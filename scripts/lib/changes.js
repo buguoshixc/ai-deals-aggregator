@@ -60,6 +60,11 @@ const CHANGES_WORDING = {
   CHANGES_LABELS: {
     radar: '变化雷达',
     pageTitle: '优惠变化雷达',
+    // 二级数据页底部那个**条件模块**的标题（secondary-page-intro-changes-v1）。
+    // 刻意**不带页面名**：读者已经在 /need/no-card/ 上，标题再说一遍「『无需信用卡』最近的变化」
+    // 是把当前位置重复念一遍。同时它就是全站对这一块唯一的叫法（首页条带也叫「变化」这一族）。
+    // 出现条件只有一条：**本页相关的真实变化事件 ≥ 1 条**（0 条整块不渲染，见 changesTopicHtml）。
+    recent: '最近变化',
     all: '全部变化',
     more: '另有 {n} 条未显示',
     base: '以最近一次数据更新 {date} 为基准',

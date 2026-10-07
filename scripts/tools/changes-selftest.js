@@ -493,6 +493,98 @@ section('⑬ 记录级代表事件（ItemList 与页面行标记的唯一出处�
 }
 
 /* ------------------------------------------------------------------ */
+section('⑩ 二级页「最近变化」是**条件模块**（secondary-page-intro-changes-v1）');
+
+{
+  const landing = require('../lib/landing');
+  const rc = require('../lib/render-core').load();
+
+  // 四条真实形状的事件：一条今日新增 + 三条 6 天内的字段变化（跨三个分栏桶）
+  const events = [
+    event({ id: ID_A, at: day(0), type: 'created', field: null, from: null, to: null, fields: {} }),
+    event({ id: ID_B, at: day(-2), type: 'benefit_changed', field: 'discountInfo' }),
+    event({ id: ID_C, at: day(-3), type: 'eligibility_changed', field: 'claimRequirements' }),
+    event({ id: ID_D, at: day(-4), type: 'expiry_changed', field: 'expiresAt' })
+  ];
+  const deals = [deal({ id: ID_A }), deal({ id: ID_B }), deal({ id: ID_C }), deal({ id: ID_D })];
+  const radar = radarOf(events, deals);
+  const allIds = [ID_A, ID_B, ID_C, ID_D];
+  const view = landing.topicChangesOf(radar, allIds, { sectionOrder: changes.SECTION_ORDER });
+
+  // ---- R2：零变化（含日志不可用）⇒ 整块不输出 ----
+  // 生产上的真实形状：这一页**有条目**（deal 在池子里），但没有任何与它相关的事件
+  //（当前数据下 40 个目录页全是这一种）→ sections 为空、totals 0。
+  const ID_NONE = 'eeeeeeeeeeee';
+  const radarWithQuietDeal = radarOf(events, [...deals, deal({ id: ID_NONE, title: '没有任何事件的优惠' })]);
+  const empty = landing.topicChangesOf(radarWithQuietDeal, [ID_NONE], { sectionOrder: changes.SECTION_ORDER });
+  const emptyHtml = rc.changesTopicHtml(empty, '../../');
+  check('R2 零变化：模块**逐字返回空串**（没有标题 / 空态 / 起算日 / 空容器）',
+    empty.totals === 0 && empty.sections.length === 0 && emptyHtml === '',
+    JSON.stringify(empty.totals) + ' / ' + JSON.stringify(emptyHtml.slice(0, 40)));
+  check('R2b 零变化时页面上不会出现「最近变化」这四个字（连标题都不留）',
+    !emptyHtml.includes('最近变化'));
+  check('R2c 日志不可用：同样整块不输出（诚实性由 /changes/ 与首页条带承担，不在二级页展开）',
+    rc.changesTopicHtml({ availability: 'unavailable', asOf: null, startedAt: AS_OF, sections: [], totals: 0 }, '') === '');
+  check('R2d 枢纽页 / 别名页（topic = null）：不输出',
+    rc.changesTopicHtml(null, '') === '' && rc.changesTopicHtml(undefined, '../../') === '');
+  check('R2e 空态那三句旧文案（「当前没有观察到变化」「为基准」「记录自」）一个字都不再出现',
+    !/当前没有观测到变化|为基准|记录自|变更记录自/.test(emptyHtml));
+
+  // ---- R3：有变化 ⇒ 轻量模块在场 ----
+  const html = rc.changesTopicHtml(view, '../../');
+  const rowsHtml = [...html.matchAll(/<li class="chgi"[^>]*>/g)].length;
+  const shown = (html.match(/data-topic-shown="(\d+)"/) || [])[1];
+  const total = (html.match(/data-topic-total="(\d+)"/) || [])[1];
+  check('R3 有变化：模块在场，标题**逐字**「最近变化」', html.includes('<h2>最近变化</h2>'));
+  check('R3b 标题里不再出现页面名（旧形态「「…」最近的变化」已消失）',
+    !html.includes('最近的变化') && !/「[^」]+」/.test(html));
+  check(`R3c 最多 3 条：<li> 数量与 data-topic-shown 都是 ${Math.min(3, view.totals)}`,
+    rowsHtml === Math.min(3, view.totals) && shown === String(rowsHtml), `${rowsHtml} / ${shown}`);
+  check('R3d 相关变化总数如实写在 data-topic-total 上（截断不撒谎）',
+    total === String(view.totals), `${total} / ${view.totals}`);
+  check('R3e 有指向既有稳定路由 /changes/ 的入口（不为这一块新造 URL）',
+    html.includes('href="../../changes/"') && html.includes('全部变化'));
+  check('R3f 没有基准日 / 起算日 / 内部口径（那些只在 /changes/ 解释）',
+    !/为基准|变更记录自|记录自 \d{4}|没有观测到变化/.test(html));
+  check('R3g 不再是 .snote（目录页上它不再是一条「页面级说明」）',
+    !/class="snote/.test(html) && html.includes('class="chgsec chgtopic"'));
+
+  // ---- R4：内容真实 + 顺序正确（复用判据层的渲染顺序，不在这里重排）----
+  const rowKeys = [...html.matchAll(/data-deal-id="([^"]+)"[^>]*>[\s\S]*?<time datetime="([^"]+)"/g)]
+    .map(m => `${m[1]}@${m[2]}`);
+  const order = changes.renderOrderOf(radar).map(entry => entry.item.id);
+  const expected = order.filter(id => allIds.includes(id)).slice(0, rowsHtml)
+    .map(id => `${id}@${events.find(e => e.id === id).at}`);
+  check('R4 每一行的 (id, 日期) 都能在雷达事件里逐条命中 —— 页面不自己造事件',
+    rowKeys.length === rowsHtml && rowKeys.every(key => expected.includes(key)),
+    rowKeys.join(' / '));
+  check('R4b 顺序 = 分栏顺序（SECTION_ORDER）→ 桶内时间倒序：与 renderOrderOf() 逐项一致',
+    rowKeys.join(',') === expected.join(','), `${rowKeys.join(',')} / ${expected.join(',')}`);
+  const firstRow = rc.changesRowHtml(view.sections[0].items[0], '../../');
+  check('R4c 行渲染与 /changes/ **同一个函数**（逐字相同 ⇒ 同一件事在两页上是同一个词）',
+    html.includes(firstRow));
+}
+
+/* ------------------------------------------------------------------ */
+section('⑪ 说明容器 matcher：`class="snote aliasnote"` 不许再逃过扫描');
+
+{
+  // 实测过的真实盲区：`/<p class="snote"[^>]*>/` 要求 `snote` 后面**紧跟引号**，
+  // 于是 `<p class="snote aliasnote">` 一条都照不到 —— 别名页那句内部措辞
+  // （`benefitType`）因此长期没被任何守卫看见。本轮把两处 matcher 都改成 class token 级。
+  const legacy = /<p class="snote"[^>]*>/;
+  const token = /<p\b[^>]*\bclass="[^"]*\bsnote\b[^"]*"[^>]*>/;
+  const alias = '<p class="snote aliasnote">这一页是旧地址……</p>';
+  const vsnote = '<p class="vsnote vnone">本次构建没有拿到套餐变更日志。</p>';
+  check('旧 matcher 对 `<p class="snote aliasnote">` **0 命中**（盲区真实存在，不是推测）',
+    !legacy.test(alias), String(legacy.test(alias)));
+  check('新 matcher（class token 级）命中它',
+    token.test(alias), String(token.test(alias)));
+  check('新 matcher 不误命中 `.vsnote`（`v` 与 `s` 之间没有词边界）',
+    !token.test(vsnote) && token.test('<p class="snote">x</p>'));
+}
+
+/* ------------------------------------------------------------------ */
 console.log(`\n=== v1.5 变化雷达演练：${passed} 项通过，${failures.length} 项失败 ===`);
 if (failures.length) {
   for (const item of failures) console.log(`  ✗ ${item.name}${item.detail ? ` —— ${item.detail}` : ''}`);

@@ -1,0 +1,21 @@
+{
+  "what": "逐页摘要原件（Tier-2，留本机/CI artifact）：字段口径 = 行数 / data-item id 集合 / 详情 href 集合 / 正文长度 / 上限余量 / 说明块 / JSON-LD 每段 sha256",
+  "digests": [
+    {
+      "file": ".arch-v1/before.json",
+      "bytes": 335992,
+      "sha256": "b7ba31c0560ab505a42a50009336e4596bb4ce1ab40968fa9068c4d1b7571b26"
+    },
+    {
+      "file": ".arch-v1/after.json",
+      "bytes": 316326,
+      "sha256": "1f914a27ef32245147ed8fbb58f3aeace2ecd3f1c3da220bb9fccf0d883d3d19"
+    },
+    {
+      "file": ".arch-v1/before-rebuilt.json",
+      "bytes": 335988,
+      "sha256": "fbd371721736b13f8a4242babed0498f1bb7cd6c3ae7d8d58f5383e6406fcb7a"
+    }
+  ],
+  "note": "before-rebuilt 与 before 的摘要**逐字段相同** ⇒ 装置可复跑，且构建是确定性的"
+}

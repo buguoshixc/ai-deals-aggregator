@@ -2264,11 +2264,12 @@ function renderDirectoryPage(spec, deals, indexHtml, context) {
     : (deals.length ? deals.map(rowHtml).join('') : emptyRow);
 
   /**
-   * 三层说明模型的**唯一实现**（secondary-page-content-simplification）。
+   * 两层说明模型的**唯一实现**（secondary-page-intro-changes-v1；此前是三层的）。
    *
-   *   ① `userIntro` —— 顶部 `<p class="snote">`，0~1 句。**没有就整块不输出**，
-   *      不写「本页收录……」这种复述标题的空话（一个空容器比没有容器更糟：
-   *      它会被 §22c 当成一条「说明」去量，读者却什么也没读到）。
+   *   ① **首屏（标题下）—— 一个字都没有。** 顶部只留 `<h1>` + 「共 N 条 · 数据更新 …」。
+   *      上一轮留下的 `userIntro`（0~1 句 `<p class="snote">`）本轮整层删除：
+   *      实测 41 个页面每页至少占一行，而它解释的内容读者不看也能用这一页。
+   *      判据在构建期（本文件「首屏说明必须为空」那条结构性扫描，白名单只有别名页）。
    *   ② `userNotes` —— 底部 `<details class="page-notes">`，只放三类内容
    *      （分类边界 / 来源与条款 / 少量误解说明）。**真没有价值的内容直接不展示**，
    *      不倒进折叠块 —— 把垃圾藏进 `<details>` 不是简化。
@@ -2286,13 +2287,13 @@ function renderDirectoryPage(spec, deals, indexHtml, context) {
    * 折叠**不影响**无 JS 可读性，也不影响正文下限：`prerenderedText()`（构建期）与
    * `seo.js` 的 `visibleText()` 都只剥 script/style/注释/标签，`<details>` 的正文照样计入。
    * 这一点是本轮敢用折叠的前提 —— 折起来的内容仍然能被搜索引擎与「无 JS 读全文」读到。
+   *
+   * ## 唯一的例外：别名页的 `.aliasnote`
+   *
+   * 旧地址页（`/need/student-only/` 等三条）顶上那条「这一页是旧地址：它与 X 收的是同一批
+   * 条目……该去哪里」**不是**解释性副标题，而是「你在哪、该去哪」的导航更正；页面本身
+   * noindex。它因此是本轮唯一被保留的页面级 `.snote`，并在构建期扫描里逐条登记路由。
    */
-  const userIntro = typeof spec.userIntro === 'string' ? spec.userIntro.trim() : '';
-  const introHtml = userIntro ? `      <p class="snote">
-        ${userIntro}
-      </p>
-
-` : '';
 
   /**
    * 底部折叠说明。**共享句在前、本页特有句在后** —— 顺序固定，产物因此可复现。
@@ -2523,6 +2524,21 @@ ${summary.map(row => `        <li data-summary-label="${htmlEscape(row.label)}" 
   .page-notes[open] .page-notes-action::before { content: '收起'; }
   .page-notes > .pnote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0; padding: 0 12px var(--s2); }
   .page-notes > .pnote:last-child { padding-bottom: 12px; }
+  /* ---- 最近变化（条件模块 · secondary-page-intro-changes-v1）----
+     只有真的存在与本页条目相关的变化事件时才输出（判据在 RENDER-CORE 的 changesTopicHtml：
+     零变化与日志不可用都整块不渲染）。视觉权重刻意**低于**优惠表格：一条 hairline +
+     小标题 + 紧凑列表，不做卡片、不做大号标题、不加底色。
+     颜色全部走 token ⇒ 亮色 / data-theme="dark" / 跟随系统三态自动成立（无硬编码白色）。
+     ⚠️ 这里也不许出现反引号，也不许写 .snote 规则（同上面那两条硬约束）。 */
+  .chgtopic { margin: var(--s4) 0 0; border-top: 1px solid var(--line); padding-top: var(--s3); }
+  .chgtopic-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s2); flex-wrap: wrap; }
+  .chgtopic-head h2 { font-size: 15px; margin: 0; }
+  .chgtopic-all { font-size: var(--fs-sm); }
+  .chgtopic .chglist { list-style: none; margin: var(--s2) 0 0; padding: 0; display: grid; gap: 10px; }
+  .chgtopic .chgh { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px var(--s2); font-size: var(--fs-sm); }
+  .chgtopic .chgh time { color: var(--mut); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .chgtopic .chgh .chgt { color: var(--mut); }
+  .chgtopic .chgv { display: flex; flex-wrap: wrap; gap: var(--s2); margin-top: 2px; font-size: var(--fs-sm); color: var(--mut); overflow-wrap: anywhere; }
   .ctable { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
   .ctable caption { text-align: left; color: var(--mut); font-size: var(--fs-sm); padding: 0 0 var(--s2); }
   .ctable th, .ctable td { text-align: left; padding: 10px 12px; border-top: 1px solid var(--line); font-weight: 400; font-size: var(--fs-sm); vertical-align: top; }
@@ -2557,7 +2573,7 @@ ${extraCss}`;
         <h1>${htmlEscape(spec.heading)}</h1>
         <span class="meta">共 ${isHub ? childList.length : deals.length} ${isHub ? '个入口' : '条'} · 数据更新 ${htmlEscape(String(context.lastmod || ''))}</span>
       </div>
-${aliasNote}${introHtml}${summaryHtml}
+${aliasNote}${summaryHtml}
 
       <div class="ctable-wrap">
       <table class="ctable">
@@ -3167,13 +3183,18 @@ function assemble() {
     const topic = spec.kind === 'hub' || spec.kind === 'alias'
       ? null
       : landing.topicChangesOf(radar, matched.map(deal => deal.id), { sectionOrder: changes.SECTION_ORDER });
-    if (topic) topic.title = `「${spec.title || spec.label}」最近的变化`;
+    // ⚠️ 这里**不再给 topic 注入标题**（secondary-page-intro-changes-v1）：模块标题固定为
+    // 「最近变化」。上一版注入的是 `「${spec.title}」最近的变化`，读者已经在那一页上，
+    // 标题只是把页面名再念一遍（prompt §11）。
     const pageFeeds = feeds.feedsForPage(spec, feedBundle.feeds);
     const page = renderDirectoryPage(spec, matched, html, {
       lastmod, summary, topic, plan: PLAN, feedsForPage: pageFeeds, allFeeds: feedBundle.feeds, renderCore,
       // v3.0 Stage E：厂商页的六个资料区块（官方入口 / 优惠 / Coding 套餐 / API 计费 /
       // 模型 / 最近变化 / 订阅）。只有 vendor 进入这个分支；其余 kind 返回空 bundle，
       // 因此非厂商页的输出一个字节都没变（`check-reproducible` 会替我们盯着这件事）。
+      //
+      // `hasTopicChanges`：资料区块里那句「优惠变化见本页上方的「最近变化」块」必须只在
+      // 上方**真的有**那一块时出现 —— 否则它指向空气（模块现在是条件渲染的）。
       extraSections: spec.kind === 'vendor'
         ? (vendorSpec => vendorPage.renderVendorKnowledgeBundle(vendorSpec, {
           deals: matched,
@@ -3185,6 +3206,7 @@ function assemble() {
           apiPlanHistoryStore,
           providerTable,
           feeds: pageFeeds,
+          hasTopicChanges: Boolean(topic && topic.sections && topic.sections.length),
           prefix: '../'.repeat(vendorSpec.depth || spec.depth || 1)
         }))
         : null
@@ -5401,9 +5423,13 @@ function selfCheck(built) {
     // 同一次扩面还收进了 `<details>`：本轮把底部说明搬进折叠块，
     // 而那是个**非贪婪 `<p class="snote">…</p>` 正则**根本照不到的新容器 ——
     // 「搬个位置就静默失去覆盖」正是这条守卫最该防的失效方式。
+    // ⚠️ 两个 `.snote` 文本容器用 **class token 级**匹配（`\bsnote\b` / `\bvsnote\b`），
+    // 不用 `class="snote"` 这种精确串：后者对 `<p class="snote aliasnote">` **一条都照不到**，
+    // 而别名页那三句里恰好有内部措辞（实测：`benefitType`）—— 「换个类名就静默失去覆盖」
+    // 与本文件反复记录的那次 `.vsnote` 漏网是同一类失效。
     const PROSE_PATTERNS = [
-      /<p class="snote"[^>]*>([\s\S]*?)<\/p>/g,
-      /<p class="vsnote[^"]*"[^>]*>([\s\S]*?)<\/p>/g,
+      /<p\b[^>]*\bclass="[^"]*\bsnote\b[^"]*"[^>]*>([\s\S]*?)<\/p>/g,
+      /<p\b[^>]*\bclass="[^"]*\bvsnote\b[^"]*"[^>]*>([\s\S]*?)<\/p>/g,
       /<caption>([\s\S]*?)<\/caption>/g,
       /<details\b[^>]*>([\s\S]*?)<\/details>/g
     ];
@@ -5429,15 +5455,27 @@ function selfCheck(built) {
       console.log('  ✓ 作者正文无 Markdown 记号: .snote / .vsnote / <caption> / <details> 里的强调一律用 <b>，字段名直接写');
     }
 
-    // 首屏（intro）里不许出现**内部实现措辞** —— secondary-page-content-simplification 的新牙。
+    // 首屏说明**必须为空** —— secondary-page-intro-changes-v1 的主牙（**含一次真实盲区的修复**）。
     //
-    // 扫的是**产物现场**，不是注册表：注册表级那条（`audience-selftest.js` §9）只看得到
-    // 静态注册表，而 `/vendor/<slug>/` 的文案是 `landing.js` 里**算出来的**（26 个页面），
-    // 只有回读产物才照得到。两条一起才是完整覆盖面。
+    // 为什么要有它：二级数据页首屏的任务是「有哪些优惠」。上一轮把三段口径删到「0~1 句」，
+    // 而实测那 0~1 句在 **41 个页面**上各占至少一行，读者不看也照样能用这一页 —— 于是整层删除
+    // （`userIntro` 字段与渲染路径一起删）。这条断言守的是**删掉之后不许回流**：再有人往注册表
+    // 加一个 `userIntro`、或在模板里插一段顶部说明，构建当场红。注册表级还有一条
+    // （`audience-selftest` §9），两层各管一半 —— 产物层这条连 `/vendor/<slug>/` 那种
+    // **算出来的**文案（26 页）也照得到。
     //
-    // 判据边界（prompt §18 明说「不做机械全站禁词」）：
-    //   · 扫描面**只限 intro 区** —— 从 `.cstop` 结束到第一个数据区（`.lsum` / 表格容器）之间；
-    //     表格里的「为什么在这一页」列、底部折叠说明、页脚都不在其中。
+    // ## 判据边界
+    //
+    //   · 扫描面**只限 intro 区** —— `.cstop` 结束到第一个数据区（`.lsum` / 表格容器）之间；
+    //     表格里的「为什么在这一页」列、底部折叠说明、页脚都不在其中（那三处本来就该有字）。
+    //   · **唯一的例外是别名页**（`/need/student-only/` 等三条）：旧地址页顶上那条
+    //     「这一页是旧地址……该去哪里」是**导航更正**，不是解释性副标题，而且那三页是 noindex。
+    //     例外逐条登记在 `ALIAS_NOTE_ROUTES`（由计划现算，不是手写名单），并要求恰好一条、
+    //     且必须带 `aliasnote` 类 —— 白名单只放行**那一条**，不是「跳过那一页」。
+    //   · 类名匹配是 **class token 级**的（`\bsnote\b`）。上一版用的是 `class="snote"` 精确串，
+    //     于是 `<p class="snote aliasnote">` **一条都照不到**：别名页那句里的内部措辞
+    //     （`benefitType`）从来没被这条守卫看见过。本轮实测出这个盲区并修掉
+    //     （`changes-selftest` 里有正反例探针：旧正则 0 命中 / 新 matcher 必命中）。
     //   · `判据` **不在禁词表里**：它同时是业务语义（别名页那句「同一份判据」），
     //     机械禁掉会变成一条在正常文案上失败的守卫 —— 那比没有守卫更糟。
     //   · 误报的处置是**改文案**或往 ALLOW 里登记理由，不是把词从表里删掉。
@@ -5446,7 +5484,20 @@ function selfCheck(built) {
     ];
     // 逐条登记的白名单（空 = 当前没有例外）。键是 `路由|词`，值是「为什么这里是业务语义」。
     const INTRO_TERM_ALLOW = new Set([]);
+    // class token 级匹配 —— `\bsnote\b` 既能命中 `class="snote aliasnote"`，
+    // 又不会误命中 `class="vsnote"`（`v` 与 `s` 之间没有词边界）。
+    // 同一个 matcher 也用在上面那段 Markdown 记号扫描里（同一次盲区修复）。
+    const INTRO_SNOTE_RE = /<p\b[^>]*\bclass="[^"]*\bsnote\b[^"]*"[^>]*>([\s\S]*?)<\/p>/g;
+    const introProblems = [];
     const introHits = [];
+    const ALIAS_NOTE_ROUTES = new Set(
+      built.directoryPages.filter(page => page.kind === 'alias').map(page => page.route)
+    );
+    for (const route of ALIAS_NOTE_ROUTES) {
+      if (!built.directoryPages.some(page => page.route === route)) {
+        introHits.push(`别名页白名单里的 ${route} 不在本次计划里 —— 名单是现算的，出现这一条说明计划与产物不一致`);
+      }
+    }
     for (const page of built.directoryPages) {
       const file = path.join(OUT, `${page.route}index.html`);
       if (!fs.existsSync(file)) continue;
@@ -5460,22 +5511,36 @@ function selfCheck(built) {
         .filter(index => index > 0);
       const introEnd = anchors.length ? Math.min(...anchors) : html.length;
       const introRegion = html.slice(cstopEnd, introEnd);
-      const prose = [...introRegion.matchAll(/<p class="snote"[^>]*>([\s\S]*?)<\/p>/g)]
-        .map(m => m[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim())
-        .join(' ');
-      if (!prose) continue;
-      for (const term of INTRO_INTERNAL_TERMS) {
-        if (prose.includes(term) && !INTRO_TERM_ALLOW.has(`${page.route}|${term}`)) {
-          introHits.push(`${page.route || '/'} 含「${term}」：${prose.slice(0, 40)}…`);
+      const notes = [...introRegion.matchAll(INTRO_SNOTE_RE)].map(m => ({
+        classes: (m[0].match(/class="([^"]*)"/) || ['', ''])[1].split(/\s+/).filter(Boolean),
+        text: m[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+      })).filter(note => note.text);
+      if (!notes.length) continue;
+      const isAlias = ALIAS_NOTE_ROUTES.has(page.route);
+      if (!isAlias) {
+        introProblems.push(`${page.route || '/'} 首屏仍有 ${notes.length} 条说明`
+          + `（二级数据页首屏只允许标题 / 条目数 / 更新时间）：${notes[0].text.slice(0, 40)}…`);
+      } else if (notes.length !== 1 || !notes[0].classes.includes('aliasnote')) {
+        introProblems.push(`${page.route} 是别名页，intro 区应当**恰好**一条 .aliasnote，`
+          + `实际 ${notes.length} 条（类名 ${notes.map(n => n.classes.join('.')).join(' / ')}）`);
+      }
+      for (const note of notes) {
+        for (const term of INTRO_INTERNAL_TERMS) {
+          if (note.text.includes(term) && !INTRO_TERM_ALLOW.has(`${page.route}|${term}`)) {
+            introHits.push(`${page.route || '/'} 含「${term}」：${note.text.slice(0, 40)}…`);
+          }
         }
       }
     }
-    if (introHits.length) {
+    if (introProblems.length) {
+      fail(`二级数据页首屏出现了说明（分类判据、字段模型与解释性副标题都不占首屏，见 docs/DESIGN-RULES.md H13）：`
+        + `${introProblems.slice(0, 4).join('；')}`);
+    } else if (introHits.length) {
       fail(`二级页首屏出现内部实现措辞（分类判据 / 字段模型属于维护文档，见 docs/DESIGN-RULES.md 的口径归档）：`
         + `${introHits.slice(0, 4).join('；')}`);
     } else {
-      console.log(`  ✓ 二级页首屏无内部实现措辞: ${built.directoryPages.length} 页 × ${INTRO_INTERNAL_TERMS.length} 个禁词`
-        + `（白名单 ${INTRO_TERM_ALLOW.size} 条）`);
+      console.log(`  ✓ 二级数据页首屏无说明: ${built.directoryPages.length} 页（${ALIAS_NOTE_ROUTES.size} 条别名页`
+        + `各留一条 .aliasnote，逐条登记在 ALIAS_NOTE_ROUTES）· 残留说明 × ${INTRO_INTERNAL_TERMS.length} 个禁词 0 命中`);
     }
   }
 

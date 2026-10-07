@@ -50,17 +50,18 @@ const CATEGORY_MIN_DEALS = 4;
 /**
  * 分类页的**人工允许表**。只有登记在这里的分类才会生成 /category/<slug>/。
  *
- * ⚠️ `userIntro` / `userNotes` 是**直接写进 HTML 的**（模板插进 `<p class="snote">`
- * 与 `<details class="page-notes">`），所以这里写的是 HTML，不是 Markdown：
+ * ⚠️ `userNotes` 是**直接写进 HTML 的**（模板插进 `<details class="page-notes">`），
+ * 所以这里写的是 HTML，不是 Markdown：
  * 要强调用 `<b>`，要写字面量就直接写。违反这条会被 build-local.js 的既有守卫当场
  * 拦下（`.snote` / `.vsnote` / `<caption>` / `<details>` 里出现 `**` 或反引号即构建失败）。
  *
- * ## 分类页为什么大多不需要 `userIntro`
+ * ## 分类页为什么首屏一个字都没有（secondary-page-intro-changes-v1）
  *
  * 「这一页按 category 字段收、不是按标题关键词猜的」属于**维护口径**，不是用户任务：
  * 读者点进 /category/audio/ 时想问的是「这里有什么音频类优惠」，不是「你们怎么分类的」。
- * 因此这一族大多只留共享的底部说明；只有**会改变领取判断**的差异（例如额度按张数/时长计，
- * 与按 Token 计不可比）才进 `userNotes`。
+ * 二级数据页首屏只留标题 / 条目数 / 更新时间（DESIGN-RULES H13），所以这一族**一律没有**
+ * 首屏说明；只有**会改变领取判断**的差异（例如额度按张数/时长计，与按 Token 计不可比）
+ * 保留在底部折叠的 `userNotes` 里。
  */
 const CATEGORY_PAGES = [
   {
@@ -69,7 +70,8 @@ const CATEGORY_PAGES = [
     title: 'AI API 服务优惠',
     heading: 'AI API 服务与算力平台的优惠',
     description: '大模型 API 服务与算力平台的优惠与免费额度：新用户赠送、限时免费模型与按量抵扣，逐条标注领取门槛与是否中国大陆可用。',
-    userIntro: '这一页的优惠按量计费，额度单位多为 Token 或积分。'
+    // 单位会影响读者怎么比较额度 ⇒ 保留在底部折叠（首屏不再有说明，DESIGN-RULES H13）。
+    userNotes: ['这一页的优惠按量计费，额度单位多为 Token 或积分。']
   },
   {
     slug: 'chat',
@@ -139,8 +141,8 @@ const VENDOR_HUB = {
   heading: '按厂商浏览 AI 优惠',
   description: '按厂商浏览本站收录的 AI 优惠与免费额度：每家厂商一页，列出当前有效优惠、学生与开发者相关条目以及最近变化。',
   // 「门槛 ≥2 条 / ≥3 事件」「厂商归一规则 / 同名归并」是维护口径 → docs 口径归档。
-  // 用户在枢纽页上只需要知道一件事：门槛够的厂商才有独立页。
-  userIntro: '只列出当前有效优惠达到门槛、因而有独立页面的厂商。',
+  // 「门槛够的厂商才有独立页」已由渲染层的共享句 SHARED_NOTES.hubMissing 承担
+  // ⇒ 首屏不再重复一遍（重复的代价是首屏多一行，收益是零）。
   userNotes: ['同一个公司的不同写法会合并到同一页。']
 };
 
@@ -152,8 +154,8 @@ const CATEGORY_HUB = {
   depth: 1,
   title: '按分类找优惠',
   heading: '按分类浏览 AI 优惠',
-  description: '按分类浏览本站收录的 AI 优惠：API 服务、对话模型、图像绘画、音频语音与智能体，每一类一页。',
-  userIntro: '只列出条目数达到门槛、因而有独立页面的分类。'
+  description: '按分类浏览本站收录的 AI 优惠：API 服务、对话模型、图像绘画、音频语音与智能体，每一类一页。'
+  // 「只列出达门槛的分类」由渲染层共享句 SHARED_NOTES.hubMissing 承担 ⇒ 首屏不再重复。
 };
 
 /* ------------------------------------------------------------------ */
@@ -563,16 +565,16 @@ function planLandingPages(options = {}) {
     const description = nonDealOnly
       ? `${name} 在本站收录的 Coding 套餐、API 计费记录、模型归属与最近变化。所有内容来自已有数据关系（join），不复制生产事实。`
       : `${name} 当前收录的 AI 优惠与免费额度：逐条标注福利类型、领取门槛与是否中国大陆可用，并给出该厂商最近的变化。`;
-    // 厂商页首屏只留一句「会改变读者判断」的话。原先那段
+    // 厂商页首屏**不再有任何说明**（DESIGN-RULES H13：标题 / 条目数 / 更新时间）。原先那段
     // 「厂商名按站内归一规则合并 / 条数只统计当前有效优惠 / 每个数字都来自当前数据」
     // 属于**维护口径**（prompt §6D 点名不要在厂商页顶部展开归一规则与 slug），
     // 已整段移入 docs/DESIGN-RULES.md 的二级数据页口径归档。
-    // `.cstop` 已经写着「共 N 条 · 数据更新 …」，所以这里不再重复条数。
-    const userIntro = nonDealOnly
-      ? `本站目前没有收录这家厂商当前有效的优惠；下面是它的套餐、API 计费与模型资料。`
-      : `只列当前有效的优惠；已结束的条目在历史档案里。`;
-    // 首屏放不下的、但对读者确实有用的内容 → 底部折叠。
-    const userNotes = [];
+    // `.cstop` 已经写着「共 N 条 · 数据更新 …」，所以这里连条数也不必再写一遍。
+    // 「只列当前有效的优惠」与「这家只有资料」属于分类边界 → 底部折叠。
+    const scopeNote = nonDealOnly
+      ? '本站目前没有收录这家厂商当前有效的优惠；下面是它的套餐、API 计费与模型资料。'
+      : '只列当前有效的优惠；已结束的条目在历史档案里。';
+    const userNotes = [scopeNote];
     if (material.nonDeal) {
       // ⚠️ t13 跨范围修复（阻断级）：这里原本写的是 `**join**` —— Markdown 记号会被**逐字**
       // 渲染给读者（当时 `.snote` 是纯 HTML 容器），并被构建期的「作者正文无 Markdown 记号」
@@ -583,7 +585,7 @@ function planLandingPages(options = {}) {
     }
     vendorPages.push({
       kind: 'vendor', key: name, slug, route, depth: depthOf(route), indexable: true, pinned,
-      title, heading, description, userIntro, userNotes,
+      title, heading, description, userNotes,
       match: { by: 'vendor', value: name }, count, eventCount,
       // v3.0 Stage E：资料页 join 的输入（渲染层只读这些键，不重新判据）。
       material,

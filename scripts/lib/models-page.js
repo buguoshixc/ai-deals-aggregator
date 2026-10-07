@@ -1063,7 +1063,7 @@ ${rows.map(row => modelPricingRowHtml(row, prefix)).join('\n')}
     ? `      <ul class="mlist">
 ${refs.codingPlans.map(item => codingPlanLineOf(item, ctx, prefix)).join('\n')}
       </ul>`
-    : `      <p class="snote mnone">${modelsMarkdownish('没有与该模型**显式关联**的 Coding 套餐 —— 本站不按套餐里的模型名猜关系（`supportedModels` 是自由文本，没有模型键）。', prefix)}</p>`;
+    : `      <p class="snote mnone">${modelsMarkdownish('没有与该模型**显式关联**的 Coding 套餐 —— 本站不按套餐里的模型名猜关系（supportedModels 是自由文本，没有模型键）。', prefix)}</p>`;
 
   const dealsBlock = refs.deals.length
     ? `      <ul class="mlist">

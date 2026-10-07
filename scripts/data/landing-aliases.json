@@ -8,7 +8,7 @@
     },
     "need/free-api/": {
       "target": "free-api/",
-      "reason": "与 /free-api/ 是同一份判据（benefitType 含 free_api）、同一批条目，标题逐字相同。保留 /free-api/ 作为被索引的入口。"
+      "reason": "与 /free-api/ 是同一份判据、同一批条目，标题逐字相同。保留 /free-api/ 作为被索引的入口。"
     },
     "need/dev-credits/": {
       "target": "developer/",

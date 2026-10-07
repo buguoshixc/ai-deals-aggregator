@@ -2656,17 +2656,20 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     }
     await page.setViewportSize({ width: 1440, height: 900 });
 
-    // 无 JS：这是「预渲染」的硬定义 —— 关掉 JS 打开一条需求页，表格、首屏那一句、
+    // 无 JS：这是「预渲染」的硬定义 —— 关掉 JS 打开一条需求页，表格、条目、
     // 以及底部折叠说明都要在。
     //
-    // ⚠️ secondary-page-content-simplification 重瞄过一次。原先探针读的是
-    // `document.body.innerText.includes('这一页')`，断言名叫「能读到**判据说明**与全部条目」。
-    // 本轮把那段三段式判据说明从首屏移走之后，`这一页` 仍然命中 —— 但命中的是**表头**
-    // 「为什么在这一页」这一列，不是那段说明。**断言还在绿，而它声称守的东西已经不在页面上了**：
-    // 这正是本仓库反复写的那类失效（「一个数错了东西的断言比没有断言更糟」）。
-    // 所以这里换成守**新形态**的两件事：折叠说明真的能被无 JS 读到（`<details>` 的正文
-    // 在 DOM 里，`innerText` 对闭合 details 不返回它 —— 用 textContent 才是「读得到」），
-    // 以及首屏那一句确实是短句。
+    // ⚠️ 这条探针被**重瞄过两次**，两次都是同一类失效（「断言还绿，而它声称守的东西
+    // 已经不在页面上了」）：
+    //   · 第一版读的是 `document.body.innerText.includes('这一页')`，断言名叫「能读到**判据说明**」。
+    //     `secondary-page-content-simplification` 把三段式判据说明从首屏移走之后，`这一页`
+    //     仍然命中 —— 但命中的是**表头**「为什么在这一页」那一列，不是那段说明。
+    //   · 第二版改成量「首屏那一句」的字数（`0 < introChars ≤ 60`）。
+    //     `secondary-page-intro-changes-v1` 把首屏说明整层删掉之后，这个量恒为 0 ——
+    //     它守的东西同样已经不在页面上了。
+    // 现在守的是**新形态**：首屏（`.cstop` 之后、第一个数据区之前）**一条说明都没有**，
+    // 而底部折叠说明仍然无 JS 可读（`<details>` 的正文在 DOM 里，`innerText` 对闭合
+    // details 不返回它 —— 用 textContent 才是「读得到」）。
     {
       const noJsCtx = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1440, height: 900 } });
       const noJsP = await noJsCtx.newPage();
@@ -2676,8 +2679,16 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         await noJsP.goto(new URL(`need/${slug}/`, base).href, { waitUntil: 'load' });
         probes.push(await noJsP.evaluate(() => {
           const main = document.querySelector('main');
-          const first = main ? main.querySelector('.snote') : null;
           const details = main ? main.querySelector('details.page-notes') : null;
+          // intro 区 = `.cstop` 之后 → 第一个数据区之前（与构建期那条结构性扫描同一口径）
+          const cstop = main ? main.querySelector('.cstop') : null;
+          const region = document.createRange();
+          if (cstop && main) {
+            region.setStartAfter(cstop);
+            const anchor = main.querySelector('.lsum, .ctable-wrap, table');
+            if (anchor) region.setEndBefore(anchor); else region.setEnd(main, main.childNodes.length);
+          }
+          const introNotes = cstop ? [...region.cloneContents().querySelectorAll('.snote')] : [];
           return {
             chars: document.body ? document.body.innerText.replace(/\s+/g, ' ').trim().length : 0,
             rows: document.querySelectorAll('.ctable tbody tr').length,
@@ -2686,7 +2697,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
             // 但搜索引擎与「查看源码」读的是 DOM —— 这正是折叠不影响可索引性的原因）
             notes: Boolean(details) && (details.textContent || '').replace(/\s+/g, ' ').trim().length > 10,
             notesSummary: details ? ((details.querySelector('summary') || {}).textContent || '').trim() : '',
-            introChars: first ? (first.textContent || '').replace(/\s+/g, ' ').trim().length : 0,
+            introNotes: introNotes.length,
+            introChars: introNotes.reduce((sum, el) => sum + (el.textContent || '').trim().length, 0),
             jumpback: [...document.querySelectorAll('a')].some(a => (a.getAttribute('href') || '') === '../../')
           };
         }));
@@ -2706,11 +2718,11 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         };
       });
       await noJsCtx.close();
-      check('需求页不执行 JS 也能读到条目、首屏那一句与底部折叠说明（预渲染的硬定义）',
+      check('需求页不执行 JS 也能读到条目与底部折叠说明，且**首屏一条说明都没有**（预渲染的硬定义）',
         probes.length > 0 && probes.every(p => p.chars > 500 && p.rows > 0 && p.links > 0
-          && p.notes && p.notesSummary === '分类说明' && p.introChars > 0 && p.introChars <= 60 && p.jumpback),
+          && p.notes && p.notesSummary === '分类说明' && p.introNotes === 0 && p.jumpback),
         probes.map((p, i) => `${['no-card', 'ai-coding', 'china-usable'][i]} ${p.rows} 行/${p.chars} 字`
-          + ` · 首屏 ${p.introChars} 字 · 折叠说明「${p.notesSummary}」`).join(' · '));
+          + ` · 首屏说明 ${p.introNotes} 条/${p.introChars} 字 · 折叠说明「${p.notesSummary}」`).join(' · '));
       check('无 JS 打开首页时「按需求找优惠」入口行仍在且指向需求页',
         homeNoJs.entries === Object.keys(needTruth.needs).length && /^need\//.test(homeNoJs.firstHref),
         `${homeNoJs.entries} 条入口 · 首条 ${homeNoJs.firstHref}`);
@@ -6467,7 +6479,15 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   const WIDE_LONG_TOKEN = 'x'.repeat(200);
   // M1–M4 的四个壳（页面级说明曾经各自被压成 70ch 的就是这四个家族）。它们是**固定路由**，
   // 不是数据 id/slug；每条变异都会先守卫「这一页确实是 wide 族、且真有页面级说明」。
-  const WIDE_MUTATION_TARGETS = ['student/', 'status/', 'changes/', 'feeds/'];
+  //
+  // ⚠️ 第一个壳在 secondary-page-intro-changes-v1 里换过一次：
+  //   原先靶页是 `student/`（目录页家族）。本轮把二级数据页首屏的说明**整层删掉**之后，
+  //   非别名目录页在 `<main>` 里已经**一条 `.snote` 都没有**（变化块的「全部变化 →」
+  //   也从 `<p class="snote">` 改成了模块头里的链接）—— 变异失去了承重面。
+  //   目录页家族里现在唯一还带页面级说明的是**别名页**（旧地址通知，三条），
+  //   所以第一个壳换成 `need/student-only/`：它仍然走 build-local.js 的**同一个**
+  //   `renderDirectoryPage`，四个壳的覆盖面（四个页面族）因此一点没变。
+  const WIDE_MUTATION_TARGETS = ['need/student-only/', 'status/', 'changes/', 'feeds/'];
 
   /**
    * 首屏说明（intro）的行数上限 —— secondary-page-content-simplification 的新判据。
@@ -7487,12 +7507,12 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         anchor: WIDE_SNOTE_FROZEN, replacement: WIDE_SNOTE_NARROW
       }));
       wideMutations.push(
-        { id: 'M6', route: 'student/', width: WIDE_NARROW, expect: `page-overflow@${WIDE_NARROW}`, target: 'replace', inject: true,
+        { id: 'M6', route: 'need/student-only/', width: WIDE_NARROW, expect: `page-overflow@${WIDE_NARROW}`, target: 'replace', inject: true,
           what: `拿走 .snote 的 overflow-wrap:anywhere 并注入 ${WIDE_LONG_TOKEN.length} 字符不可断串`,
           anchor: WIDE_SNOTE_FROZEN, replacement: WIDE_SNOTE_NOWRAP },
         { id: 'M7', route: 'status/', width: WIDE_DESKTOP, expect: 'unexpected-detail-main', target: 'dom',
           what: '给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在）' },
-        { id: 'M8', route: 'student/', width: WIDE_DESKTOP, expect: 'note-narrow', target: 'extend', expectFirstNote: true,
+        { id: 'M8', route: 'need/student-only/', width: WIDE_DESKTOP, expect: 'note-narrow', target: 'extend', expectFirstNote: true,
           rule: '.snote { padding-right: calc(100% - 70ch); }',
           what: 'F1 原型：把 .snote 的 padding-right 写成 calc(100% - 70ch) —— 盒宽一字不动、有字区域恒等于 70ch（修复前整轮 0 失败放行的那一条）' },
         { id: 'M9a', route: 'docs/data/', width: WIDE_DESKTOP, expect: 'note-narrow', target: 'extend',
@@ -7501,7 +7521,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         { id: 'M9b', route: 'changes/', width: WIDE_DESKTOP, expect: 'note-narrow', target: 'extend',
           rule: '.snote:not(:first-of-type) { max-width: 70ch; }', selector: '.snote:not(:first-of-type)',
           what: 'F2 原型：只压**非首个** .snote（:not(:first-of-type)）' },
-        { id: 'M10', route: 'student/', width: WIDE_WIDE, expect: 'note-narrow', target: 'extend',
+        { id: 'M10', route: 'need/student-only/', width: WIDE_WIDE, expect: 'note-narrow', target: 'extend',
           rule: '@media (min-width: 1500px) { .snote { max-width: 70ch; } }',
           what: 'F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到）' },
         // ---- t14（修复轮 3）新增：两条「盒子满宽、只有排版结果变窄」的牙 ----
@@ -7509,7 +7529,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
           rule: '.snote { display: grid; grid-template-columns: minmax(0, 70ch) 1fr; }',
           what: 't8 的 F-R2-1 原型：display:grid + minmax(0,70ch) 1fr —— 只改一条 CSS、不动标记，'
             + '盒宽/内容盒都满宽，文字被排进 70ch 那一轨（修复轮 2 时整轮 842 项 EXIT=0 放行的那一条）' },
-        { id: 'M12', route: 'student/', width: WIDE_DESKTOP, expect: 'note-hidden-text', target: 'extend', expectNoGlyph: true,
+        { id: 'M12', route: 'need/student-only/', width: WIDE_DESKTOP, expect: 'note-hidden-text', target: 'extend', expectNoGlyph: true,
           rule: '.snote { font-size: 0; } .snote::before { content: "§22c-M12 伪元素承载正文（真实文本已不可见）";'
             + ' display: block; max-width: 70ch; font-size: var(--fs-sm); line-height: 1.7; }',
           what: 't8 的 F-R2-2 原型：真实文本 font-size:0（一个字形都不画），正文交给 ::before 的 content 去画'
@@ -7523,7 +7543,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         //   与 M1–M13 的 CSS 变异不同，这条**故意**用 DOM 注入：判据量的是行数，
         //   而任何压窄盒子的 CSS 都会先咬中 note-narrow / note-ink-narrow ——
         //   两条码一起响就证明不了新码自己在守东西。注入只推高行数、其余量一个不动。
-        { id: 'M14', route: 'student/', width: WIDE_DESKTOP, expect: 'note-intro-long', target: 'intro',
+        { id: 'M14', route: 'need/student-only/', width: WIDE_DESKTOP, expect: 'note-intro-long', target: 'intro',
           filler: '（M14 注入的填充正文，用来把首屏说明撑成更多行，其余量一律不动。）'.repeat(6),
           what: '首屏说明被写长（DOM 注入填充正文）：盒宽 / 内容盒 / 同轴 / 裁切全都不动，'
             + '只有「行数」越过上限 ⇒ 必须由 note-intro-long 咬住（本轮之前的产物在 1440 档就有多页命中）' }
@@ -7666,14 +7686,14 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         let injected = null;
         try {
           wideNavigations += 1;
-          await target.goto(new URL('student/', base).href, { waitUntil: 'load' });
+          await target.goto(new URL('need/student-only/', base).href, { waitUntil: 'load' });
           injected = await wideInjectToken(target, WIDE_LONG_TOKEN);
           geometry = await wideMeasure(target);
         } finally {
           await target.close();
         }
         const controlProblems = geometry
-          ? wideProblems(geometry, wideMeta.find(item => item.route === 'student/'))
+          ? wideProblems(geometry, wideMeta.find(item => item.route === 'need/student-only/'))
           : [{ code: '（页面没打开）', msg: '' }];
         const controlOverflow = controlProblems.filter(problem => problem.code.startsWith('page-overflow@'));
         metrics.layoutMutationCodes['M6-control'] = wideCodes(controlOverflow);
@@ -7687,10 +7707,10 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
 
       // ---- M8/M9a/M9b/M10 的正对照：**不注入**时，四个靶页在对应档位没有任何 note-narrow ----
       const wideNoInjectionControls = [
-        { id: 'M8', route: 'student/', width: WIDE_DESKTOP },
+        { id: 'M8', route: 'need/student-only/', width: WIDE_DESKTOP },
         { id: 'M9a', route: 'docs/data/', width: WIDE_DESKTOP },
         { id: 'M9b', route: 'changes/', width: WIDE_DESKTOP },
-        { id: 'M10', route: 'student/', width: WIDE_WIDE }
+        { id: 'M10', route: 'need/student-only/', width: WIDE_WIDE }
       ].map(control => {
         const problems = wideProblemsAt.get(`${control.width}|${control.route}`);
         return { ...control, codes: wideCodes(problems), narrow: problems.filter(problem => problem.code === 'note-narrow').length };
@@ -7706,7 +7726,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         let duplicated = null;
         try {
           wideNavigations += 1;
-          await target.goto(new URL('student/', base).href, { waitUntil: 'load' });
+          await target.goto(new URL('need/student-only/', base).href, { waitUntil: 'load' });
           absent = await wideMutate(target, '§22c-这个锚点在产物里不存在', 'x');
           // `color: var(--mut);` 在整份内联样式里出现几十次（≥2 ⇒ 非唯一）
           duplicated = await wideMutate(target, 'color: var(--mut);', 'color: var(--mut);');
@@ -7966,7 +7986,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
             };
           }),
           control: {
-            m6: { id: 'M6-control', route: 'student/', width: WIDE_NARROW, expect: `不得出现 page-overflow@${WIDE_NARROW}`,
+            m6: { id: 'M6-control', route: 'need/student-only/', width: WIDE_NARROW, expect: `不得出现 page-overflow@${WIDE_NARROW}`,
               observed: metrics.layoutMutationCodes['M6-control'] || [] },
             noInjection: wideNoInjectionControls.map(row => ({ id: row.id, route: row.route, width: row.width, noteNarrow: row.narrow, codes: row.codes }))
           },

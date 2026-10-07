@@ -1,0 +1,1262 @@
+{
+  "what": "真浏览器（msedge headless）量测：标题底边 → 首个数据区顶边、intro 区说明条数、变化块在场性、横向溢出",
+  "channel": "msedge",
+  "widths": [
+    1440,
+    390,
+    360
+  ],
+  "before": [
+    {
+      "route": "student/",
+      "w1440": {
+        "h1": "面向学生的 AI 优惠",
+        "gap": 41,
+        "introNotes": 1,
+        "legacyModule": true,
+        "legacyHeading": "「学生优惠」最近的变化",
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 12,
+        "overflowX": 0
+      },
+      "w390": {
+        "h1": "面向学生的 AI 优惠",
+        "gap": 61,
+        "introNotes": 1,
+        "legacyModule": true,
+        "legacyHeading": "「学生优惠」最近的变化",
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 12,
+        "overflowX": 0
+      },
+      "w360": {
+        "h1": "面向学生的 AI 优惠",
+        "gap": 98,
+        "introNotes": 1,
+        "legacyModule": true,
+        "legacyHeading": "「学生优惠」最近的变化",
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 12,
+        "overflowX": 0
+      }
+    },
+    {
+      "route": "developer/",
+      "w1440": {
+        "h1": "面向开发者的 AI 优惠",
+        "gap": 41,
+        "introNotes": 1,
+        "legacyModule": true,
+        "legacyHeading": "「开发者优惠」最近的变化",
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 67,
+        "overflowX": 0
+      },
+      "w390": {
+        "h1": "面向开发者的 AI 优惠",
+        "gap": 61,
+        "introNotes": 1,
+        "legacyModule": true,
+        "legacyHeading": "「开发者优惠」最近的变化",
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 67,
+        "overflowX": 0
+      },
+      "w360": {
+        "h1": "面向开发者的 AI 优惠",
+        "gap": 98,
+        "introNotes": 1,
+        "legacyModule": true,
+        "legacyHeading": "「开发者优惠」最近的变化",
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 67,
+        "overflowX": 0
+      }
+    },
+    {
+      "route": "free-api/",
+      "w1440": {
+        "h1": "可以免费调用的 API",
+        "gap": 41,
+        "introNotes": 1,
+        "legacyModule": true,
+        "legacyHeading": "「免费 API」最近的变化",
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 45,
+        "overflowX": 0
+      },
+      "w390": {
+        "h1": "可以免费调用的 API",
+        "gap": 61,
+        "introNotes": 1,
+        "legacyModule": true,
+        "legacyHeading": "「免费 API」最近的变化",
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 45,
+        "overflowX": 0
+      },
+      "w360": {
+        "h1": "可以免费调用的 API",
+        "gap": 98,
+        "introNotes": 1,
+        "legacyModule": true,
+        "legacyHeading": "「免费 API」最近的变化",
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 45,
+        "overflowX": 0
+      }
+    },
+    {
+      "route": "need/no-card/",
+      "w1440": {
+        "h1": "不需要信用卡的 AI 优惠",
+        "gap": 41,
+        "introNotes": 1,
+        "legacyModule": true,
+        "legacyHeading": "「无需信用卡」最近的变化",
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 1,
+        "overflowX": 0
+      },
+      "w390": {
+        "h1": "不需要信用卡的 AI 优惠",
+        "gap": 98,
+        "introNotes": 1,
+        "legacyModule": true,
+        "legacyHeading": "「无需信用卡」最近的变化",
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 1,
+        "overflowX": 0
+      },
+      "w360": {
+        "h1": "不需要信用卡的 AI 优惠",
+        "gap": 98,
+        "introNotes": 1,
+        "legacyModule": true,
+        "legacyHeading": "「无需信用卡」最近的变化",
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 1,
+        "overflowX": 0
+      }
+    },
+    {
+      "route": "need/ai-coding/",
+      "w1440": {
+        "h1": "编程开发类 AI 优惠",
+        "gap": 41,
+        "introNotes": 1,
+        "legacyModule": true,
+        "legacyHeading": "「AI Coding」最近的变化",
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 4,
+        "overflowX": 0
+      },
+      "w390": {
+        "h1": "编程开发类 AI 优惠",
+        "gap": 41,
+        "introNotes": 1,
+        "legacyModule": true,
+        "legacyHeading": "「AI Coding」最近的变化",
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 4,
+        "overflowX": 0
+      },
+      "w360": {
+        "h1": "编程开发类 AI 优惠",
+        "gap": 98,
+        "introNotes": 1,
+        "legacyModule": true,
+        "legacyHeading": "「AI Coding」最近的变化",
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 4,
+        "overflowX": 0
+      }
+    },
+    {
+      "route": "need/free-tokens/",
+      "w1440": {
+        "h1": "赠送 Token / 免费额度类优惠",
+        "gap": 41,
+        "introNotes": 1,
+        "legacyModule": true,
+        "legacyHeading": "「免费 Tokens」最近的变化",
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 44,
+        "overflowX": 0
+      },
+      "w390": {
+        "h1": "赠送 Token / 免费额度类优惠",
+        "gap": 98,
+        "introNotes": 1,
+        "legacyModule": true,
+        "legacyHeading": "「免费 Tokens」最近的变化",
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 44,
+        "overflowX": 0
+      },
+      "w360": {
+        "h1": "赠送 Token / 免费额度类优惠",
+        "gap": 98,
+        "introNotes": 1,
+        "legacyModule": true,
+        "legacyHeading": "「免费 Tokens」最近的变化",
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 44,
+        "overflowX": 0
+      }
+    },
+    {
+      "route": "need/free-tier/",
+      "w1440": {
+        "h1": "免费档可用：不用付费就能用上的优惠",
+        "gap": 41,
+        "introNotes": 1,
+        "legacyModule": true,
+        "legacyHeading": "「完全免费」最近的变化",
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 60,
+        "overflowX": 0
+      },
+      "w390": {
+        "h1": "免费档可用：不用付费就能用上的优惠",
+        "gap": 77,
+        "introNotes": 1,
+        "legacyModule": true,
+        "legacyHeading": "「完全免费」最近的变化",
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 60,
+        "overflowX": 0
+      },
+      "w360": {
+        "h1": "免费档可用：不用付费就能用上的优惠",
+        "gap": 98,
+        "introNotes": 1,
+        "legacyModule": true,
+        "legacyHeading": "「完全免费」最近的变化",
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 60,
+        "overflowX": 0
+      }
+    },
+    {
+      "route": "need/edu-identity/",
+      "w1440": {
+        "h1": "凭教育身份可以领取的 AI 优惠",
+        "gap": 41,
+        "introNotes": 1,
+        "legacyModule": true,
+        "legacyHeading": "「教育身份可领」最近的变化",
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 7,
+        "overflowX": 0
+      },
+      "w390": {
+        "h1": "凭教育身份可以领取的 AI 优惠",
+        "gap": 98,
+        "introNotes": 1,
+        "legacyModule": true,
+        "legacyHeading": "「教育身份可领」最近的变化",
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 7,
+        "overflowX": 0
+      },
+      "w360": {
+        "h1": "凭教育身份可以领取的 AI 优惠",
+        "gap": 98,
+        "introNotes": 1,
+        "legacyModule": true,
+        "legacyHeading": "「教育身份可领」最近的变化",
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 7,
+        "overflowX": 0
+      }
+    },
+    {
+      "route": "need/dev-credits/",
+      "w1440": {
+        "h1": "面向开发者的赠送额度",
+        "gap": 94,
+        "introNotes": 2,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 67,
+        "overflowX": 0
+      },
+      "w390": {
+        "h1": "面向开发者的赠送额度",
+        "gap": 212,
+        "introNotes": 2,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 67,
+        "overflowX": 0
+      },
+      "w360": {
+        "h1": "面向开发者的赠送额度",
+        "gap": 212,
+        "introNotes": 2,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 67,
+        "overflowX": 0
+      }
+    },
+    {
+      "route": "category/",
+      "w1440": {
+        "h1": "按分类浏览 AI 优惠",
+        "gap": 41,
+        "introNotes": 1,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 5,
+        "overflowX": 0
+      },
+      "w390": {
+        "h1": "按分类浏览 AI 优惠",
+        "gap": 41,
+        "introNotes": 1,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 5,
+        "overflowX": 0
+      },
+      "w360": {
+        "h1": "按分类浏览 AI 优惠",
+        "gap": 77,
+        "introNotes": 1,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 5,
+        "overflowX": 0
+      }
+    },
+    {
+      "route": "category/api/",
+      "w1440": {
+        "h1": "AI API 服务与算力平台的优惠",
+        "gap": 41,
+        "introNotes": 1,
+        "legacyModule": true,
+        "legacyHeading": "「AI API 服务优惠」最近的变化",
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 36,
+        "overflowX": 0
+      },
+      "w390": {
+        "h1": "AI API 服务与算力平台的优惠",
+        "gap": 77,
+        "introNotes": 1,
+        "legacyModule": true,
+        "legacyHeading": "「AI API 服务优惠」最近的变化",
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 36,
+        "overflowX": 0
+      },
+      "w360": {
+        "h1": "AI API 服务与算力平台的优惠",
+        "gap": 77,
+        "introNotes": 1,
+        "legacyModule": true,
+        "legacyHeading": "「AI API 服务优惠」最近的变化",
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 36,
+        "overflowX": 0
+      }
+    },
+    {
+      "route": "vendor/",
+      "w1440": {
+        "h1": "按厂商浏览 AI 优惠",
+        "gap": 41,
+        "introNotes": 1,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 25,
+        "overflowX": 0
+      },
+      "w390": {
+        "h1": "按厂商浏览 AI 优惠",
+        "gap": 77,
+        "introNotes": 1,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 25,
+        "overflowX": 0
+      },
+      "w360": {
+        "h1": "按厂商浏览 AI 优惠",
+        "gap": 77,
+        "introNotes": 1,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 25,
+        "overflowX": 0
+      }
+    },
+    {
+      "route": "vendor/openai/",
+      "w1440": {
+        "h1": "OpenAI 的 AI 优惠与免费额度",
+        "gap": 41,
+        "introNotes": 1,
+        "legacyModule": true,
+        "legacyHeading": "「OpenAI 的 AI 优惠」最近的变化",
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 1,
+        "overflowX": 0
+      },
+      "w390": {
+        "h1": "OpenAI 的 AI 优惠与免费额度",
+        "gap": 77,
+        "introNotes": 1,
+        "legacyModule": true,
+        "legacyHeading": "「OpenAI 的 AI 优惠」最近的变化",
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 1,
+        "overflowX": 0
+      },
+      "w360": {
+        "h1": "OpenAI 的 AI 优惠与免费额度",
+        "gap": 77,
+        "introNotes": 1,
+        "legacyModule": true,
+        "legacyHeading": "「OpenAI 的 AI 优惠」最近的变化",
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 1,
+        "overflowX": 0
+      }
+    }
+  ],
+  "after": [
+    {
+      "route": "student/",
+      "w1440": {
+        "h1": "面向学生的 AI 优惠",
+        "gap": 9,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 12,
+        "overflowX": 0
+      },
+      "w390": {
+        "h1": "面向学生的 AI 优惠",
+        "gap": 9,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 12,
+        "overflowX": 0
+      },
+      "w360": {
+        "h1": "面向学生的 AI 优惠",
+        "gap": 45,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 12,
+        "overflowX": 0
+      }
+    },
+    {
+      "route": "developer/",
+      "w1440": {
+        "h1": "面向开发者的 AI 优惠",
+        "gap": 9,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 67,
+        "overflowX": 0
+      },
+      "w390": {
+        "h1": "面向开发者的 AI 优惠",
+        "gap": 9,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 67,
+        "overflowX": 0
+      },
+      "w360": {
+        "h1": "面向开发者的 AI 优惠",
+        "gap": 45,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 67,
+        "overflowX": 0
+      }
+    },
+    {
+      "route": "free-api/",
+      "w1440": {
+        "h1": "可以免费调用的 API",
+        "gap": 9,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 45,
+        "overflowX": 0
+      },
+      "w390": {
+        "h1": "可以免费调用的 API",
+        "gap": 9,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 45,
+        "overflowX": 0
+      },
+      "w360": {
+        "h1": "可以免费调用的 API",
+        "gap": 45,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 45,
+        "overflowX": 0
+      }
+    },
+    {
+      "route": "need/no-card/",
+      "w1440": {
+        "h1": "不需要信用卡的 AI 优惠",
+        "gap": 9,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 1,
+        "overflowX": 0
+      },
+      "w390": {
+        "h1": "不需要信用卡的 AI 优惠",
+        "gap": 45,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 1,
+        "overflowX": 0
+      },
+      "w360": {
+        "h1": "不需要信用卡的 AI 优惠",
+        "gap": 45,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 1,
+        "overflowX": 0
+      }
+    },
+    {
+      "route": "need/ai-coding/",
+      "w1440": {
+        "h1": "编程开发类 AI 优惠",
+        "gap": 9,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 4,
+        "overflowX": 0
+      },
+      "w390": {
+        "h1": "编程开发类 AI 优惠",
+        "gap": 9,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 4,
+        "overflowX": 0
+      },
+      "w360": {
+        "h1": "编程开发类 AI 优惠",
+        "gap": 45,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 4,
+        "overflowX": 0
+      }
+    },
+    {
+      "route": "need/free-tokens/",
+      "w1440": {
+        "h1": "赠送 Token / 免费额度类优惠",
+        "gap": 9,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 44,
+        "overflowX": 0
+      },
+      "w390": {
+        "h1": "赠送 Token / 免费额度类优惠",
+        "gap": 45,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 44,
+        "overflowX": 0
+      },
+      "w360": {
+        "h1": "赠送 Token / 免费额度类优惠",
+        "gap": 45,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 44,
+        "overflowX": 0
+      }
+    },
+    {
+      "route": "need/free-tier/",
+      "w1440": {
+        "h1": "免费档可用：不用付费就能用上的优惠",
+        "gap": 9,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 60,
+        "overflowX": 0
+      },
+      "w390": {
+        "h1": "免费档可用：不用付费就能用上的优惠",
+        "gap": 45,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 60,
+        "overflowX": 0
+      },
+      "w360": {
+        "h1": "免费档可用：不用付费就能用上的优惠",
+        "gap": 45,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 60,
+        "overflowX": 0
+      }
+    },
+    {
+      "route": "need/edu-identity/",
+      "w1440": {
+        "h1": "凭教育身份可以领取的 AI 优惠",
+        "gap": 9,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 7,
+        "overflowX": 0
+      },
+      "w390": {
+        "h1": "凭教育身份可以领取的 AI 优惠",
+        "gap": 45,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 7,
+        "overflowX": 0
+      },
+      "w360": {
+        "h1": "凭教育身份可以领取的 AI 优惠",
+        "gap": 45,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 7,
+        "overflowX": 0
+      }
+    },
+    {
+      "route": "need/dev-credits/",
+      "w1440": {
+        "h1": "面向开发者的赠送额度",
+        "gap": 61,
+        "introNotes": 1,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 67,
+        "overflowX": 0
+      },
+      "w390": {
+        "h1": "面向开发者的赠送额度",
+        "gap": 159,
+        "introNotes": 1,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 67,
+        "overflowX": 0
+      },
+      "w360": {
+        "h1": "面向开发者的赠送额度",
+        "gap": 159,
+        "introNotes": 1,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 67,
+        "overflowX": 0
+      }
+    },
+    {
+      "route": "category/",
+      "w1440": {
+        "h1": "按分类浏览 AI 优惠",
+        "gap": 9,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 5,
+        "overflowX": 0
+      },
+      "w390": {
+        "h1": "按分类浏览 AI 优惠",
+        "gap": 9,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 5,
+        "overflowX": 0
+      },
+      "w360": {
+        "h1": "按分类浏览 AI 优惠",
+        "gap": 45,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 5,
+        "overflowX": 0
+      }
+    },
+    {
+      "route": "category/api/",
+      "w1440": {
+        "h1": "AI API 服务与算力平台的优惠",
+        "gap": 9,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 36,
+        "overflowX": 0
+      },
+      "w390": {
+        "h1": "AI API 服务与算力平台的优惠",
+        "gap": 45,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 36,
+        "overflowX": 0
+      },
+      "w360": {
+        "h1": "AI API 服务与算力平台的优惠",
+        "gap": 45,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 36,
+        "overflowX": 0
+      }
+    },
+    {
+      "route": "vendor/",
+      "w1440": {
+        "h1": "按厂商浏览 AI 优惠",
+        "gap": 9,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 25,
+        "overflowX": 0
+      },
+      "w390": {
+        "h1": "按厂商浏览 AI 优惠",
+        "gap": 45,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 25,
+        "overflowX": 0
+      },
+      "w360": {
+        "h1": "按厂商浏览 AI 优惠",
+        "gap": 45,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 25,
+        "overflowX": 0
+      }
+    },
+    {
+      "route": "vendor/openai/",
+      "w1440": {
+        "h1": "OpenAI 的 AI 优惠与免费额度",
+        "gap": 9,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 1,
+        "overflowX": 0
+      },
+      "w390": {
+        "h1": "OpenAI 的 AI 优惠与免费额度",
+        "gap": 45,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 1,
+        "overflowX": 0
+      },
+      "w360": {
+        "h1": "OpenAI 的 AI 优惠与免费额度",
+        "gap": 45,
+        "introNotes": 0,
+        "legacyModule": false,
+        "legacyHeading": null,
+        "module": false,
+        "moduleRows": 0,
+        "moduleHeading": null,
+        "tableRows": 1,
+        "overflowX": 0
+      }
+    }
+  ],
+  "overflow": {
+    "before": 0,
+    "after": 0
+  },
+  "fixture": {
+    "note": "台账：生产数据下 0 个目录页有相关变化 ⇒ 非空分支用「真实产物 + 真实渲染函数对合成雷达的输出」在真浏览器里量（不伪造生产事件）",
+    "rows": [
+      {
+        "route": "need/no-card",
+        "width": 1440,
+        "module": true,
+        "heading": "最近变化",
+        "rows": 3,
+        "shown": "3",
+        "total": "4",
+        "allHref": "../../changes/",
+        "allRight": 1410,
+        "introNotes": 0,
+        "overflowX": 0,
+        "moduleOverflow": 0,
+        "tableRows": 1
+      },
+      {
+        "route": "need/no-card",
+        "width": 390,
+        "module": true,
+        "heading": "最近变化",
+        "rows": 3,
+        "shown": "3",
+        "total": "4",
+        "allHref": "../../changes/",
+        "allRight": 374,
+        "introNotes": 0,
+        "overflowX": 0,
+        "moduleOverflow": 0,
+        "tableRows": 1
+      },
+      {
+        "route": "need/no-card",
+        "width": 360,
+        "module": true,
+        "heading": "最近变化",
+        "rows": 3,
+        "shown": "3",
+        "total": "4",
+        "allHref": "../../changes/",
+        "allRight": 344,
+        "introNotes": 0,
+        "overflowX": 0,
+        "moduleOverflow": 0,
+        "tableRows": 1
+      },
+      {
+        "route": "student",
+        "width": 1440,
+        "module": true,
+        "heading": "最近变化",
+        "rows": 3,
+        "shown": "3",
+        "total": "4",
+        "allHref": "../../changes/",
+        "allRight": 1410,
+        "introNotes": 0,
+        "overflowX": 0,
+        "moduleOverflow": 0,
+        "tableRows": 12
+      },
+      {
+        "route": "student",
+        "width": 390,
+        "module": true,
+        "heading": "最近变化",
+        "rows": 3,
+        "shown": "3",
+        "total": "4",
+        "allHref": "../../changes/",
+        "allRight": 374,
+        "introNotes": 0,
+        "overflowX": 0,
+        "moduleOverflow": 0,
+        "tableRows": 12
+      },
+      {
+        "route": "student",
+        "width": 360,
+        "module": true,
+        "heading": "最近变化",
+        "rows": 3,
+        "shown": "3",
+        "total": "4",
+        "allHref": "../../changes/",
+        "allRight": 344,
+        "introNotes": 0,
+        "overflowX": 0,
+        "moduleOverflow": 0,
+        "tableRows": 12
+      },
+      {
+        "route": "category/api",
+        "width": 1440,
+        "module": true,
+        "heading": "最近变化",
+        "rows": 3,
+        "shown": "3",
+        "total": "4",
+        "allHref": "../../changes/",
+        "allRight": 1410,
+        "introNotes": 0,
+        "overflowX": 0,
+        "moduleOverflow": 0,
+        "tableRows": 36
+      },
+      {
+        "route": "category/api",
+        "width": 390,
+        "module": true,
+        "heading": "最近变化",
+        "rows": 3,
+        "shown": "3",
+        "total": "4",
+        "allHref": "../../changes/",
+        "allRight": 374,
+        "introNotes": 0,
+        "overflowX": 0,
+        "moduleOverflow": 0,
+        "tableRows": 36
+      },
+      {
+        "route": "category/api",
+        "width": 360,
+        "module": true,
+        "heading": "最近变化",
+        "rows": 3,
+        "shown": "3",
+        "total": "4",
+        "allHref": "../../changes/",
+        "allRight": 344,
+        "introNotes": 0,
+        "overflowX": 0,
+        "moduleOverflow": 0,
+        "tableRows": 36
+      },
+      {
+        "route": "vendor/openai",
+        "width": 1440,
+        "module": true,
+        "heading": "最近变化",
+        "rows": 3,
+        "shown": "3",
+        "total": "4",
+        "allHref": "../../changes/",
+        "allRight": 1410,
+        "introNotes": 0,
+        "overflowX": 0,
+        "moduleOverflow": 0,
+        "tableRows": 1
+      },
+      {
+        "route": "vendor/openai",
+        "width": 390,
+        "module": true,
+        "heading": "最近变化",
+        "rows": 3,
+        "shown": "3",
+        "total": "4",
+        "allHref": "../../changes/",
+        "allRight": 374,
+        "introNotes": 0,
+        "overflowX": 0,
+        "moduleOverflow": 0,
+        "tableRows": 1
+      },
+      {
+        "route": "vendor/openai",
+        "width": 360,
+        "module": true,
+        "heading": "最近变化",
+        "rows": 3,
+        "shown": "3",
+        "total": "4",
+        "allHref": "../../changes/",
+        "allRight": 344,
+        "introNotes": 0,
+        "overflowX": 0,
+        "moduleOverflow": 0,
+        "tableRows": 1
+      }
+    ],
+    "dark": [
+      {
+        "route": "need/no-card",
+        "color": "rgb(232, 236, 242)",
+        "bg": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "route": "student",
+        "color": "rgb(232, 236, 242)",
+        "bg": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "route": "category/api",
+        "color": "rgb(232, 236, 242)",
+        "bg": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "route": "vendor/openai",
+        "color": "rgb(232, 236, 242)",
+        "bg": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "noJs": [
+      {
+        "route": "need/no-card/",
+        "module": true,
+        "heading": "最近变化",
+        "rows": 3,
+        "allHref": "../../changes/",
+        "tableRows": 1,
+        "notesSummary": "分类说明",
+        "notesChars": 121,
+        "overflowX": 0
+      },
+      {
+        "route": "student/",
+        "module": true,
+        "heading": "最近变化",
+        "rows": 3,
+        "allHref": "../../changes/",
+        "tableRows": 12,
+        "notesSummary": "分类说明",
+        "notesChars": 88,
+        "overflowX": 0
+      }
+    ]
+  }
+}
