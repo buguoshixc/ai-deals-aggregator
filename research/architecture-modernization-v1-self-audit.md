@@ -2,10 +2,11 @@
 
 > **这份文档不宣布完成** —— 它按 §25 逐项审查本轮的实际状态，并对每条 finding 给出分类：
 > `REPAIR_NOW` / `GUARDRAIL` / `DESIGN_ACCEPTED` / `DEFERRED` / `OUT_OF_SCOPE`。
-> 结论：**P0 = 0 · P1 = 0 · REPAIR_NOW = 0**；有 3 条 DEFERRED（见 §11），因此最终判定是
+> 结论：**P0 = 0 · P1 = 0 · REPAIR_NOW = 0**；有 **5 条 DEFERRED**（见 §11），因此最终判定是
 > **PASS WITH DEFERRED**（不是 PASS）。
 
-审查范围：`architecture-modernization-v1` 分支，基线 `e0ca04a` → 最终提交见《最终报告》。
+审查范围：分支 `architecture-modernization-v1`，基线 `e0ca04a`
+→ [PR #47](https://github.com/buguoshixc/ai-deals-aggregator/pull/47) → merge `39def54` → 已发布（线上冒烟 14/14）。
 
 ---
 
@@ -232,6 +233,27 @@
 | 2 | `/plans/coding/` 丢了静态表格原语 ⇒ 360/390px **290px** 溢出（634px 宽表撑破 328px 容器） | 同上 | 同一类缺陷的第二个实例，直接催生了 CSS 级对比工具 |
 | 3 | 改名 `renderModelsShell` → `renderStaticPage` 后，`archive-selftest` 里那条 grep 构建源码的接线断言红了 | **本地门禁链第一次运行** | 它守的是「档案详情真的把统一内容列常量传下去」—— 断言的**意图**没变，只是锚点要跟着改名；已同步 |
 | 4 | `check-evidence.js` 的文档注释里出现 `**/`（`**/shots/`）⇒ 提前终止块注释 ⇒ 语法错误 | `node --check` | 小但值得记：脚本注释里的 glob 会把注释切断 |
+| 5 | **`check-evidence.js` 的判据绑在 git 历史上** ⇒ CI 10 秒即红（`git ls-tree e0ca04a` 在浅克隆里取不到对象） | **远端 CI（PR #47 第一次运行）** | 见下 |
+
+**关于 #5（这一条值得单独说）**：工具当时**按设计拒绝静默放行**（「判不了就宁可拦住提交」
+—— 这条原则是对的，不是缺陷），真正的缺陷是**判据的取数方式**：
+它把一个「门禁」绑在了 CI 拿不到的历史对象上，于是一条**只在本地成立的门禁**诞生了
+——而只在本地成立的门禁等于没有门禁。
+
+修法是把 grandfather 从「每次问 git 历史」改成**可提交的基线清单**
+（`scripts/data/evidence-tier3-grandfather.txt`，1,283 条，像 lockfile）：
+主判据 `git ls-files ∩ Tier-3 − 清单 = ∅` 不需要历史 ⇒ CI 里**全强度**生效；
+本地有完整历史时额外自证清单没被改过；浅克隆下那一步**明确打印「跳过 + 原因 + 影响范围」**。
+
+**验证**（三条都实测过）：① 负例 —— 新加一个 `research/_raw/**/*.txt` 立刻被拦（exit 1）；
+② 浅克隆分支 —— 明确打印跳过原因后 exit 0，主判据仍生效；
+③ CI 实测 —— `✅ 没有新增的 Tier-3 文件` + `ℹ️ 清单自证**已跳过**：本地没有基线提交 e0ca04a 的对象`。
+
+**为什么这条要写进报告**：它是「本地全绿、CI 红」这一类**结构性风险**的实例，
+而这正是本轮 Phase 6 要解决的那个缺口（`npm run gate` 之前不存在）。
+新做的本地门禁链**没有**覆盖它，因为它不是「本地跑得不对」，而是**判据本身依赖了 CI 没有的东西**
+—— 这一类只能靠真跑一次远端 CI 才暴露出来。
+
 
 **审查意见**：这 4 条里前 2 条是**产品级**的（线上会看到横向滚动条），
 如果没有 L4 几何门禁与新建的 CSS 对比工具，它们会静默上线。分类：`GUARDRAIL`（已修）。
@@ -272,7 +294,13 @@
 - **REPAIR_NOW = 0**
 - **Behavior equivalence 有独立证据**（不是「我认为等价」）
 - **Determinism 有独立证据**（clean build A == B，303 文件逐字节）
+- **Release 全链路有独立证据**：PR [#47](https://github.com/buguoshixc/ai-deals-aggregator/pull/47)
+  → 必需检查 `gate` pass（4m55s）→ merge `39def54` → deploy run `37583953837` 全绿 → **线上冒烟 14/14**
 
 **最终判定：`PASS WITH DEFERRED`** —— 5 条 DEFERRED 全部有明确的范围边界、
 不做它的**技术理由**与**后续触发条件**（§11）。其中 D2/D3 是本轮计划里
 最大的两块未完成工作；把它们的真实状态写清楚，比含糊地宣称「完成」更有价值。
+
+**发布阶段还有一个值得记的结论**：第 5 条真实缺陷（§12）**只有真跑一次远端 CI 才会暴露**
+—— 新做的本地门禁链覆盖不了它，因为问题不在「本地跑得不对」，而在**判据依赖了 CI 没有的东西**。
+这条经验已经写进 `docs/EVIDENCE-POLICY.md §4.1`，供下一个做门禁的人参考。
