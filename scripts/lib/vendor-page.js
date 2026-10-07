@@ -321,8 +321,14 @@ ${listOrEmpty(view.models.map(model => `        <li><a href="${escapeHtml(`${pre
 
   const planChangeLines = view.planEvents.slice().sort((a, b) => (a.at === b.at ? 0 : a.at < b.at ? 1 : -1)).slice(0, 5);
   const apiChangeLines = view.apiEvents.slice().sort((a, b) => (a.at === b.at ? 0 : a.at < b.at ? 1 : -1)).slice(0, 5);
-  const changesBlock = `<p class="vsnote">优惠变化见本页上方的「最近变化」块。下面两支来自**套餐变化日志**与 **API 计费变化日志**`
-    + `（同一份事件、同一套措辞，这一层只搬运）。</p>
+  // ⚠️ secondary-page-content-simplification：这一行原先直接写了 `**套餐变化日志**`
+  // 与 `**API 计费变化日志**`，而且**没有过 `rich()`** —— 于是 25 个厂商页上，
+  // 读者看到的是字面的星号。它逃过了构建期的「作者正文无 Markdown 记号」守卫，
+  // 因为那条守卫当时的扫描面只有 `.snote` / `<caption>`（`.vsnote` 不在里面）。
+  // 两处都修了：这里用 rich() 把 `**x**` 变成 `<b>x</b>`；守卫的扫描面同时扩到
+  // `.vsnote` 与 `<details>`（见 build-local.js 的「作者正文无 Markdown 记号」一节）。
+  const changesBlock = `<p class="vsnote">${rich('优惠变化见本页上方的「最近变化」块。下面两支来自**套餐变化日志**'
+    + '与 **API 计费变化日志**（同一份事件、同一套措辞，这一层只搬运）。')}</p>
       <h3 class="vh3">Coding 套餐变化（${view.planEvents.length} 条）</h3>
       ${view.planAvailability !== 'ok'
     ? `<p class="vsnote vnone">${rich('本次构建没有拿到套餐变更日志 —— 这不表示「没有变化」。')}</p>`

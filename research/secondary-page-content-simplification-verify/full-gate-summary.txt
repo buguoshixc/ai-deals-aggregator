@@ -1,0 +1,51 @@
+﻿门禁步骤（读自 .github/actions/gate/action.yml）：51 个
+  ✓     0.1s  [ 2] Architecture fitness (structure invariants)
+  ✓     0.1s  [ 3] Evidence policy (Tier-3 interception)
+  ✓     0.2s  [ 4] Validate data (strict)
+  ✓     0.1s  [ 5] Reproducibility gate (no value without a source)
+  ✓     0.1s  [ 6] History verify (log consistent with deals.json)
+  ✓     0.1s  [ 7] Migration verifier (audience provenance backfill)
+  ✓     0.0s  [ 8] Translation gate (drift blocks, pending ages out)
+  ✓    12.9s  [ 9] Translation self-test
+  ✓     0.1s  [10] Expiry self-test
+  ✓     0.1s  [11] Text / cleanText self-test
+  ✓     0.5s  [12] Source-health self-test
+  ✓     0.1s  [13] Provenance self-test
+  ✓     0.1s  [14] Deal-history self-test
+  ✓     0.1s  [15] Change-radar self-test
+  ✓     0.4s  [16] Feeds self-test
+  ✓     0.1s  [17] SEO self-test
+  ✓     0.1s  [18] Audience self-test
+  ✓     0.2s  [19] App-token self-test
+  ✓     2.0s  [20] AI layer self-test
+  ✓     0.2s  [21] Collector fixtures (offline replay)
+  ✓     0.7s  [22] Plans self-test (data + page)
+  ✓     0.1s  [23] Plan-history self-test
+  ✓     0.1s  [24] Deal-plan-links self-test
+  ✓     0.2s  [25] API-plans self-test (data + page)
+  ✓     0.1s  [26] API-plans reproducibility (curated → api-plans.json, byte-compare)
+  ✓     0.1s  [27] API-plan-history verify (log consistent with api-plans.json)
+  ✓     0.2s  [28] Model-registry self-test (identity + explicit mapping)
+  ✓     0.1s  [29] Models reproducibility (registry → models.json, byte-compare)
+  ✓     0.1s  [30] Model-registry links check (explicit mapping only, no similarity)
+  ✓     0.3s  [31] Coverage report (gap list consistent with data)
+  ✓     5.5s  [32] Coverage-targets self-test (intent layer + seven derived states)
+  ✓     0.1s  [33] Model-role vocabulary self-test (registry ↔ freshness contract)
+  ✓     0.1s  [34] Freshness self-test (catalogStatus branches)
+  ✓     0.1s  [35] Freshness threshold sensitivity (±90 days, baseline invariants)
+  ✓     2.3s  [36] Assemble site (same path as deploy.yml)
+  ✓     0.5s  [37] Models-page self-test (index + detail pages)
+  ✓     0.1s  [38] Plans-hub self-test (/plans/)
+  ✓     0.1s  [39] Vendor-pages self-test (/vendor/)
+  ✓     0.1s  [40] Archive self-test (/archive/, synthetic ended/restored fixtures)
+  ✓     0.1s  [41] Data-docs self-test (/docs/data/ + /data/index.json)
+  ✓     7.7s  [42] Analytics self-test (bootstrap count / production guard / provider)
+  ✓     5.0s  [43] Feeds reproducibility (build twice, byte-compare)
+  ✓     0.1s  [44] Plans reproducibility (curated → plans.json, byte-compare)
+  ✓     0.1s  [45] Plan-history verify (log consistent with plans.json)
+  ✓     0.5s  [46] SEO verification (independent, from dist/)
+  ✓   116.6s  [49] Real-browser acceptance (verify-site.js)
+  ✓   115.4s  [50] Regression verify (baseline compare)
+合计 273.6s / 47 个脚本，失败 0
+跳过的 4 个非 node 步骤（本地无意义或需要 bash/网络）：
+✅ 本地门禁链全过（与 CI 读同一份 action.yml）
