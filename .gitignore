@@ -74,3 +74,8 @@ dist.v24/
 # .qc-* 是各任务的一次性证据脚本/临时输出。两者都是过程产物，验证完即弃，绝不入库。
 dist.qc-*/
 .qc-*/
+
+# architecture-modernization-v1 的取证 scratch：等价性快照、A/B 全树 hash、各阶段计时。
+# 与 .qc-* 同一条纪律 —— 过程产物、体积大、可重建，验证完即弃，绝不入库。
+# 本轮要留下的**结论**写在 research/architecture-modernization-v1-*.md（Tier 1）。
+.arch-v1/
