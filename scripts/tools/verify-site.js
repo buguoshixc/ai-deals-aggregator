@@ -7375,6 +7375,44 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
             : `documentElement.scrollWidth ≤ 视口+${WIDE_TOL} 全部成立`);
       }
 
+      // ---- ③b 二级标签 / 聚合页的首屏**不许有页面级说明**（secondary-page-intro-changes-v1 的主牙）----
+      //
+      // 为什么它在浏览器层、而不是只靠构建期扫描：首屏「有没有一行解释文字」是**排版事实**，
+      // 构建期只能按字符串切区间推断（`.cstop` → 第一个数据区锚点）。这里用的是同一份现场几何
+      // （`introIndexes` = 顶边落在首个数据区之前的那些 `.snote`，与 §22c 判 `note-intro-long`
+      // 用的是**同一个量**），并且不依赖任何字符串约定。
+      //
+      // **作用域 = 目录页家族**（collection / need / category / vendor / hub / alias）。
+      // 其它宽页（`/status/` `/feeds/` `/plans/*` `/models/*` `/archive/` `/docs/data/` `/changes/`）
+      // 的导语是**那一页自己的主体**（例如订阅中心解释怎么订阅），不在本规则射程内 ——
+      // 把它们一起判红就是「一条在正常页面上失败的守卫」，比没有守卫更糟。
+      //
+      // 唯一的例外是别名页那条「这一页是旧地址……该去哪里」—— 它是导航更正，不是解释性副标题，
+      // 而且那三页 noindex。例外**不是「跳过这些页」**：它们必须恰好一条，多一条即红。
+      {
+        const aliasRoutes = new Set((() => {
+          const doc = JSON.parse(fs.readFileSync(landingsLib.ALIASES_FILE, 'utf8'));
+          return Object.keys(doc.aliases || {});
+        })());
+        const DIRECTORY_KINDS = new Set(['collection', 'need', 'category', 'vendor', 'hub', 'alias']);
+        const directoryRoutes = wideMeta.filter(meta => DIRECTORY_KINDS.has(meta.kind)).map(meta => meta.route);
+        const introNoteRoutes = directoryRoutes.filter(route => {
+          const geometry = wideGeometry.get(`${WIDE_DESKTOP}|${route}`);
+          return Boolean(geometry && geometry.introIndexes && geometry.introIndexes.length);
+        });
+        const offenders = introNoteRoutes.filter(route => !aliasRoutes.has(route));
+        const aliasBad = [...aliasRoutes].filter(route => {
+          const geometry = wideGeometry.get(`${WIDE_DESKTOP}|${route}`);
+          return !geometry || !geometry.introIndexes || geometry.introIndexes.length !== 1;
+        });
+        check(`§22c @${WIDE_DESKTOP} 目录页家族（${directoryRoutes.length} 页）首屏没有页面级说明；${aliasRoutes.size} 条别名页各恰好 1 条导航更正`,
+          offenders.length === 0 && aliasBad.length === 0 && introNoteRoutes.length === aliasRoutes.size,
+          `有首屏说明的目录页 ${introNoteRoutes.length} 条：${introNoteRoutes.map(r => r || '/').join(' ') || '无'}`
+          + (offenders.length ? ` · 不该有的 ${offenders.length} 页：${offenders.slice(0, 5).map(r => r || '/').join(' ')}` : '')
+          + (aliasBad.length ? ` · 别名页条数不对：${aliasBad.join(' ')}` : '')
+          + `（其它宽页的导语不在本规则射程内：${wideMeta.length - directoryRoutes.length} 页）`);
+      }
+
       // ---- ④b 未渲染说明：上界断言（t24 立 / t28 收紧计数）----
       //   `unrenderedNotes` 从 t14 起就有，但直到 t24 才被断言引用。计数口径（t28 / 收掉 T26 的残余面）：
       //     · **豁免只看「可见文本长度为 0」**（没有可画的东西；dist 的 `<noscript>` 条靠这条过）——

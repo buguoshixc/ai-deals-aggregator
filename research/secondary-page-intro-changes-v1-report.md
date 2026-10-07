@@ -165,7 +165,7 @@ if (!rows.length) return '';          // 零变化 / 日志不可用 / 无主题
 | `verify-site.js` §22c 变异牙 | M6 / M8 / M10 / M12 / M14 与 M1–M4 的第一个壳、两条正对照、负例自检靶页：`student/` → `need/student-only/`。**理由**：首屏说明删除后，非别名目录页在 `<main>` 里已经一条 `.snote` 都没有（变化块的入口也不再是 `<p class="snote">`），而别名页仍走**同一个** `renderDirectoryPage` ⇒ 四个壳的覆盖面一点没变 |
 
 断言**只增不减**：`audience-selftest` 203 → 205 项、`changes-selftest` 101 → 119 项、
-`verify-site` 861 项（1:1 重瞄，数量不变）。CI 步骤数与 `--expect-checks=38` 一项未动。
+`verify-site` **861 → 862 项**（1:1 重瞄 + 1 条新增的全站首屏断言）。CI 步骤数与 `--expect-checks=38` 一项未动。
 
 ---
 
@@ -206,7 +206,7 @@ if (!rows.length) return '';          // 零变化 / 日志不可用 / 无主题
 
 | 装置 | 读数 |
 |---|---|
-| `verify-site.js --dir=dist` | **861 项 / 失败 0** |
+| `verify-site.js --dir=dist` | **862 项 / 失败 0**（新增 §22c「目录页家族 45 页首屏无页面级说明 + 3 条别名页各恰好 1 条」） |
 | `verify-site.js --compare`（回归） | **867 项 / 失败 0**（6 条回归读数全过） |
 | `selftest:audience` | **205 项 / 0 失败**（此前 203） |
 | `selftest:changes` | **119 项 / 0 失败**（此前 101；新增 ⑩ 18 条 + ⑪ 3 条） |

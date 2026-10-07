@@ -70,7 +70,7 @@ Footer
 
 ## 门禁
 
-* `verify-site.js --dir=dist` **861 项 / 失败 0**；`--compare` 回归 **867 项 / 失败 0**
+* `verify-site.js --dir=dist` **862 项 / 失败 0**（新增一条全站断言：目录页家族 45 页首屏无页面级说明、3 条别名页各恰好 1 条）；`--compare` 回归 **867 项 / 失败 0**
 * `selftest:audience` **205 / 0**（§9 换向：`userIntro` 回流即红 + 「删掉的内容必须落在折叠里」+ 别名页文案扫词 + `criteria` 仍在）
 * `selftest:changes` **119 / 0**（新增 ⑩ 条件模块 18 条 + ⑪ matcher 正反例 3 条）
 * §15b2 无 JS 探针重瞄为「首屏说明条数 = 0」；§22c 的 M6/M8/M10/M12/M14 与 M1–M4 第一个壳改靶
