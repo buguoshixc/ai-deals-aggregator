@@ -163,6 +163,21 @@
   只剥 script/style/注释/标签 ⇒ 折起来的内容照样被搜索引擎与「查看源码」读到。
 - 既有断言逐字未破：`summary.textContent === '分类说明'`、`notes.textContent > 10 字`。
 
+### 5.5 线上收尾复核：**其它折叠组件没有被误伤**（§23 的生产侧证据）
+
+站内另有 4 类**语义不同**的 `<details>`，本轮一个都没碰。它们各自长在不同层，
+所以判据也各写各的（`research/_raw/…/closure-check.cjs`，实测 8 条全过）：
+
+| 组 | 判据 | 读数 |
+|---|---|---|
+| A 目录页族（4 个族各抽一条） | `/need/ai-coding/` · `/student/` · `/category/chat/` · `/vendor/github/` 上**新控件在线存在**（三件套 + `min-height: 44px`） | 4/4 ✅ |
+| B① 首页 FAQ（构建期静态）+ `.zht` 模板串与样式 | FAQ 的 `<details><summary>…</summary>` 还在；`.zht` 的模板串「`'<details class="zht"'`」仍在页内脚本里（实测 `dist/index.html:2212`）、`.zht > summary::-webkit-details-marker` 仍在共享样式里 | ✅ 未沾新类名 |
+| B② 详情页 `/deal/2eae0e246de2/` | `.zht > summary` / `.zht .zbody` / `.zht[open] .zcaret` 三条样式仍在（`.zht` 是**运行期由首页脚本构造**的，静态页里只有它的样式） | ✅ 未沾新类名 |
+| B③ 变化页 `/changes/` · B④ API 计费页 `/plans/api/` | `<details class="chgother">` / `<details class="pevd">` 原样在 | ✅ 未沾新类名 |
+
+「未沾新类名」= 这四页上 `page-notes-summary` / `page-notes-chevron` / `page-notes-action`
+**一个都不出现** ⇒ 新组件没有以任何形式泄漏到别的折叠块里（marker 抑制与全部新样式都锁在 `.page-notes` 作用域内）。
+
 ### 5.4 目检（六态截图，本机 `research/_raw/page-notes-disclosure-v1/shots/`）
 
 收起 / hover / focus / 展开 / 暗色（收起 + 展开）/ 390px / 系统跟随 / 无 JS 共 20 张特写。

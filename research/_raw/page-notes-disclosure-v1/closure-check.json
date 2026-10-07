@@ -1,0 +1,75 @@
+{
+  "generatedAt": "2026-10-07T15:54:58.085Z",
+  "origin": "https://buguoshixc.github.io/ai-deals-aggregator/",
+  "rows": [
+    {
+      "group": "A 目录页族",
+      "route": "need/ai-coding/",
+      "label": "按需求页",
+      "status": 200,
+      "newControl": true,
+      "ok": true
+    },
+    {
+      "group": "A 目录页族",
+      "route": "student/",
+      "label": "专题集合页",
+      "status": 200,
+      "newControl": true,
+      "ok": true
+    },
+    {
+      "group": "A 目录页族",
+      "route": "category/chat/",
+      "label": "分类落地页",
+      "status": 200,
+      "newControl": true,
+      "ok": true
+    },
+    {
+      "group": "A 目录页族",
+      "route": "vendor/github/",
+      "label": "厂商页",
+      "status": 200,
+      "newControl": true,
+      "ok": true
+    },
+    {
+      "group": "B 其它折叠组件",
+      "route": "/",
+      "label": "首页：FAQ（静态）+ .zht 模板串与样式",
+      "status": 200,
+      "ownComponentStillThere": true,
+      "leakedNewClasses": [],
+      "ok": true
+    },
+    {
+      "group": "B 其它折叠组件",
+      "route": "deal/2eae0e246de2/",
+      "label": "详情页：.zht 的样式与正文容器（模板在首页脚本里）",
+      "status": 200,
+      "ownComponentStillThere": true,
+      "leakedNewClasses": [],
+      "ok": true
+    },
+    {
+      "group": "B 其它折叠组件",
+      "route": "changes/",
+      "label": "变化页：.chgother（静态）",
+      "status": 200,
+      "ownComponentStillThere": true,
+      "leakedNewClasses": [],
+      "ok": true
+    },
+    {
+      "group": "B 其它折叠组件",
+      "route": "plans/api/",
+      "label": "API 计费页：.pevd（静态）",
+      "status": 200,
+      "ownComponentStillThere": true,
+      "leakedNewClasses": [],
+      "ok": true
+    }
+  ],
+  "verdict": "PASS"
+}
