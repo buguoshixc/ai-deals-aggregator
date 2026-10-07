@@ -1,0 +1,49 @@
+{
+  "generatedAt": "2026-10-07T14:59:14.543Z",
+  "origin": "https://buguoshixc.github.io/ai-deals-aggregator/",
+  "rows": [
+    {
+      "route": "need/ai-coding/",
+      "url": "https://buguoshixc.github.io/ai-deals-aggregator/need/ai-coding/",
+      "status": 200,
+      "bytes": 93065,
+      "sha256": "f274cd44658c177f",
+      "localSha256": "f274cd44658c177f",
+      "checks": {
+        "http200": true,
+        "byteIdenticalToLocalBuild": true,
+        "detailsKept": true,
+        "summaryControl": true,
+        "chevronPresent": true,
+        "actionPresent": true,
+        "cssOpenLabel": true,
+        "cssCloseLabel": true,
+        "minHeight44": true,
+        "bodyTextIntact": true,
+        "canonicalSelf": true
+      }
+    },
+    {
+      "route": "student/",
+      "url": "https://buguoshixc.github.io/ai-deals-aggregator/student/",
+      "status": 200,
+      "bytes": 98494,
+      "sha256": "8e7d9f4b67a98b46",
+      "localSha256": "8e7d9f4b67a98b46",
+      "checks": {
+        "http200": true,
+        "byteIdenticalToLocalBuild": true,
+        "detailsKept": true,
+        "summaryControl": true,
+        "chevronPresent": true,
+        "actionPresent": true,
+        "cssOpenLabel": true,
+        "cssCloseLabel": true,
+        "minHeight44": true,
+        "bodyTextIntact": true,
+        "canonicalSelf": true
+      }
+    }
+  ],
+  "verdict": "PASS"
+}
