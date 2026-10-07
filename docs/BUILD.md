@@ -137,7 +137,32 @@ npm run smoke -- --url=https://…/               # 指定其它部署
 
 ---
 
-## 8. 排障速查
+## 8. 手工维护工具（**不在门禁里**，由人按需运行）
+
+这些工具**故意**不进 CI：它们要么改数据、要么需要人工判断、要么只在事故恢复时用。
+把它们列在这里，是为了让「文档里提过但没人接线」这种中间态消失 —— 每个都有明确身份。
+
+| 工具 | 用途 | 危险度 |
+|---|---|---|
+| `scripts/tools/restore-from-git.js` | 从 Git 历史恢复某个数据文件（事故恢复） | **高**（改工作树） |
+| `scripts/tools/audience-overrides-extract.js` | 从现有数据里抽取受众覆盖候选（人工复核后并入 `audience-overrides.json`） | 中（只出新文件） |
+| `scripts/tools/probe-offers.js` | 探测某个来源页的优惠结构（研究用） | 低（只读 + 打印） |
+| `scripts/tools/inspect-source.js` | 检查单个来源的原始响应（排查采集问题） | 低（需要外网） |
+| `scripts/data/backfill-cards.js` | 回填历史条目的卡片字段（一次性迁移用） | **高**（改数据） |
+| `scripts/tools/study-site.js` | 参考站拆解（WCAG 对比度近似算法出自这里，`verify-site.js` 的注释引用它） | 低（需要外网） |
+
+**纪律**：跑任何一个**改数据**的工具（前两类）之前，先 `git status` 确认工作树干净，
+跑完立刻 diff 并跑 `npm run gate:fast`。
+
+> 本轮（architecture-modernization-v1）删掉了 4 个**零引用**的死代码文件
+> （`history-nonempty-e2e.js` / `audience-backfill.js` / `audience-restore-history.js` /
+> `rows-by-link.js`，共 102,940 B）—— 它们满足 §17 的六条判据（无 require、无 package script、
+> 无 workflow、无 registry discovery、无 dynamic load、**无 docs promise**）。
+> 上表这 6 个**不满足第六条**（文档承诺过），所以处置是**确认身份并写清楚**，而不是删。
+
+---
+
+## 9. 排障速查
 
 | 症状 | 先看哪里 |
 |---|---|
