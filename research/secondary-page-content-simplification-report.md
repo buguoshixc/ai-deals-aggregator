@@ -16,6 +16,10 @@
 的**口径归档**，并且「迁移过」这件事有机器断言守着。
 数据 / 路由 / 链接 / JSON-LD / sitemap / Feed **0 变化**（逐字节证据见 §6）。
 
+**已发布**：PR [#49](https://github.com/buguoshixc/ai-deals-aggregator/pull/49) → CI `gate` 4m41s 绿
+（真浏览器路径）→ merge `5e13061` → Deploy 成功 → 线上冒烟 5 条路由 200、
+**线上与本地已验证产物逐字节相同 10/10**（读数见 §11）。
+
 ---
 
 ## 1. 审计范围与三层归类
@@ -345,3 +349,73 @@ npm run verify:regress
 > 只留 `.json`。所以**读数 JSON** 放 `_raw/`，而**一次性装置与文本读数**放
 > `research/<轮次>-verify/` —— 与上一轮的 `research/architecture-modernization-v1/verify/` 同一形状。
 > 完整日志（`full-gate.log` / `verify-after-*.log`）按同一规则不入库，只在本机留痕。
+
+---
+
+## 11. 发布读数（PR → CI → merge → Deploy → 线上冒烟）
+
+### 11.1 版本坐标
+
+| 项 | 值 |
+|---|---|
+| 基线 SHA | `a795ce3a4e5d3708ea3b17b2fcbb5fcb391218fe`（`origin/master`） |
+| 分支 | `secondary-page-content-simplification` |
+| 冻结修订 SHA | `93c8a29de6b6bccd371ce826d817352ebc7d0e86` |
+| PR | [#49](https://github.com/buguoshixc/ai-deals-aggregator/pull/49) |
+| merge 提交 | `5e130618522c5b2bd1fc5da1dd933a40e742685d`（merge pull request #49） |
+| 线上 | <https://buguoshixc.github.io/ai-deals-aggregator/> |
+
+### 11.2 本地 Full Gate（冻结修订上）
+
+```
+门禁步骤（读自 .github/actions/gate/action.yml）：51 个
+合计 273.6s / 47 个脚本，失败 0            ← 51 步 = 执行 47 / 通过 47 / 跳过 4 / 失败 0 · exit 0
+✅ 本地门禁链全过（与 CI 读同一份 action.yml）
+```
+
+另跑：`npm run check:ci` **38 项 / 0 失败** · `npm run check:evidence` **通过**（无新增 Tier-3）。
+`verify-site.js --dir=dist`：**855 项 / 0 失败**；`--compare` 追加 6 项回归全过（**861 / 0**）。
+
+### 11.3 CI（PR #49 · run `37611374145`）
+
+```
+gate  ✓ SUCCESS  4m41s
+  ✓ CI consistency (action / runner / node-version / engines drift)
+  ✓ Gate (validate → translation → selftests → build → real browser)
+```
+
+- **真浏览器路径**：判定 `mode=full`（`allow_degraded_run: false`），
+  浏览器 `…/ms-playwright/chromium-1243/chrome-linux64/chrome` ⇒ 不是降级运行。
+- CI 侧 §22c 读数与本地**逐项一致**：186 页 / 逐条判 352 条 ·
+  `note-narrow` / `note-ink-narrow` / 藏字 / 不同轴 / 裁切 / **首屏说明过长全部 0** ·
+  冻结串 186/186 恰好 1 次。
+- CI 侧回归比对 6 项全过（覆盖 80→80 · 卡片 50→50 · 首屏完整可见 6→6 ·
+  页高 4589→4788px（容差 15%）· 外部请求 0→0 · JS 错误 0）。
+  > 页高 +199px 是**本轮之前**就存在的漂移：首页 `index.html` 本分支**一字节未改**
+  > （读数 4787 → 4787），基线文件是更早一轮记录的 4589。
+
+### 11.4 Deploy（run `37614845796`）
+
+```
+✓ build  in 15s   Validate data and assemble site → Setup Pages → Upload artifact
+✓ deploy in  9s   Deploy to GitHub Pages
+```
+
+### 11.5 线上冒烟（prompt §40 指定的 5 条路由）
+
+| 路由 | HTTP | 首屏 intro | 折叠说明 | 可见文本里的旧口径残留 |
+|---|---|---|---|---|
+| `/need/edu-identity/` | 200 | 33 字 | ✓ | **0** |
+| `/need/free-tier/` | 200 | 28 字 | ✓ | **0** |
+| `/developer/` | 200 | 33 字 | ✓ | **0** |
+| `/student/` | 200 | 33 字 | ✓ | **0** |
+| `/free-api/` | 200 | 38 字 | ✓ | **0** |
+
+- **逐字节对账**：把线上 10 条路由的 HTML 与本地已验证的 `dist/` 同名文件取 SHA256 ——
+  **10/10 完全相同**。也就是说「本地验过的那一份」就是线上跑的那一份，没有二次加工。
+- **旧口径残留**的检查项里，唯一命中的是 `判据：type=deal …`，实测它**只出现在
+  `<li … title="…">` 属性里**（本轮有意保留的悬停提示）；把属性值剥掉后
+  页面**可见文本 1532 字里「判据」出现 0 次**。这不是残留，是设计。
+- **Analytics**（prompt §41）：本地 `analytics request = 0`（`selftest:analytics --dir=dist`
+  在门禁里，186 页逐页断言 bootstrap 恰好 1 个 + localhost/127.0.0.1 零上报）；
+  线上**没有为了本轮遍历全站**，只按上面 5 条抽检。
