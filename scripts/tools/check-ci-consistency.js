@@ -145,6 +145,16 @@ const GATE_ACTION_REF = './.github/actions/gate';
 /** 门禁步骤的冻结序列：**顺序与数量**都算契约——谁把真浏览器验收从门禁里拿掉，(10) 立刻红 */
 const GATE_STEP_NAMES = [
   'Install dependencies',
+  // architecture-modernization-v1 新增两步：都是**不需要数据也不需要 dist** 的结构/纪律门禁，
+  // 因此排在数据门禁之前（红的时候是「骨架坏了」而不是「数据不对」，最快定位）。
+  //   · Architecture fitness —— 4 条结构不变量（依赖方向 / renderer 纯度 / 唯一 document 出口 /
+  //     分层表完整性）；选这 4 条的标准见 scripts/test/fitness.js 头注释（刻意不收「无循环依赖」
+  //     与「布局族声明」，避免同一不变量重复证明）。
+  //   · Evidence policy —— Tier-3 过程产物不许进 Git，只拦基线之后新进的（grandfather 1,283 个放行）。
+  // 两步都不新增断言项数（本文件的断言数不变），但**必须**登记进 GATE_STEP_NAMES 与
+  // GATE_STEP_RUN —— 断言 (8) 会逐个比对步骤序列与 run 体，漏登记即红。
+  'Architecture fitness (structure invariants)',
+  'Evidence policy (Tier-3 interception)',
   'Validate data (strict)',
   // v1.1 收口新增：可重建性（值必须有源）。与 strict 分开，因为红的含义不同 ——
   // strict 红 = 值不合法；这一条红 = 值合法但**没有任何文件能重建它**。
@@ -295,6 +305,10 @@ const GATE_STEP_NAMES = [
 const GATE_STEP_RUN = {
   "Install dependencies":
     "npm ci",
+  "Architecture fitness (structure invariants)":
+    "node scripts/test/fitness.js",
+  "Evidence policy (Tier-3 interception)":
+    "node scripts/tools/check-evidence.js",
   "Validate data (strict)":
     "node scripts/validate.js --strict",
   "Reproducibility gate (no value without a source)":
