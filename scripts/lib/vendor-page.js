@@ -327,7 +327,14 @@ ${listOrEmpty(view.models.map(model => `        <li><a href="${escapeHtml(`${pre
   // 因为那条守卫当时的扫描面只有 `.snote` / `<caption>`（`.vsnote` 不在里面）。
   // 两处都修了：这里用 rich() 把 `**x**` 变成 `<b>x</b>`；守卫的扫描面同时扩到
   // `.vsnote` 与 `<details>`（见 build-local.js 的「作者正文无 Markdown 记号」一节）。
-  const changesBlock = `<p class="vsnote">${rich('优惠变化见本页上方的「最近变化」块。下面两支来自**套餐变化日志**'
+  // ⚠️ secondary-page-intro-changes-v1：这一行原先无条件写「优惠变化见本页上方的「最近变化」块」。
+  // 上方那一块现在是**条件模块**（只有真的存在与本页条目相关的变化事件才渲染，判据在
+  // RENDER-CORE 的 changesTopicHtml），所以这句必须跟着条件化 —— 否则 25 个厂商页里绝大多数
+  // 会指向一块不存在的模块。没有那一块时**只删掉指向子句**，不补任何关于变化的断言：
+  // 「没有变化」这句话我们不能说（我们只是没有可展示的事件），而不写才是诚实的写法。
+  const changesBlock = `<p class="vsnote">${rich((ctx.hasTopicChanges
+    ? '优惠变化见本页上方的「最近变化」块。'
+    : '') + '下面两支来自**套餐变化日志**'
     + '与 **API 计费变化日志**（同一份事件、同一套措辞，这一层只搬运）。')}</p>
       <h3 class="vh3">Coding 套餐变化（${view.planEvents.length} 条）</h3>
       ${view.planAvailability !== 'ok'

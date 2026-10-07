@@ -1,0 +1,38 @@
+{
+  "what": "186 个页面逐字段 Before/After 对账（数据面必须零差异；形状面是本轮预期变化）",
+  "before": {
+    "label": "before",
+    "dir": "../page-notes-disclosure-v1/dist",
+    "pages": 186
+  },
+  "after": {
+    "label": "after",
+    "dir": "dist",
+    "pages": 186
+  },
+  "dataDiffCount": 1,
+  "dataByField": {
+    "pageNotesPresent": 1
+  },
+  "dataDiffs": [
+    {
+      "route": "need/student-only/",
+      "field": "pageNotesPresent",
+      "before": "false",
+      "after": "true"
+    }
+  ],
+  "shapeDiffCount": 512,
+  "shapeByField": {
+    "textLength": 89,
+    "headroom": 89,
+    "snoteCount": 45,
+    "introSnoteCount": 41,
+    "bodyTextLength": 89,
+    "chgsecPresent": 40,
+    "chgsecTotal": 40,
+    "chgsecHeading": 40,
+    "pageNotesChars": 39
+  },
+  "shapeNote": "形状面差异全部可归因：45 个目录页（删首屏说明 + 隐藏空变化块）+ 45 个模型详情页（去掉字面反引号，每页 −2 字符）；/changes/ 自身逐字节不变（不在任何差异清单里）"
+}

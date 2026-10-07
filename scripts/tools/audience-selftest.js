@@ -735,19 +735,20 @@ console.log('\n=== 9) 按需求找优惠（v1.2）：注册表与判据 ===');
     new Set(au.NEED_PAGES.map(page => page.icon)).size === au.NEED_PAGES.length,
     au.NEED_PAGES.map(page => page.icon).join(' '));
   /* ------------------------------------------------------------------ */
-  /* 三层说明模型：注册表级的形状守卫（secondary-page-content-simplification）  */
+  /* 两层说明模型：注册表级的形状守卫（secondary-page-intro-changes-v1）        */
   /* ------------------------------------------------------------------ */
   //
-  // 这一节原先守着 `why.length >= 3`（「每条 why 至少三句」）。本轮把三段式口径
-  // 从页面正文移进维护文档后，那条断言**方向反了** —— 它守的正是本轮要消灭的形状。
-  // 但它**不是被删掉**，而是被换成一组**方向相反**的断言：顶部只允许极短的一句，
-  // 内部分类实现细节不许出现在任何用户可见的文案字段里。
-  //
-  // 为什么不能只删不换：`research/_raw/v3.0-antigaming.js` 有一条（不在 CI、但仓库在跑）
-  // 「每个文件的 check/fail 调用数不得低于基线」——删断言会红，而且删掉之后
-  // 「下一轮有人把三段口径写回顶部」就没有任何东西拦得住了。
+  // 这一节守过两代形状：
+  //   ① 最早是 `why.length >= 3`（「每条 why 至少三句」）；
+  //   ② 上一轮换成 `userIntro`（首屏 0~1 句）+ `userNotes`；
+  //   ③ 本轮把 `userIntro` **整层删掉** —— 二级数据页首屏只留标题 / 条目数 / 更新时间，
+  //      首屏那 0~1 句在 41 个页面上各占一行，而读者不看也照样能用这一页。
+  // 路径是「重瞄」而不是「删断言」：`research/_raw/v3.0-antigaming.js` 有一条
+  // （不在 CI、但仓库在跑）「每个文件的 check/fail 调用数不得低于基线」——删断言会红；
+  // 更要紧的是删掉之后，「下一轮有人把说明写回首屏」就没有任何东西拦得住了。
+  // 因此这里换成的是一组**方向相反**的断言：首屏说明**必须不存在**（回流即红），
+  // 而删掉的信息必须真的落在用户读得到的地方（底部折叠）或维护文档里。
   const INTERNAL_TERMS = /字段|数据模型|predicate|benefitType|collections|slug|registry|映射表|关键词扫描|归一规则/;
-  const INTRO_MAX = 60;   // 顶部只允许 0~1 句：实测最长 41 字，留出余量
   const NOTE_MAX = 80;    // 折叠项每条一句话
   const NOTE_COUNT_MAX = 4;
 
@@ -760,38 +761,69 @@ console.log('\n=== 9) 按需求找优惠（v1.2）：注册表与判据 ===');
   ];
   const copyRows = copyRegistries.flatMap(reg => reg.pages.map(page => ({ reg: reg.label, page })));
 
-  /* `userIntro` 是**可选**字段，但有两族的条数会让读者意外，那两族必须有一句
-     （`no-card` 只有 1 条、`ai-coding` 只有 4 条 —— 不解释就会被读成「没有这类优惠」）。
-     分类页与枢纽页**刻意允许没有** `userIntro`：prompt §6C 的处置就是「顶部只是解释
-     为何属于这个分类 ⇒ 直接移除」，它们的理想形态是「标题 → 条数 → 摘要 → 表格」。 */
-  const introRequired = [
-    { label: 'COLLECTION_PAGES', pages: au.COLLECTION_PAGES },
-    { label: 'NEED_PAGES', pages: au.NEED_PAGES }
-  ].flatMap(reg => reg.pages.map(page => ({ reg: reg.label, page })));
-  check('条数会让读者意外的两族（3 个集合页 + 10 个按需求页）每页都有一句 userIntro',
-    introRequired.every(({ page }) => typeof page.userIntro === 'string' && page.userIntro.trim().length > 0),
-    introRequired.filter(({ page }) => !(typeof page.userIntro === 'string' && page.userIntro.trim()))
-      .map(({ reg, page }) => `${reg}/${page.slug}`).join(', '));
-
-  /* 空容器：`userIntro: ''` 会渲染出一个空的 `<p class="snote">`，`userNotes: []` 会渲染出
-     一个只有 summary 的空 `<details>`。两者都是「为了不留白而留白」—— 读者什么也没读到，
-     而 §22c 会把那个空容器当成一条「页面级说明」去量。**没有内容就不输出容器。** */
-  check('没有空容器：userIntro 不许是空串，userNotes 不许是空数组（有内容才输出容器）',
-    copyRows.every(({ page }) => page.userIntro === undefined || String(page.userIntro).trim().length > 0)
-    && copyRows.every(({ page }) => page.userNotes === undefined || (Array.isArray(page.userNotes) && page.userNotes.length > 0)),
-    copyRows.filter(({ page }) => (page.userIntro !== undefined && !String(page.userIntro).trim())
-      || (page.userNotes !== undefined && (!Array.isArray(page.userNotes) || page.userNotes.length === 0)))
+  /* 本轮的**主收口**：注册表里再出现 `userIntro` 即红。
+     它与 `why` 那一条是同一个模式（旧字段名回流即红）—— 没有它，下一轮加一条新入口页时
+     照着旧代码抄一个 `userIntro: '……'` 就能把首屏说明带回来，而产物层那条扫描
+     （`build-local.js` 的「二级数据页首屏无说明」）虽然也会红，但它给不出「你抄了旧字段」
+     这个诊断。两层一起才是完整覆盖面：注册表层管**来源**，产物层管**结果**。 */
+  check('注册表里不许再出现 `userIntro` 字段（首屏说明整层删除，回流即红）',
+    copyRows.every(({ page }) => !Object.prototype.hasOwnProperty.call(page, 'userIntro')),
+    copyRows.filter(({ page }) => Object.prototype.hasOwnProperty.call(page, 'userIntro'))
       .map(({ reg, page }) => `${reg}/${page.slug || page.key}`).join(', '));
 
-  check(`userIntro 不超过 ${INTRO_MAX} 字（首屏只允许 0~1 句；三段式口径属于维护文档）`,
-    copyRows.every(({ page }) => String(page.userIntro || '').length <= INTRO_MAX),
-    copyRows.filter(({ page }) => String(page.userIntro || '').length > INTRO_MAX)
-      .map(({ page }) => `${page.slug || page.key}:${String(page.userIntro).length}`).join(' '));
+  /* 删掉不等于丢掉：**原先靠首屏那一句说话的 13 个页面**，必须至少有一条自己的
+     `userNotes`（折叠仍然读得到、仍然进正文下限与检索面）。
+     这一条是「搬走了」与「搬丢了」的区别 —— 上一轮实测过同类失效：断言还在绿，
+     而它声称守的东西已经不在页面上了。 */
+  const migrated = [
+    { label: 'COLLECTION_PAGES', pages: au.COLLECTION_PAGES },
+    { label: 'NEED_PAGES', pages: au.NEED_PAGES },
+    { label: 'CATEGORY_PAGES', pages: landing.CATEGORY_PAGES }
+  ].flatMap(reg => reg.pages.map(page => ({ reg: reg.label, page })))
+    .filter(({ page }) => page.slug !== 'chat');   // chat 页旧文案无页级特有内容（见 docs 归档）
+  check(`原来靠首屏那一句说话的 ${migrated.length} 个页面，删掉的内容必须落在底部折叠里（userNotes ≥ 1 条）`,
+    migrated.every(({ page }) => Array.isArray(page.userNotes) && page.userNotes.length > 0),
+    migrated.filter(({ page }) => !(Array.isArray(page.userNotes) && page.userNotes.length > 0))
+      .map(({ reg, page }) => `${reg}/${page.slug}`).join(', '));
 
-  check('userIntro 不写内部实现措辞（字段名 / predicate / 判据实现属于维护文档，不属于首屏）',
-    copyRows.every(({ page }) => !INTERNAL_TERMS.test(String(page.userIntro || ''))),
-    copyRows.filter(({ page }) => INTERNAL_TERMS.test(String(page.userIntro || '')))
-      .map(({ page }) => `${page.slug || page.key}`).join(', '));
+  /* 反向的一条：**不是所有删掉的文字都该搬到底部**（prompt §7 的逐条判断）。
+     两个枢纽页那句「只列出达到门槛、因而有独立页面的分类 / 厂商」是**入口门槛**，
+     渲染层已经有一条共享句（`SHARED_NOTES.hubMissing`）在说同一件事 —— 抄进 userNotes
+     就是同一句话在页面上出现两遍。这条断言把「我们决定不搬」写成可执行的形式。 */
+  check('枢纽页没有把「入口门槛」那句搬进 userNotes（共享句已经说过一遍，重复即冗余）',
+    [landing.VENDOR_HUB, landing.CATEGORY_HUB].every(page =>
+      !(Array.isArray(page.userNotes) && page.userNotes.some(line => /达到门槛|独立页面/.test(line)))),
+    [landing.VENDOR_HUB, landing.CATEGORY_HUB]
+      .filter(page => Array.isArray(page.userNotes) && page.userNotes.some(line => /达到门槛|独立页面/.test(line)))
+      .map(page => page.key).join(', '));
+
+  /* 空容器：`userNotes: []` 会渲染出一个只有 summary 的空 `<details>`。
+     那是「为了不留白而留白」—— 读者什么也没读到，而 §22c 会把那个空容器当成一条
+     「页面级说明」去量。**没有内容就不输出容器。** */
+  check('没有空容器：userNotes 不许是空数组（有内容才输出容器）',
+    copyRows.every(({ page }) => page.userNotes === undefined
+      || (Array.isArray(page.userNotes) && page.userNotes.length > 0)),
+    copyRows.filter(({ page }) => page.userNotes !== undefined
+      && (!Array.isArray(page.userNotes) || page.userNotes.length === 0))
+      .map(({ reg, page }) => `${reg}/${page.slug || page.key}`).join(', '));
+
+  /* 别名页那句「原因」是**逐字渲染给读者**的（`build-local.js` 把它插进顶部 `.aliasnote`），
+     而它的正文来自 `scripts/data/landing-aliases.json` —— 一个**注册表层完全照不到**的文件。
+     实测过它曾经写着 `benefitType 含 free_api`：产物层那条扫描当时用 `class="snote"` 精确串，
+     对 `<p class="snote aliasnote">` 一条都照不到，于是这句内部措辞在页面上活了很久而全绿。
+     本轮修了产物层的 matcher，这里补上注册表侧的那一半：文案源头逐条扫。 */
+  const aliasDoc = JSON.parse(fs.readFileSync(landing.ALIASES_FILE, 'utf8'));
+  const aliasReasons = Object.entries(aliasDoc.aliases || {})
+    .map(([route, entry]) => ({ route, reason: String((entry && entry.reason) || '') }));
+  check(`别名页「原因」文案里不含内部实现措辞（${aliasReasons.length} 条，逐字显示在页面上）`,
+    aliasReasons.length > 0 && aliasReasons.every(({ reason }) => !INTERNAL_TERMS.test(reason)),
+    aliasReasons.filter(({ reason }) => INTERNAL_TERMS.test(reason))
+      .map(({ route, reason }) => `${route}: ${reason.slice(0, 30)}…`).join(' · '));
+
+  check('每条按需求页都保留了机器可读的 `criteria`（维护口径留在注册表里，不是随首屏说明一起删掉）',
+    au.NEED_PAGES.every(page => typeof page.criteria === 'string' && page.criteria.trim().length > 0),
+    au.NEED_PAGES.filter(page => !(typeof page.criteria === 'string' && page.criteria.trim()))
+      .map(page => page.slug).join(', '));
 
   check(`userNotes 形状：数组、最多 ${NOTE_COUNT_MAX} 条、每条不超过 ${NOTE_MAX} 字、不含内部实现措辞`,
     copyRows.every(({ page }) => {
@@ -809,25 +841,23 @@ console.log('\n=== 9) 按需求找优惠（v1.2）：注册表与判据 ===');
 
   // 旧字段名回流即红。这条是「改名」这个动作的**收口**：
   // 没有它，下一轮有人加一条新入口页时照着旧代码抄一个 `why: [...]` 就能把三段口径带回来。
-  check('注册表里不许再出现旧的 `why` 字段（口径已改为 userIntro / userNotes，回流即红）',
+  check('注册表里不许再出现旧的 `why` 字段（口径已改为 userNotes / 维护文档，回流即红）',
     copyRows.every(({ page }) => !Object.prototype.hasOwnProperty.call(page, 'why')),
     copyRows.filter(({ page }) => Object.prototype.hasOwnProperty.call(page, 'why'))
       .map(({ reg, page }) => `${reg}/${page.slug || page.key}`).join(', '));
 
   // 这两个记号会**原样渲染给读者**（构建期直接插进 HTML），构建自检也扫这一条
   const markdownish = copyRows.filter(({ page }) =>
-    /\*\*|`/.test(String(page.userIntro || ''))
-    || (Array.isArray(page.userNotes) && page.userNotes.some(line => /\*\*|`/.test(line))));
-  check('userIntro / userNotes 里没有 Markdown 记号（** 与反引号会原样出现在读者眼前）',
+    Array.isArray(page.userNotes) && page.userNotes.some(line => /\*\*|`/.test(line)));
+  check('userNotes 里没有 Markdown 记号（** 与反引号会原样出现在读者眼前）',
     markdownish.length === 0, markdownish.map(({ page }) => page.slug || page.key).join(', '));
 
   // 版本号与写死的条数：条数是**按数据现算**的（页面顶部与首页入口都是），
   // 写进文案必然过期 —— 而「过期」的具体样子是「页面上写着 4 条、表格里列了 12 行」。
   const frozenNumbers = copyRows.filter(({ page }) =>
-    /v\d+\.\d+/.test(String(page.userIntro || '')) || /\d+\s*(条|个条目)/.test(String(page.userIntro || ''))
-    || (Array.isArray(page.userNotes) && page.userNotes.some(line =>
-      /v\d+\.\d+/.test(line) || /\d+\s*(条|个条目)/.test(line))));
-  check('userIntro / userNotes 里没有写死的条数（条数按数据现算，写死必然过期）',
+    Array.isArray(page.userNotes) && page.userNotes.some(line =>
+      /v\d+\.\d+/.test(line) || /\d+\s*(条|个条目)/.test(line)));
+  check('userNotes 里没有写死的条数（条数按数据现算，写死必然过期）',
     frozenNumbers.length === 0, frozenNumbers.map(({ page }) => page.slug || page.key).join(', '));
 
   // 维护口径没有丢：逐页在 docs 的口径归档里能查到（「说迁移了」与「真的迁移了」的区别）

@@ -1350,7 +1350,7 @@
        由 build-local 的产物自检逐项比对（validate --strict 的 checkWordingContract 也要求它
        存在且是可解析的 JSON 字面量）。事件类型 / 字段名 / 结束原因 / 免责句**不在这里** ——
        它们直接复用上面的 HISTORY_WORDING：同一件事在详情页与雷达上必须用同一个词。 */
-    const CHANGES_WORDING = {"CHANGES_SECTION":{"created":"今日新增","changed":"最近 7 天变化","endingSoon":"即将结束","ended":"已结束","restored":"重新出现"},"CHANGES_LABELS":{"radar":"变化雷达","pageTitle":"优惠变化雷达","all":"全部变化","more":"另有 {n} 条未显示","base":"以最近一次数据更新 {date} 为基准","since":"变更记录自 {date} 起（此前状态没有记录）","homeEmpty":"当前没有观测到变化","homeEmptySince":"当前没有观测到变化（记录自 {date} 起）","homeEmptyShort":"自 {date} 起记录，暂无变化","tombstone":"已移除的记录（无标题快照）","other":"不计入高价值的其他变化","otherNote":"这些变化只影响记录的元信息或写法（分类、出处、空白与措辞），不改变优惠本身，因此不进入首页雷达。"},"CHANGES_SOON":{"today":"今天截止","days":"剩 {n} 天"},"CHANGES_EMPTY":{"created":"截至基准日，没有观测到首次收录的条目。","changed":"最近 7 天内没有观测到优惠内容、领取条件或有效期的变化。","endingSoonNone":"当前收录的条目里没有一条写有绝对截止日期，因此这一栏暂时为空。","endingSoonLater":"有 {n} 条写有截止日期，但没有一条在 {days} 天内到期。","ended":"自起算日起，没有观测到不再收录的条目。","restored":"没有观测到重新出现的条目。","other":"没有这类变化。"},"CHANGES_NOTES":{"scope":"本页五个分栏互不重叠：今日新增只列今天首次收录的条目；最近 7 天变化列内容与期限的变化，以及过去 6 天内首次收录的条目。","window":"已结束与重新出现只列最近 30 天；更早的记录仍留在该条目自己的「变更记录」里。","soonBasis":"「即将结束」只认数据里写有绝对截止日期（expiresAt）的条目，剩余天数按基准日计算。","unavailable":"本次构建没有拿到历史日志（deal-history.json 缺失或损坏），因此无法显示变化记录 —— 这不表示「没有变化」。","noEvents":"自起算日起还没有任何变更事件。"}};
+    const CHANGES_WORDING = {"CHANGES_SECTION":{"created":"今日新增","changed":"最近 7 天变化","endingSoon":"即将结束","ended":"已结束","restored":"重新出现"},"CHANGES_LABELS":{"radar":"变化雷达","pageTitle":"优惠变化雷达","recent":"最近变化","all":"全部变化","more":"另有 {n} 条未显示","base":"以最近一次数据更新 {date} 为基准","since":"变更记录自 {date} 起（此前状态没有记录）","homeEmpty":"当前没有观测到变化","homeEmptySince":"当前没有观测到变化（记录自 {date} 起）","homeEmptyShort":"自 {date} 起记录，暂无变化","tombstone":"已移除的记录（无标题快照）","other":"不计入高价值的其他变化","otherNote":"这些变化只影响记录的元信息或写法（分类、出处、空白与措辞），不改变优惠本身，因此不进入首页雷达。"},"CHANGES_SOON":{"today":"今天截止","days":"剩 {n} 天"},"CHANGES_EMPTY":{"created":"截至基准日，没有观测到首次收录的条目。","changed":"最近 7 天内没有观测到优惠内容、领取条件或有效期的变化。","endingSoonNone":"当前收录的条目里没有一条写有绝对截止日期，因此这一栏暂时为空。","endingSoonLater":"有 {n} 条写有截止日期，但没有一条在 {days} 天内到期。","ended":"自起算日起，没有观测到不再收录的条目。","restored":"没有观测到重新出现的条目。","other":"没有这类变化。"},"CHANGES_NOTES":{"scope":"本页五个分栏互不重叠：今日新增只列今天首次收录的条目；最近 7 天变化列内容与期限的变化，以及过去 6 天内首次收录的条目。","window":"已结束与重新出现只列最近 30 天；更早的记录仍留在该条目自己的「变更记录」里。","soonBasis":"「即将结束」只认数据里写有绝对截止日期（expiresAt）的条目，剩余天数按基准日计算。","unavailable":"本次构建没有拿到历史日志（deal-history.json 缺失或损坏），因此无法显示变化记录 —— 这不表示「没有变化」。","noEvents":"自起算日起还没有任何变更事件。"}};
     /* AUDIENCE:END */
 
     const REGION_LABELS = { cn: '国内', global: '国外' };
@@ -3934,53 +3934,68 @@
         '<p class="snote">' + escapeHtml(HISTORY_WORDING.HISTORY_NOTES.disclaimer) + '</p>';
     }
 
+    /** 二级数据页底部「最近变化」块的行数上限（与首页条带 `slice(0, 3)` 同一密度） */
+    const TOPIC_CHANGES_MAX = 3;
+
     /**
-     * 某个主题的「最近变化」块（v1.7 落地页用）。
+     * 二级数据页底部的「最近变化」块 —— **条件模块**（secondary-page-intro-changes-v1）。
      *
      * `topic` 的形状由 `scripts/lib/landing.js` 的 `topicChangesOf()` 给出：
-     * `{ availability, asOf, startedAt, totals, sections: [{ key, items }], title }`。
+     * `{ availability, asOf, startedAt, totals, sections: [{ key, items }] }`。
      *
-     * 三条纪律与 /changes/ 完全一致，因为**用的是同一批措辞常量与同一个行渲染函数**：
-     *   · 不在这里重新判断什么算变化（判据在 lib/changes.js，页面只排版）；
-     *   · 「没拿到历史日志」与「窗口内没有变化」是两句不同的话；
-     *   · 分栏标题、计数、免责句与 /changes/ 逐字相同 —— 同一件事在两页上是同一个词。
+     * ## 出现条件只有一条：本页相关的真实变化事件 ≥ 1 条
      *
-     * 空态刻意**保留起算日**：读者要能看出「空」是因为记录自某天才开始，
-     * 而不是因为这一页忘了渲染。
+     * **0 条 ⇒ 整块不输出（返回空串）**：不输出标题、不输出空态、不输出「记录自 x 起」，
+     * 也不留一个空容器。上一版的空态（标题 + 基准日 + 起算日 + 「当前没有观察到变化」）
+     * 在每个二级页上都要占掉三行，而它回答的是**变化系统自己的状态**，不是读者的问题。
+     * 日志不可用（`availability !== 'ok'`）时 `buildRadar` 本来就产出空 sections，
+     * 因此与「零变化」走同一条路径 —— 二级页只回答「最近有没有值得我注意的变化」，
+     * 「没拿到日志」由 `/changes/`、首页条带与变化 Feed 说（三处各有断言盯着）。
+     *
+     * ## 为什么这里不写基准日 / 起算日
+     *
+     * 「以最近一次数据更新 {date} 为基准」「变更记录自 {date} 起（此前状态没有记录）」是
+     * **变化系统自身的口径**，属于 `/changes/` 那一页。二级页读者要的是「有没有变化」，
+     * 不是我们的记账方式。
+     *
+     * ## 三条纪律与 /changes/ 完全一致（复用同一批措辞与同一个行渲染函数）
+     *
+     *   · 不在这里重新判断什么算变化（判据在 `lib/changes.js`，这里只排版与截断）；
+     *   · 行内容全部来自雷达条目，页面不自己造事件（`changesRowHtml()` 与 /changes/ 同源）；
+     *   · 入口是既有稳定路由 `/changes/` —— 不为这一块新造 `?tag=` 之类的 URL。
+     *
+     * ## 顺序与截断
+     *
+     * 分栏顺序 = `lib/changes.js` 的 `SECTION_ORDER`（构建期原样传进来），桶内顺序 = 雷达
+     * 自己的顺序（时间倒序 + id 升序）。这里只把它们**扁平化后取前 N 条**，不重排事件。
      */
     function changesTopicHtml(topic, prefix) {
       const W = CHANGES_WORDING;
       const L = W.CHANGES_LABELS;
-      const N = W.CHANGES_NOTES;
       const view = topic && typeof topic === 'object' ? topic : null;
-      const title = view && typeof view.title === 'string' && view.title ? view.title : L.radar;
-      const more = '<p class="snote"><a href="' + escapeAttr(String(prefix || '') + 'changes/') + '">' +
-        escapeHtml(L.all) + ' →</a></p>';
-      const head = '<h2>' + escapeHtml(title) + '</h2>';
+      const sections = view && view.availability === 'ok' && Array.isArray(view.sections)
+        ? view.sections
+        : [];
 
-      if (!view || view.availability !== 'ok') {
-        // 日志缺失/损坏：说「没有拿到」，不说「没有变化」
-        return '<section class="chgsec" data-topic-availability="unavailable">' + head +
-          '<p class="chgempty">' + escapeHtml(N.unavailable) + '</p>' + more + '</section>';
+      const rows = [];
+      for (const section of sections) {
+        const items = section && Array.isArray(section.items) ? section.items : [];
+        for (const item of items) {
+          if (rows.length >= TOPIC_CHANGES_MAX) break;
+          rows.push(item);
+        }
+        if (rows.length >= TOPIC_CHANGES_MAX) break;
       }
+      if (!rows.length) return '';
 
-      const since = typeof view.startedAt === 'string' ? view.startedAt : null;
-      const asOf = typeof view.asOf === 'string' ? view.asOf : null;
-      const meta = '<div class="chgmeta">' +
-        (asOf ? '<span>' + escapeHtml(L.base.replace('{date}', asOf)) + '</span>' : '') +
-        (since ? '<span>' + escapeHtml(L.since.replace('{date}', since)) + '</span>' : '') +
-        '</div>';
-      const sections = Array.isArray(view.sections) ? view.sections : [];
-      const body = sections.length
-        ? sections.map(section => {
-          const label = hasOwn(W.CHANGES_SECTION, section.key) ? W.CHANGES_SECTION[section.key] : section.key;
-          return '<div class="chgsec"><h3>' + escapeHtml(label + '（' + section.items.length + '）') + '</h3>' +
-            '<ul class="chglist">' + section.items.map(item => changesRowHtml(item, prefix)).join('') + '</ul></div>';
-        }).join('')
-        : '<p class="chgempty">' + escapeHtml(since ? L.homeEmptySince.replace('{date}', since) : L.homeEmpty) + '</p>';
-
-      return '<section class="chgsec" data-topic-availability="ok" data-topic-total="' +
-        escapeAttr(String(Number(view.totals) || 0)) + '">' + head + meta + body + more + '</section>';
+      const total = Number(view.totals) || rows.length;
+      return '<section class="chgsec chgtopic" data-topic-total="' + escapeAttr(String(total)) +
+        '" data-topic-shown="' + escapeAttr(String(rows.length)) + '">' +
+        '<div class="chgtopic-head"><h2>' + escapeHtml(L.recent) + '</h2>' +
+        '<a class="chgtopic-all" href="' + escapeAttr(String(prefix || '') + 'changes/') + '">' +
+        escapeHtml(L.all) + ' →</a></div>' +
+        '<ul class="chglist">' + rows.map(item => changesRowHtml(item, prefix)).join('') + '</ul>' +
+        '</section>';
     }
 
     /* ================================================================
