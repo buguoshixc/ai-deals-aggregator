@@ -2297,6 +2297,23 @@ function renderDirectoryPage(spec, deals, indexHtml, context) {
   /**
    * 底部折叠说明。**共享句在前、本页特有句在后** —— 顺序固定，产物因此可复现。
    * 共享句是全站同一句，不逐页复制（prompt §20：不要每个模板抄一份不同版本的说明）。
+   *
+   * ## disclosure 可发现性（page-notes-disclosure-v1）
+   *
+   * 折叠逻辑本来就是对的（原生 `<details>`，无 JS 可用），缺的是**可交互提示**：
+   * 收起时它长得像一行普通小标题，读者看不出整行能点。本轮只补 affordance，三层语义不变：
+   *
+   *   · 左侧 `page-notes-chevron`：CSS 画的 disclosure 箭头（收起 › / 展开 ⌄），
+   *     `aria-hidden` —— 它是装饰，不是信息；
+   *   · 右侧 `page-notes-action`：状态文案由 **CSS `::before` 生成**（收起「展开」/ 展开「收起」）。
+   *     刻意**不写进 DOM**：① `verify-site.js` 的无 JS 探针读 `summary.textContent` 是不是
+   *     逐字等于「分类说明」，加字面量会把那条既有断言打红；② 生成的文案不进正文文本，
+   *     也就不进 SEO 的字数口径。两条都是有意的，不是巧合。
+   *   · 整行即点击区（summary 铺满宽度 + `min-height: 44px`），箭头 / 标题 / 中间空白 /
+   *     右侧文案任意一处都能触发折叠 —— 由 §15b3 的「空白带中点」断言盯着。
+   *
+   * 开合状态、键盘切换（Enter / Space）与屏读的展开状态**全部交给浏览器**：不手写
+   * `aria-expanded`，也不引 JS 状态管理。默认仍然是**收起**（分类说明是次级信息）。
    */
   const SHARED_NOTES = {
     // 分类边界：三类切法（人群 / 福利类型 / 分类）本来就会重叠。
@@ -2315,7 +2332,10 @@ function renderDirectoryPage(spec, deals, indexHtml, context) {
   const noteLines = isAlias ? ownNotes : [...ownNotes, ...sharedNotes];
   const notesHtml = noteLines.length
     ? `      <details class="page-notes">
-        <summary>分类说明</summary>
+        <summary class="page-notes-summary">
+          <span class="page-notes-leading"><span class="page-notes-chevron" aria-hidden="true"></span><span class="page-notes-title">分类说明</span></span>
+          <span class="page-notes-action" aria-hidden="true"></span>
+        </summary>
 ${noteLines.map(line => `        <p class="pnote">${line}</p>`).join('\n')}
       </details>
 
@@ -2456,12 +2476,53 @@ ${summary.map(row => `        <li data-summary-label="${htmlEscape(row.label)}" 
      就是 index.html 共享 <style> 里那条**冻结串**（WIDE_SNOTE_FROZEN）。
      每页多写一份的症状是 §22c 的「冻结串恰好 1 次」断言全站变红。 */
   /* 底部折叠说明。单独一类（.page-notes / .pnote），刻意**不复用** .snote：
-     闭合 <details> 里的 .snote 会被 §22c 判成 note-unrendered（见上面那一段注释）。 */
-  .page-notes { margin: var(--s3) 0 0; border-top: 1px solid var(--line); padding-top: var(--s2); }
-  .page-notes > summary { display: block; cursor: pointer; color: var(--ink2); font-size: var(--fs-sm); font-weight: 600; }
+     闭合折叠块里的 .snote 会被 §22c 判成 note-unrendered（见上面那一段注释）。
+     ⚠️ 两条写给下一个人的实测教训（2026-10-07，都在这一段注释里踩到过）：
+     ① 这里**不写出**折叠标签的字面量（原本写过）。构建期的「作者正文无 Markdown 记号」按那个
+        字面量取扫描窗口，写进页面级 CSS 会把后面整段样式表卷进窗口 —— CSS 注释里的任何
+        Markdown 强调记号都会变成一条假阳性。去掉之后窗口正好从真实的折叠块开始，扫描面更准。
+     ② 这里也**不许出现反引号**（原本也写过）。这段 CSS 是模板字符串的字面量，一个反引号就会
+        提前闭合它，把 pageCss 变成 NaN —— 后果是**整页的页面级样式被静默丢掉**（NaN 是假值，
+        页面壳不会输出 style 块），而构建期自检全绿。判据在浏览器层：§15b3 读 computed
+        ::before content，CSS 没进去时它必然红。 */
+  /* ---- 分类说明的 disclosure 控件（page-notes-disclosure-v1）----
+     原生折叠元素 + 一行 44px 的整行点击区；开合、键盘与会话状态由浏览器负责，页面零 JS。
+     视觉权重刻意低于优惠表格与 CTA：上下两条 hairline，不做成按钮。
+     颜色全部走 token ⇒ 亮色 / data-theme="dark" / 跟随系统三态自动成立。 */
+  .page-notes { margin: var(--s3) 0 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  /* 默认 marker 只在**本组件**内抑制（写全局 summary 会误伤首页 FAQ、译文块、.chgother、
+     .pevd 这些语义不同的折叠组件），避免出现「▶ ›」两个箭头。 */
+  .page-notes > summary { list-style: none; }
+  .page-notes > summary::-webkit-details-marker { display: none; }
+  .page-notes-summary {
+    display: flex; align-items: center; justify-content: space-between; gap: var(--s2);
+    width: 100%; min-height: 44px; padding: 10px 12px;
+    cursor: pointer; color: var(--ink2); font-size: var(--fs-sm); font-weight: 600;
+    border-radius: var(--r-sm);
+    transition: background-color var(--t-fast) var(--e-std);
+  }
+  /* hover 底色用 --card（而不是 --line2）：状态文案与箭头压在这层底上实测亮色 4.83:1 /
+     暗色 6.08:1，都过 AA；换 --line2 会掉到亮色 ≈4.3:1（--mut 在 --bg 上本来就是 4.50:1 的临界值）。 */
+  .page-notes-summary:hover { background: var(--card); }
   .page-notes > summary:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
-  .page-notes[open] > summary { margin-bottom: var(--s1); }
-  .page-notes .pnote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s1); }
+  /* 标题允许折行，右侧状态永不被挤出去：leading 可收缩、action 不参与伸缩。 */
+  .page-notes-leading { display: flex; align-items: center; gap: var(--s2); min-width: 0; }
+  /* 箭头用 CSS 画（两条 border 组成的直角），不依赖字体里有没有箭头字形：
+     收起 rotate(-45deg) → 指向右 ›；展开 rotate(45deg) → 指向下 ⌄。 */
+  .page-notes-chevron {
+    flex: none; width: 7px; height: 7px;
+    border-right: 2px solid var(--mut); border-bottom: 2px solid var(--mut);
+    transform: rotate(-45deg);
+    transition: transform var(--t-fast) var(--e-std);
+  }
+  .page-notes[open] .page-notes-chevron { transform: rotate(45deg); }
+  /* 右侧状态文案由 CSS 生成：DOM 里没有这两个字（见 notesHtml 上方那段注释）。
+     它必须是**真实可见**的 —— 断言读 getComputedStyle(action, '::before').content。 */
+  .page-notes-action { flex: none; color: var(--mut); font-weight: 400; }
+  .page-notes-action::before { content: '展开'; }
+  .page-notes[open] .page-notes-action::before { content: '收起'; }
+  .page-notes > .pnote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0; padding: 0 12px var(--s2); }
+  .page-notes > .pnote:last-child { padding-bottom: 12px; }
   .ctable { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
   .ctable caption { text-align: left; color: var(--mut); font-size: var(--fs-sm); padding: 0 0 var(--s2); }
   .ctable th, .ctable td { text-align: left; padding: 10px 12px; border-top: 1px solid var(--line); font-weight: 400; font-size: var(--fs-sm); vertical-align: top; }

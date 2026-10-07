@@ -1,0 +1,23 @@
+{
+  "light": {
+    "hoverBg": "rgb(255, 255, 255)",
+    "title": 8.01,
+    "action": 4.83,
+    "chevron": 4.83,
+    "theme": null
+  },
+  "dark": {
+    "hoverBg": "rgb(20, 23, 28)",
+    "title": 9.58,
+    "action": 6.08,
+    "chevron": 6.08,
+    "theme": "dark"
+  },
+  "system-dark": {
+    "hoverBg": "rgb(20, 23, 28)",
+    "title": 9.58,
+    "action": 6.08,
+    "chevron": 6.08,
+    "theme": null
+  }
+}
