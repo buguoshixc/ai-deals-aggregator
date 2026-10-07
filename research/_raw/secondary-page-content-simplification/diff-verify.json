@@ -1,0 +1,949 @@
+{
+  "generatedAt": "2026-10-07T10:52:29.565Z",
+  "base": "dist.baseline",
+  "dir": "dist",
+  "totals": {
+    "files": 303,
+    "html": 186,
+    "nonHtml": 117,
+    "htmlIdenticalRaw": 140,
+    "htmlIdenticalNormalized": 186,
+    "problems": 0
+  },
+  "problems": [],
+  "notes": [
+    "非 HTML 产物 117 个逐字节相同的 117 个"
+  ],
+  "perPage": [
+    {
+      "file": "archive/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "category/agent/index.html",
+      "rows": 4,
+      "jsonLdSha": []
+    },
+    {
+      "file": "category/api/index.html",
+      "rows": 36,
+      "jsonLdSha": []
+    },
+    {
+      "file": "category/audio/index.html",
+      "rows": 6,
+      "jsonLdSha": []
+    },
+    {
+      "file": "category/chat/index.html",
+      "rows": 15,
+      "jsonLdSha": []
+    },
+    {
+      "file": "category/image/index.html",
+      "rows": 5,
+      "jsonLdSha": []
+    },
+    {
+      "file": "category/index.html",
+      "rows": 5,
+      "jsonLdSha": []
+    },
+    {
+      "file": "changes/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/017bdbc04e70/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/0273d8b23412/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/0c30d79a5016/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/1688614d6669/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/176234a80147/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/1888ab62bd67/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/1c057c22422c/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/219f6fca7f31/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/2db62eb1a8a0/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/2eae0e246de2/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/3c8a9a6a9ee9/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/407572a1e046/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/42c65c0d8d9d/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/45ead69d60cc/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/47a4c57f3a15/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/4987c183fc1a/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/4a875a435019/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/4bda0ebbb091/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/4c7952115477/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/4caf88e30671/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/4d4bcb5b6829/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/4e659666cbb2/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/514a84a1064a/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/5253b5ed77b1/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/57847fbcc1ed/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/5c38e515a3ae/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/5dedb9455508/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/6013b80f266f/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/62e3166acec0/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/65f0bdd295ac/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/6644f3b43bdb/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/6798f78de5ce/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/6869e7866510/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/7691c150c8e5/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/78384299b660/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/7f8c32f6a327/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/833a9889bfb7/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/8814355d59e1/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/8b2e8d64f11f/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/8b609cb05116/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/8dada3205ed8/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/8e7b0fd03e73/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/913211f6d165/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/9180073deef1/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/97d21ff73d3e/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/9c12f13df3ba/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/9c553dd82d2d/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/a1255b2fbae2/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/aacd5856bba2/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/ad1d0c83909d/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/adcb6471a512/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/b4d87c02f4d9/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/b56f33b3d4f3/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/b75b42583ad8/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/b8f11a235591/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/bcba406ed9ff/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/bf156583e97c/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/c05dc74bfd78/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/c25b0ed788e3/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/c433fee91818/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/c4ab5c5d8101/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/c59299cdc88e/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/c694e7c5f125/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/c971e33a9cd0/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/d6aaee8c7379/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/d8d0ba522315/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/df1210f69a39/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/df8ec56faa17/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/e237cab7c007/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/e384895f5935/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/e4bd8003b3d6/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/e4f7271cf7dc/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/e63402b5cc83/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/e65f54470862/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/e7e8f538456c/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/e91f65960877/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/ead998e58cd9/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/ebd47f6d2522/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/f22e3cd094ad/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "deal/f578493037d4/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "developer/index.html",
+      "rows": 67,
+      "jsonLdSha": []
+    },
+    {
+      "file": "docs/data/index.html",
+      "rows": 9,
+      "jsonLdSha": []
+    },
+    {
+      "file": "feeds/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "free-api/index.html",
+      "rows": 45,
+      "jsonLdSha": []
+    },
+    {
+      "file": "index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/360zhinao-pro/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/360zhinao-turbo-llm-geo/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/baichuan-m3-plus/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/baichuan-m3/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/claude-fable-5.1/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/claude-haiku-4.5/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/claude-opus-5.5/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/claude-sonnet-5.5/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/deepseek-flash/index.html",
+      "rows": 5,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/deepseek-v3.2/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/deepseek-v4-pro/index.html",
+      "rows": 5,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/doubao-seed-2.1-pro/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/doubao-seed-2.1-turbo/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/doubao-seed-character/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/doubao-seed-evolving/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/ernie-4.5-turbo-128k/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/ernie-5.1/index.html",
+      "rows": 2,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/gemini-3.5-flash/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/gemini-3.6-flash/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/gemini-3.7-flash/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/gemini-3.8-flash/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/glm-4.5v/index.html",
+      "rows": 2,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/glm-4.6v-flash/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/glm-4.6v-flashx/index.html",
+      "rows": 2,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/glm-4.6v/index.html",
+      "rows": 2,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/glm-4.7-flash/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/glm-5.3-flash/index.html",
+      "rows": 3,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/glm-5.3/index.html",
+      "rows": 5,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/glm-5v-turbo/index.html",
+      "rows": 2,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/gpt-6-astra/index.html",
+      "rows": 4,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/gpt-6-luna/index.html",
+      "rows": 4,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/gpt-6.1-sol/index.html",
+      "rows": 4,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/gpt-live-1/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/hunyuan-a13b/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/hunyuan-embedding/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/hunyuan-role-latest/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/hunyuan-translation-lite/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/hunyuan-translation/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/index.html",
+      "rows": 51,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/kimi-k2.7-code/index.html",
+      "rows": 2,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/kimi-k3/index.html",
+      "rows": 4,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/minimax-m2.5/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/minimax-m2.7-highspeed/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/minimax-m2.7/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/minimax-m3/index.html",
+      "rows": 5,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/qwen-max/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/qwen3-max/index.html",
+      "rows": 2,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/qwen3.8-27b/index.html",
+      "rows": 3,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/qwen3.8-max/index.html",
+      "rows": 2,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/spark-x2.5/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/step-3.5-flash/index.html",
+      "rows": 2,
+      "jsonLdSha": []
+    },
+    {
+      "file": "models/tencent-hy-vision-1.5-instruct/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "need/ai-coding/index.html",
+      "rows": 4,
+      "jsonLdSha": []
+    },
+    {
+      "file": "need/china-usable/index.html",
+      "rows": 30,
+      "jsonLdSha": []
+    },
+    {
+      "file": "need/dev-credits/index.html",
+      "rows": 67,
+      "jsonLdSha": []
+    },
+    {
+      "file": "need/edu-identity/index.html",
+      "rows": 7,
+      "jsonLdSha": []
+    },
+    {
+      "file": "need/free-api/index.html",
+      "rows": 45,
+      "jsonLdSha": []
+    },
+    {
+      "file": "need/free-model/index.html",
+      "rows": 12,
+      "jsonLdSha": []
+    },
+    {
+      "file": "need/free-tier/index.html",
+      "rows": 60,
+      "jsonLdSha": []
+    },
+    {
+      "file": "need/free-tokens/index.html",
+      "rows": 44,
+      "jsonLdSha": []
+    },
+    {
+      "file": "need/no-card/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "need/student-only/index.html",
+      "rows": 12,
+      "jsonLdSha": []
+    },
+    {
+      "file": "plans/api/index.html",
+      "rows": 108,
+      "jsonLdSha": []
+    },
+    {
+      "file": "plans/coding/index.html",
+      "rows": 44,
+      "jsonLdSha": []
+    },
+    {
+      "file": "plans/index.html",
+      "rows": 7,
+      "jsonLdSha": []
+    },
+    {
+      "file": "status/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "student/index.html",
+      "rows": 12,
+      "jsonLdSha": []
+    },
+    {
+      "file": "vendor/ai360/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "vendor/aliyun/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "vendor/anthropic/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "vendor/aws/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "vendor/baichuan/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "vendor/baidu-ai-cloud/index.html",
+      "rows": 17,
+      "jsonLdSha": []
+    },
+    {
+      "file": "vendor/coze/index.html",
+      "rows": 4,
+      "jsonLdSha": []
+    },
+    {
+      "file": "vendor/cursor/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "vendor/deepseek/index.html",
+      "rows": 0,
+      "jsonLdSha": []
+    },
+    {
+      "file": "vendor/github/index.html",
+      "rows": 3,
+      "jsonLdSha": []
+    },
+    {
+      "file": "vendor/google/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "vendor/iflytek/index.html",
+      "rows": 2,
+      "jsonLdSha": []
+    },
+    {
+      "file": "vendor/index.html",
+      "rows": 25,
+      "jsonLdSha": []
+    },
+    {
+      "file": "vendor/microsoft/index.html",
+      "rows": 2,
+      "jsonLdSha": []
+    },
+    {
+      "file": "vendor/minimax/index.html",
+      "rows": 3,
+      "jsonLdSha": []
+    },
+    {
+      "file": "vendor/moonshot/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "vendor/notion/index.html",
+      "rows": 2,
+      "jsonLdSha": []
+    },
+    {
+      "file": "vendor/openai/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "vendor/replit/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "vendor/sensetime/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "vendor/siliconflow/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "vendor/stepfun/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "vendor/tencent-cloud/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "vendor/volcengine/index.html",
+      "rows": 13,
+      "jsonLdSha": []
+    },
+    {
+      "file": "vendor/windsurf/index.html",
+      "rows": 1,
+      "jsonLdSha": []
+    },
+    {
+      "file": "vendor/zhipu/index.html",
+      "rows": 12,
+      "jsonLdSha": []
+    }
+  ]
+}

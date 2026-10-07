@@ -1003,10 +1003,8 @@ ${feeds.rootFeedTags('../')}`;
         <span class="meta">数据生成时间 ${htmlEscape(health.formatCN(healthDoc && healthDoc.generatedAt))}（北京时间）</span>
       </div>
       <p class="snote">
-        这里列出每个采集来源<b>最近一次</b>的结果与跨运行的连续性。为什么要公开它：
-        首页只写「数据更新 {日期}」，而人工策展的条目每天都在刷新，所以「某个来源坏了几天」
-        与「某个来源这次没有新内容」在首页上看起来是一样的——这一页把它们分开。
-        状态规则：采集器报错、或连续 3 次零产出即 <b>❌ 失败</b>；请求成功但条数掉到上次一半以下、
+        这一页列出每个采集来源<b>最近一次</b>的结果与跨运行的连续性。
+        采集器报错、或连续 3 次零产出即 <b>❌ 失败</b>；请求成功但条数掉到上次一半以下、
         或零产出但还没到 3 次即 <b>⚠️ 异常</b>；其余为 <b>✅ 正常</b>。
         「连续失败 / 连续零产出」两列分别是这两个计数器的当前值。
       </p>
@@ -1031,7 +1029,6 @@ ${feeds.rootFeedTags('../')}`;
 
       <p class="snote" style="margin-top: var(--s3)">
         机器可读的同一份数据：<a href="../source-health.json">source-health.json</a>。
-        本站只做收录与整理，来源站点的可用性、内容与最终条款以官方页面为准。
       </p>${shell.docEnd({ route, prefix: '../', parts, extraScript: pageScript, where: 'renderStatusPage' })}`;
 }
 
@@ -2266,7 +2263,64 @@ function renderDirectoryPage(spec, deals, indexHtml, context) {
     ? (childList.length ? childList.map(hubRowHtml).join('') : emptyRow)
     : (deals.length ? deals.map(rowHtml).join('') : emptyRow);
 
-  const why = spec.why.map(line => `        ${line}`).join('\n');
+  /**
+   * 三层说明模型的**唯一实现**（secondary-page-content-simplification）。
+   *
+   *   ① `userIntro` —— 顶部 `<p class="snote">`，0~1 句。**没有就整块不输出**，
+   *      不写「本页收录……」这种复述标题的空话（一个空容器比没有容器更糟：
+   *      它会被 §22c 当成一条「说明」去量，读者却什么也没读到）。
+   *   ② `userNotes` —— 底部 `<details class="page-notes">`，只放三类内容
+   *      （分类边界 / 来源与条款 / 少量误解说明）。**真没有价值的内容直接不展示**，
+   *      不倒进折叠块 —— 把垃圾藏进 `<details>` 不是简化。
+   *   ③ 维护口径 —— 不进页面，进 `docs/DESIGN-RULES.md` 的「二级数据页口径归档」。
+   *
+   * ## 为什么折叠块**不能**用 `.snote` 类（两个都是硬约束，实测得出）
+   *
+   *   · 闭合 `<details>` 里的 `.snote` 会被 §22c 判成 `note-unrendered`：
+   *     `verify-site.js` 的 `visibleTextOf()` 直接遍历 DOM 子节点，不看 `display`
+   *     也不看 `<details>` 开合 —— 于是 `rendered=false` + `textLength>0` + `glyphRects=0`
+   *     三条同时成立，正好命中那条判据。所以内层正文用 `.pnote`。
+   *   · 外层 `<details>` 也刻意**不带** `.snote`：否则会扰动 §22c 的 `notes` 索引、
+   *     `WIDE_SNOTE_FROZEN` 计次与 M1–M13 变异牙的靶位。
+   *
+   * 折叠**不影响**无 JS 可读性，也不影响正文下限：`prerenderedText()`（构建期）与
+   * `seo.js` 的 `visibleText()` 都只剥 script/style/注释/标签，`<details>` 的正文照样计入。
+   * 这一点是本轮敢用折叠的前提 —— 折起来的内容仍然能被搜索引擎与「无 JS 读全文」读到。
+   */
+  const userIntro = typeof spec.userIntro === 'string' ? spec.userIntro.trim() : '';
+  const introHtml = userIntro ? `      <p class="snote">
+        ${userIntro}
+      </p>
+
+` : '';
+
+  /**
+   * 底部折叠说明。**共享句在前、本页特有句在后** —— 顺序固定，产物因此可复现。
+   * 共享句是全站同一句，不逐页复制（prompt §20：不要每个模板抄一份不同版本的说明）。
+   */
+  const SHARED_NOTES = {
+    // 分类边界：三类切法（人群 / 福利类型 / 分类）本来就会重叠。
+    overlap: '同一条优惠可能同时出现在多个标签页。',
+    // 误解说明：表格里会出现「尚未确认」这个 token，不解释会被读成「不可用」。
+    tristate: '表格里写「尚未确认」的字段表示我们没查到依据，不代表不可用。',
+    // 枢纽页没有条目表，换成入口口径 + 「为什么某个分类/厂商不在这里」。
+    // 后半句是真有用户价值的：读者找某家厂商找不到时，最想知道的就是「是没有，还是没成页」。
+    hub: '每个入口一页，页面上的条数按当前数据现算。',
+    hubMissing: '没有出现在这里的分类与厂商，是条目数还没有达到独立成页的门槛 —— 不代表没有这类优惠。'
+  };
+  const sharedNotes = isHub
+    ? [SHARED_NOTES.hub, SHARED_NOTES.hubMissing]
+    : [SHARED_NOTES.overlap, SHARED_NOTES.tristate];
+  const ownNotes = Array.isArray(spec.userNotes) ? spec.userNotes.filter(line => typeof line === 'string' && line.trim()) : [];
+  const noteLines = isAlias ? ownNotes : [...ownNotes, ...sharedNotes];
+  const notesHtml = noteLines.length
+    ? `      <details class="page-notes">
+        <summary>分类说明</summary>
+${noteLines.map(line => `        <p class="pnote">${line}</p>`).join('\n')}
+      </details>
+
+`
+    : '';
 
   // 面包屑：分类页/厂商页多一层**真实存在**的枢纽（`/category/`、`/vendor/`）。
   // 面包屑的每一级 URL 都必须真的能打开 —— 这是 v1.7 起有断言的一条（Tooth Test #5）。
@@ -2338,31 +2392,41 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
   // 是错的（需求之间不互斥，且同一页里的判据是「或」）—— 照抄会让页面上出现一句
   // 与事实不符的话，这正是 v1.0 那类错误。所以每种 kind 各写一句，各自成立。
   const headRow = HEADERS.map(text => `            <th scope="col">${htmlEscape(text)}</th>`).join('\n');
+
+  /**
+   * 题注（`<caption>`）—— **只写条数**。
+   *
+   * 为什么把原来那两句搬走（secondary-page-content-simplification）：
+   *   · 「本页按单一判据收条目，判据写在上面的说明里」是**维护口径**（prompt §5 点名的
+   *     「这一页按……收」「这个页面的生成判据是什么」两类，都在默认移除之列）；
+   *   · 「首页卡片数为何少于本页条数」同样是维护口径 —— 读者不需要为了看懂这一页，
+   *     先去理解首页的折叠规则。
+   *   · 「没有依据的字段写「尚未确认」，不写成「不可用」」是**用户需要**的图例，
+   *     但它属于「少量误解说明」→ 移到底部 `.page-notes`（见 SHARED_NOTES.tristate）。
+   *
+   * 别名页的题注**保留**：读者点进旧地址时必须知道「自己在哪、该去哪里」，
+   * 那是 USER_REQUIRED，不是维护口径。
+   */
   const caption = isHub
-    ? `共 ${childList.length} 个入口。每个入口一页，页面上的条数按当前数据现算；没有达到门槛的分类与厂商不会出现在这里，原因写在构建日志与项目报告里。`
+    ? `共 ${childList.length} 个入口。`
     : (isAlias
       ? `共 ${deals.length} 条 —— 与 <a href="${prefix}${spec.aliasOf}">${htmlEscape(aliasTarget ? aliasTarget.title : spec.aliasOf)}</a> 是同一批条目（同一份判据）。这一页保留旧地址可用，但<b>不参与搜索收录</b>；收录以目标页为准。`
-      : (isNeed
-        ? `共 ${deals.length} 条。每一行的依据都在对应的详情页上；没有依据的字段写「尚未确认」，不写成「不可用」。
-          本页按单一判据收条目，判据写在上面的说明里；首页会把同一厂商的同类优惠折叠成一张卡片，所以首页入口上的数字（卡片数）通常少于这里的条数。`
-        : `共 ${deals.length} 条。每一行的依据都在对应的详情页上；没有依据的字段写「尚未确认」，不写成「不可用」。
-          首页会把同一厂商的同类优惠折叠成一张卡片，所以首页筛选项上的数字（卡片数）通常少于这里的条数。`));
-  const footNote = isHub
-    ? `这里列出的入口都是<b>静态页面</b>：无 JS 也能打开，每页都有自指 canonical 与自己的订阅地址。
-        本站只做收录与整理，来源站点的可用性、内容与最终条款以官方页面为准。`
-    : (kind === 'vendor'
-      ? `厂商名按站内<b>归一规则</b>合并（同一个公司的不同写法落到同一页）。同一条优惠也会出现在分类页、学生页或开发者页里 —— 那几种页面是<b>不同</b>的切法，本来就会重叠。
-        本站只做收录与整理，来源站点的可用性、内容与最终条款以官方页面为准。`
-      : `分类之间<b>不互斥</b>：一条优惠可以同时出现在多个分类页与多个需求页里（既是给学生的、也是免费 API 的情况很常见）。
-        本站只做收录与整理，来源站点的可用性、内容与最终条款以官方页面为准。`);
+      : `共 ${deals.length} 条。`);
 
   // 数据摘要（v1.7）：每个数字都带 `data-summary-label/value`，既给读者看，
   // 也给 SEO 门禁**独立重算**用 —— 「页面写 12、实际列 7」因此在构建期就红。
+  //
+  // ⚠️ 可见的 `<small>判据：…</small>` 本轮**删除**（它是字段级维护口径，prompt §5/§8）。
+  //    判据原文改挂在 `<li title="…">` 上：想核对的人悬停即可看到，首屏不再有这一行。
+  //    机器可读的两个属性**一个都没动** —— 门禁读的正是属性
+  //    （`seo.js` 的 `data-summary-label="X" data-summary-value="Y"` 重算、
+  //    `build-local.js` 摘要自检、`verify-site.js` 的 `[data-summary-label]` 采样），
+  //    所以「删掉可见文字」与「删掉机器口径」是两件事，这一点有断言守着。
   const summaryHtml = summary.length
     ? `      <ul class="lsum" aria-label="当前数据摘要">
-${summary.map(row => `        <li data-summary-label="${htmlEscape(row.label)}" data-summary-value="${htmlEscape(String(row.value))}">` +
-    `<span>${htmlEscape(row.label)}</span><b>${htmlEscape(String(row.value))}</b>${htmlEscape(row.unit || '')}` +
-    `<small title="${htmlEscape(row.source || '')}">判据：${htmlEscape(row.source || '')}</small></li>`).join('\n')}
+${summary.map(row => `        <li data-summary-label="${htmlEscape(row.label)}" data-summary-value="${htmlEscape(String(row.value))}"` +
+    ` title="判据：${htmlEscape(row.source || '')}">` +
+    `<span>${htmlEscape(row.label)}</span><b>${htmlEscape(String(row.value))}</b>${htmlEscape(row.unit || '')}</li>`).join('\n')}
       </ul>`
     : '';
 
@@ -2388,7 +2452,16 @@ ${summary.map(row => `        <li data-summary-label="${htmlEscape(row.label)}" 
   .lsum li { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 6px 10px; font-size: var(--fs-sm); }
   .lsum li span { color: var(--mut); }
   .lsum li b { margin: 0 2px 0 6px; }
-  .lsum li small { display: block; color: var(--mut); font-size: 11px; margin-top: 2px; max-width: 34ch; }
+  /* ⚠️ 这里**不许**再写一条 .snote 规则：页面级说明的宽度只有一处定义，
+     就是 index.html 共享 <style> 里那条**冻结串**（WIDE_SNOTE_FROZEN）。
+     每页多写一份的症状是 §22c 的「冻结串恰好 1 次」断言全站变红。 */
+  /* 底部折叠说明。单独一类（.page-notes / .pnote），刻意**不复用** .snote：
+     闭合 <details> 里的 .snote 会被 §22c 判成 note-unrendered（见上面那一段注释）。 */
+  .page-notes { margin: var(--s3) 0 0; border-top: 1px solid var(--line); padding-top: var(--s2); }
+  .page-notes > summary { display: block; cursor: pointer; color: var(--ink2); font-size: var(--fs-sm); font-weight: 600; }
+  .page-notes > summary:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+  .page-notes[open] > summary { margin-bottom: var(--s1); }
+  .page-notes .pnote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s1); }
   .ctable { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
   .ctable caption { text-align: left; color: var(--mut); font-size: var(--fs-sm); padding: 0 0 var(--s2); }
   .ctable th, .ctable td { text-align: left; padding: 10px 12px; border-top: 1px solid var(--line); font-weight: 400; font-size: var(--fs-sm); vertical-align: top; }
@@ -2423,12 +2496,7 @@ ${extraCss}`;
         <h1>${htmlEscape(spec.heading)}</h1>
         <span class="meta">共 ${isHub ? childList.length : deals.length} ${isHub ? '个入口' : '条'} · 数据更新 ${htmlEscape(String(context.lastmod || ''))}</span>
       </div>
-${aliasNote}
-      <p class="snote">
-${why}
-      </p>
-
-${summaryHtml}
+${aliasNote}${introHtml}${summaryHtml}
 
       <div class="ctable-wrap">
       <table class="ctable">
@@ -2446,10 +2514,7 @@ ${headRow}
 ${topicHtml}
 
 ${extraHtml}
-
-      <p class="snote" style="margin-top: var(--s3)">
-        ${footNote}
-      </p>${shell.docEnd({ route: spec.route || `${spec.slug}/`, prefix: prefix, parts, where: 'renderDirectoryPage' })}`;
+${notesHtml}${shell.docEnd({ route: spec.route || `${spec.slug}/`, prefix: prefix, parts, where: 'renderDirectoryPage' })}`;
 }
 
 /* ------------------------------------------------------------------ */
@@ -5257,24 +5322,38 @@ function selfCheck(built) {
 
     // 作者写的正文里不许残留 Markdown 记号 —— 它是**直接写进 HTML 的**，不是 Markdown。
     //
-    // 为什么要有这条：`audience.js` 的 `why` 与状态页/分类页的正文都曾把强调写成 `**这样**`、
+    // 为什么要有这条：`audience.js` 的页面说明与状态页/分类页的正文都曾把强调写成 `**这样**`、
     // 把字段名写成 `` `这样` ``，于是 **16 个 `**` 与 14 个反引号原样出现在读者眼前**
     // （独立验证代理在 4 类页面上数出来的），而没有任何门禁会因此变红。
     // 更糟的是「预渲染正文过短」那条长度断言还把星号当成内容算进去了 ——
     // 一条在数自己造成的排版噪声的守卫。
     //
-    // 扫描面刻意收在**作者写的容器**（`.snote` / `<caption>`）里，而不是整页文本：
+    // 扫描面刻意收在**作者写的容器**里，而不是整页文本：
     // 采集来的文案（标题 / discountInfo）里出现 `**` 或反引号是**数据**，不是我们的排版错误；
     // 拿它判红会变成一条「在正常数据上失败」的守卫，而那比没有守卫更糟。
+    //
+    // ## 扫描面在 secondary-page-content-simplification 扩过一次（含一次真实漏网）
+    //
+    // 原先只有 `.snote` / `<caption>`。实测漏掉了 `.vsnote`：`vendor-page.js` 的
+    // changesBlock 直接写了 `**套餐变化日志**` 且没过 `rich()`，于是**25 个厂商页**
+    // 上读者看到的是字面星号，而构建全绿（2026-08 那版守卫的扫描面就是这里写的那两个）。
+    // 同一次扩面还收进了 `<details>`：本轮把底部说明搬进折叠块，
+    // 而那是个**非贪婪 `<p class="snote">…</p>` 正则**根本照不到的新容器 ——
+    // 「搬个位置就静默失去覆盖」正是这条守卫最该防的失效方式。
+    const PROSE_PATTERNS = [
+      /<p class="snote"[^>]*>([\s\S]*?)<\/p>/g,
+      /<p class="vsnote[^"]*"[^>]*>([\s\S]*?)<\/p>/g,
+      /<caption>([\s\S]*?)<\/caption>/g,
+      /<details\b[^>]*>([\s\S]*?)<\/details>/g
+    ];
     const mdMarkers = [];
     for (const [rel] of routeOutputs) {
       const file = path.join(OUT, rel);
       if (!fs.existsSync(file)) continue;
       const page = fs.readFileSync(file, 'utf8');
-      const prose = [
-        ...[...page.matchAll(/<p class="snote"[^>]*>([\s\S]*?)<\/p>/g)].map(m => m[1]),
-        ...[...page.matchAll(/<caption>([\s\S]*?)<\/caption>/g)].map(m => m[1])
-      ].map(chunk => chunk.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim());
+      const prose = PROSE_PATTERNS
+        .flatMap(re => [...page.matchAll(re)].map(m => m[1]))
+        .map(chunk => chunk.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim());
       for (const chunk of prose) {
         const stars = (chunk.match(/\*\*/g) || []).length;
         const ticks = (chunk.match(/`/g) || []).length;
@@ -5286,7 +5365,56 @@ function selfCheck(built) {
     if (mdMarkers.length) {
       fail(`作者正文里残留 Markdown 记号（读者会原样看到）：${mdMarkers.slice(0, 4).join('；')}`);
     } else {
-      console.log('  ✓ 作者正文无 Markdown 记号: .snote / <caption> 里的强调一律用 <b>，字段名直接写');
+      console.log('  ✓ 作者正文无 Markdown 记号: .snote / .vsnote / <caption> / <details> 里的强调一律用 <b>，字段名直接写');
+    }
+
+    // 首屏（intro）里不许出现**内部实现措辞** —— secondary-page-content-simplification 的新牙。
+    //
+    // 扫的是**产物现场**，不是注册表：注册表级那条（`audience-selftest.js` §9）只看得到
+    // 静态注册表，而 `/vendor/<slug>/` 的文案是 `landing.js` 里**算出来的**（26 个页面），
+    // 只有回读产物才照得到。两条一起才是完整覆盖面。
+    //
+    // 判据边界（prompt §18 明说「不做机械全站禁词」）：
+    //   · 扫描面**只限 intro 区** —— 从 `.cstop` 结束到第一个数据区（`.lsum` / 表格容器）之间；
+    //     表格里的「为什么在这一页」列、底部折叠说明、页脚都不在其中。
+    //   · `判据` **不在禁词表里**：它同时是业务语义（别名页那句「同一份判据」），
+    //     机械禁掉会变成一条在正常文案上失败的守卫 —— 那比没有守卫更糟。
+    //   · 误报的处置是**改文案**或往 ALLOW 里登记理由，不是把词从表里删掉。
+    const INTRO_INTERNAL_TERMS = [
+      '数据模型', 'benefitType', 'predicate', 'collections', '关键词扫描', '映射表', '字段', '归一规则'
+    ];
+    // 逐条登记的白名单（空 = 当前没有例外）。键是 `路由|词`，值是「为什么这里是业务语义」。
+    const INTRO_TERM_ALLOW = new Set([]);
+    const introHits = [];
+    for (const page of built.directoryPages) {
+      const file = path.join(OUT, `${page.route}index.html`);
+      if (!fs.existsSync(file)) continue;
+      const html = fs.readFileSync(file, 'utf8').replace(/<script[\s\S]*?<\/script>/gi, '');
+      const mainStart = html.indexOf('<main');
+      const cstopEnd = html.indexOf('</div>', html.indexOf('class="cstop"', mainStart));
+      if (mainStart < 0 || cstopEnd < 0) continue;
+      // intro 区 = .cstop 之后 → 第一个数据区之前。三个锚点谁先出现就用谁。
+      const anchors = ['<ul class="lsum"', '<div class="ctable-wrap"', '<table']
+        .map(anchor => html.indexOf(anchor, cstopEnd))
+        .filter(index => index > 0);
+      const introEnd = anchors.length ? Math.min(...anchors) : html.length;
+      const introRegion = html.slice(cstopEnd, introEnd);
+      const prose = [...introRegion.matchAll(/<p class="snote"[^>]*>([\s\S]*?)<\/p>/g)]
+        .map(m => m[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim())
+        .join(' ');
+      if (!prose) continue;
+      for (const term of INTRO_INTERNAL_TERMS) {
+        if (prose.includes(term) && !INTRO_TERM_ALLOW.has(`${page.route}|${term}`)) {
+          introHits.push(`${page.route || '/'} 含「${term}」：${prose.slice(0, 40)}…`);
+        }
+      }
+    }
+    if (introHits.length) {
+      fail(`二级页首屏出现内部实现措辞（分类判据 / 字段模型属于维护文档，见 docs/DESIGN-RULES.md 的口径归档）：`
+        + `${introHits.slice(0, 4).join('；')}`);
+    } else {
+      console.log(`  ✓ 二级页首屏无内部实现措辞: ${built.directoryPages.length} 页 × ${INTRO_INTERNAL_TERMS.length} 个禁词`
+        + `（白名单 ${INTRO_TERM_ALLOW.size} 条）`);
     }
   }
 

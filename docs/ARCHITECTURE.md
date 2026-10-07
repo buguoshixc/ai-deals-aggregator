@@ -225,3 +225,6 @@ dist/**
 | 新增一个 Feed | `lib/feeds.js` 的注册表 |
 | 改 SEO 判据 | `lib/seo.js`（构建期）+ `page-kinds.js`（声明）；独立门禁 `seo-verify.js` 各自从 dist 解析 |
 | 改某页的正文 | 该族的 `lib/*-page.js`（离线自测可直接调用） |
+| 改二级数据页**用户可见的说明** | 注册表的 `userIntro`（顶部、0~1 句）/ `userNotes`（底部折叠）—— **不要**改回 `why`，`selftest:audience` 有一条「旧字段回流即红」 |
+| 改某页**分类判据的解释口径** | `docs/DESIGN-RULES.md` §8 的「二级数据页口径归档」（**维护文档，不是页面正文**）。判据实现仍在 `lib/audience.js` / `lib/landing.js`，且只写一遍 |
+| 加一条页面族级文案守卫 | 注册表级 → `selftest:audience` §9；产物级（含动态生成的 `/vendor/<slug>/`）→ `build-local.js` 的产物自检（Markdown 记号 / 首屏内部措辞两张扫描面） |

@@ -2656,7 +2656,17 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     }
     await page.setViewportSize({ width: 1440, height: 900 });
 
-    // 无 JS：这是「预渲染」的硬定义 —— 关掉 JS 打开一条需求页，表格与判据说明都要在
+    // 无 JS：这是「预渲染」的硬定义 —— 关掉 JS 打开一条需求页，表格、首屏那一句、
+    // 以及底部折叠说明都要在。
+    //
+    // ⚠️ secondary-page-content-simplification 重瞄过一次。原先探针读的是
+    // `document.body.innerText.includes('这一页')`，断言名叫「能读到**判据说明**与全部条目」。
+    // 本轮把那段三段式判据说明从首屏移走之后，`这一页` 仍然命中 —— 但命中的是**表头**
+    // 「为什么在这一页」这一列，不是那段说明。**断言还在绿，而它声称守的东西已经不在页面上了**：
+    // 这正是本仓库反复写的那类失效（「一个数错了东西的断言比没有断言更糟」）。
+    // 所以这里换成守**新形态**的两件事：折叠说明真的能被无 JS 读到（`<details>` 的正文
+    // 在 DOM 里，`innerText` 对闭合 details 不返回它 —— 用 textContent 才是「读得到」），
+    // 以及首屏那一句确实是短句。
     {
       const noJsCtx = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1440, height: 900 } });
       const noJsP = await noJsCtx.newPage();
@@ -2664,13 +2674,22 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       for (const slug of ['no-card', 'ai-coding', 'china-usable']) {
         if (!needTruth.needs[slug]) continue;
         await noJsP.goto(new URL(`need/${slug}/`, base).href, { waitUntil: 'load' });
-        probes.push(await noJsP.evaluate(() => ({
-          chars: document.body ? document.body.innerText.replace(/\s+/g, ' ').trim().length : 0,
-          rows: document.querySelectorAll('.ctable tbody tr').length,
-          links: document.querySelectorAll('.ctable tbody a[href*="/deal/"]').length,
-          why: document.body.innerText.includes('这一页'),
-          jumpback: [...document.querySelectorAll('a')].some(a => (a.getAttribute('href') || '') === '../../')
-        })));
+        probes.push(await noJsP.evaluate(() => {
+          const main = document.querySelector('main');
+          const first = main ? main.querySelector('.snote') : null;
+          const details = main ? main.querySelector('details.page-notes') : null;
+          return {
+            chars: document.body ? document.body.innerText.replace(/\s+/g, ' ').trim().length : 0,
+            rows: document.querySelectorAll('.ctable tbody tr').length,
+            links: document.querySelectorAll('.ctable tbody a[href*="/deal/"]').length,
+            // 无 JS 下的「读得到」= DOM 里有正文（闭合 details 的 innerText 是空的，
+            // 但搜索引擎与「查看源码」读的是 DOM —— 这正是折叠不影响可索引性的原因）
+            notes: Boolean(details) && (details.textContent || '').replace(/\s+/g, ' ').trim().length > 10,
+            notesSummary: details ? ((details.querySelector('summary') || {}).textContent || '').trim() : '',
+            introChars: first ? (first.textContent || '').replace(/\s+/g, ' ').trim().length : 0,
+            jumpback: [...document.querySelectorAll('a')].some(a => (a.getAttribute('href') || '') === '../../')
+          };
+        }));
       }
       // 顺便：无 JS 打开**首页**时入口行必须还在（它是构建期注入的静态导航）
       await noJsP.goto(base, { waitUntil: 'load' });
@@ -2687,9 +2706,11 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         };
       });
       await noJsCtx.close();
-      check('需求页不执行 JS 也能读到判据说明与全部条目（预渲染的硬定义）',
-        probes.length > 0 && probes.every(p => p.chars > 500 && p.rows > 0 && p.links > 0 && p.why && p.jumpback),
-        probes.map((p, i) => `${['no-card', 'ai-coding', 'china-usable'][i]} ${p.rows} 行/${p.chars} 字`).join(' · '));
+      check('需求页不执行 JS 也能读到条目、首屏那一句与底部折叠说明（预渲染的硬定义）',
+        probes.length > 0 && probes.every(p => p.chars > 500 && p.rows > 0 && p.links > 0
+          && p.notes && p.notesSummary === '分类说明' && p.introChars > 0 && p.introChars <= 60 && p.jumpback),
+        probes.map((p, i) => `${['no-card', 'ai-coding', 'china-usable'][i]} ${p.rows} 行/${p.chars} 字`
+          + ` · 首屏 ${p.introChars} 字 · 折叠说明「${p.notesSummary}」`).join(' · '));
       check('无 JS 打开首页时「按需求找优惠」入口行仍在且指向需求页',
         homeNoJs.entries === Object.keys(needTruth.needs).length && /^need\//.test(homeNoJs.firstHref),
         `${homeNoJs.entries} 条入口 · 首条 ${homeNoJs.firstHref}`);
@@ -6213,10 +6234,44 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   // M1–M4 的四个壳（页面级说明曾经各自被压成 70ch 的就是这四个家族）。它们是**固定路由**，
   // 不是数据 id/slug；每条变异都会先守卫「这一页确实是 wide 族、且真有页面级说明」。
   const WIDE_MUTATION_TARGETS = ['student/', 'status/', 'changes/', 'feeds/'];
+
+  /**
+   * 首屏说明（intro）的行数上限 —— secondary-page-content-simplification 的新判据。
+   *
+   * ## 为什么是「行数」而不是「字数」或「像素距离」
+   *
+   * 本轮之前，二级页顶部那段口径是 133–306 字（三条 `why`）。要守的东西是
+   * 「首屏别先让人读三段分类实现」，而它在排版上就是**行数**：
+   *   · 写死字数会在中英混排 / 不同字号下失真（prompt §30 明确说「不要写死一个极端字符数」）；
+   *   · 写死「标题底边到数据区的像素距离」在本轮实测里**不可用** —— 改动前那 26 条样本路由
+   *     的 `introGap` 是 60.78–498.28px，最大值来自 `/plans/coding/`（498px，而它的顶部说明
+   *     只有 84 字、1 行 —— 距离被摘要卡与筛选控件撑开的，不是被口径说明撑开的）。
+   *     拿它当闸门会变成一条「在正常页面上误报」的守卫。
+   * 行数直接对应读者的阅读负担，且对上述两者都免疫。
+   *
+   * ## ⚠️ 适用范围必须是**物理前置条件**，不能是「所有视口」
+   *
+   * 这条判据的第一版**没有**限定阅读列宽，结果是：1440/1600 全站 0 命中，
+   * 而 @760 命中 4 条、@360 命中 **17 条** —— 命中的还大多是本轮**根本没改**的页面
+   * （`/plans/` `/models/` `/docs/data/` `/changes/` `/feeds/` `/status/`，都是 prompt §37
+   * 「已经简洁、KEEP」的那一批）。原因很朴素：**同一段文字在窄屏上必然折成更多行**，
+   * 那是响应式排版的正常行为，不是缺陷。
+   *
+   * 所以判据的作用域是「**阅读列宽达到桌面档**」——与 §22c 既有那条 70ch 前置条件
+   * （R3-1：`min(主数据区宽, 页面列宽) > note.ch70`）同一种写法，只是尺子换成
+   * 「桌面内容列的最小宽度」。实测列宽：1440 档 1120–1380px、1600 档 1240–1500px、
+   * 760 档 676–728px、360 档 276–328px ⇒ 取 **1100px** 一刀切开，1440/1600 判、
+   * 760/360 不判。**这不是「只测桌面」的偷懒**：prompt §13/§14 的验收目标本身就写明
+   * 在 1440×900 下成立，而窄屏的首屏预算由「标题 + 条数 + 首条优惠」另行守着。
+   */
+  const WIDE_INTRO_MAX_LINES = 2;
+  /** 判 intro 行数所需的**最小阅读列宽**（实测：1440 档 ≥1120px · 760 档 ≤728px） */
+  const WIDE_INTRO_MIN_COLUMN = 1100;
   /** §22c 的全部违规码（判据自检用：一个都不能少、也不能多）。 */
   const WIDE_CODE_VOCABULARY = [
     'unclassified-layout', 'unexpected-detail-main', 'missing-detail-main', 'note-narrow', 'note-ink-narrow',
-    'note-axis', 'note-clipped', 'note-hidden-text', 'note-unrendered', 'page-overflow@<vw>', 'data-region-missing'
+    'note-axis', 'note-clipped', 'note-hidden-text', 'note-unrendered', 'note-intro-long',
+    'page-overflow@<vw>', 'data-region-missing'
   ];
 
   const wideRound = n => Math.round(n * 100) / 100;
@@ -6446,6 +6501,16 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       let frozenCount = 0;
       for (const style of styles) frozenCount += style.textContent.split(FROZEN).length - 1;
       const notes = main ? Array.prototype.slice.call(main.querySelectorAll('.snote')) : [];
+      // intro 区 = 首个数据区**之前**的那些说明。判据：说明的 border-box 顶边 < 数据区顶边。
+      // 没有数据区（/plans/、/archive/ 这类）时退化成「全部说明都不算 intro」——
+      // 宁可漏判也不误判：一条在正常页面上失败的守卫比没有守卫更糟。
+      // ⚠️ 这段是**浏览器侧的模板字符串**，注释里不许出现反引号（会提前截断模板、
+      //    报成「xxx is not defined」而不是语法错误 —— 本地实测踩过一次）。
+      const regionTop = regionEl ? regionEl.getBoundingClientRect().top + window.scrollY : null;
+      const introIndexes = regionTop === null ? [] : notes
+        .map((el, index) => ({ index, top: el.getBoundingClientRect().top + window.scrollY }))
+        .filter(item => item.top < regionTop - 0.5)
+        .map(item => item.index);
       return {
         doc: {
           innerWidth: window.innerWidth,
@@ -6460,6 +6525,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         // 命不中声明选择器时**回落 <main>**（这一条是判据的一部分，不是兜底将就）。
         region: box(regionEl || main),
         noteCount: notes.length,
+        introIndexes: introIndexes,
         notes: notes.map((el, index) => {
           const noteBox = box(el);
           const cs = getComputedStyle(el);
@@ -6594,6 +6660,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         { label: `主数据区 ${geometry.regionSel || '<main>'}`, box: region },
         { label: '页面主容器 <main>', box: main }
       ];
+      // 合成几何（判据自检）不带这个量 ⇒ 按「没有 intro」处理：宁可漏判也不误判。
+      const introSet = Array.isArray(geometry.introIndexes) ? geometry.introIndexes : [];
       for (const note of geometry.notes) {
         const where = wideNoteKey(meta.route, note.index);
         const facts = `盒宽 ${wideRound(note.box.width)}px · 内容盒 ${wideRound(note.contentBox)}px · 行 ${note.lineCount} 行`
@@ -6668,6 +6736,22 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
           push('note-clipped', `${where} 说明自身横向溢出 ${note.box.scrollW - note.box.clientW}px`
             + `（scrollWidth ${note.box.scrollW} > clientWidth ${note.box.clientW}）`, note.index);
         }
+        // ⑤ 首屏说明过长（secondary-page-content-simplification）。
+        //    只判 **intro 区**（首个数据区之前的说明），上限 2 行。
+        //    前置条件 `lineCount >= 2` 是**有意的**：单行说明恒 ≤ 上限，
+        //    拿它去判只会让 detail 里多一堆噪声；而「1 行变 3 行」必然经过 2 行。
+        //    未渲染的说明不判（它会先被 ④ 咬住，两条码不该对同一件事重复报）。
+        //    ⚠️ 作用域 = **阅读列宽达到桌面档**（物理前置条件，见 WIDE_INTRO_MIN_COLUMN）。
+        //    第一版漏了这条，于是 @360 上 17 个**本轮没改过**的页面被判红 ——
+        //    窄屏折行是响应式排版的正常行为，不是缺陷。
+        if (boxed && column >= WIDE_INTRO_MIN_COLUMN && introSet.includes(note.index)
+          && note.lineCount > WIDE_INTRO_MAX_LINES) {
+          push('note-intro-long', `${where} 首屏说明 ${note.lineCount} 行 > 上限 ${WIDE_INTRO_MAX_LINES} 行`
+            + `（${note.textLength} 字 · 首个数据区之前的说明属于「首屏」；`
+            + `分类判据与字段模型应进维护文档，见 docs/DESIGN-RULES.md 的口径归档）`
+            + ` —— 盒宽 ${wideRound(note.box.width)}px · 最宽一行 ${wideRound(note.widestLine)}px`
+            + ` · 列宽 ${wideRound(column)}px（前置条件 ≥ ${WIDE_INTRO_MIN_COLUMN}px）`, note.index, 'intro-lines');
+        }
       }
     }
 
@@ -6731,6 +6815,38 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       const all = main ? Array.prototype.slice.call(main.querySelectorAll('.snote')) : [];
       return Array.prototype.slice.call(document.querySelectorAll(${JSON.stringify(selector)}))
         .map(el => all.indexOf(el)).filter(i => i >= 0).map(i => ${JSON.stringify(route)} + '#' + i);
+    })()`);
+  }
+
+  /**
+   * M14 用：给**首个 .snote** 追加一段填充正文，把它撑成更多行。
+   *
+   * 为什么这条牙必须是 DOM 注入而不是 CSS 变异：`note-intro-long` 判的是**行数**，
+   * 而任何「把盒子压窄」的 CSS 都会先咬中 `note-narrow` / `note-ink-narrow` ——
+   * 两条码同时响，就分不清新码到底有没有在守东西。DOM 注入把「行数」这一个变量
+   * 单独推上去，盒宽 / 内容盒 / 同轴 / 裁切全都不动，因此是一次**隔离**的变异。
+   *
+   * **注入前守卫**：首个 .snote 必须存在、必须已渲染、且当前行数 ≤ 上限 ——
+   * 否则「注入后出现 note-intro-long」不能归因于注入。
+   */
+  async function wideInjectIntroFiller(target, filler, maxLines) {
+    return target.evaluate(`(() => {
+      const main = document.querySelector('main');
+      if (!main) return { ok: false, reason: '页面没有 <main>' };
+      const first = main.querySelector('.snote');
+      if (!first) return { ok: false, reason: '页面没有页面级说明（.snote）' };
+      const box = first.getBoundingClientRect();
+      if (!(box.width > 0 && box.height > 0)) {
+        return { ok: false, reason: '首个 .snote 未渲染（注入前提不成立）' };
+      }
+      const before = Math.max(1, Math.round(box.height / (parseFloat(getComputedStyle(first).lineHeight) || 22)));
+      if (before > ${maxLines}) {
+        return { ok: false, reason: '首个 .snote 注入前已经是 ' + before + ' 行（> ${maxLines}）—— 注入不是它的原因' };
+      }
+      const span = document.createElement('span');
+      span.textContent = ${JSON.stringify(filler)};
+      first.appendChild(span);
+      return { ok: true, added: true, before: before };
     })()`);
   }
 
@@ -6918,6 +7034,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
           unrenderedUnexplained: rows.filter(row => row.unrendered && row.textLength > 0 && !row.codes.includes('note-unrendered')).length,
           axis: hit('note-axis'),
           clipped: hit('note-clipped'),
+          // 首屏说明过长（本轮新增）：只统计 intro 区里越限的那些条
+          introLong: hit('note-intro-long'),
+          introLongRoutes: [...new Set(hit('note-intro-long').map(row => row.route))],
           textFallback: rows.filter(row => row.textFallback).length,
           unrendered: rows.filter(row => row.unrendered).length,
           vertical: rows.filter(row => row.vertical).length,
@@ -6987,12 +7106,13 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       // ---- ③ / ④ 两个桌面档：**逐条**判全部说明（旧口径 textWidth + 新口径逐行字迹 + 藏字）----
       for (const width of WIDE_DESKTOP_VIEWPORTS) {
         const summary = wideSummary[width];
-        const bad = [...summary.union, ...summary.hiddenText, ...summary.unrenderedText, ...summary.axis, ...summary.clipped];
-        check(`§22c @${width} 逐条页面级说明：旧口径（内容盒 ≥ ${WIDE_NOTE_RATIO}×列宽）+ 新口径（逐行字迹 ≥ ${WIDE_NOTE_RATIO}×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切`,
+        const bad = [...summary.union, ...summary.hiddenText, ...summary.unrenderedText, ...summary.axis, ...summary.clipped, ...summary.introLong];
+        check(`§22c @${width} 逐条页面级说明：旧口径（内容盒 ≥ ${WIDE_NOTE_RATIO}×列宽）+ 新口径（逐行字迹 ≥ ${WIDE_NOTE_RATIO}×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ ${WIDE_INTRO_MAX_LINES} 行`,
           bad.length === 0,
           `全站 ${wideMeta.length} 页 / 逐条判 ${summary.rows} 条（有说明的页 ${wideNotePages.length} · 零说明的页 ${wideNoNotePages.length} 标注跳过 · 未渲染 ${summary.unrendered} 条：<noscript> ${summary.unrenderedNoscript} + note-unrendered ${summary.unrenderedText.length}）`
           + ` · note-narrow ${summary.narrow.length}（落在 ${summary.narrowRoutes.length} 页） · note-ink-narrow ${summary.inkNarrow.length}（${summary.inkNarrowRoutes.length} 页）`
           + ` · 并集 ${summary.union.length} 条 / ${summary.unionRoutes.length} 页 · 藏字 ${summary.hiddenText.length} · 不同轴 ${summary.axis.length} · 裁切 ${summary.clipped.length}`
+          + ` · 首屏说明过长 ${summary.introLong.length} 条 / ${summary.introLongRoutes.length} 页`
           + ` · 多行说明（有行证据）${summary.lineEvidence} 条 · 竖排 ${summary.vertical} 条 · textFallback 回落 ${summary.textFallback} 条`
           + (bad.length ? ` · 命中样例：${bad.slice(0, 4).map(wideExplainRow).join('；')}` : ''));
         check(`§22c @${width} 全站 ${wideRoutes.length} 页都没有横向溢出`,
@@ -7164,7 +7284,15 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         { id: 'M13', route: 'docs/data/', width: WIDE_DESKTOP, expect: 'note-unrendered', target: 'extend', expectUnrendered: true,
           rule: '.snote { font-size: 0; }',
           what: 'T22-F1 原型：**裸** font-size:0（没有 ::before 高度恢复器）—— 盒高被压成 0 ⇒ rendered=false，'
-            + '修复前会让窄柱 / 逐行字迹 / 藏字三条判据同时静默（整页零码）；现在由 note-unrendered 咬住' }
+            + '修复前会让窄柱 / 逐行字迹 / 藏字三条判据同时静默（整页零码）；现在由 note-unrendered 咬住' },
+        // ---- secondary-page-content-simplification 新增：首屏说明过长的隔离牙 ----
+        //   与 M1–M13 的 CSS 变异不同，这条**故意**用 DOM 注入：判据量的是行数，
+        //   而任何压窄盒子的 CSS 都会先咬中 note-narrow / note-ink-narrow ——
+        //   两条码一起响就证明不了新码自己在守东西。注入只推高行数、其余量一个不动。
+        { id: 'M14', route: 'student/', width: WIDE_DESKTOP, expect: 'note-intro-long', target: 'intro',
+          filler: '（M14 注入的填充正文，用来把首屏说明撑成更多行，其余量一律不动。）'.repeat(6),
+          what: '首屏说明被写长（DOM 注入填充正文）：盒宽 / 内容盒 / 同轴 / 裁切全都不动，'
+            + '只有「行数」越过上限 ⇒ 必须由 note-intro-long 咬住（本轮之前的产物在 1440 档就有多页命中）' }
       );
 
       metrics.layoutMutationCodes = {};
@@ -7184,6 +7312,10 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
           await target.goto(new URL(mutation.route, base).href, { waitUntil: 'load' });
           if (mutation.target === 'dom') {
             guard = await wideInjectDetailMain(target);
+          } else if (mutation.target === 'intro') {
+            // M14：只把「行数」推上去（盒宽 / 内容盒 / 同轴 / 裁切一律不动）——
+            // 见 wideInjectIntroFiller 的注释：这是新码 note-intro-long 的**隔离**变异。
+            guard = await wideInjectIntroFiller(target, mutation.filler, WIDE_INTRO_MAX_LINES);
           } else if (mutation.target === 'extend') {
             // 冻结串**保留**（仍恰好 1 次），只在它后面追加一条收窄规则 —— 形状与产物里真实存在的
             // 「页内第二条 .snote 规则」一致（review 的 A5/C1c 就是这么写进共享 <style> 的）。
@@ -7372,7 +7504,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
           main: { count: 1, left: 0, right: 1380, width: 1380, scrollW: 1380, clientW: 1380 },
           regionSel: '.ctable', regionFallback: false,
           region: { count: 1, left: 0, right: 1380, width: 1380, scrollW: 1380, clientW: 1380 },
-          noteCount: 2, notes: [note0, note1], frozenCount: 1
+          noteCount: 2, notes: [note0, note1], frozenCount: 1,
+          // 新码 note-intro-long 的适用范围：默认「没有 intro」，只在下面那一条里显式打开。
+          introIndexes: []
         };
         const metaWide = { route: 'synthetic/', kind: 'collection', family: 'wide' };
         const reachable = new Set();
@@ -7406,6 +7540,15 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         collect(wideProblems(Object.assign({}, g0, { doc: Object.assign({}, g0.doc, { scrollWidth: 1500 }) }), metaWide)); // page-overflow@<vw>
         collect(wideProblems(Object.assign({}, g0, { mainCount: 0, main: Object.assign({}, g0.main, { count: 0 }), noteCount: 0, notes: [] }), metaWide)); // data-region-missing
         collect(wideProblems(g0, { route: 'synthetic-unknown/', kind: null, family: null }));                             // unclassified-layout
+        // ⑤ 首屏说明过长（本轮新增）：行数越过上限、且这条说明落在首个数据区之前 ⇒ note-intro-long。
+        //    **正反例成对**：同一个 note0（lineCount 3）在 introIndexes=[0] 时报，在 introIndexes=[] 时不报 ——
+        //    后者证明新码确实按「intro 区」限定，而不是「所有说明都判」。
+        const introLongOn = wideCodes(wideProblems(Object.assign({}, g0, { introIndexes: [0] }), metaWide));
+        const introLongOff = wideCodes(wideProblems(g0, metaWide));
+        collect(wideProblems(Object.assign({}, g0, { introIndexes: [0] }), metaWide));                                    // note-intro-long
+        check('§22c note-intro-long 的适用范围自检：同一段 3 行的说明，在 intro 区里报、不在 intro 区里不报',
+          introLongOn.includes('note-intro-long') && !introLongOff.includes('note-intro-long'),
+          `introIndexes=[0] ⇒ [${introLongOn.join(', ')}] · introIndexes=[] ⇒ [${introLongOff.join(', ')}]`);
         const missingCodes = WIDE_CODE_VOCABULARY.filter(code => !reachable.has(code));
         const extraCodes = [...reachable].filter(code => !WIDE_CODE_VOCABULARY.includes(code));
         check(`§22c 违规码自检：${WIDE_CODE_VOCABULARY.length} 个码全部由 wideProblems() 一处产出、且都可达（不多不少）`,

@@ -759,14 +759,21 @@ WORDING_CONTRACT = { triLabel, chinaUsableLine, FIELD_LABELS, AUDIENCE_LABELS,
 
 #### 10.4.4 作者正文里不许残留 Markdown 记号
 
-`audience.js` 的 `why` 与状态页/分类页的正文是**直接写进 HTML 的**，不是 Markdown。
+`audience.js` 的页面说明与状态页/分类页的正文是**直接写进 HTML 的**，不是 Markdown。
 它们曾把强调写成 `**这样**`、把字段名写成 `` `这样` ``，于是 **16 个 `**` 与 14 个反引号
 原样出现在读者眼前**，跨 4 类页面（`/status/` `/student/` `/developer/` `/free-api/`）。
 这没有任何门禁会红 —— 更糟的是上面那条长度断言还把星号当作正文内容算了进去。
 
-现在构建期扫描**全部产物的作者容器**（`.snote` / `<caption>`），出现字面 `**` 或反引号即失败。
+现在构建期扫描**全部产物的作者容器**（`.snote` / `.vsnote` / `<caption>` / `<details>`），
+出现字面 `**` 或反引号即失败。
 扫描面刻意收在作者容器里而不是整页文本：采集来的文案（标题 / `discountInfo`）里出现这些记号
 是**数据**，不是排版错误，拿它判红会变成一条「在正常数据上失败」的守卫。
+
+> **扫描面扩过一次**（`secondary-page-content-simplification`）。原先只有 `.snote` / `<caption>`，
+> 实测漏掉了 `.vsnote`：`vendor-page.js` 的 changesBlock 写了 `**套餐变化日志**` 且没过 `rich()`，
+> 于是 **25 个厂商页**上读者看到的是字面星号，而构建全绿。同一次扩面还收进了 `<details>` ——
+> 本轮把底部说明搬进折叠块，而它是个非贪婪 `<p class="snote">…</p>` 正则照不到的新容器。
+> 「换个位置就静默失去覆盖」正是这条守卫最该防的失效方式。
 
 
 
@@ -972,7 +979,7 @@ v1.2 的十条需求（学生专享 / 教育身份可领 / 无需信用卡 / 国
 
 | 断言 | 在哪 |
 |---|---|
-| 注册表结构（slug 唯一/kebab-case、group 合法、why ≥3 句、无 Markdown 记号、无写死条数、`short` 存在且更短） | `scripts/tools/audience-selftest.js` §9 |
+| 注册表结构（slug 唯一/kebab-case、group 合法、**`userIntro` 非空且 ≤60 字 / `userNotes` 形状 / 旧的 `why` 字段回流即红 / 无 Markdown 记号 / 无写死条数 / 无内部实现措辞 / 口径归档逐页可查**、`short` 存在且更短） | `scripts/tools/audience-selftest.js` §9 |
 | 判据三态行为（含 `"false"` 字符串、`"unknown"`、脏输入不抛） | 同上 |
 | `needsOf` 顺序稳定、无重复、空记录返回 `[]` | 同上 |
 | 真实数据不变量（每条 slug ≥1 条命中、命中都在注册表内） | 同上 |

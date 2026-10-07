@@ -20,6 +20,7 @@ const fs = require('fs');
 const path = require('path');
 const { load: loadRenderCore } = require('../lib/render-core');
 const au = require('../lib/audience');
+const landing = require('../lib/landing');
 const { makeDeal, validateDeal, AUDIENCE_FIELD_ORDER } = require('../lib/schema');
 const { auditAudienceFields } = require('../lib/audience-audit');
 const { merge, mergeAudienceFields, credibilityOf } = require('../lib/dedup');
@@ -733,21 +734,108 @@ console.log('\n=== 9) 按需求找优惠（v1.2）：注册表与判据 ===');
   check('十个图标两两不同（同一屏里两个同样的图标等于没有图标）',
     new Set(au.NEED_PAGES.map(page => page.icon)).size === au.NEED_PAGES.length,
     au.NEED_PAGES.map(page => page.icon).join(' '));
-  check('每条 why 至少三句（缺了就成了「只有条数、没有口径」的页面）',
-    au.NEED_PAGES.every(page => Array.isArray(page.why) && page.why.length >= 3),
-    au.NEED_PAGES.filter(page => !Array.isArray(page.why) || page.why.length < 3).map(p => p.slug).join(', '));
-  // 这两个记号会**原样渲染给读者**（构建期直接插进 .snote），构建自检也扫这一条
-  const markdownish = au.NEED_PAGES.filter(page => page.why.some(line => /\*\*|`/.test(line))).map(p => p.slug);
-  check('why 里没有 Markdown 记号（** 与反引号会原样出现在读者眼前）',
-    markdownish.length === 0, markdownish.join(', '));
+  /* ------------------------------------------------------------------ */
+  /* 三层说明模型：注册表级的形状守卫（secondary-page-content-simplification）  */
+  /* ------------------------------------------------------------------ */
+  //
+  // 这一节原先守着 `why.length >= 3`（「每条 why 至少三句」）。本轮把三段式口径
+  // 从页面正文移进维护文档后，那条断言**方向反了** —— 它守的正是本轮要消灭的形状。
+  // 但它**不是被删掉**，而是被换成一组**方向相反**的断言：顶部只允许极短的一句，
+  // 内部分类实现细节不许出现在任何用户可见的文案字段里。
+  //
+  // 为什么不能只删不换：`research/_raw/v3.0-antigaming.js` 有一条（不在 CI、但仓库在跑）
+  // 「每个文件的 check/fail 调用数不得低于基线」——删断言会红，而且删掉之后
+  // 「下一轮有人把三段口径写回顶部」就没有任何东西拦得住了。
+  const INTERNAL_TERMS = /字段|数据模型|predicate|benefitType|collections|slug|registry|映射表|关键词扫描|归一规则/;
+  const INTRO_MAX = 60;   // 顶部只允许 0~1 句：实测最长 41 字，留出余量
+  const NOTE_MAX = 80;    // 折叠项每条一句话
+  const NOTE_COUNT_MAX = 4;
+
+  /** 受检的注册表。**四张表全查** —— 本轮之前 COLLECTION/CATEGORY/VENDOR_HUB/CATEGORY_HUB 一个形状守卫都没有。 */
+  const copyRegistries = [
+    { label: 'COLLECTION_PAGES', pages: au.COLLECTION_PAGES },
+    { label: 'NEED_PAGES', pages: au.NEED_PAGES },
+    { label: 'CATEGORY_PAGES', pages: landing.CATEGORY_PAGES },
+    { label: 'VENDOR_HUB/CATEGORY_HUB', pages: [landing.VENDOR_HUB, landing.CATEGORY_HUB] }
+  ];
+  const copyRows = copyRegistries.flatMap(reg => reg.pages.map(page => ({ reg: reg.label, page })));
+
+  /* `userIntro` 是**可选**字段，但有两族的条数会让读者意外，那两族必须有一句
+     （`no-card` 只有 1 条、`ai-coding` 只有 4 条 —— 不解释就会被读成「没有这类优惠」）。
+     分类页与枢纽页**刻意允许没有** `userIntro`：prompt §6C 的处置就是「顶部只是解释
+     为何属于这个分类 ⇒ 直接移除」，它们的理想形态是「标题 → 条数 → 摘要 → 表格」。 */
+  const introRequired = [
+    { label: 'COLLECTION_PAGES', pages: au.COLLECTION_PAGES },
+    { label: 'NEED_PAGES', pages: au.NEED_PAGES }
+  ].flatMap(reg => reg.pages.map(page => ({ reg: reg.label, page })));
+  check('条数会让读者意外的两族（3 个集合页 + 10 个按需求页）每页都有一句 userIntro',
+    introRequired.every(({ page }) => typeof page.userIntro === 'string' && page.userIntro.trim().length > 0),
+    introRequired.filter(({ page }) => !(typeof page.userIntro === 'string' && page.userIntro.trim()))
+      .map(({ reg, page }) => `${reg}/${page.slug}`).join(', '));
+
+  /* 空容器：`userIntro: ''` 会渲染出一个空的 `<p class="snote">`，`userNotes: []` 会渲染出
+     一个只有 summary 的空 `<details>`。两者都是「为了不留白而留白」—— 读者什么也没读到，
+     而 §22c 会把那个空容器当成一条「页面级说明」去量。**没有内容就不输出容器。** */
+  check('没有空容器：userIntro 不许是空串，userNotes 不许是空数组（有内容才输出容器）',
+    copyRows.every(({ page }) => page.userIntro === undefined || String(page.userIntro).trim().length > 0)
+    && copyRows.every(({ page }) => page.userNotes === undefined || (Array.isArray(page.userNotes) && page.userNotes.length > 0)),
+    copyRows.filter(({ page }) => (page.userIntro !== undefined && !String(page.userIntro).trim())
+      || (page.userNotes !== undefined && (!Array.isArray(page.userNotes) || page.userNotes.length === 0)))
+      .map(({ reg, page }) => `${reg}/${page.slug || page.key}`).join(', '));
+
+  check(`userIntro 不超过 ${INTRO_MAX} 字（首屏只允许 0~1 句；三段式口径属于维护文档）`,
+    copyRows.every(({ page }) => String(page.userIntro || '').length <= INTRO_MAX),
+    copyRows.filter(({ page }) => String(page.userIntro || '').length > INTRO_MAX)
+      .map(({ page }) => `${page.slug || page.key}:${String(page.userIntro).length}`).join(' '));
+
+  check('userIntro 不写内部实现措辞（字段名 / predicate / 判据实现属于维护文档，不属于首屏）',
+    copyRows.every(({ page }) => !INTERNAL_TERMS.test(String(page.userIntro || ''))),
+    copyRows.filter(({ page }) => INTERNAL_TERMS.test(String(page.userIntro || '')))
+      .map(({ page }) => `${page.slug || page.key}`).join(', '));
+
+  check(`userNotes 形状：数组、最多 ${NOTE_COUNT_MAX} 条、每条不超过 ${NOTE_MAX} 字、不含内部实现措辞`,
+    copyRows.every(({ page }) => {
+      if (page.userNotes === undefined) return true;   // 可选字段
+      if (!Array.isArray(page.userNotes) || page.userNotes.length > NOTE_COUNT_MAX) return false;
+      return page.userNotes.every(line => typeof line === 'string' && line.trim().length > 0
+        && line.length <= NOTE_MAX && !INTERNAL_TERMS.test(line) && !/\*\*|`/.test(line));
+    }),
+    copyRows.filter(({ page }) => {
+      if (page.userNotes === undefined) return false;
+      if (!Array.isArray(page.userNotes) || page.userNotes.length > NOTE_COUNT_MAX) return true;
+      return !page.userNotes.every(line => typeof line === 'string' && line.trim().length > 0
+        && line.length <= NOTE_MAX && !INTERNAL_TERMS.test(line) && !/\*\*|`/.test(line));
+    }).map(({ page }) => `${page.slug || page.key}`).join(', '));
+
+  // 旧字段名回流即红。这条是「改名」这个动作的**收口**：
+  // 没有它，下一轮有人加一条新入口页时照着旧代码抄一个 `why: [...]` 就能把三段口径带回来。
+  check('注册表里不许再出现旧的 `why` 字段（口径已改为 userIntro / userNotes，回流即红）',
+    copyRows.every(({ page }) => !Object.prototype.hasOwnProperty.call(page, 'why')),
+    copyRows.filter(({ page }) => Object.prototype.hasOwnProperty.call(page, 'why'))
+      .map(({ reg, page }) => `${reg}/${page.slug || page.key}`).join(', '));
+
+  // 这两个记号会**原样渲染给读者**（构建期直接插进 HTML），构建自检也扫这一条
+  const markdownish = copyRows.filter(({ page }) =>
+    /\*\*|`/.test(String(page.userIntro || ''))
+    || (Array.isArray(page.userNotes) && page.userNotes.some(line => /\*\*|`/.test(line))));
+  check('userIntro / userNotes 里没有 Markdown 记号（** 与反引号会原样出现在读者眼前）',
+    markdownish.length === 0, markdownish.map(({ page }) => page.slug || page.key).join(', '));
+
   // 版本号与写死的条数：条数是**按数据现算**的（页面顶部与首页入口都是），
   // 写进文案必然过期 —— 而「过期」的具体样子是「页面上写着 4 条、表格里列了 12 行」。
-  // 第一版这条守卫太窄（只抓「N 条」），漏掉了「只有 4 条」「扫出 10 条，其中 6 条」这种写法；
-  // 现在按「why 里根本不该出现与条数有关的数字」判。
-  const frozenNumbers = au.NEED_PAGES.filter(page =>
-    page.why.some(line => /v\d+\.\d+/.test(line) || /\d+\s*(条|个条目)/.test(line))).map(p => p.slug);
-  check('why 里没有写死的条数（条数按数据现算，写死必然过期）',
-    frozenNumbers.length === 0, frozenNumbers.join(', '));
+  const frozenNumbers = copyRows.filter(({ page }) =>
+    /v\d+\.\d+/.test(String(page.userIntro || '')) || /\d+\s*(条|个条目)/.test(String(page.userIntro || ''))
+    || (Array.isArray(page.userNotes) && page.userNotes.some(line =>
+      /v\d+\.\d+/.test(line) || /\d+\s*(条|个条目)/.test(line))));
+  check('userIntro / userNotes 里没有写死的条数（条数按数据现算，写死必然过期）',
+    frozenNumbers.length === 0, frozenNumbers.map(({ page }) => page.slug || page.key).join(', '));
+
+  // 维护口径没有丢：逐页在 docs 的口径归档里能查到（「说迁移了」与「真的迁移了」的区别）
+  const designRules = fs.readFileSync(path.join(ROOT, 'docs', 'DESIGN-RULES.md'), 'utf8');
+  const archivedSlugs = [...designRules.matchAll(/^#### `([^`]+)`/gm)].map(m => m[1]);
+  check('每条被删过口径的入口页在 docs/DESIGN-RULES.md 的口径归档里都有对应条目',
+    copyRows.every(({ page }) => archivedSlugs.includes(page.slug || page.key)),
+    copyRows.map(({ page }) => page.slug || page.key).filter(slug => !archivedSlugs.includes(slug)).join(', '));
 
   // 判据本身：三态只认肯定信号 —— 「未确认」绝不等于「不需要」
   const noCard = au.NEED_PREDICATES.noCard;
