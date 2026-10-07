@@ -360,7 +360,7 @@ grandfather 边界写成**常量 SHA** 而不是「policy 文档首次加入的�
 | # | 项 | 值 |
 |---|---|---|
 | 1 | baseline SHA | `e0ca04a` |
-| 2 | final SHA | **`132919161c77644c7b6a8939db1484ed3bf6e909`**（分支 `architecture-modernization-v1`，5 个阶段提交） |
+| 2 | final SHA | **`132919161c77644c7b6a8939db1484ed3bf6e909`** —— 全部代码、文档、审计、自审与本报告落地的那一个提交；分支 `architecture-modernization-v1` tip 是紧随其后的一次「报告读数回填」提交 |
 | 3 | PR | **未开**（待用户确认） |
 | 4 | merge | **未做**（待用户确认） |
 | 5 | deploy | **未做**（待用户确认） |
