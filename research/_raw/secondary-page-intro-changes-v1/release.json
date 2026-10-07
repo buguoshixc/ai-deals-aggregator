@@ -1,0 +1,53 @@
+{
+  "what": "发布链路的实测读数（PR / CI / merge / Deploy / 线上冒烟），合并后回填 —— Tier-1 结论摘要",
+  "branch": "secondary-page-intro-changes-v1",
+  "baselineSha": "a57670d",
+  "baselineNote": "分支起点的 origin/master。本轮进行中 origin/master 前进到 fa1e4ce（docs-only：`git diff --stat a57670d fa1e4ce -- scripts index.html docs .github` 为空），分支已在合并前 rebase 到 fa1e4ce",
+  "finalSha": "ec68a62",
+  "finalShaNote": "分支 tip（第二个提交补了 §22c 的全站首屏断言与文档读数回填）；merge commit 见下",
+  "pr": {
+    "number": 54,
+    "url": "https://github.com/buguoshixc/ai-deals-aggregator/pull/54",
+    "title": "二级页首屏去解释化 + 「最近变化」条件化",
+    "createdAt": "2026-10-07T17:21:37Z",
+    "ciRun": {
+      "id": 37658452291,
+      "workflow": "Verify site (gate)",
+      "conclusion": "success",
+      "startedAt": "2026-10-07T17:21:40Z",
+      "finishedAt": "2026-10-07T17:26:58Z",
+      "duration": "5m18s",
+      "url": "https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/37658452291"
+    }
+  },
+  "merge": {
+    "mergedAt": "2026-10-07T17:27:37Z",
+    "mergeCommit": "5a031cb150a2398d3a99467e19b00575b1a3d71a",
+    "method": "merge commit（与仓库既有 #44–#53 同一种）"
+  },
+  "deploy": {
+    "runId": 37659228848,
+    "workflow": "Deploy to GitHub Pages",
+    "conclusion": "success",
+    "startedAt": "2026-10-07T17:27:39Z",
+    "finishedAt": "2026-10-07T17:33:20Z",
+    "duration": "5m41s",
+    "url": "https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/37659228848",
+    "note": "master push 同时触发 Verify site (gate)（run 37659228952），与本轮 PR 上的门禁是同一个共享 action"
+  },
+  "onlineSmoke": {
+    "verdict": "PASS",
+    "at": "2026-10-08T01:35+08:00",
+    "evidence": "online-smoke.json（HTTP 层 6 条二级页 + /changes/，并内嵌真浏览器 12 次量测）",
+    "readings": {
+      "introNotesOnSecondaryPages": 0,
+      "changeModuleContainers": 0,
+      "rowCountsMatchLocal": "6/6（need/no-card 1 · need/ai-coding 4 · student 12 · developer 67 · category/api 36 · vendor/openai 1）",
+      "pageNotesPresent": "6/6（分类说明仍在）",
+      "overflowAt390And360": "0px（4 条路由 × 2 档）",
+      "changesPage": "7 个分栏 + 起算日 + 免责句 + 折叠块全在，390/360 溢出 0",
+      "geometry": "/need/no-card/ @1440：标题底边 135 → 数据区顶边 144（间距 9px；改造前线上是 41px）"
+    }
+  },
+  "selfAudit": { "p0": 0, "p1": 0, "repairNow": 0, "deferred": 2 }
+}

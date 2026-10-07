@@ -233,10 +233,19 @@ if (!rows.length) return '';          // 零变化 / 日志不可用 / 无主题
 
 ## 8. 发布
 
-见 [`research/_raw/secondary-page-intro-changes-v1/online-smoke.json`](_raw/secondary-page-intro-changes-v1/online-smoke.json)
-（PR / CI / merge / deploy / 线上抽查的实测读数，合并后回填）。
+完整读数见 [`research/_raw/secondary-page-intro-changes-v1/release.json`](_raw/secondary-page-intro-changes-v1/release.json)
+与 [`online-smoke.json`](_raw/secondary-page-intro-changes-v1/online-smoke.json)（含内嵌的真浏览器量测）。
 
-线上抽查至少覆盖：一个无变化的 `/need/*`、`/student/` 或 `/developer/`、一个 `/vendor/*`、以及 `/changes/` 自身。
+| 环节 | 读数 |
+|---|---|
+| 基线 SHA | `a57670d`（其后的 `fa1e4ce` 是 docs-only；分支合并前已 rebase 到 `fa1e4ce`） |
+| final SHA | `ec68a62`（分支 tip）→ merge commit `5a031cb` |
+| PR | [#54](https://github.com/buguoshixc/ai-deals-aggregator/pull/54)，2026-10-07T17:21:37Z |
+| CI（PR 上的 gate） | **success**，`5m18s`（run [37658452291](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/37658452291)）—— 与本地 Full Gate 同一个共享 action |
+| merge | 2026-10-07T17:27:37Z，merge commit `5a031cb150a2398d3a99467e19b00575b1a3d71a` |
+| Deploy | **success**，`5m41s`（run [37659228848](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/37659228848)：`prepublish` 门禁 → build → deploy） |
+| 线上冒烟（HTTP） | **PASS**：6 条二级页顶部说明 **0**、变化块容器 **0**、行数与本地**逐页相同**（1/4/12/67/36/1）、分类说明 6/6 仍在；`/changes/` 7 个分栏 + 起算日 + 免责句 + 折叠块全在 |
+| 线上冒烟（真浏览器 msedge） | **PASS**：4 条路由 × {390, 360} 横向溢出 **0px**；`/need/no-card/` @1440 标题底边 135 → 数据区顶边 144 ⇒ **间距 9px**（改造前线上是 41px） |
 
 ---
 
@@ -248,4 +257,4 @@ if (!rows.length) return '';          // 零变化 / 日志不可用 / 无主题
 | R2 | 正文下限余量变薄：`/need/no-card/` **50 字**（`/category/` 123、`/category/audio/` 123） | 迁移句进折叠 ⇒ 长度只掉那一句与空模块；构建期 `thin-content` 与 `verify:seo` 两处独立判定全过。**不调低下限公式**（`v3.0-antigaming` 有下限单调性规则）。若将来继续删正文，`/need/no-card/` 会第一个变红 |
 | R3 | 日志不可用（降级构建）时二级页不再显示「没拿到历史日志」 | 本轮把它与「零变化」统一处置（判据 = 相关事件 ≥ 1 条），诚实性由 `/changes/`、首页条带、变化 Feed 承担，三处断言原样保留。若要在二级页恢复一行提示，改动量是 1 个分支 + 1 条断言 |
 | R4 | 入口文案用的是「全部变化 →」而不是字面的「查看全部 →」 | 有意为之：首页条带与 `/changes/` 都用「全部变化」，同一件事同一个词。要改成「查看全部」只需加一个措辞键 |
-| R5 | `origin/master` 在本轮进行中从 `a57670d` 前进到 `fa1e4ce`（docs-only，`git diff --stat a57670d fa1e4ce -- scripts index.html docs .github` 为空） | 分支基于 `a57670d`；合并前如需要可 rebase，代码面无重叠 |
+| R5 | `origin/master` 在本轮进行中从 `a57670d` 前进到 `fa1e4ce`（docs-only，`git diff --stat a57670d fa1e4ce -- scripts index.html docs .github` 为空） | 合并前已 rebase 到 `fa1e4ce`，无冲突；merge commit `5a031cb` |
