@@ -232,7 +232,7 @@ grandfather 边界写成**常量 SHA** 而不是「policy 文档首次加入的�
 | build | 2.9s | **~2.9s** | ±0 |
 | verify（真浏览器，852 项） | 106.7s | **~119s** | +12%（**同一台机器上多次测量波动 107–120s**；本轮未改 L4 的任何断言，差异在噪声带内） |
 | 门禁链（node 步骤） | 263.8s（45 步） | **274.6s（47 个脚本 / 50 步）** | **+4.1%**（其中 2 个新步骤 <0.2s，其余为波动） |
-| CI | 未测（本轮未触发远端 CI） | 未测 | — |
+| **CI（gate job，GitHub Actions）** | master 上一次成功运行 **300s**（run `37506217510`） | **299s**（PR run `37583143364`，4m55s 为 job 时长） | **±0%** —— 新增两步本身 <1s，其余是运行器波动（近 12 次运行区间 200–367s） |
 
 **未超过 25% 阈值**，因此不触发「必须分析原因」的条件。
 诚实说明：`verify` 与门禁的绝对秒数受本机负载影响明显，上表按同一台机器上的多次测量取代表值。
@@ -311,12 +311,17 @@ grandfather 边界写成**常量 SHA** 而不是「policy 文档首次加入的�
 
 | 步骤 | 状态 |
 |---|---|
-| 分支 / 工作树 / 阶段提交 | ✅ 4 个阶段提交（08bc73e → 56009cd → cbae420 → 1ae53e2 → 本轮收尾） |
+| 分支 / 工作树 / 阶段提交 | ✅ 7 个提交（`08bc73e` → `56009cd` → `cbae420` → `1ae53e2` → `1329191` → …… → `3af7bac`） |
 | clean install / L1–L4 / fitness / 确定性 A/B / Full Gate | ✅ 全部实测通过 |
-| **PR / merge / deploy / 线上冒烟（Phase 12）** | ⏸ **未启动 —— 需要用户显式确认**（部署是不可逆外部动作） |
+| **PR** | ✅ **[#47](https://github.com/buguoshixc/ai-deals-aggregator/pull/47)**（base `master`，head `architecture-modernization-v1`） |
+| **必需检查 `gate`** | ✅ **pass / 4m55s**（run `37583143364`）—— 本轮新增的两步在 CI 里**真的跑了**：<br>`✅ 架构 fitness 4 条，失败 0 条` · `✅ 没有新增的 Tier-3 文件（1283 个已跟踪的全部在清单内）` |
+| **merge** | ✅ merge commit **`39def54ff272b901c0a0337cef9eba15d44256ae`**（2026-10-07 06:52:34Z） |
+| **deploy** | ✅ `Deploy to GitHub Pages` run `37583953837`：**prepublish**（`✓ Gate (same implementation as verify.yml)`）→ **build**（`✓ Validate data and assemble site` + `✓ Upload artifact`）→ **deploy**（`✓ Deploy to GitHub Pages`） |
+| **线上冒烟（L5）** | ✅ **14 / 14 全过**：sitemap 183 条 URL 可读；11 条关键路由 + 2 条 sitemap 抽样（模型详情页 / 优惠详情页）全部 HTTP 200、canonical 自指、无残留占位符、JSON-LD 可解析 |
 
-线上冒烟工具已就绪：`npm run smoke`（L5，11 条关键路由 + sitemap 抽样，
-断言 HTTP 200 / title / canonical 自指 / 无残留占位符 / JSON-LD 可解析）。
+线上冒烟工具即 `npm run smoke`（L5）—— 它**刻意不重复 Full Gate**，只回答三个问题：
+线上真的存在这些页面吗 / 线上那一份和本地构建的是同一份吗 / 最要命的几个 SEO 事实还在吗。
+
 
 ---
 
@@ -361,9 +366,9 @@ grandfather 边界写成**常量 SHA** 而不是「policy 文档首次加入的�
 |---|---|---|
 | 1 | baseline SHA | `e0ca04a` |
 | 2 | final SHA | **`132919161c77644c7b6a8939db1484ed3bf6e909`** —— 全部代码、文档、审计、自审与本报告落地的那一个提交；分支 `architecture-modernization-v1` tip 是紧随其后的一次「报告读数回填」提交 |
-| 3 | PR | **未开**（待用户确认） |
-| 4 | merge | **未做**（待用户确认） |
-| 5 | deploy | **未做**（待用户确认） |
+| 3 | PR | **[#47](https://github.com/buguoshixc/ai-deals-aggregator/pull/47)**（必需检查 `gate` pass / 4m55s） |
+| 4 | merge | **`39def54ff272b901c0a0337cef9eba15d44256ae`**（2026-10-07 06:52:34Z） |
+| 5 | deploy | ✅ `Deploy to GitHub Pages` run `37583953837`（prepublish 门禁 → build → deploy 全绿）；线上冒烟 **14/14** |
 | 6 | Architecture Before | §3 |
 | 7 | Architecture After | §4 |
 | 8 | 最大源码文件 Before / After | `verify-site.js` 8,057 → 8,058 行（未动）· `build-local.js` **6,677 → 6,345 行** |
