@@ -1,0 +1,25 @@
+{
+  "filesBase": 303,
+  "filesNext": 303,
+  "onlyInBaseline": [],
+  "onlyInNext": [],
+  "identical": 258,
+  "differing": 45,
+  "nonHtmlDiffering": [],
+  "htmlDiffering": 45,
+  "htmlDifferingWithPageNotes": 44,
+  "htmlDifferingWithoutPageNotes": [
+    "need/student-only/index.html"
+  ],
+  "htmlDifferingWithoutPageNotesNote": "别名页没有说明块，但它与其它目录页共用同一份页面级 CSS ⇒ 样式块同样变了（正文仍逐字未动）",
+  "bodyDiffersAfterAllowlist": [],
+  "jsonLdDiffers": [],
+  "verdict": {
+    "noRouteOrFileAddedOrRemoved": true,
+    "allNonHtmlByteIdentical": true,
+    "everyDiffExplainedByAllowlist": true,
+    "everyDifferingPageIsADirectoryPage": true,
+    "jsonLdIdenticalEverywhere": true
+  },
+  "verdictOk": true
+}

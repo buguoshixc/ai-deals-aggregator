@@ -1,0 +1,98 @@
+{
+  "generatedAt": "2026-10-07T14:26:49.530Z",
+  "note": "三份完整快照（各约 1 MB）与全部探针脚本（.cjs）/ 日志（.log）/ 截图（.png）按证据政策留在本机，不入库。",
+  "runs": [
+    {
+      "label": "改动前基线（origin/master 的产物）",
+      "source": "verify-pre-change.json",
+      "total": 855,
+      "failed": 0,
+      "failedNames": [],
+      "newChecks": []
+    },
+    {
+      "label": "改动后（本轮冻结修订；本次带 --compare 回归比对，故 867 = 861 + 6 条回归项）",
+      "source": "verify-after.json",
+      "total": 867,
+      "failed": 0,
+      "failedNames": [],
+      "newChecks": [
+        {
+          "name": "分类说明 disclosure：三件套各恰好一个（summary / chevron / action）+ 装饰件 aria-hidden + 默认收起 + 默认 marker 已抑制",
+          "ok": true,
+          "detail": "need/ai-coding/ summary×1「分类说明」· chevron×1 9.9×9.9px · action×1 · marker=none · open=false · student/ summary×1「分类说明」· chevron×1 9.9×9.9px · action×1 · marker=none · open=false · category/chat/ summary×1「分类说明」· chevron×1 9.9×9.9px · action×1 · marker=none · open=false"
+        },
+        {
+          "name": "右侧状态文案由 CSS 生成且真实可见：收起态 computed content = 「展开」（DOM 里没有这两个字）",
+          "ok": true,
+          "detail": "need/ai-coding/=\"\\\"展开\\\"\" · student/=\"\\\"展开\\\"\" · category/chat/=\"\\\"展开\\\"\""
+        },
+        {
+          "name": "点一下状态整体翻转：open false→true · 「展开」→「收起」 · 正文不可见→可见 · 箭头 transform 改变",
+          "ok": true,
+          "detail": "open false→true · 文案「展开」→「收起」 · 正文可见 false→true · 箭头 matrix(0.707107, -0.707107, 0.707107, 0.707107, 0, 0)→matrix(0.707107, 0.707107, -0.707107, 0.707107, 0, 0)"
+        },
+        {
+          "name": "整行可点：summary 中段的空白带（不在任何文字上）点一下就展开",
+          "ok": true,
+          "detail": "空白带 1261px · 点 (740, 597) 命中 <summary.page-notes-summary> · open false→true"
+        },
+        {
+          "name": "键盘可用：Tab 聚焦 summary（:focus-visible 命中且 outline ≥2px）· Enter 展开 · Space 收起",
+          "ok": true,
+          "detail": "焦点在 summary=true · :focus-visible=true · outline solid 2px · Enter→open=true · Space→open=false"
+        },
+        {
+          "name": "390px：整行点击区 ≥44px、summary 不超出视口、展开后正文与页面都不横向溢出",
+          "ok": true,
+          "detail": "summary 358×44px（视口 390） · 页面溢出 0px · 正文溢出 0/2 段 · 状态文案仍在行内=true"
+        }
+      ]
+    },
+    {
+      "label": "变异复测（删掉 dist 克隆里 .page-notes-action 的 span）",
+      "source": "m1-verify.json",
+      "total": 861,
+      "failed": 5,
+      "failedNames": [
+        "分类说明 disclosure：三件套各恰好一个（summary / chevron / action）+ 装饰件 aria-hidden + 默认收起 + 默认 marker 已抑制",
+        "右侧状态文案由 CSS 生成且真实可见：收起态 computed content = 「展开」（DOM 里没有这两个字）",
+        "点一下状态整体翻转：open false→true · 「展开」→「收起」 · 正文不可见→可见 · 箭头 transform 改变",
+        "整行可点：summary 中段的空白带（不在任何文字上）点一下就展开",
+        "390px：整行点击区 ≥44px、summary 不超出视口、展开后正文与页面都不横向溢出"
+      ],
+      "newChecks": [
+        {
+          "name": "分类说明 disclosure：三件套各恰好一个（summary / chevron / action）+ 装饰件 aria-hidden + 默认收起 + 默认 marker 已抑制",
+          "ok": false,
+          "detail": "need/ai-coding/ summary×1「分类说明」· chevron×1 9.9×9.9px · action×0 · marker=none · open=false · student/ summary×1「分类说明」· chevron×1 9.9×9.9px · action×1 · marker=none · open=false · category/chat/ summary×1「分类说明」· chevron×1 9.9×9.9px · action×1 · marker=none · open=false"
+        },
+        {
+          "name": "右侧状态文案由 CSS 生成且真实可见：收起态 computed content = 「展开」（DOM 里没有这两个字）",
+          "ok": false,
+          "detail": "need/ai-coding/=\"\" · student/=\"\\\"展开\\\"\" · category/chat/=\"\\\"展开\\\"\""
+        },
+        {
+          "name": "点一下状态整体翻转：open false→true · 「展开」→「收起」 · 正文不可见→可见 · 箭头 transform 改变",
+          "ok": false,
+          "detail": "need/ai-coding/ 缺 .page-notes-action ⇒ 状态切换无从谈起"
+        },
+        {
+          "name": "整行可点：summary 中段的空白带（不在任何文字上）点一下就展开",
+          "ok": false,
+          "detail": "need/ai-coding/ 找不到 summary / .page-notes-leading / .page-notes-action ⇒ 点不出空白带给读者"
+        },
+        {
+          "name": "键盘可用：Tab 聚焦 summary（:focus-visible 命中且 outline ≥2px）· Enter 展开 · Space 收起",
+          "ok": true,
+          "detail": "焦点在 summary=true · :focus-visible=true · outline solid 2px · Enter→open=true · Space→open=false"
+        },
+        {
+          "name": "390px：整行点击区 ≥44px、summary 不超出视口、展开后正文与页面都不横向溢出",
+          "ok": false,
+          "detail": "need/ai-coding/ 缺 details.page-notes / summary / .page-notes-action ⇒ 窄屏判据无从谈起"
+        }
+      ]
+    }
+  ]
+}

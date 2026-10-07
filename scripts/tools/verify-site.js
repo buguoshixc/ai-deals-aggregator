@@ -2726,6 +2726,240 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   }
 
   /* ------------------------------------------------------------------ */
+  /* 分类说明的 disclosure（page-notes-disclosure-v1，§15b3）             */
+  /* ------------------------------------------------------------------ */
+
+  console.log('\n=== 15b3) 分类说明 disclosure：收起状态也要看得出整行能展开 ===');
+
+  /**
+   * 为什么这一段必须存在（本轮修的**不是**折叠逻辑，而是 affordance）：
+   *
+   * 折叠本身一直是好的 —— 原生 `<details>`，无 JS 能开合，键盘本来就是浏览器给的。
+   * 坏的是**可发现性**：收起时它长得像一行普通小标题，没有箭头、没有状态文案，
+   * 点击区只有标题那几个字宽，读者不会想到去点它。这类缺陷的共性是
+   * **所有既有断言全绿**：`<details>` 在、`<summary>` 在、无 JS 读得到正文
+   * （那三条正是 §15b2 在守的）—— 唯独「看起来能不能点」没有任何一条在量。
+   *
+   * 所以这里量的是**只有真浏览器能回答**的几件事，每条对应一种具体坏法：
+   *   ① 三件套（summary / chevron / action）**各恰好一个**且装饰件 `aria-hidden`
+   *      —— 少一件就退回「一行看不懂的标题」；多一件就是两个箭头 / 两段状态文案；
+   *      同时确认默认 marker 已抑制（`list-style-type === 'none'`），否则会出现「▶ ›」；
+   *   ② 右侧状态文案是 **CSS `::before` 生成**的（DOM 里刻意没有那两个字，理由见
+   *      build-local.js 的 notesHtml 注释）⇒ 读 computed content 才是「它真的在」的证明；
+   *   ③ **整行可点**：判据是中段**空白带**里的真实鼠标点击 —— 点文字本来就会展开，
+   *      证明不了点击区有没有铺满整行，而「只有文字能点」正是最初那个症状；
+   *   ④ 键盘：Tab 聚焦后 `:focus-visible` 真的有 outline（删掉 outline 又不给替代样式
+   *      是本仓库反复出现的一类回归），且 Enter 与 Space **都能**开合。
+   *
+   * 两条实现边界：状态切换用 `checkVisibility()` 判正文可见性（Chromium 对关闭的
+   * `<details>` 用的是 content-visibility 语义，`offsetHeight` 会报出上一次的布局高度
+   * —— 见 §11 的注释）；390px 在**展开状态下**量溢出（收起时正文不可见，量不出来）。
+   *
+   * 三族各取一条：`/need/*`（按需求）· `/student/`（专题集合）· `/category/*`（分类落地）——
+   * 它们共用 build-local.js 的**同一个** `renderDirectoryPage` 输出，这里顺手证明这一点。
+   */
+  {
+    const DISCLOSURE_ROUTES = ['need/ai-coding/', 'student/', 'category/chat/'];
+    /** Chromium 的 computed `content` 带引号（`"展开"`）—— 判等前先剥掉 */
+    const unquote = text => String(text === null || text === undefined ? '' : text).replace(/^["']|["']$/g, '');
+    const structure = [];
+    for (const route of DISCLOSURE_ROUTES) {
+      await page.goto(new URL(route, base).href, { waitUntil: 'load' });
+      structure.push(await page.evaluate(() => {
+        const details = document.querySelector('details.page-notes');
+        const summary = details ? details.querySelector('summary') : null;
+        const chevron = details ? details.querySelector('.page-notes-chevron') : null;
+        const action = details ? details.querySelector('.page-notes-action') : null;
+        const body = details ? details.querySelector('.pnote') : null;
+        const box = el => { const r = el.getBoundingClientRect(); return { w: Math.round(r.width * 10) / 10, h: Math.round(r.height * 10) / 10 }; };
+        return {
+          found: Boolean(details && summary),
+          open: details ? details.open : null,
+          summaries: details ? details.querySelectorAll('summary').length : 0,
+          summaryClass: summary ? summary.className : '',
+          title: summary ? (summary.textContent || '').trim() : '',
+          listStyle: summary ? getComputedStyle(summary).listStyleType : '',
+          chevrons: details ? details.querySelectorAll('.page-notes-chevron').length : 0,
+          chevronHidden: chevron ? chevron.getAttribute('aria-hidden') : null,
+          chevronBox: chevron ? box(chevron) : null,
+          actions: details ? details.querySelectorAll('.page-notes-action').length : 0,
+          actionHidden: action ? action.getAttribute('aria-hidden') : null,
+          actionContent: action ? getComputedStyle(action, '::before').content : '',
+          bodyVisible: body && typeof body.checkVisibility === 'function' ? body.checkVisibility() : null
+        };
+      }));
+    }
+    const structureDetail = structure.map((s, i) => (s.found
+      ? `${DISCLOSURE_ROUTES[i]} summary×${s.summaries}「${s.title}」· chevron×${s.chevrons}`
+        + `${s.chevronBox ? ` ${s.chevronBox.w}×${s.chevronBox.h}px` : ''} · action×${s.actions}`
+        + ` · marker=${s.listStyle} · open=${s.open}`
+      : `${DISCLOSURE_ROUTES[i]} 没有 details.page-notes`)).join(' · ');
+
+    check('分类说明 disclosure：三件套各恰好一个（summary / chevron / action）+ 装饰件 aria-hidden + 默认收起 + 默认 marker 已抑制',
+      structure.length === DISCLOSURE_ROUTES.length && structure.every(s =>
+        s.found && s.open === false && s.summaries === 1 && s.summaryClass === 'page-notes-summary'
+        && s.title === '分类说明' && s.listStyle === 'none'
+        && s.chevrons === 1 && s.chevronHidden === 'true' && s.chevronBox.w > 0 && s.chevronBox.h > 0
+        && s.actions === 1 && s.actionHidden === 'true'),
+      structureDetail);
+
+    check('右侧状态文案由 CSS 生成且真实可见：收起态 computed content = 「展开」（DOM 里没有这两个字）',
+      structure.every(s => unquote(s.actionContent) === '展开'),
+      structure.map((s, i) => `${DISCLOSURE_ROUTES[i]}=${JSON.stringify(s.actionContent)}`).join(' · '));
+
+    // ---- 状态切换：点一下，四件东西必须同时翻转（少翻一件就是半个控件）----
+    // 四条探针一律 fail-soft：控件整个不见了的时候，判据要**说得出口**（哪一项没了），
+    // 而不是从 evaluate 里抛一个 TypeError 把整轮验收打断（那样后面的 800 多项都不会跑）。
+    await page.goto(new URL(DISCLOSURE_ROUTES[0], base).href, { waitUntil: 'load' });
+    const toggled = await page.evaluate(async () => {
+      const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+      const details = document.querySelector('details.page-notes');
+      const summary = details ? details.querySelector('summary') : null;
+      const action = details ? details.querySelector('.page-notes-action') : null;
+      const chevron = details ? details.querySelector('.page-notes-chevron') : null;
+      const body = details ? details.querySelector('.pnote') : null;
+      if (!details || !summary || !action || !chevron || !body) {
+        return { missing: [!details && 'details.page-notes', !summary && 'summary', !action && '.page-notes-action',
+          !chevron && '.page-notes-chevron', !body && '.pnote'].filter(Boolean).join(' / ') };
+      }
+      const snap = () => ({
+        open: details.open,
+        action: getComputedStyle(action, '::before').content,
+        chevron: getComputedStyle(chevron).transform,
+        bodyVisible: typeof body.checkVisibility === 'function'
+          ? body.checkVisibility() : getComputedStyle(body).visibility !== 'hidden'
+      });
+      const before = snap();
+      summary.click();
+      await sleep(250);
+      return { before, after: snap() };
+    });
+    check('点一下状态整体翻转：open false→true · 「展开」→「收起」 · 正文不可见→可见 · 箭头 transform 改变',
+      !toggled.missing && toggled.before.open === false && toggled.after.open === true
+      && unquote(toggled.before.action) === '展开' && unquote(toggled.after.action) === '收起'
+      && toggled.before.bodyVisible === false && toggled.after.bodyVisible === true
+      && toggled.before.chevron !== toggled.after.chevron,
+      toggled.missing
+        ? `${DISCLOSURE_ROUTES[0]} 缺 ${toggled.missing} ⇒ 状态切换无从谈起`
+        : `open ${toggled.before.open}→${toggled.after.open} · 文案「${unquote(toggled.before.action)}」→「${unquote(toggled.after.action)}」`
+          + ` · 正文可见 ${toggled.before.bodyVisible}→${toggled.after.bodyVisible} · 箭头 ${toggled.before.chevron}→${toggled.after.chevron}`);
+
+    // ---- 整行可点：点「箭头与状态文案之间的空白带」也要展开 ----
+    await page.goto(new URL(DISCLOSURE_ROUTES[0], base).href, { waitUntil: 'load' });
+    const blank = await page.evaluate(() => {
+      const details = document.querySelector('details.page-notes');
+      const summary = details ? details.querySelector('summary') : null;
+      const lead = summary ? summary.querySelector('.page-notes-leading') : null;
+      const act = summary ? summary.querySelector('.page-notes-action') : null;
+      if (!details || !summary || !lead || !act) return null;
+      summary.scrollIntoView({ block: 'center', behavior: 'instant' });
+      const rect = summary.getBoundingClientRect();
+      const leadBox = lead.getBoundingClientRect();
+      const actBox = act.getBoundingClientRect();
+      const left = leadBox.right + 4;
+      const right = actBox.left - 4;
+      const x = (left + right) / 2;
+      const y = rect.top + rect.height / 2;
+      const hit = document.elementFromPoint(x, y);
+      return {
+        gap: Math.round((right - left) * 10) / 10,
+        x: Math.round(x), y: Math.round(y),
+        inViewport: y >= 0 && y <= innerHeight && x >= 0 && x <= innerWidth,
+        hitIsSummary: hit === summary,
+        hitLabel: hit ? `${hit.tagName.toLowerCase()}${typeof hit.className === 'string' && hit.className ? `.${hit.className}` : ''}` : '(无)',
+        open: details.open
+      };
+    });
+    if (blank) {
+      await page.mouse.click(blank.x, blank.y);
+      await page.waitForTimeout(250);
+    }
+    const blankAfter = blank ? await page.evaluate(() => document.querySelector('details.page-notes').open) : null;
+    check('整行可点：summary 中段的空白带（不在任何文字上）点一下就展开',
+      Boolean(blank) && blank.gap >= 20 && blank.inViewport && blank.hitIsSummary
+      && blank.open === false && blankAfter === true,
+      blank
+        ? `空白带 ${blank.gap}px · 点 (${blank.x}, ${blank.y}) 命中 <${blank.hitLabel}> · open ${blank.open}→${blankAfter}`
+        : `${DISCLOSURE_ROUTES[0]} 找不到 summary / .page-notes-leading / .page-notes-action ⇒ 点不出空白带给读者`);
+
+    // ---- 键盘：Tab 可达 + focus-visible 有可见 outline + Enter / Space 都能开合 ----
+    await page.goto(new URL(DISCLOSURE_ROUTES[0], base).href, { waitUntil: 'load' });
+    // 焦点探针也是 fail-soft：`page.focus()` 在元素不存在时会等 30 秒再抛，
+    // 那会把整轮验收拖死；先问一句在不在，不在就直接判红并说清楚。
+    const hasSummary = Boolean(await page.$('.page-notes-summary'));
+    let kbFocus = null;
+    let afterEnter = null;
+    let afterSpace = null;
+    if (hasSummary) {
+      await page.focus('.page-notes-summary');
+      // 先 Shift+Tab 再 Tab：把「最后一次交互是键盘」做实，`:focus-visible` 才稳定命中
+      // （只用 focus() 时焦点可见性是启发式判定的，会给出假阴性）。
+      await page.keyboard.press('Shift+Tab');
+      await page.keyboard.press('Tab');
+      kbFocus = await page.evaluate(() => {
+        const summary = document.querySelector('.page-notes-summary');
+        const style = getComputedStyle(summary);
+        return {
+          isSummary: document.activeElement === summary,
+          focusVisible: typeof summary.matches === 'function' ? summary.matches(':focus-visible') : null,
+          outlineStyle: style.outlineStyle,
+          outlineWidth: parseFloat(style.outlineWidth) || 0
+        };
+      });
+      await page.keyboard.press('Enter');
+      await page.waitForTimeout(200);
+      afterEnter = await page.evaluate(() => document.querySelector('details.page-notes').open);
+      await page.keyboard.press('Space');
+      await page.waitForTimeout(200);
+      afterSpace = await page.evaluate(() => document.querySelector('details.page-notes').open);
+    }
+    check('键盘可用：Tab 聚焦 summary（:focus-visible 命中且 outline ≥2px）· Enter 展开 · Space 收起',
+      hasSummary && kbFocus.isSummary && kbFocus.focusVisible === true
+      && kbFocus.outlineStyle !== 'none' && kbFocus.outlineWidth >= 2
+      && afterEnter === true && afterSpace === false,
+      hasSummary
+        ? `焦点在 summary=${kbFocus.isSummary} · :focus-visible=${kbFocus.focusVisible}`
+          + ` · outline ${kbFocus.outlineStyle} ${kbFocus.outlineWidth}px · Enter→open=${afterEnter} · Space→open=${afterSpace}`
+        : `${DISCLOSURE_ROUTES[0]} 没有 .page-notes-summary ⇒ 键盘判据无从谈起`);
+
+    // ---- 390px：整行触控区 ≥44px、不超出视口、展开后正文与页面都不横向溢出 ----
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(new URL(DISCLOSURE_ROUTES[0], base).href, { waitUntil: 'load' });
+    const mobile = await page.evaluate(async () => {
+      const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+      const details = document.querySelector('details.page-notes');
+      const summary = details ? details.querySelector('summary') : null;
+      const action = details ? details.querySelector('.page-notes-action') : null;
+      if (!details || !summary || !action) {
+        return { missing: [!details && 'details.page-notes', !summary && 'summary', !action && '.page-notes-action'].filter(Boolean).join(' / ') };
+      }
+      summary.click();
+      await sleep(250);
+      const rect = summary.getBoundingClientRect();
+      const actionBox = action.getBoundingClientRect();
+      const notes = [...details.querySelectorAll('.pnote')];
+      return {
+        open: details.open,
+        summaryWidth: Math.round(rect.width * 10) / 10,
+        summaryHeight: Math.round(rect.height * 10) / 10,
+        viewport: innerWidth,
+        docOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        notes: notes.length,
+        notesOverflow: notes.filter(p => p.scrollWidth > p.clientWidth + 1).length,
+        actionInside: actionBox.right <= rect.right + 0.5 && actionBox.left >= rect.left - 0.5
+      };
+    });
+    check('390px：整行点击区 ≥44px、summary 不超出视口、展开后正文与页面都不横向溢出',
+      !mobile.missing && mobile.open === true && mobile.summaryHeight >= 44 && mobile.summaryWidth <= mobile.viewport
+      && mobile.docOverflow === 0 && mobile.notesOverflow === 0 && mobile.actionInside,
+      mobile.missing
+        ? `${DISCLOSURE_ROUTES[0]} 缺 ${mobile.missing} ⇒ 窄屏几何判据无从谈起`
+        : `summary ${mobile.summaryWidth}×${mobile.summaryHeight}px（视口 ${mobile.viewport}）`
+          + ` · 页面溢出 ${mobile.docOverflow}px · 正文溢出 ${mobile.notesOverflow}/${mobile.notes} 段 · 状态文案仍在行内=${mobile.actionInside}`);
+    await page.setViewportSize({ width: 1440, height: 900 });
+  }
+
+  /* ------------------------------------------------------------------ */
   /* 数据源状态页（/status/）                                             */
   /* ------------------------------------------------------------------ */
 
