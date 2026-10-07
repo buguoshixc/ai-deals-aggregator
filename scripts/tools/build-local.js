@@ -78,6 +78,11 @@ const dataDocs = require('../lib/data-docs');
 // v3.0：页面类型声明表 —— 路由 → kind / 正文下限 / ItemList 要求 / sitemap priority 的唯一出处。
 // 构建期与独立门禁（tools/seo-verify.js）都读它，但**各自从 dist 解析**（执行路径不合并）。
 const pageKinds = require('../lib/page-kinds');
+// architecture-modernization-v1：**页面壳的唯一出口**。
+// 原先 9 个页面族各自手写一份 `<!DOCTYPE html>`…`</html>`、各自从 index.html 抽共享
+// `<style>` / 主题脚本 / 页脚、各自调一次 finalizePage —— 实测那 9 份是逐字相同的。
+// 现在：文档脚手架只有一处实现，布局族按 kind 查 page-kinds.js，差异由显式参数承载。
+const shell = require('../lib/page-shell');
 const planChanges = require('../lib/plan-changes');
 const providers = require('../lib/providers');
 // v2.4：优惠 ↔ 套餐关系层。真值在 scripts/data/deal-plan-links.json，
@@ -87,8 +92,11 @@ const dealPlanLinks = require('../lib/deal-plan-links');
 // 定义只有一处 —— `lib/analytics.js` 的 ANALYTICS-GUARD 区块就是浏览器里跑的那段源码；
 // 「这一页要不要统计」只有一处声明 —— `lib/analytics-routes.js` 的 ROUTE_RULES。
 // 构建期做三件事：按路由注入 beacon / 断言每页 exactly 1 / 断言产物里不留占位符。
+//
+// 注入与那两条断言现在住在 `lib/page-shell.js` 的 `finalizePage()`（页面 HTML 的唯一收尾动作），
+// 本文件只在产物自检里用 `analytics.stripBootstrap()` 对磁盘上的真实字节做对账 ——
+// 所以这里**不再** require `analytics-routes`：路由→统计范围的判据只有一个消费者，就是页壳。
 const analytics = require('../lib/analytics');
-const analyticsRoutes = require('../lib/analytics-routes');
 
 /**
  * 套餐对比页的交互逻辑**源码**（逐字节内联进页面）。
@@ -358,63 +366,9 @@ function renderNeedRow(deals) {
 }
 
 /**
- * 把共享片段里的路由占位符按**输出深度**解析成相对路径。
- * @param {string} html 含占位符的 HTML
- * @param {string} prefix 该输出相对站点根的路径前缀（'' / '../' / '../../'）
- */
-function resolveRouteHrefs(html, prefix) {
-  let out = html;
-  for (const [marker, rel] of ROUTE_HREFS) out = out.split(marker).join(prefix + rel);
-  // 动态路由（厂商页 / 分类页）的深度前缀：源码里写 __PREFIX__vendor/<slug>/，
-  // 由这里按输出深度解析 —— 写死相对路径在详情页那一层必然错。
-  return out.split('__PREFIX__').join(prefix);
-}
-
-/**
- * 页面 HTML 的**唯一收尾动作**（private-analytics-v1）：解析路由占位符 + 注入分析 bootstrap。
- *
- * ## 为什么它配得上「唯一」这两个字
- *
- * P1 §7 禁止逐页手写 `<script>`，目标是「Beacon 的定义只有一处，所有正式发布 HTML 从这一处派生」。
- * 本文件里页面 HTML 的生成路径有五条（首页骨架 / 详情页 / 状态页 / 变化页 / 各资料页渲染器），
- * 但它们**已经**收敛在一件事上：抽取共享片段时都要调一次 `resolveRouteHrefs()` 按输出深度
- * 解析页面里的占位符。分析注入就挂在这条既有收尾路径上 —— 于是「新页面族从同一处派生 beacon」
- * 不是因为大家记得改，而是**没有别的出口**。
- *
- * ## 三件必须在同一处发生的事
- *
- *   ① 路由占位符解析（既有行为，逐字不变）；
- *   ② 分析占位符按**该页路由**解析成 beacon 或注释（`lib/analytics.js` 是唯一实现）；
- *   ③ 收尾断言：残留占位符 = 0，且 bootstrap 数 == 该页应有值（trackable 1 / excluded 0）。
- *
- * ③ 是这套设计真正值钱的地方：漏注入、注入两次、绕过共享页脚、偷偷改 token 或删掉
- * Production Guard —— 任何一种都在**构建期**就红，而不是等到线上少了一半数据才发现。
- *
- * ⚠️ 一个页面**恰好调用一次**。页脚标记在源码里只出现一次，因此「解析两次」只可能来自
- * 有人把同一个页面拼了两遍 —— 那种情况下计数断言会报 2，正是我们想要的。
- *
- * @param {string} html 含占位符的 HTML 片段
- * @param {string} route 该页的站根相对路由（首页是空串）—— 必须是**显式**的，不许猜
- * @param {string} prefix 该输出的深度前缀（'' / '../' / '../../'）
- * @param {string} [where] 出错时点名用的位置描述（渲染器名）
- */
-function finalizePage(html, route, prefix, where = '') {
-  const resolved = resolveRouteHrefs(html, prefix);
-  const decision = analyticsRoutes.classifyRoute(route);
-  if (!decision.known) {
-    // 「没有任何规则声明过这个路由」= 新增页面族忘了登记统计范围。
-    // 静默不统计正是这一层最危险的失效方式，所以这里硬失败并给出登记位置。
-    throw new Error(`分析统计范围里没有登记路由 ${analytics.describeRoute(decision.route)}`
-      + `${where ? `（${where}）` : ''} —— 请把这一族加进 scripts/lib/analytics-routes.js 的 ROUTE_RULES`);
-  }
-  const out = analytics.inject(resolved, decision);
-  const verdict = analytics.assertPageHtml(out, decision);
-  if (!verdict.ok) {
-    throw new Error(`分析注入自检失败 ${analytics.describeRoute(decision.route)}`
-      + `${where ? `（${where}）` : ''}：${verdict.problems.join('；')}`);
-  }
-  return out;
-}
+// `resolveRouteHrefs()` 与 `finalizePage()` 的唯一实现已迁到 `scripts/lib/page-shell.js`：
+// 页面壳（9 个页面族 + 首页收尾）都从那一处派生，「分析注入只有一处出口」这条性质不变，
+// 差别只是它不再住在构建脚本里 —— 于是 renderer 与构建编排都不会各自抄一份收尾逻辑。
 
 /**
  * 预渲染正文的纯文本 —— **同时剥掉 `<script>` 与 `<style>`**。
@@ -746,16 +700,10 @@ const htmlEscape = xmlEscape;
  * 只保留一个极小的主题切换脚本（与首页同一套 localStorage 约定）。
  */
 function writeDetailPages(payload, indexHtml, renderCore, plan) {
-  const style = (indexHtml.match(/<style>[\s\S]*?<\/style>/) || [''])[0];
-  const themeScript = (indexHtml.match(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/) || [''])[0];
-  const footerRaw = (indexHtml.match(/<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/) || [])[1];
-  if (!style || !themeScript || !footerRaw) {
-    throw new Error('抽取详情页共用片段失败（style / 主题脚本 / 页脚）——检查 index.html 里的标记是否还在');
-  }
-  // 页脚在这条路径上**每页解析一次**（而不是提前解析成一份共用）：
-  // 分析注入要按该页自己的路由判「要不要统计」，所以路由必须是这一页的。
-  // 除分析占位符外，这段的解析结果与「提前解析一次」逐字相同。
-  const footerTemplate = footerRaw.replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>');
+  // 共享片段（共享 `<style>` / 主题前置脚本 / 页脚模板）与页脚收尾都交给页面壳：
+  // 页脚**每页解析一次**这条既有纪律没有变 —— `shell.docEnd()` 会用这一页自己的路由调
+  // `finalizePage()`（分析注入要按该页路由判「要不要统计」）。
+  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS);
 
   const themeSeg = `<div class="seg" id="themeSeg" role="group" aria-label="配色主题">
         <button type="button" data-theme-value="auto" aria-pressed="true">跟随系统</button>
@@ -807,7 +755,6 @@ function writeDetailPages(payload, indexHtml, renderCore, plan) {
     const tier = renderCore.tierOf(deal);
     const pageUrl = `${SITE_URL}deal/${encodeURIComponent(deal.id)}/`;
     // 这一页自己的页脚：路由显式给（`deal/<id>/`），分析注入因此按本页路由判定。
-    const footer = finalizePage(footerTemplate, `deal/${deal.id}/`, '../../', 'writeDetailPages/footer').trim();
     const title = `${deal.title} — 官方优惠与免费额度 | ${SITE_NAME}`;
     const desc = (() => {
       // 描述：厂商 + 标题 + 优惠原文。**为什么要带标题前缀**：80 个详情页里有 17 条
@@ -857,53 +804,34 @@ function writeDetailPages(payload, indexHtml, renderCore, plan) {
       .map(data => `  <script type="application/ld+json">\n${toJsonLd(data)}\n  </script>`)
       .join('\n');
 
-    const html = `<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>${htmlEscape(title)}</title>
-<meta name="description" content="${htmlEscape(desc)}">
-<meta name="robots" content="index, follow, max-image-preview:large">
-<link rel="canonical" href="${htmlEscape(pageUrl)}">
-<link rel="alternate" hreflang="zh-CN" href="${htmlEscape(pageUrl)}">
-<link rel="alternate" hreflang="x-default" href="${htmlEscape(pageUrl)}">
-<meta property="og:type" content="article">
-<meta property="og:site_name" content="${htmlEscape(SITE_NAME)}">
-<meta property="og:url" content="${htmlEscape(pageUrl)}">
-<meta property="og:title" content="${htmlEscape(deal.title)}">
-<meta property="og:description" content="${htmlEscape(desc)}">
-<meta property="og:image" content="${SITE_URL}og-image.png">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
-<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
-${feeds.rootFeedTags('../../')}
-<link rel="stylesheet" href="../../logos.css">
-${themeScript}
-${jsonLd}
-${style}
-</head>
-<body>
-  <header class="top">
-    <div class="topin">
-      <a class="brand" href="../../">
-        <span class="mark" aria-hidden="true">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2A2 2 0 0 1 3 12V4.6A1.6 1.6 0 0 1 4.6 3H12a2 2 0 0 1 1.4.6l7.2 7.2a2 2 0 0 1 0 2.6Z"/>
-            <path d="M12 8v6"/><path d="m9.5 11.5 2.5 2.5 2.5-2.5"/>
-          </svg>
-        </span>
-        <span class="btxt"><b>AI <em>优惠</em>聚合器</b><small>真实优惠 · 每日更新</small></span>
-      </a>
-      <a class="jumpback" href="../../">← 返回全部优惠</a>
-      ${themeSeg}
-    </div>
-  </header>
-
-  <div class="wrap">
-    <main id="main" class="detail-main">
+    const html = `${shell.docStart({
+      kind: 'deal',
+      route: `deal/${deal.id}/`,
+      prefix: '../../',
+      parts,
+      title: htmlEscape(title),
+      description: htmlEscape(desc),
+      robots: 'index, follow, max-image-preview:large',
+      canonicalUrl: htmlEscape(pageUrl),
+      hreflang: [
+        { hreflang: 'zh-CN', href: htmlEscape(pageUrl) },
+        { hreflang: 'x-default', href: htmlEscape(pageUrl) }
+      ],
+      og: {
+        type: 'article',
+        siteName: htmlEscape(SITE_NAME),
+        url: htmlEscape(pageUrl),
+        title: htmlEscape(deal.title),
+        description: htmlEscape(desc),
+        image: `${SITE_URL}og-image.png`
+      },
+      faviconHref: '../../favicon.svg',
+      logoCssHref: '../../logos.css',
+      feedTagsHtml: feeds.rootFeedTags('../../'),
+      jsonLdHtml: jsonLd,
+      headerExtra: themeSeg,
+      where: 'writeDetailPages'
+    })}
       <nav class="crumb" aria-label="面包屑">
         <a href="../../">首页</a> › ${categoryPage
     ? `<a href="../../${categoryPage.route}">${htmlEscape(deal.category)}</a>`
@@ -920,14 +848,7 @@ ${vendorPage
       <p class="dpane-src">
         官方页：<a href="${htmlEscape(official)}" target="_blank" rel="noopener noreferrer">${htmlEscape(official)}</a>
         · 本站只做收录与整理，最终以厂商官方页面为准；排序与推荐理由不出售。
-      </p>
-    </main>
-    ${footer}
-  </div>
-  ${themeBind}
-</body>
-</html>
-`;
+      </p>${shell.docEnd({ route: `deal/${deal.id}/`, prefix: '../../', parts, extraTailHtml: themeBind, where: 'writeDetailPages' })}`;
 
     const dir = path.join(OUT, 'deal', deal.id);
     fs.mkdirSync(dir, { recursive: true });
@@ -959,18 +880,7 @@ ${vendorPage
  *  · 数据缺失（还没有过一次成功采集）时生成一页说明，而不是让构建失败。
  */
 function renderStatusPage(healthDoc, indexHtml, route = 'status/') {
-  const style = (indexHtml.match(/<style>[\s\S]*?<\/style>/) || [''])[0];
-  const themeScript = (indexHtml.match(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/) || [''])[0];
-  const footerRaw = (indexHtml.match(/<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/) || [])[1];
-  if (!style || !themeScript || !footerRaw) {
-    throw new Error('抽取状态页共用片段失败（style / 主题脚本 / 页脚）——检查 index.html 里的标记是否还在');
-  }
-  const footer = finalizePage(
-    footerRaw.replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>'),
-    route,
-    '../',
-    'renderStatusPage/footer'
-  ).trim();
+  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS);
   const summary = health.summarize(healthDoc);
   const rows = summary.rows;
 
@@ -1031,26 +941,10 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
     ? rows.map(rowHtml).join('')
     : '<tr><td colspan="6">还没有采集记录：这份文件由 `node scripts/collect.js` 写入，第一次采集成功后这里会有数据。</td></tr>';
 
-  return `<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${htmlEscape(STATUS_HEADING)} · ${htmlEscape(SITE_NAME)}</title>
-<meta name="description" content="${htmlEscape(STATUS_DESCRIPTION)}">
-<link rel="canonical" href="${SITE_URL}status/">
-<meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
-<link rel="icon" href="../favicon.svg" type="image/svg+xml">
-<!-- feed 约定：状态页自己不产出条目（订阅是「内容更新」语义，一页运维表不是更新），
-     但必须能被订阅发现 —— 与首页、详情页、分类页声明同两个 feed。
-     这一条是 v1.1 收口补的：此页原先只满足五条既有约定里的两条。 -->
-${feeds.rootFeedTags('../')}
-${themeScript}
-${style}
-<style>
-  /* 只用首页已有的设计变量，不新建一套视觉语言 */
+  // 本页独有的部分（页面级 CSS / 面包屑 / 页面脚本 / 订阅标签说明）逐字保留，
+  // 只把**文档脚手架**交给页面壳：共享 `<style>`、主题前置脚本、共享页头、共享页脚、
+  // 以及收尾的 finalizePage —— 此前这一族各写了一份，实测与其余 8 族逐字相同。
+  const pageCss = `  /* 只用首页已有的设计变量，不新建一套视觉语言 */
   .stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
   .stop h1 { font-size: 19px; margin: 0; }
   .stop .meta { color: var(--mut); font-size: var(--fs-sm); }
@@ -1066,28 +960,42 @@ ${style}
   .stt.degraded { color: var(--warn, #a35a00); border-color: currentColor; }
   .stt.failed { color: var(--bad, #b3261e); border-color: currentColor; }
   .stable-wrap { overflow-x: auto; }
-  @media (max-width: 760px) { .stable th, .stable td { padding: 8px 9px; } }
-</style>
-${jsonLdBlocks}
-</head>
-<body>
-  <header class="top">
-    <div class="topin">
-      <a class="brand" href="../">
-        <span class="mark" aria-hidden="true">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2A2 2 0 0 1 3 12V4.6A1.6 1.6 0 0 1 4.6 3H12a2 2 0 0 1 1.4.6l7.2 7.2a2 2 0 0 1 0 2.6Z"/>
-            <path d="M12 8v6"/><path d="m9.5 11.5 2.5 2.5 2.5-2.5"/>
-          </svg>
-        </span>
-        <span class="btxt"><b>AI <em>优惠</em>聚合器</b><small>真实优惠 · 每日更新</small></span>
-      </a>
-      <a class="jumpback" href="../">← 返回全部优惠</a>
-    </div>
-  </header>
-
-  <div class="wrap">
-    <main id="main">
+  @media (max-width: 760px) { .stable th, .stable td { padding: 8px 9px; } }`;
+  /* 相对时间只在浏览器里换算：页面字节因此与构建时刻无关（连续两次 build 产物一致）。
+     禁用 JS 时读到的仍是完整的绝对时间。 */
+  const pageScript = `    (function () {
+      document.body.classList.add('js');
+      var now = Date.now();
+      Array.prototype.forEach.call(document.querySelectorAll('time[data-rel]'), function (el) {
+        var at = Date.parse(el.getAttribute('datetime'));
+        if (isNaN(at)) return;
+        var minutes = Math.round((now - at) / 60000);
+        var text = minutes < 1 ? '刚刚'
+          : minutes < 60 ? minutes + ' 分钟前'
+            : minutes < 1440 ? Math.round(minutes / 60) + ' 小时前'
+              : Math.round(minutes / 1440) + ' 天前';
+        el.setAttribute('title', el.textContent);
+        el.textContent = text;
+      });
+    })();`;
+  const feedTagsHtml = `<!-- feed 约定：状态页自己不产出条目（订阅是「内容更新」语义，一页运维表不是更新），
+     但必须能被订阅发现 —— 与首页、详情页、分类页声明同两个 feed。
+     这一条是 v1.1 收口补的：此页原先只满足五条既有约定里的两条。 -->
+${feeds.rootFeedTags('../')}`;
+  return `${shell.docStart({
+    kind: 'status',
+    route,
+    prefix: '../',
+    parts,
+    title: `${htmlEscape(STATUS_HEADING)} · ${htmlEscape(SITE_NAME)}`,
+    description: htmlEscape(STATUS_DESCRIPTION),
+    canonicalUrl: `${SITE_URL}status/`,
+    faviconHref: '../favicon.svg',
+    feedTagsHtml,
+    extraCss: pageCss,
+    jsonLdHtml: jsonLdBlocks,
+    where: 'renderStatusPage'
+  })}
       <nav class="crumb" aria-label="面包屑"><a href="../">首页</a> › <span>${htmlEscape(STATUS_HEADING)}</span></nav>
 
       <div class="stop">
@@ -1124,32 +1032,7 @@ ${jsonLdBlocks}
       <p class="snote" style="margin-top: var(--s3)">
         机器可读的同一份数据：<a href="../source-health.json">source-health.json</a>。
         本站只做收录与整理，来源站点的可用性、内容与最终条款以官方页面为准。
-      </p>
-    </main>
-    ${footer}
-  </div>
-  <script>
-    /* 相对时间只在浏览器里换算：页面字节因此与构建时刻无关（连续两次 build 产物一致）。
-       禁用 JS 时读到的仍是完整的绝对时间。 */
-    (function () {
-      document.body.classList.add('js');
-      var now = Date.now();
-      Array.prototype.forEach.call(document.querySelectorAll('time[data-rel]'), function (el) {
-        var at = Date.parse(el.getAttribute('datetime'));
-        if (isNaN(at)) return;
-        var minutes = Math.round((now - at) / 60000);
-        var text = minutes < 1 ? '刚刚'
-          : minutes < 60 ? minutes + ' 分钟前'
-            : minutes < 1440 ? Math.round(minutes / 60) + ' 小时前'
-              : Math.round(minutes / 1440) + ' 天前';
-        el.setAttribute('title', el.textContent);
-        el.textContent = text;
-      });
-    })();
-  </script>
-</body>
-</html>
-`;
+      </p>${shell.docEnd({ route, prefix: '../', parts, extraScript: pageScript, where: 'renderStatusPage' })}`;
 }
 
 /* ------------------------------------------------------------------ */
@@ -1220,18 +1103,7 @@ function markChangesRows(body, records, expectedRows) {
 
 function renderChangesPage(radar, indexHtml, renderCore, context = {}) {
   const changeFeedTags = context.changeFeedTags || feeds.rootFeedTags('../');
-  const style = (indexHtml.match(/<style>[\s\S]*?<\/style>/) || [''])[0];
-  const themeScript = (indexHtml.match(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/) || [''])[0];
-  const footerRaw = (indexHtml.match(/<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/) || [])[1];
-  if (!style || !themeScript || !footerRaw) {
-    throw new Error('抽取变化雷达页共用片段失败（style / 主题脚本 / 页脚）——检查 index.html 里的标记是否还在');
-  }
-  const footer = finalizePage(
-    footerRaw.replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>'),
-    'changes/',
-    '../',
-    'renderChangesPage/footer'
-  ).trim();
+  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS);
 
   const W = changes.CHANGES_WORDING;
   const PAGE_HEADING = W.CHANGES_LABELS.pageTitle;
@@ -1330,25 +1202,22 @@ ${dealsBody}
 ${planBlock}
 ${apiPlanBlock}`;
 
-  return `<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${htmlEscape(PAGE_HEADING)} · ${htmlEscape(SITE_NAME)}</title>
-<meta name="description" content="${htmlEscape(PAGE_DESCRIPTION)}">
-<link rel="canonical" href="${pageUrl}">
-<meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
-<link rel="icon" href="../favicon.svg" type="image/svg+xml">
-<!-- feed 约定：这一页自己不产出条目（订阅是「内容更新」语义），但**必须订到变化本身** ——
+  // 面包屑属于**这一页的正文**（页壳只管文档脚手架），与正文拼在一起传给页壳。
+  const bodyHtml = `      <nav class="crumb" aria-label="面包屑"><a href="../">首页</a> › <span>${htmlEscape(PAGE_HEADING)}</span></nav>
+${body}`;
+  return shell.renderWidePageShell({
+    kind: 'changes',
+    route: 'changes/',
+    prefix: '../',
+    parts,
+    title: `${htmlEscape(PAGE_HEADING)} · ${htmlEscape(SITE_NAME)}`,
+    description: htmlEscape(PAGE_DESCRIPTION),
+    canonicalUrl: pageUrl,
+    faviconHref: '../favicon.svg',
+    feedTagsHtml: `<!-- feed 约定：这一页自己不产出条目（订阅是「内容更新」语义），但**必须订到变化本身** ——
      v1.6 起声明的是变化 Feed（v1.5 报告里「雷达没有自己的订阅源」那条技术债的收口）。 -->
-${changeFeedTags}
-${themeScript}
-${style}
-<style>
-  /* 只用首页已有的设计变量，不新建一套视觉语言。
+${changeFeedTags}`,
+    extraCss: `  /* 只用首页已有的设计变量，不新建一套视觉语言。
      列表式（不是宽表）：手机上自然换行、不产生横向滚动 —— 与目录页的表格相反，
      这里每行都有一段可能很长的原文（原值 → 新值），表格会把手机变成横向滚动条。 */
   .chgmeta { display: flex; align-items: baseline; gap: var(--s3); flex-wrap: wrap; color: var(--mut); font-size: var(--fs-sm); margin: 0 0 var(--s3); }
@@ -1393,36 +1262,11 @@ ${style}
   @media (max-width: 760px) {
     .chgi { padding: 9px 10px; }
     .chgh { gap: 2px var(--s2); }
-  }
-</style>
-${jsonLdBlocks}
-</head>
-<body>
-  <header class="top">
-    <div class="topin">
-      <a class="brand" href="../">
-        <span class="mark" aria-hidden="true">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2A2 2 0 0 1 3 12V4.6A1.6 1.6 0 0 1 4.6 3H12a2 2 0 0 1 1.4.6l7.2 7.2a2 2 0 0 1 0 2.6Z"/>
-            <path d="M12 8v6"/><path d="m9.5 11.5 2.5 2.5 2.5-2.5"/>
-          </svg>
-        </span>
-        <span class="btxt"><b>AI <em>优惠</em>聚合器</b><small>真实优惠 · 每日更新</small></span>
-      </a>
-      <a class="jumpback" href="../">← 返回全部优惠</a>
-    </div>
-  </header>
-
-  <div class="wrap">
-    <main id="main">
-      <nav class="crumb" aria-label="面包屑"><a href="../">首页</a> › <span>${htmlEscape(PAGE_HEADING)}</span></nav>
-${body}
-    </main>
-    ${footer}
-  </div>
-</body>
-</html>
-`;
+  }`,
+    jsonLdHtml: jsonLdBlocks,
+    bodyHtml,
+    where: 'renderChangesPage'
+  });
 }
 
 /* ------------------------------------------------------------------ */
@@ -1445,22 +1289,70 @@ ${body}
  * ## 页面正文不在这里
  *
  * 正文、列模型、诚实性断言都在 `lib/plans-page.js`（纯函数，能被离线自测直接调用）。
- * 这一层只套壳：`<head>`、主题脚本、页头、页脚、JSON-LD。
+/**
+ * 套餐对比页 `/plans/coding/` 的**静态表格原语**（宽表 11 列 ⇒ 外层必须有横滚容器）。
+ *
+ * 与 `STATIC_PAGE_CSS` 是**变体关系而不是同一份**：`.ptable td` 的 `min-width` 是 92px
+ * （资料页那五个族是 72px），另有 `.ptag` 与 `.ptable .num small` 两条这里独有。
+ * 按本轮审计的纪律「分歧的声明不合并」——先原样保留；要合并必须先证明两条规则真的同值，
+ * 否则外观会静默改变，而外观回归**只有真浏览器几何断言抓得到**。
+ *
+ * ⚠️ 迁移时漏掉这一段一次，症状是 `/plans/coding/` 在 360/390px 出现 290px 页面级横向溢出
+ * （`.ptable-wrap` 的 `overflow-x: auto` 没了，634px 的宽表直接撑破 328px 的容器）——
+ * 由 `verify-site.js` §22c 的全站几何门禁抓住，构建期自检与静态检查都是绿的。
+ * 教训：页壳只接管**文档脚手架**，页面级 CSS 必须显式保留。
+ */
+const PLANS_TABLE_CSS = `  /* 只用首页已有的设计变量，不新建一套视觉语言。
+     这是一张**宽表**（11 列），所以外层必须有横滚容器：
+     /status/ 那一页的教训是「桌面端一切正常、手机上整页横滚，而所有静态检查都是绿的」。 */
+  .stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
+  .stop h1 { font-size: 19px; margin: 0; }
+  .stop .meta { color: var(--mut); font-size: var(--fs-sm); }
+  /* ⚠️ 这一页底部的口径文案**不收窄**（v2.2 上线后的修复）。
+     早先按"长文段 82ch 更好读"写了个上限，但 ch 量的是 "0" 的宽度（12px 字体下约 6px），
+     于是 82ch ≈ 490px —— 正文容器有 1400px，整段只占左边 1/3，句子还被切在词中间
+     （「…本页照原样列 / 出，不互相换算」），正文右侧留下一条巨大的空白。
+     口径说明是**必须读完才能理解这一页**的内容，宽度就该跟随正文容器；
+     想要收窄的是"可选的长文"，不是它。 */
+  .ph2 { font-size: 15px; margin: var(--s4) 0 var(--s2); }
+  .plist { margin: 0; padding-left: 1.15em; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; max-width: none; }
+  .plist b { color: var(--ink2); }
+  .ptable-wrap { overflow-x: auto; }
+  .ptable { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+  .ptable caption { text-align: left; color: var(--mut); font-size: var(--fs-sm); padding: 0 0 var(--s2); }
+  .ptable th, .ptable td { text-align: left; padding: 9px 11px; border-top: 1px solid var(--line); font-weight: 400; font-size: var(--fs-sm); vertical-align: top; }
+  .ptable thead th { border-top: 0; color: var(--mut); font-weight: 600; white-space: nowrap; }
+  .ptable tbody th { font-weight: 600; white-space: nowrap; }
+  .ptable td { min-width: 92px; }
+  .ptable small { display: block; color: var(--mut); font-weight: 400; font-size: 11.5px; margin-top: 2px; line-height: 1.5; }
+  .ptable .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .ptable .num small { text-align: right; }
+  .ptable a { color: var(--brand); }
+  .ptag { margin-left: 4px; color: var(--mut); border: 1px solid var(--line); border-radius: var(--r-pill); padding: 0 6px; font-size: 10.5px; }
+  .pnone { color: var(--mut); }
+  @media (max-width: 760px) { .ptable th, .ptable td { padding: 8px 9px; } }`;
+
+/**
+ * 渲染 `/plans/coding/`（Coding Plan 套餐对比页）。
+ *
+ * ## 为什么它是「独立路由」而不是落地页家族的一员
+ *
+ * `landing.js` 的 `planLandingPages()` 产出的每一页都是**按数据分组的家族**
+ * （一个厂商一页、一个分类一页，`itemsOf()` 用 `match.by` 决定谁属于哪一页）。
+ * 套餐对比页只有**一条**路由 `/plans/coding/`，它不分页也不需要门槛 ——
+ * 硬把它塞进那张家族表，会为了「统一」而引入一条永远只有一个成员的注册表。
+ * 所以它走的是 `/status/` `/changes/` `/feeds/` 那一条既有路径：**独立静态页**。
+ * 代价是下面四张清单（sitemap 计数、`pageRoutes`、页脚深度扫描、订阅声明扫描）
+ * 都要显式加上它 —— 而这正是「新增一条路由是一个决定，不是一次手滑」的落点。
+ *
+ * ## 页面正文不在这里
+ *
+ * 正文、列模型、诚实性断言都在 `lib/plans-page.js`（纯函数，能被离线自测直接调用）。
+ * 这一层只套壳：`<head>`、主题脚本、页头、页脚、JSON-LD（文档脚手架见 `lib/page-shell.js`）。
  */
 function renderPlansPage(planStore, indexHtml, context = {}) {
   const prefix = '../../'; // /plans/coding/ 是两层路由
-  const style = (indexHtml.match(/<style>[\s\S]*?<\/style>/) || [''])[0];
-  const themeScript = (indexHtml.match(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/) || [''])[0];
-  const footerRaw = (indexHtml.match(/<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/) || [])[1];
-  if (!style || !themeScript || !footerRaw) {
-    throw new Error('抽取套餐对比页共用片段失败（style / 主题脚本 / 页脚）——检查 index.html 里的标记是否还在');
-  }
-  const footer = finalizePage(
-    footerRaw.replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>'),
-    plansPage.PLANS_ROUTE,
-    prefix,
-    'renderPlansPage/footer'
-  ).trim();
+  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS);
 
   // v2.3：这一页**有专属订阅源**（套餐变化），必须声明它 —— 与根 Feed 并列，
   // 而不是替换：读者既可以订全站优惠，也可以只订套餐变化。
@@ -1586,83 +1478,26 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
 ${plansCompareSource()}
 </script>`;
 
-  return `<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${htmlEscape(plansPage.PLANS_HEADING)} · ${htmlEscape(SITE_NAME)}</title>
-<meta name="description" content="${htmlEscape(plansPage.PLANS_DESCRIPTION)}">
-<link rel="canonical" href="${pageUrl}">
-<meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
-<link rel="icon" href="${prefix}favicon.svg" type="image/svg+xml">
-<!-- feed 约定：与首页、状态页、变化页声明同两个根 Feed；v2.3 起另加**本页专属的
+  return shell.renderWidePageShell({
+    kind: 'plans',
+    route: plansPage.PLANS_ROUTE,
+    prefix: prefix,
+    parts,
+    title: `${htmlEscape(plansPage.PLANS_HEADING)} · ${htmlEscape(SITE_NAME)}`,
+    description: htmlEscape(plansPage.PLANS_DESCRIPTION),
+    canonicalUrl: pageUrl,
+    faviconHref: `${prefix}favicon.svg`,
+    feedTagsHtml: `<!-- feed 约定：与首页、状态页、变化页声明同两个根 Feed；v2.3 起另加**本页专属的
      套餐变化源**（这一页不产出优惠条目，但它自己确实有一条变化流）。 -->
 ${feeds.rootFeedTags(prefix)}
-${feeds.feedLinkTags([planFeed], prefix)}
-${themeScript}
-${style}
-<style>
-  /* 只用首页已有的设计变量，不新建一套视觉语言。
-     这是一张**宽表**（11 列），所以外层必须有横滚容器：
-     /status/ 那一页的教训是「桌面端一切正常、手机上整页横滚，而所有静态检查都是绿的」。 */
-  .stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
-  .stop h1 { font-size: 19px; margin: 0; }
-  .stop .meta { color: var(--mut); font-size: var(--fs-sm); }
-  /* ⚠️ 这一页底部的口径文案**不收窄**（v2.2 上线后的修复）。
-     早先按"长文段 82ch 更好读"写了个上限，但 ch 量的是 "0" 的宽度（12px 字体下约 6px），
-     于是 82ch ≈ 490px —— 正文容器有 1400px，整段只占左边 1/3，句子还被切在词中间
-     （「…本页照原样列 / 出，不互相换算」），正文右侧留下一条巨大的空白。
-     口径说明是**必须读完才能理解这一页**的内容，宽度就该跟随正文容器；
-     想要收窄的是"可选的长文"，不是它。 */
-  .ph2 { font-size: 15px; margin: var(--s4) 0 var(--s2); }
-  .plist { margin: 0; padding-left: 1.15em; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; max-width: none; }
-  .plist b { color: var(--ink2); }
-  .ptable-wrap { overflow-x: auto; }
-  .ptable { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
-  .ptable caption { text-align: left; color: var(--mut); font-size: var(--fs-sm); padding: 0 0 var(--s2); }
-  .ptable th, .ptable td { text-align: left; padding: 9px 11px; border-top: 1px solid var(--line); font-weight: 400; font-size: var(--fs-sm); vertical-align: top; }
-  .ptable thead th { border-top: 0; color: var(--mut); font-weight: 600; white-space: nowrap; }
-  .ptable tbody th { font-weight: 600; white-space: nowrap; }
-  .ptable td { min-width: 92px; }
-  .ptable small { display: block; color: var(--mut); font-weight: 400; font-size: 11.5px; margin-top: 2px; line-height: 1.5; }
-  .ptable .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .ptable .num small { text-align: right; }
-  .ptable a { color: var(--brand); }
-  .ptag { margin-left: 4px; color: var(--mut); border: 1px solid var(--line); border-radius: var(--r-pill); padding: 0 6px; font-size: 10.5px; }
-  .pnone { color: var(--mut); }
-  @media (max-width: 760px) { .ptable th, .ptable td { padding: 8px 9px; } }
-${css}</style>
-${jsonLdBlocks}
-</head>
-<body>
-  <header class="top">
-    <div class="topin">
-      <a class="brand" href="${prefix}">
-        <span class="mark" aria-hidden="true">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2A2 2 0 0 1 3 12V4.6A1.6 1.6 0 0 1 4.6 3H12a2 2 0 0 1 1.4.6l7.2 7.2a2 2 0 0 1 0 2.6Z"/>
-            <path d="M12 8v6"/><path d="m9.5 11.5 2.5 2.5 2.5-2.5"/>
-          </svg>
-        </span>
-        <span class="btxt"><b>AI <em>优惠</em>聚合器</b><small>真实优惠 · 每日更新</small></span>
-      </a>
-      <a class="jumpback" href="${prefix}">← 返回全部优惠</a>
-    </div>
-  </header>
-
-  <div class="wrap">
-    <main id="main">
-${body}
-    </main>
-    ${footer}
-  </div>
-${compareScript}
-</body>
-</html>
-`;
+${feeds.feedLinkTags([planFeed], prefix)}`,
+    // 顺序与迁移前一致：本页静态表格原语在前，`css`（筛选/搜索/展开，由 plans-compare.js 驱动）在后。
+    extraCss: `${PLANS_TABLE_CSS}\n${css}`,
+    extraTailHtml: compareScript,
+    jsonLdHtml: jsonLdBlocks,
+    bodyHtml: body,
+    where: 'renderPlansPage'
+  });
 }
 
 /* ------------------------------------------------------------------ */
@@ -1681,18 +1516,7 @@ ${compareScript}
  */
 function renderApiPlansPage(apiStore, indexHtml, context = {}) {
   const prefix = '../../'; // /plans/api/ 同样是两层路由
-  const style = (indexHtml.match(/<style>[\s\S]*?<\/style>/) || [''])[0];
-  const themeScript = (indexHtml.match(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/) || [''])[0];
-  const footerRaw = (indexHtml.match(/<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/) || [])[1];
-  if (!style || !themeScript || !footerRaw) {
-    throw new Error('抽取 API 计费页共用片段失败（style / 主题脚本 / 页脚）——检查 index.html 里的标记是否还在');
-  }
-  const footer = finalizePage(
-    footerRaw.replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>'),
-    apiPlansPage.API_PLANS_ROUTE,
-    prefix,
-    'renderApiPlansPage/footer'
-  ).trim();
+  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS);
 
   const pageUrl = `${SITE_URL}${apiPlansPage.API_PLANS_ROUTE}`;
   const plans = apiStore.plans || [];
@@ -1716,29 +1540,23 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
     prefix
   });
 
-  return `<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${htmlEscape(apiPlansPage.API_PLANS_HEADING)} · ${htmlEscape(SITE_NAME)}</title>
-<meta name="description" content="${htmlEscape(apiPlansPage.API_PLANS_DESCRIPTION)}">
-<link rel="canonical" href="${pageUrl}">
-<meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
-<link rel="icon" href="${prefix}favicon.svg" type="image/svg+xml">
-<!-- v2.5：这一页的「平台」列会写 data-logo 属性，所以必须引用 logos.css ——
+  return shell.renderWidePageShell({
+    kind: 'plans',
+    route: apiPlansPage.API_PLANS_ROUTE,
+    prefix: prefix,
+    parts,
+    title: `${htmlEscape(apiPlansPage.API_PLANS_HEADING)} · ${htmlEscape(SITE_NAME)}`,
+    description: htmlEscape(apiPlansPage.API_PLANS_DESCRIPTION),
+    canonicalUrl: pageUrl,
+    faviconHref: `${prefix}favicon.svg`,
+    logoCssHref: `${prefix}logos.css`,
+    feedTagsHtml: `<!-- v2.5：这一页的「平台」列会写 data-logo 属性，所以必须引用 logos.css ——
      漏了它的表现是**每一行的 logo 位是一个空方块**（页面看起来只是"有点空"），
      而真浏览器那一条「没有 JS 错误、没有外部请求」的断言不会红（缺的是本地样式表，
      既不报错也不发外部请求）。这是构建期自检「模板引用的 logo key 全部已登记」查不到的那一类。 -->
-<link rel="stylesheet" href="${prefix}logos.css">
 ${apiOwnFeedTags}
-${feeds.rootFeedTags(prefix)}
-${themeScript}
-${style}
-<style>
-  /* 只用首页已有的设计变量，不新建一套视觉语言。 */
+${feeds.rootFeedTags(prefix)}`,
+    extraCss: `  /* 只用首页已有的设计变量，不新建一套视觉语言。 */
   .stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
   .stop h1 { font-size: 19px; margin: 0; }
   .stop .meta { color: var(--mut); font-size: var(--fs-sm); }
@@ -1796,35 +1614,11 @@ ${style}
       box-shadow: 1px 0 0 var(--line); max-width: 10em; white-space: normal; overflow-wrap: anywhere;
     }
     .ptable th, .ptable td { padding: 8px 9px; }
-  }
-</style>
-${jsonLdBlocks}
-</head>
-<body>
-  <header class="top">
-    <div class="topin">
-      <a class="brand" href="${prefix}">
-        <span class="mark" aria-hidden="true">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2A2 2 0 0 1 3 12V4.6A1.6 1.6 0 0 1 4.6 3H12a2 2 0 0 1 1.4.6l7.2 7.2a2 2 0 0 1 0 2.6Z"/>
-            <path d="M12 8v6"/><path d="m9.5 11.5 2.5 2.5 2.5-2.5"/>
-          </svg>
-        </span>
-        <span class="btxt"><b>AI <em>优惠</em>聚合器</b><small>真实优惠 · 每日更新</small></span>
-      </a>
-      <a class="jumpback" href="${prefix}">← 返回全部优惠</a>
-    </div>
-  </header>
-
-  <div class="wrap">
-    <main id="main">
-${body}
-    </main>
-    ${footer}
-  </div>
-</body>
-</html>
-`;
+  }`,
+    jsonLdHtml: jsonLdBlocks,
+    bodyHtml: body,
+    where: 'renderApiPlansPage'
+  });
 }
 
 /* ------------------------------------------------------------------ */
@@ -1845,18 +1639,7 @@ ${body}
  */
 function renderPlansHubShell(indexHtml, context = {}) {
   const prefix = '../'; // /plans/ 是一层路由
-  const style = (indexHtml.match(/<style>[\s\S]*?<\/style>/) || [''])[0];
-  const themeScript = (indexHtml.match(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/) || [''])[0];
-  const footerRaw = (indexHtml.match(/<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/) || [])[1];
-  if (!style || !themeScript || !footerRaw) {
-    throw new Error('抽取套餐资料入口页共用片段失败（style / 主题脚本 / 页脚）——检查 index.html 里的标记是否还在');
-  }
-  const footer = finalizePage(
-    footerRaw.replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>'),
-    plansHubPage.PLANS_HUB_ROUTE,
-    prefix,
-    'renderPlansHubShell/footer'
-  ).trim();
+  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS);
 
   const pageUrl = `${SITE_URL}${plansHubPage.PLANS_HUB_ROUTE}`;
   const jsonLdBlocks = plansHubPage.plansHubJsonLd({ siteUrl: SITE_URL })
@@ -1865,23 +1648,17 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
 </script>`).join('\n');
   const body = plansHubPage.renderPlansHubPage({ ...context, prefix, siteUrl: SITE_URL });
 
-  return `<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${htmlEscape(plansHubPage.PLANS_HUB_HEADING)} · ${htmlEscape(SITE_NAME)}</title>
-<meta name="description" content="${htmlEscape(plansHubPage.PLANS_HUB_DESCRIPTION)}">
-<link rel="canonical" href="${pageUrl}">
-<meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
-<link rel="icon" href="${prefix}favicon.svg" type="image/svg+xml">
-${feeds.rootFeedTags(prefix)}
-${themeScript}
-${style}
-<style>
-  /* 只用首页与两个对比页已有的设计变量，不新建一套视觉语言。 */
+  return shell.renderWidePageShell({
+    kind: 'plans-hub',
+    route: plansHubPage.PLANS_HUB_ROUTE,
+    prefix: prefix,
+    parts,
+    title: `${htmlEscape(plansHubPage.PLANS_HUB_HEADING)} · ${htmlEscape(SITE_NAME)}`,
+    description: htmlEscape(plansHubPage.PLANS_HUB_DESCRIPTION),
+    canonicalUrl: pageUrl,
+    faviconHref: `${prefix}favicon.svg`,
+    feedTagsHtml: `${feeds.rootFeedTags(prefix)}`,
+    extraCss: `  /* 只用首页与两个对比页已有的设计变量，不新建一套视觉语言。 */
   .stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
   .stop h1 { font-size: 19px; margin: 0; }
   .stop .meta { color: var(--mut); font-size: var(--fs-sm); }
@@ -1919,35 +1696,11 @@ ${style}
   .pchgtype { color: var(--brand); }
   .pchgwhat { color: var(--ink); }
   .pchgorigin { color: var(--mut); }
-  .pchnone, .pchnote { color: var(--mut); font-size: var(--fs-sm); margin: var(--s1) 0 0; }
-</style>
-${jsonLdBlocks}
-</head>
-<body>
-  <header class="top">
-    <div class="topin">
-      <a class="brand" href="${prefix}">
-        <span class="mark" aria-hidden="true">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2A2 2 0 0 1 3 12V4.6A1.6 1.6 0 0 1 4.6 3H12a2 2 0 0 1 1.4.6l7.2 7.2a2 2 0 0 1 0 2.6Z"/>
-            <path d="M12 8v6"/><path d="m9.5 11.5 2.5 2.5 2.5-2.5"/>
-          </svg>
-        </span>
-        <span class="btxt"><b>AI <em>优惠</em>聚合器</b><small>真实优惠 · 每日更新</small></span>
-      </a>
-      <a class="jumpback" href="${prefix}">← 返回全部优惠</a>
-    </div>
-  </header>
-
-  <div class="wrap">
-    <main id="main">
-${body}
-    </main>
-    ${footer}
-  </div>
-</body>
-</html>
-`;
+  .pchnone, .pchnote { color: var(--mut); font-size: var(--fs-sm); margin: var(--s1) 0 0; }`,
+    jsonLdHtml: jsonLdBlocks,
+    bodyHtml: body,
+    where: 'renderPlansHubShell'
+  });
 }
 
 /* ------------------------------------------------------------------ */
@@ -1955,50 +1708,20 @@ ${body}
 /* ------------------------------------------------------------------ */
 
 /**
- * 模型页（索引 / 详情共用）的套壳。
+/**
+ * `renderStaticPage` 那五个页面族共用的**页面级 CSS**：表格 / 信息表 / 过滤条 / 空态原语。
  *
- * 与 `/plans/` 那一支同一套做法：正文在 lib、`<head>` / 页头 / 页脚 / JSON-LD 在这里。
- * `prefix` 由路由段数推导，**不写死**（索引一层、详情两层）。
+ * 它原先内联在 `renderModelsShell` 的 `<style>` 块里（那一版自带一整份文档脚手架，105 行）。
+ * 页壳接管脚手架之后这段 CSS 必须**显式留下**——它是这五族共用的页面原语，不是文档脚手架的一部分。
+ * 漏掉它的症状实测过一次：`/docs/data/`、`/models/` 等页在 390/360px 出现 209–239px 的
+ * 页面级横向溢出（`.ptable-wrap` 的 `overflow-x: auto` 与窄屏 sticky 列都没了），
+ * 由 `verify-site.js` §22c 的全站几何门禁当场抓住 —— 静态检查与构建期自检都是绿的。
  *
- * `mainClass` 缺省为空 ⇒ `<main id="main">` 一字不改（索引页 / 档案页 / 数据文档页全部走缺省）。
- * 只有**详情内容列**页面（模型详情）才显式传 `'detail-main'`，宽度由首页那条 `.detail-main` 规则给。
+ * ⚠️ 与 `index.html` 的**共享** `<style>` 是两件事：那里面放的是「全站同一条规则」
+ * （`.detail-main` 内容列、`.snote` 说明宽度）；这里放的是「资料页这一族的表格原语」。
+ * 什么时候该把其中某条上提到共享 `<style>`：当**第二个布局族**也需要它时（Workstream C 的判据）。
  */
-function renderModelsShell({ route, title, description, body, jsonLd, prefix, extraCss = '', mainClass = '' }, indexHtml) {
-  const style = (indexHtml.match(/<style>[\s\S]*?<\/style>/) || [''])[0];
-  const themeScript = (indexHtml.match(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/) || [''])[0];
-  const footerRaw = (indexHtml.match(/<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/) || [])[1];
-  if (!style || !themeScript || !footerRaw) {
-    throw new Error(`抽取模型页共用片段失败（style / 主题脚本 / 页脚，${route}）——检查 index.html 里的标记是否还在`);
-  }
-  const footer = finalizePage(
-    footerRaw.replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>'),
-    route,
-    prefix,
-    'renderModelsShell/footer'
-  ).trim();
-  const pageUrl = `${SITE_URL}${route}`;
-  const jsonLdBlocks = jsonLd
-    .map(data => `<script type="application/ld+json">
-${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
-</script>`).join('\n');
-
-  return `<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${htmlEscape(title)} · ${htmlEscape(SITE_NAME)}</title>
-<meta name="description" content="${htmlEscape(description)}">
-<link rel="canonical" href="${pageUrl}">
-<meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
-<link rel="icon" href="${prefix}favicon.svg" type="image/svg+xml">
-${feeds.rootFeedTags(prefix)}
-${themeScript}
-${style}
-<style>
-  /* 只用首页已有的设计变量，不新建视觉语言。 */
+const STATIC_PAGE_CSS = `  /* 只用首页已有的设计变量，不新建视觉语言。 */
   .stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
   .stop h1 { font-size: 19px; margin: 0; }
   .stop .meta { color: var(--mut); font-size: var(--fs-sm); }
@@ -2037,36 +1760,49 @@ ${style}
       position: sticky; left: 0; width: 8.5em; white-space: normal; background: var(--card); z-index: 2;
     }
     .ptable th, .ptable td { padding: 8px 9px; }
-  }
-${extraCss}
-</style>
-${jsonLdBlocks}
-</head>
-<body>
-  <header class="top">
-    <div class="topin">
-      <a class="brand" href="${prefix}">
-        <span class="mark" aria-hidden="true">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2A2 2 0 0 1 3 12V4.6A1.6 1.6 0 0 1 4.6 3H12a2 2 0 0 1 1.4.6l7.2 7.2a2 2 0 0 1 0 2.6Z"/>
-            <path d="M12 8v6"/><path d="m9.5 11.5 2.5 2.5 2.5-2.5"/>
-          </svg>
-        </span>
-        <span class="btxt"><b>AI <em>优惠</em>聚合器</b><small>真实优惠 · 每日更新</small></span>
-      </a>
-      <a class="jumpback" href="${prefix}">← 返回全部优惠</a>
-    </div>
-  </header>
+  }`;
 
-  <div class="wrap">
-    <main id="main"${mainClass ? ` class="${mainClass}"` : ''}>
-${body}
-    </main>
-    ${footer}
-  </div>
-</body>
-</html>
-`;
+/**
+ * 五个「静态资料页族」共用的**参数映射**：/models/ · /models/<slug>/ · /archive/ ·
+ * /archive/<kind>/<id>/ · /docs/data/。
+ *
+ * ⚠️ 它**不是第二份页面壳**：文档脚手架只有 \`lib/page-shell.js\` 一处实现，这里只做映射。
+ * 这五族的正文与 JSON-LD 都已经是现成的值，且都不用 robots / hreflang / OG，
+ * 于是把「route → canonical → favicon → 根 Feed → JSON-LD 段」这几步固定下来，
+ * 避免在 5 个调用点各抄一遍 —— 上一版是一份 105 行的**自带文档脚手架**，那正是本轮要消灭的形态。
+ *
+ * \`kind\` **必须由调用方显式给出**，它决定布局族（\`models-index\` / \`archive-index\` /
+ * \`data-docs\` 是 wide，\`model\` / \`archive-detail\` 是 detail）。上一版靠「传不传 mainClass」
+ * 暗示这件事，而忘了传的症状是**详情页悄悄渲染成宽页**；交给 \`page-kinds.js\` 的声明表判之后，
+ * 这件事不再依赖记性（detail 族缺内容列会当场抛错）。
+ *
+ * \`jsonLd\` 收**对象数组**（不是 HTML）：本函数按站点既有格式渲染成一段一个对象
+ * （塞成数组时 \`JSON.parse(block)['@type']\` 会得到 undefined，自检既不抛错也不命中 ——
+ * 分类页第一版就是这么写的，被自检当场拦下）。
+ */
+function renderStaticPage({ kind, route, title, description, body, jsonLd, prefix, extraCss = '', mainClass }, indexHtml) {
+  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS);
+  const jsonLdHtml = jsonLd
+    .map(data => `<script type="application/ld+json">
+${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
+</script>`).join('\n');
+  return shell.renderPageShell({
+    kind,
+    route,
+    prefix,
+    parts,
+    title: `${htmlEscape(title)} · ${htmlEscape(SITE_NAME)}`,
+    description: htmlEscape(description),
+    canonicalUrl: `${SITE_URL}${route}`,
+    faviconHref: `${prefix}favicon.svg`,
+    feedTagsHtml: feeds.rootFeedTags(prefix),
+    // 这一族的表格原语 + 各页自己的追加样式（顺序与迁移前一致：族原语在前、页面追加在后）。
+    extraCss: extraCss ? `${STATIC_PAGE_CSS}\n${extraCss}` : STATIC_PAGE_CSS,
+    jsonLdHtml,
+    bodyHtml: body,
+    mainClass,
+    where: `renderStaticPage/${route}`
+  });
 }
 
 /**
@@ -2155,18 +1891,7 @@ function vendorHrefFor(developer, providerTable, directoryPages) {
  * 措辞直接取 `lib/changes.js` 的权威表，不另写一句话。
  */
 function renderFeedsPage(feedList, indexHtml, context = {}) {
-  const style = (indexHtml.match(/<style>[\s\S]*?<\/style>/) || [''])[0];
-  const themeScript = (indexHtml.match(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/) || [''])[0];
-  const footerRaw = (indexHtml.match(/<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/) || [])[1];
-  if (!style || !themeScript || !footerRaw) {
-    throw new Error('抽取订阅中心共用片段失败（style / 主题脚本 / 页脚）——检查 index.html 里的标记是否还在');
-  }
-  const footer = finalizePage(
-    footerRaw.replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>'),
-    'feeds/',
-    '../',
-    'renderFeedsPage/footer'
-  ).trim();
+  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS);
 
   const W = feeds.FEEDS_WORDING;
   const PAGE_HEADING = W.FEEDS_LABELS.pageTitle;
@@ -2293,24 +2018,7 @@ ${ungroupedFeeds.map(rowHtml).join('\n')}
 ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
 </script>`).join('\n');
 
-  return `<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${htmlEscape(PAGE_HEADING)} · ${htmlEscape(SITE_NAME)}</title>
-<meta name="description" content="${htmlEscape(PAGE_DESCRIPTION)}">
-<link rel="canonical" href="${pageUrl}">
-<meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
-<link rel="icon" href="../favicon.svg" type="image/svg+xml">
-<!-- feed 约定：这一页自己不产出条目（订阅是「内容更新」语义），但必须能被订阅发现。 -->
-${feeds.feedLinkTags(ownFeed ? [ownFeed] : [], '../')}
-${themeScript}
-${style}
-<style>
-  /* 只用首页已有的设计变量。列表式（不是宽表）：订阅地址很长，窄屏上不能产生横向滚动。 */
+  const pageCss = `  /* 只用首页已有的设计变量。列表式（不是宽表）：订阅地址很长，窄屏上不能产生横向滚动。 */
   .fsec { margin: 0 0 var(--s4); border-top: 1px solid var(--line); padding-top: var(--s3); }
   .fsec h2 { font-size: 15px; margin: 0 0 var(--s2); }
   .flist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
@@ -2319,20 +2027,22 @@ ${style}
   .fcount { color: var(--mut); font-variant-numeric: tabular-nums; }
   .fdesc { margin: 4px 0 0; color: var(--ink2); font-size: var(--fs-sm); line-height: 1.6; }
   .furl { margin: 6px 0 0; font-size: 11.5px; overflow-wrap: anywhere; }
-  .furl a { color: var(--brand); }
-</style>
-${jsonLdBlocks}
-</head>
-<body>
-  <header class="top">
-    <div class="topin">
-      <a class="brand" href="../"><span class="btxt"><b>AI <em>优惠</em>聚合器</b><small>真实优惠 · 每日更新</small></span></a>
-      <a class="jumpback" href="../">← 返回全部优惠</a>
-    </div>
-  </header>
-
-  <div class="wrap">
-    <main id="main">
+  .furl a { color: var(--brand); }`;
+  return `${shell.docStart({
+    kind: 'feeds',
+    route: 'feeds/',
+    prefix: '../',
+    parts,
+    title: `${htmlEscape(PAGE_HEADING)} · ${htmlEscape(SITE_NAME)}`,
+    description: htmlEscape(PAGE_DESCRIPTION),
+    canonicalUrl: pageUrl,
+    faviconHref: '../favicon.svg',
+    feedTagsHtml: `<!-- feed 约定：这一页自己不产出条目（订阅是「内容更新」语义），但必须能被订阅发现。 -->
+${feeds.feedLinkTags(ownFeed ? [ownFeed] : [], '../')}`,
+    extraCss: pageCss,
+    jsonLdHtml: jsonLdBlocks,
+    where: 'renderFeedsPage'
+  })}
       <nav class="crumb" aria-label="面包屑"><a href="../">首页</a> › <span>${htmlEscape(PAGE_HEADING)}</span></nav>
       <h1>${htmlEscape(PAGE_HEADING)}</h1>
       <p class="snote">把下面的地址粘进任意 RSS / JSON Feed 阅读器即可订阅。本站没有账号、没有邮件列表、没有推送服务，
@@ -2353,13 +2063,7 @@ ${vendorFeeds.map(rowHtml).join('\n')}
       <p class="snote">优惠订阅回答「当前有哪些符合这个条件的优惠」；最近变化与最近新增回答「最近发生了什么」，
         只收优惠内容、领取条件、有效期与收录状态的变化 —— 改一个标点、换一处分类不会推给你。</p>
       <p class="snote">${htmlEscape(W.FEEDS_NOTES.officialNote)}</p>
-    </section>
-    </main>
-    ${footer}
-  </div>
-</body>
-</html>
-`;
+    </section>${shell.docEnd({ route: 'feeds/', prefix: '../', parts, where: 'renderFeedsPage' })}`;
 }
 
 /* ------------------------------------------------------------------ */
@@ -2401,18 +2105,7 @@ function renderDirectoryPage(spec, deals, indexHtml, context) {
   const prefix = '../'.repeat(spec.depth || 1);
   /** 该页自身的绝对地址。按需求页在 `/need/<slug>/`，所以**不能**由 slug 直接拼站根地址 */
   const pageUrl = `${SITE_URL}${spec.route || `${spec.slug}/`}`;
-  const style = (indexHtml.match(/<style>[\s\S]*?<\/style>/) || [''])[0];
-  const themeScript = (indexHtml.match(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/) || [''])[0];
-  const footerRaw = (indexHtml.match(/<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/) || [])[1];
-  if (!style || !themeScript || !footerRaw) {
-    throw new Error(`抽取目录页共用片段失败（style / 主题脚本 / 页脚）——检查 index.html 里的标记是否还在`);
-  }
-  const footer = finalizePage(
-    footerRaw.replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>'),
-    spec.route || `${spec.slug}/`,
-    prefix,
-    'renderDirectoryPage/footer'
-  ).trim();
+  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS);
 
   // v1.7：页面类型。`hub` 列子页面、`alias` 是 noindex 的旧地址，其余列条目。
   const kind = spec.kind || 'collection';
@@ -2686,26 +2379,7 @@ ${summary.map(row => `        <li data-summary-label="${htmlEscape(row.label)}" 
       `${spec.aliasReason ? `原因：${htmlEscape(spec.aliasReason)}` : ''}</p>`
     : '';
 
-  return `<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${htmlEscape(spec.heading)} · ${htmlEscape(SITE_NAME)}</title>
-<meta name="description" content="${htmlEscape(spec.description)}">
-<meta name="robots" content="${isAlias ? 'noindex, follow' : 'index, follow, max-image-preview:large'}">
-<link rel="canonical" href="${pageUrl}">
-<meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
-<link rel="icon" href="${prefix}favicon.svg" type="image/svg+xml">
-<!-- feed 约定：本页自己的订阅（如果有）+ 站点根 Feed。两者都要：根 Feed 是「全部优惠」，
-     本页 Feed 是「这一类」，读者的选择不同。 -->
-${feedTags}
-${themeScript}
-${style}
-<style>
-  /* 只用首页已有的设计变量，不新建一套视觉语言 */
+  const pageCss = `  /* 只用首页已有的设计变量，不新建一套视觉语言 */
   .cstop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
   .cstop h1 { font-size: 19px; margin: 0; }
   .cstop .meta { color: var(--mut); font-size: var(--fs-sm); }
@@ -2725,28 +2399,22 @@ ${style}
   .ctable .none { color: var(--mut); }
   .ctable-wrap { overflow-x: auto; }
   @media (max-width: 760px) { .ctable th, .ctable td { padding: 8px 9px; } }
-${extraCss}
-</style>
-${jsonLdBlocks}
-</head>
-<body>
-  <header class="top">
-    <div class="topin">
-      <a class="brand" href="${prefix}">
-        <span class="mark" aria-hidden="true">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2A2 2 0 0 1 3 12V4.6A1.6 1.6 0 0 1 4.6 3H12a2 2 0 0 1 1.4.6l7.2 7.2a2 2 0 0 1 0 2.6Z"/>
-            <path d="M12 8v6"/><path d="m9.5 11.5 2.5 2.5 2.5-2.5"/>
-          </svg>
-        </span>
-        <span class="btxt"><b>AI <em>优惠</em>聚合器</b><small>真实优惠 · 每日更新</small></span>
-      </a>
-      <a class="jumpback" href="${prefix}">← 返回全部优惠</a>
-    </div>
-  </header>
-
-  <div class="wrap">
-    <main id="main">
+${extraCss}`;
+  return `${shell.docStart({
+    kind,
+    route: spec.route || `${spec.slug}/`,
+    prefix,
+    parts,
+    title: `${htmlEscape(spec.heading)} · ${htmlEscape(SITE_NAME)}`,
+    description: htmlEscape(spec.description),
+    canonicalUrl: pageUrl,
+    robots: isAlias ? 'noindex, follow' : 'index, follow, max-image-preview:large',
+    faviconHref: `${prefix}favicon.svg`,
+    feedTagsHtml: feedTags,
+    extraCss: pageCss,
+    jsonLdHtml: jsonLdBlocks,
+    where: 'renderDirectoryPage'
+  })}
       <nav class="crumb" aria-label="面包屑"><a href="${prefix}">首页</a>${
   crumbParent ? ` › <a href="${prefix}${crumbParent.route}">${htmlEscape(crumbParent.name)}</a>` : ''
 } › <span>${htmlEscape(spec.title)}</span></nav>
@@ -2781,13 +2449,7 @@ ${extraHtml}
 
       <p class="snote" style="margin-top: var(--s3)">
         ${footNote}
-      </p>
-    </main>
-    ${footer}
-  </div>
-</body>
-</html>
-`;
+      </p>${shell.docEnd({ route: spec.route || `${spec.slug}/`, prefix: prefix, parts, where: 'renderDirectoryPage' })}`;
 }
 
 /* ------------------------------------------------------------------ */
@@ -3335,7 +2997,7 @@ function assemble() {
   // （首页 `status/`、详情页 `../../status/`、状态页自己 `../status/`），
   // 所以源码里只有一处占位符，各自在写出前替换。这里先只处理**首页那一份**，
   // 详情页与状态页的替换在各自的写出函数里做（它们拿到的是同一份含占位符的 html）。
-  fs.writeFileSync(indexFile, finalizePage(html, '', '', 'index.html'), 'utf8');
+  fs.writeFileSync(indexFile, shell.finalizePage(html, '', '', ROUTE_HREFS, 'index.html'), 'utf8');
 
   // OG 分享图。
   // 画完立刻自检（og-image.selfCheck）：点阵字模没有自动换行，排版一变文字就会被静默裁掉，
@@ -3612,7 +3274,8 @@ function assemble() {
     // 会让索引页每一行都渲染成「发布时间未知」且丢掉 `data-catalog-status`
     // （筛选脚本与浏览器验收都读这个属性），而详情页拿的是派生记录 ⇒ 两页自相矛盾。
     const indexBody = modelsPage.renderModelsIndex(modelRecords, modelsIndexCtx);
-    const indexHtml = renderModelsShell({
+    const indexHtml = renderStaticPage({
+      kind: 'models-index',
       route: modelsPage.MODELS_INDEX_ROUTE,
       title: modelsPage.MODELS_INDEX_HEADING,
       description: modelsPage.MODELS_INDEX_DESCRIPTION,
@@ -3641,7 +3304,8 @@ function assemble() {
       const detailCtx = { ...modelsCtx, prefix, __refCache: new Map() };
       const route = modelsPage.modelHrefOf(model);
       fs.mkdirSync(path.join(OUT, modelsPage.MODEL_ROUTE_PREFIX, model.slug), { recursive: true });
-      const detailHtml = renderModelsShell({
+      const detailHtml = renderStaticPage({
+        kind: 'model',
         route,
         title: `${modelsPage.modelNameOf(model)} · 模型资料`,
         description: `${modelsPage.modelNameOf(model)}（${model.developer || '开发者未标注'}）在本站收录的 API 计价条目、相关套餐、相关优惠与变化记录。本站只整理事实，不做推荐。`,
@@ -3707,7 +3371,8 @@ function assemble() {
     const archiveDir = path.join(OUT, 'archive');
     fs.mkdirSync(archiveDir, { recursive: true });
     const indexBody = archiveLib.renderArchiveIndex(archives, { prefix: '../', siteUrl: SITE_URL });
-    const indexHtml = renderModelsShell({
+    const indexHtml = renderStaticPage({
+      kind: 'archive-index',
       // 通用静态页套壳（模型页与档案页共用：head / 主题脚本 / 页头 / 页脚 / JSON-LD）
       route: archiveLib.ARCHIVE_INDEX_ROUTE,
       title: archiveLib.ARCHIVE_HEADING,
@@ -3731,7 +3396,8 @@ function assemble() {
       // （审计 F-r1-history-ai-002：每页 27 条相对引用里 24 条死链）。
       const prefix = archiveLib.archiveEntryPrefix(entry);
       fs.mkdirSync(path.join(OUT, route), { recursive: true });
-      const entryHtml = renderModelsShell({
+      const entryHtml = renderStaticPage({
+        kind: 'archive-detail',
         route,
         title: `${entry.title || entry.id} · ${archiveLib.ARCHIVE_HEADING}`,
         description: `${entry.title || entry.id} 的结束 / 恢复记录：首次发现、最后有效时间、结束发现时间、最后已知内容与变化时间线。资料失效不等于资料删除。`,
@@ -3844,7 +3510,8 @@ function assemble() {
     const docsDir = path.join(OUT, 'docs', 'data');
     fs.mkdirSync(docsDir, { recursive: true });
     const body = dataDocs.renderDataDocsPage(dataDocsCtx);
-    const docsHtml = renderModelsShell({
+    const docsHtml = renderStaticPage({
+      kind: 'data-docs',
       route: dataDocs.DATA_DOCS_ROUTE,
       title: dataDocs.DATA_DOCS_HEADING,
       description: dataDocs.DATA_DOCS_DESCRIPTION,

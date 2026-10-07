@@ -39,6 +39,36 @@ runs:
       shell: bash
       run: npm ci
 
+    # 架构不变量（architecture-modernization-v1 新增，4 条）。
+    #
+    # 为什么排在数据门禁之前：它**不需要任何数据、也不需要 dist**（纯源码 / 声明表检查，
+    # 实测 <0.1s），红的时候是「结构被改坏了」而不是「数据不对」——先跑它能让
+    # 「改坏了骨架」这一类失败在最快的步骤上就定位，不必等一分钟的浏览器验收。
+    #
+    # 守的四条（每一条都必须满足「真实边界 + 没有别人会红 + 今天真的成立」，见 scripts/test/fitness.js 头注释）：
+    #   ① scripts/lib/** 不得依赖 scripts/{build,tools,ai}/**
+    #   ② 页面正文/页壳模块不读盘、不联网、不看当前时间（时间必须 context 注入）
+    #   ③ 生产模块里只有 lib/page-shell.js 产出 <!DOCTYPE（本轮之前是 9 处）
+    #   ④ 分层表 scripts/test/layers.js 无幽灵条目、每个 selftest:* 恰好属于一层
+    #
+    # 刻意**不收**的几条（避免同一不变量重复证明）：无循环依赖（实测恒 0）、布局族声明
+    # （已由 page-kinds.assertLayoutDeclarations + seo-selftest + verify-site §22c 三处把守）、
+    # 产物注册表闭包（构建期 selfCheck 是 owner）、每个测试被门禁跑到（check-ci-consistency (17)(19) 是 owner）。
+    - name: Architecture fitness (structure invariants)
+      shell: bash
+      run: node scripts/test/fitness.js
+
+    # 证据政策门禁（Tier-3 拦截）：`research/` 的临时过程产物不许进 Git —— 见 docs/EVIDENCE-POLICY.md。
+    #
+    # 为什么它必须存在：`.gitignore` 只能拦**未跟踪**的文件，而一个已经 `git add` 的探针 dump
+    # 不会因为它被忽略而消失。原先靠「逐目录白名单 + 记得别 add」维持，漏补的症状是
+    # 「几十 MB 的第三方正文静默进仓库」，且没有任何门禁会红（实测 research/ 已跟踪 2,190 个文件）。
+    # 这条判据**只管未来**：基线（e0ca04a）时已跟踪的 1,283 个 Tier-3 文件全部 grandfather 放行，
+    # 不删、不 untrack、不重写历史。
+    - name: Evidence policy (Tier-3 interception)
+      shell: bash
+      run: node scripts/tools/check-evidence.js
+
     # 数据门禁：collect.yml 采集后跑的就是这一条（strict），PR/发布路径同样要过。
     - name: Validate data (strict)
       shell: bash

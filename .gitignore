@@ -74,3 +74,29 @@ dist.v24/
 # .qc-* 是各任务的一次性证据脚本/临时输出。两者都是过程产物，验证完即弃，绝不入库。
 dist.qc-*/
 .qc-*/
+
+# architecture-modernization-v1 的取证 scratch：等价性快照、A/B 全树 hash、各阶段计时。
+# 与 .qc-* 同一条纪律 —— 过程产物、体积大、可重建，验证完即弃，绝不入库。
+# 本轮要留下的**结论**写在 research/architecture-modernization-v1-*.md（Tier 1）。
+.arch-v1/
+
+# 证据政策：Tier-3（只留本机）的**类别规则**
+# 政策与三层定义见 docs/EVIDENCE-POLICY.md；机器判据见 `npm run check:evidence`。
+#
+# 为什么从「逐目录白名单」改成「按类别」：原先每开一个新任务都要人工补一条路径
+# （v3.0-sources/html、coverage-depth-v1/release-evidence/raw、各 shots 目录…），
+# 漏补的症状是「几十 MB 的第三方正文静默进了仓库」，而且**没有任何门禁会红**。
+# 实测：research/ 已跟踪 2,190 个文件，其中 Tier-3 类别 1,283 个（.txt 788 / .log 196 / .cjs 299）。
+#
+# ⚠️ 这两条规则**只管未来**：已跟踪的 1,283 个文件不会被 gitignore 取消跟踪，
+# 本轮也不删它们（不重写历史、不让历史报告里的引用失效）。新增的会被 check:evidence 拦住。
+research/_raw/**/*.txt
+research/_raw/**/*.log
+research/_raw/**/*.cjs
+research/**/scratch/
+
+# 逃生口（Tier-1 的索引类文件本来就是 .md/.json，不受上面影响；这里显式写出来，
+# 免得下一个人以为「索引也不能提交」）：
+!research/_raw/*/README.md
+!research/_raw/*/INDEX.md
+!research/_raw/*/manifest.json

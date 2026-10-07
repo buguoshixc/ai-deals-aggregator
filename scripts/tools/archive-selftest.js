@@ -561,14 +561,17 @@ section('⑦″ 布局族：档案详情走统一内容列（今天无生产实�
   const buildSource = fs.readFileSync(path.join(ROOT, 'scripts', 'tools', 'build-local.js'), 'utf8');
   const routeAt = buildSource.indexOf('const route = archiveLib.archiveEntryRoute(entry);');
   const callSite = routeAt === -1 ? '' : buildSource.slice(routeAt, routeAt + 2500);
-  const callSiteHasShell = /renderModelsShell\(\{/.test(callSite);
+  // architecture-modernization-v1：壳函数由 renderModelsShell 改名为 renderStaticPage
+  // （它同时服务模型/档案/数据文档五个静态资料页族，旧名字是误称）。
+  // 这条断言守的性质没变：**档案详情必须把统一内容列常量传下去**，而不是只查「有没有调壳」。
+  const callSiteHasShell = /renderStaticPage\(\{/.test(callSite);
   const wiredToConstant = /mainClass:\s*archiveLib\.ARCHIVE_ENTRY_MAIN_CLASS\b/.test(callSite);
-  check('【设计约束 · 今天无生产实例，这是替代性设计约束】档案详情的 renderModelsShell 调用点' +
+  check('【设计约束 · 今天无生产实例，这是替代性设计约束】档案详情的 renderStaticPage 调用点' +
     '（route 来自 archiveLib.archiveEntryRoute(entry)）真的把 ARCHIVE_ENTRY_MAIN_CLASS 当 mainClass 传下去',
     routeAt !== -1 && callSiteHasShell && wiredToConstant,
     routeAt === -1
       ? '找不到档案详情的渲染调用点（archiveEntryRoute(entry) 那一行）'
-      : `调用点在，renderModelsShell=${callSiteHasShell}，mainClass 接线=${wiredToConstant}`);
+      : `调用点在，renderStaticPage=${callSiteHasShell}，mainClass 接线=${wiredToConstant}`);
 
   // ③ 断言会响：整页形态（构建期喂给 assertPageHonesty 的正是整页）
   const entry = synthetic.entries.find(item => item.id === 'aaaaaaaaaaa1');
