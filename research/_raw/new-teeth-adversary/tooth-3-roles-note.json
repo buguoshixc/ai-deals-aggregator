@@ -1,0 +1,59 @@
+{
+ "what": "牙 3（t18 / PR #78）+ 牙 4（t16 / PR #71）：`_roles` 注记 ↔ live 常量 的门禁步骤（8 条）",
+ "criterionSource": "scripts/tools/roles-note-selftest.js（8 条：注记里的行标签 = audience.js 的 SOURCE_LABELS.origin；旧称不许残留；必须指向唯一出处与判据脚本；前端副本一致；plans 侧仍原样透传）",
+ "noteFile": "scripts/data/official_urls.json 的 `_roles` 字段（默认路径；`--roles=` 可指向别处）",
+ "baseline": {
+  "command": "npm run selftest:roles-note",
+  "exit": 0,
+  "reading": "✅ roles-note 自测：8 项通过，0 项失败"
+ },
+ "matrix": [
+  {
+   "id": "R1",
+   "form": "注记与 live 常量脱节：把注里的「收录渠道」改成「官方出处」（其余一字不动）",
+   "verdict": "红",
+   "exit": 1,
+   "reading": "❌ roles-note 自测：7 项通过，1 项失败 —— ✗ 注里逐字引用今天的标签「收录渠道」（出处：audience.js 的 SOURCE_LABELS.origin）—— 括注与渲染行为脱节：注里没有出现 live 值"
+  },
+  {
+   "id": "R2",
+   "form": "把注记整段删掉（`_roles` 缺失）",
+   "verdict": "红",
+   "exit": 1,
+   "reading": "❌ roles-note 自测：4 项通过，4 项失败（live 标签 / 唯一出处 / plans 侧行为 / 判据入口 四条全红）"
+  },
+  {
+   "id": "R3",
+   "form": "**极简注**：只保留判据要求的那几个子串（74 字，原注 961 字）",
+   "verdict": "**绿（假绿面）**",
+   "exit": 0,
+   "reading": "✅ roles-note 自测：8 项通过，0 项失败 —— 注记只剩「「收录渠道」 SOURCE_LABELS.origin audience.js plans 侧 不渲染 roles-note-selftest.js」这一行，判据全绿",
+   "why": "8 条判据全是**子串在场**，没有一条约束「注记的说明是否还讲得通」⇒ 注记可以退化成一串关键词"
+  },
+  {
+   "id": "R4",
+   "form": "把注记搬到**别的数据文件**（沙箱 .arch-v1/sb-roles 的 scripts/data/models.json 里塞一份内容错误的 `_roles`）",
+   "verdict": "绿（漏）",
+   "exit": 0,
+   "reading": "✅ roles-note 自测：8 项通过，0 项失败 —— 现场读数仍写 `注记文件 scripts/data/official_urls.json`",
+   "why": "门禁只读**一个文件的**一个字段（默认 official_urls.json）；别处的陈旧副本不会被看见"
+  },
+  {
+   "id": "R5",
+   "form": "把默认路径换成别的数据文件（`--roles=scripts/data/models.json`）",
+   "verdict": "红（缺注记）",
+   "reading": "与 R2 同类：那个文件没有 `_roles` ⇒ 四条断言全红（说明「注记必须留在那一处」是判据的一部分）"
+  },
+  {
+   "id": "R6",
+   "form": "t5 的手法：注释 / 大小写 / 字面量拼接",
+   "verdict": "不适用 / 无法伪造",
+   "reading": "注记本体是 **JSON**（`official_urls.json`）⇒ 不能写注释；8 条判据是 `note.includes(...)` 的**逐字**比较（含中文引号），大小写与全半角变体都会掉出去（R1 就是最小形态）"
+  }
+ ],
+ "boundary": [
+  "**会响**：注记与 live 常量脱节（R1）、注记缺失（R2/R5）、注记里残留旧称「原始出处」、注记没指向出处/判据脚本 —— 都逐条红。",
+  "**不会响**：**注记的说明被掏空**（R3：只留关键词仍绿）与**别处的第二处陈旧注记**（R4：只认一处文件）。这两条是当前判据的承诺边界，建议下一轮登记表加两条（「注记长度/句数下限」与「同名注记在别的数据文件里不许出现」）。",
+  "**JSON 无注释** ⇒ t5 的注释伪造手法在这一颗上不成立（如实登记为「不适用」，不是「免疫」）。"
+ ]
+}
