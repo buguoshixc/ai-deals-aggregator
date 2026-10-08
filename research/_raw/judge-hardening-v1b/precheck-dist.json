@@ -1,0 +1,16 @@
+{
+  "what": "「先剥注释 / 收窄引号」三处收紧对 304 文件真产物的影响面（口径与 lib/seo.js 读点一一对应）",
+  "device": ".arch-v1/precheck-v1b.cjs",
+  "result": {
+    "commentedMarkers": [],
+    "markersInProtectedBlocks": [],
+    "singleQuotedHrefInVisibleText": [],
+    "files": 304,
+    "commentedMarkersTotal": 0,
+    "markersInProtectedBlocksTotal": 0,
+    "singleQuotedHrefTotal": 0,
+    "sitemapLocsRaw": 183,
+    "sitemapLocsStripped": 183,
+    "sitemapCommentBytes": 0
+  }
+}

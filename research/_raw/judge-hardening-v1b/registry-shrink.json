@@ -1,0 +1,82 @@
+{
+  "what": "观察 2（t13 提出 / t24 实测）：登记表 6 行裁到 1 行，且与 JSON 转写**一起裁**",
+  "device": ".arch-v1/sb-registry.cjs（沙箱：scripts/ + index.html + 数据 JSON + research/_raw/p2-residuals-v1/ 整目录 + dist/；沙箱内改，工作树零改动）",
+  "stages": [
+    {
+      "stage": "1-before-delete-5-rows",
+      "sandbox": ".arch-v1/sb-one-before",
+      "seoToolchain": "git origin/master (pre-fix)",
+      "registryShrink": {
+        "kept": 1,
+        "removed": 5,
+        "transcriptionTrimmed": true
+      },
+      "seoVerify": {
+        "exit": 0,
+        "tail": "✅ SEO 验收 18 项，失败 0 项",
+        "failed": []
+      },
+      "seoSelftest": {
+        "exit": 0,
+        "tail": ""
+      }
+    },
+    {
+      "stage": "2-after-delete-5-rows",
+      "sandbox": ".arch-v1/sb-one-after",
+      "seoToolchain": "worktree (fixed)",
+      "registryShrink": {
+        "kept": 1,
+        "removed": 5,
+        "transcriptionTrimmed": true
+      },
+      "seoVerify": {
+        "exit": 1,
+        "tail": "❌ SEO 验收 19 项，失败 1 项",
+        "failed": [
+          "✗ 余量登记集合 == 实时余量 < 150 的页面集合（6 页；**少登记 / 过期登记都红**） —— 实时 < 150：need/no-card/(50) · category/(123) · category/audio/(123) · need/ai-coding/(136) · category/image/(139) · category/agent/(142) · **未登记**：category/(123) category/audio/(123) need/ai-coding/(136) category/image/(139) category/agent/(142)"
+        ]
+      },
+      "seoSelftest": {
+        "exit": 0,
+        "tail": ""
+      }
+    },
+    {
+      "stage": "2b-table-only-fixed-gate",
+      "sandbox": ".arch-v1/sb-one-tableonly",
+      "seoToolchain": "worktree (fixed)",
+      "registryShrink": {
+        "kept": 1,
+        "removed": 5,
+        "transcriptionTrimmed": false
+      },
+      "seoVerify": {
+        "exit": 1,
+        "tail": "❌ SEO 验收 19 项，失败 1 项",
+        "failed": [
+          "✗ 余量登记集合 == 实时余量 < 150 的页面集合（6 页；**少登记 / 过期登记都红**） —— 实时 < 150：need/no-card/(50) · category/(123) · category/audio/(123) · need/ai-coding/(136) · category/image/(139) · category/agent/(142) · **未登记**：category/(123) category/audio/(123) need/ai-coding/(136) category/image/(139) category/agent/(142)"
+        ]
+      },
+      "seoSelftest": {
+        "exit": 1,
+        "tail": ""
+      }
+    },
+    {
+      "stage": "3-restore-6-rows",
+      "sandbox": ".arch-v1/sb-one-restore",
+      "seoToolchain": "worktree (fixed)",
+      "registryShrink": null,
+      "seoVerify": {
+        "exit": 0,
+        "tail": "✅ SEO 验收 19 项，失败 0 项",
+        "failed": []
+      },
+      "seoSelftest": {
+        "exit": 0,
+        "tail": ""
+      }
+    }
+  ]
+}

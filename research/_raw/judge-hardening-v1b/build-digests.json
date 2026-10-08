@@ -1,0 +1,32 @@
+{
+  "what": "产物变化面：判据带修复的构建 vs pre-fix（origin/master 的 lib/seo.js）构建",
+  "device": ".arch-v1/tree-digest.cjs（相对 POSIX 路径排序 → sha256 逐行 → 全树摘要）",
+  "digests": {
+    "post-fix": "b99fd06dfe5355a7c51b9130a216197bf668cb2c0f18d8b9fe34cdec6cab55a3",
+    "pre-fix seo.js": "b99fd06dfe5355a7c51b9130a216197bf668cb2c0f18d8b9fe34cdec6cab55a3",
+    "restored post-fix": "b99fd06dfe5355a7c51b9130a216197bf668cb2c0f18d8b9fe34cdec6cab55a3",
+    "final (after attr+matrix 改动)": "b99fd06dfe5355a7c51b9130a216197bf668cb2c0f18d8b9fe34cdec6cab55a3"
+  },
+  "files": {
+    "post-fix": 304,
+    "pre-fix seo.js": 304,
+    "final": 304
+  },
+  "bytes": {
+    "post-fix": 20386654,
+    "pre-fix seo.js": 20386654,
+    "final": 20386654
+  },
+  "diff": {
+    "post-fix vs pre-fix seo.js": {
+      "files": 304,
+      "changed": 0,
+      "changedSample": []
+    },
+    "post-fix vs final": {
+      "files": 304,
+      "changed": 0,
+      "changedSample": []
+    }
+  }
+}

@@ -45,7 +45,17 @@ function check(name, ok, detail = '') {
 /* 自己的解析（刻意不复用 seo.js 的解析器：两边独立，才能互相证伪）        */
 /* ------------------------------------------------------------------ */
 
-const strip = html => String(html).replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ');
+/**
+ * 自己的「剥 script/style」——**刻意**不复用 seo.js 的解析器（两边独立才能互相证伪），
+ * 但「剥注释」这一条是**同一份实现**（`seo.stripComments`）：它是纪律，不是判据。
+ *
+ * judge-hardening-v1b：改前这里只剥 `<script>`/`<style>`，于是注释里的 `data-item` / `robots` /
+ * **sitemap 的 `<loc>`** 全被当成真产物（t5 的 A1 / F2 实测：`<url>` 块包进 XML 注释 ⇒
+ * sitemap 三条判据同时绿）。判据读的文本不许包含「只存在于注释里」的东西。
+ */
+const strip = html => seo.stripComments(String(html)
+  .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+  .replace(/<style[\s\S]*?<\/style>/gi, ' '));
 
 function firstMatch(text, re) {
   const m = String(text).match(re);
@@ -91,7 +101,9 @@ function listFiles() {
 function itemListOf(html) {
   // ⚠️ 不先 `strip()`：那个函数会把 `<script>` 整段摘掉（它服务的是「数可见标记」的调用方），
   // 而 JSON-LD 恰恰住在 `<script>` 里 —— 走 strip 的话这里恒返回 null（历史上正是如此）。
-  for (const m of String(html).matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+  // judge-hardening-v1b：**只剥注释**（`seo.stripComments`）—— 注释里的 ld+json 是影子块，
+  // 它曾让「ItemsList 在我」这句判据在被注释包住时照样成立（t5 的 A1 静态判定）。
+  for (const m of seo.stripComments(html).matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
     try {
       const data = JSON.parse(m[1]);
       if (data['@type'] === 'ItemList') return data;
@@ -153,7 +165,10 @@ const specByRoute = new Map(plan.pages.map(spec => [spec.route, spec]));
 const routes = listPages();
 const files = listFiles();
 const sitemapXml = fs.readFileSync(path.join(OUT, 'sitemap.xml'), 'utf8');
-const sitemap = [...sitemapXml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1]);
+// judge-hardening-v1b：sitemap 是 XML，注释同形（`<!-- … -->`）—— 判据读的 `<loc>` 必须来自
+// **未被注释**的 `<url>` 块。改前这里直接扫原始文本：把某个 `<url>` 块包进注释 ⇒ 「sitemap 有」
+// 与「集合相等」同时绿（t5 的 F2 实测），而线上那个 URL 其实已经不在 sitemap 里了。
+const sitemap = [...seo.stripComments(sitemapXml).matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1]);
 const feedFiles = [...files].filter(rel => /^feed.*\.(xml|json)$/.test(rel));
 const feedSpecs = feedFiles.map(rel => ({ id: rel, path: rel, jsonPath: rel, title: '' }));
 
@@ -409,6 +424,35 @@ const ownVisibleText = html => unescapeHtml(
   check('登记表里的每一页都真的产出了（登记过期 = 这一页没人看着了）',
     readings.length === seo.TEXT_FLOOR_RESIDUALS.length,
     `${readings.length}/${seo.TEXT_FLOOR_RESIDUALS.length}`);
+
+  /**
+   * **登记集合 == 实时余量 < 150 的页面集合**（judge-coverage-gaps-v1 §4 观察 2 的收口）。
+   *
+   * 为什么要有这一条：改前只有「被点名的 `/need/no-card/` 必须在表里」这一条钉住登记表，
+   * 其余 5 条**连同行带 JSON 转写一起删掉**时 `selftest:seo` / `verify:seo` 全都保持全绿 ——
+   * 也就是说「登记范围 = 全站余量 < 150 字的**全部**页面」只是一次普查的**结论**，
+   * 不是一条能拦住「静默缩小」的不变式（那个缺口是 `judge-coverage-gaps-v1` 量出来的）。
+   * 现在把它变成不变式，**两个方向都判**：
+   *   · 实时余量 < 阈值却没登记 ⇒ 红（这一页没人看着）；
+   *   · 登记了但实时余量已经 ≥ 阈值 ⇒ 红（登记过期：它已经不是最薄的那一档了）。
+   * 阈值 150 与 `lib/seo.js` 的登记注释同源（下一档是 409 字）。
+   */
+  const RESIDUAL_RANGE = 150;
+  const liveThin = descriptors
+    .map(page => ({
+      route: page.route, kind: page.kind, count: page.count,
+      margin: ownVisibleText(page.html).length - pageKinds.textFloor(page.kind, page.count)
+    }))
+    .filter(row => row.margin < RESIDUAL_RANGE)
+    .sort((a, b) => a.margin - b.margin);
+  const registeredRoutes = seo.TEXT_FLOOR_RESIDUALS.map(row => row.route).sort();
+  const missingRegistration = liveThin.filter(row => registeredRoutes.indexOf(row.route) === -1);
+  const staleRegistration = registeredRoutes.filter(route => !liveThin.some(row => row.route === route));
+  check(`余量登记集合 == 实时余量 < ${RESIDUAL_RANGE} 的页面集合（${liveThin.length} 页；**少登记 / 过期登记都红**）`,
+    missingRegistration.length === 0 && staleRegistration.length === 0,
+    `实时 < ${RESIDUAL_RANGE}：${liveThin.map(row => `${row.route}(${row.margin})`).join(' · ') || '（无）'}`
+      + (missingRegistration.length ? ` · **未登记**：${missingRegistration.map(row => `${row.route}(${row.margin})`).join(' ')}` : '')
+      + (staleRegistration.length ? ` · **登记过期**（余量已 ≥ ${RESIDUAL_RANGE}）：${staleRegistration.join(' ')}` : ''));
 }
 
 /* ------------------------------------------------------------------ */

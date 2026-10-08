@@ -794,6 +794,165 @@ section('七、入口文案契约（P2 残留 e3：「全部变化 →」而不�
     `原词「${anchorBefore}」· 换表后「${anchorMutated}」· 复位后「${anchorRestored}」`);
 }
 
+/* ------------------------------------------------------------------ */
+section('八、日志不可用时的**如实登记**（p2-honesty-single-source-v1 / 缺口 A）');
+
+{
+  // 缺口 A 的规则本体在 `lib/changes.js`（纯函数）——这里直接对它开牙，不经过构建。
+  // 合成清单刻意用 `log-a/b/c` 这种占位 id：本自测不依赖任何真实日志文件名。
+  const changesLib = require('../lib/changes');
+  const availability = changesLib.logAvailabilityOf([
+    { id: 'log-a', file: 'a.json', label: 'A 日志', load: { missing: true } },
+    { id: 'log-b', file: 'b.json', label: 'B 日志', load: { broken: '坏掉的 JSON' } },
+    { id: 'log-c', file: 'c.json', label: 'C 日志', load: {} }
+  ]);
+
+  check('登记表：缺失 / 损坏 ⇒ unavailable（原因如实带出来）；正常 ⇒ ok',
+    availability[0].availability === 'unavailable' && availability[0].reason === '文件缺失'
+    && availability[1].availability === 'unavailable' && availability[1].reason === '坏掉的 JSON'
+    && availability[2].availability === 'ok' && availability[2].reason === null,
+    availability.map(row => `${row.id}=${row.availability}(${row.reason || '-'})`).join(' · '));
+
+  const mixed = {
+    datasets: [
+      { id: 'log-a', updatedAt: null, updatedAtShape: null, availability: 'unavailable', updatedAtNote: '', count: 0 },
+      { id: 'log-b', updatedAt: '2026-01-01', updatedAtShape: 'date', count: 0 },
+      { id: 'log-c', updatedAt: '2026-01-02', updatedAtShape: 'date', count: 0 },
+      { id: 'other', updatedAt: '2026-01-03', updatedAtShape: 'date', count: 0 }
+    ]
+  };
+  const mixedProblems = changesLib.logDatasetHonestyProblems(mixed, availability);
+  check('【牙】源日志不可用却没登记 ⇒ 红；拿别的日期顶替 ⇒ 红；没给「没有拿到」说明 ⇒ 红',
+    mixedProblems.some(problem => problem.includes('log-b') && problem.includes('必须显式登记'))
+    && mixedProblems.some(problem => problem.includes('log-b') && problem.includes('不许用别的日期顶上'))
+    && mixedProblems.some(problem => problem.includes('log-a') && problem.includes('updatedAtNote')),
+    mixedProblems.slice(0, 3).join('；'));
+
+  check('【反证】源日志本次可用：登记为 unavailable 或留空 updatedAt ⇒ 红（不许反过来放水）',
+    (() => {
+      const forged = {
+        datasets: [{ id: 'log-c', updatedAt: null, updatedAtShape: null, availability: 'unavailable', updatedAtNote: '没有拿到' }]
+      };
+      const problems = changesLib.logDatasetHonestyProblems(forged, availability);
+      return problems.some(problem => problem.includes('不许登记为 unavailable'))
+        && problems.some(problem => problem.includes('不许留空'));
+    })());
+
+  check('【盘侧】产物文件没有时间却没登记 ⇒ 红；登记了、文件却带着时间 ⇒ 红',
+    changesLib.logDatasetDiskHonestyProblems({ datasets: [{ id: 'x', updatedAt: '2026-01-01', updatedAtShape: 'date' }] }, { x: null })
+      .some(problem => problem.includes('必须登记为 availability: unavailable'))
+    && changesLib.logDatasetDiskHonestyProblems(
+      { datasets: [{ id: 'y', updatedAt: null, updatedAtShape: null, availability: 'unavailable', updatedAtNote: '没有拿到' }] },
+      { y: '2026-01-01' }).some(problem => problem.includes('登记与产物不一致')));
+
+  check('【正例】如实登记的那一份三条断言都不响；tolerated 只放过它的那两条形状抱怨（一条都不多）',
+    (() => {
+      const good = {
+        datasets: [{
+          id: 'log-a', updatedAt: null, updatedAtShape: null, availability: 'unavailable',
+          updatedAtNote: '本次构建没有拿到 a.json —— 这不表示「没有变化」。'
+        }]
+      };
+      const tolerated = changesLib.toleratedLogComplaints(good);
+      return changesLib.logDatasetHonestyProblems(good, [availability[0]]).length === 0
+        && changesLib.logDatasetDiskHonestyProblems(good, { 'log-a': null }).length === 0
+        && tolerated.size === 2
+        && tolerated.has('dataset log-a: 缺少 updatedAt')
+        && changesLib.toleratedLogComplaints({ datasets: [{ id: 'log-c', updatedAt: '2026-01-02', updatedAtShape: 'date' }] }).size === 0;
+    })());
+}
+
+/* ------------------------------------------------------------------ */
+section('九、判据读的文本必须先剥注释（judge-hardening-v1b：t5 的 F2 / F3 / A1）');
+
+{
+  // 这一节是**规则级**牙：把「注释里有没有一份影子产物」直接喂给各个读点，断言读不到。
+  // 产物级的三段读数（伪造副本红 / 真删副本红 / 原样绿）在报告 §2，由 `.arch-v1/` 的副本承载。
+  const seoL = require('../lib/seo');
+  const CANON = '<link rel="canonical" href="https://example.test/a/">';
+  const TITLE = '<title>示例标题</title>';
+  const ROBOTS = '<meta name="robots" content="noindex, follow">';
+  const H1 = '<h1>正文标题</h1>';
+  const ITEM = { '@context': 'https://schema.org', '@type': 'ItemList', numberOfItems: 1, itemListElement: [{ position: 1, url: 'https://example.test/x/', name: 'x' }] };
+  const jsonLd = body => `<script type="application/ld+json">${JSON.stringify(body)}</script>`;
+
+  const stripped = seoL.stripComments('<script>var s = "<!-- 不是注释";</script><p>正文</p><!-- <p>影子</p> -->');
+  check('剥注释（唯一实现 `seo.stripComments`）：丢注释、保住 `<script>` 段里的 `<!--` 字面量（内联 RENDER-CORE 里真有这种串）',
+    stripped.includes('不是注释') && !stripped.includes('影子') && stripped.includes('<p>正文</p>'),
+    stripped.replace(/\s+/g, ' ').slice(0, 90));
+
+  check('【F3 牙】canonical 包进 HTML 注释 ⇒ 读不到（与真删同解）；原样仍在',
+    seoL.canonicalOf(`<!-- ${CANON} -->`) === '' && seoL.canonicalOf(CANON) === 'https://example.test/a/',
+    `注释里「${seoL.canonicalOf(`<!-- ${CANON} -->`)}」· 原样「${seoL.canonicalOf(CANON)}」`);
+
+  const sitemapXml = '<urlset><url><loc>https://example.test/vendor/kept/</loc></url>'
+    + '<!-- <url><loc>https://example.test/vendor/forged/</loc></url> --></urlset>';
+  const locs = [...seoL.stripComments(sitemapXml).matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1]);
+  check('【F2 牙】sitemap 里包进 XML 注释的 `<url>` 块 ⇒ `<loc>` 读不到（与真删同解）',
+    locs.length === 1 && locs[0] === 'https://example.test/vendor/kept/',
+    locs.join(' · '));
+
+  check('【A1 牙】title / robots / h1Count / description：注释里的副本一律不认（h1Count 的伪造方向曾是**假红**）',
+    seoL.titleOf(`<!-- ${TITLE} -->`) === '' && seoL.titleOf(TITLE) === '示例标题'
+    && seoL.robotsOf(`<!-- ${ROBOTS} -->`) === '' && seoL.robotsOf(ROBOTS) === 'noindex, follow'
+    && seoL.h1Count(`<!-- ${H1} -->`) === 0 && seoL.h1Count(H1) === 1
+    && seoL.descriptionOf('<!-- <meta name="description" content="影子"> -->') === '',
+    '四处读点逐一对账');
+
+  const bothJsonLd = seoL.jsonLdBlocks(`${jsonLd(ITEM)}<!-- ${jsonLd(ITEM)} -->`);
+  check('【A1 牙】JSON-LD：注释里的块不算数（影子块），注释外的照常解析',
+    bothJsonLd.blocks.length === 1 && bothJsonLd.broken.length === 0,
+    `解析出 ${bothJsonLd.blocks.length} 块 · 失败 ${bothJsonLd.broken.length}`);
+
+  check('【A1 牙】rowMarkers：注释里的 `data-item="…"` 不计入行数（改前那行字面量能把行数对账买通）',
+    seoL.rowMarkers('<tr data-item="a"></tr><!-- data-item="shadow" -->', 'item') === 1,
+    String(seoL.rowMarkers('<tr data-item="a"></tr><!-- data-item="shadow" -->', 'item')));
+
+  const links = seoL.internalLinks('<a href="kept/">a</a><a href=\'single/\'>b</a><!-- <a href="shadow/">c</a> -->', 'x/');
+  check('【A1 牙】internalLinks：单引号 `href` 也认（浏览器两种都吃）；注释里的链接不认',
+    links.length === 2 && links.includes('x/kept/') && links.includes('x/single/') && !links.includes('x/shadow/'),
+    links.join(' · '));
+
+  /**
+   * **矩阵**（A1 的系统化版本）：对每个命名读点，把同一份标记「注释掉」与「根本不存在」两种输入
+   * 分别喂进去，断言**读数逐点相同**。比「逐点写一条」更耐改：新增读点只要漏剥注释，
+   * 这里就会以「注释版 ≠ 不存在版」的形式红出来，而不是等某个产物级判据偶然撞上。
+   */
+  const ABSENT_MATRIX = [
+    ['titleOf', TITLE],
+    ['canonicalOf', CANON],
+    ['descriptionOf', '<meta name="description" content="影子">'],
+    ['robotsOf', ROBOTS],
+    ['h1Count', H1],
+    ['rowMarkers', '<tr data-item="shadow"></tr>']
+  ];
+  const matrixRows = ABSENT_MATRIX.map(([fn, fragment]) => {
+    const commented = fn === 'rowMarkers' ? seoL[fn](`<!-- ${fragment} -->`, 'item') : seoL[fn](`<!-- ${fragment} -->`);
+    const absent = fn === 'rowMarkers' ? seoL[fn]('', 'item') : seoL[fn]('');
+    return { fn, commented: JSON.stringify(commented), absent: JSON.stringify(absent), same: JSON.stringify(commented) === JSON.stringify(absent) };
+  });
+  check('【A1 矩阵】六个命名读点：注释里的副本 == 该标记根本不存在（逐点相等；漏剥即红）',
+    matrixRows.every(row => row.same),
+    matrixRows.map(row => `${row.fn}${row.same ? '=' : '≠'}${row.commented}`).join(' · '));
+
+  check('【A1 矩阵】JSON-LD 与站内链接两个读点同理（注释版 == 不存在版）',
+    (() => {
+      const commentedBlocks = seoL.jsonLdBlocks(`<!-- ${jsonLd(ITEM)} -->`).blocks.length;
+      const absentBlocks = seoL.jsonLdBlocks('').blocks.length;
+      const commentedLinks = seoL.internalLinks('<!-- <a href="shadow/">c</a> -->', 'x/').length;
+      const absentLinks = seoL.internalLinks('', 'x/').length;
+      return commentedBlocks === absentBlocks && commentedLinks === absentLinks;
+    })(),
+    'jsonLdBlocks / internalLinks 两点逐点对账');
+
+  const verifySource = fs.readFileSync(path.join(ROOT, 'scripts/tools/seo-verify.js'), 'utf8');
+  check('【护栏】`seo-verify.js` 的 sitemap / strip / itemListOf 三处都经过 `seo.stripComments`（谁改回去，这条立刻红）',
+    /seo\.stripComments\(sitemapXml\)/.test(verifySource)
+    && /const strip = html => seo\.stripComments\(/.test(verifySource)
+    && /for \(const m of seo\.stripComments\(html\)\.matchAll/.test(verifySource),
+    '三处逐一对账（唯一实现 = lib/seo.js 的 stripComments）');
+}
+
 console.log(`\n=== v1.7 SEO 门禁演练：${passed} 项通过，${failures.length} 项失败 ===`);
 for (const row of failures) console.log(`  ✗ ${row.name}${row.detail ? ` —— ${row.detail}` : ''}`);
 process.exit(failures.length ? 1 : 0);
