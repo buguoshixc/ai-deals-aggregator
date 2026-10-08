@@ -121,16 +121,68 @@ function visibleText(html) {
 }
 
 /**
+ * 剥 HTML / XML 注释（`<!-- … -->`）——**从左到右扫描**，所以两种边角都对：
+ *
+ *   ① `<script>` / `<style>` 段里的 `<!--` 不会被当成注释开头（内联的 RENDER-CORE 里就有
+ *      这种字符串）；遇到这两个标签就整段抄过去、跳过扫描；
+ *   ② 被注释包住的**整段** `<script type="application/ld+json">…</script>` 会被**整段丢掉**
+ *      —— 这正是要修的形状（注释里的结构化数据不是结构化数据）。
+ *
+ * ## 为什么必须单列一个函数（judge-hardening-v1b）
+ *
+ * 本文件原先只有 `stripless()`（摘 `<script>`/`<style>`），**没有一处剥注释**：
+ * `criteria-adversary-v1`（t5）的 A1 清单实测出「把 `<link rel="canonical">` 包进 HTML 注释，
+ * `canonical-self` 照样绿；真删才红」。判据读原始文本的地方，注释里的字面量就成了**影子产物**。
+ * 纪律（与 `visibleText()` 同一条，只是它一直只覆盖了「数正文」这一路）：
+ * **凡是判据，先剥注释再读文本；或者干脆走解析器 / DOM。**
+ */
+function stripComments(html) {
+  const source = String(html || '');
+  let out = '';
+  let index = 0;
+  while (index < source.length) {
+    const commentAt = source.indexOf('<!--', index);
+    const protectedMatch = /<(?:script|style)\b[^>]*>/i.exec(source.slice(index));
+    const protectedAt = protectedMatch ? index + protectedMatch.index : -1;
+    const nextProtected = protectedAt === -1 ? Infinity : protectedAt;
+    const nextComment = commentAt === -1 ? Infinity : commentAt;
+    if (nextComment === Infinity && nextProtected === Infinity) {
+      out += source.slice(index);
+      break;
+    }
+    if (nextComment < nextProtected) {
+      const close = source.indexOf('-->', nextComment + 4);
+      out += source.slice(index, nextComment);
+      if (close === -1) { index = source.length; break; }   // 未闭合注释：余下全丢（保守）
+      index = close + 3;
+    } else {
+      // 保护段：<script>/<style> 原样抄过去（里面的 `<!--` 不是注释）
+      const tag = protectedMatch[0].replace(/^</, '').replace(/[\s/>].*$/, '').toLowerCase();
+      const closeRe = new RegExp(`</${tag}\\s*>`, 'i');
+      const rest = source.slice(protectedAt);
+      const closeMatch = closeRe.exec(rest);
+      const end = closeMatch ? protectedAt + closeMatch.index + closeMatch[0].length : source.length;
+      out += source.slice(index, end);
+      index = end;
+    }
+  }
+  return out;
+}
+
+/**
  * 数标记前先摘掉 `<script>` / `<style>` —— 本文件自己的纪律，也是这个项目反复吃到的教训。
  *
  * 首页与变化页把 RENDER-CORE 的模板字符串内联在 `<script>` 里（`'<h1>' + escapeHtml(...)`），
  * 不摘的话：`<h1>` 会被数成 3 个、`href="…"` 会被当成真实链接（实测一次报出 **90 条
  * 不存在的内链**）。**一个数错了东西的门禁比没有门禁更糟**，因为它看起来在守着什么。
+ *
+ * judge-hardening-v1b：在这条纪律上**再加一条** —— 注释也摘掉（先摘 script/style，再剥注释：
+ * 顺序与 `visibleText()` 一致，所以内联脚本里的 `<!--` 不会被误当注释开头）。
  */
 function stripless(html) {
-  return String(html || '')
+  return stripComments(String(html || '')
     .replace(/<script[\s\S]*?<\/script>/gi, ' ')
-    .replace(/<style[\s\S]*?<\/style>/gi, ' ');
+    .replace(/<style[\s\S]*?<\/style>/gi, ' '));
 }
 
 function attr(html, name) {
@@ -162,13 +214,20 @@ function h1Count(html) {
   return (stripless(html).match(/<h1[\s>]/gi) || []).length;
 }
 
-/** 抽全部 JSON-LD 块（解析失败的单独记下来，不静默吞掉） */
+/**
+ * 抽全部 JSON-LD 块（解析失败的单独记下来，不静默吞掉）。
+ *
+ * judge-hardening-v1b：读的是**剥掉注释之后**的文本 —— 注释里的 `<script type="application/ld+json">`
+ * 是影子块（t5 的 A1 实测：把它包进注释，`itemlist-arity` 照样绿）。
+ * 这里**不能**用 `stripless()`：它会把 ld+json 块本身一起摘掉，所以用只剥注释的 `stripComments()`。
+ */
 function jsonLdBlocks(html) {
   const blocks = [];
   const broken = [];
   const re = /<script[^>]+type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gi;
+  const source = stripComments(html);
   let match;
-  while ((match = re.exec(String(html || '')))) {
+  while ((match = re.exec(source))) {
     try {
       blocks.push(JSON.parse(match[1]));
     } catch (error) {
@@ -212,20 +271,32 @@ function breadcrumbsOf(blocks) {
   return null;
 }
 
-/** 表格里的行：模板给每行写一个 data-item / data-child，检查器只数标记，不信任何人报的数 */
+/**
+ * 表格里的行：模板给每行写一个 data-item / data-child，检查器只数标记，不信任何人报的数。
+ *
+ * judge-hardening-v1b：数的是**剥掉 script/style 与注释之后**的文本 —— 注释里的
+ * `data-item="…"` 会让行数对账永远对得上（t5 的 A1 实测）。实测前提：产物里 `data-item` /
+ * `data-child` 从不落在 `<script>`/`<style>` 里（186 页扫描 0 处），所以这条改动**不改变任何一页的计数**。
+ */
 function rowMarkers(html, name) {
-  return (String(html || '').match(new RegExp(`data-${name}="`, 'g')) || []).length;
+  return (stripless(html).match(new RegExp(`data-${name}="`, 'g')) || []).length;
 }
 
-/** 页面里的内部链接（相对路由，已规范化；外链与锚点丢弃）。先摘 `<script>`/`<style>`。 */
+/**
+ * 页面里的内部链接（相对路由，已规范化；外链与锚点丢弃）。先摘 `<script>`/`<style>`/注释。
+ *
+ * judge-hardening-v1b：`href` 的**引号两种都认**（`"…"` 与 `'…'`）—— 浏览器两种都吃，
+ * 而只认双引号的正则会让「单引号写的死链」完全隐形（t5 的 A1 实测）。实测前提：产物里
+ * 单引号 `href='…'` 出现 0 次 ⇒ 这条改动不改变任何一页的读数。
+ */
 function internalLinks(html, route) {
   const out = [];
   const source = stripless(html);
   const base = route.split('/').filter(Boolean).length;
-  const re = /href="([^"]+)"/gi;
+  const re = /href\s*=\s*(?:"([^"]+)"|'([^']+)')/gi;
   let match;
   while ((match = re.exec(source))) {
-    let href = decodeEntities(match[1]).trim();
+    let href = decodeEntities(match[1] !== undefined ? match[1] : match[2]).trim();
     if (!href || href.startsWith('#') || /^(https?:|mailto:|data:)/i.test(href)) continue;
     href = href.split('#')[0].split('?')[0];
     if (!href) continue;
@@ -648,5 +719,8 @@ module.exports = {
   rowMarkers,
   internalLinks,
   normalizeRoute,
-  visibleText
+  visibleText,
+  // judge-hardening-v1b：剥注释的实现**只有一处**（本文件），seo-verify 与自测都从这里取，
+  // 免得「补丁补了三份、第四处又漏了」——t5 的 A1 清单就是这么长出来的。
+  stripComments
 };
