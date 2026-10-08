@@ -67,7 +67,7 @@
     "updatedAtShape": null,
     "availability": "unavailable",
     "count": 0,
-    "updatedAtNote": "本次构建没有拿到 deal-history.json（文件缺失）——这份数据集的更新时间不可公布，这不表示「没有变化」。"
+    "updatedAtNote": "本次构建没有拿到 D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\p2-honesty-single-source-v1\\scripts\\data\\deal-history.json（文件缺失）——这份数据集的更新时间不可公布，这不表示「没有变化」。"
    },
    {
     "id": "plan-history",
@@ -270,7 +270,7 @@
   "updatedAtShape": null,
   "availability": "unavailable",
   "count": 0,
-  "updatedAtNote": "本次构建没有拿到 deal-history.json（文件缺失）——这份数据集的更新时间不可公布，这不表示「没有变化」。"
+  "updatedAtNote": "本次构建没有拿到 D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\p2-honesty-single-source-v1\\scripts\\data\\deal-history.json（文件缺失）——这份数据集的更新时间不可公布，这不表示「没有变化」。"
  },
  "manifestEntryNormal": {
   "id": "deal-history",

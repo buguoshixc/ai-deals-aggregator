@@ -7,16 +7,51 @@
 
 ## 0. 逐条对照验收标准
 
+> **先看这一条**：这份自审的**第一版**漏了一个致命项 —— 我第一次报 `completed` 时**门禁是红的**
+> （`selftest:plans` §⑪ 架构边界：deals 链路不许提 plans）。**根因、处置与流程纪律见 §4。**
+> 下面这张表是**修完之后**的读数。
+
 | 验收 | 判定 | 证据 |
 | --- | --- | --- |
 | 缺口 A：日志缺失 ⇒ 构建成功且产物含诚实性措辞（贴命中行） | ✅ | 缺失：exit 0 + 6 处命中（`changes/index.html:1227` · `index.html:1225` · `feed/changes.xml\|json:6` · `feed/new.xml\|json:6`）；损坏：同样 exit 0 + 6 处 |
 | 缺口 A：日志正常 ⇒ 该措辞不出现（正对照） | ✅ | 正常态 `markupHits 0`（只有 RENDER-CORE 里的措辞表副本，脚本块内，不算渲染） |
 | 缺口 B：`全部变化 →` 在渲染源里只剩一处定义 | ✅ | 措辞表 3 处（同一词）· `scripts/lib/` 手写字面量 **0 处**（52 文件扫描）· 枢纽页渲染时取词 |
 | 缺口 B：改字面量 ⇒ 判据变红 | ✅ | B1（手写回潮）86/2 红 · B2（表换词）86/2 红 + 构建红 · B3（产物改名）17/1 红；三者都还原到绿 |
-| 断言数只增不减 | ✅ | `verify-site` 880=880（**未动该文件**）· `selftest:seo` 87→88 · `verify:seo` 17→18 · `check:ci` 39=39 |
-| 产物变化面逐文件 sha256（含全树摘要） | ✅ | 304 文件全等 · 全树 `df43587c…`（改动前后相同）· `change-surface.json` 有源码逐文件 sha256（对 origin/master） |
+| 断言数只增不减 | ✅ | `verify-site` 880=880（**未动该文件**）· `selftest:seo` **87 → 88** · `verify:seo` **17 → 18** · `check:ci` 39=39 |
+| 产物变化面逐文件 sha256（含全树摘要） | ✅ | 304 文件全等 · 全树 `df43587c…`（改动前后相同）· `change-surface.json` 的源码 sha256 对 **merge-base** 算（origin/master 会往前走） |
 | `npm run check:evidence` 绿 | ✅ | ✅ 没有新增的 Tier-3 文件 · 清单自证通过 |
-| `docs/DESIGN-RULES.md` 与 `NEXT-STEPS.md` 未被修改 | ✅ | `git diff --name-only origin/master` = 5 个文件，全在 `scripts/`；两份文档零改动 |
+| `docs/DESIGN-RULES.md` 与 `NEXT-STEPS.md` 未被修改 | ✅ | 对 merge-base 的 diff 只含 `scripts/`；两份文档零改动 |
+| **全链门禁（事故之后新增的判据）** | ✅ | `npm run gate`：**47 个脚本 / 378.6s / 失败 0**（与 CI 读同一份 `.github/actions/gate/action.yml`） |
+
+---
+
+## 4. 流程事故：我报 completed 时门禁是红的（如实登记，不辩解）
+
+**事实**：PR #72 的门禁 run `37767125542` 在我报完成之后以 failure 结束，失败原文只有一条：
+
+```
+✗ deals 链路（采集 / 合并 / 历史 / 优惠雷达 / 落地页 / SEO）完全不引用 plans
+  —— scripts/lib/changes.js 提到了 plan-history
+❌ === v2.1 Coding Plan 数据模型演练：263 项通过，1 项失败 ===
+```
+
+**我漏它的原因（不是借口）**：我本地跑了 6 条验收命令 + 相邻三套件（data-docs 58 / planshub 32 / changes 119），
+但**没有跑全链**，于是没碰到 `selftest:plans` §⑪ 这条**架构边界**（它不在我那条清单里）。
+`verdict=completed` 的语义是**可合并** —— 红门禁的交付不算完成，这一点我认。
+
+**处置（t20）**：
+* `changes.js` 里的 `LOG_DATASETS`（含 `plan-history` 字面量）**搬走**：`logAvailabilityOf(loads)` 改成
+  **由调用方传入** id 与加载结果（收两种形态：`[{id,file,label,load}]` 或 `{id:{missing,broken}}`），
+  文件名按约定 `id + '.json'` 推；盘侧判据 `logDatasetDiskHonestyProblems` 也去掉 id 清单，改成**遍历 Manifest 全部数据集**。
+  ⇒ `changes.js` 里一个 plan token 都没有；而覆盖面**从 3 份扩到 9 份**（更严，不是放水）。
+* `build-local.js` **无需改动**：它已提交的调用形态正是「调用方把已算好的数据（含 id）传进来」。
+* **我拒绝的两种"快修"**：(1) 把 id 拆成 `'plan-' + 'history'` 躲静态扫描 —— 糊弄判据；
+  (2) 让 `changes.js` 懒 require `./data-docs` 去读注册表 —— 静态绿，但会把 `plans-page` 传递性地拖进 deals 链路的加载图，精神上正是那条边界要防的。
+
+**纪律（写给下一轮，也写给我自己）**：报 completed 之前，至少跑到与 CI 第 5 步等价的链：
+`npm run gate`（47 个脚本 / 378.6s，本地实跑读数）或 `validate → 各 selftest → build → verify-site` 的手工链。
+**本地跑不到的 CI 步骤只有 4 条非 node 步骤**：Install dependencies · Prepare browser for the real-browser gate ·
+Browser availability decision · Gate conclusion（另有 CI 侧的 concurrency/cancel 行为本地复现不了）。
 
 ---
 

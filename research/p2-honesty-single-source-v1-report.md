@@ -14,6 +14,7 @@
 | **A：日志缺失/损坏 ⇒ 诚实性措辞上不了线**（构建死在 Dataset Manifest 步） | 日志不可用时**如实登记**数据集的更新时间为「不可公布」（`availability: 'unavailable'` + `updatedAt: null` + 说明），**不用任何日期顶替**；并发布一份**如实空账本**让 endpoint 自洽；配三条更严的新断言 | **缺失**：构建 **exit 0**，产物里那句措辞命中 **6 处**（`changes/index.html:1227`、`index.html:1225`、`feed/changes.xml\|json:6`、`feed/new.xml\|json:6`）；**损坏**：同样 exit 0 + 6 处；**正常对照**：构建 exit 0 且该句在产物里 **0 处** |
 | **B：`全部变化 →` 是 `plans-hub-page.js` 的硬编码字面量** | 改成**渲染时**从 `changes.js` 的措辞表取词；断言从「登记一处手写」升级成**零容忍** + 加一颗**入口锚变异牙** | 手写字面量 0 处（52 个 lib 文件扫描）；三颗牙都实跑红→逐字节还原→复跑绿（见 §4） |
 | 硬约束 | 断言**只增不减** · 文本下限一个字未改 · 产物**0 变化** | `verify-site` 880/0（**未动该文件**，写作用域留给 t9）· `selftest:seo` **87 → 88** · `verify:seo` **17 → 18** · `check:ci` 39/0 · 产物 304 文件全树摘要 `df43587c…` **改动前后全等** |
+| **t20（CI 红的修复）** | 把 `changes.js` 里的日志 id 清单**搬走**（调用方传参）+ `seo-verify.js` §③⁗ 改成**遍历 Manifest 全部数据集** | `selftest:plans` **264/0**（架构边界恢复绿）· `verify:seo` 18/0（覆盖面 3 → **9** 份，更严）· 本机 Full Gate **47 脚本 / 0 失败**；两种"快修"（拆字符串躲扫描 / 懒 require 注册表）我**拒绝**并如实登记（§6.0） |
 
 ---
 
@@ -109,7 +110,7 @@ manifest 的 schema 里**没有「未知时间」这个状态**。
 | --- | --- | --- | --- |
 | `verify-site.js`（`--dir=dist`） | 880 / 0 | **880 / 0** | **本文件一个字未动**（captain 把 `verify-site.js` 整块留给 t9，避免撞车） |
 | `selftest:seo` | 87 / 0 | **88 / 0** | §七：−1（登记表式）+2（零容忍 + 入口锚变异牙） |
-| `verify:seo` | 17 / 0 | **18 / 0** | 新增 §③⁗「变化日志的可用性：Manifest ↔ 产物文件」（正常态「不可用 0 份」；降级态「不可用 1 份」且仍 ✓） |
+| `verify:seo` | 17 / 0 | **18 / 0** | 新增 §③⁗「数据集的可用性：Manifest 的如实登记 ↔ 产物文件逐条一致」——遍历 Manifest **全部 9 份**数据集（t20 把口径从「日志清单 3 份」扩到全部）：登记为不可用 ⇒ null + 说明 + 产物不许带时间；没有时间 ⇒ 必须登记；有时间 ⇒ 两边逐字相等。正常态「不可用 0 份」✓、降级态「不可用 1 份」✓ |
 | `check:ci`（`--expect-checks=39`） | 39 / 0 | **39 / 0** | 未新增门禁步骤，冻结清单不变 |
 | 构建期自检（不计入上表） | — | **+3 条不变量 + 1 条分支反向断言** | 「如实不可用」三条 + `/changes/` 不可用时不许出现雷达分栏 |
 | 相邻套件 | — | `selftest:data-docs` 58/0 · `selftest:planshub` 32/0 · `selftest:changes` 119/0 | 都实跑过 |
@@ -139,6 +140,22 @@ manifest 的 schema 里**没有「未知时间」这个状态**。
 
 ## 6. 没做 / 边界（如实登记）
 
+0. **⚠️ 一次真实的流程事故（写在最前面，因为它比任何读数都值钱）**：我第一次报「完成」时，
+   **门禁其实是红的** —— 我在本地跑了 6 条验收命令 + 3 个相邻套件，但**没跑全链**，
+   于是漏掉了 `selftest:plans` §⑪ 这条**架构边界**：
+   `✗ deals 链路（采集 / 合并 / 历史 / 优惠雷达 / 落地页 / SEO）完全不引用 plans —— scripts/lib/changes.js 提到了 plan-history`。
+   根因：我为缺口 A 在 `changes.js` 里加的 `LOG_DATASETS`（三条 `{id, file, label}`）含 `plan-history` 字面量，
+   而 deals 链路**一个字都不许提 plans**（`lib/data-docs.js` 的 `PUBLIC_DATASETS` 才是那条清单的既有真值）。
+   处置（t20）：把清单从 `changes.js` 里**搬走**——`logAvailabilityOf()` 改成由**调用方**传入 id 与加载结果
+   （两种形态都收：`[{id,file,label,load}]` 或 `{id:{missing,broken}}`），文件名按约定 `id + '.json'` 推；
+   盘侧那条判据（`logDatasetDiskHonestyProblems`）也去掉 id 清单，改成「遍历 Manifest 全部数据集」——
+   **不但没有放宽，覆盖面反而从 3 份扩到 9 份**（任何数据集：登记为不可用 ⇒ null + 说明 + 产物不许带时间；没有时间 ⇒ 必须登记；有时间 ⇒ 两边逐字相等）。
+   我**没有**采用「把 id 拆成 `'plan-' + 'history'` 躲静态扫描」这种糊弄写法，也没有为了绿而删掉那条检查。
+   **流程纪律（写进自审）**：`verdict=completed` 意味着**可合并** ⇒ 报完成之前必须跑到与 CI 第 5 步等价的链
+   （本机 `npm run gate`：47 个脚本 / 378.6s / 失败 0，与 CI 读同一份 `action.yml`）。
+   本地跑不到的 CI 步骤只有 4 条非 node 步骤：Install dependencies · Prepare browser for the real-browser gate ·
+   Browser availability decision · Gate conclusion（另有 CI 侧的 concurrency/cancel 行为本地复现不了）。
+
 1. **`verify-site.js` 一个字未动**（写作用域留给 t9）。⇒ 在**降级产物**上跑 `verify-site` 的 §25 会红 1 条
    （「页面标出每份数据的时间形状」：`data/index.json` 里有一条 `updatedAtShape: null`）。
    这是**已知的交接项**，改法见 §7；在**正常产物**上它 880/0。
@@ -147,7 +164,25 @@ manifest 的 schema 里**没有「未知时间」这个状态**。
 3. **A2 的「删掉断言 ⇒ 伪造通过」那一侧是推演**，没有实跑（时间预算）：断言在 ⇒ 红这一侧实测过；
    推演的依据是「日期 + 形状都写上时，`assertManifestShape` / `assertPageHonesty` / `assertUpdatedAt`
    （真实值为 null ⇒ 跳过）三条都不说话」。我不把它写成实测。
-4. 没有动任何**文本下限**与任何**词条下限**；没有新增门禁步骤（`check:ci` 39 不变）。
+4. **`seo-selftest.js` 的 §八 单元牙（5 条）**已经写好并实跑通过（`selftest:seo` 88 → 93），
+   但该文件在 t10 的声明面里 ⇒ 按「不许两人同写一个文件」的护栏**从本 PR 撤下**。
+   **补丁去向 = t10**：原文（可直接照抄的代码块 + 期望读数 + 每条在守什么）落在
+   [`patch-seo-selftest-gap-a.md`](_raw/p2-honesty-single-source-v1/patch-seo-selftest-gap-a.md) —— 不是口头承诺。
+5. 没有动任何**文本下限**与任何**词条下限**；没有新增门禁步骤（`check:ci` 39 不变）。
+6. 没有实跑 `--url=` 线上冒烟（本任务不涉及发布链）。
+
+### 6.1 t20 的最终形状（CI 修复落在哪两个文件）
+
+| 文件 | 改动 | 为什么 |
+| --- | --- | --- |
+| `scripts/lib/changes.js` | 去掉 `LOG_DATASETS`（含 `plan-history` 字面量）；`logAvailabilityOf(loads)` 收**两种形态**（`[{id,file,label,load}]` / `{id:{missing,broken}}`），文件名按 `id + '.json'` 推；`logDatasetDiskHonestyProblems` 去掉 id 清单（直接看 Manifest + 产物文件） | deals 链路**一个字都不许提 plans**（`plans-selftest` §⑪ 静态扫描 7 个文件） |
+| `scripts/tools/seo-verify.js` | §③⁗ 从「遍历日志清单」改成「遍历 **Manifest 全部 9 份数据集**」 | 不再需要 id 清单；覆盖面 3 → **9**（更严），且独立门禁与构建期共用同一句判据 |
+| `scripts/tools/build-local.js` | **零改动** | 它已提交的调用形态就是「调用方把已算好的数据（含 id）传进来」 |
+
+**我明确拒绝的两条"快修"**（写在这里，免得下一轮有人重提）：
+① 把 id 拆成 `'plan-' + 'history'` 之类 —— 躲静态 token 扫描 = 糊弄判据；
+② 让 `changes.js` 懒 require `./data-docs` 读 `PUBLIC_DATASETS` —— 静态绿，但 `data-docs.js` 自己 require `./plans-page`，
+   等于把套餐侧模块**传递性地**拖进 deals 链路的加载图，正是那条边界要防的东西。
 
 ## 7. 待排补丁（下一轮，都只有几行）
 
@@ -165,6 +200,9 @@ manifest 的 schema 里**没有「未知时间」这个状态**。
 
 **（c）本任务留给 t11 的交接**：t11 的形态集要覆盖本次新增的边界 ——
 「日志缺失 / 损坏 ⇒ 构建成功 + 措辞在场 + Manifest 不许有日期」这一组三层读数（构建 / 产物 / 独立门禁）。
+
+**（d）交 t10 的补丁**：`seo-selftest.js` §八「日志不可用时的如实登记」5 条单元牙，
+原文在 [`patch-seo-selftest-gap-a.md`](_raw/p2-honesty-single-source-v1/patch-seo-selftest-gap-a.md)（实跑 88 → 93，0 失败）。
 
 ## 8. 附录：复跑
 

@@ -553,30 +553,37 @@ function summarize(radar) {
 // 这里放的是**纯函数**：构建期（`build-local.js`）与独立门禁都从这里取同一条规则；
 // `seo-selftest.js` 直接对它们开牙（空值必须显式登记、可用时不许登记、日期顶替即红）。
 
-/** 三份变化日志 ↔ 数据出口 Manifest 里的数据集 id */
-const LOG_DATASETS = [
-  { id: 'deal-history', file: 'deal-history.json', label: '优惠变化日志' },
-  { id: 'plan-history', file: 'plan-history.json', label: '套餐变化日志' },
-  { id: 'api-plan-history', file: 'api-plan-history.json', label: 'API 计费变化日志' }
-];
-
 /** 如实说明：与页面上的措辞同源（都点明「不表示没有变化」） */
 function logUnavailableNote(item) {
   return `本次构建没有拿到 ${item.file}（${item.reason || '缺失或损坏'}）——这份数据集的更新时间不可公布，`
     + '这不表示「没有变化」。';
 }
 
-/** 由「日志加载结果」算出可用性登记（`availability: 'ok' | 'unavailable'`） */
-function logAvailabilityOf(loads = {}) {
-  return LOG_DATASETS.map(item => {
-    const load = loads[item.id] || {};
-    const unavailable = load.missing || load.broken;
+/**
+ * 由「日志加载结果」算出可用性登记（`availability: 'ok' | 'unavailable'`）。
+ *
+ * ⚠️ **清单由调用方传入，本文件一个字都不写日志名**：本文件属于 deals 链路，而
+ * `plans-selftest` §⑪（"谁可以引用 plans"）静态扫描 deals 链路的 7 个文件、禁止出现
+ * `plan-history` 之类的 token。所以这里只留**判据**；id 与加载结果都由调用方给出
+ * （`build-local.js` 本来就同时持有三份日志的加载结果），文件名按约定从 id 推（`<id>.json`）。
+ *
+ * @param {Array|object} loads 两种形态都收：
+ *   · `[{ id, file?, label?, load }]`（显式清单，可覆盖文件名）
+ *   · `{ [id]: { missing, broken } }`（调用方只有"id → 加载结果"时最省事）
+ */
+function logAvailabilityOf(loads = []) {
+  const rows = Array.isArray(loads)
+    ? loads.map(item => ({ id: item.id, load: item.load || {}, file: item.file, label: item.label }))
+    : Object.entries(loads).map(([id, value]) => ({ id, load: value || {}, file: value && value.file, label: value && value.label }));
+  return rows.map(row => {
+    const unavailable = row.load.missing || row.load.broken;
     return {
-      id: item.id,
-      file: item.file,
-      label: item.label,
+      id: row.id,
+      // 约定：数据集 id 与它的 endpoint 同名（`<id>.json`）；需要别的映射时由调用方显式给 file
+      file: row.file || `${row.id}.json`,
+      label: row.label || row.id,
       availability: unavailable ? 'unavailable' : 'ok',
-      reason: unavailable ? (load.broken || '文件缺失') : null
+      reason: unavailable ? (row.load.broken || '文件缺失') : null
     };
   });
 }
@@ -607,7 +614,7 @@ function logDatasetHonestyProblems(manifest, availability = []) {
     const item = availability.find(row => row.id === dataset.id);
     const declared = dataset.availability === 'unavailable';
     if (!item) {
-      if (declared) problems.push(`${dataset.id}: 只有变化日志类数据集才允许登记 availability: unavailable`);
+      if (declared) problems.push(`${dataset.id}: 只有本次登记的日志数据集才允许 availability: unavailable`);
       continue;
     }
     if (item.availability === 'ok') {
@@ -647,10 +654,11 @@ function toleratedLogComplaints(manifest) {
 }
 
 /**
- * 盘侧（自检/独立门禁）的同一条不变量：**没有时间的数据文件必须登记为不可用**，反之亦然。
+ * 盘侧（自检 / 独立门禁）的同一条不变量：**没有时间的数据文件必须登记为不可用**，反之亦然。
  *
- * 与 `logDatasetHonestyProblems()` 的区别：这里不需要"源日志加载结果"——只看
- * 产物 Manifest 与盘上数据文件本身。两条合起来把"源 ⇒ Manifest ⇒ 盘"三段钉住。
+ * 与 `logDatasetHonestyProblems()` 的区别：这里不需要"源日志加载结果"，也不需要**任何 id 清单**——
+ * 只看产物 Manifest 与盘上数据文件本身（因此独立门禁与构建期用的是同一句话）。
+ * 两条合起来把"源 ⇒ Manifest ⇒ 盘"三段钉住。
  *
  * @param {object} manifest          产物里的 data/index.json
  * @param {object} actualUpdatedAt   { [id]: updatedAt|null }（文件不存在时**不给键**：那条由 endpoint 存在性断言负责）
@@ -658,14 +666,9 @@ function toleratedLogComplaints(manifest) {
 function logDatasetDiskHonestyProblems(manifest, actualUpdatedAt = {}) {
   const problems = [];
   for (const dataset of ((manifest && manifest.datasets) || [])) {
-    const isLog = LOG_DATASETS.some(item => item.id === dataset.id);
     const declared = dataset.availability === 'unavailable';
     const hasKey = Object.prototype.hasOwnProperty.call(actualUpdatedAt, dataset.id);
     const real = hasKey ? actualUpdatedAt[dataset.id] : undefined;
-    if (!isLog) {
-      if (declared) problems.push(`${dataset.id}: 只有变化日志类数据集才允许登记 availability: unavailable`);
-      continue;
-    }
     if (declared) {
       if (dataset.updatedAt !== null) {
         problems.push(`${dataset.id}: 已登记为不可用，Manifest 的 updatedAt 必须是 null（实得 ${dataset.updatedAt}）`);
@@ -692,7 +695,6 @@ function logDatasetDiskHonestyProblems(manifest, actualUpdatedAt = {}) {
 
 module.exports = {
   CHANGES_WORDING,
-  LOG_DATASETS,
   logUnavailableNote,
   logAvailabilityOf,
   markUnavailableLogDatasets,

@@ -1,5 +1,5 @@
 {
- "what": "四条断言口径的前后读数（只增不减）",
+ "what": "四条断言口径的前后读数（只增不减）+ 架构边界的复绿读数",
  "verifySite": {
   "before": 880,
   "after": 880,
@@ -8,24 +8,46 @@
  "selftestSeo": {
   "before": 87,
   "after": 88,
-  "note": "§七 由「登记一处手写」升级成「零容忍」+ 新增入口锚变异牙"
+  "note": "§七 由「登记一处手写」升级成「零容忍」+ 新增入口锚变异牙；§八 的 5 条单元牙（88 → 93）按护栏交给 t10（补丁见 patch-seo-selftest-gap-a.md）"
  },
  "verifySeo": {
   "before": 17,
   "after": 18,
-  "note": "新增 §③⁗「变化日志的可用性：Manifest ↔ 产物文件」"
+  "note": "新增 §③⁗「数据集的可用性：Manifest 的如实登记 ↔ 产物文件逐条一致」——t20 把口径从「日志清单 3 份」扩到 Manifest 全部 9 份数据集（更严）"
  },
  "checkCi": {
   "before": 39,
   "after": 39,
   "note": "冻结清单 38 + 看门狗；未新增门禁步骤"
  },
+ "architectureBoundary": {
+  "what": "CI 红掉的那条：plans-selftest §⑪「deals 链路完全不引用 plans」",
+  "redReading": "✗ deals 链路（采集 / 合并 / 历史 / 优惠雷达 / 落地页 / SEO）完全不引用 plans —— scripts/lib/changes.js 提到了 plan-history（263 项通过 / 1 项失败）",
+  "fix": "changes.js 去掉日志 id 清单（改由调用方传入）+ seo-verify.js §③⁗ 改为遍历 Manifest 全部数据集",
+  "greenReading": "✓ deals 链路（采集 / 合并 / 历史 / 优惠雷达 / 落地页 / SEO）完全不引用 plans · === v2.1 Coding Plan 数据模型演练：264 项通过，0 项失败 ===",
+  "rejectedShortcuts": [
+   "把 id 拆成 'plan-' + 'history' 躲静态 token 扫描（糊弄判据）",
+   "让 changes.js 懒 require ./data-docs 读注册表（静态绿，但把 plans-page 传递性拖进 deals 链路加载图）"
+  ]
+ },
  "buildSelfCheck": {
   "note": "构建期自检新增三条「如实不可用」不变量 + /changes/ 的可用性分支断言（不计入上面四条口径）"
+ },
+ "fullGate": {
+  "what": "本机 Full Gate（与 CI 第 5 步等价的链）",
+  "reading": "合计 378.6s / 47 个脚本，失败 0 · ✅ 本地门禁链全过（与 CI 读同一份 action.yml）",
+  "cannotRunLocally": [
+   "Install dependencies",
+   "Prepare browser for the real-browser gate",
+   "Browser availability decision",
+   "Gate conclusion"
+  ],
+  "note": "另有 CI 侧的 concurrency / cancel 行为本地复现不了"
  },
  "neighbouringSuites": {
   "selftest:data-docs": "58 项 / 0 失败",
   "selftest:planshub": "32 项 / 0 失败",
-  "selftest:changes": "119 项 / 0 失败"
+  "selftest:changes": "119 项 / 0 失败",
+  "selftest:plans": "264 项 / 0 失败（含 §⑪ 架构边界）"
  }
 }
