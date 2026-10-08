@@ -1,0 +1,237 @@
+{
+  "task": "sources-residue-v1",
+  "measure": "citation-budget",
+  "date": "2026-10-08",
+  "source": "api-plans.json（发布数据）",
+  "plans": 24,
+  "evidenceTotal": 59,
+  "maxEvidencePerPlan": 3,
+  "plansAtMaxEvidence": 16,
+  "modelLevelBindings": 40,
+  "modelLevelWithBothInputAndOutput": 39,
+  "modelLevelInputBeforeOutput": 39,
+  "dimensionBindings": 0,
+  "dimensionsCovered": [],
+  "rateEntriesTotal": 308,
+  "rateEntriesClaimedByDimensionBinding": 0,
+  "rateEntriesBoundShare": 0,
+  "modelRegistryModels": 51,
+  "perPlan": [
+    {
+      "id": "0940febeeea9",
+      "provider": "ai360",
+      "planName": "360zhinao 模型广场按量计费",
+      "evidenceCount": 3,
+      "modelLevelBindings": 2,
+      "modelEntries": 2,
+      "rateEntries": 8
+    },
+    {
+      "id": "ebc4af9a71b6",
+      "provider": "aliyun",
+      "planName": "模型推理按量计费(中国内地)",
+      "evidenceCount": 3,
+      "modelLevelBindings": 2,
+      "modelEntries": 8,
+      "rateEntries": 14
+    },
+    {
+      "id": "ef4d06758403",
+      "provider": "aliyun",
+      "planName": "模型推理按量计费(闲时)",
+      "evidenceCount": 1,
+      "modelLevelBindings": 1,
+      "modelEntries": 1,
+      "rateEntries": 2
+    },
+    {
+      "id": "4f8bae91f9f8",
+      "provider": "anthropic",
+      "planName": "Claude API 按量计费",
+      "evidenceCount": 3,
+      "modelLevelBindings": 3,
+      "modelEntries": 4,
+      "rateEntries": 20
+    },
+    {
+      "id": "218c142dcb17",
+      "provider": "baichuan",
+      "planName": "百川大模型按量计费",
+      "evidenceCount": 3,
+      "modelLevelBindings": 2,
+      "modelEntries": 2,
+      "rateEntries": 4
+    },
+    {
+      "id": "23643dfd94f8",
+      "provider": "baidu",
+      "planName": "千帆模型按量后付费",
+      "evidenceCount": 3,
+      "modelLevelBindings": 2,
+      "modelEntries": 3,
+      "rateEntries": 5
+    },
+    {
+      "id": "61aa6c3ed3ff",
+      "provider": "cerebras",
+      "planName": "推理按量计费 Developer 档",
+      "evidenceCount": 1,
+      "modelLevelBindings": 0,
+      "modelEntries": 2,
+      "rateEntries": 4
+    },
+    {
+      "id": "e546e8ab4c7d",
+      "provider": "deepseek",
+      "planName": "API 按量计费",
+      "evidenceCount": 2,
+      "modelLevelBindings": 2,
+      "modelEntries": 2,
+      "rateEntries": 6
+    },
+    {
+      "id": "fffbb44ac3a9",
+      "provider": "deepseek",
+      "planName": "API 按量计费",
+      "evidenceCount": 3,
+      "modelLevelBindings": 2,
+      "modelEntries": 2,
+      "rateEntries": 6
+    },
+    {
+      "id": "929a1f3ec46c",
+      "provider": "fireworks",
+      "planName": "Serverless 按量计费",
+      "evidenceCount": 1,
+      "modelLevelBindings": 0,
+      "modelEntries": 10,
+      "rateEntries": 30
+    },
+    {
+      "id": "a110a5bfc3f8",
+      "provider": "google",
+      "planName": "Gemini API 标准档",
+      "evidenceCount": 3,
+      "modelLevelBindings": 2,
+      "modelEntries": 4,
+      "rateEntries": 12
+    },
+    {
+      "id": "036c5f09561e",
+      "provider": "groq",
+      "planName": "模型推理按量计费",
+      "evidenceCount": 1,
+      "modelLevelBindings": 0,
+      "modelEntries": 6,
+      "rateEntries": 12
+    },
+    {
+      "id": "faf2d5722e71",
+      "provider": "iflytek",
+      "planName": "星火大模型 API 按量计费",
+      "evidenceCount": 2,
+      "modelLevelBindings": 1,
+      "modelEntries": 1,
+      "rateEntries": 3
+    },
+    {
+      "id": "796e0c92ecdc",
+      "provider": "minimax",
+      "planName": "API 按量计费",
+      "evidenceCount": 3,
+      "modelLevelBindings": 2,
+      "modelEntries": 5,
+      "rateEntries": 15
+    },
+    {
+      "id": "c4b6948c4fa9",
+      "provider": "moonshot",
+      "planName": "Kimi 开放平台模型推理按量计费",
+      "evidenceCount": 3,
+      "modelLevelBindings": 2,
+      "modelEntries": 2,
+      "rateEntries": 8
+    },
+    {
+      "id": "206f8b4bde7b",
+      "provider": "openai",
+      "planName": "API 标准价格",
+      "evidenceCount": 3,
+      "modelLevelBindings": 3,
+      "modelEntries": 7,
+      "rateEntries": 12
+    },
+    {
+      "id": "82c3df0bc204",
+      "provider": "openai",
+      "planName": "Batch API",
+      "evidenceCount": 2,
+      "modelLevelBindings": 2,
+      "modelEntries": 6,
+      "rateEntries": 12
+    },
+    {
+      "id": "09ed95f9cd81",
+      "provider": "sensetime",
+      "planName": "日日新大模型 Tokens 按量后付费",
+      "evidenceCount": 3,
+      "modelLevelBindings": 2,
+      "modelEntries": 2,
+      "rateEntries": 4
+    },
+    {
+      "id": "6844d46deb05",
+      "provider": "siliconflow",
+      "planName": "模型推理按量计费",
+      "evidenceCount": 3,
+      "modelLevelBindings": 2,
+      "modelEntries": 6,
+      "rateEntries": 16
+    },
+    {
+      "id": "03b27e432472",
+      "provider": "stepfun",
+      "planName": "StepFun 开放平台模型推理按量计费",
+      "evidenceCount": 3,
+      "modelLevelBindings": 3,
+      "modelEntries": 3,
+      "rateEntries": 9
+    },
+    {
+      "id": "2981d8f29020",
+      "provider": "tencent",
+      "planName": "混元生文按量计费",
+      "evidenceCount": 3,
+      "modelLevelBindings": 1,
+      "modelEntries": 6,
+      "rateEntries": 12
+    },
+    {
+      "id": "8a26562011f2",
+      "provider": "together",
+      "planName": "Serverless 按量计费",
+      "evidenceCount": 1,
+      "modelLevelBindings": 0,
+      "modelEntries": 8,
+      "rateEntries": 23
+    },
+    {
+      "id": "a4a9addc49ca",
+      "provider": "volcengine",
+      "planName": "豆包模型 API 按量计费",
+      "evidenceCount": 3,
+      "modelLevelBindings": 2,
+      "modelEntries": 4,
+      "rateEntries": 12
+    },
+    {
+      "id": "646f01c662e6",
+      "provider": "zhipu",
+      "planName": "模型 API 按量计费",
+      "evidenceCount": 3,
+      "modelLevelBindings": 2,
+      "modelEntries": 12,
+      "rateEntries": 20
+    }
+  ]
+}
