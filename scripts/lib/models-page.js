@@ -57,6 +57,20 @@
 
 'use strict';
 
+/**
+ * 说明登记（notes-manifest-residual-v1）：`.snote` 构造点不再直接写进页面 —— 每个构造点在
+ * 产出那一段 HTML 的**同一次调用**里登记（`ctx.note` 由 `build-local.js` 按 route 注入）。
+ * 与 `lib/vendor-page.js` 同形：参数可以是 ctx 对象（含 `.note`），也可以是 note 函数本身；
+ * 都没有时是恒等函数（断言 / selftest 路径不产出页面）。
+ */
+const NOTES_DECLARED_BY = 'lib/models-page.js';
+const noteIn = source => {
+  if (typeof source === 'function') return source;
+  if (source && typeof source.note === 'function') return source.note;
+  return (decl, html) => html;
+};
+
+
 const apiSchema = require('./api-plan-schema');
 const apiPlansPage = require('./api-plans-page');
 const plansPage = require('./plans-page');
@@ -827,11 +841,11 @@ function renderModelsIndex(registry, ctx = {}) {
 
   const emptyState = rows.length
     ? ''
-    : `      <p class="snote mnone">当前 registry 里没有任何模型 —— 这是事实，不是故障：本站只收录有官方来源、且能被显式引用的模型。</p>\n`;
+    : `      ${noteIn(ctx)({ kind: 'page-note-empty', slot: 'main-snote', classes: 'snote mnone', declaredBy: NOTES_DECLARED_BY }, `<p class="snote mnone">当前 registry 里没有任何模型 —— 这是事实，不是故障：本站只收录有官方来源、且能被显式引用的模型。</p>`)}\n`;
   // 未过门槛的模型**仍然留在表里**（一行都不少），只是没有详情页链接：
   // 表的行数 == registry 的全部模型数，这一条由 `assertPageHonesty()` 对账。
   const unlinkedBlock = unlinked.length
-    ? `      <p class="snote" id="models-unlinked">${modelsMarkdownish(`表里有 ${unlinked.length} 个模型**还没有任何显式引用**（API 计价映射 / 套餐 / 优惠 / 历史事件），因此本版本不为它们生成详情页 —— 它们仍在覆盖报告里，也仍在这一页上（名字后面的小字标出）。`, prefix)}</p>
+    ? `      ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote" id="models-unlinked">${modelsMarkdownish(`表里有 ${unlinked.length} 个模型**还没有任何显式引用**（API 计价映射 / 套餐 / 优惠 / 历史事件），因此本版本不为它们生成详情页 —— 它们仍在覆盖报告里，也仍在这一页上（名字后面的小字标出）。`, prefix)}</p>`)}
 `
     : '';
 
@@ -842,7 +856,7 @@ function renderModelsIndex(registry, ctx = {}) {
         <span class="meta">${rows.length} 个模型 · ${developerCount} 个开发者 · ${linked.length} 个已生成详情页</span>
       </div>
 
-      <p class="snote">${escapeHtml(MODELS_INDEX_DESCRIPTION)}</p>
+      ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">${escapeHtml(MODELS_INDEX_DESCRIPTION)}</p>`)}
 
       <h2 class="ph2" id="models-notes">口径与说明（先读这一段）</h2>
       <ul class="plist">
@@ -850,7 +864,7 @@ ${notes}
       </ul>
 
 ${emptyState}      <div id="models-filter" class="mfilter" aria-label="筛选模型"></div>
-      <p class="snote mcount" id="models-count">显示 ${rows.length} / ${rows.length} 个模型${hiddenCount ? `（无 JS 时全部列出；有 JS 时旧型号 ${hiddenCount} 个默认不占首屏，可勾选「显示旧型号」查看）` : ''}</p>
+      ${noteIn(ctx)({ kind: 'page-note-count', slot: 'main-snote', classes: 'snote mcount', declaredBy: NOTES_DECLARED_BY }, `<p class="snote mcount" id="models-count">显示 ${rows.length} / ${rows.length} 个模型${hiddenCount ? `（无 JS 时全部列出；有 JS 时旧型号 ${hiddenCount} 个默认不占首屏，可勾选「显示旧型号」查看）` : ''}</p>`)}
 
       <div class="ptable-wrap">
       <table class="ptable" id="models-table">
@@ -867,13 +881,13 @@ ${rows.length ? rows.map(row => modelsIndexRowHtml(row, prefix)).join('\n') : ''
       </table>
       </div>
 
-${unlinkedBlock}      <p class="snote" id="models-links">相关页面：
+${unlinkedBlock}      ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote" id="models-links">相关页面：
         <a href="${escapeHtml(`${prefix}plans/`)}">套餐与 API 计费资料库</a> ·
         <a href="${escapeHtml(`${prefix}plans/api/`)}">API / Token 计费对比</a> ·
         <a href="${escapeHtml(`${prefix}vendor/`)}">按厂商浏览</a> ·
         <a href="${escapeHtml(`${prefix}archive/`)}">历史档案</a> ·
         <a href="${escapeHtml(`${prefix}docs/data/`)}">数据文档</a>
-      </p>
+      </p>`)}
 ${modelsIndexFilterScriptHtml()}
 `;
 }
@@ -1057,19 +1071,19 @@ ${rows.map(row => modelPricingRowHtml(row, prefix)).join('\n')}
         </tbody>
       </table>
       </div>`
-    : `      <p class="snote mnone">${modelsMarkdownish('本站的 API 计费数据里还没有与该模型**显式映射**的计价条目。这不是"没有平台提供它"，而是"我们还没有确证的官方价格" —— 未映射的 modelKey 记在覆盖报告里。', prefix)}</p>`;
+    : `      ${noteIn(ctx)({ kind: 'page-note-empty', slot: 'main-snote', classes: 'snote mnone', declaredBy: NOTES_DECLARED_BY }, `<p class="snote mnone">${modelsMarkdownish('本站的 API 计费数据里还没有与该模型**显式映射**的计价条目。这不是"没有平台提供它"，而是"我们还没有确证的官方价格" —— 未映射的 modelKey 记在覆盖报告里。', prefix)}</p>`)}`;
 
   const codingBlock = refs.codingPlans.length
     ? `      <ul class="mlist">
 ${refs.codingPlans.map(item => codingPlanLineOf(item, ctx, prefix)).join('\n')}
       </ul>`
-    : `      <p class="snote mnone">${modelsMarkdownish('没有与该模型**显式关联**的 Coding 套餐 —— 本站不按套餐里的模型名猜关系（supportedModels 是自由文本，没有模型键）。', prefix)}</p>`;
+    : `      ${noteIn(ctx)({ kind: 'page-note-empty', slot: 'main-snote', classes: 'snote mnone', declaredBy: NOTES_DECLARED_BY }, `<p class="snote mnone">${modelsMarkdownish('没有与该模型**显式关联**的 Coding 套餐 —— 本站不按套餐里的模型名猜关系（supportedModels 是自由文本，没有模型键）。', prefix)}</p>`)}`;
 
   const dealsBlock = refs.deals.length
     ? `      <ul class="mlist">
 ${refs.deals.map(item => relatedDealLineOf(item, ctx, prefix)).join('\n')}
       </ul>`
-    : `      <p class="snote mnone">${modelsMarkdownish('没有与该模型**显式关联**的优惠 —— 本站不用标题关键词猜关系。', prefix)}</p>`;
+    : `      ${noteIn(ctx)({ kind: 'page-note-empty', slot: 'main-snote', classes: 'snote mnone', declaredBy: NOTES_DECLARED_BY }, `<p class="snote mnone">${modelsMarkdownish('没有与该模型**显式关联**的优惠 —— 本站不用标题关键词猜关系。', prefix)}</p>`)}`;
 
   const historyBlock = ctx.apiPlanHistoryStore
     ? (refs.events.length
@@ -1081,8 +1095,8 @@ ${refs.events.slice().sort((a, b) => (a.at === b.at ? 0 : a.at < b.at ? 1 : -1))
           <span class="pchgtype">${escapeHtml(type)}</span>${field ? `<span class="pchgwhat">${escapeHtml(field)}</span>` : ''}</li>`;
   }).join('\n')}
       </ul>`
-      : `      <p class="snote mnone">API 计费日志里没有与该模型相关的事件。</p>`)
-    : `      <p class="snote mnone">本次构建没有拿到 API 计费日志 —— 这不表示「没有变化」。</p>`;
+      : `      ${noteIn(ctx)({ kind: 'page-note-empty', slot: 'main-snote', classes: 'snote mnone', declaredBy: NOTES_DECLARED_BY }, `<p class="snote mnone">API 计费日志里没有与该模型相关的事件。</p>`)}`)
+    : `      ${noteIn(ctx)({ kind: 'page-note-empty', slot: 'main-snote', classes: 'snote mnone', declaredBy: NOTES_DECLARED_BY }, `<p class="snote mnone">本次构建没有拿到 API 计费日志 —— 这不表示「没有变化」。</p>`)}`;
 
   return `      <nav class="crumb" aria-label="面包屑"><a href="${escapeHtml(prefix)}">首页</a> ›
         <a href="${escapeHtml(`${prefix}${MODELS_INDEX_ROUTE}`)}">${escapeHtml(MODELS_INDEX_HEADING)}</a> › <span>${escapeHtml(name)}</span></nav>
@@ -1109,8 +1123,8 @@ ${refs.events.slice().sort((a, b) => (a.at === b.at ? 0 : a.at < b.at ? 1 : -1))
       </dl>
 
       <h2 class="ph2" id="model-api">API 提供平台与计价条目（${rows.length} 条）</h2>
-      <p class="snote">全部来自本站 <a href="${escapeHtml(`${prefix}plans/api/`)}">API / Token 计费对比</a> 的同一份数据；
-        每一行都带计费单位与官方定价页。<b>不折算、不排序成"最便宜"、不写推荐</b>。</p>
+      ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">全部来自本站 <a href="${escapeHtml(`${prefix}plans/api/`)}">API / Token 计费对比</a> 的同一份数据；
+        每一行都带计费单位与官方定价页。<b>不折算、不排序成"最便宜"、不写推荐</b>。</p>`)}
 ${pricingBlock}
 
       <h2 class="ph2" id="model-plans">相关 Coding 套餐</h2>
@@ -1120,7 +1134,7 @@ ${codingBlock}
 ${dealsBlock}
 
       <h2 class="ph2" id="model-history">模型变化记录（派生视图）</h2>
-      <p class="snote">${modelsMarkdownish('这一节是**派生视图**：直接把 API 计费日志里与该模型有关的记录事件排出来，不新建第四套历史真值。', prefix)}</p>
+      ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">${modelsMarkdownish('这一节是**派生视图**：直接把 API 计费日志里与该模型有关的记录事件排出来，不新建第四套历史真值。', prefix)}</p>`)}
 ${historyBlock}
 `;
 }

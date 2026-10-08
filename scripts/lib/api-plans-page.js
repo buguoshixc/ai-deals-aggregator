@@ -31,6 +31,20 @@ const apiSchema = require('./api-plan-schema');
 const providersLib = require('./providers');
 const plansPage = require('./plans-page');
 
+/**
+ * 说明登记（notes-manifest-residual-v1）：`.snote` 构造点不再直接写进页面 —— 每个构造点在
+ * 产出那一段 HTML 的**同一次调用**里登记（`ctx.note` 由 `build-local.js` 按 route 注入）。
+ * 与 `lib/vendor-page.js` 同形：参数可以是 ctx 对象（含 `.note`），也可以是 note 函数本身；
+ * 都没有时是恒等函数（断言 / selftest 路径不产出页面）。
+ */
+const NOTES_DECLARED_BY = 'lib/api-plans-page.js';
+const noteIn = source => {
+  if (typeof source === 'function') return source;
+  if (source && typeof source.note === 'function') return source.note;
+  return (decl, html) => html;
+};
+
+
 const API_PLANS_ROUTE = 'plans/api/';
 const API_PLANS_HEADING = 'API / Token 计费对比';
 const API_PLANS_DESCRIPTION = '把各平台按量计费（API / Token）的官方价格放在一张表里比：'
@@ -308,7 +322,7 @@ function rowHtml(row) {
 }
 
 /** 免费额度与 credits 的明细（厂商级事实，逐条带官方口径） */
-function freeTierSectionHtml(plans) {
+function freeTierSectionHtml(plans, note = null) {
   const items = [];
   for (const plan of plans) {
     if (!plan.freeTier && !plan.credits) continue;
@@ -342,8 +356,8 @@ function freeTierSectionHtml(plans) {
   }
   if (!items.length) return '';
   return `      <h2 class="ph2" id="api-free">免费额度与 credits（厂商级事实）</h2>
-      <p class="snote">这一节把上表那一列的短文本展开，并逐条写明<b>性质</b>：长期提供的免费能力 / 新用户赠送 / 限时赠送。
-      只有「长期提供」才是长期免费能力；后两类是一次性或限时赠送，官方条件写在每条的说明里。</p>
+      ${noteIn(note)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">这一节把上表那一列的短文本展开，并逐条写明<b>性质</b>：长期提供的免费能力 / 新用户赠送 / 限时赠送。
+      只有「长期提供」才是长期免费能力；后两类是一次性或限时赠送，官方条件写在每条的说明里。</p>`)}
       <ul class="pftlist">
 ${items.map(item => `        ${item}`).join('\n')}
       </ul>`;
@@ -369,9 +383,9 @@ ${items}
 ${blocks.join('\n')}`;
 }
 
-function crossLinkHtml(prefix) {
-  return `      <p class="snote" id="api-cross">相关页面：<a href="${prefix}plans/coding/">AI Coding 套餐对比</a>`
-    + `（长期订阅的价格与额度） · <a href="${prefix}changes/">最近变化</a> · <a href="${prefix}feeds/">订阅</a></p>`;
+function crossLinkHtml(prefix, note = null) {
+  return `      ${noteIn(note)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote" id="api-cross">相关页面：<a href="${prefix}plans/coding/">AI Coding 套餐对比</a>`
+    + `（长期订阅的价格与额度） · <a href="${prefix}changes/">最近变化</a> · <a href="${prefix}feeds/">订阅</a></p>`)}`;
 }
 
 /**
@@ -385,22 +399,22 @@ function crossLinkHtml(prefix) {
  * @param {object|null} store   `api-plan-history.json` 的内容（null = 不可用）
  * @param {object[]}    plans   当前记录（取标题快照）
  */
-function apiChangesBlockHtml(store, plans, { limit = 12 } = {}) {
+function apiChangesBlockHtml(store, plans, { limit = 12 } = {}, note = null) {
   const history = require('./api-plan-history');
   const W = history.API_PLAN_HISTORY_WORDING;
   const byId = new Map((plans || []).map(plan => [plan.id, plan]));
 
   if (!store) {
     return `      <h2 class="ph2" id="api-changes">最近变化</h2>
-      <p class="snote pnone">${escapeHtml(W.API_PLAN_HISTORY_LABELS.unavailable)}</p>`;
+      ${noteIn(note)({ kind: 'page-note-empty', slot: 'main-snote', classes: 'snote pnone', declaredBy: NOTES_DECLARED_BY }, `<p class="snote pnone">${escapeHtml(W.API_PLAN_HISTORY_LABELS.unavailable)}</p>`)}`;
   }
 
   const events = (store.events || []).filter(event => event && event.type !== 'updated');
   if (!events.length) {
     const since = (store.baseline && store.baseline.at) || null;
     return `      <h2 class="ph2" id="api-changes">最近变化</h2>
-      <p class="snote pnone">${escapeHtml(W.API_PLAN_HISTORY_LABELS.empty)}`
-      + `${since ? `（变更记录自 ${escapeHtml(since)} 起）` : ''}</p>`;
+      ${noteIn(note)({ kind: 'page-note-empty', slot: 'main-snote', classes: 'snote pnone', declaredBy: NOTES_DECLARED_BY }, `<p class="snote pnone">${escapeHtml(W.API_PLAN_HISTORY_LABELS.empty)}`
+      + `${since ? `（变更记录自 ${escapeHtml(since)} 起）` : ''}</p>`)}`;
   }
 
   const sorted = [...events].sort((a, b) => (a.at === b.at ? 0 : a.at < b.at ? 1 : -1)).slice(0, limit);
@@ -418,8 +432,8 @@ function apiChangesBlockHtml(store, plans, { limit = 12 } = {}) {
   }).join('\n');
 
   return `      <h2 class="ph2" id="api-changes">最近变化</h2>
-      <p class="snote">以下是本站重建 API 计费数据时留下的观测记录（最多 ${limit} 条）。`
-    + `「不再收录」表示人工来源层不再列出它，<b>不表示厂商已经下架</b>。</p>
+      ${noteIn(note)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">以下是本站重建 API 计费数据时留下的观测记录（最多 ${limit} 条）。`
+    + `「不再收录」表示人工来源层不再列出它，<b>不表示厂商已经下架</b>。</p>`)}
       <ul class="pchglist">
 ${items}
       </ul>`;
@@ -474,7 +488,7 @@ function apiPlanChangesPageBlockHtml(radar, opts = {}) {
   if (!radar || radar.availability !== 'ok') {
     return `<section class="chgsec apichanges" id="api-plans">
       <h2>${escapeHtml(W.sectionTitle)}</h2>
-      <p class="snote chgwarn">${escapeHtml(W.unavailable)}</p>
+      ${noteIn(opts)({ kind: 'page-note-warn', slot: 'main-snote', classes: 'snote chgwarn', declaredBy: NOTES_DECLARED_BY }, `<p class="snote chgwarn">${escapeHtml(W.unavailable)}</p>`)}
     </section>
 `;
   }
@@ -491,9 +505,9 @@ function apiPlanChangesPageBlockHtml(radar, opts = {}) {
       ? `<ul class="chglist">
 ${items.map(item => `          <li>${apiPlanChangeItemHtml(item, itemOpts)}</li>`).join('\n')}
         </ul>`
-      : `<p class="snote">${escapeHtml(W.emptySection[key])}</p>`;
+      : `${noteIn(opts)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">${escapeHtml(W.emptySection[key])}</p>`)}`;
     const truncated = section.truncated > 0
-      ? `\n        <p class="snote">${escapeHtml(W.more.replace('{n}', String(section.truncated)))}</p>` : '';
+      ? `\n        ${noteIn(opts)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">${escapeHtml(W.more.replace('{n}', String(section.truncated)))}</p>`)}` : '';
     return `      <div class="chgsub">
         <h3>${escapeHtml(S[key])}（${radar.totals[key]}）</h3>
 ${list}${truncated}
@@ -501,15 +515,15 @@ ${list}${truncated}
   }).join('\n');
 
   const metaNote = radar.totals.meta > 0
-    ? `      <p class="snote">另有 ${radar.totals.meta} 条只影响记录元信息的变化（官方定价页 / 来源类型 / 来源地址），`
-      + `不计入上面的分栏；它们仍出现在各条计费记录的变化记录里。</p>\n`
+    ? `      ${noteIn(opts)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">另有 ${radar.totals.meta} 条只影响记录元信息的变化（官方定价页 / 来源类型 / 来源地址），`
+      + `不计入上面的分栏；它们仍出现在各条计费记录的变化记录里。</p>`)}\n`
     : '';
 
   return `<section class="chgsec apichanges" id="api-plans">
       <h2>${escapeHtml(W.sectionTitle)}</h2>
-      <p class="snote">${escapeHtml(W.plansSource.replace('{date}', radar.startedAt || '未知'))}</p>
+      ${noteIn(opts)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">${escapeHtml(W.plansSource.replace('{date}', radar.startedAt || '未知'))}</p>`)}
 ${sections}
-${metaNote}      <p class="snote">${escapeHtml(W.disclaimer)}</p>
+${metaNote}      ${noteIn(opts)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">${escapeHtml(W.disclaimer)}</p>`)}
     </section>
 `;
 }
@@ -610,7 +624,7 @@ function apiPlansPageBody(plans, opts = {}) {
         <span class="meta">${plans.length} 条计费记录 · ${providers.length} 个平台 · ${rows.length} 个模型计价条目 · 最近核对 ${escapeHtml(updatedAt)}</span>
       </div>
 
-      <p class="snote">${escapeHtml(API_PLANS_DESCRIPTION)}</p>
+      ${noteIn(opts)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">${escapeHtml(API_PLANS_DESCRIPTION)}</p>`)}
 
       <h2 class="ph2" id="api-notes">口径与说明（先读这一段）</h2>
       <ul class="plist">
@@ -629,15 +643,15 @@ ${body}
       </table>
       </div>
 
-${freeTierSectionHtml(plans)}
+${freeTierSectionHtml(plans, opts.note)}
 
-${apiChangesBlockHtml(opts.historyStore || null, plans)}
+${apiChangesBlockHtml(opts.historyStore || null, plans, {}, opts.note)}
 
-${dealLinksBlockHtml(opts.dealLinks || null)}
+${dealLinksBlockHtml(opts.dealLinks || null, opts.note)}
 
 ${evidenceSectionHtml(plans)}
 
-${crossLinkHtml(prefix)}
+${crossLinkHtml(prefix, opts.note)}
 `;
 }
 
@@ -649,10 +663,11 @@ ${crossLinkHtml(prefix)}
  * 只筛 `kind: 'api'` 的行，并把标题与计数名词换成这一页的说法。
  * 锚点指向每条记录的**第一行**（`#plan-<recordId>`），因此这一块在无 JS 时同样可跳。
  */
-function dealLinksBlockHtml(view) {
+function dealLinksBlockHtml(view, note = null) {
   if (!view) return '';
   return plansPage.planDealsBlockHtml(view, {
     prefix: '../../',
+    note,
     kind: 'api',
     heading: '各计费记录当前优惠',
     unit: '条 API 计费记录'

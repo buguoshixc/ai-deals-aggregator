@@ -1,0 +1,28 @@
+{
+  "what": "产物变化面：master 基线构建 vs 本分支构建（逐文件 sha256）",
+  "device": ".arch-v1/dist-baseline（本分支起点 70d7463 的构建）vs dist/",
+  "files": 304,
+  "changedFiles": 2,
+  "changes": [
+    {
+      "file": "index.html",
+      "status": "changed",
+      "beforeSha256": "a4a12094a85214afa05a98133ae23609397f3d29780ca903e88161c67473dd80",
+      "afterSha256": "a8282f788f3b150528dde1d46c4f144b70e3f928902c242e9f15068d01f3fdae",
+      "beforeBytes": 405756,
+      "afterBytes": 406587
+    },
+    {
+      "file": "_notes.ndjson",
+      "status": "changed",
+      "beforeSha256": "58a7373b502dbbdeb6d9292a0ba4df95140a3f6bd70d041286b69c1f978ee27c",
+      "afterSha256": "8a04cebabe91df91cb9543c68afebe75cf3a0bc9fde76bf4ff83dfb8cca77adb",
+      "beforeBytes": 104591,
+      "afterBytes": 131051
+    }
+  ],
+  "explanations": {
+    "_notes.ndjson": "预期变化：台账清零 + 逐条登记（104,591 → 131,051 B）",
+    "index.html": "**必须解释的一处**：内联 RENDER-CORE 模板（<script> 段）里 changesPageHtml 的源码本身随页面出货 —— 新增第三个参数与 snote() 包装让这份内联副本多了 831 字节；同一次构建的 DOM 部分（去掉 script/style 后）逐字节相同，且 /changes/ 页面的 HTML 一个字节未变"
+  }
+}

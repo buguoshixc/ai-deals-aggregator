@@ -33,6 +33,20 @@
 
 'use strict';
 
+/**
+ * 说明登记（notes-manifest-residual-v1）：`.snote` 构造点不再直接写进页面 —— 每个构造点在
+ * 产出那一段 HTML 的**同一次调用**里登记（`ctx.note` 由 `build-local.js` 按 route 注入）。
+ * 与 `lib/vendor-page.js` 同形：参数可以是 ctx 对象（含 `.note`），也可以是 note 函数本身；
+ * 都没有时是恒等函数（断言 / selftest 路径不产出页面）。
+ */
+const NOTES_DECLARED_BY = 'lib/plans-hub-page.js';
+const noteIn = source => {
+  if (typeof source === 'function') return source;
+  if (source && typeof source.note === 'function') return source.note;
+  return (decl, html) => html;
+};
+
+
 const plansPage = require('./plans-page');
 const apiPlansPage = require('./api-plans-page');
 const planChanges = require('./plan-changes');
@@ -198,7 +212,7 @@ function statHtml(label, value, hint) {
     + `${hint ? `<small>${escapeHtml(hint)}</small>` : ''}</li>`;
 }
 
-function codingSectionHtml(view, prefix) {
+function codingSectionHtml(view, prefix, note = null) {
   const c = view.coding;
   const ch = view.codingChanges;
   const changeLine = ch.availability === 'ok'
@@ -206,19 +220,19 @@ function codingSectionHtml(view, prefix) {
     : '本次构建没有拿到套餐变更日志 —— 这不表示「没有变化」。';
   return `      <section class="phubsec" id="plans-hub-coding" data-child="${PLANS_HUB_CHILDREN[0].route}">
         <h2 class="ph2">Coding 套餐</h2>
-        <p class="snote">这里收录 <b>订阅型 / Coding 套餐</b>：月费、活动价、可用模型、额度、限制与官方来源。
-          这些是长期在售的套餐，与按量计费是两件事。</p>
+        ${noteIn(note)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">这里收录 <b>订阅型 / Coding 套餐</b>：月费、活动价、可用模型、额度、限制与官方来源。
+          这些是长期在售的套餐，与按量计费是两件事。</p>`)}
         <ul class="phubstats">
 ${statHtml('套餐数', c.plans, '条')}
 ${statHtml('平台数', c.providers, '个提供方')}
 ${statHtml('数据最近核对', c.updatedAt || UNKNOWN_TEXT, '')}
         </ul>
-        <p class="snote">${escapeHtml(changeLine)}</p>
+        ${noteIn(note)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">${escapeHtml(changeLine)}</p>`)}
         <p><a class="phubgo" href="${escapeHtml(`${prefix}plans/coding/`)}">进入 Coding 套餐对比 →</a></p>
       </section>`;
 }
 
-function apiSectionHtml(view, prefix) {
+function apiSectionHtml(view, prefix, note = null) {
   const a = view.api;
   const ch = view.apiChanges;
   const changeLine = ch.availability === 'ok'
@@ -226,40 +240,40 @@ function apiSectionHtml(view, prefix) {
     : '本次构建没有拿到 API 计费变化日志 —— 这不表示「没有变化」。';
   return `      <section class="phubsec" id="plans-hub-api" data-child="${PLANS_HUB_CHILDREN[1].route}">
         <h2 class="ph2">API 计费</h2>
-        <p class="snote">这里收录 <b>按量计费（API / Token）的官方单价</b>：输入价、输出价、缓存、Batch、
-          Off-Peak、免费额度、credits 与其他官方计费维度。单位逐行写出，不跨单位换算。</p>
+        ${noteIn(note)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">这里收录 <b>按量计费（API / Token）的官方单价</b>：输入价、输出价、缓存、Batch、
+          Off-Peak、免费额度、credits 与其他官方计费维度。单位逐行写出，不跨单位换算。</p>`)}
         <ul class="phubstats">
 ${statHtml('计费记录', a.records, '条')}
 ${statHtml('模型计价条目', a.modelItems, '条')}
 ${statHtml('平台数', a.providers, '个提供方')}
 ${statHtml('数据最近核对', a.updatedAt || UNKNOWN_TEXT, '')}
         </ul>
-        <p class="snote">${escapeHtml(changeLine)}</p>
+        ${noteIn(note)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">${escapeHtml(changeLine)}</p>`)}
         <p><a class="phubgo" href="${escapeHtml(`${prefix}plans/api/`)}">进入 API / Token 计费对比 →</a></p>
       </section>`;
 }
 
-function changesSectionHtml(view, prefix) {
+function changesSectionHtml(view, prefix, note = null) {
   // 这一页没有套餐表格行，因此变化块里「谁变了」的链接必须跨页落到 `/plans/coding/#plan-<id>` ——
   // 复用 `planChangesBlockHtml`（同一份事件、同一句话）但换掉链接落点，
   // 否则页面上会出现点不动的 `#plan-<id>` 死锚点（真浏览器验收会红）。
   const planHref = item => (item.planId ? `${prefix}plans/coding/#plan-${item.planId}` : null);
   const coding = plansPage.planChangesBlockHtml(view.codingRadar, {
-    prefix, providerTable: view.providerTable, planHref
+    prefix, providerTable: view.providerTable, planHref, note
   });
-  const api = apiPlansPage.apiChangesBlockHtml(view.apiPlanHistoryStore || null, view.apiPlans || []);
+  const api = apiPlansPage.apiChangesBlockHtml(view.apiPlanHistoryStore || null, view.apiPlans || [], {}, note);
   return `      <section class="phubsec" id="plans-hub-changes">
         <h2 class="ph2">最近套餐与价格变化</h2>
-        <p class="snote">变化 <b>直接来自本站的变更日志</b>（优惠、套餐、API 计费三套各自独立），
-          这里只搬运，不另立一套判据；「不再收录」表示人工来源层不再列出它，不表示厂商已经下架。</p>
+        ${noteIn(note)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">变化 <b>直接来自本站的变更日志</b>（优惠、套餐、API 计费三套各自独立），
+          这里只搬运，不另立一套判据；「不再收录」表示人工来源层不再列出它，不表示厂商已经下架。</p>`)}
 ${coding}
 ${api}
-        <p class="snote"><a href="${escapeHtml(`${prefix}changes/`)}">${escapeHtml(changes.CHANGES_WORDING.CHANGES_LABELS.all)} →</a> ·
-          <a href="${escapeHtml(`${prefix}feeds/`)}">订阅变化（RSS / JSON Feed） →</a></p>
+        ${noteIn(note)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote"><a href="${escapeHtml(`${prefix}changes/`)}">${escapeHtml(changes.CHANGES_WORDING.CHANGES_LABELS.all)} →</a> ·
+          <a href="${escapeHtml(`${prefix}feeds/`)}">订阅变化（RSS / JSON Feed） →</a></p>`)}
       </section>`;
 }
 
-function currentOffersHtml(view, prefix) {
+function currentOffersHtml(view, prefix, note = null) {
   const rows = view.currentOffers;
   const kindLabel = kind => (kind === 'api' ? 'API 计费' : 'Coding 套餐');
   const body = rows.length
@@ -278,12 +292,12 @@ function currentOffersHtml(view, prefix) {
     : `          <li class="phubnone">暂无当前优惠 —— 关系只来自显式确认的关联，没有确认过的就不显示。</li>`;
   return `      <section class="phubsec" id="plans-hub-deals">
         <h2 class="ph2">当前相关优惠</h2>
-        <p class="snote">只列 <b>尚未结束</b> 的关联：优惠与它关联的套餐记录都必须仍然是当前的。
-          已结束的关联不会出现在这里（它们仍留在各自套餐的「历史优惠」里）。</p>
+        ${noteIn(note)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">只列 <b>尚未结束</b> 的关联：优惠与它关联的套餐记录都必须仍然是当前的。
+          已结束的关联不会出现在这里（它们仍留在各自套餐的「历史优惠」里）。</p>`)}
         <ul class="phubdeals">
 ${body}
         </ul>
-        <p class="snote">共 ${rows.length} 条当前关联优惠。</p>
+        ${noteIn(note)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">共 ${rows.length} 条当前关联优惠。</p>`)}
       </section>`;
 }
 
@@ -316,34 +330,34 @@ function renderPlansHubPage(ctx = {}) {
         <span class="meta">${escapeHtml(meta)}</span>
       </div>
 
-      <p class="snote">${escapeHtml(PLANS_HUB_DESCRIPTION)}</p>
+      ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">${escapeHtml(PLANS_HUB_DESCRIPTION)}</p>`)}
 
       <h2 class="ph2" id="plans-hub-notes">这一页收录什么</h2>
       <ul class="plist">
 ${notes}
       </ul>
 
-${codingSectionHtml(view, prefix)}
+${codingSectionHtml(view, prefix, ctx.note)}
 
-${apiSectionHtml(view, prefix)}
+${apiSectionHtml(view, prefix, ctx.note)}
 
-${changesSectionHtml({ ...view, apiPlanHistoryStore: ctx.apiPlanHistoryStore || null, apiPlans: ctx.apiPlans || [] }, prefix)}
+${changesSectionHtml({ ...view, apiPlanHistoryStore: ctx.apiPlanHistoryStore || null, apiPlans: ctx.apiPlans || [] }, prefix, ctx.note)}
 
-${ctx.dealLinks === undefined || ctx.dealLinks === null ? '' : `${currentOffersHtml(view, prefix)}\n`}      <p class="snote" id="plans-hub-data">数据出口：
+${ctx.dealLinks === undefined || ctx.dealLinks === null ? '' : `${currentOffersHtml(view, prefix, ctx.note)}\n`}      ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote" id="plans-hub-data">数据出口：
         <a href="${escapeHtml(`${prefix}deals.json`)}">deals.json</a> ·
         <a href="${escapeHtml(`${prefix}plans.json`)}">plans.json</a> ·
         <a href="${escapeHtml(`${prefix}api-plans.json`)}">api-plans.json</a>${
   // `/docs/data/` 由 Stage G 生成。**只有它真的存在时才链接** —— 站内链接存在性是硬门禁，
   // 先写一条指向未来页面的链接就是造一条死链（t10 接上之后由构建期传 `dataDocs: true`）。
   ctx.dataDocs ? ` ·\n        <a href="${escapeHtml(`${prefix}docs/data/`)}">数据文档</a>` : ''}
-      </p>
+      </p>`)}
 
-      <p class="snote" id="plans-hub-cross">相关资料库：
+      ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote" id="plans-hub-cross">相关资料库：
         <a href="${escapeHtml(`${prefix}models/`)}">模型资料索引</a> ·
         <a href="${escapeHtml(`${prefix}vendor/`)}">按厂商浏览</a> ·
         <a href="${escapeHtml(`${prefix}archive/`)}">历史档案</a> ·
         <a href="${escapeHtml(`${prefix}changes/`)}">最近变化</a>
-      </p>
+      </p>`)}
 `;
 }
 

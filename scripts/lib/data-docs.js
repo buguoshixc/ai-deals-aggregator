@@ -27,6 +27,15 @@
 const plansPage = require('./plans-page');
 const pageKinds = require('./page-kinds');
 
+/**
+ * 说明登记（notes-manifest-residual-v1）：`.snote` 构造点不再直接写进页面 —— 每个构造点在
+ * 产出那一段 HTML 的**同一次调用**里登记（`ctx.note` 由 `build-local.js` 按 route 注入）。
+ * 与 `lib/vendor-page.js` 同形；没有注入时是恒等函数（断言 / selftest 路径不产出页面）。
+ */
+const NOTES_DECLARED_BY = 'lib/data-docs.js';
+const noteIn = ctx => (typeof (ctx && ctx.note) === 'function' ? ctx.note : (decl, html) => html);
+
+
 const DATA_DOCS_ROUTE = 'docs/data/';
 /** Dataset Manifest 的**唯一出处**（构建期落盘、自测扫描、页面链接都读它） */
 const MANIFEST_URL = 'data/index.json';
@@ -748,7 +757,7 @@ function examplesHtml(ctx, prefix) {
     const endpoints = example.endpoints
       .map(url => `<a href="${escapeHtml(`${prefix}${url}`)}">${escapeHtml(url)}</a>`).join('、');
     return `      <h3>${escapeHtml(example.title)}</h3>
-      <p class="snote">用到的 endpoint：${endpoints}</p>
+      ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">用到的 endpoint：${endpoints}</p>`)}
       <pre class="codeblock"><code>${escapeHtml(example.code)}</code></pre>`;
   }).join('\n');
 }
@@ -791,7 +800,7 @@ function renderDataDocsPage(ctx = {}) {
           · 最近更新 ${escapeHtml(updatedAt)}</span>
       </div>
 
-      <p class="snote">${escapeHtml(DATA_DOCS_DESCRIPTION)}</p>
+      ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">${escapeHtml(DATA_DOCS_DESCRIPTION)}</p>`)}
 
       <h2 class="ph2" id="data-notes">先说三件重要的事</h2>
       <ul class="plist">
@@ -799,14 +808,14 @@ ${notes}
       </ul>
 
       <h2 class="ph2" id="data-datasets">数据集索引（Dataset Index）</h2>
-      <p class="snote">${rich(`六类数据集：${DATASET_CATEGORIES.map(item => item.label).join(' · ')}。`)}
+      ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">${rich(`六类数据集：${DATASET_CATEGORIES.map(item => item.label).join(' · ')}。`)}
         Manifest 地址：<a href="${escapeHtml(`${prefix}data/index.json`)}">data/index.json</a>
-        —— 它${rich('**只描述数据集**')}（URL / schemaVersion / updatedAt / 记录数 / 用途），不复制任何数据。</p>
-      <p class="snote">${rich(`**时间形状必须分开读**：本站 ${timeShapeCount(manifest, 'timestamp')} 份数据集的 `
+        —— 它${rich('**只描述数据集**')}（URL / schemaVersion / updatedAt / 记录数 / 用途），不复制任何数据。</p>`)}
+      ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">${rich(`**时间形状必须分开读**：本站 ${timeShapeCount(manifest, 'timestamp')} 份数据集的 `
   + '`updatedAt` 是**真实时刻**，'
   + `${timeShapeCount(manifest, 'date-normalized')} 份是**日期规范化**（当天零点，看起来像时刻其实是日期），`
   + `${timeShapeCount(manifest, 'date')} 份是纯日期。`
-  + '表里每一行都显式标出形状 —— 不标的话，读者会以为它们是同一时刻产出的。')}</p>
+  + '表里每一行都显式标出形状 —— 不标的话，读者会以为它们是同一时刻产出的。')}</p>`)}
       <div class="ptable-wrap">
       <table class="ptable">
         <caption>一行 = 一份公开数据集（${manifest.count} 份）。</caption>
@@ -826,15 +835,15 @@ ${termListHtml(DATA_DOC_TERMS)}
       </ul>
 
       <h2 class="ph2" id="data-examples">使用示例</h2>
-      <p class="snote">示例只用到上面列出的真实 endpoint；它们不是"伪代码"，是可以直接复制运行的取数方式。</p>
+      ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">示例只用到上面列出的真实 endpoint；它们不是"伪代码"，是可以直接复制运行的取数方式。</p>`)}
 ${examplesHtml(ctx, prefix)}
 
       <h2 class="ph2" id="data-citation">引用方式</h2>
-      <p class="snote">${rich('引用本站数据时，请同时保留下面三条信息，并且**不要宣称本站是官方来源**。')}</p>
+      ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">${rich('引用本站数据时，请同时保留下面三条信息，并且**不要宣称本站是官方来源**。')}</p>`)}
       <ul class="plist">
 ${CITATION_RULES.map(rule => `        <li>${rich(rule)}</li>`).join('\n')}
       </ul>
-      <p class="snote">示例：</p>
+      ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">示例：</p>`)}
       <pre class="codeblock"><code>${escapeHtml(citationExample)}</code></pre>
 
       <h2 class="ph2" id="data-stability">Schema 稳定性</h2>
@@ -845,13 +854,13 @@ ${termListHtml(SCHEMA_STABILITY)}
       <h2 class="ph2" id="data-license">License 状态</h2>
 ${licenseBlockHtml(ctx)}
 
-      <p class="snote" id="data-links">相关页面：
+      ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote" id="data-links">相关页面：
         <a href="${escapeHtml(`${prefix}plans/`)}">套餐与 API 计费资料库</a> ·
         <a href="${escapeHtml(`${prefix}models/`)}">模型资料索引</a> ·
         <a href="${escapeHtml(`${prefix}vendor/`)}">按厂商浏览</a> ·
         <a href="${escapeHtml(`${prefix}archive/`)}">历史档案</a> ·
         <a href="${escapeHtml(`${prefix}changes/`)}">最近变化</a>
-      </p>
+      </p>`)}
 `;
 }
 
