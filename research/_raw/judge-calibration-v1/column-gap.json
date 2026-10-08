@@ -1,0 +1,423 @@
+{
+  "task": "judge-calibration-v1",
+  "what": "T4 横排 column-gap 细分：极小 gap 会不会把一个视觉列切成多列（对 ② 前置条件 inkCount ≥ 2 的影响）",
+  "base": {
+    "head": "e455b3a69428f11d67189e304d4cc676610838b5",
+    "note": "本轮工作树建立时的 origin/master；期间 master 被队友推进到 95dfeb99（见 source-unchanged.json 的 criteria-region-hash）"
+  },
+  "apparatus": ".arch-v1/（Tier-3 探针与原始读数，gitignore；本轮未改任何判据源码）",
+  "at": "2026-10-08T10:34:07.018Z",
+  "fieldSamples": {
+    "artifactMulticolDeclarations": 0,
+    "note": "全站 186 个页面的 CSS 里 column-* 声明总数为 0 ⇒ 现场**没有** multicol / column-gap 样本（0 也是有效读数）"
+  },
+  "minimalRepros": [
+    {
+      "route": "synth/h-mc3/",
+      "name": "h-mc3",
+      "css": "column-count: 3; column-gap: 24px;",
+      "textLength": 260,
+      "note": "横排 3 列（balanced，字迹铺满整盒）",
+      "column": 1380,
+      "ch70": 452.81,
+      "inkScope": true,
+      "vertical": false,
+      "inkCount": 3,
+      "inkSpan": 1380,
+      "ratio": 1,
+      "lineCount": 3,
+      "columnCount": 0,
+      "widestLine": 1380,
+      "columnSpan": 0,
+      "boxWidth": 1380,
+      "contentBox": 1380,
+      "lines": 3,
+      "lineRects": [
+        {
+          "left": 30,
+          "right": 1410,
+          "width": 1380
+        },
+        {
+          "left": 30,
+          "right": 978,
+          "width": 948
+        },
+        {
+          "left": 30,
+          "right": 942,
+          "width": 912
+        }
+      ],
+      "columnRects": [],
+      "hitAt085": false,
+      "hitAt050": false,
+      "delta": "passed by both"
+    },
+    {
+      "route": "synth/h-mc3-auto/",
+      "name": "h-mc3-auto",
+      "css": "column-count: 3; column-fill: auto; column-gap: 24px; height: 20rem; overflow: hidden;",
+      "textLength": 950,
+      "note": "横排 3 列 auto：只填 2 列 ⇒ 目标 ≈ 66%（t11 形态）",
+      "column": 1380,
+      "ch70": 452.81,
+      "inkScope": true,
+      "vertical": false,
+      "inkCount": 15,
+      "inkSpan": 912,
+      "ratio": 0.6609,
+      "lineCount": 15,
+      "columnCount": 0,
+      "widestLine": 912,
+      "columnSpan": 0,
+      "boxWidth": 1380,
+      "contentBox": 1380,
+      "lines": 15,
+      "lineRects": [
+        {
+          "left": 30,
+          "right": 942,
+          "width": 912
+        },
+        {
+          "left": 30,
+          "right": 942,
+          "width": 912
+        },
+        {
+          "left": 30,
+          "right": 942,
+          "width": 912
+        },
+        {
+          "left": 30,
+          "right": 942,
+          "width": 912
+        },
+        {
+          "left": 30,
+          "right": 942,
+          "width": 912
+        },
+        {
+          "left": 30,
+          "right": 942,
+          "width": 912
+        },
+        {
+          "left": 30,
+          "right": 942,
+          "width": 912
+        },
+        {
+          "left": 30,
+          "right": 942,
+          "width": 912
+        },
+        {
+          "left": 30,
+          "right": 942,
+          "width": 912
+        },
+        {
+          "left": 30,
+          "right": 942,
+          "width": 912
+        },
+        {
+          "left": 30,
+          "right": 798,
+          "width": 768
+        },
+        {
+          "left": 30,
+          "right": 474,
+          "width": 444
+        },
+        {
+          "left": 30,
+          "right": 474,
+          "width": 444
+        },
+        {
+          "left": 30,
+          "right": 474,
+          "width": 444
+        },
+        {
+          "left": 30,
+          "right": 474,
+          "width": 444
+        }
+      ],
+      "columnRects": [],
+      "hitAt085": true,
+      "hitAt050": false,
+      "delta": "DISCRIMINATING"
+    },
+    {
+      "route": "synth/h-gap0/",
+      "name": "h-gap0",
+      "css": "column-count: 2; column-gap: 0px;",
+      "textLength": 420,
+      "note": "横排 2 列、gap 0",
+      "column": 1380,
+      "ch70": 452.81,
+      "inkScope": true,
+      "vertical": false,
+      "inkCount": 4,
+      "inkSpan": 1374,
+      "ratio": 0.9957,
+      "lineCount": 4,
+      "columnCount": 0,
+      "widestLine": 1374,
+      "columnSpan": 0,
+      "boxWidth": 1380,
+      "contentBox": 1380,
+      "lines": 4,
+      "lineRects": [
+        {
+          "left": 30,
+          "right": 1404,
+          "width": 1374
+        },
+        {
+          "left": 30,
+          "right": 1404,
+          "width": 1374
+        },
+        {
+          "left": 30,
+          "right": 1404,
+          "width": 1374
+        },
+        {
+          "left": 30,
+          "right": 972,
+          "width": 942
+        }
+      ],
+      "columnRects": [],
+      "hitAt085": false,
+      "hitAt050": false,
+      "delta": "passed by both"
+    },
+    {
+      "route": "synth/h-gap1/",
+      "name": "h-gap1",
+      "css": "column-count: 2; column-gap: 1px;",
+      "textLength": 420,
+      "note": "横排 2 列、gap 1px",
+      "column": 1380,
+      "ch70": 452.81,
+      "inkScope": true,
+      "vertical": false,
+      "inkCount": 4,
+      "inkSpan": 1374.5,
+      "ratio": 0.996,
+      "lineCount": 4,
+      "columnCount": 0,
+      "widestLine": 1374.5,
+      "columnSpan": 0,
+      "boxWidth": 1380,
+      "contentBox": 1380,
+      "lines": 4,
+      "lineRects": [
+        {
+          "left": 30,
+          "right": 1404.5,
+          "width": 1374.5
+        },
+        {
+          "left": 30,
+          "right": 1404.5,
+          "width": 1374.5
+        },
+        {
+          "left": 30,
+          "right": 1404.5,
+          "width": 1374.5
+        },
+        {
+          "left": 30,
+          "right": 972.5,
+          "width": 942.5
+        }
+      ],
+      "columnRects": [],
+      "hitAt085": false,
+      "hitAt050": false,
+      "delta": "passed by both"
+    },
+    {
+      "route": "synth/h-gap8/",
+      "name": "h-gap8",
+      "css": "column-count: 2; column-gap: 8px;",
+      "textLength": 420,
+      "note": "横排 2 列、gap 8px",
+      "column": 1380,
+      "ch70": 452.81,
+      "inkScope": true,
+      "vertical": false,
+      "inkCount": 4,
+      "inkSpan": 1378,
+      "ratio": 0.9986,
+      "lineCount": 4,
+      "columnCount": 0,
+      "widestLine": 1378,
+      "columnSpan": 0,
+      "boxWidth": 1380,
+      "contentBox": 1380,
+      "lines": 4,
+      "lineRects": [
+        {
+          "left": 30,
+          "right": 1408,
+          "width": 1378
+        },
+        {
+          "left": 30,
+          "right": 1408,
+          "width": 1378
+        },
+        {
+          "left": 30,
+          "right": 1408,
+          "width": 1378
+        },
+        {
+          "left": 30,
+          "right": 976,
+          "width": 946
+        }
+      ],
+      "columnRects": [],
+      "hitAt085": false,
+      "hitAt050": false,
+      "delta": "passed by both"
+    },
+    {
+      "route": "synth/h-gap0-auto/",
+      "name": "h-gap0-auto",
+      "css": "column-count: 2; column-fill: auto; column-gap: 0px; height: 12rem; overflow: hidden;",
+      "textLength": 500,
+      "note": "横排 2 列 auto、gap 0：检验「同顶不同高」时列会不会各自成单元",
+      "column": 1380,
+      "ch70": 452.81,
+      "inkScope": true,
+      "vertical": false,
+      "inkCount": 9,
+      "inkSpan": 684,
+      "ratio": 0.4957,
+      "lineCount": 9,
+      "columnCount": 0,
+      "widestLine": 684,
+      "columnSpan": 0,
+      "boxWidth": 1380,
+      "contentBox": 1380,
+      "lines": 9,
+      "lineRects": [
+        {
+          "left": 30,
+          "right": 714,
+          "width": 684
+        },
+        {
+          "left": 30,
+          "right": 714,
+          "width": 684
+        },
+        {
+          "left": 30,
+          "right": 714,
+          "width": 684
+        },
+        {
+          "left": 30,
+          "right": 714,
+          "width": 684
+        },
+        {
+          "left": 30,
+          "right": 714,
+          "width": 684
+        },
+        {
+          "left": 30,
+          "right": 714,
+          "width": 684
+        },
+        {
+          "left": 30,
+          "right": 714,
+          "width": 684
+        },
+        {
+          "left": 30,
+          "right": 714,
+          "width": 684
+        },
+        {
+          "left": 30,
+          "right": 558,
+          "width": 528
+        }
+      ],
+      "columnRects": [],
+      "hitAt085": true,
+      "hitAt050": true,
+      "delta": "caught by both"
+    },
+    {
+      "route": "synth/h-plain/",
+      "name": "h-plain",
+      "css": "",
+      "textLength": 260,
+      "note": "横排普通满宽说明（对照组）",
+      "column": 1380,
+      "ch70": 452.81,
+      "inkScope": true,
+      "vertical": false,
+      "inkCount": 3,
+      "inkSpan": 1380,
+      "ratio": 1,
+      "lineCount": 3,
+      "columnCount": 0,
+      "widestLine": 1380,
+      "columnSpan": 0,
+      "boxWidth": 1380,
+      "contentBox": 1380,
+      "lines": 3,
+      "lineRects": [
+        {
+          "left": 30,
+          "right": 1410,
+          "width": 1380
+        },
+        {
+          "left": 30,
+          "right": 1410,
+          "width": 1380
+        },
+        {
+          "left": 30,
+          "right": 390,
+          "width": 360
+        }
+      ],
+      "columnRects": [],
+      "hitAt085": false,
+      "hitAt050": false,
+      "delta": "passed by both"
+    }
+  ],
+  "readingRule": "单元 = 按垂直重叠 > 两者较矮高度 50% 归并出来的「行」；inkCount = 行数（前置条件）；inkSpan = 最宽一行的**并集跨度**；命中还需要 inkSpan < ratio × 列宽",
+  "finding": [
+    "gap 0 / 1 / 8px 三档的单元数都是 4、最宽单元 1374 / 1374.5 / 1378px（≈ 99.6–99.9% 列宽）⇒ **极小 gap 不会切出「窄的多单元」形态**：两列同顶的那一行会被并成同一个单元，其跨度是两列的并集（≈ 满宽）",
+    "真正决定命中与否的是「用了几个视觉列」：column-fill: auto 下只填满第一列 ⇒ 单元跨度 684px（49.6%）⇒ 两档都咬中；3 列只填 2 列 ⇒ 912px（66.1%）⇒ 只有 0.85 咬中。这与 gap 大小无关",
+    "前置条件（inkCount ≥ 2）在 multicol 形态下天然成立，且 gap 从 0 到 8px 不改变单元数（4/4/4）⇒ gap 不改变这条前置条件的语义，也不制造新的放行面",
+    "边界（本轮**没测**）：竖排下的 multicol（换轴后按水平重叠归并，band 间距 = gap 可能真的把列栈切成多段）、gap 大到超过列宽的极端形态、@media 内的 column-* —— 三者现场都是 0 样本"
+  ],
+  "impactOnPrecondition": "无影响：极小 gap 既不会把「一个视觉列」拆成两个**窄**单元（同顶行会并回满宽单元），也不会让单行说明变成 ≥2 单元（单行只有一个行单元）。前置条件仍然只在「真的排出了多行/多列」时成立。"
+}

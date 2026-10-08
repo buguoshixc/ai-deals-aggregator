@@ -1,0 +1,172 @@
+{
+  "task": "judge-calibration-v1",
+  "what": "「源文件 0 改动」的机器证明 + 本轮量到的代码段在 base / origin/master 上的一致性",
+  "base": {
+    "head": "e455b3a69428f11d67189e304d4cc676610838b5",
+    "note": "本轮工作树建立时的 origin/master；期间 master 被队友推进到 95dfeb99（见 source-unchanged.json 的 criteria-region-hash）"
+  },
+  "apparatus": ".arch-v1/（Tier-3 探针与原始读数，gitignore；本轮未改任何判据源码）",
+  "at": "2026-10-08T10:34:07.019Z",
+  "proof": {
+    "task": "judge-calibration-v1",
+    "what": "「源文件 0 改动」的机器证明：本轮只做测量，判据源一字未改",
+    "at": "2026-10-08T10:22:54.062Z",
+    "head": "e455b3a69428f11d67189e304d4cc676610838b5",
+    "originMaster": "95dfeb99035c7431597c99c10fb2cae83ddfad8f",
+    "gitStatusPorcelainScripts": "",
+    "gitStatusPorcelainScriptsEmpty": true,
+    "gitStatusPorcelainOther": [],
+    "files": [
+      {
+        "file": "scripts/tools/verify-site.js",
+        "bytes": 595554,
+        "worktreeSha256": "fdab655d8ed71c4335ab2c1f8c8873914eaf896b12f46171fb3ff70c394063a3",
+        "originMasterSha256": "87cac59b51265cf25cd1f40173b632ce6563b59aea75b9c773072270fbdc2f79",
+        "sha256Identical": false,
+        "worktreeBlobHash": "faffb273f1b0e743af0d4c7dcd66941a2f7fe6c3",
+        "originMasterBlobOid": "5744df537adc4f86a5f7dbffacf8c7a3145b29e3",
+        "blobIdentical": false
+      },
+      {
+        "file": "scripts/tools/build-local.js",
+        "bytes": 414222,
+        "worktreeSha256": "7dce47e10909bed9237834a12d1d3021cf86fc2392d153b59a5d4541de1c2909",
+        "originMasterSha256": "cf6870f212844fea4cdf1b45b9a7e6964da49981ea1664e0f909676812edee45",
+        "sha256Identical": false,
+        "worktreeBlobHash": "c22fd79dabe49f2df8ce0a2c2622141c97494ccc",
+        "originMasterBlobOid": "d292a3cf1e947a265ffe9413ad35642bf51821a7",
+        "blobIdentical": false
+      },
+      {
+        "file": "scripts/data/narrow-reading-columns.json",
+        "bytes": 1751,
+        "worktreeSha256": "433dc73e463d27532f3d2c003e2707f68e85e2b12eef5f60134cf9c9ab29f78a",
+        "originMasterSha256": "433dc73e463d27532f3d2c003e2707f68e85e2b12eef5f60134cf9c9ab29f78a",
+        "sha256Identical": true,
+        "worktreeBlobHash": "693c5d39ee250ad98664f76186a6b3cf05b60b3d",
+        "originMasterBlobOid": "693c5d39ee250ad98664f76186a6b3cf05b60b3d",
+        "blobIdentical": true
+      },
+      {
+        "file": "index.html",
+        "bytes": 294318,
+        "worktreeSha256": "59054fe021d50425a6d47141afb9837f88566aec9a6b9a228056f07d97a36e93",
+        "originMasterSha256": "59054fe021d50425a6d47141afb9837f88566aec9a6b9a228056f07d97a36e93",
+        "sha256Identical": true,
+        "worktreeBlobHash": "0192ae300ce822c5ee1117d845485dbc45c43d95",
+        "originMasterBlobOid": "0192ae300ce822c5ee1117d845485dbc45c43d95",
+        "blobIdentical": true
+      }
+    ],
+    "allIdentical": false
+  },
+  "criteriaRegionsAcrossBaseAndMaster": {
+    "task": "judge-calibration-v1",
+    "what": "本轮量到的代码区段在 base（e455b3a）与 origin/master 上是否逐字节相同",
+    "at": "2026-10-08T10:23:47.741Z",
+    "revs": {
+      "base": {
+        "rev": "e455b3a69428f11d67189e304d4cc676610838b5",
+        "files": {
+          "scripts/tools/verify-site.js": {
+            "sha256": "fdab655d8ed71c4335ab2c1f8c8873914eaf896b12f46171fb3ff70c394063a3",
+            "bytes": 595554
+          },
+          "scripts/data/narrow-reading-columns.json": {
+            "sha256": "433dc73e463d27532f3d2c003e2707f68e85e2b12eef5f60134cf9c9ab29f78a",
+            "bytes": 1751
+          }
+        }
+      },
+      "originMaster": {
+        "rev": "95dfeb99035c7431597c99c10fb2cae83ddfad8f",
+        "files": {
+          "scripts/tools/verify-site.js": {
+            "sha256": "87cac59b51265cf25cd1f40173b632ce6563b59aea75b9c773072270fbdc2f79",
+            "bytes": 607767
+          },
+          "scripts/data/narrow-reading-columns.json": {
+            "sha256": "433dc73e463d27532f3d2c003e2707f68e85e2b12eef5f60134cf9c9ab29f78a",
+            "bytes": 1751
+          }
+        }
+      }
+    },
+    "regions": [
+      {
+        "file": "scripts/tools/verify-site.js",
+        "region": "§19 居中几何判据块",
+        "base": {
+          "found": true,
+          "chars": 4234,
+          "sha256": "af2fe510460755b810d42b11f967fe7ef8ebde04dd8247f12b285e09e8b70031"
+        },
+        "originMaster": {
+          "found": true,
+          "chars": 4234,
+          "sha256": "af2fe510460755b810d42b11f967fe7ef8ebde04dd8247f12b285e09e8b70031"
+        },
+        "identical": true
+      },
+      {
+        "file": "scripts/tools/verify-site.js",
+        "region": "② note-ink-narrow 判据式",
+        "base": {
+          "found": true,
+          "chars": 246,
+          "sha256": "afeed0660b7f086a214f76fb908aa75e2141f12b0e61241ba8c14f8e75245c94"
+        },
+        "originMaster": {
+          "found": true,
+          "chars": 246,
+          "sha256": "afeed0660b7f086a214f76fb908aa75e2141f12b0e61241ba8c14f8e75245c94"
+        },
+        "identical": true
+      },
+      {
+        "file": "scripts/tools/verify-site.js",
+        "region": "§22c ch 窄列扫描器",
+        "base": {
+          "found": true,
+          "chars": 1481,
+          "sha256": "c912e59ea9580df767847e6ffdd1db92c93a696da149de5f2d7de1869c380fc6"
+        },
+        "originMaster": {
+          "found": true,
+          "chars": 1481,
+          "sha256": "c912e59ea9580df767847e6ffdd1db92c93a696da149de5f2d7de1869c380fc6"
+        },
+        "identical": true
+      },
+      {
+        "file": "scripts/tools/verify-site.js",
+        "region": "常量：WIDE_NOTE_RATIO / WIDE_TOL / WIDE_AXIS_RATIO",
+        "base": {
+          "found": false
+        },
+        "originMaster": {
+          "found": false
+        },
+        "identical": false
+      },
+      {
+        "file": "scripts/data/narrow-reading-columns.json",
+        "region": "登记清单全文",
+        "base": {
+          "found": true,
+          "chars": 1091,
+          "sha256": "433dc73e463d27532f3d2c003e2707f68e85e2b12eef5f60134cf9c9ab29f78a"
+        },
+        "originMaster": {
+          "found": true,
+          "chars": 1091,
+          "sha256": "433dc73e463d27532f3d2c003e2707f68e85e2b12eef5f60134cf9c9ab29f78a"
+        },
+        "identical": true
+      }
+    ],
+    "allRegionsIdentical": false,
+    "note": "origin/master 在本轮进行中被队友推进（notes-manifest-v1 / p2-residuals-v1 / registry-adversary-v1 的合并）；上面逐段比对回答的是「本轮校准所针对的判据本身有没有变」"
+  },
+  "conclusion": "本轮只做测量：scripts/ 下 `git status --porcelain` 为空；判据文件的 sha256 / git blob 与**本轮基点** e455b3a 逐字节相同。origin/master 期间被队友推进到 95dfeb99，本轮校准所针对的四段代码（§19 判据块、② 判据式、§22c 扫描器、登记清单）在两版之间**逐字节相同**，常数（0.85 / 2 / 1 / 0.05）也未变 ⇒ 读数对当前 master 仍然有效。"
+}

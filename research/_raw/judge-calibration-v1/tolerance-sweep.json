@@ -1,0 +1,26 @@
+{
+  "task": "judge-calibration-v1",
+  "what": "T2 §19 居中容差（2px）敏感性标定",
+  "base": {
+    "head": "e455b3a69428f11d67189e304d4cc676610838b5",
+    "note": "本轮工作树建立时的 origin/master；期间 master 被队友推进到 95dfeb99（见 source-unchanged.json 的 criteria-region-hash）"
+  },
+  "apparatus": ".arch-v1/（Tier-3 探针与原始读数，gitignore；本轮未改任何判据源码）",
+  "at": "2026-10-08T10:34:07.017Z",
+  "constant": {
+    "file": "scripts/data/narrow-reading-columns.json",
+    "path": "ratio.centeringTolerancePx",
+    "value": 2,
+    "checkText": "§19 .pdetailbody 是**居中**的保留窄阅读列（…）：比单元格窄 ≥ 40px、左右内边距差 ≤ 2px、自身不裁切",
+    "predicate": "centeredOk = measured.bodyWidth < measured.cellWidth - 40 && |leftInset - rightInset| <= tol && scrollWidth <= clientWidth + WIDE_TOL",
+    "note": "容差是量在**左右内边距之差**上的：盒相对中心位移 d px ⇒ 左 +d、右 −d ⇒ 差 = 2d。所以 2px 的容差等价于「居中偏差 ≤ 1px」。"
+  },
+  "mutationMethod": {
+    "first": "把 position: relative; left: Npx 追加进**已登记那条规则内部**（dist.calib.offN）",
+    "firstFinding": "这种变形会顺手毁掉 §19 隔离牙的锚点（`.pdetailbody { max-width: 72ch; margin-inline: auto; }` 在 DOM 里不再出现 ⇒ 牙报「变异未执行 ⇒ 按红处理」）。容差读数本身有效，但整轮变噪声。",
+    "corrected": "改成追加一条**独立**规则 `.pdetailbody { position: relative; left: Npx; }`（dist.calib.shiftN）⇒ 已登记规则逐字不动，隔离牙仍然有牙。"
+  },
+  "sweepInsideRule": null,
+  "sweepSeparateRule": null,
+  "distNote": "变形只作用于 dist 的副本（dist.calib.offN / dist.calib.shiftN）；仓库里的 dist 与 dist.calib 未改一字节"
+}
