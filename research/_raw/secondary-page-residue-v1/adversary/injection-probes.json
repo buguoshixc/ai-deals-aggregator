@@ -1,0 +1,161 @@
+{
+  "probes": [
+    {
+      "id": "P0",
+      "desc": "基线（不打补丁）—— 沙箱必须全绿，否则后面所有读数不成立",
+      "expectedByMe": "green",
+      "exitCode": 0,
+      "redCount": 0,
+      "redSample": [],
+      "greenReadouts": [
+        "  ✓ 二级数据页首屏无说明: 45 页（**含别名页**，没有例外名单） · 残留说明 × 8 个禁词 0 命中",
+        "  ✓ 目录页家族题注形状: 45 条 <caption> 逐字匹配「共 N 条。/ 共 N 个入口。」（另有 56 条非目录页题注不在本规则射程内，只报告不判）"
+      ],
+      "distPromoted": false,
+      "distBefore": "19940c38d0f0",
+      "distAfter": "19940c38d0f0",
+      "logFile": "injection-logs/P0.log"
+    },
+    {
+      "id": "P1",
+      "desc": "把 `.aliasnote` 注回模板、**只对别名页**（历史实现的等价形状）—— 首屏扫描（牙 1）应当点名别名路由",
+      "expectedByMe": "red-intro",
+      "exitCode": 1,
+      "redCount": 7,
+      "redSample": [
+        "  ✗ 二级数据页首屏出现了说明（分类判据、字段模型与解释性副标题都不占首屏，见 docs/DESIGN-RULES.md H13）：need/student-only/ 首屏仍有 1 条说明（二级数据页首屏只允许标题 / 条目数 / 更新时间）：这一页是 旧地址 ：它与目标页收的是同一批条目（同一份判据）。页面保留是为了让老…；need/free-api/ 首屏仍有 1 条说明（二级数据页首屏只允许标题 / 条目数 / 更新时间）：这一页是 旧地址 ：它与目标页收的是同一批条目（同一份判据）。页面保留是为了让老…；need/dev-credits/ 首屏仍有 1 条说明（二级数据页首屏只允许标题 / 条目数 / 更新时间）：这一页是 旧地址 ：它与目标页收的是同一批条目（同一份判据）。页面保留是为了让老…",
+        "  ✗ need/dev-credits/#0 槽位 main-snote 签名 <aliasnote snote>：清单声明 0 条、产物里数出 1 条 —— 产物里出现了没有登记的说明容器（绕过 noteDeclare() 直接写进页面）",
+        "  ✗ need/dev-credits/ 整页 .snote：清单声明 0 条、产物里数出 1 条（完整对账不许有差额）"
+      ],
+      "greenReadouts": [],
+      "distPromoted": false,
+      "distBefore": "19940c38d0f0",
+      "distAfter": "19940c38d0f0",
+      "logFile": "injection-logs/P1.log"
+    },
+    {
+      "id": "P2",
+      "desc": "别名页的长题注回流（三支恢复）—— 题注形状牙应当点名别名路由（独立复现 T1 的 R-2）",
+      "expectedByMe": "red-caption",
+      "exitCode": 1,
+      "redCount": 1,
+      "redSample": [
+        "  ✗ 目录页家族的题注超出「共 N 条。/ 共 N 个入口。」两种形状（长题注回流即红，见 docs/DESIGN-RULES.md H11）：need/student-only/ 题注形状不对（57 字）：共 12 条 —— 与目标页是同一批条目（同一份判据）。这一页保留旧地址可用，但不参与搜索收录；…；need/free-api/ 题注形状不对（57 字）：共 45 条 —— 与目标页是同一批条目（同一份判据）。这一页保留旧地址可用，但不参与搜索收录；…；need/dev-credits/ 题注形状不对（57 字）：共 67 条 —— 与目标页是同一批条目（同一份判据）。这一页保留旧地址可用，但不参与搜索收录；…"
+      ],
+      "greenReadouts": [],
+      "distPromoted": false,
+      "distBefore": "19940c38d0f0",
+      "distAfter": "19940c38d0f0",
+      "logFile": "injection-logs/P2.log"
+    },
+    {
+      "id": "P3a",
+      "desc": "别名页题注**文本清空**（`<caption></caption>` 仍在）—— 题注牙应当红（空串不匹配形状）",
+      "expectedByMe": "red-caption",
+      "exitCode": 1,
+      "redCount": 1,
+      "redSample": [
+        "  ✗ 目录页家族的题注超出「共 N 条。/ 共 N 个入口。」两种形状（长题注回流即红，见 docs/DESIGN-RULES.md H11）：need/student-only/ 题注形状不对（0 字）：；need/free-api/ 题注形状不对（0 字）：；need/dev-credits/ 题注形状不对（0 字）："
+      ],
+      "greenReadouts": [],
+      "distPromoted": false,
+      "distBefore": "19940c38d0f0",
+      "distAfter": "19940c38d0f0",
+      "logFile": "injection-logs/P3a.log"
+    },
+    {
+      "id": "P3b",
+      "desc": "别名页把题注**整条删掉**（连 `<caption>` 元素都不渲染）—— 预期：一条牙都不响（条件式判据的已知边界）",
+      "expectedByMe": "green(gap)",
+      "exitCode": 0,
+      "redCount": 0,
+      "redSample": [],
+      "greenReadouts": [
+        "  ✓ 二级数据页首屏无说明: 45 页（**含别名页**，没有例外名单） · 残留说明 × 8 个禁词 0 命中",
+        "  ✓ 目录页家族题注形状: 42 条 <caption> 逐字匹配「共 N 条。/ 共 N 个入口。」（另有 56 条非目录页题注不在本规则射程内，只报告不判）"
+      ],
+      "distPromoted": true,
+      "distBefore": "19940c38d0f0",
+      "distAfter": "a2808476c561",
+      "logFile": "injection-logs/P3b.log"
+    },
+    {
+      "id": "P4",
+      "desc": "题注写对，但别名页**旁边又加一条 .snote**（intro 区尾）—— 首屏扫描应当点名别名路由",
+      "expectedByMe": "red-intro",
+      "exitCode": 1,
+      "redCount": 7,
+      "redSample": [
+        "  ✗ 二级数据页首屏出现了说明（分类判据、字段模型与解释性副标题都不占首屏，见 docs/DESIGN-RULES.md H13）：need/student-only/ 首屏仍有 1 条说明（二级数据页首屏只允许标题 / 条目数 / 更新时间）：旁边多出来的一条说明（对抗复核注入）…；need/free-api/ 首屏仍有 1 条说明（二级数据页首屏只允许标题 / 条目数 / 更新时间）：旁边多出来的一条说明（对抗复核注入）…；need/dev-credits/ 首屏仍有 1 条说明（二级数据页首屏只允许标题 / 条目数 / 更新时间）：旁边多出来的一条说明（对抗复核注入）…",
+        "  ✗ need/dev-credits/#0 槽位 main-snote 签名 <snote>：清单声明 0 条、产物里数出 1 条 —— 产物里出现了没有登记的说明容器（绕过 noteDeclare() 直接写进页面）",
+        "  ✗ need/dev-credits/ 整页 .snote：清单声明 0 条、产物里数出 1 条（完整对账不许有差额）"
+      ],
+      "greenReadouts": [],
+      "distPromoted": false,
+      "distBefore": "a2808476c561",
+      "distAfter": "a2808476c561",
+      "logFile": "injection-logs/P4.log"
+    },
+    {
+      "id": "P5",
+      "desc": "别名页题注换成**别的短文本**（`共 N 条（旧地址）。`）—— 题注形状牙应当点名别名路由",
+      "expectedByMe": "red-caption",
+      "exitCode": 1,
+      "redCount": 1,
+      "redSample": [
+        "  ✗ 目录页家族的题注超出「共 N 条。/ 共 N 个入口。」两种形状（长题注回流即红，见 docs/DESIGN-RULES.md H11）：need/student-only/ 题注形状不对（12 字）：共 12 条（旧地址）。；need/free-api/ 题注形状不对（12 字）：共 45 条（旧地址）。；need/dev-credits/ 题注形状不对（12 字）：共 67 条（旧地址）。"
+      ],
+      "greenReadouts": [],
+      "distPromoted": false,
+      "distBefore": "a2808476c561",
+      "distAfter": "a2808476c561",
+      "logFile": "injection-logs/P5.log"
+    },
+    {
+      "id": "P6",
+      "desc": "**规避面**：别名页题注写成 `<caption class=\"legacy\">` + 长题注（3 页）—— 题注牙看不见带属性的 `<caption>`，扫描数 42 ≥ 20 ⇒ 预期全绿（假绿）",
+      "expectedByMe": "green(bypass)",
+      "exitCode": 1,
+      "redCount": 1,
+      "redSample": [
+        "  ✗ 题注形状牙扫到的题注太少（扫描面坏了或缺产物）：目录页家族里只找到 0 条 <caption> < 20"
+      ],
+      "greenReadouts": [],
+      "distPromoted": false,
+      "distBefore": "a2808476c561",
+      "distAfter": "a2808476c561",
+      "logFile": "injection-logs/P6.log"
+    },
+    {
+      "id": "P7",
+      "desc": "**非**枢纽目录页题注换成别的短文本（`共 N 条··。`）—— 题注牙应当点名全家族（45 页）",
+      "expectedByMe": "red-caption",
+      "exitCode": 1,
+      "redCount": 1,
+      "redSample": [
+        "  ✗ 目录页家族的题注超出「共 N 条。/ 共 N 个入口。」两种形状（长题注回流即红，见 docs/DESIGN-RULES.md H11）：student/ 题注形状不对（9 字）：共 12 条··。；developer/ 题注形状不对（9 字）：共 67 条··。；free-api/ 题注形状不对（9 字）：共 45 条··。；need/student-only/ 题注形状不对（9 字）：共 12 条··。"
+      ],
+      "greenReadouts": [],
+      "distPromoted": false,
+      "distBefore": "a2808476c561",
+      "distAfter": "a2808476c561",
+      "logFile": "injection-logs/P7.log"
+    },
+    {
+      "id": "P8",
+      "desc": "枢纽页题注换成别的东西（`共 N 个入口··。`）—— 证明枢纽页那一支也在射程内（不是「凡是入库就放行」）",
+      "expectedByMe": "red-caption",
+      "exitCode": 1,
+      "redCount": 1,
+      "redSample": [
+        "  ✗ 目录页家族的题注超出「共 N 条。/ 共 N 个入口。」两种形状（长题注回流即红，见 docs/DESIGN-RULES.md H11）：category/ 题注形状不对（10 字）：共 5 个入口··。；vendor/ 题注形状不对（11 字）：共 25 个入口··。"
+      ],
+      "greenReadouts": [],
+      "distPromoted": false,
+      "distBefore": "a2808476c561",
+      "distAfter": "a2808476c561",
+      "logFile": "injection-logs/P8.log"
+    }
+  ],
+  "sandbox": "research/_raw/secondary-page-residue-v1/adversary/sandbox"
+}

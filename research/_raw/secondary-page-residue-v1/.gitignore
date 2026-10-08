@@ -1,0 +1,9 @@
+# 本轮 Stage B 普查的**中间原料** —— 按 `docs/EVIDENCE-POLICY.md` 只留本机（Tier-2/3）。
+#
+# 为什么它冗余：`raw-scan.json` 的 `items` 正是 `census.json` 的 `items` **加**上分类结果之前的
+# 那一份（同一个扫描器的同一轮输出）。结论、逐条归类、`deleteSpec` 全在 `census.json` 里，
+# 而 `census.json` 就是据此产出的。留两份 1 MB 级的同源 JSON 属于 EP §0 说的重复过程产物。
+#
+# 想复现它：`census.json` 的 `scanned` 段落记了扫描面与口径，报告
+# `research/secondary-page-residue-v1-census.md` §4 记了方法与局限（含被排除的 7 条 style/script 假条目）。
+raw-scan.json

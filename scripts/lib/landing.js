@@ -381,6 +381,8 @@ function vendorMaterialOf({ vendorName, providerTable = {}, plans = [], apiPlans
  * 顺序是稳定的（集合页 → 需求页/别名页 → 分类枢纽 → 分类页 → 厂商枢纽 → 厂商页），
  * 因此产物顺序、sitemap 顺序与报告顺序都确定，不受输入键序影响。
  */
+// [T5-landing-592-explicit-match]
+// T5 删除（census A · 半句）：删「全部来自既有数据关系的显式匹配。」与它前面的逗号—— **归一规则自证**（「显式匹配」说的是我们内部怎么归一的）。保留三组计数（Coding 套餐 N 条 / API 计费记录 N 条 / 归属模型 N 个）。⚠️ 22 个厂商页共用这一处 ⇒ 改一处全站生效；这是 `userNotes` 的一条（底部折叠），删完仍非空（该页族还有别的 userNotes 与共享句 ⇒ 不许空容器的断言仍绿）。
 function planLandingPages(options = {}) {
   const deals = options.deals || [];
   const vendorKeyOf = options.vendorKeyOf || (deal => String((deal && deal.vendor) || ''));
@@ -588,8 +590,7 @@ function planLandingPages(options = {}) {
       noteRows.push({
         kind: 'vendor-material-note',
         text: `这一页还<b>关联</b>了该厂商的非优惠资料：Coding 套餐 ${material.codingPlans} 条、`
-          + `API 计费记录 ${material.apiRecords} 条、Model Registry 归属模型 ${material.models} 个，`
-          + `全部来自既有数据关系的显式匹配。`
+          + `API 计费记录 ${material.apiRecords} 条、Model Registry 归属模型 ${material.models} 个。`
       });
     }
     const userNotes = noteRows.map(row => row.text);

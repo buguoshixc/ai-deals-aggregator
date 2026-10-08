@@ -807,18 +807,61 @@ console.log('\n=== 9) 按需求找优惠（v1.2）：注册表与判据 ===');
       && (!Array.isArray(page.userNotes) || page.userNotes.length === 0))
       .map(({ reg, page }) => `${reg}/${page.slug || page.key}`).join(', '));
 
-  /* 别名页那句「原因」是**逐字渲染给读者**的（`build-local.js` 把它插进顶部 `.aliasnote`），
-     而它的正文来自 `scripts/data/landing-aliases.json` —— 一个**注册表层完全照不到**的文件。
-     实测过它曾经写着 `benefitType 含 free_api`：产物层那条扫描当时用 `class="snote"` 精确串，
-     对 `<p class="snote aliasnote">` 一条都照不到，于是这句内部措辞在页面上活了很久而全绿。
-     本轮修了产物层的 matcher，这里补上注册表侧的那一半：文案源头逐条扫。 */
+  /* 别名页的「原因」：本轮（`secondary-page-residue-v1`）起它**只留在配置里**，不再上页面。
+     换向的原因与依据（写清，免得下一轮又把它接回模板）：
+       · 旧断言的名字是「别名页『原因』文案里不含内部实现措辞（逐字显示在页面上）」——
+     `build-local.js` 曾把 `reason` 插进顶部 `<p class="snote aliasnote">`，所以「扫词」是
+         有余量的；本轮那条 `.aliasnote` **整条删除**（它渲染的是站务机制与内部标识符，
+         实测三个别名页各有 183 个站内入链来源、全站零入链路由 0 ⇒ 对导航零贡献），
+         渲染路径没有了，旧断言名就成了「一句不再成立的话」。
+       · 于是改成**两条**：① 配置侧形状不变（reason 仍不许含内部实现措辞）；
+         ② **反向断言**（比原来更强）—— reason 的**逐字文本**不许出现在任何产物里。
+         原来只保证「reason 不含禁词」，现在保证「reason 整个不出现」：就算下一轮有人把
+         一句话原样接回模板、而那句话恰好不含禁词，第 ② 条也会红。
+       · **判据边界**（必须写清，否则会变成一条在正常文案上误报的守卫）：
+         第 ② 条扫的是 `reason` **值逐字出现**（整串包含关系），**不是**「reason 里的词逐个出现」。
+         后者的误报面很实在：`reason` 里写着「同一份判据」「同一批条目」这类正常业务措辞，
+         逐词扫会把页面上合法的同义说法一并判红 —— 那比没有守卫更糟。 */
   const aliasDoc = JSON.parse(fs.readFileSync(landing.ALIASES_FILE, 'utf8'));
   const aliasReasons = Object.entries(aliasDoc.aliases || {})
     .map(([route, entry]) => ({ route, reason: String((entry && entry.reason) || '') }));
-  check(`别名页「原因」文案里不含内部实现措辞（${aliasReasons.length} 条，逐字显示在页面上）`,
+  check(`别名页「原因」文案里不含内部实现措辞（${aliasReasons.length} 条，配置侧形状；本轮起不再逐字渲染给读者）`,
     aliasReasons.length > 0 && aliasReasons.every(({ reason }) => !INTERNAL_TERMS.test(reason)),
     aliasReasons.filter(({ reason }) => INTERNAL_TERMS.test(reason))
       .map(({ route, reason }) => `${route}: ${reason.slice(0, 30)}…`).join(' · '));
+
+  /* 反向断言：内部理由（`landing-aliases.json` 里每条 `aliases[r].reason` 的**逐字文本**）
+     不许出现在**任何产物页面**里 —— 扫 dist/ 全部 index.html，命中即红。
+     ⚠️ 没有 dist/ 时**不静默通过**：报成一条失败（`npm run build` 之后才跑得动这条断言），
+        否则「目录不存在」会被读成「扫过且干净」。 */
+  {
+    const distDir = path.join(ROOT, 'dist');
+    let htmlFiles = [];
+    if (fs.existsSync(distDir)) {
+      const stack = [distDir];
+      while (stack.length) {
+        const dir = stack.pop();
+        for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+          const full = path.join(dir, entry.name);
+          if (entry.isDirectory()) stack.push(full);
+          else if (entry.name.toLowerCase() === 'index.html') htmlFiles.push(full);
+        }
+      }
+    }
+    const hits = [];
+    for (const file of htmlFiles) {
+      const html = fs.readFileSync(file, 'utf8');
+      for (const { route, reason } of aliasReasons) {
+        if (reason && html.includes(reason)) {
+          hits.push(`${path.relative(distDir, file).split(path.sep).join('/')} 含 ${route} 的 reason 逐字文本`);
+        }
+      }
+    }
+    check(`内部理由不再出现在任何产物页面：${aliasReasons.length} 条 reason 的逐字文本 × ${htmlFiles.length} 个 dist/index.html 0 命中`,
+      htmlFiles.length > 0 && hits.length === 0,
+      htmlFiles.length === 0 ? 'dist/ 不存在或没有 index.html —— 这条断言没扫到东西（先 npm run build）'
+        : hits.slice(0, 5).join(' · '));
+  }
 
   check('每条按需求页都保留了机器可读的 `criteria`（维护口径留在注册表里，不是随首屏说明一起删掉）',
     au.NEED_PAGES.every(page => typeof page.criteria === 'string' && page.criteria.trim().length > 0),

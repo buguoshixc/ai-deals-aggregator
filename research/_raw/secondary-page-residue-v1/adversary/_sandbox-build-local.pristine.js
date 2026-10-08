@@ -2420,10 +2420,12 @@ ${ungroupedFeeds.map(rowHtml).join('\n')}
     })
     .join('\n');
   const emptyPlanNote = emptyPlanNotes;
-// [T5-build-local-2427-vendor-scope-note]
-// T5 删除（census A · 自证整条）：**整条删除**「厂商订阅门槛口径」那条 .snote。为什么删：它渲染的是**生成门槛的数值与内部理由**（「≥ N 条才给这一家生成订阅」「只出现一两条记录的厂商单独开一个订阅没有价值」「地址来自人工维护的 slug 表」）—— 判据实现 / 取舍理由 / 内部命名机制三类都是维护口径。怎么删：真分支**整支去掉**（不是返回空串）—— 返回空串会留下一个 noteDeclare 的**幽灵声明**（清单声明 1 条 / DOM 0 条 ⇒ §22c ⑨ 逐页逐槽位对账当场红）。门禁核对：`feeds/` 的台账下限是 `floors.main-snote ≥ 4`，本轮同批删掉 3 条分组 note（feeds.js 的 student / developer / category）+ 这一条 ⇒ 8 − 4 = **4 == floor**（压线，未破）；§22c ⑨ 的「结构下限」与「棘轮」在收口时逐条复核（stage-b-deltas.json 的 gatesAffected）。
   const vendorNote = vendorFeeds.length
-    ? ''
+    ? noteDeclare(noteRoute, {
+      kind: 'feed-vendor-scope', slot: 'main-snote', classes: 'snote',
+      declaredBy: 'build-local.js:renderFeedsPage(厂商订阅门槛口径)'
+    }, `<p class="snote">厂商订阅只给「当前收录的优惠 ≥ ${feeds.VENDOR_THRESHOLDS.minDeals} 条」或「历史变更事件 ≥ ${feeds.VENDOR_THRESHOLDS.minEvents} 条」的厂商生成：` +
+      `只出现一两条记录的厂商单独开一个订阅没有价值。厂商改名不会改订阅地址（地址来自人工维护的 slug 表）。</p>`)
     : noteDeclare(noteRoute, {
       kind: 'feed-vendor-empty', slot: 'main-snote', classes: 'snote',
       declaredBy: 'build-local.js:renderFeedsPage(没有达门槛厂商订阅时的说明)'
@@ -2713,9 +2715,7 @@ function renderDirectoryPage(spec, deals, indexHtml, context) {
    *   ① **首屏（标题下）—— 一个字都没有。** 顶部只留 `<h1>` + 「共 N 条 · 数据更新 …」。
    *      上一轮留下的 `userIntro`（0~1 句 `<p class="snote">`）本轮整层删除：
    *      实测 41 个页面每页至少占一行，而它解释的内容读者不看也能用这一页。
-   *      判据在构建期（本文件「首屏说明必须为空」那条结构性扫描）。**没有白名单**：
-   *      `secondary-page-residue-v1` 起别名页那条例外已退役（见下方「为什么现在没有例外」），
-   *      扫描对目录页家族**逐页一视同仁**，多一条即红。
+   *      判据在构建期（本文件「首屏说明必须为空」那条结构性扫描，白名单只有别名页）。
    *   ② `userNotes` —— 底部 `<details class="page-notes">`，只放三类内容
    *      （分类边界 / 来源与条款 / 少量误解说明）。**真没有价值的内容直接不展示**，
    *      不倒进折叠块 —— 把垃圾藏进 `<details>` 不是简化。
@@ -6176,35 +6176,23 @@ function selfCheck(built) {
     // —— `共 N 条。`（目录页，含别名页）与 `共 N 个入口。`（枢纽页，它没有条目表）。
     // 判定用**整串**匹配（不是 `includes`）：多一个字、少一个句号、换了破折号都算红。
     //
-    // ⚠️ 判据是**条件式**的，不许改成「每题注都必须存在」（captain 独立裁定，2026-10-09）：
+    // ⚠️ 判据是**条件式**的，不许改成「题注必须存在」（captain 独立裁定，2026-10-09，逐字记在这里）：
     //    `<caption>` 在任何浏览器里都**不渲染**（对读者零可见价值、也零干扰），
     //    而它有真实的 **a11y 价值**（表格的可访问名）。所以：
     //      · 题注**存在** ⇒ 渲染文本必须逐字匹配这个形状（长题注回流即红）；
-    //      · 题注**不存在** ⇒ 只有在**这一页根本没有主表**时才算合法。
-    //    「有表却把题注整条删掉」不是合法删除，是结构缺失 ⇒ 红（见下面 EXPECT_RE 的用法）。
-    //    边界必须说清：这条牙**证不了**「别名页题注 == 非别名页题注」（两侧跑同一条规则），
-    //    它证的是「存在的那些题注形状合规，且该有的地方没缺」。
-    //
-    // ## 反空洞守卫：**按产物现算**，不用绝对常量（对抗复核 F1 的第二半）
-    //
-    // 上一版是 `INTRO_CAPTION_MIN_SCANNED = 20` 这样的绝对门槛。它的失效不是「写错数」，
-    // 而是**形态本身错**：门槛与「产物里应该有多少条题注」没有任何联系，于是
-    // `captionScanned` 只要还 ≥ 20，**任意多页的题注都可以不被判形状**而构建全绿
-    // （T4 沙箱 P6b/P6c/P6d 实测：45 页里改掉 3 页的标记即可静默，改满 25 页才会红）。
-    // 现在的判据是 `captionScanned === captionExpected`，其中 `captionExpected`
-    // 由产物现算（目录页家族里含主表的页数）⇒ 少扫到一页就红，不存在可退化的区间。
+    //      · 题注**不存在** ⇒ 不判（那是合法的删除，硬要求它存在会变成一条在正常改动上误报的守卫）。
+    //    边界必须说清：这条牙**证不了**「每一页都有题注」，它只证「存在的那些形状合规」。
+    //    反空洞守卫（`INTRO_CAPTION_MIN_SCANNED`）量的是**本产物里存在多少条**题注，
+    //    不是「应该有多少条」—— 门槛**只由常量定义**（现值 20 = 本轮实测 45 的一半向下取整），
+    //    注释与 fail 文案都引用常量、不另写数字：上一版这里写着「取 45 的一半」而 fail 旁写着
+    //    「门槛取 30」，与常量的 20 三处不一致，于是题注面退化到 21–29 时牙不响而构建全绿 ——
+    //    一个真实的**静默窗口**（captain 独立复核后裁定修掉，2026-10-09）。
     const INTRO_CAPTION_RE = /^共 \d+ (?:条|个入口)。$/;
-    // 题注标签：**容错属性**（`<caption>` / `<caption class="legacy">` 都算），见下面那条注释。
-    const INTRO_CAPTION_TAG_RE = /<caption[^>]*>([\s\S]*?)<\/caption>/g;
-    // 「这一页有主表」的判据 —— `.ctable-wrap` 是目录页的表格容器。
-    // 只用它判「有表却没题注」，**不用它要求每页都有表**。
-    const INTRO_CAPTION_EXPECT_RE = /<div class="ctable-wrap"|<table[\s>]/;
+    const INTRO_CAPTION_MIN_SCANNED = 20;
     const introProblems = [];
     const introHits = [];
     const captionProblems = [];
     let captionScanned = 0;
-    // 「应有题注」的**现算**值：目录页家族里含主表的页数。与 `captionScanned` 逐页相等才算过。
-    let captionExpected = 0;
     const directoryRoutes = new Set(built.directoryPages.map(page => page.route));
     for (const page of built.directoryPages) {
       const file = path.join(OUT, `${page.route}index.html`);
@@ -6224,12 +6212,12 @@ function selfCheck(built) {
         text: m[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
       })).filter(note => note.text);
       // ---- 牙 3：目录页家族（含别名页）的题注只允许「共 N 条。」/「共 N 个入口。」形状 ----
-      // 题注取自 `.cstop` 之后的**整段文档**，不限于 intro 区：`<caption>` 是 `<table>` 的第一个
-      // 子元素，而表格容器（`<div class="ctable-wrap"`）落在它**之前** ⇒ intro 区自己不含题注
-      // （第一版把题注也塞进 intro 区里找，实测扫到 0 条 ⇒ 反空洞守卫当场把构建判红，
-      // 这正是那条守卫存在的意义）。改成整段查找之后，属性写法与容器顺序都不再影响命中。
-      // ⚠️ 取**第一条**题注判形状，但**多余条数单独判红**（多于一条 = 结构可疑，不许「取第一条了事」）。
-      // 判据是**整串**逐字匹配，不是 `includes`。
+      // 扫描面 = `.cstop` 之后 → 第一个数据区锚点**之前**（与首屏扫描同一段区间）**再向后到第一个
+      // `<caption>` 为止** —— 题注必须这样取：`<caption>` 是 `<table>` 的**第一个子元素**，
+      // 而数据区锚点（`<div class="ctable-wrap"` / `<table`）正好落在它**之前**，所以「intro 区」
+      // 自己是不含题注的（第一版就是这么写的，实测扫到 0 条 ⇒ 反空洞守卫把构建判红了，
+      // 这正是那条守卫存在的意义）。
+      // ⚠️ 只取**第一个** `<caption>`（页面结构上它就是主表的题注）；判据是**整串**逐字匹配。
       //
       // ⚠️ 判据边界（不许把这条牙说成比它实际更强的东西）：它**证不了**
       //    「别名页题注 == 非别名页题注」—— 两侧跑的是同一条规则、同一次扫描，
@@ -6237,33 +6225,14 @@ function selfCheck(built) {
       //    「别名页确实走了 caption 的同一条分支」由**源码形状**（`const caption` 那一支里
       //    已经没有任何 kind 分叉）与 diff 保证。这条牙真正回答的是另一个问题：
       //    「有没有哪一页的题注悄悄长出第三种形状（长题注回流 / 换个说法）」。
-      // ⚠️ **必须容错标签属性**（`secondary-page-residue-v1` · 对抗复核 F1）。
-      //    第一版写的是 `/<caption>([\s\S]*?)<\/caption>/` —— 只认**无属性**标签。
-      //    实测旁路（T4 沙箱 P6b）：把 3 个别名页的题注改成 `<caption class="legacy">`
-      //    并注回 57 字长题注 ⇒ `npm run build` **exit 0**，读数还是「42 条逐字匹配」——
-      //    那 3 页从扫描面里**消失**了，而不是被判红。只改标记不改内容（P6c）同样静默丢覆盖。
-      //    这与「改个类名就隐形」是同一类失效（`.vsnote` / `class="snote"` 精确串都栽过），
-      //    所以这里用 `<caption[^>]*>`，并且**允许多条**：多于一条即单独判红，不许「取第一条了事」。
-      const hasMainTable = INTRO_CAPTION_EXPECT_RE.test(html.slice(cstopEnd));
-      const captions = [...html.slice(cstopEnd).matchAll(INTRO_CAPTION_TAG_RE)];
-      // 「应有题注」= 有主表的那些页 —— **从产物现算**，所以它天然跟着页面结构走，
-      // 不像绝对常量那样留下「不判也绿」的区间。
-      if (hasMainTable) captionExpected += 1;
-      if (captions.length > 1) {
-        captionProblems.push(`${page.route || '/'} 有 ${captions.length} 条 <caption> —— 主表只允许一条题注`);
-      }
-      if (captions.length) {
+      const captionMatch = html.slice(cstopEnd).match(/<caption>([\s\S]*?)<\/caption>/);
+      if (captionMatch) {
         captionScanned += 1;
-        const captionText = captions[0][1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+        const captionText = captionMatch[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
         if (!INTRO_CAPTION_RE.test(captionText)) {
           captionProblems.push(`${page.route || '/'} 题注形状不对（${captionText.length} 字）：`
             + `${captionText.slice(0, 48)}${captionText.length > 48 ? '…' : ''}`);
         }
-      } else if (hasMainTable) {
-        // 有主表却没有题注 ⇒ 红。这是「整条删除题注」这条路径的收口：
-        // T4 已裁定题注牙是**条件式**的（不要求每页都有题注），但那是针对「页面本来就没有表」；
-        // 有表而没题注属于结构缺失，不是合法删除 —— 否则「把题注整条删掉」就是一条静默旁路。
-        captionProblems.push(`${page.route || '/'} 有主表（${INTRO_CAPTION_EXPECT_RE.source}）却没有 <caption>`);
       }
       if (!notes.length) continue;
       // **没有例外**：所有目录页（含别名页）走同一条判据。
@@ -6303,10 +6272,7 @@ function selfCheck(built) {
         const pageHtml = fs.readFileSync(file, 'utf8').replace(/<script[\s\S]*?<\/script>/gi, '');
         const mainStart = pageHtml.indexOf('<main');
         if (mainStart < 0) continue;
-        // 同一处属性容错：这里只数**读数**（非目录页有多少条题注），但读数若用精确串，
-        // 就会在报告里少报（而「少报」正是 F1 那类静默的开始）。两个计数器用手写同形的正则。
-        if (INTRO_CAPTION_TAG_RE.test(pageHtml.slice(mainStart))) captionNonDirectoryScanned += 1;
-        INTRO_CAPTION_TAG_RE.lastIndex = 0;
+        if (/<caption>[\s\S]*?<\/caption>/.test(pageHtml.slice(mainStart))) captionNonDirectoryScanned += 1;
       }
     }
     if (introProblems.length) {
@@ -6318,22 +6284,18 @@ function selfCheck(built) {
     } else if (captionProblems.length) {
       fail(`目录页家族的题注超出「共 N 条。/ 共 N 个入口。」两种形状（长题注回流即红，见 docs/DESIGN-RULES.md H11）：`
         + `${captionProblems.slice(0, 4).join('；')}`);
-    } else if (captionScanned !== captionExpected) {
-      // 反空洞守卫（对抗复核 F1 后**改为按产物现算**）：判据是
-      // `captionScanned === captionExpected`，其中 expected = 目录页家族里含主表的页数。
-      //
-      // 为什么不用绝对常量：上一版是 `captionScanned < 20` 这种写法，门槛与「应该有多少条题注」
-      // 毫无联系 ⇒ 只要产物里还留着 20 条题注，**任意多页都可以不被判形状**而构建全绿
-      // （T4 实测：45 页里改掉 3 页的标记即可静默，改满 25 页才会红）。
-      // 现在少扫到**一页**就红，没有可退化的区间 —— 这条守卫防的是「扫描面本身坏了」，
-      // 而「扫描面坏了」的精确表述就是「数出来的比该有的少」。
-      fail(`题注形状牙的覆盖面与产物不符（扫描面坏了 / 有页没产出 / 标签写法逃过了匹配）：`
-        + `目录页家族里判了 ${captionScanned} 条 <caption>，但含主表的目录页有 ${captionExpected} 页`);
+    } else if (captionScanned < INTRO_CAPTION_MIN_SCANNED) {
+      // 反空洞守卫：题注牙必须真的扫到东西。门槛**只由常量 `INTRO_CAPTION_MIN_SCANNED` 定义**，
+      // 现值 20 = 本轮实测 45 的一半向下取整（`Math.floor(45 / 2)`）。它量的是「本产物里**存在**
+      // 多少条题注」，不是「**应该**有多少条」—— 所以它不会因为后续合法删除题注而误报；
+      // 只有扫描面本身坏了（或产物缺失）才会把它压低。⚠️ 这里**不许**再写一个数：
+      // 上一版这句注释写的是「门槛取 30」（常量已是 20），留下一个 21–29 的**静默窗口** ——
+      // 题注面退化到那个区间时 `45 < 20` 不成立、牙不响而构建全绿，正是这条守卫要防的失效。
+      fail(`题注形状牙扫到的题注太少（扫描面坏了或缺产物）：目录页家族里只找到 ${captionScanned} 条 <caption> < ${INTRO_CAPTION_MIN_SCANNED}`);
     } else {
       console.log(`  ✓ 二级数据页首屏无说明: ${built.directoryPages.length} 页（**含别名页**，没有例外名单）`
         + ` · 残留说明 × ${INTRO_INTERNAL_TERMS.length} 个禁词 0 命中`);
-      console.log(`  ✓ 目录页家族题注形状: ${captionScanned}/${captionExpected} 条 <caption> 逐字匹配`
-        + `「共 N 条。/ 共 N 个入口。」（判了 ${captionScanned} · 应有 ${captionExpected} —— 两者必须相等）`
+      console.log(`  ✓ 目录页家族题注形状: ${captionScanned} 条 <caption> 逐字匹配「共 N 条。/ 共 N 个入口。」`
         + `（另有 ${captionNonDirectoryScanned} 条非目录页题注不在本规则射程内，只报告不判）`);
     }
   }

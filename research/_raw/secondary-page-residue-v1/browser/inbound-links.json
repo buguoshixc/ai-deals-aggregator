@@ -1,0 +1,198 @@
+{
+  "label": "T3 任务 3：A4 退役证据的独立复证（删掉别名页那条可见链之后，目标页是否仍有站内入链）",
+  "method": {
+    "scanner": "research/_raw/secondary-page-residue-v1/browser/_tmp/inbound-scan.cjs",
+    "independence": "不 require 任何仓库 lib（含 scripts/lib/seo.js）：自己递归 dist 找 index.html、自己写 href 正则（先剥 script/style/注释）、自己按 URL 解析把相对/绝对链接归一到路由、自己读 robots meta 判 noindex",
+    "sourceConvention": "来源 = 除本页以外的页面（自链不计）；别名页来源另单列",
+    "note": "preflight.json 记的是 student//free-api//developer/ 的 total 186 / excluding3Aliases 183 —— 那是**把目标页自链也算作一个来源**的口径；本扫描器排除自链，故差 1。换算列已单列。"
+  },
+  "dist": "dist",
+  "distHtmlDigest": "d1dc3c472515f916f4d320939b4bb23394cda3c97cb51c8f9592b45704a0f0cb",
+  "distDigestFile": "research/_raw/secondary-page-residue-v1/browser/_tmp/dist-digest-after-seo.json",
+  "scannedAt": "2026-10-08T17:54:49.230Z",
+  "totals": {
+    "pages": 186,
+    "indexable": 183,
+    "noindex": 3,
+    "internalPageLinkEdges": 4455
+  },
+  "targets": [
+    {
+      "route": "student/",
+      "aliasPage": "need/student-only/",
+      "targetIndexable": true,
+      "inboundFromAlias": true,
+      "inboundExcludingAliases": 182,
+      "inboundFromIndexableOnly": 182,
+      "inboundTotalExcludingSelf": 185,
+      "selfLinkCount": 1,
+      "inboundTotalWithSelfConvention": 186,
+      "inboundExcludingAliasesWithSelfConvention": 183,
+      "samples": [
+        "",
+        "archive/",
+        "category/",
+        "category/agent/",
+        "category/api/",
+        "category/audio/",
+        "category/chat/",
+        "category/image/",
+        "changes/",
+        "deal/017bdbc04e70/",
+        "deal/0273d8b23412/",
+        "deal/0c30d79a5016/"
+      ],
+      "samplesIncludingAlias": [
+        "",
+        "archive/",
+        "category/",
+        "category/agent/",
+        "category/api/",
+        "category/audio/",
+        "category/chat/",
+        "category/image/",
+        "changes/",
+        "deal/017bdbc04e70/",
+        "deal/0273d8b23412/",
+        "deal/0c30d79a5016/"
+      ],
+      "aliasPageStillLinksTarget": true
+    },
+    {
+      "route": "free-api/",
+      "aliasPage": "need/free-api/",
+      "targetIndexable": true,
+      "inboundFromAlias": true,
+      "inboundExcludingAliases": 182,
+      "inboundFromIndexableOnly": 182,
+      "inboundTotalExcludingSelf": 185,
+      "selfLinkCount": 1,
+      "inboundTotalWithSelfConvention": 186,
+      "inboundExcludingAliasesWithSelfConvention": 183,
+      "samples": [
+        "",
+        "archive/",
+        "category/",
+        "category/agent/",
+        "category/api/",
+        "category/audio/",
+        "category/chat/",
+        "category/image/",
+        "changes/",
+        "deal/017bdbc04e70/",
+        "deal/0273d8b23412/",
+        "deal/0c30d79a5016/"
+      ],
+      "samplesIncludingAlias": [
+        "",
+        "archive/",
+        "category/",
+        "category/agent/",
+        "category/api/",
+        "category/audio/",
+        "category/chat/",
+        "category/image/",
+        "changes/",
+        "deal/017bdbc04e70/",
+        "deal/0273d8b23412/",
+        "deal/0c30d79a5016/"
+      ],
+      "aliasPageStillLinksTarget": true
+    },
+    {
+      "route": "developer/",
+      "aliasPage": "need/dev-credits/",
+      "targetIndexable": true,
+      "inboundFromAlias": true,
+      "inboundExcludingAliases": 182,
+      "inboundFromIndexableOnly": 182,
+      "inboundTotalExcludingSelf": 185,
+      "selfLinkCount": 1,
+      "inboundTotalWithSelfConvention": 186,
+      "inboundExcludingAliasesWithSelfConvention": 183,
+      "samples": [
+        "",
+        "archive/",
+        "category/",
+        "category/agent/",
+        "category/api/",
+        "category/audio/",
+        "category/chat/",
+        "category/image/",
+        "changes/",
+        "deal/017bdbc04e70/",
+        "deal/0273d8b23412/",
+        "deal/0c30d79a5016/"
+      ],
+      "samplesIncludingAlias": [
+        "",
+        "archive/",
+        "category/",
+        "category/agent/",
+        "category/api/",
+        "category/audio/",
+        "category/chat/",
+        "category/image/",
+        "changes/",
+        "deal/017bdbc04e70/",
+        "deal/0273d8b23412/",
+        "deal/0c30d79a5016/"
+      ],
+      "aliasPageStillLinksTarget": true
+    }
+  ],
+  "aliasPages": [
+    {
+      "route": "need/student-only/",
+      "indexable": false,
+      "inboundCount": 1,
+      "inboundFromIndexableOnly": 1,
+      "samples": [
+        ""
+      ]
+    },
+    {
+      "route": "need/free-api/",
+      "indexable": false,
+      "inboundCount": 1,
+      "inboundFromIndexableOnly": 1,
+      "samples": [
+        ""
+      ]
+    },
+    {
+      "route": "need/dev-credits/",
+      "indexable": false,
+      "inboundCount": 1,
+      "inboundFromIndexableOnly": 1,
+      "samples": [
+        ""
+      ]
+    }
+  ],
+  "zeroInboundRoutes": [],
+  "crossCheck": {
+    "command": "npm run verify:seo",
+    "exitCode": 0,
+    "log": "research/_raw/secondary-page-residue-v1/browser/_tmp/verify-seo.log",
+    "readings": {
+      "indexable URLs": 183,
+      "sitemap entries": 183,
+      "orphan pages": 0,
+      "noindex pages": 3,
+      "dist 文件数": 304,
+      "verifySeoChecks": 19,
+      "verifySeoFailures": 0
+    },
+    "agreement": {
+      "indexable": "独立扫描 183 == verify:seo 183",
+      "noindex": "独立扫描 3 == verify:seo 3",
+      "orphan": "独立扫描零入链可索引路由（非首页）0 == verify:seo orphan pages 0"
+    }
+  },
+  "findings": [
+    "student//free-api//developer/ 各有 185 个站内入链来源（除自己以外全部页面），排除三个别名页后 182；换算到 preflight 的自链口径即 186 / 183，与 preflight.json 逐数吻合。",
+    "删掉 .aliasnote 之后，三个别名页各自**仍有 1 条**指向自己目标的 <a>：全站共享的「按需求浏览」导航条（在 .pnote 内，目标页自己也带同一条），不是被退役的那条别名说明。",
+    "三个别名页**自身**的入链只有 1 条（首页的「按需求浏览」）。它们 noindex 且不进 sitemap，不需要入链；这同时说明别名页↔目标页的可发现性依赖的是全站导航，而不是那条被删的说明。"
+  ]
+}

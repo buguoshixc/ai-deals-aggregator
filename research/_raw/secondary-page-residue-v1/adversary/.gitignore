@@ -1,0 +1,34 @@
+# T4 对抗复核留下的**大体量可再生产物** —— 刻意不入库（`docs/EVIDENCE-POLICY.md` Tier-2/3）
+#
+# 为什么单独一张表、而不是改仓库根的 .gitignore：
+#   · 这两个目录是**一次性的沙箱现场**，不是结论。删掉它们之后，
+#     `report.json` / `report.md` / `*.json` 里的每条结论仍然可以按其中的命令重新得出；
+#   · 它们是**整仓副本**，体量与「重新 checkout 一次」同量级：
+#       sandbox/             —— 一份完整仓库副本（含 scripts/**、docs/**、mockups/**、数据），
+#                               用来在不碰真实工作区的前提下做 14 次注入构建；
+#       dist-mut-aliasnote/  —— 一份 186 页的产物副本（形态注入后的现场）。
+#     让它们进 Git 正是「仓库悄悄涨到几百 MB 而没有任何门禁会红」的那条路径
+#     （EP §0 点名的三种混在一起的东西里的第 2、3 种）。
+#   · 与 `research/_raw/**/*.{cjs,txt,log}` 是同一类处置，只是它们是**目录**、
+#     后缀拦不住，所以按目录拦。
+#
+# 保留在库里的（`report.json` / `report.md` / `injection-probes*.json` / `mutations.json` /
+# `static-recon*.json` / `targets-static*.json` / `verify-*.json`）是**结论与可复跑判据**，
+# 按 EP Tier-1 必须入库。
+sandbox/
+dist-mut-aliasnote/
+dist-control-baseline/
+#
+# 两次**全量** `verify-site` 报告（各 ~700–870 KB，逐页 `checks[]`）——只留本机（Tier-2）。
+# 它们的**结论**已经在两处可读：`report.json` / `report.md` 的 findings 与 verified（逐条带
+# 命令与关键输出），以及 `browser/verify-site.json` 的 M1–M16 逐条 + 两条隔离性断言 + 正对照。
+# 这里排掉的只是「186 页 × 每条断言的完整明细」这一层体量。复现命令写在 report.md 里。
+verify-mut-aliasnote.json
+verify-control-t5era.json
+#
+# 保留的（**刻意不进上面这张表**）：
+#   verify-mut-aliasnote.extract.json —— 上面那份的**抽取**（只留与 F1/F2 结论相关的那几条），
+#   它是 `report.json` 里对应 findings 的直接依据，体量小且是结论锚点，所以入库。
+#   _sandbox-build-local.pristine.js / _recon-head-build-local.js —— 复核当时的**源码快照**，
+#   `report.json` 里每条结论都按 blob sha 锚在它们上（`bbac1af` / `23efc6b9`）。
+#   它们是**结论的锚点**（EP Tier-1），不是整仓副本，所以留在库里。

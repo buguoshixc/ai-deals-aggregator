@@ -151,10 +151,11 @@ const RESTRICTION_LABEL = {
  * `none`（暂无当前优惠）与 `historical`（历史优惠）必须分开：把「现在没有」与
  * 「曾经有过、已经结束」写成同一句，就是把一件已经过去的事说成现在的事。
  */
+// [T5-plans-157-deal-plan-links-note]
+// T5 删除（census A · 自证整条）：删 `PLAN_DEALS_WORDING.note` 这一行 —— 它讲的是**我们的关联判据怎么实现的**（人工在哪个文件写明、相似度匹配去了哪里），属默认移除的维护口径；渲染点会随之不再产出这条 .snote。⚠️ 同一常量同时供给 /plans/coding/ 与 /plans/api/（改一处两页生效）。
 const PLAN_DEALS_WORDING = {
   sectionId: 'plan-deals',
   heading: '各套餐当前优惠',
-  note: '关联是显式确认的：只有人工在 deal-plan-links.json 写明、且能在官方页找到出处的关联才会计入；相似度匹配只产出候选报告，不会自动写进这一页。',
   none: '暂无当前优惠',
   current: '当前优惠：',
   historical: '历史优惠：',
@@ -994,6 +995,10 @@ function assertPlanDealsBlock(html, view, opts = {}) {
  * @param {object[]} plans plans.json 的记录
  * @param {{providerTable?:object, dealLinks?:object}} [opts]
  */
+// [T5-plans-1064-dataset-line]
+// T5 删除（census A · 半句）：删「数据集与判据：plans.json（每条套餐的原始字段，含官方原文引文）。」—— **内部数据源自证**（哪个文件、里面有什么字段）。⚠️ 同一条 `.snote` 的**元素不删**（前半句「名义 Token 单价的口径」是 C 类）⇒ 元素数不变。
+// [T5-plans-1065-footer-dup]
+// T5 删除（census B · 半句）：删「这一页只做收录与整理，价格、额度与条款以各平台官方页面为准。」—— 与共享页脚「优惠信息来自各厂商官方页面与公开折扣页，最终以官方页面为准。」同义重复。元素保留（同上）。
 function plansPageBody(plans, opts = {}) {
   const providerTable = opts.providerTable || providersLib.load().table;
   const rows = plansRows(plans, opts);
@@ -1061,8 +1066,6 @@ ${planDetailTemplatesHtml(plans, { providerTable, planHistoryStore: opts.planHis
 
       ${noteIn(opts)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote" style="margin-top: var(--s3)">
         名义 Token 单价的口径：${escapeHtml(planSchema.PLAN_WORDING.nominalUnitPriceNote)}
-        数据集与判据：<a href="${home}plans.json">plans.json</a>（每条套餐的原始字段，含官方原文引文）。
-        这一页只做收录与整理，价格、额度与条款以各平台官方页面为准。
       </p>`)}`;
 }
 

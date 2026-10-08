@@ -566,22 +566,35 @@ section('⑩ 二级页「最近变化」是**条件模块**（secondary-page-int
 }
 
 /* ------------------------------------------------------------------ */
-section('⑪ 说明容器 matcher：`class="snote aliasnote"` 不许再逃过扫描');
+section('⑪ 说明容器 matcher：多 class 的 `<p class="snote mcount">` 不许再逃过扫描');
 
 {
   // 实测过的真实盲区：`/<p class="snote"[^>]*>/` 要求 `snote` 后面**紧跟引号**，
-  // 于是 `<p class="snote aliasnote">` 一条都照不到 —— 别名页那句内部措辞
-  // （`benefitType`）因此长期没被任何守卫看见。本轮把两处 matcher 都改成 class token 级。
+  // 于是任何多 class 形状（`class="snote aliasnote"` / `class="snote mcount"`）**一条都照不到**。
+  // 历史上被它漏掉的那一句正是别名页的 `benefitType`（长期没有守卫看见）；本轮把两处 matcher
+  // 都保持为 class token 级。
+  //
+  // ⚠️ 正例本轮换过一次（`secondary-page-residue-v1`，理由如实记）：原先用的是
+  //    `<p class="snote aliasnote">`，而那条 `.aliasnote` 现在**已整条删除**（它渲染的是站务
+  //    机制与内部标识符，实测对导航零贡献）—— 拿一个产物里不存在的形状当正例，会让这条断言
+  //    悄悄滑向「测一个虚构的东西」。换成 `<p class="snote mcount">`：**产物里真实存在**
+  //    （`/models/` 的首屏数据摘要计数行，实测 1 页 1 处）。
+  //    这条断言的本意从来没变 —— 证的是 **matcher 的分辨率**（旧精确串 0 命中 / 新 token 级必命中），
+  //    不是「别名页长什么样」。所以换例子是**正确地**修正，不是放宽判据。
   const legacy = /<p class="snote"[^>]*>/;
   const token = /<p\b[^>]*\bclass="[^"]*\bsnote\b[^"]*"[^>]*>/;
-  const alias = '<p class="snote aliasnote">这一页是旧地址……</p>';
+  const multiClass = '<p class="snote mcount">筛选中：全部 51 个模型。</p>';
   const vsnote = '<p class="vsnote vnone">本次构建没有拿到套餐变更日志。</p>';
-  check('旧 matcher 对 `<p class="snote aliasnote">` **0 命中**（盲区真实存在，不是推测）',
-    !legacy.test(alias), String(legacy.test(alias)));
+  check('旧 matcher 对多 class 的 `<p class="snote mcount">` **0 命中**（盲区真实存在，不是推测）',
+    !legacy.test(multiClass), String(legacy.test(multiClass)));
   check('新 matcher（class token 级）命中它',
-    token.test(alias), String(token.test(alias)));
+    token.test(multiClass), String(token.test(multiClass)));
   check('新 matcher 不误命中 `.vsnote`（`v` 与 `s` 之间没有词边界）',
     !token.test(vsnote) && token.test('<p class="snote">x</p>'));
+  // 多 class 的另一半形状（历史上真实存在过、且是首次发现盲区的那一个）也要照得到 ——
+  // 判据是 token 级，class 的**顺序与个数**都不该影响结果。
+  check('新 matcher 对 class="snote aliasnote"（历史形状）同样必命中',
+    token.test('<p class="snote aliasnote">这一页是旧地址……</p>'), String(token.test('<p class="snote aliasnote">这一页是旧地址……</p>')));
 }
 
 /* ------------------------------------------------------------------ */

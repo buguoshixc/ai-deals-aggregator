@@ -1,0 +1,2616 @@
+{
+  "task": "T3 真浏览器层",
+  "deliverable": "research/_raw/secondary-page-residue-v1/browser/verify-site.json",
+  "runs": [
+    {
+      "label": "run1-frozen",
+      "command": "node scripts/tools/verify-site.js --dir=dist",
+      "jsonReport": "research/_raw/secondary-page-residue-v1/browser/_tmp/verify-site-report-final.json",
+      "log": "research/_raw/secondary-page-residue-v1/browser/_tmp/verify-site-final.log",
+      "mutationsFile": "research/_raw/secondary-page-residue-v1/browser/_tmp/mutations-run1-frozen.json",
+      "exitCode": 1,
+      "totalChecks": 887,
+      "failures": 2,
+      "check_22c_3b": {
+        "name": "§22c @1440 目录页家族（42 页，其中别名页 3 页）首屏**没有**任何页面级说明",
+        "detail": "有首屏说明的目录页 0 条：无 · 别名页 3 页（清单的 pageKind 现算）：need/dev-credits/ need/free-api/ need/student-only/ · ⚠️ 未进射程的别名页：need/dev-credits/ need/free-api/ need/student-only/（其它宽页的导语不在本规则射程内：144 页）",
+        "ok": false
+      },
+      "check_22c_9_floors": {
+        "name": "§22c ⑨ 页面族结构下限：目录页家族（**含别名页**）0 条页面级说明、状态页 2 条、订阅中心 3+1 条、厂商页六节说明",
+        "detail": "全部页面族的说明条数下限成立（下限守住「登记与模板一起被删」那种两侧同时消失的改法；别名页本轮从「恰好 1 条」并入「目录页家族 0 条」—— 依据见 build-local.js renderDirectoryPage 顶部）",
+        "ok": true
+      },
+      "frozenRatchet": {
+        "name": "§22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页）",
+        "pages": 186,
+        "exactlyOnce": 186,
+        "total": 186,
+        "ok": true,
+        "detail": "186/186 页恰好 1 次 · 锚点「.snote { color: var(--mu…」"
+      },
+      "mutationIsolationAssertions": [
+        {
+          "id": "M14",
+          "name": "§22c M14 隔离性：变异后只许出 [note-intro-long]，任何伴随码都说明另有缺陷在响",
+          "ok": true,
+          "detail": "允许 [note-intro-long] · 实测 [note-intro-long] · 无伴随码"
+        },
+        {
+          "id": "M15",
+          "name": "§22c M15 隔离性：变异后只许出 [note-ink-narrow]，任何伴随码都说明另有缺陷在响",
+          "ok": false,
+          "detail": "允许 [note-ink-narrow] · 实测 [note-ink-narrow, note-intro-long, note-ink-narrow, note-intro-long, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow] · ⚠️ 伴随码 [note-intro-long, note-intro-long] —— 这条牙不再是隔离命中"
+        }
+      ],
+      "mutations": [
+        {
+          "id": "M1",
+          "route": "plans/",
+          "width": 1440,
+          "expect": "note-narrow",
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "narrow-unregistered"
+          ],
+          "codesUnique": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "narrow-unregistered"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M1 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · 把冻结串的 max-width 换回 70ch（plans/ 这一族的页面级说明曾被压窄）"
+          },
+          "isolation": null,
+          "loadBearing": null,
+          "verdict": "hit"
+        },
+        {
+          "id": "M2",
+          "route": "status/",
+          "width": 1440,
+          "expect": "note-narrow",
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "note-narrow",
+            "note-axis",
+            "narrow-unregistered"
+          ],
+          "codesUnique": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "narrow-unregistered"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M2 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · 把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄）"
+          },
+          "isolation": null,
+          "loadBearing": null,
+          "verdict": "hit"
+        },
+        {
+          "id": "M3",
+          "route": "changes/",
+          "width": 1440,
+          "expect": "note-narrow",
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "narrow-unregistered"
+          ],
+          "codesUnique": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "narrow-unregistered"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M3 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · 把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄）"
+          },
+          "isolation": null,
+          "loadBearing": null,
+          "verdict": "hit"
+        },
+        {
+          "id": "M4",
+          "route": "feeds/",
+          "width": 1440,
+          "expect": "note-narrow",
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "narrow-unregistered"
+          ],
+          "codesUnique": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "narrow-unregistered"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M4 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · 把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄）"
+          },
+          "isolation": null,
+          "loadBearing": null,
+          "verdict": "hit"
+        },
+        {
+          "id": "M6",
+          "route": "plans/",
+          "width": 390,
+          "expect": "page-overflow@390",
+          "codes": [
+            "note-clipped",
+            "page-overflow@390"
+          ],
+          "codesUnique": [
+            "note-clipped",
+            "page-overflow@390"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M6 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · 拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串（靶页本轮由 need/student-only/ 换到 plans/：前者删掉别名说明后 <main> 内 0 条 .snote，变异没有承重面）"
+          },
+          "isolation": null,
+          "loadBearing": null,
+          "verdict": "hit"
+        },
+        {
+          "id": "M7",
+          "route": "status/",
+          "width": 1440,
+          "expect": "unexpected-detail-main",
+          "codes": [
+            "unexpected-detail-main"
+          ],
+          "codesUnique": [
+            "unexpected-detail-main"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M7 DOM 注入前提成立（该类原本不存在）",
+            "ok": true,
+            "detail": "注入前提成立 · 给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在）"
+          },
+          "isolation": null,
+          "loadBearing": null,
+          "verdict": "hit"
+        },
+        {
+          "id": "M8",
+          "route": "plans/",
+          "width": 1440,
+          "expect": "note-narrow",
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-intro-long",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-narrow",
+            "note-narrow",
+            "note-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-narrow",
+            "note-narrow"
+          ],
+          "codesUnique": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-intro-long"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M8 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · F1 原型：把 .snote 的 padding-right 写成 calc(100% - 70ch) —— 盒宽一字不动、有字区域恒等于 70ch（修复前整轮 0 失败放行的那一条）（靶页同上换到 plans/：这条断言读**未注入**几何的 notes[0]，plans/ 有 12 条说明，成立性比原靶页的 1 条更好）"
+          },
+          "isolation": null,
+          "loadBearing": null,
+          "verdict": "hit"
+        },
+        {
+          "id": "M9a",
+          "route": "docs/data/",
+          "width": 1440,
+          "expect": "note-narrow",
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "narrow-unregistered"
+          ],
+          "codesUnique": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "narrow-unregistered"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M9a 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · F2 原型：只压**非首个** .snote（相邻兄弟选择器）"
+          },
+          "isolation": null,
+          "loadBearing": null,
+          "verdict": "hit"
+        },
+        {
+          "id": "M9b",
+          "route": "changes/",
+          "width": 1440,
+          "expect": "note-narrow",
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "narrow-unregistered"
+          ],
+          "codesUnique": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "narrow-unregistered"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M9b 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · F2 原型：只压**非首个** .snote（:not(:first-of-type)）"
+          },
+          "isolation": null,
+          "loadBearing": null,
+          "verdict": "hit"
+        },
+        {
+          "id": "M10",
+          "route": "plans/",
+          "width": 1600,
+          "expect": "note-narrow",
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "narrow-unregistered"
+          ],
+          "codesUnique": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "narrow-unregistered"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M10 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · F4 原型：缺陷藏在 @media (min-width:1500px) 里（@1440 档物理上看不见，只有 @1600 档咬得到）（靶页同上换到 plans/）"
+          },
+          "isolation": null,
+          "loadBearing": null,
+          "verdict": "hit"
+        },
+        {
+          "id": "M11",
+          "route": "changes/",
+          "width": 1440,
+          "expect": "note-ink-narrow",
+          "codes": [
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow"
+          ],
+          "codesUnique": [
+            "note-ink-narrow"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M11 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · t8 的 F-R2-1 原型：display:grid + minmax(0,70ch) 1fr —— 只改一条 CSS、不动标记，盒宽/内容盒都满宽，文字被排进 70ch 那一轨（修复轮 2 时整轮 842 项 EXIT=0 放行的那一条）"
+          },
+          "isolation": null,
+          "loadBearing": {
+            "ok": true,
+            "detail": "note-narrow 0 条（0 = 盒子/内容盒满宽，旧口径确实看不见）· note-ink-narrow 6 条 [changes/#0, changes/#1, changes/#2, changes/#4, changes/#8, changes/#13] · 这些条的行证据：#0 2 行 / 最宽 445.05px / 内容盒 1380px · #1 2 行 / 最宽 445.09px / 内容盒 1380px · #2 2 行 / 最宽 432px / 内容盒 1380px · #4 2 行 / 最宽 444px / 内容盒 1380px · #8 2 行 / 最宽 444px / 内容盒 1380px · #13 2 行 / 最宽 444.23px / 内容盒 1380px"
+          },
+          "verdict": "hit+load-bearing-proof"
+        },
+        {
+          "id": "M12",
+          "route": "plans/",
+          "width": 1440,
+          "expect": "note-hidden-text",
+          "codes": [
+            "note-hidden-text",
+            "note-hidden-text",
+            "note-hidden-text",
+            "note-hidden-text",
+            "note-hidden-text",
+            "note-hidden-text",
+            "note-hidden-text",
+            "note-hidden-text",
+            "note-hidden-text",
+            "note-hidden-text",
+            "note-hidden-text",
+            "note-hidden-text",
+            "narrow-unregistered"
+          ],
+          "codesUnique": [
+            "note-hidden-text",
+            "narrow-unregistered"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M12 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · t8 的 F-R2-2 原型：真实文本 font-size:0（一个字形都不画），正文交给 ::before 的 content 去画 —— 盒宽/行数一切正常，只有字形盒能看穿（靶页同上换到 plans/）"
+          },
+          "isolation": null,
+          "loadBearing": {
+            "ok": true,
+            "detail": "首条：文本 121 字 · 字形盒 0 个 · 盒宽 1380px（rendered=true） · 行 0 行 · note-hidden-text 命中 [plans/#0, plans/#1, plans/#2, plans/#3, plans/#4, plans/#5, plans/#6, plans/#7, plans/#8, plans/#9, plans/#10, plans/#11] · note-ink-narrow 无"
+          },
+          "verdict": "hit+load-bearing-proof"
+        },
+        {
+          "id": "M13",
+          "route": "docs/data/",
+          "width": 1440,
+          "expect": "note-unrendered",
+          "codes": [
+            "note-unrendered",
+            "note-unrendered",
+            "note-unrendered",
+            "note-unrendered",
+            "note-unrendered",
+            "note-unrendered"
+          ],
+          "codesUnique": [
+            "note-unrendered"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M13 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · T22-F1 原型：**裸** font-size:0（没有 ::before 高度恢复器）—— 盒高被压成 0 ⇒ rendered=false，修复前会让窄柱 / 逐行字迹 / 藏字三条判据同时静默（整页零码）；现在由 note-unrendered 咬住"
+          },
+          "isolation": null,
+          "loadBearing": {
+            "ok": true,
+            "detail": "未渲染条 6 条 [#0, #1, #2, #3, #4, #5] · 它们的 textLength [108, 196, 110, 34, 3, 50] · glyphRects [0, 0, 0, 0, 0, 0] · note-unrendered 命中 [docs/data/#0, docs/data/#1, docs/data/#2, docs/data/#3, docs/data/#4, docs/data/#5] · 窄柱/字迹/藏字码 [无（这正是修复前的假绿形状）]"
+          },
+          "verdict": "hit+load-bearing-proof"
+        },
+        {
+          "id": "M14",
+          "route": "models/",
+          "width": 1440,
+          "expect": "note-intro-long",
+          "codes": [
+            "note-intro-long"
+          ],
+          "codesUnique": [
+            "note-intro-long"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M14 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · 首屏说明被写长（DOM 注入填充正文）：盒宽 / 内容盒 / 同轴 / 裁切全都不动，只有「行数」越过上限 ⇒ 必须由 note-intro-long 咬住（靶页本轮由 need/student-only/ 换到 models/）"
+          },
+          "isolation": {
+            "ok": true,
+            "allowed": [
+              "note-intro-long"
+            ],
+            "detail": "允许 [note-intro-long] · 实测 [note-intro-long] · 无伴随码",
+            "assertion": "§22c M14 隔离性：变异后只许出 [note-intro-long]，任何伴随码都说明另有缺陷在响"
+          },
+          "loadBearing": null,
+          "verdict": "isolated-hit"
+        },
+        {
+          "id": "M15",
+          "route": "changes/",
+          "width": 1440,
+          "expect": "note-ink-narrow",
+          "codes": [
+            "note-ink-narrow",
+            "note-intro-long",
+            "note-ink-narrow",
+            "note-intro-long",
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow"
+          ],
+          "codesUnique": [
+            "note-ink-narrow",
+            "note-intro-long"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M15 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 @1440/@1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）（靶页本轮由 need/free-api/ 换到 feeds/ 再换到 changes/，见上面那段三次换靶记录）"
+          },
+          "isolation": {
+            "ok": false,
+            "allowed": [
+              "note-ink-narrow"
+            ],
+            "detail": "允许 [note-ink-narrow] · 实测 [note-ink-narrow, note-intro-long, note-ink-narrow, note-intro-long, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow] · ⚠️ 伴随码 [note-intro-long, note-intro-long] —— 这条牙不再是隔离命中",
+            "assertion": "§22c M15 隔离性：变异后只许出 [note-ink-narrow]，任何伴随码都说明另有缺陷在响"
+          },
+          "loadBearing": {
+            "ok": true,
+            "detail": "note-ink-narrow 14 条 [changes/#0, changes/#1, changes/#2, changes/#3, changes/#4, changes/#5, changes/#6, changes/#7, changes/#8, changes/#9, changes/#10, changes/#11, changes/#12, changes/#13] · 逐条：#0 vertical-rl 列 9 / 列栈 179.12px / 行 1（最宽 179.13px） / 内容盒 1380px / 字形盒 9 · #1 vertical-rl 列 6 / 列栈 117.95px / 行 1（最宽 117.95px） / 内容盒 1380px / 字形盒 6 · #2 vertical-rl 列 7 / 列栈 138.34px / 行 1（最宽 138.34px） / 内容盒 1380px / 字形盒 7 · #3 vertical-rl 列 6 / 列栈 117.95px / 行 1（最宽 117.95px） / 内容盒 1380px / 字形盒 6 · #4 vertical-rl 列 9 / 列栈 179.12px / 行 1（最宽 179.13px） / 内容盒 1380px / 字形盒 9 · #5 vertical-rl 列 2 / 列栈 36.39px / 行 1（最宽 36.39px） / 内容盒 1380px / 字形盒 2 · #6 vertical-rl 列 3 / 列栈 56.78px / 行 1（最宽 56.78px） / 内容盒 1380px / 字形盒 3 · #7 vertical-rl 列 2 / 列栈 36.39px / 行 1（最宽 36.39px） / 内容盒 1380px / 字形盒 2 · #8 vertical-rl 列 9 / 列栈 179.12px / 行 1（最宽 179.13px） / 内容盒 1380px / 字形盒 9 · #9 vertical-rl 列 2 / 列栈 36.39px / 行 1（最宽 36.39px） / 内容盒 1380px / 字形盒 2 · #10 vertical-rl 列 4 / 列栈 77.17px / 行 1（最宽 77.17px） / 内容盒 1380px / 字形盒 4 · #11 vertical-rl 列 4 / 列栈 77.17px / 行 1（最宽 77.17px） / 内容盒 1380px / 字形盒 4 · #12 vertical-rl 列 3 / 列栈 56.78px / 行 1（最宽 56.78px） / 内容盒 1380px / 字形盒 3 · #13 vertical-rl 列 9 / 列栈 179.12px / 行 1（最宽 179.13px） / 内容盒 1380px / 字形盒 9 · 列宽 1380px · 阈值 1173px · note-narrow 0 条（0 = ① 也看不见）· 盒宽与注入前一致 true"
+          },
+          "verdict": "hit-with-companion-codes"
+        },
+        {
+          "id": "M16",
+          "route": "plans/coding/",
+          "width": 1440,
+          "expect": "narrow-unregistered",
+          "codes": [
+            "narrow-unregistered"
+          ],
+          "codesUnique": [
+            "narrow-unregistered"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M16 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · 保留窄阅读列的登记制：把已登记的 `.pdetailbody { max-width: 72ch }` 覆盖成 **70ch**（DOM 追加一条 <style>，命中真实元素但未展开 ⇒ 不影响布局）⇒ 现场扫描必须认出「未登记的 ch 窄列」"
+          },
+          "isolation": null,
+          "loadBearing": {
+            "ok": true,
+            "detail": "现场扫描到 2 条 ch 窄列：.pdetailbody{max-width: 72ch}（已登记） · .pdetailbody{max-width: 70ch}（未登记） · 注入的那条命中 true · 已登记条目仍在 true · 除登记码之外的码 [无]"
+          },
+          "verdict": "hit+load-bearing-proof"
+        }
+      ],
+      "controls": [
+        {
+          "name": "§22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出",
+          "ok": true,
+          "detail": "不可断串注入位置 note · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [无]，390 档只看溢出）"
+        },
+        {
+          "name": "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条违规码都没有",
+          "ok": true,
+          "detail": "M8 plans/@1440 说明 12 条（竖排 0）违规码 [无] · M9a docs/data/@1440 说明 6 条（竖排 0）违规码 [无] · M9b changes/@1440 说明 14 条（竖排 0）违规码 [无] · M10 plans/@1600 说明 12 条（竖排 0）违规码 [无]"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "feeds/@1440 说明 4 条（竖排 0）违规码 [无] ⇒ 严格形式成立（未注入产物）"
+        }
+      ],
+      "failedChecks": [
+        {
+          "name": "§22c @1440 目录页家族（42 页，其中别名页 3 页）首屏**没有**任何页面级说明",
+          "detail": "有首屏说明的目录页 0 条：无 · 别名页 3 页（清单的 pageKind 现算）：need/dev-credits/ need/free-api/ need/student-only/ · ⚠️ 未进射程的别名页：need/dev-credits/ need/free-api/ need/student-only/（其它宽页的导语不在本规则射程内：144 页）"
+        },
+        {
+          "name": "§22c M15 隔离性：变异后只许出 [note-ink-narrow]，任何伴随码都说明另有缺陷在响",
+          "detail": "允许 [note-ink-narrow] · 实测 [note-ink-narrow, note-intro-long, note-ink-narrow, note-intro-long, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow] · ⚠️ 伴随码 [note-intro-long, note-intro-long] —— 这条牙不再是隔离命中"
+        }
+      ],
+      "logTail": "  ✓ 抽样页面正文都有内容（分析注入没有把正文吃掉） — /:12297 · plans/api/:20314 · plans/coding/:16265 · models/:5956 · models/360zhinao-pro/:1220 · vendor/ai360/:1219 · changes/:4186\n  ✓ 本地：真实资源计时里 0 次 Cloudflare 请求（不是「没看到」，是浏览器确实没去取） — 全部 0\n  ✓ 本地：网络层同样 0 次分析请求（guard 在插入 <script> 之前就返回了） — 本轮累计 0 次\n  ✓ 本地：抽样页面没有新增 JS 错误（Analytics 失败不得影响产品） — 全部 0\n  ✓ 本地：没有出现白名单之外的外部请求 — 0 个\n\n机器可读报告已写出：research\\_raw\\secondary-page-residue-v1\\browser\\_tmp\\verify-site-report-final.json（887 项，失败 2 项）\n\n❌ 验收 887 项，失败 2 项\n   ✗ §22c @1440 目录页家族（42 页，其中别名页 3 页）首屏**没有**任何页面级说明 — 有首屏说明的目录页 0 条：无 · 别名页 3 页（清单的 pageKind 现算）：need/dev-credits/ need/free-api/ need/student-only/ · ⚠️ 未进射程的别名页：need/dev-credits/ need/free-api/ need/student-only/（其它宽页的导语不在本规则射程内：144 页）\n   ✗ §22c M15 隔离性：变异后只许出 [note-ink-narrow]，任何伴随码都说明另有缺陷在响 — 允许 [note-ink-narrow] · 实测 [note-ink-narrow, note-intro-long, note-ink-narrow, note-intro-long, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow] · ⚠️ 伴随码 [note-intro-long, note-intro-long] —— 这条牙不再是隔离命中\n",
+      "frozenAnchorLine": null
+    },
+    {
+      "label": "run2-fixed",
+      "command": "node scripts/tools/verify-site.js --dir=dist",
+      "jsonReport": "research/_raw/secondary-page-residue-v1/browser/_tmp/verify-site-report-fixed.json",
+      "log": "research/_raw/secondary-page-residue-v1/browser/_tmp/verify-site-fixed.log",
+      "mutationsFile": "research/_raw/secondary-page-residue-v1/browser/_tmp/mutations-run2-fixed.json",
+      "exitCode": 0,
+      "totalChecks": 887,
+      "failures": 0,
+      "check_22c_3b": {
+        "name": "§22c @1440 目录页家族（45 页，其中别名页 3 页）首屏**没有**任何页面级说明",
+        "detail": "有首屏说明的目录页 0 条：无 · 别名页 3 页：need/dev-credits/ need/free-api/ need/student-only/ · kind 来源：meta.kind ∪ 清单 pageKind（其它宽页的导语不在本规则射程内：141 页）",
+        "ok": true
+      },
+      "check_22c_9_floors": {
+        "name": "§22c ⑨ 页面族结构下限：目录页家族（**含别名页**）0 条页面级说明、状态页 2 条、订阅中心 3+1 条、厂商页六节说明",
+        "detail": "全部页面族的说明条数下限成立（下限守住「登记与模板一起被删」那种两侧同时消失的改法；别名页本轮从「恰好 1 条」并入「目录页家族 0 条」—— 依据见 build-local.js renderDirectoryPage 顶部）",
+        "ok": true
+      },
+      "frozenRatchet": {
+        "name": "§22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页）",
+        "pages": 186,
+        "exactlyOnce": 186,
+        "total": 186,
+        "ok": true,
+        "detail": "186/186 页恰好 1 次 · 锚点「.snote { color: var(--mu…」"
+      },
+      "mutationIsolationAssertions": [
+        {
+          "id": "M14",
+          "name": "§22c M14 隔离性：变异后只许出 [note-intro-long]，任何伴随码都说明另有缺陷在响",
+          "ok": true,
+          "detail": "允许 [note-intro-long] · 实测 [note-intro-long] · 无伴随码"
+        },
+        {
+          "id": "M15",
+          "name": "§22c M15 隔离性：变异后只许出 [note-ink-narrow, note-intro-long]，任何伴随码都说明另有缺陷在响",
+          "ok": true,
+          "detail": "允许 [note-ink-narrow, note-intro-long] · 实测 [note-ink-narrow, note-intro-long, note-ink-narrow, note-ink-narrow, note-ink-narrow] · 无伴随码"
+        }
+      ],
+      "mutations": [
+        {
+          "id": "M1",
+          "route": "plans/",
+          "width": 1440,
+          "expect": "note-narrow",
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "narrow-unregistered"
+          ],
+          "codesUnique": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "narrow-unregistered"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M1 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · 把冻结串的 max-width 换回 70ch（plans/ 这一族的页面级说明曾被压窄）"
+          },
+          "isolation": null,
+          "loadBearing": null,
+          "verdict": "hit"
+        },
+        {
+          "id": "M2",
+          "route": "status/",
+          "width": 1440,
+          "expect": "note-narrow",
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "note-narrow",
+            "note-axis",
+            "narrow-unregistered"
+          ],
+          "codesUnique": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "narrow-unregistered"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M2 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · 把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄）"
+          },
+          "isolation": null,
+          "loadBearing": null,
+          "verdict": "hit"
+        },
+        {
+          "id": "M3",
+          "route": "changes/",
+          "width": 1440,
+          "expect": "note-narrow",
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "narrow-unregistered"
+          ],
+          "codesUnique": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "narrow-unregistered"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M3 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · 把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄）"
+          },
+          "isolation": null,
+          "loadBearing": null,
+          "verdict": "hit"
+        },
+        {
+          "id": "M4",
+          "route": "feeds/",
+          "width": 1440,
+          "expect": "note-narrow",
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "narrow-unregistered"
+          ],
+          "codesUnique": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "narrow-unregistered"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M4 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · 把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄）"
+          },
+          "isolation": null,
+          "loadBearing": null,
+          "verdict": "hit"
+        },
+        {
+          "id": "M6",
+          "route": "plans/",
+          "width": 390,
+          "expect": "page-overflow@390",
+          "codes": [
+            "note-clipped",
+            "page-overflow@390"
+          ],
+          "codesUnique": [
+            "note-clipped",
+            "page-overflow@390"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M6 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · 拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串（靶页本轮由 need/student-only/ 换到 plans/：前者删掉别名说明后 <main> 内 0 条 .snote，变异没有承重面）"
+          },
+          "isolation": null,
+          "loadBearing": null,
+          "verdict": "hit"
+        },
+        {
+          "id": "M7",
+          "route": "status/",
+          "width": 1440,
+          "expect": "unexpected-detail-main",
+          "codes": [
+            "unexpected-detail-main"
+          ],
+          "codesUnique": [
+            "unexpected-detail-main"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M7 DOM 注入前提成立（该类原本不存在）",
+            "ok": true,
+            "detail": "注入前提成立 · 给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在）"
+          },
+          "isolation": null,
+          "loadBearing": null,
+          "verdict": "hit"
+        },
+        {
+          "id": "M8",
+          "route": "plans/",
+          "width": 1440,
+          "expect": "note-narrow",
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-intro-long",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-narrow",
+            "note-narrow",
+            "note-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-narrow",
+            "note-narrow"
+          ],
+          "codesUnique": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-intro-long"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M8 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · F1 原型：把 .snote 的 padding-right 写成 calc(100% - 70ch) —— 盒宽一字不动、有字区域恒等于 70ch（修复前整轮 0 失败放行的那一条）（靶页同上换到 plans/：这条断言读**未注入**几何的 notes[0]，plans/ 有 12 条说明，成立性比原靶页的 1 条更好）"
+          },
+          "isolation": null,
+          "loadBearing": null,
+          "verdict": "hit"
+        },
+        {
+          "id": "M9a",
+          "route": "docs/data/",
+          "width": 1440,
+          "expect": "note-narrow",
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "narrow-unregistered"
+          ],
+          "codesUnique": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "narrow-unregistered"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M9a 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · F2 原型：只压**非首个** .snote（相邻兄弟选择器）"
+          },
+          "isolation": null,
+          "loadBearing": null,
+          "verdict": "hit"
+        },
+        {
+          "id": "M9b",
+          "route": "changes/",
+          "width": 1440,
+          "expect": "note-narrow",
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "narrow-unregistered"
+          ],
+          "codesUnique": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "narrow-unregistered"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M9b 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · F2 原型：只压**非首个** .snote（:not(:first-of-type)）"
+          },
+          "isolation": null,
+          "loadBearing": null,
+          "verdict": "hit"
+        },
+        {
+          "id": "M10",
+          "route": "plans/",
+          "width": 1600,
+          "expect": "note-narrow",
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "narrow-unregistered"
+          ],
+          "codesUnique": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "narrow-unregistered"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M10 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · F4 原型：缺陷藏在 @media (min-width:1500px) 里（@1440 档物理上看不见，只有 @1600 档咬得到）（靶页同上换到 plans/）"
+          },
+          "isolation": null,
+          "loadBearing": null,
+          "verdict": "hit"
+        },
+        {
+          "id": "M11",
+          "route": "changes/",
+          "width": 1440,
+          "expect": "note-ink-narrow",
+          "codes": [
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow"
+          ],
+          "codesUnique": [
+            "note-ink-narrow"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M11 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · t8 的 F-R2-1 原型：display:grid + minmax(0,70ch) 1fr —— 只改一条 CSS、不动标记，盒宽/内容盒都满宽，文字被排进 70ch 那一轨（修复轮 2 时整轮 842 项 EXIT=0 放行的那一条）"
+          },
+          "isolation": null,
+          "loadBearing": {
+            "ok": true,
+            "detail": "note-narrow 0 条（0 = 盒子/内容盒满宽，旧口径确实看不见）· note-ink-narrow 6 条 [changes/#0, changes/#1, changes/#2, changes/#4, changes/#8, changes/#13] · 这些条的行证据：#0 2 行 / 最宽 445.05px / 内容盒 1380px · #1 2 行 / 最宽 445.09px / 内容盒 1380px · #2 2 行 / 最宽 432px / 内容盒 1380px · #4 2 行 / 最宽 444px / 内容盒 1380px · #8 2 行 / 最宽 444px / 内容盒 1380px · #13 2 行 / 最宽 444.23px / 内容盒 1380px"
+          },
+          "verdict": "hit+load-bearing-proof"
+        },
+        {
+          "id": "M12",
+          "route": "plans/",
+          "width": 1440,
+          "expect": "note-hidden-text",
+          "codes": [
+            "note-hidden-text",
+            "note-hidden-text",
+            "note-hidden-text",
+            "note-hidden-text",
+            "note-hidden-text",
+            "note-hidden-text",
+            "note-hidden-text",
+            "note-hidden-text",
+            "note-hidden-text",
+            "note-hidden-text",
+            "note-hidden-text",
+            "note-hidden-text",
+            "narrow-unregistered"
+          ],
+          "codesUnique": [
+            "note-hidden-text",
+            "narrow-unregistered"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M12 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · t8 的 F-R2-2 原型：真实文本 font-size:0（一个字形都不画），正文交给 ::before 的 content 去画 —— 盒宽/行数一切正常，只有字形盒能看穿（靶页同上换到 plans/）"
+          },
+          "isolation": null,
+          "loadBearing": {
+            "ok": true,
+            "detail": "首条：文本 121 字 · 字形盒 0 个 · 盒宽 1380px（rendered=true） · 行 0 行 · note-hidden-text 命中 [plans/#0, plans/#1, plans/#2, plans/#3, plans/#4, plans/#5, plans/#6, plans/#7, plans/#8, plans/#9, plans/#10, plans/#11] · note-ink-narrow 无"
+          },
+          "verdict": "hit+load-bearing-proof"
+        },
+        {
+          "id": "M13",
+          "route": "docs/data/",
+          "width": 1440,
+          "expect": "note-unrendered",
+          "codes": [
+            "note-unrendered",
+            "note-unrendered",
+            "note-unrendered",
+            "note-unrendered",
+            "note-unrendered",
+            "note-unrendered"
+          ],
+          "codesUnique": [
+            "note-unrendered"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M13 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · T22-F1 原型：**裸** font-size:0（没有 ::before 高度恢复器）—— 盒高被压成 0 ⇒ rendered=false，修复前会让窄柱 / 逐行字迹 / 藏字三条判据同时静默（整页零码）；现在由 note-unrendered 咬住"
+          },
+          "isolation": null,
+          "loadBearing": {
+            "ok": true,
+            "detail": "未渲染条 6 条 [#0, #1, #2, #3, #4, #5] · 它们的 textLength [108, 196, 110, 34, 3, 50] · glyphRects [0, 0, 0, 0, 0, 0] · note-unrendered 命中 [docs/data/#0, docs/data/#1, docs/data/#2, docs/data/#3, docs/data/#4, docs/data/#5] · 窄柱/字迹/藏字码 [无（这正是修复前的假绿形状）]"
+          },
+          "verdict": "hit+load-bearing-proof"
+        },
+        {
+          "id": "M14",
+          "route": "models/",
+          "width": 1440,
+          "expect": "note-intro-long",
+          "codes": [
+            "note-intro-long"
+          ],
+          "codesUnique": [
+            "note-intro-long"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M14 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · 首屏说明被写长（DOM 注入填充正文）：盒宽 / 内容盒 / 同轴 / 裁切全都不动，只有「行数」越过上限 ⇒ 必须由 note-intro-long 咬住（靶页本轮由 need/student-only/ 换到 models/）"
+          },
+          "isolation": {
+            "ok": true,
+            "allowed": [
+              "note-intro-long"
+            ],
+            "detail": "允许 [note-intro-long] · 实测 [note-intro-long] · 无伴随码",
+            "assertion": "§22c M14 隔离性：变异后只许出 [note-intro-long]，任何伴随码都说明另有缺陷在响"
+          },
+          "loadBearing": null,
+          "verdict": "isolated-hit"
+        },
+        {
+          "id": "M15",
+          "route": "feeds/",
+          "width": 1440,
+          "expect": "note-ink-narrow",
+          "codes": [
+            "note-ink-narrow",
+            "note-intro-long",
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow"
+          ],
+          "codesUnique": [
+            "note-ink-narrow",
+            "note-intro-long"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M15 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 @1440/@1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）（靶页本轮由 need/free-api/ 换到 feeds/ 再换到 changes/，见上面那段三次换靶记录）"
+          },
+          "isolation": {
+            "ok": true,
+            "allowed": [
+              "note-ink-narrow",
+              "note-intro-long"
+            ],
+            "detail": "允许 [note-ink-narrow, note-intro-long] · 实测 [note-ink-narrow, note-intro-long, note-ink-narrow, note-ink-narrow, note-ink-narrow] · 无伴随码",
+            "assertion": "§22c M15 隔离性：变异后只许出 [note-ink-narrow, note-intro-long]，任何伴随码都说明另有缺陷在响"
+          },
+          "loadBearing": {
+            "ok": true,
+            "detail": "note-ink-narrow 4 条 [feeds/#0, feeds/#1, feeds/#2, feeds/#3] · 逐条：#0 vertical-rl 列 13 / 列栈 260.69px / 行 1（最宽 260.69px） / 内容盒 1380px / 字形盒 13 · #1 vertical-rl 列 17 / 列栈 342.25px / 行 1（最宽 342.25px） / 内容盒 1380px / 字形盒 20 · #2 vertical-rl 列 13 / 列栈 260.69px / 行 1（最宽 260.69px） / 内容盒 1380px / 字形盒 13 · #3 vertical-rl 列 3 / 列栈 56.78px / 行 1（最宽 56.78px） / 内容盒 1380px / 字形盒 3 · 列宽 1380px · 阈值 1173px · note-narrow 0 条（0 = ① 也看不见）· 盒宽与注入前一致 true"
+          },
+          "verdict": "isolated-hit"
+        },
+        {
+          "id": "M16",
+          "route": "plans/coding/",
+          "width": 1440,
+          "expect": "narrow-unregistered",
+          "codes": [
+            "narrow-unregistered"
+          ],
+          "codesUnique": [
+            "narrow-unregistered"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M16 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · 保留窄阅读列的登记制：把已登记的 `.pdetailbody { max-width: 72ch }` 覆盖成 **70ch**（DOM 追加一条 <style>，命中真实元素但未展开 ⇒ 不影响布局）⇒ 现场扫描必须认出「未登记的 ch 窄列」"
+          },
+          "isolation": null,
+          "loadBearing": {
+            "ok": true,
+            "detail": "现场扫描到 2 条 ch 窄列：.pdetailbody{max-width: 72ch}（已登记） · .pdetailbody{max-width: 70ch}（未登记） · 注入的那条命中 true · 已登记条目仍在 true · 除登记码之外的码 [无]"
+          },
+          "verdict": "hit+load-bearing-proof"
+        }
+      ],
+      "controls": [
+        {
+          "name": "§22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出",
+          "ok": true,
+          "detail": "不可断串注入位置 note · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [无]，390 档只看溢出）"
+        },
+        {
+          "name": "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条违规码都没有",
+          "ok": true,
+          "detail": "M8 plans/@1440 说明 12 条（竖排 0）违规码 [无] · M9a docs/data/@1440 说明 6 条（竖排 0）违规码 [无] · M9b changes/@1440 说明 14 条（竖排 0）违规码 [无] · M10 plans/@1600 说明 12 条（竖排 0）违规码 [无]"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "feeds/@1440 说明 4 条（竖排 0）违规码 [无] ⇒ 严格形式成立（未注入产物）"
+        }
+      ],
+      "failedChecks": [],
+      "logTail": "  ✓ 抽样 7 个页面在真实 DOM 里各有一个 analytics bootstrap（含 noindex / 深层路由） — /=1 · plans/api/=1 · plans/coding/=1 · models/=1 · models/360zhinao-pro/=1 · vendor/ai360/=1 · changes/=1\n  ✓ 抽样页面里没有残留的分析占位符（页面 HTML 里不会露出模板标记） — 0 个\n  ✓ 抽样页面正文都有内容（分析注入没有把正文吃掉） — /:12297 · plans/api/:20314 · plans/coding/:16265 · models/:5956 · models/360zhinao-pro/:1220 · vendor/ai360/:1219 · changes/:4186\n  ✓ 本地：真实资源计时里 0 次 Cloudflare 请求（不是「没看到」，是浏览器确实没去取） — 全部 0\n  ✓ 本地：网络层同样 0 次分析请求（guard 在插入 <script> 之前就返回了） — 本轮累计 0 次\n  ✓ 本地：抽样页面没有新增 JS 错误（Analytics 失败不得影响产品） — 全部 0\n  ✓ 本地：没有出现白名单之外的外部请求 — 0 个\n\n机器可读报告已写出：research\\_raw\\secondary-page-residue-v1\\browser\\_tmp\\verify-site-report-fixed.json（887 项，失败 0 项）\n\n✅ 验收 887 项，失败 0 项\n",
+      "frozenAnchorLine": null
+    },
+    {
+      "label": "run3-postcommit",
+      "command": "node scripts/tools/verify-site.js --dir=dist",
+      "jsonReport": "research/_raw/secondary-page-residue-v1/browser/_tmp/verify-site-report-postcommit.json",
+      "log": "research/_raw/secondary-page-residue-v1/browser/_tmp/verify-site-postcommit.log",
+      "mutationsFile": "research/_raw/secondary-page-residue-v1/browser/_tmp/mutations.json",
+      "exitCode": 0,
+      "totalChecks": 887,
+      "failures": 0,
+      "check_22c_3b": {
+        "name": "§22c @1440 目录页家族（45 页，其中别名页 3 页）首屏**没有**任何页面级说明",
+        "detail": "有首屏说明的目录页 0 条：无 · 别名页 3 页：need/dev-credits/ need/free-api/ need/student-only/ · kind 来源：meta.kind ∪ 清单 pageKind（其它宽页的导语不在本规则射程内：141 页）",
+        "ok": true
+      },
+      "check_22c_9_floors": {
+        "name": "§22c ⑨ 页面族结构下限：目录页家族（**含别名页**）0 条页面级说明、状态页 2 条、订阅中心 3+1 条、厂商页六节说明",
+        "detail": "全部页面族的说明条数下限成立（下限守住「登记与模板一起被删」那种两侧同时消失的改法；别名页本轮从「恰好 1 条」并入「目录页家族 0 条」—— 依据见 build-local.js renderDirectoryPage 顶部）",
+        "ok": true
+      },
+      "frozenRatchet": {
+        "name": "§22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页）",
+        "pages": 186,
+        "exactlyOnce": 186,
+        "total": 186,
+        "ok": true,
+        "detail": "186/186 页恰好 1 次 · 锚点「.snote { color: var(--mu…」"
+      },
+      "mutationIsolationAssertions": [
+        {
+          "id": "M14",
+          "name": "§22c M14 隔离性：变异后只许出 [note-intro-long]，任何伴随码都说明另有缺陷在响",
+          "ok": true,
+          "detail": "允许 [note-intro-long] · 实测 [note-intro-long] · 无伴随码"
+        },
+        {
+          "id": "M15",
+          "name": "§22c M15 隔离性：变异后只许出 [note-ink-narrow, note-intro-long]，任何伴随码都说明另有缺陷在响",
+          "ok": true,
+          "detail": "允许 [note-ink-narrow, note-intro-long] · 实测 [note-ink-narrow, note-intro-long, note-ink-narrow, note-ink-narrow, note-ink-narrow] · 无伴随码"
+        }
+      ],
+      "mutations": [
+        {
+          "id": "M1",
+          "route": "plans/",
+          "width": 1440,
+          "expect": "note-narrow",
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "narrow-unregistered"
+          ],
+          "codesUnique": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "narrow-unregistered"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M1 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · 把冻结串的 max-width 换回 70ch（plans/ 这一族的页面级说明曾被压窄）"
+          },
+          "isolation": null,
+          "loadBearing": null,
+          "verdict": "hit"
+        },
+        {
+          "id": "M2",
+          "route": "status/",
+          "width": 1440,
+          "expect": "note-narrow",
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "note-narrow",
+            "note-axis",
+            "narrow-unregistered"
+          ],
+          "codesUnique": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "narrow-unregistered"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M2 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · 把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄）"
+          },
+          "isolation": null,
+          "loadBearing": null,
+          "verdict": "hit"
+        },
+        {
+          "id": "M3",
+          "route": "changes/",
+          "width": 1440,
+          "expect": "note-narrow",
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "narrow-unregistered"
+          ],
+          "codesUnique": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "narrow-unregistered"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M3 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · 把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄）"
+          },
+          "isolation": null,
+          "loadBearing": null,
+          "verdict": "hit"
+        },
+        {
+          "id": "M4",
+          "route": "feeds/",
+          "width": 1440,
+          "expect": "note-narrow",
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "narrow-unregistered"
+          ],
+          "codesUnique": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "narrow-unregistered"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M4 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · 把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄）"
+          },
+          "isolation": null,
+          "loadBearing": null,
+          "verdict": "hit"
+        },
+        {
+          "id": "M6",
+          "route": "plans/",
+          "width": 390,
+          "expect": "page-overflow@390",
+          "codes": [
+            "note-clipped",
+            "page-overflow@390"
+          ],
+          "codesUnique": [
+            "note-clipped",
+            "page-overflow@390"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M6 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · 拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串（靶页本轮由 need/student-only/ 换到 plans/：前者删掉别名说明后 <main> 内 0 条 .snote，变异没有承重面）"
+          },
+          "isolation": null,
+          "loadBearing": null,
+          "verdict": "hit"
+        },
+        {
+          "id": "M7",
+          "route": "status/",
+          "width": 1440,
+          "expect": "unexpected-detail-main",
+          "codes": [
+            "unexpected-detail-main"
+          ],
+          "codesUnique": [
+            "unexpected-detail-main"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M7 DOM 注入前提成立（该类原本不存在）",
+            "ok": true,
+            "detail": "注入前提成立 · 给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在）"
+          },
+          "isolation": null,
+          "loadBearing": null,
+          "verdict": "hit"
+        },
+        {
+          "id": "M8",
+          "route": "plans/",
+          "width": 1440,
+          "expect": "note-narrow",
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-intro-long",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-narrow",
+            "note-narrow",
+            "note-narrow",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-narrow",
+            "note-narrow",
+            "note-narrow"
+          ],
+          "codesUnique": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-intro-long"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M8 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · F1 原型：把 .snote 的 padding-right 写成 calc(100% - 70ch) —— 盒宽一字不动、有字区域恒等于 70ch（修复前整轮 0 失败放行的那一条）（靶页同上换到 plans/：这条断言读**未注入**几何的 notes[0]，plans/ 有 12 条说明，成立性比原靶页的 1 条更好）"
+          },
+          "isolation": null,
+          "loadBearing": null,
+          "verdict": "hit"
+        },
+        {
+          "id": "M9a",
+          "route": "docs/data/",
+          "width": 1440,
+          "expect": "note-narrow",
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "narrow-unregistered"
+          ],
+          "codesUnique": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "narrow-unregistered"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M9a 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · F2 原型：只压**非首个** .snote（相邻兄弟选择器）"
+          },
+          "isolation": null,
+          "loadBearing": null,
+          "verdict": "hit"
+        },
+        {
+          "id": "M9b",
+          "route": "changes/",
+          "width": 1440,
+          "expect": "note-narrow",
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "narrow-unregistered"
+          ],
+          "codesUnique": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "narrow-unregistered"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M9b 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · F2 原型：只压**非首个** .snote（:not(:first-of-type)）"
+          },
+          "isolation": null,
+          "loadBearing": null,
+          "verdict": "hit"
+        },
+        {
+          "id": "M10",
+          "route": "plans/",
+          "width": 1600,
+          "expect": "note-narrow",
+          "codes": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "note-narrow",
+            "note-axis",
+            "narrow-unregistered"
+          ],
+          "codesUnique": [
+            "note-narrow",
+            "note-ink-narrow",
+            "note-axis",
+            "note-intro-long",
+            "narrow-unregistered"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M10 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · F4 原型：缺陷藏在 @media (min-width:1500px) 里（@1440 档物理上看不见，只有 @1600 档咬得到）（靶页同上换到 plans/）"
+          },
+          "isolation": null,
+          "loadBearing": null,
+          "verdict": "hit"
+        },
+        {
+          "id": "M11",
+          "route": "changes/",
+          "width": 1440,
+          "expect": "note-ink-narrow",
+          "codes": [
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow"
+          ],
+          "codesUnique": [
+            "note-ink-narrow"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M11 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · t8 的 F-R2-1 原型：display:grid + minmax(0,70ch) 1fr —— 只改一条 CSS、不动标记，盒宽/内容盒都满宽，文字被排进 70ch 那一轨（修复轮 2 时整轮 842 项 EXIT=0 放行的那一条）"
+          },
+          "isolation": null,
+          "loadBearing": {
+            "ok": true,
+            "detail": "note-narrow 0 条（0 = 盒子/内容盒满宽，旧口径确实看不见）· note-ink-narrow 6 条 [changes/#0, changes/#1, changes/#2, changes/#4, changes/#8, changes/#13] · 这些条的行证据：#0 2 行 / 最宽 445.05px / 内容盒 1380px · #1 2 行 / 最宽 445.09px / 内容盒 1380px · #2 2 行 / 最宽 432px / 内容盒 1380px · #4 2 行 / 最宽 444px / 内容盒 1380px · #8 2 行 / 最宽 444px / 内容盒 1380px · #13 2 行 / 最宽 444.23px / 内容盒 1380px"
+          },
+          "verdict": "hit+load-bearing-proof"
+        },
+        {
+          "id": "M12",
+          "route": "plans/",
+          "width": 1440,
+          "expect": "note-hidden-text",
+          "codes": [
+            "note-hidden-text",
+            "note-hidden-text",
+            "note-hidden-text",
+            "note-hidden-text",
+            "note-hidden-text",
+            "note-hidden-text",
+            "note-hidden-text",
+            "note-hidden-text",
+            "note-hidden-text",
+            "note-hidden-text",
+            "note-hidden-text",
+            "note-hidden-text",
+            "narrow-unregistered"
+          ],
+          "codesUnique": [
+            "note-hidden-text",
+            "narrow-unregistered"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M12 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · t8 的 F-R2-2 原型：真实文本 font-size:0（一个字形都不画），正文交给 ::before 的 content 去画 —— 盒宽/行数一切正常，只有字形盒能看穿（靶页同上换到 plans/）"
+          },
+          "isolation": null,
+          "loadBearing": {
+            "ok": true,
+            "detail": "首条：文本 121 字 · 字形盒 0 个 · 盒宽 1380px（rendered=true） · 行 0 行 · note-hidden-text 命中 [plans/#0, plans/#1, plans/#2, plans/#3, plans/#4, plans/#5, plans/#6, plans/#7, plans/#8, plans/#9, plans/#10, plans/#11] · note-ink-narrow 无"
+          },
+          "verdict": "hit+load-bearing-proof"
+        },
+        {
+          "id": "M13",
+          "route": "docs/data/",
+          "width": 1440,
+          "expect": "note-unrendered",
+          "codes": [
+            "note-unrendered",
+            "note-unrendered",
+            "note-unrendered",
+            "note-unrendered",
+            "note-unrendered",
+            "note-unrendered"
+          ],
+          "codesUnique": [
+            "note-unrendered"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M13 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · T22-F1 原型：**裸** font-size:0（没有 ::before 高度恢复器）—— 盒高被压成 0 ⇒ rendered=false，修复前会让窄柱 / 逐行字迹 / 藏字三条判据同时静默（整页零码）；现在由 note-unrendered 咬住"
+          },
+          "isolation": null,
+          "loadBearing": {
+            "ok": true,
+            "detail": "未渲染条 6 条 [#0, #1, #2, #3, #4, #5] · 它们的 textLength [108, 196, 110, 34, 3, 50] · glyphRects [0, 0, 0, 0, 0, 0] · note-unrendered 命中 [docs/data/#0, docs/data/#1, docs/data/#2, docs/data/#3, docs/data/#4, docs/data/#5] · 窄柱/字迹/藏字码 [无（这正是修复前的假绿形状）]"
+          },
+          "verdict": "hit+load-bearing-proof"
+        },
+        {
+          "id": "M14",
+          "route": "models/",
+          "width": 1440,
+          "expect": "note-intro-long",
+          "codes": [
+            "note-intro-long"
+          ],
+          "codesUnique": [
+            "note-intro-long"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M14 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · 首屏说明被写长（DOM 注入填充正文）：盒宽 / 内容盒 / 同轴 / 裁切全都不动，只有「行数」越过上限 ⇒ 必须由 note-intro-long 咬住（靶页本轮由 need/student-only/ 换到 models/）"
+          },
+          "isolation": {
+            "ok": true,
+            "allowed": [
+              "note-intro-long"
+            ],
+            "detail": "允许 [note-intro-long] · 实测 [note-intro-long] · 无伴随码",
+            "assertion": "§22c M14 隔离性：变异后只许出 [note-intro-long]，任何伴随码都说明另有缺陷在响"
+          },
+          "loadBearing": null,
+          "verdict": "isolated-hit"
+        },
+        {
+          "id": "M15",
+          "route": "feeds/",
+          "width": 1440,
+          "expect": "note-ink-narrow",
+          "codes": [
+            "note-ink-narrow",
+            "note-intro-long",
+            "note-ink-narrow",
+            "note-ink-narrow",
+            "note-ink-narrow"
+          ],
+          "codesUnique": [
+            "note-ink-narrow",
+            "note-intro-long"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M15 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 @1440/@1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）（靶页本轮由 need/free-api/ 换到 feeds/，见上面那段两次换靶记录）"
+          },
+          "isolation": {
+            "ok": true,
+            "allowed": [
+              "note-ink-narrow",
+              "note-intro-long"
+            ],
+            "detail": "允许 [note-ink-narrow, note-intro-long] · 实测 [note-ink-narrow, note-intro-long, note-ink-narrow, note-ink-narrow, note-ink-narrow] · 无伴随码",
+            "assertion": "§22c M15 隔离性：变异后只许出 [note-ink-narrow, note-intro-long]，任何伴随码都说明另有缺陷在响"
+          },
+          "loadBearing": {
+            "ok": true,
+            "detail": "note-ink-narrow 4 条 [feeds/#0, feeds/#1, feeds/#2, feeds/#3] · 逐条：#0 vertical-rl 列 13 / 列栈 260.69px / 行 1（最宽 260.69px） / 内容盒 1380px / 字形盒 13 · #1 vertical-rl 列 17 / 列栈 342.25px / 行 1（最宽 342.25px） / 内容盒 1380px / 字形盒 20 · #2 vertical-rl 列 13 / 列栈 260.69px / 行 1（最宽 260.69px） / 内容盒 1380px / 字形盒 13 · #3 vertical-rl 列 3 / 列栈 56.78px / 行 1（最宽 56.78px） / 内容盒 1380px / 字形盒 3 · 列宽 1380px · 阈值 1173px · note-narrow 0 条（0 = ① 也看不见）· 盒宽与注入前一致 true"
+          },
+          "verdict": "isolated-hit"
+        },
+        {
+          "id": "M16",
+          "route": "plans/coding/",
+          "width": 1440,
+          "expect": "narrow-unregistered",
+          "codes": [
+            "narrow-unregistered"
+          ],
+          "codesUnique": [
+            "narrow-unregistered"
+          ],
+          "expectHit": true,
+          "guard": {
+            "name": "§22c M16 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+            "ok": true,
+            "detail": "锚点出现 1 次 · 保留窄阅读列的登记制：把已登记的 `.pdetailbody { max-width: 72ch }` 覆盖成 **70ch**（DOM 追加一条 <style>，命中真实元素但未展开 ⇒ 不影响布局）⇒ 现场扫描必须认出「未登记的 ch 窄列」"
+          },
+          "isolation": null,
+          "loadBearing": {
+            "ok": true,
+            "detail": "现场扫描到 2 条 ch 窄列：.pdetailbody{max-width: 72ch}（已登记） · .pdetailbody{max-width: 70ch}（未登记） · 注入的那条命中 true · 已登记条目仍在 true · 除登记码之外的码 [无]"
+          },
+          "verdict": "hit+load-bearing-proof"
+        }
+      ],
+      "controls": [
+        {
+          "name": "§22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出",
+          "ok": true,
+          "detail": "不可断串注入位置 note · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [无]，390 档只看溢出）"
+        },
+        {
+          "name": "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条违规码都没有",
+          "ok": true,
+          "detail": "M8 plans/@1440 说明 12 条（竖排 0）违规码 [无] · M9a docs/data/@1440 说明 6 条（竖排 0）违规码 [无] · M9b changes/@1440 说明 14 条（竖排 0）违规码 [无] · M10 plans/@1600 说明 12 条（竖排 0）违规码 [无]"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "feeds/@1440 说明 4 条（竖排 0）违规码 [无] ⇒ 严格形式成立（未注入产物）"
+        }
+      ],
+      "failedChecks": [],
+      "logTail": "  ✓ 抽样 7 个页面在真实 DOM 里各有一个 analytics bootstrap（含 noindex / 深层路由） — /=1 · plans/api/=1 · plans/coding/=1 · models/=1 · models/360zhinao-pro/=1 · vendor/ai360/=1 · changes/=1\n  ✓ 抽样页面里没有残留的分析占位符（页面 HTML 里不会露出模板标记） — 0 个\n  ✓ 抽样页面正文都有内容（分析注入没有把正文吃掉） — /:12297 · plans/api/:20314 · plans/coding/:16265 · models/:5956 · models/360zhinao-pro/:1220 · vendor/ai360/:1219 · changes/:4186\n  ✓ 本地：真实资源计时里 0 次 Cloudflare 请求（不是「没看到」，是浏览器确实没去取） — 全部 0\n  ✓ 本地：网络层同样 0 次分析请求（guard 在插入 <script> 之前就返回了） — 本轮累计 0 次\n  ✓ 本地：抽样页面没有新增 JS 错误（Analytics 失败不得影响产品） — 全部 0\n  ✓ 本地：没有出现白名单之外的外部请求 — 0 个\n\n机器可读报告已写出：research\\_raw\\secondary-page-residue-v1\\browser\\_tmp\\verify-site-report-postcommit.json（887 项，失败 0 项）\n\n✅ 验收 887 项，失败 0 项\n",
+      "frozenAnchorLine": null
+    }
+  ],
+  "knownBoundaries": [
+    "F6（对抗复核，captain 要求写清）：③b 的射程以 verify-site.js 的 WIDE_DATA_SELECTORS = [.ctable,.stable,.chgsec,.chglist,.flist,.fsec,.ptable,.lsum,.pchglist] 为准；构建期首屏扫描用的是另一套锚点（.lsum / .ctable-wrap / <table>），两者不是同一个集合，谁先出现决定区间。**构建期读数是另一段区间，不得当作 ③b 的射程证据。**",
+    "本轮 verify-site 套件一律 --dir=dist（真浏览器必须真跑，未降级）；载体是 playwright-core + 系统 Edge headless + 本地静态服务（脚本内 serve()），几何那次用的是 file://（与 geometry-before.json 同载体）。"
+  ],
+  "label": "run3-postcommit",
+  "command": "node scripts/tools/verify-site.js --dir=dist",
+  "exitCode": 0,
+  "totalChecks": 887,
+  "failures": 0,
+  "check_22c_3b": {
+    "name": "§22c @1440 目录页家族（45 页，其中别名页 3 页）首屏**没有**任何页面级说明",
+    "detail": "有首屏说明的目录页 0 条：无 · 别名页 3 页：need/dev-credits/ need/free-api/ need/student-only/ · kind 来源：meta.kind ∪ 清单 pageKind（其它宽页的导语不在本规则射程内：141 页）",
+    "ok": true
+  },
+  "check_22c_9_floors": {
+    "name": "§22c ⑨ 页面族结构下限：目录页家族（**含别名页**）0 条页面级说明、状态页 2 条、订阅中心 3+1 条、厂商页六节说明",
+    "detail": "全部页面族的说明条数下限成立（下限守住「登记与模板一起被删」那种两侧同时消失的改法；别名页本轮从「恰好 1 条」并入「目录页家族 0 条」—— 依据见 build-local.js renderDirectoryPage 顶部）",
+    "ok": true
+  },
+  "frozenRatchet": {
+    "name": "§22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页）",
+    "pages": 186,
+    "exactlyOnce": 186,
+    "total": 186,
+    "ok": true,
+    "detail": "186/186 页恰好 1 次 · 锚点「.snote { color: var(--mu…」"
+  },
+  "mutationIsolationAssertions": [
+    {
+      "id": "M14",
+      "name": "§22c M14 隔离性：变异后只许出 [note-intro-long]，任何伴随码都说明另有缺陷在响",
+      "ok": true,
+      "detail": "允许 [note-intro-long] · 实测 [note-intro-long] · 无伴随码"
+    },
+    {
+      "id": "M15",
+      "name": "§22c M15 隔离性：变异后只许出 [note-ink-narrow, note-intro-long]，任何伴随码都说明另有缺陷在响",
+      "ok": true,
+      "detail": "允许 [note-ink-narrow, note-intro-long] · 实测 [note-ink-narrow, note-intro-long, note-ink-narrow, note-ink-narrow, note-ink-narrow] · 无伴随码"
+    }
+  ],
+  "mutations": [
+    {
+      "id": "M1",
+      "route": "plans/",
+      "width": 1440,
+      "expect": "note-narrow",
+      "codes": [
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-intro-long",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "narrow-unregistered"
+      ],
+      "codesUnique": [
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-intro-long",
+        "narrow-unregistered"
+      ],
+      "expectHit": true,
+      "guard": {
+        "name": "§22c M1 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+        "ok": true,
+        "detail": "锚点出现 1 次 · 把冻结串的 max-width 换回 70ch（plans/ 这一族的页面级说明曾被压窄）"
+      },
+      "isolation": null,
+      "loadBearing": null,
+      "verdict": "hit"
+    },
+    {
+      "id": "M2",
+      "route": "status/",
+      "width": 1440,
+      "expect": "note-narrow",
+      "codes": [
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-intro-long",
+        "note-narrow",
+        "note-axis",
+        "narrow-unregistered"
+      ],
+      "codesUnique": [
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-intro-long",
+        "narrow-unregistered"
+      ],
+      "expectHit": true,
+      "guard": {
+        "name": "§22c M2 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+        "ok": true,
+        "detail": "锚点出现 1 次 · 把冻结串的 max-width 换回 70ch（status/ 这一族的页面级说明曾被压窄）"
+      },
+      "isolation": null,
+      "loadBearing": null,
+      "verdict": "hit"
+    },
+    {
+      "id": "M3",
+      "route": "changes/",
+      "width": 1440,
+      "expect": "note-narrow",
+      "codes": [
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "narrow-unregistered"
+      ],
+      "codesUnique": [
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "narrow-unregistered"
+      ],
+      "expectHit": true,
+      "guard": {
+        "name": "§22c M3 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+        "ok": true,
+        "detail": "锚点出现 1 次 · 把冻结串的 max-width 换回 70ch（changes/ 这一族的页面级说明曾被压窄）"
+      },
+      "isolation": null,
+      "loadBearing": null,
+      "verdict": "hit"
+    },
+    {
+      "id": "M4",
+      "route": "feeds/",
+      "width": 1440,
+      "expect": "note-narrow",
+      "codes": [
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-intro-long",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "narrow-unregistered"
+      ],
+      "codesUnique": [
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-intro-long",
+        "narrow-unregistered"
+      ],
+      "expectHit": true,
+      "guard": {
+        "name": "§22c M4 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+        "ok": true,
+        "detail": "锚点出现 1 次 · 把冻结串的 max-width 换回 70ch（feeds/ 这一族的页面级说明曾被压窄）"
+      },
+      "isolation": null,
+      "loadBearing": null,
+      "verdict": "hit"
+    },
+    {
+      "id": "M6",
+      "route": "plans/",
+      "width": 390,
+      "expect": "page-overflow@390",
+      "codes": [
+        "note-clipped",
+        "page-overflow@390"
+      ],
+      "codesUnique": [
+        "note-clipped",
+        "page-overflow@390"
+      ],
+      "expectHit": true,
+      "guard": {
+        "name": "§22c M6 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+        "ok": true,
+        "detail": "锚点出现 1 次 · 拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串（靶页本轮由 need/student-only/ 换到 plans/：前者删掉别名说明后 <main> 内 0 条 .snote，变异没有承重面）"
+      },
+      "isolation": null,
+      "loadBearing": null,
+      "verdict": "hit"
+    },
+    {
+      "id": "M7",
+      "route": "status/",
+      "width": 1440,
+      "expect": "unexpected-detail-main",
+      "codes": [
+        "unexpected-detail-main"
+      ],
+      "codesUnique": [
+        "unexpected-detail-main"
+      ],
+      "expectHit": true,
+      "guard": {
+        "name": "§22c M7 DOM 注入前提成立（该类原本不存在）",
+        "ok": true,
+        "detail": "注入前提成立 · 给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在）"
+      },
+      "isolation": null,
+      "loadBearing": null,
+      "verdict": "hit"
+    },
+    {
+      "id": "M8",
+      "route": "plans/",
+      "width": 1440,
+      "expect": "note-narrow",
+      "codes": [
+        "note-narrow",
+        "note-ink-narrow",
+        "note-intro-long",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-narrow",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-narrow",
+        "note-narrow",
+        "note-narrow",
+        "note-narrow",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-narrow",
+        "note-narrow",
+        "note-narrow"
+      ],
+      "codesUnique": [
+        "note-narrow",
+        "note-ink-narrow",
+        "note-intro-long"
+      ],
+      "expectHit": true,
+      "guard": {
+        "name": "§22c M8 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+        "ok": true,
+        "detail": "锚点出现 1 次 · F1 原型：把 .snote 的 padding-right 写成 calc(100% - 70ch) —— 盒宽一字不动、有字区域恒等于 70ch（修复前整轮 0 失败放行的那一条）（靶页同上换到 plans/：这条断言读**未注入**几何的 notes[0]，plans/ 有 12 条说明，成立性比原靶页的 1 条更好）"
+      },
+      "isolation": null,
+      "loadBearing": null,
+      "verdict": "hit"
+    },
+    {
+      "id": "M9a",
+      "route": "docs/data/",
+      "width": 1440,
+      "expect": "note-narrow",
+      "codes": [
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-intro-long",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-intro-long",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "narrow-unregistered"
+      ],
+      "codesUnique": [
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-intro-long",
+        "narrow-unregistered"
+      ],
+      "expectHit": true,
+      "guard": {
+        "name": "§22c M9a 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+        "ok": true,
+        "detail": "锚点出现 1 次 · F2 原型：只压**非首个** .snote（相邻兄弟选择器）"
+      },
+      "isolation": null,
+      "loadBearing": null,
+      "verdict": "hit"
+    },
+    {
+      "id": "M9b",
+      "route": "changes/",
+      "width": 1440,
+      "expect": "note-narrow",
+      "codes": [
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "narrow-unregistered"
+      ],
+      "codesUnique": [
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "narrow-unregistered"
+      ],
+      "expectHit": true,
+      "guard": {
+        "name": "§22c M9b 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+        "ok": true,
+        "detail": "锚点出现 1 次 · F2 原型：只压**非首个** .snote（:not(:first-of-type)）"
+      },
+      "isolation": null,
+      "loadBearing": null,
+      "verdict": "hit"
+    },
+    {
+      "id": "M10",
+      "route": "plans/",
+      "width": 1600,
+      "expect": "note-narrow",
+      "codes": [
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-intro-long",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "narrow-unregistered"
+      ],
+      "codesUnique": [
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-intro-long",
+        "narrow-unregistered"
+      ],
+      "expectHit": true,
+      "guard": {
+        "name": "§22c M10 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+        "ok": true,
+        "detail": "锚点出现 1 次 · F4 原型：缺陷藏在 @media (min-width:1500px) 里（@1440 档物理上看不见，只有 @1600 档咬得到）（靶页同上换到 plans/）"
+      },
+      "isolation": null,
+      "loadBearing": null,
+      "verdict": "hit"
+    },
+    {
+      "id": "M11",
+      "route": "changes/",
+      "width": 1440,
+      "expect": "note-ink-narrow",
+      "codes": [
+        "note-ink-narrow",
+        "note-ink-narrow",
+        "note-ink-narrow",
+        "note-ink-narrow",
+        "note-ink-narrow",
+        "note-ink-narrow"
+      ],
+      "codesUnique": [
+        "note-ink-narrow"
+      ],
+      "expectHit": true,
+      "guard": {
+        "name": "§22c M11 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+        "ok": true,
+        "detail": "锚点出现 1 次 · t8 的 F-R2-1 原型：display:grid + minmax(0,70ch) 1fr —— 只改一条 CSS、不动标记，盒宽/内容盒都满宽，文字被排进 70ch 那一轨（修复轮 2 时整轮 842 项 EXIT=0 放行的那一条）"
+      },
+      "isolation": null,
+      "loadBearing": {
+        "ok": true,
+        "detail": "note-narrow 0 条（0 = 盒子/内容盒满宽，旧口径确实看不见）· note-ink-narrow 6 条 [changes/#0, changes/#1, changes/#2, changes/#4, changes/#8, changes/#13] · 这些条的行证据：#0 2 行 / 最宽 445.05px / 内容盒 1380px · #1 2 行 / 最宽 445.09px / 内容盒 1380px · #2 2 行 / 最宽 432px / 内容盒 1380px · #4 2 行 / 最宽 444px / 内容盒 1380px · #8 2 行 / 最宽 444px / 内容盒 1380px · #13 2 行 / 最宽 444.23px / 内容盒 1380px"
+      },
+      "verdict": "hit+load-bearing-proof"
+    },
+    {
+      "id": "M12",
+      "route": "plans/",
+      "width": 1440,
+      "expect": "note-hidden-text",
+      "codes": [
+        "note-hidden-text",
+        "note-hidden-text",
+        "note-hidden-text",
+        "note-hidden-text",
+        "note-hidden-text",
+        "note-hidden-text",
+        "note-hidden-text",
+        "note-hidden-text",
+        "note-hidden-text",
+        "note-hidden-text",
+        "note-hidden-text",
+        "note-hidden-text",
+        "narrow-unregistered"
+      ],
+      "codesUnique": [
+        "note-hidden-text",
+        "narrow-unregistered"
+      ],
+      "expectHit": true,
+      "guard": {
+        "name": "§22c M12 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+        "ok": true,
+        "detail": "锚点出现 1 次 · t8 的 F-R2-2 原型：真实文本 font-size:0（一个字形都不画），正文交给 ::before 的 content 去画 —— 盒宽/行数一切正常，只有字形盒能看穿（靶页同上换到 plans/）"
+      },
+      "isolation": null,
+      "loadBearing": {
+        "ok": true,
+        "detail": "首条：文本 121 字 · 字形盒 0 个 · 盒宽 1380px（rendered=true） · 行 0 行 · note-hidden-text 命中 [plans/#0, plans/#1, plans/#2, plans/#3, plans/#4, plans/#5, plans/#6, plans/#7, plans/#8, plans/#9, plans/#10, plans/#11] · note-ink-narrow 无"
+      },
+      "verdict": "hit+load-bearing-proof"
+    },
+    {
+      "id": "M13",
+      "route": "docs/data/",
+      "width": 1440,
+      "expect": "note-unrendered",
+      "codes": [
+        "note-unrendered",
+        "note-unrendered",
+        "note-unrendered",
+        "note-unrendered",
+        "note-unrendered",
+        "note-unrendered"
+      ],
+      "codesUnique": [
+        "note-unrendered"
+      ],
+      "expectHit": true,
+      "guard": {
+        "name": "§22c M13 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+        "ok": true,
+        "detail": "锚点出现 1 次 · T22-F1 原型：**裸** font-size:0（没有 ::before 高度恢复器）—— 盒高被压成 0 ⇒ rendered=false，修复前会让窄柱 / 逐行字迹 / 藏字三条判据同时静默（整页零码）；现在由 note-unrendered 咬住"
+      },
+      "isolation": null,
+      "loadBearing": {
+        "ok": true,
+        "detail": "未渲染条 6 条 [#0, #1, #2, #3, #4, #5] · 它们的 textLength [108, 196, 110, 34, 3, 50] · glyphRects [0, 0, 0, 0, 0, 0] · note-unrendered 命中 [docs/data/#0, docs/data/#1, docs/data/#2, docs/data/#3, docs/data/#4, docs/data/#5] · 窄柱/字迹/藏字码 [无（这正是修复前的假绿形状）]"
+      },
+      "verdict": "hit+load-bearing-proof"
+    },
+    {
+      "id": "M14",
+      "route": "models/",
+      "width": 1440,
+      "expect": "note-intro-long",
+      "codes": [
+        "note-intro-long"
+      ],
+      "codesUnique": [
+        "note-intro-long"
+      ],
+      "expectHit": true,
+      "guard": {
+        "name": "§22c M14 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+        "ok": true,
+        "detail": "锚点出现 1 次 · 首屏说明被写长（DOM 注入填充正文）：盒宽 / 内容盒 / 同轴 / 裁切全都不动，只有「行数」越过上限 ⇒ 必须由 note-intro-long 咬住（靶页本轮由 need/student-only/ 换到 models/）"
+      },
+      "isolation": {
+        "ok": true,
+        "allowed": [
+          "note-intro-long"
+        ],
+        "detail": "允许 [note-intro-long] · 实测 [note-intro-long] · 无伴随码",
+        "assertion": "§22c M14 隔离性：变异后只许出 [note-intro-long]，任何伴随码都说明另有缺陷在响"
+      },
+      "loadBearing": null,
+      "verdict": "isolated-hit"
+    },
+    {
+      "id": "M15",
+      "route": "feeds/",
+      "width": 1440,
+      "expect": "note-ink-narrow",
+      "codes": [
+        "note-ink-narrow",
+        "note-intro-long",
+        "note-ink-narrow",
+        "note-ink-narrow",
+        "note-ink-narrow"
+      ],
+      "codesUnique": [
+        "note-ink-narrow",
+        "note-intro-long"
+      ],
+      "expectHit": true,
+      "guard": {
+        "name": "§22c M15 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+        "ok": true,
+        "detail": "锚点出现 1 次 · T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 @1440/@1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）（靶页本轮由 need/free-api/ 换到 feeds/，见上面那段两次换靶记录）"
+      },
+      "isolation": {
+        "ok": true,
+        "allowed": [
+          "note-ink-narrow",
+          "note-intro-long"
+        ],
+        "detail": "允许 [note-ink-narrow, note-intro-long] · 实测 [note-ink-narrow, note-intro-long, note-ink-narrow, note-ink-narrow, note-ink-narrow] · 无伴随码",
+        "assertion": "§22c M15 隔离性：变异后只许出 [note-ink-narrow, note-intro-long]，任何伴随码都说明另有缺陷在响"
+      },
+      "loadBearing": {
+        "ok": true,
+        "detail": "note-ink-narrow 4 条 [feeds/#0, feeds/#1, feeds/#2, feeds/#3] · 逐条：#0 vertical-rl 列 13 / 列栈 260.69px / 行 1（最宽 260.69px） / 内容盒 1380px / 字形盒 13 · #1 vertical-rl 列 17 / 列栈 342.25px / 行 1（最宽 342.25px） / 内容盒 1380px / 字形盒 20 · #2 vertical-rl 列 13 / 列栈 260.69px / 行 1（最宽 260.69px） / 内容盒 1380px / 字形盒 13 · #3 vertical-rl 列 3 / 列栈 56.78px / 行 1（最宽 56.78px） / 内容盒 1380px / 字形盒 3 · 列宽 1380px · 阈值 1173px · note-narrow 0 条（0 = ① 也看不见）· 盒宽与注入前一致 true"
+      },
+      "verdict": "isolated-hit"
+    },
+    {
+      "id": "M16",
+      "route": "plans/coding/",
+      "width": 1440,
+      "expect": "narrow-unregistered",
+      "codes": [
+        "narrow-unregistered"
+      ],
+      "codesUnique": [
+        "narrow-unregistered"
+      ],
+      "expectHit": true,
+      "guard": {
+        "name": "§22c M16 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+        "ok": true,
+        "detail": "锚点出现 1 次 · 保留窄阅读列的登记制：把已登记的 `.pdetailbody { max-width: 72ch }` 覆盖成 **70ch**（DOM 追加一条 <style>，命中真实元素但未展开 ⇒ 不影响布局）⇒ 现场扫描必须认出「未登记的 ch 窄列」"
+      },
+      "isolation": null,
+      "loadBearing": {
+        "ok": true,
+        "detail": "现场扫描到 2 条 ch 窄列：.pdetailbody{max-width: 72ch}（已登记） · .pdetailbody{max-width: 70ch}（未登记） · 注入的那条命中 true · 已登记条目仍在 true · 除登记码之外的码 [无]"
+      },
+      "verdict": "hit+load-bearing-proof"
+    }
+  ],
+  "controls": [
+    {
+      "name": "§22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出",
+      "ok": true,
+      "detail": "不可断串注入位置 note · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [无]，390 档只看溢出）"
+    },
+    {
+      "name": "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条违规码都没有",
+      "ok": true,
+      "detail": "M8 plans/@1440 说明 12 条（竖排 0）违规码 [无] · M9a docs/data/@1440 说明 6 条（竖排 0）违规码 [无] · M9b changes/@1440 说明 14 条（竖排 0）违规码 [无] · M10 plans/@1600 说明 12 条（竖排 0）违规码 [无]"
+    },
+    {
+      "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+      "ok": true,
+      "detail": "feeds/@1440 说明 4 条（竖排 0）违规码 [无] ⇒ 严格形式成立（未注入产物）"
+    }
+  ],
+  "failedChecks": [],
+  "logTail": "  ✓ 抽样 7 个页面在真实 DOM 里各有一个 analytics bootstrap（含 noindex / 深层路由） — /=1 · plans/api/=1 · plans/coding/=1 · models/=1 · models/360zhinao-pro/=1 · vendor/ai360/=1 · changes/=1\n  ✓ 抽样页面里没有残留的分析占位符（页面 HTML 里不会露出模板标记） — 0 个\n  ✓ 抽样页面正文都有内容（分析注入没有把正文吃掉） — /:12297 · plans/api/:20314 · plans/coding/:16265 · models/:5956 · models/360zhinao-pro/:1220 · vendor/ai360/:1219 · changes/:4186\n  ✓ 本地：真实资源计时里 0 次 Cloudflare 请求（不是「没看到」，是浏览器确实没去取） — 全部 0\n  ✓ 本地：网络层同样 0 次分析请求（guard 在插入 <script> 之前就返回了） — 本轮累计 0 次\n  ✓ 本地：抽样页面没有新增 JS 错误（Analytics 失败不得影响产品） — 全部 0\n  ✓ 本地：没有出现白名单之外的外部请求 — 0 个\n\n机器可读报告已写出：research\\_raw\\secondary-page-residue-v1\\browser\\_tmp\\verify-site-report-postcommit.json（887 项，失败 0 项）\n\n✅ 验收 887 项，失败 0 项\n",
+  "jsonReport": "research/_raw/secondary-page-residue-v1/browser/_tmp/verify-site-report-postcommit.json",
+  "log": "research/_raw/secondary-page-residue-v1/browser/_tmp/verify-site-postcommit.log",
+  "mutationsFile": "research/_raw/secondary-page-residue-v1/browser/_tmp/mutations.json",
+  "frozenAnchorLine": null,
+  "primaryRun": "run3-postcommit",
+  "dist": {
+    "dir": "dist",
+    "htmlDigest": "d1dc3c472515f916f4d320939b4bb23394cda3c97cb51c8f9592b45704a0f0cb",
+    "htmlDigestBeforeRun": "d1dc3c472515f916f4d320939b4bb23394cda3c97cb51c8f9592b45704a0f0cb",
+    "stableAcrossRun": true,
+    "sitemapDigest": "7ef7e5d6991b29066a57dffa4b7d5ad1f366f2376bce140a40a4896f0127bdcf",
+    "notesManifestDigest": "f9e84d8995b1862288dcee3267f821f6a1affdd01fa48c52fed4a8ae69064639",
+    "digestDefinition": "sha256 over (\"<route>\\0<sha256(index.html)>\\n\" for all 186 index.html, sorted) + sitemap.xml + _notes.ndjson + robots.txt",
+    "digestLog": "research/_raw/secondary-page-residue-v1/browser/_tmp/dist-digest-run3-before.json / dist-digest-run3-after.json",
+    "note": "run1 / run2 / run3 是**同一份产物**（四次 digest 全是 d1dc3c47…）：run1 与 run2 之间的红→绿只可能来自门禁侧（captain 修 F1–F6）；run2 与 run3 之间**门禁源码文本变了**（verify-site.js sha256 21A5312B… → 30C4703C…，captain 误清工作区后从 stash 恢复并重落 F1–F4），但行为一致（两轮都 887/0，核心读数逐字相同）。"
+  },
+  "notes": [
+    "主读数 = run3-postcommit（**已提交**版本 b39aec1，分支 secondary-page-residue-v1，基线 d47ec47；exit 0，887/0）。run2-fixed 是提交前同一份 dist 上的等价读数（门禁源码文本不同、行为一致）；run1-frozen 是同一份 dist 上、修复前的那一轮（exit 1，887/2）。三轮全部保留，红的那轮没有被覆盖。",
+    "M14（新靶 models/，DOM 注入推高行数）与 M15（靶页 feeds/，竖排形态）的隔离性由脚本新增的 expectIsolatedCodes 断言承担：M14 允许 [note-intro-long]，实测恰好 [note-intro-long]；M15 允许 [note-ink-narrow, note-intro-long]（脚本正对照 m15Expected 的原口径：竖排形态固有伴随码），实测 [note-ink-narrow, note-intro-long, note-ink-narrow ×3]，**无允许集之外的码**。M16 的隔离性由它自己的承重证明断言承担（除 narrow-unregistered 外无别的码）。run3 的 checks 里两条隔离性断言逐字存在且绿。",
+    "首次跑（任务书口径「M15 只出期望码」）在 feeds/ 与 changes/ 两个靶页上都不成立：竖排化后总有 .snote 落进首屏区 ⇒ note-intro-long 跟着响。这是形态固有性质，captain 已裁定按脚本原有允许集如实记录，不再换靶（第三次换靶被否）。",
+    "acceptance 里那句「M14/M15 隔离命中」在本交付件里的准确含义是：**期望码命中且实测码 ⊆ 该牙声明的允许集**（M14 单元素、M15 双元素、M16 由承重证明兜底），不是「只出一条码」。",
+    "产物侧三轮零变化：dist htmlDigest = d1dc3c472515f916f4d320939b4bb23394cda3c97cb51c8f9592b45704a0f0cb（186 页）· sitemap.xml 7ef7e5d6… · _notes.ndjson f9e84d89…（后者与 captain 丢失前记录的那一份逐字节相同）⇒ geometry.json 与 inbound-links.json 无需重跑，仍对 run3 的产物成立。",
+    "runs[] 的机器可读副本：run1 = _tmp/verify-site-report-final.json + mutations-run1-frozen.json；run2 = _tmp/verify-site-report-fixed.json + mutations-run2-fixed.json；run3 = _tmp/verify-site-report-postcommit.json + _tmp/mutations.json（_tmp/ 按 browser/.gitignore 不入库）。"
+  ],
+  "latestRun": "run3-postcommit"
+}

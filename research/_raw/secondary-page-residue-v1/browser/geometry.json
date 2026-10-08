@@ -1,0 +1,435 @@
+{
+  "label": "after",
+  "engine": "playwright-core + system Edge (msedge.exe), headless, file:// absolute URL",
+  "executablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+  "capturedAt": "2026-10-08T18:03:02.736Z",
+  "carrier": "file:// absolute URL（与 geometry-before.json 同载体；非本地 HTTP 服务）",
+  "definition": "gap = (首个 WIDE_DATA_SELECTORS 命中元素的 rect.top + scrollY) − (.cstop rect.bottom + scrollY)",
+  "viewports": [
+    "1440x900",
+    "390x844"
+  ],
+  "parameters": {
+    "titleBottom": "document.querySelector(\".cstop\").getBoundingClientRect().bottom + window.scrollY",
+    "dataTop": "按 WIDE_DATA_SELECTORS = [.ctable,.stable,.chgsec,.chglist,.flist,.fsec,.ptable,.lsum,.pchglist] 顺序命中的第一个元素的 rect.top + window.scrollY",
+    "gap": "dataTop − titleBottom",
+    "pageHeight": "document.documentElement.scrollHeight",
+    "horizontalOverflow": "document.documentElement.scrollWidth − document.documentElement.clientWidth（必须 0）"
+  },
+  "dist": "dist",
+  "distHtmlDigest": "d1dc3c472515f916f4d320939b4bb23394cda3c97cb51c8f9592b45704a0f0cb",
+  "distDigestBeforeRun": "d1dc3c472515f916f4d320939b4bb23394cda3c97cb51c8f9592b45704a0f0cb",
+  "distStableAcrossRun": true,
+  "routes": [
+    {
+      "route": "need/student-only/",
+      "viewport": "1440x900",
+      "titleBottom": 135.5,
+      "dataTop": 187.5,
+      "gap": 52,
+      "pageHeight": 1730,
+      "horizontalOverflow": 0,
+      "regionSel": ".ctable",
+      "aliasNoteCount": 0,
+      "snoteInMain": 0,
+      "cstopText": "面向学生的 AI 优惠 共 12 条 · 数据更新 2026-10-08",
+      "before": {
+        "gap": 104.78,
+        "titleBottom": 135.5,
+        "dataTop": 240.28,
+        "pageHeight": 1783,
+        "horizontalOverflow": 0
+      },
+      "delta": {
+        "gap": -52.78,
+        "pageHeight": -53,
+        "horizontalOverflow": 0
+      },
+      "twin": "student/",
+      "twinGapAfter": 52,
+      "twinGapMatches": true
+    },
+    {
+      "route": "need/free-api/",
+      "viewport": "1440x900",
+      "titleBottom": 135.5,
+      "dataTop": 187.5,
+      "gap": 52,
+      "pageHeight": 4184,
+      "horizontalOverflow": 0,
+      "regionSel": ".ctable",
+      "aliasNoteCount": 0,
+      "snoteInMain": 0,
+      "cstopText": "可以免费调用的 API 共 45 条 · 数据更新 2026-10-08",
+      "before": {
+        "gap": 104.78,
+        "titleBottom": 135.5,
+        "dataTop": 240.28,
+        "pageHeight": 4237,
+        "horizontalOverflow": 0
+      },
+      "delta": {
+        "gap": -52.78,
+        "pageHeight": -53,
+        "horizontalOverflow": 0
+      },
+      "twin": "free-api/",
+      "twinGapAfter": 52,
+      "twinGapMatches": true
+    },
+    {
+      "route": "need/dev-credits/",
+      "viewport": "1440x900",
+      "titleBottom": 135.5,
+      "dataTop": 187.5,
+      "gap": 52,
+      "pageHeight": 5668,
+      "horizontalOverflow": 0,
+      "regionSel": ".ctable",
+      "aliasNoteCount": 0,
+      "snoteInMain": 0,
+      "cstopText": "面向开发者的赠送额度 共 67 条 · 数据更新 2026-10-08",
+      "before": {
+        "gap": 104.78,
+        "titleBottom": 135.5,
+        "dataTop": 240.28,
+        "pageHeight": 5720,
+        "horizontalOverflow": 0
+      },
+      "delta": {
+        "gap": -52.78,
+        "pageHeight": -52,
+        "horizontalOverflow": 0
+      },
+      "twin": "developer/",
+      "twinGapAfter": 52,
+      "twinGapMatches": true
+    },
+    {
+      "route": "student/",
+      "viewport": "1440x900",
+      "titleBottom": 135.5,
+      "dataTop": 187.5,
+      "gap": 52,
+      "pageHeight": 1730,
+      "horizontalOverflow": 0,
+      "regionSel": ".ctable",
+      "aliasNoteCount": 0,
+      "snoteInMain": 0,
+      "cstopText": "面向学生的 AI 优惠 共 12 条 · 数据更新 2026-10-08",
+      "before": {
+        "gap": 52,
+        "titleBottom": 135.5,
+        "dataTop": 187.5,
+        "pageHeight": 1730,
+        "horizontalOverflow": 0
+      },
+      "delta": {
+        "gap": 0,
+        "pageHeight": 0,
+        "horizontalOverflow": 0
+      },
+      "twinGapAfter": null,
+      "twinGapMatches": null
+    },
+    {
+      "route": "free-api/",
+      "viewport": "1440x900",
+      "titleBottom": 135.5,
+      "dataTop": 187.5,
+      "gap": 52,
+      "pageHeight": 4184,
+      "horizontalOverflow": 0,
+      "regionSel": ".ctable",
+      "aliasNoteCount": 0,
+      "snoteInMain": 0,
+      "cstopText": "可以免费调用的 API 共 45 条 · 数据更新 2026-10-08",
+      "before": {
+        "gap": 52,
+        "titleBottom": 135.5,
+        "dataTop": 187.5,
+        "pageHeight": 4184,
+        "horizontalOverflow": 0
+      },
+      "delta": {
+        "gap": 0,
+        "pageHeight": 0,
+        "horizontalOverflow": 0
+      },
+      "twinGapAfter": null,
+      "twinGapMatches": null
+    },
+    {
+      "route": "developer/",
+      "viewport": "1440x900",
+      "titleBottom": 135.5,
+      "dataTop": 187.5,
+      "gap": 52,
+      "pageHeight": 5668,
+      "horizontalOverflow": 0,
+      "regionSel": ".ctable",
+      "aliasNoteCount": 0,
+      "snoteInMain": 0,
+      "cstopText": "面向开发者的 AI 优惠 共 67 条 · 数据更新 2026-10-08",
+      "before": {
+        "gap": 52,
+        "titleBottom": 135.5,
+        "dataTop": 187.5,
+        "pageHeight": 5668,
+        "horizontalOverflow": 0
+      },
+      "delta": {
+        "gap": 0,
+        "pageHeight": 0,
+        "horizontalOverflow": 0
+      },
+      "twinGapAfter": null,
+      "twinGapMatches": null
+    },
+    {
+      "route": "need/student-only/",
+      "viewport": "390x844",
+      "titleBottom": 131,
+      "dataTop": 223,
+      "gap": 92,
+      "pageHeight": 2171,
+      "horizontalOverflow": 0,
+      "regionSel": ".ctable",
+      "aliasNoteCount": 0,
+      "snoteInMain": 0,
+      "cstopText": "面向学生的 AI 优惠 共 12 条 · 数据更新 2026-10-08",
+      "before": {
+        "gap": 205.95,
+        "titleBottom": 131,
+        "dataTop": 336.95,
+        "pageHeight": 2303,
+        "horizontalOverflow": 0
+      },
+      "delta": {
+        "gap": -113.95,
+        "pageHeight": -132,
+        "horizontalOverflow": 0
+      },
+      "twin": "student/",
+      "twinGapAfter": 92,
+      "twinGapMatches": true
+    },
+    {
+      "route": "need/free-api/",
+      "viewport": "390x844",
+      "titleBottom": 131,
+      "dataTop": 263,
+      "gap": 132,
+      "pageHeight": 7119,
+      "horizontalOverflow": 0,
+      "regionSel": ".ctable",
+      "aliasNoteCount": 0,
+      "snoteInMain": 0,
+      "cstopText": "可以免费调用的 API 共 45 条 · 数据更新 2026-10-08",
+      "before": {
+        "gap": 245.95,
+        "titleBottom": 131,
+        "dataTop": 376.95,
+        "pageHeight": 7251,
+        "horizontalOverflow": 0
+      },
+      "delta": {
+        "gap": -113.95,
+        "pageHeight": -132,
+        "horizontalOverflow": 0
+      },
+      "twin": "free-api/",
+      "twinGapAfter": 132,
+      "twinGapMatches": true
+    },
+    {
+      "route": "need/dev-credits/",
+      "viewport": "390x844",
+      "titleBottom": 167.5,
+      "dataTop": 299.5,
+      "gap": 132,
+      "pageHeight": 9830,
+      "horizontalOverflow": 0,
+      "regionSel": ".ctable",
+      "aliasNoteCount": 0,
+      "snoteInMain": 0,
+      "cstopText": "面向开发者的赠送额度 共 67 条 · 数据更新 2026-10-08",
+      "before": {
+        "gap": 245.95,
+        "titleBottom": 167.5,
+        "dataTop": 413.45,
+        "pageHeight": 9962,
+        "horizontalOverflow": 0
+      },
+      "delta": {
+        "gap": -113.95,
+        "pageHeight": -132,
+        "horizontalOverflow": 0
+      },
+      "twin": "developer/",
+      "twinGapAfter": 132,
+      "twinGapMatches": true
+    },
+    {
+      "route": "student/",
+      "viewport": "390x844",
+      "titleBottom": 131,
+      "dataTop": 223,
+      "gap": 92,
+      "pageHeight": 2119,
+      "horizontalOverflow": 0,
+      "regionSel": ".ctable",
+      "aliasNoteCount": 0,
+      "snoteInMain": 0,
+      "cstopText": "面向学生的 AI 优惠 共 12 条 · 数据更新 2026-10-08",
+      "before": {
+        "gap": 92,
+        "titleBottom": 131,
+        "dataTop": 223,
+        "pageHeight": 2119,
+        "horizontalOverflow": 0
+      },
+      "delta": {
+        "gap": 0,
+        "pageHeight": 0,
+        "horizontalOverflow": 0
+      },
+      "twinGapAfter": null,
+      "twinGapMatches": null
+    },
+    {
+      "route": "free-api/",
+      "viewport": "390x844",
+      "titleBottom": 131,
+      "dataTop": 263,
+      "gap": 132,
+      "pageHeight": 7119,
+      "horizontalOverflow": 0,
+      "regionSel": ".ctable",
+      "aliasNoteCount": 0,
+      "snoteInMain": 0,
+      "cstopText": "可以免费调用的 API 共 45 条 · 数据更新 2026-10-08",
+      "before": {
+        "gap": 132,
+        "titleBottom": 131,
+        "dataTop": 263,
+        "pageHeight": 7119,
+        "horizontalOverflow": 0
+      },
+      "delta": {
+        "gap": 0,
+        "pageHeight": 0,
+        "horizontalOverflow": 0
+      },
+      "twinGapAfter": null,
+      "twinGapMatches": null
+    },
+    {
+      "route": "developer/",
+      "viewport": "390x844",
+      "titleBottom": 131,
+      "dataTop": 263,
+      "gap": 132,
+      "pageHeight": 9794,
+      "horizontalOverflow": 0,
+      "regionSel": ".ctable",
+      "aliasNoteCount": 0,
+      "snoteInMain": 0,
+      "cstopText": "面向开发者的 AI 优惠 共 67 条 · 数据更新 2026-10-08",
+      "before": {
+        "gap": 132,
+        "titleBottom": 131,
+        "dataTop": 263,
+        "pageHeight": 9794,
+        "horizontalOverflow": 0
+      },
+      "delta": {
+        "gap": 0,
+        "pageHeight": 0,
+        "horizontalOverflow": 0
+      },
+      "twinGapAfter": null,
+      "twinGapMatches": null
+    }
+  ],
+  "comparisons": {
+    "beforeBaselineFile": "research/_raw/secondary-page-residue-v1/browser/geometry-before.json",
+    "controlsUnchanged": true,
+    "controlDrift": [],
+    "aliasTwinGapConverged": true,
+    "aliasRows": [
+      {
+        "route": "need/student-only/",
+        "viewport": "1440x900",
+        "gapBefore": 104.78,
+        "gapAfter": 52,
+        "twin": "student/",
+        "twinGapAfter": 52,
+        "pageHeightBefore": 1783,
+        "pageHeightAfter": 1730,
+        "pageHeightDelta": -53,
+        "horizontalOverflow": 0
+      },
+      {
+        "route": "need/free-api/",
+        "viewport": "1440x900",
+        "gapBefore": 104.78,
+        "gapAfter": 52,
+        "twin": "free-api/",
+        "twinGapAfter": 52,
+        "pageHeightBefore": 4237,
+        "pageHeightAfter": 4184,
+        "pageHeightDelta": -53,
+        "horizontalOverflow": 0
+      },
+      {
+        "route": "need/dev-credits/",
+        "viewport": "1440x900",
+        "gapBefore": 104.78,
+        "gapAfter": 52,
+        "twin": "developer/",
+        "twinGapAfter": 52,
+        "pageHeightBefore": 5720,
+        "pageHeightAfter": 5668,
+        "pageHeightDelta": -52,
+        "horizontalOverflow": 0
+      },
+      {
+        "route": "need/student-only/",
+        "viewport": "390x844",
+        "gapBefore": 205.95,
+        "gapAfter": 92,
+        "twin": "student/",
+        "twinGapAfter": 92,
+        "pageHeightBefore": 2303,
+        "pageHeightAfter": 2171,
+        "pageHeightDelta": -132,
+        "horizontalOverflow": 0
+      },
+      {
+        "route": "need/free-api/",
+        "viewport": "390x844",
+        "gapBefore": 245.95,
+        "gapAfter": 132,
+        "twin": "free-api/",
+        "twinGapAfter": 132,
+        "pageHeightBefore": 7251,
+        "pageHeightAfter": 7119,
+        "pageHeightDelta": -132,
+        "horizontalOverflow": 0
+      },
+      {
+        "route": "need/dev-credits/",
+        "viewport": "390x844",
+        "gapBefore": 245.95,
+        "gapAfter": 132,
+        "twin": "developer/",
+        "twinGapAfter": 132,
+        "pageHeightBefore": 9962,
+        "pageHeightAfter": 9830,
+        "pageHeightDelta": -132,
+        "horizontalOverflow": 0
+      }
+    ]
+  }
+}

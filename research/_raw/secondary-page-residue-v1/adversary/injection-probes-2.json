@@ -1,0 +1,62 @@
+{
+  "probes": [
+    {
+      "id": "P6b",
+      "exitCode": 0,
+      "redCount": 0,
+      "redSample": [],
+      "greenReadouts": [
+        "  ✓ 二级数据页首屏无说明: 45 页（**含别名页**，没有例外名单） · 残留说明 × 8 个禁词 0 命中",
+        "  ✓ 目录页家族题注形状: 42 条 <caption> 逐字匹配「共 N 条。/ 共 N 个入口。」（另有 56 条非目录页题注不在本规则射程内，只报告不判）"
+      ],
+      "logFile": "injection-logs/P6b.log"
+    },
+    {
+      "id": "P6c",
+      "exitCode": 0,
+      "redCount": 0,
+      "redSample": [],
+      "greenReadouts": [
+        "  ✓ 二级数据页首屏无说明: 45 页（**含别名页**，没有例外名单） · 残留说明 × 8 个禁词 0 命中",
+        "  ✓ 目录页家族题注形状: 42 条 <caption> 逐字匹配「共 N 条。/ 共 N 个入口。」（另有 56 条非目录页题注不在本规则射程内，只报告不判）"
+      ],
+      "logFile": "injection-logs/P6c.log"
+    },
+    {
+      "id": "P6d",
+      "exitCode": 1,
+      "redCount": 1,
+      "redSample": [
+        "  ✗ 题注形状牙扫到的题注太少（扫描面坏了或缺产物）：目录页家族里只找到 0 条 <caption> < 20"
+      ],
+      "greenReadouts": [],
+      "logFile": "injection-logs/P6d.log"
+    },
+    {
+      "id": "P10",
+      "exitCode": 0,
+      "redCount": 0,
+      "redSample": [],
+      "greenReadouts": [
+        "  ✓ 二级数据页首屏无说明: 45 页（**含别名页**，没有例外名单） · 残留说明 × 8 个禁词 0 命中",
+        "  ✓ 目录页家族题注形状: 45 条 <caption> 逐字匹配「共 N 条。/ 共 N 个入口。」（另有 56 条非目录页题注不在本规则射程内，只报告不判）"
+      ],
+      "logFile": "injection-logs/P10.log",
+      "preHash": "2379685f7706",
+      "preNoteStillThere": false
+    },
+    {
+      "id": "P10b",
+      "exitCode": 0,
+      "redCount": 0,
+      "redSample": [],
+      "greenReadouts": [
+        "  ✓ 二级数据页首屏无说明: 45 页（**含别名页**，没有例外名单） · 残留说明 × 8 个禁词 0 命中",
+        "  ✓ 目录页家族题注形状: 45 条 <caption> 逐字匹配「共 N 条。/ 共 N 个入口。」（另有 56 条非目录页题注不在本规则射程内，只报告不判）"
+      ],
+      "logFile": "injection-logs/P10b.log",
+      "stageExistsAfterBuild": false,
+      "stageNoteStillThere": null
+    }
+  ]
+}

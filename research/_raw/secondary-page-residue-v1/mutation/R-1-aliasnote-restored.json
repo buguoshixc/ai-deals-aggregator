@@ -1,0 +1,48 @@
+{
+  "probe": "R-1",
+  "what": "把删掉的别名页说明整条注回 renderDirectoryPage 的模板（`<p class=\"snote aliasnote\">…</p>`），看门禁是否变红",
+  "injectedInto": "scripts/tools/build-local.js · renderDirectoryPage 的返回模板（`${summaryHtml}` 之前）· 与历史实现同位置、同 class（`snote aliasnote`）",
+  "injectionText": "      <p class=\"snote aliasnote\">这一页是<b>旧地址</b>：它与 <a href=\"${prefix}${spec.aliasOf}\">\\n        ${htmlEscape(spec.aliasOf)}</a> 收的是同一批条目（同一份判据）。页面保留是为了让老链接仍然可用，\\n        但搜索引擎的收录以目标页为准（本页为 noindex）。</p>",
+  "injectionScript": "Tier-3 临时脚本 `.tmp-a/probe-mutate.cjs`（不入库）：按行号把上面 4 行插到 `${summaryHtml}` 之前；还原用 `.tmp-a/green/build-local.js` 全绿快照（**不用 git checkout** —— 实测过一次教训：用 `git show HEAD:` 还原会把本轮改动一起抹掉）",
+  "command": "npm run build",
+  "exitCode": 1,
+  "redChecks": [
+    {
+      "name": "构建期首屏扫描（build-local.js · 牙 1）",
+      "detail": "✗ 二级数据页首屏出现了说明（分类判据、字段模型与解释性副标题都不占首屏，见 docs/DESIGN-RULES.md H13）：category/ 首屏仍有 1 条说明（二级数据页首屏只允许标题 / 条目数 / 更新时间）：这一页是 旧地址 ：它与 收的是同一批条目（同一份判据）。页面保留是为了让老链接…；vendor/ 首屏仍有 1 条说明（…）｜❌ 产物自检失败（23 项）｜❌ 构建失败：产物自检未通过"
+    },
+    {
+      "name": "注回的那条说明在构建期**产物层**被逐页点名（说明清单对账；43 页同类）",
+      "detail": "✗ category/#0 槽位 main-snote 签名 <aliasnote snote>：清单声明 0 条、产物里数出 1 条 —— 产物里出现了没有登记的说明容器（绕过 noteDeclare() 直接写进页面）· ✗ category/ 整页 .snote：清单声明 0 条、产物里数出 1 条（完整对账不许有差额）· …另有 82 条说明对账差异"
+    },
+    {
+      "name": "SEO 静态门禁（注回文本里的 ${spec.aliasOf} 在非别名页上求值成 undefined，属注入脚本副作用，非本轮判据）",
+      "detail": "✗ SEO[internal-link-exists] 42 处：站内链接指向不存在的目标：undefined（按码统计：{\"internal-link-exists\":42}）"
+    }
+  ],
+  "browserLevel": {
+    "command": "node scripts/tools/verify-site.js --dir=.tmp-a/dist-r1",
+    "note": "构建在产物自检阶段就退出（失败时 dist.building 被清掉），所以浏览器层复测跑在**忠实副本**上：把 dist 复制一份，再用临时脚本把上面那段 `.aliasnote` 与长题注按原样注入那三个别名页（零写盘到 dist/）。判据口径与 verify-site.js 完全一致（同一份脚本、同一批断言）。",
+    "exitCode": 1,
+    "result": "❌ 验收 885 项，失败 3 项",
+    "redChecks": [
+      {
+        "name": "§22c @1440 目录页家族（45 页，含别名页）首屏**没有**任何页面级说明（牙 2 / ③b）",
+        "detail": "✗ 有首屏说明的目录页 3 条：need/dev-credits/ need/free-api/ need/student-only/（其它宽页的导语不在本规则射程内：141 页）"
+      },
+      {
+        "name": "§22c ⑨ 逐页逐槽位对账：清单声明的「签名 × 条数」== 真浏览器 DOM 数出来的",
+        "detail": "✗ 3 处不一致：need/dev-credits/#0 槽位 main-snote 签名 <aliasnote snote>：清单声明 0 条 / DOM 实测 1 条；need/free-api/#0 …；need/student-only/#0 …"
+      },
+      {
+        "name": "§22c ⑨ 完整对账：complete 页面的整页 .snote 总数逐字相等（186 页）",
+        "detail": "✗ 3 页有差额：need/dev-credits/ 整页 .snote：清单声明 0 条 / DOM 实测 1 条；need/free-api/ …；need/student-only/ …"
+      }
+    ]
+  },
+  "greenControl": "同一条 `npm run build` 在**未注入**的源码上 exit 0，且两行读数全绿：`✓ 二级数据页首屏无说明: 45 页（**含别名页**，没有例外名单） · 残留说明 × 8 个禁词 0 命中` 与 `✓ 目录页家族题注形状: 45 条 <caption> 逐字匹配「共 N 条。/ 共 N 个入口。」（另有 56 条非目录页题注不在本规则射程内，只报告不判）`；`node scripts/tools/verify-site.js --dir=dist` = 885 项 / 失败 0 项。原始日志：`.tmp-a/build-4.log` 与 `.tmp-a/verify-site-full.log`（本机临时文件，未入库）。",
+  "rawOutputRefs": {
+    "build": ".tmp-a/mut-r1-build.log（Tier-3，未入库）",
+    "verify": ".tmp-a/mut-r1-verify.log（Tier-3，未入库）"
+  }
+}

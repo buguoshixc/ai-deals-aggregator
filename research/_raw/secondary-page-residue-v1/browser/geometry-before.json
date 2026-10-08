@@ -1,0 +1,127 @@
+{
+  "label": "before",
+  "engine": "playwright-core + system Edge (msedge.exe), headless, file:// absolute URL",
+  "capturedAt": "2026-10-08T16:40:05.445Z",
+  "rows": [
+    {
+      "route": "need/student-only/",
+      "viewport": "1440x900",
+      "gap": 104.78,
+      "titleBottom": 135.5,
+      "dataTop": 240.28,
+      "regionSel": ".ctable",
+      "pageHeight": 1783,
+      "horizontalOverflow": 0
+    },
+    {
+      "route": "need/free-api/",
+      "viewport": "1440x900",
+      "gap": 104.78,
+      "titleBottom": 135.5,
+      "dataTop": 240.28,
+      "regionSel": ".ctable",
+      "pageHeight": 4237,
+      "horizontalOverflow": 0
+    },
+    {
+      "route": "need/dev-credits/",
+      "viewport": "1440x900",
+      "gap": 104.78,
+      "titleBottom": 135.5,
+      "dataTop": 240.28,
+      "regionSel": ".ctable",
+      "pageHeight": 5720,
+      "horizontalOverflow": 0
+    },
+    {
+      "route": "student/",
+      "viewport": "1440x900",
+      "gap": 52,
+      "titleBottom": 135.5,
+      "dataTop": 187.5,
+      "regionSel": ".ctable",
+      "pageHeight": 1730,
+      "horizontalOverflow": 0
+    },
+    {
+      "route": "free-api/",
+      "viewport": "1440x900",
+      "gap": 52,
+      "titleBottom": 135.5,
+      "dataTop": 187.5,
+      "regionSel": ".ctable",
+      "pageHeight": 4184,
+      "horizontalOverflow": 0
+    },
+    {
+      "route": "developer/",
+      "viewport": "1440x900",
+      "gap": 52,
+      "titleBottom": 135.5,
+      "dataTop": 187.5,
+      "regionSel": ".ctable",
+      "pageHeight": 5668,
+      "horizontalOverflow": 0
+    },
+    {
+      "route": "need/student-only/",
+      "viewport": "390x844",
+      "gap": 205.95,
+      "titleBottom": 131,
+      "dataTop": 336.95,
+      "regionSel": ".ctable",
+      "pageHeight": 2303,
+      "horizontalOverflow": 0
+    },
+    {
+      "route": "need/free-api/",
+      "viewport": "390x844",
+      "gap": 245.95,
+      "titleBottom": 131,
+      "dataTop": 376.95,
+      "regionSel": ".ctable",
+      "pageHeight": 7251,
+      "horizontalOverflow": 0
+    },
+    {
+      "route": "need/dev-credits/",
+      "viewport": "390x844",
+      "gap": 245.95,
+      "titleBottom": 167.5,
+      "dataTop": 413.45,
+      "regionSel": ".ctable",
+      "pageHeight": 9962,
+      "horizontalOverflow": 0
+    },
+    {
+      "route": "student/",
+      "viewport": "390x844",
+      "gap": 92,
+      "titleBottom": 131,
+      "dataTop": 223,
+      "regionSel": ".ctable",
+      "pageHeight": 2119,
+      "horizontalOverflow": 0
+    },
+    {
+      "route": "free-api/",
+      "viewport": "390x844",
+      "gap": 132,
+      "titleBottom": 131,
+      "dataTop": 263,
+      "regionSel": ".ctable",
+      "pageHeight": 7119,
+      "horizontalOverflow": 0
+    },
+    {
+      "route": "developer/",
+      "viewport": "390x844",
+      "gap": 132,
+      "titleBottom": 131,
+      "dataTop": 263,
+      "regionSel": ".ctable",
+      "pageHeight": 9794,
+      "horizontalOverflow": 0
+    }
+  ]
+}

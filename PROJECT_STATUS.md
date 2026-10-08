@@ -1,6 +1,31 @@
-﻿# AI 优惠聚合器 — 项目状态
+# AI 优惠聚合器 — 项目状态
 
-**最后更新**：2026-10-06（最新一节 **secondary-page-layout-unification：二级页布局统一**，分支 `secondary-page-layout-unification`，**未提交 / 未发布**；门禁读数 = **轮 6 冻结**（判据 sha `2cbc160dc64f8ade…`））
+**最后更新**：2026-10-09（最新一节 **secondary-page-residue-v1：二级页残留小字清除（别名页那条例外退役）**，分支 `docs/closures-v4`，**未提交 / 未发布**）
+
+---
+
+## 0.4 secondary-page-residue-v1 状态（2026-10-09）
+
+> **一句话现状**：三个别名页顶上的 `<p class="snote aliasnote">`（161 / 139 / 159 字）与题注里的长句
+> （62 / 63 / 64 字）**整条删除** —— 上一轮把它们当「导航更正 / USER_REQUIRED」保留，本轮实测推翻
+> （无「去目标页」动作、183 个站内入链来源、零入链路由 0；它们渲染的其实是站务机制与内部判据标识符）。
+> 「删掉不许回流」落成 **3 条会响的牙 + 1 条反向断言**，变异证明 R-1/R-2 真红。
+> **机制一个字没改，数据面 0 变化。**
+
+| 维度 | 实测 |
+|---|---|
+| 基线 | `docs/closures-v4` @ `d47ec47`，改动全在工作区 |
+| 删除面 | 三个别名页 `main` 内 `.snote` **1 → 0**；题注 **62/63/64 字 → 6 字**（`共 N 条。`）；`.aliasnote` 模板 / CSS / `noteDeclare` / `ALIAS_NOTE_ROUTES` 白名单整块退役 |
+| 折叠块 | **仍然非空**：`need/student-only/` 1→3 条 `.pnote`、`need/free-api/` 2→4、`need/dev-credits/` 2→4（自有 `userNotes` + 共享句；「不许空容器」断言照旧） |
+| 机制侧 | 逐条不变：`noindex, follow` · **自指** canonical · 不进 sitemap（sitemap 183 条、3 条别名页已排除）· 条目集合与目标页逐条相同（12/45/67）· 别名链最长 1 跳 |
+| 正文下限 | 删掉 197–217 字后余量 **619 / 1518 / 1949**（下限 1320 / 3300 / 4620）⇒ 仍 ≥ 600，**不该重新登记**；`verify:seo` 的余量登记读数与登记值逐页相同（`/need/no-card/` 50 等 6 页，一页未动） |
+| 牙 1（构建期） | 首屏扫描判据升级为「目录页家族（含别名页）0 条」：`✓ 二级数据页首屏无说明: 45 页（**含别名页**，没有例外名单）· 残留说明 × 8 个禁词 0 命中` |
+| 牙 2（浏览器层） | `verify-site.js` §22c ③b 整段重写为 `introNoteRoutes.length === 0`：`✓ 目录页家族（45 页，含别名页）首屏**没有**任何页面级说明 — 有首屏说明的目录页 0 条` |
+| 牙 3（构建期） | 题注形状牙（本轮新增）：`✓ 目录页家族题注形状: 45 条 <caption> 逐字匹配「共 N 条。/ 共 N 个入口。」（另有 56 条非目录页题注不在本规则射程内，只报告不判）`。**条件式判据**（captain 独立裁定，2026-10-09）：题注存在就必须匹配形状；不存在不判 —— 题注在任何浏览器里都不渲染，而它有表格 a11y 名的价值 ⇒ 这 45 条题注**保留**，只退役长句。附反空洞守卫（本产物里存在的题注 < 20 条即红） |
+| 反向断言 | `selftest:audience`：3 条 `reason` 的逐字文本 × 186 个 `dist/index.html` **0 命中**；负例对照实测红（把 reason 注进产物 ⇒ `205 项通过 / 1 项失败` 并点名文件） |
+| 变异证明 | **R-1**（注回 `.aliasnote`）：`npm run build` exit 1（首屏扫描 + 说明清单对账）、`verify-site --dir=<副本>` exit 1 / **885 项失败 3 项**（③b + 两条 ⑨ 对账，逐条点名三个别名页）；**R-2**（注回长题注）：`npm run build` exit 1（题注形状牙逐页点名 66/67/68 字）。原始输出入库 `research/_raw/secondary-page-residue-v1/mutation/` |
+| 换靶（如实记） | `need/student-only/` 原是 M1–M4 第一个壳 + M6/M8/M10/M12/M14 的靶页；删除后该页 `.snote` 0 条 ⇒ 承重面消失。四壳改 `plans/`(12 条说明·冻结串 1 次) / `status/` / `changes/` / `feeds/`，M14 → `models/`，M15 → `feeds/`。**目录页家族从此没有任何变异壳**（无页面级说明可变异），M1–M4 守的是 `.snote` 宽柱规则本身 ⇒ 价值随承重面迁移 |
+| 门禁读数 | `verify-site.js --dir=dist` **885 项 / 失败 0** · `validate --strict` ✅ · `verify:seo` **19 项 / 0** · `selftest:audience` **206 / 0** · `selftest:changes` **120 / 0** · `selftest:seo` **103 / 0** · `check:ci` **39 / 0** · `check:evidence` 无新增 Tier-3 |
 
 ---
 

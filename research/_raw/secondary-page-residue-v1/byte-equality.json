@@ -1,0 +1,198 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-10-08T18:00:38.129Z",
+  "baselineFile": "research/_raw/secondary-page-residue-v1/preflight-baseline.json",
+  "baselineNote": "preflight 时刻（HEAD d47ec47，本次改动之前）304 个产物文件的 sha256",
+  "counts": {
+    "baseline": 304,
+    "current": 304,
+    "html": 186,
+    "nonHtml": 118
+  },
+  "changed": {
+    "html": 103,
+    "htmlRoutes": [
+      "category/agent/",
+      "category/api/",
+      "category/audio/",
+      "category/chat/",
+      "category/image/",
+      "category/",
+      "changes/",
+      "developer/",
+      "docs/data/",
+      "feeds/",
+      "free-api/",
+      "",
+      "models/360zhinao-pro/",
+      "models/360zhinao-turbo-llm-geo/",
+      "models/baichuan-m3-plus/",
+      "models/baichuan-m3/",
+      "models/claude-fable-5.1/",
+      "models/claude-haiku-4.5/",
+      "models/claude-opus-5.5/",
+      "models/claude-sonnet-5.5/",
+      "models/deepseek-flash/",
+      "models/deepseek-v3.2/",
+      "models/deepseek-v4-pro/",
+      "models/doubao-seed-2.1-pro/",
+      "models/doubao-seed-2.1-turbo/",
+      "models/doubao-seed-character/",
+      "models/doubao-seed-evolving/",
+      "models/ernie-4.5-turbo-128k/",
+      "models/ernie-5.1/",
+      "models/gemini-3.5-flash/",
+      "models/gemini-3.6-flash/",
+      "models/gemini-3.7-flash/",
+      "models/gemini-3.8-flash/",
+      "models/glm-4.5v/",
+      "models/glm-4.6v-flash/",
+      "models/glm-4.6v-flashx/",
+      "models/glm-4.6v/",
+      "models/glm-4.7-flash/",
+      "models/glm-5.3-flash/",
+      "models/glm-5.3/",
+      "models/glm-5v-turbo/",
+      "models/gpt-6-astra/",
+      "models/gpt-6-luna/",
+      "models/gpt-6.1-sol/",
+      "models/gpt-live-1/",
+      "models/hunyuan-a13b/",
+      "models/hunyuan-embedding/",
+      "models/hunyuan-role-latest/",
+      "models/hunyuan-translation-lite/",
+      "models/hunyuan-translation/",
+      "models/kimi-k2.7-code/",
+      "models/kimi-k3/",
+      "models/minimax-m2.5/",
+      "models/minimax-m2.7-highspeed/",
+      "models/minimax-m2.7/",
+      "models/minimax-m3/",
+      "models/qwen-max/",
+      "models/qwen3-max/",
+      "models/qwen3.8-27b/",
+      "models/qwen3.8-max/",
+      "models/spark-x2.5/",
+      "models/step-3.5-flash/",
+      "models/tencent-hy-vision-1.5-instruct/",
+      "need/ai-coding/",
+      "need/china-usable/",
+      "need/dev-credits/",
+      "need/edu-identity/",
+      "need/free-api/",
+      "need/free-model/",
+      "need/free-tier/",
+      "need/free-tokens/",
+      "need/no-card/",
+      "need/student-only/",
+      "plans/api/",
+      "plans/coding/",
+      "plans/",
+      "student/",
+      "vendor/ai360/",
+      "vendor/aliyun/",
+      "vendor/anthropic/",
+      "vendor/aws/",
+      "vendor/baichuan/",
+      "vendor/baidu-ai-cloud/",
+      "vendor/coze/",
+      "vendor/cursor/",
+      "vendor/deepseek/",
+      "vendor/github/",
+      "vendor/google/",
+      "vendor/iflytek/",
+      "vendor/",
+      "vendor/microsoft/",
+      "vendor/minimax/",
+      "vendor/moonshot/",
+      "vendor/notion/",
+      "vendor/openai/",
+      "vendor/replit/",
+      "vendor/sensetime/",
+      "vendor/siliconflow/",
+      "vendor/stepfun/",
+      "vendor/tencent-cloud/",
+      "vendor/volcengine/",
+      "vendor/windsurf/",
+      "vendor/zhipu/"
+    ],
+    "nonHtml": [
+      "_notes.ndjson"
+    ]
+  },
+  "added": [],
+  "removed": [],
+  "namedFilesByteIdentical": [
+    {
+      "file": "deals.json",
+      "identical": true
+    },
+    {
+      "file": "plans.json",
+      "identical": true
+    },
+    {
+      "file": "api-plans.json",
+      "identical": true
+    },
+    {
+      "file": "models.json",
+      "identical": true
+    },
+    {
+      "file": "sitemap.xml",
+      "identical": true
+    },
+    {
+      "file": "robots.txt",
+      "identical": true
+    },
+    {
+      "file": "data/index.json",
+      "identical": true
+    },
+    {
+      "file": "plan-history.json",
+      "identical": true
+    },
+    {
+      "file": "api-plan-history.json",
+      "identical": true
+    },
+    {
+      "file": "deal-plan-links.json",
+      "identical": true
+    },
+    {
+      "file": "model-registry-links.json",
+      "identical": true
+    },
+    {
+      "file": "source-health.json",
+      "identical": true
+    },
+    {
+      "file": "deal-history.json",
+      "identical": true
+    }
+  ],
+  "feeds": {
+    "count": 50,
+    "changed": []
+  },
+  "verdict": "数据面 0 变化：点名的 13 个数据文件全部逐字节相同 · 50 个 Feed 文件全部逐字节相同 · sitemap.xml 逐字节相同；变化的只有 HTML（预期内）与 dist/_notes.ndjson（构建期生成的说明清单，本轮登记的说明条数确实减少）",
+  "homepageAnnotation": {
+    "route": "(首页 = index.html)",
+    "htmlChanged": true,
+    "why": "index.html 既是首页产物、也是共享页面壳。T5 按 §20「同一句话不要每个模板抄一份」删掉 /changes/ 页尾那句与共享页脚重复的免责声明时，前端措辞副本 HISTORY_WORDING.HISTORY_NOTES.disclaimer 必须同批改（构建期 checkWordingContract 逐字比对，不改就红）。",
+    "measured": {
+      "differingLines": 1,
+      "whereLine": 1348,
+      "what": "内联 <script> 里 HISTORY_WORDING 的 JSON 字符串少了一句「最终以厂商官方页面为准。」",
+      "visibleTextOld": 1842,
+      "visibleTextNew": 1842,
+      "visibleTextDelta": 0
+    },
+    "verdict": "首页**面向读者的内容零变化**（可见正文 1842 = 1842）；变的只有共享壳里那一个 JS 措辞字符串，且它是措辞同源契约的必然结果。结构 / 卡片 / 数字 / 链接一处未动。"
+  }
+}

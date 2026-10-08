@@ -1,0 +1,382 @@
+{
+ "schemaVersion": "secondary-page-residue-v1/stage-b-gates/1",
+ "asOf": "2026-10-09",
+ "branch": "docs/closures-v4",
+ "headAtStart": "d47ec47de078d1cab496440acb66036e7ceca29b",
+ "headAtFinish": "390e7ccd7d9579b3e3a7208500255785bdf47101",
+ "headMovedByExternal": {
+  "what": "HEAD 在 T5 期间被**本队之外的会话**移动了：`d47ec47` → `390e7cc docs(closures-v5): 判据加固链条闭合（t33/t34）+ DESIGN-RULES N14–N17`（reflog: `commit: docs(closures-v5)`）。",
+  "effect": "该提交只改了 `NEXT-STEPS.md`（+53/−2）与 `docs/DESIGN-RULES.md`（+52/−2）—— **正是 T1 写的那两处文档改动**（`## 0. 本轮：secondary-page-residue-v1` 与 `§8.1 H13 的边界`），被那个会话**连我的未提交改动一起提交进了 390e7cc**。因此这两份文件现在与 HEAD 逐字节相同 ⇒ 在 T5 的 diff 里看不到它们。",
+  "impact": "① 本轮的**代码**改动（21 个文件）仍全部留在工作区、未提交；② 我的两条文档小节**内容完好**（已核对 `HEAD:NEXT-STEPS.md` 与 `HEAD:docs/DESIGN-RULES.md` 都含本轮小节）；③ **基线从 d47ec47 变成了 390e7cc** —— 任何以 d47ec47 为基线的比对/复核需要知道这一点。",
+  "verified": "`git show --stat 390e7cc` = 只这两个文件；`git rev-parse HEAD` = 390e7cc；工作区 `git diff --stat` = 21 个源码/数据文件。"
+ },
+ "commands": [
+  {
+   "cmd": "npm run build",
+   "exitCode": 0,
+   "seconds": 3,
+   "check": "构建 + 产物自检（含说明清单对账 / 首屏扫描 / 题注形状牙）",
+   "tail": [
+    "  ✓ 数据源状态: 9 个来源与 source-health.json 逐个对账一致（正常 8 · 异常 0 · 失败 1） · 五条约定齐（sitemap/canonical/双 feed/JSON-LD 2 段/预渲染 1228 字）",
+    "✅ 产物自检通过",
+    "✅ 构建完成 → dist/（自检全过，已从暂存目录就位）"
+   ]
+  },
+  {
+   "cmd": "node scripts/validate.js --strict",
+   "exitCode": 0,
+   "seconds": 0,
+   "check": "strict 校验",
+   "tail": [
+    "✅ 校验通过（strict 模式）"
+   ]
+  },
+  {
+   "cmd": "npm run verify:seo",
+   "exitCode": 0,
+   "seconds": 1,
+   "check": "SEO 独立门禁",
+   "tail": [
+    "✅ SEO 验收 19 项，失败 0 项"
+   ]
+  },
+  {
+   "cmd": "npm run selftest:feeds",
+   "exitCode": 0,
+   "seconds": 1,
+   "check": "订阅层自测",
+   "tail": [
+    "  ✓ 【原意·不许被削】空态行**缺**起算日 ⇒ 必须判失败（这道牙存在的理由）",
+    "  ✓ 【对照组】非空行即便写了起算日也通过（非空行写不写起算日都不算错）",
+    "=== v1.6 订阅层演练：145 项通过，0 项失败 ==="
+   ]
+  },
+  {
+   "cmd": "npm run selftest:data-docs",
+   "exitCode": 0,
+   "seconds": 0,
+   "check": "数据出口自测",
+   "tail": [
+    "=== v3.0 数据出口演练：58 项通过，0 项失败 ==="
+   ]
+  },
+  {
+   "cmd": "npm run selftest:planshub",
+   "exitCode": 0,
+   "seconds": 0,
+   "check": "/plans/ 资料入口自测",
+   "tail": [
+    "=== v3.0 /plans/ 资料入口演练：32 项通过，0 项失败 ==="
+   ]
+  },
+  {
+   "cmd": "npm run selftest:api-plans",
+   "exitCode": 0,
+   "seconds": 0,
+   "check": "API / Token 计费自测",
+   "tail": [
+    "  ✓ 正例：freeTier.type=credits（带 conversionDependsOnModel）通过校验",
+    "  ✓ 对照：同一中性形状补上 stability=standing → 通过（证明上一条红的是\"缺 stability\"本身）",
+    "=== v2.5 API / Token 计费演练：176 项通过，0 项失败 ==="
+   ]
+  },
+  {
+   "cmd": "npm run selftest:plans",
+   "exitCode": 0,
+   "seconds": 1,
+   "check": "Coding Plan 数据模型自测",
+   "tail": [
+    "  ✓ 页面级诚实性断言全部通过（行数 / 口径文案 / 结论性词汇 / 数值列逐格比对）",
+    "  ✓ 页面级诚实性断言全部通过（含最近变化块与时间线）",
+    "✅ === v2.1 Coding Plan 数据模型演练：264 项通过，0 项失败 ==="
+   ]
+  },
+  {
+   "cmd": "npm run selftest:changes",
+   "exitCode": 0,
+   "seconds": 0,
+   "check": "变化雷达自测",
+   "tail": [
+    "=== v1.5 变化雷达演练：120 项通过，0 项失败 ==="
+   ]
+  },
+  {
+   "cmd": "npm run selftest:audience",
+   "exitCode": 0,
+   "seconds": 0,
+   "check": "受众字段自测",
+   "tail": [
+    "✅ 受众字段自测：206 项通过，0 项失败"
+   ]
+  },
+  {
+   "cmd": "npm run check:evidence",
+   "exitCode": 0,
+   "seconds": 1,
+   "check": "证据政策门禁",
+   "tail": [
+    "✅ 没有新增的 Tier-3 文件（1283 个已跟踪的全部在清单内）",
+    "✅ 清单自证通过：与基线 e0ca04a 的 Tier-3 交集逐项一致（1283 条）"
+   ]
+  }
+ ],
+ "readings": {
+  "shellGuardPlansStill12": {
+   "claim": "captain 要求：T5 改完 `plans-hub-page.js:267-268` 之后复跑壳守卫，确认 `plans/` 仍是 12 条 `.snote`",
+   "method": "源码级元素计数（与 `verify-site.js` 的 `wideTargetGuard` 同一个量：`main.querySelectorAll('.snote').length`）+ 清单 `dist/_notes.ndjson` 的 `declared[\"main-snote\"]`",
+   "measured": {
+    "plans/": {
+     "mainSnoteElements": 12,
+     "nonEmpty": 12,
+     "manifestDeclared": 12
+    },
+    "plans/api/": {
+     "mainSnoteElements": 5,
+     "nonEmpty": 4,
+     "manifestDeclared": 5,
+     "note": "其中 1 条是 `<noscript>` 空文本条（既有）"
+    },
+    "plans/coding/": {
+     "mainSnoteElements": 5,
+     "nonEmpty": 4,
+     "manifestDeclared": 5,
+     "note": "同上"
+    },
+    "feeds/": {
+     "mainSnoteElements": 4,
+     "manifestDeclared": 4,
+     "floor": 4,
+     "note": "删掉 4 条 whole ⇒ 8−4=4，**正好压线**"
+    },
+    "status/": {
+     "mainSnoteElements": 2,
+     "manifestDeclared": 2,
+     "floor": 2
+    },
+    "changes/": {
+     "mainSnoteElements": 14,
+     "manifestDeclared": 14
+    },
+    "docs/data/": {
+     "mainSnoteElements": 6,
+     "manifestDeclared": 6
+    }
+   },
+   "verdict": "`plans/` 12 == 12 ✓（壳守卫的 `noteCount > 0` 与 M1–M4 的承重面不受影响）。**「删成 0 条」的页面只有三个别名页**（`need/student-only/` · `need/free-api/` · `need/dev-credits/`，各 1→0）—— 那是 T1（Stage A）删掉 `.aliasnote` 的结果，**不是 T5**；T5 自己没有任何一条 whole 删除把某一页的 `.snote` 变成 0，而这三个页面**不在壳守卫的四个壳里**（壳是 `plans/` `status/` `changes/` `feeds/`）⇒ 壳守卫不受影响。"
+  },
+  "captionThresholdTriple": {
+   "claim": "captain 必修项：题注牙的门槛在「注释 / 常量 / fail 文案」三处不许出现两个数（曾存在 21–29 的静默窗口）",
+   "code": "scripts/tools/build-local.js",
+   "readings": [
+    "常量：`const INTRO_CAPTION_MIN_SCANNED = 20;`（唯一出处）",
+    "比较：`} else if (captionScanned < INTRO_CAPTION_MIN_SCANNED) {`（读常量，不写字面量）",
+    "fail 文案：`… 只找到 ${captionScanned} 条 <caption> < ${INTRO_CAPTION_MIN_SCANNED}`（插值常量）",
+    "注释：`门槛**只由常量定义**（现值 20 = 本轮实测 45 的一半向下取整）` + 明确写出「上一版这里写着『取 45 的一半』而 fail 旁写着『门槛取 30』，与常量的 20 三处不一致，于是题注面退化到 21–29 时牙不响而构建全绿 —— 一个真实的静默窗口」"
+   ],
+   "verdict": "三处一致（**只有一个数**：常量 20）；门槛**保持 20**，没有提高到 45（那会在合法删除题注时误报）。"
+  },
+  "floorMarginsAfterT5": {
+   "method": "`npm run verify:seo` 的余量登记表（与 `lib/seo.js` 的 TEXT_FLOOR_RESIDUALS 逐页对账）",
+   "reading": [
+    "=== 正文下限余量登记（P2 残留 e1）· 从 dist 重新数一遍 ===",
+    "  need/no-card/          710 字 − 下限  660 = 余量   50（登记值 50）· kind=need count=1",
+    "  category/              923 字 − 下限  800 = 余量  123（登记值 123）· kind=hub count=5",
+    "  category/audio/       1083 字 − 下限  960 = 余量  123（登记值 123）· kind=category count=6",
+    "  need/ai-coding/        976 字 − 下限  840 = 余量  136（登记值 136）· kind=need count=4",
+    "  category/image/       1039 字 − 下限  900 = 余量  139（登记值 139）· kind=category count=5",
+    "  category/agent/        982 字 − 下限  840 = 余量  142（登记值 142）· kind=category count=4",
+    "  ✓ 正文下限余量登记：6 页的实时余量 ≥ 登记值（独立重算，零调低下限）"
+   ],
+   "verdict": "6 页登记读数与登记值逐页相同 ⇒ **没有触发重新登记**，`TEXT_FLOOR_RESIDUALS` 与下限公式一字未改。"
+  },
+  "manifestReconciliation": {
+   "claim": "`.snote` 清单总数从 265 掉到 207（Δ−58）必须逐条对得上，不许有「悄悄消失的说明」",
+   "reading": "构建期：`✓ 页面级说明清单: 186 页 × 3 个槽位逐页对账一致（.snote 声明 207 / 产物 207 · .pnote 声明 165 / 产物 165 · .vsnote 声明 150 / 产物 150）`",
+   "arithmetic": "T1 删掉三个别名页各 1 条 `.snote`（3 条）+ T5 的 **55 个唯一路由**上各 1 条 whole 删除（/docs/data/ 3 · /feeds/ 4 · /plans/api/ 1 · /plans/coding/ 1 · 51 个 /models/<slug>/ 各 1）= 58 ⇒ **265 − 58 = 207 ✓**（两侧独立算出同一个数）",
+   "note": "census 里 whole 类条目按「路由 × 容器」计 60 条，去重到**唯一路由**是 55 条 —— 差的 5 条是**跨页重复计数**（同一个源改点在多个路由上各记一次：/models/ 的「派生视图」条、/plans/ 的两条变化说明等）。`.pnote` 165 与 `.vsnote` 150 **一个都没变**（本轮没有任何 whole 删除落在这两个槽位）。"
+  }
+ },
+ "summary": {
+  "asOf": "2026-10-09",
+  "counter": "与 verify-site.js 的 wideTargetGuard 同口径：`main.querySelectorAll('.snote').length`",
+  "perPage": {
+   "plans/": {
+    "mainSnote": {
+     "elements": 12,
+     "nonEmpty": 12,
+     "empty": 0
+    },
+    "manifestDeclaredSnote": 12,
+    "floors": {},
+    "pageKind": "plans-hub"
+   },
+   "plans/api/": {
+    "mainSnote": {
+     "elements": 5,
+     "nonEmpty": 4,
+     "empty": 1
+    },
+    "manifestDeclaredSnote": 5,
+    "floors": {},
+    "pageKind": "api-plans"
+   },
+   "plans/coding/": {
+    "mainSnote": {
+     "elements": 5,
+     "nonEmpty": 4,
+     "empty": 1
+    },
+    "manifestDeclaredSnote": 5,
+    "floors": {},
+    "pageKind": "plans"
+   },
+   "feeds/": {
+    "mainSnote": {
+     "elements": 4,
+     "nonEmpty": 4,
+     "empty": 0
+    },
+    "manifestDeclaredSnote": 4,
+    "floors": {
+     "main-snote": {
+      "min": 4
+     }
+    },
+    "pageKind": "feeds"
+   },
+   "status/": {
+    "mainSnote": {
+     "elements": 2,
+     "nonEmpty": 2,
+     "empty": 0
+    },
+    "manifestDeclaredSnote": 2,
+    "floors": {
+     "main-snote": {
+      "min": 2
+     }
+    },
+    "pageKind": "status"
+   },
+   "changes/": {
+    "mainSnote": {
+     "elements": 14,
+     "nonEmpty": 14,
+     "empty": 0
+    },
+    "manifestDeclaredSnote": 14,
+    "floors": {},
+    "pageKind": "changes"
+   },
+   "docs/data/": {
+    "mainSnote": {
+     "elements": 6,
+     "nonEmpty": 6,
+     "empty": 0
+    },
+    "manifestDeclaredSnote": 6,
+    "floors": {},
+    "pageKind": "data-docs"
+   },
+   "models/": {
+    "mainSnote": {
+     "elements": 3,
+     "nonEmpty": 3,
+     "empty": 0
+    },
+    "manifestDeclaredSnote": 3,
+    "floors": {},
+    "pageKind": "models-index"
+   },
+   "vendor/ai360/": {
+    "mainSnote": {
+     "elements": 0,
+     "nonEmpty": 0,
+     "empty": 0
+    },
+    "manifestDeclaredSnote": 0,
+    "floors": {
+     "main-snote": {
+      "min": 0
+     },
+     "main-pnote": {
+      "min": 2
+     },
+     "main-vsnote": {
+      "min": 6
+     }
+    },
+    "pageKind": "vendor"
+   },
+   "vendor/aws/": {
+    "mainSnote": {
+     "elements": 0,
+     "nonEmpty": 0,
+     "empty": 0
+    },
+    "manifestDeclaredSnote": 0,
+    "floors": {
+     "main-snote": {
+      "min": 0
+     },
+     "main-pnote": {
+      "min": 2
+     },
+     "main-vsnote": {
+      "min": 6
+     }
+    },
+    "pageKind": "vendor"
+   },
+   "models/360zhinao-pro/": {
+    "mainSnote": {
+     "elements": 3,
+     "nonEmpty": 3,
+     "empty": 0
+    },
+    "manifestDeclaredSnote": 3,
+    "floors": {},
+    "pageKind": "model"
+   },
+   "models/deepseek-v4-pro/": {
+    "mainSnote": {
+     "elements": 3,
+     "nonEmpty": 3,
+     "empty": 0
+    },
+    "manifestDeclaredSnote": 3,
+    "floors": {},
+    "pageKind": "model"
+   },
+   "models/glm-5.3/": {
+    "mainSnote": {
+     "elements": 1,
+     "nonEmpty": 1,
+     "empty": 0
+    },
+    "manifestDeclaredSnote": 1,
+    "floors": {},
+    "pageKind": "model"
+   }
+  },
+  "snoteElementDiff": {
+   "pagesChanged": 56,
+   "pagesDroppedToZero": [
+    "need/dev-credits/",
+    "need/free-api/",
+    "need/student-only/"
+   ],
+   "note": "「删成 0 条」只出现在**三个别名页** —— 那是 T1（Stage A）删掉 `.aliasnote` 的结果，不是 T5。T5 自己没有任何一条 whole 删除把某一页的 `.snote` 元素变成 0（`feeds/` 8→4 是 floor 4 的压线值）。"
+  },
+  "wholeSite": {
+   "pages": 186,
+   "pagesWithDeclaredZeroSnote": 126,
+   "note": "「清单里 declared[\"main-snote\"]==0」的页面数：包含 126 个**本来就没有**页面级说明的页面族（详情页 / 55 个目录页 / 首页…）。要判「有没有被删空」要看上面的 snoteElementDiff。"
+  }
+ },
+ "unsortedNotes": [
+  "T5 只跑 census 的 action=delete；C/D 类 374 条与 47 条 undecided（42 条题注 + /status/ 133 字与 32 字 + /feeds/ 21 字与 133 字 + /models/ 103 字题注末句 + §4.4 盘点的 8 类）**一个字都没动**。",
+  "T5 期间的两次真实失败（都已修好，逐条记录）：① 改 `HISTORY_NOTES.disclaimer` 触发了「前端副本 == 后端」的构建期断言 ⇒ 同步 `index.html` 的 `HISTORY_WORDING` 副本（只改 disclaimer 一个键），**没有删断言、没有放宽**；② `api-plans-page.js` 的整条删把 noteIn 的第一个参数删坏成 `, `` + …` ⇒ 重建为 `` `<p class=\"snote\">` + `「不再收录」…</p>` `` 的正确拼接。",
+  "T5 期间的一次事故（工作区层面，非产物）：`git stash push` + `git checkout -- <两个文档>` 的组合把工作区副本清掉了；`stash@{0}` 完好，已用 `git show stash@{0}:<path>` 逐文件还原并核对 **23/23 逐字节一致**。"
+ ]
+}

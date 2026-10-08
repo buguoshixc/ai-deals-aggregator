@@ -1030,6 +1030,14 @@ function releaseBlockOf(model) {
  * @param {object} ctx   见 `modelReferencesOf()`；另需 `prefix`、
  *                       `vendorHrefOf(developer)`（有厂商资料页时才给链接；缺省不给）
  */
+// [T5-models-1126-pricing-note-head]
+// T5 删除（census A · 半句）：删「全部来自本站 … 的同一份数据；」—— **数据来源自证**（「同一份数据」这件事由页面上的链接与 `data-item` 对账另行保证）。保留后半句（`不折算、不排序成"最便宜"、不写推荐`）—— 那是读者理解这张表的口径，C 类。
+// [T5-models-1080-coding-empty-tail]
+// T5 删除（census A · 半句）：删「 —— 本站不按套餐里的模型名猜关系（supportedModels 是自由文本，没有模型键）。」—— **实现自证**（我们在内部怎么判关联），空态事实只需前半句。⚠️ 元素**保留**：这是 `.snote.mnone` 空态条（本条与下一条都是 kind=half ⇒ 元素数不变，45 / 41 页的 `main-snote` 条数不动）。
+// [T5-models-1086-deals-empty-tail]
+// T5 删除（census A · 半句）：同上 —— 删「 —— 本站不用标题关键词猜关系。」（实现自证），保留空态事实。元素保留（kind=half）。
+// [T5-models-1137-derived-view]
+// T5 删除（census A · 自证整条）：整条删 ——「这一节是派生视图 / 不新建第四套历史真值」是**架构自证**（我们在内部怎么组织数据），标题「模型变化记录（派生视图）」已经把「派生」写在读者眼前；下面的列表是数据（C 类）。
 function renderModelPage(model, ctx = {}) {
   const prefix = ctx.prefix === undefined ? '../../' : ctx.prefix;
   const refs = modelReferenceOfCached(model, ctx);
@@ -1077,13 +1085,13 @@ ${rows.map(row => modelPricingRowHtml(row, prefix)).join('\n')}
     ? `      <ul class="mlist">
 ${refs.codingPlans.map(item => codingPlanLineOf(item, ctx, prefix)).join('\n')}
       </ul>`
-    : `      ${noteIn(ctx)({ kind: 'page-note-empty', slot: 'main-snote', classes: 'snote mnone', declaredBy: NOTES_DECLARED_BY }, `<p class="snote mnone">${modelsMarkdownish('没有与该模型**显式关联**的 Coding 套餐 —— 本站不按套餐里的模型名猜关系（supportedModels 是自由文本，没有模型键）。', prefix)}</p>`)}`;
+    : `      ${noteIn(ctx)({ kind: 'page-note-empty', slot: 'main-snote', classes: 'snote mnone', declaredBy: NOTES_DECLARED_BY }, `<p class="snote mnone">${modelsMarkdownish('没有与该模型**显式关联**的 Coding 套餐。', prefix)}</p>`)}`;
 
   const dealsBlock = refs.deals.length
     ? `      <ul class="mlist">
 ${refs.deals.map(item => relatedDealLineOf(item, ctx, prefix)).join('\n')}
       </ul>`
-    : `      ${noteIn(ctx)({ kind: 'page-note-empty', slot: 'main-snote', classes: 'snote mnone', declaredBy: NOTES_DECLARED_BY }, `<p class="snote mnone">${modelsMarkdownish('没有与该模型**显式关联**的优惠 —— 本站不用标题关键词猜关系。', prefix)}</p>`)}`;
+    : `      ${noteIn(ctx)({ kind: 'page-note-empty', slot: 'main-snote', classes: 'snote mnone', declaredBy: NOTES_DECLARED_BY }, `<p class="snote mnone">${modelsMarkdownish('没有与该模型**显式关联**的优惠。', prefix)}</p>`)}`;
 
   const historyBlock = ctx.apiPlanHistoryStore
     ? (refs.events.length
@@ -1123,8 +1131,7 @@ ${refs.events.slice().sort((a, b) => (a.at === b.at ? 0 : a.at < b.at ? 1 : -1))
       </dl>
 
       <h2 class="ph2" id="model-api">API 提供平台与计价条目（${rows.length} 条）</h2>
-      ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">全部来自本站 <a href="${escapeHtml(`${prefix}plans/api/`)}">API / Token 计费对比</a> 的同一份数据；
-        每一行都带计费单位与官方定价页。<b>不折算、不排序成"最便宜"、不写推荐</b>。</p>`)}
+      ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">每一行都带计费单位与官方定价页。<b>不折算、不排序成"最便宜"、不写推荐</b>。</p>`)}
 ${pricingBlock}
 
       <h2 class="ph2" id="model-plans">相关 Coding 套餐</h2>
@@ -1134,7 +1141,6 @@ ${codingBlock}
 ${dealsBlock}
 
       <h2 class="ph2" id="model-history">模型变化记录（派生视图）</h2>
-      ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">${modelsMarkdownish('这一节是**派生视图**：直接把 API 计费日志里与该模型有关的记录事件排出来，不新建第四套历史真值。', prefix)}</p>`)}
 ${historyBlock}
 `;
 }

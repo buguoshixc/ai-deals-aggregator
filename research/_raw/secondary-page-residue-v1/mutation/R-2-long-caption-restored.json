@@ -1,0 +1,20 @@
+{
+  "probe": "R-2",
+  "what": "把删掉的长题注注回 `isAlias` 分支（三支恢复），看题注形状牙是否变红",
+  "injectedInto": "scripts/tools/build-local.js · `const caption` 那一支：`isHub ? … : \\`共 ${deals.length} 条。\\`` 恢复成三支，`isAlias` 分支返回 62–68 字的长句",
+  "injectionText": "  const caption = isHub\\n    ? `共 ${childList.length} 个入口。`\\n    : (isAlias\\n      ? `共 ${deals.length} 条 —— 与 <a href=\"${prefix}${spec.aliasOf}\">${htmlEscape(spec.aliasOf)}</a> 是同一批条目（同一份判据）。这一页保留旧地址可用，但<b>不参与搜索收录</b>；收录以目标页为准。`\\n      : `共 ${deals.length} 条。`);",
+  "injectionScript": "Tier-3 临时脚本 `.tmp-a/probe-mutate.cjs inject r2`（不入库）：按行号把 `const caption` 那三行替换成含 `isAlias` 分支的五行的；还原用 `.tmp-a/green/build-local.js` 全绿快照（**不用 git checkout**）",
+  "command": "npm run build",
+  "exitCode": 1,
+  "redChecks": [
+    {
+      "name": "构建期题注形状牙（牙 3 · 本轮新增）",
+      "detail": "✗ 目录页家族的题注超出「共 N 条。/ 共 N 个入口。」两种形状（长题注回流即红，见 docs/DESIGN-RULES.md H11）：need/student-only/ 题注形状不对（66 字）：共 12 条 —— 与 student/ 是同一批条目（同一份判据）。这一页保留旧地址可用，但 …；need/free-api/ 题注形状不对（67 字）：共 45 条 —— 与 free-api/ 是同一批条目（同一份判据）。这一页保留旧地址可用，但…；need/dev-credits/ 题注形状不对（68 字）：共 67 条 —— 与 developer/ 是同一批条目（同一份判据）。这一页保留旧地址可用，…｜❌ 产物自检失败（1 项）｜❌ 构建失败：产物自检未通过"
+    }
+  ],
+  "greenControl": "同一条 `npm run build` 在**未注入**的源码上 exit 0，题注牙读数：`✓ 目录页家族题注形状: 45 条 <caption> 逐字匹配「共 N 条。/ 共 N 个入口。」（另有 56 条非目录页题注不在本规则射程内，只报告不判）`；`node scripts/tools/verify-site.js --dir=dist` = 885 项 / 失败 0 项。原始日志：`.tmp-a/build-4.log`（本机临时文件，未入库）。",
+  "note": "R-2 只有 1 条牙红，且**故意**不预设它会让 ③b 或首屏扫描红：长题注不在 intro 区、也不含 `.snote` 容器，所以那两条牙物理上不该响。如实记：本轮 2 条变异共红 4 条断言（R-1 的 2 条构建期 + R-1 浏览器层 3 条、R-2 的 1 条构建期；其中「注回产物」的那两条 ⑨ 对账属同一变异的连带伤害）。",
+  "rawOutputRefs": {
+    "build": ".tmp-a/mut-r2-build.log（Tier-3，未入库）"
+  }
+}
