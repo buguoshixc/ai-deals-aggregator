@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "secondary-page-residue-v1/census-dist-snapshot/1",
+  "asOf": "2026-10-09T00:52+08:00",
+  "purpose": "T2 Stage B 普查与删前基线所锚定的 dist 快照。任何独立复核者都可以用 treeDigest 与 perFileDigestFile 证明「这份报告量的是哪一份 dist」。",
+  "dist": {
+    "builtAt": "2026-10-09T00:37:47+08:00（preflight 那次 npm run build；dist/feeds/index.html 的 mtime 即 00:37:47）",
+    "treeDigestCommand": "node scripts/tools/tree-digest.cjs dist",
+    "treeDigest": "5a1ddfa99563c07b31817cfc88dd6ca331b4c82c34299be55ee460b38461670f",
+    "manifestDigest": "504865e929fea06a1d13c1a14125adf2aa426e225ba7f1678940f37084abebfe",
+    "fileCount": 304,
+    "htmlPages": 186,
+    "nonHtmlArtifacts": 118,
+    "bytes": 20408439,
+    "perFileDigestFile": "research/_raw/secondary-page-residue-v1/dist-snapshot.sha256",
+    "perFileDigestFormat": "<sha256>  dist/<posix 相对路径>"
+  },
+  "repo": {
+    "branch": "docs/closures-v4",
+    "head": "d47ec47",
+    "workingTreeDirtyAtSnapshot": [
+      "scripts/tools/build-local.js（T1 别名页分支，mtime 2026-10-09T00:45:07 —— 快照时已改）",
+      "?? .tmp-a/",
+      "?? AI_DEALS_AGGREGATOR_ROADMAP_AND_PROMPTS.md",
+      "?? AI_DEALS_CODING_PLAN_PHASES_PROMPTS.md",
+      "?? final-dist-A.sha256",
+      "?? final-dist-B.sha256",
+      "?? research/_raw/home-topic-entry-cards-v1/_t4-tmp/",
+      "?? research/_raw/secondary-page-residue-v1/",
+      "?? research/audit/"
+    ]
+  },
+  "crossChecks": [
+    {
+      "claim": "本快照与 preflight.json 里那次 build 之后的 tree digest 一致 ⇒ dist 自 preflight 起没有被重建过",
+      "expected": "5a1ddfa99563c07b31817cfc88dd6ca331b4c82c34299be55ee460b38461670f",
+      "observed": "5a1ddfa99563c07b31817cfc88dd6ca331b4c82c34299be55ee460b38461670f",
+      "status": "matched"
+    },
+    {
+      "claim": "四类容器计数与构建期台账逐数吻合 ⇒ 扫描面没有漏族",
+      "expected": { "snote": 268, "pnote": 159, "vsnote": 150 },
+      "observed": { "snote": 268, "pnote": 159, "vsnote": 150 },
+      "status": "matched"
+    },
+    {
+      "claim": "style/script 里的模板文本（不遮蔽会混进来的假条目）计数",
+      "expected": "约 7 条",
+      "observed": 7,
+      "status": "matched"
+    }
+  ],
+  "invalidators": [
+    "任何一次 npm run build（dist 会被重写；treeDigest 立刻不再匹配）",
+    "任何对 dist/ 的直接改写",
+    "scripts/ 的继续写入只会让 deleteSpec.lineHint 漂移，不会让本快照的字数读数失效（字数读的是 dist，dist 未变）"
+  ]
+}

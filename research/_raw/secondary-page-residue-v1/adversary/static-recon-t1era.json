@@ -1,0 +1,462 @@
+{
+  "probe": "probe-static.cjs（T4 对抗复核）",
+  "generatedAtNote": "时间不入断言；本文件只记读数",
+  "totals": {
+    "diskIndexHtml": 186,
+    "classifiedKinds": 16,
+    "unclassified": [],
+    "directoryRoutes": 45
+  },
+  "kindHistogram": {
+    "home": 1,
+    "archive-index": 1,
+    "hub": 2,
+    "category": 5,
+    "changes": 1,
+    "deal": 80,
+    "collection": 3,
+    "data-docs": 1,
+    "feeds": 1,
+    "models-index": 1,
+    "model": 51,
+    "need": 10,
+    "plans-hub": 1,
+    "plans": 2,
+    "status": 1,
+    "vendor": 25
+  },
+  "directoryKindsDeclared": [
+    "collection",
+    "need",
+    "category",
+    "vendor",
+    "hub",
+    "alias"
+  ],
+  "directoryKindsActuallyPresent": [
+    "category",
+    "collection",
+    "hub",
+    "need",
+    "vendor"
+  ],
+  "aliasMeta": [
+    {
+      "route": "need/student-only/",
+      "onDisk": true,
+      "kindRaw": "need",
+      "kindResolved": "need",
+      "inDirectorySet": true,
+      "target": "student/"
+    },
+    {
+      "route": "need/free-api/",
+      "onDisk": true,
+      "kindRaw": "need",
+      "kindResolved": "need",
+      "inDirectorySet": true,
+      "target": "free-api/"
+    },
+    {
+      "route": "need/dev-credits/",
+      "onDisk": true,
+      "kindRaw": "need",
+      "kindResolved": "need",
+      "inDirectorySet": true,
+      "target": "developer/"
+    }
+  ],
+  "registryCensus": {
+    "collectionPages": [
+      "student/",
+      "developer/",
+      "free-api/"
+    ],
+    "needPages": [
+      "need/student-only/",
+      "need/edu-identity/",
+      "need/no-card/",
+      "need/china-usable/",
+      "need/free-tier/",
+      "need/free-api/",
+      "need/free-tokens/",
+      "need/ai-coding/",
+      "need/free-model/",
+      "need/dev-credits/"
+    ],
+    "needPageKinds": [
+      {
+        "slug": "student-only",
+        "kind": null
+      },
+      {
+        "slug": "edu-identity",
+        "kind": null
+      },
+      {
+        "slug": "no-card",
+        "kind": null
+      },
+      {
+        "slug": "china-usable",
+        "kind": null
+      },
+      {
+        "slug": "free-tier",
+        "kind": null
+      },
+      {
+        "slug": "free-api",
+        "kind": null
+      },
+      {
+        "slug": "free-tokens",
+        "kind": null
+      },
+      {
+        "slug": "ai-coding",
+        "kind": null
+      },
+      {
+        "slug": "free-model",
+        "kind": null
+      },
+      {
+        "slug": "dev-credits",
+        "kind": null
+      }
+    ],
+    "vendorHub": "vendor/",
+    "categoryHub": "category/"
+  },
+  "distTopDirs": {
+    "archive": 1,
+    "category": 6,
+    "changes": 1,
+    "data": 0,
+    "deal": 80,
+    "developer": 1,
+    "docs": 1,
+    "feed": 0,
+    "feeds": 1,
+    "free-api": 1,
+    "logos": 0,
+    "models": 52,
+    "need": 10,
+    "plans": 3,
+    "status": 1,
+    "student": 1,
+    "vendor": 26
+  },
+  "directoryPagesWithIntroNote": [],
+  "directoryCaptions": {
+    "pagesWithCaption": 45,
+    "pagesWithoutCaption": [],
+    "pagesWithMultipleCaptions": [],
+    "firstCaptionShapeBad": [],
+    "secondPlusCaptionShapeBad": []
+  },
+  "nonDirectoryPagesWithCaptionInMain": 56,
+  "nonDirectoryPagesWithIntroNote": [
+    {
+      "route": "archive/",
+      "kind": "archive-index",
+      "n": 5
+    },
+    {
+      "route": "changes/",
+      "kind": "changes",
+      "n": 14
+    },
+    {
+      "route": "docs/data/",
+      "kind": "data-docs",
+      "n": 3
+    },
+    {
+      "route": "feeds/",
+      "kind": "feeds",
+      "n": 8
+    },
+    {
+      "route": "models/",
+      "kind": "models-index",
+      "n": 2
+    },
+    {
+      "route": "models/360zhinao-pro/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/360zhinao-turbo-llm-geo/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/baichuan-m3-plus/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/baichuan-m3/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/claude-fable-5.1/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/claude-haiku-4.5/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/claude-opus-5.5/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/claude-sonnet-5.5/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/deepseek-flash/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/deepseek-v3.2/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/deepseek-v4-pro/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/doubao-seed-2.1-pro/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/doubao-seed-2.1-turbo/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/doubao-seed-character/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/doubao-seed-evolving/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/ernie-4.5-turbo-128k/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/ernie-5.1/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/gemini-3.5-flash/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/gemini-3.6-flash/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/gemini-3.7-flash/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/gemini-3.8-flash/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/glm-4.5v/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/glm-4.6v-flash/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/glm-4.6v-flashx/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/glm-4.6v/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/glm-4.7-flash/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/glm-5.3-flash/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/glm-5.3/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/glm-5v-turbo/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/gpt-6-astra/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/gpt-6-luna/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/gpt-6.1-sol/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/gpt-live-1/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/hunyuan-a13b/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/hunyuan-embedding/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/hunyuan-role-latest/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/hunyuan-translation-lite/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/hunyuan-translation/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/kimi-k2.7-code/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/kimi-k3/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/minimax-m2.5/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/minimax-m2.7-highspeed/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/minimax-m2.7/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/minimax-m3/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/qwen-max/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/qwen3-max/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/qwen3.8-27b/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/qwen3.8-max/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/spark-x2.5/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/step-3.5-flash/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "models/tencent-hy-vision-1.5-instruct/",
+      "kind": "model",
+      "n": 1
+    },
+    {
+      "route": "plans/",
+      "kind": "plans-hub",
+      "n": 12
+    },
+    {
+      "route": "plans/api/",
+      "kind": "plans",
+      "n": 1
+    },
+    {
+      "route": "plans/coding/",
+      "kind": "plans",
+      "n": 3
+    },
+    {
+      "route": "status/",
+      "kind": "status",
+      "n": 1
+    }
+  ]
+}

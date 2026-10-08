@@ -302,6 +302,12 @@ const COLLECTION_FEED_PAGES = [
  * 新增一条 Feed 时必须选一个组（漏了会被 `checkFeedsPage()` 报成「没有分组」），
  * 这就是「注册表 → 页面」那个方向不会再漏的机制。
  */
+// [T5-feeds-323-student-note]
+// T5 删除（census A · 自证整条）：删该组（key: student）的整条 note —— 它讲的是「这一组的判据与另外两页是同一份」= **判据实现自证**（维护口径），不是读者选订阅需要的信息；组标题「学生」已经说明按什么切。渲染点有 `group.note ?` 守卫 ⇒ 缺 note 时整段不渲染（不是空容器）。
+// [T5-feeds-328-developer-note]
+// T5 删除（census A · 自证整条）：同上 ——「共用同一套判据 / 条数与行数不可能分头变化」是实现级承诺（维护口径），读者不需要它来选订阅。
+// [T5-feeds-333-category-note]
+// T5 删除（census A · 自证整条）：整条 note 是 `+` 拼起来的两行，两行一起删 —— 与上两条同一类（判据自证 + 一致性自证）。
 const FEED_LIST_GROUPS = [
   {
     key: 'core',
@@ -320,18 +326,14 @@ const FEED_LIST_GROUPS = [
   {
     key: 'student',
     label: '学生',
-    note: '按「我是谁」和「能不能在大陆用上」切；判据与 /student/、/need/china-usable/ 两页<b>同一份</b>。'
   },
   {
     key: 'developer',
     label: '开发者',
-    note: '按福利类型与用途切；与目录页、按需求页共用同一套判据，所以订阅里的条数与页面上的行数不可能分头变化。'
   },
   {
     key: 'category',
     label: '按分类',
-    note: '按站点的分类落地页切（/category/api/ 等五页）；判据与那五页<b>同一份</b>，'
-      + '所以这一组里每份订阅的条数与分类页表格的行数不可能分头变化。'
   },
   {
     // 厂商那一段在页面上单独渲染（带门槛说明），但成员判定同样走 listGroup，不再由

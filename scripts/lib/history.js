@@ -147,6 +147,8 @@ const RENDER_LIMIT = 20;
 /** 观测状态（absence）保留窗口：已 ended 且离开数据集超过这么多天的条目不再保留 */
 const ABSENCE_RETENTION_DAYS = 365;
 
+// [T5-history-201-disclaimer-tail]
+// T5 删除（census B · 重复）：删尾句「最终以厂商官方页面为准。」—— 它与共享页脚（每页都有「优惠信息来自各厂商官方页面与公开折扣页，最终以官方页面为准。」）同义，属 B 类「同一句话的第二个容器」。保留前半句（「不再收录」的必要解释，C 类口径）。⚠️ 同一常量 `HISTORY_NOTES.disclaimer` 也被 Feed 产物消费（feeds.js 对 ended 事件推入）⇒ **改它是全站同改**；当前数据 ended=0，本次不改任何 Feed 字节（收口时核对 dist/feed/**）。门禁：无既有断言引用这句；台账/清单由 noteDeclare 自动同步。
 const HISTORY_WORDING = {
   HISTORY_LABELS: {
     sectionTitle: '变更记录',
@@ -198,7 +200,7 @@ const HISTORY_WORDING = {
     derived: '（由本站规则推导）',
     lifecycle: '本条记录的生命周期事件',
     emptyNote: '起算日之前的状态没有历史记录，因此这里不显示任何变化。',
-    disclaimer: '以上是本站采集与合并过程留下的观测记录；「不再收录」表示本站未再观测到该条目，不表示厂商已经下架或优惠已经失效。最终以厂商官方页面为准。'
+    disclaimer: '以上是本站采集与合并过程留下的观测记录；「不再收录」表示本站未再观测到该条目，不表示厂商已经下架或优惠已经失效。'
   }
 };
 

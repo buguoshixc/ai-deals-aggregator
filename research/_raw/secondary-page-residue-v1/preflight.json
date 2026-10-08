@@ -1,0 +1,80 @@
+{
+  "task": "secondary-page-residue-v1",
+  "phase": "preflight (Lead, before any teammate starts)",
+  "at": "2026-10-09T00:37:00+08:00",
+  "repo": {
+    "root": "D:/OneDrive/Desktop/Code/AI Page",
+    "branch": "docs/closures-v4",
+    "head": "d47ec47",
+    "workingTreeDirty": ["AI_DEALS_AGGREGATOR_ROADMAP_AND_PROMPTS.md", "AI_DEALS_CODING_PLAN_PHASES_PROMPTS.md", "final-dist-A.sha256", "final-dist-B.sha256", "research/_raw/home-topic-entry-cards-v1/_t4-tmp/", "research/audit/"]
+  },
+  "lineNumberAudit": {
+    "method": "read tool against HEAD d47ec47, every cited range re-verified before touching anything",
+    "allCitedRangesMatched": true,
+    "notes": [
+      "verify-site.js:6803 is the WIDE_MUTATION_TARGETS array literal; 6800-6802 are the reason comment (brief said 6800-6803 as one block).",
+      "verify-site.js:8335 is the M15 target route literal; 8333 is the reason comment (brief said 'verify-site.js:8333 M15 靶页').",
+      "build-local.js:6785 is WIDE_DATA_SELECTORS in verify-site.js, used as the 'first data region' definition."
+    ],
+    "verified": {
+      "build-local.js": {"notePage.floors": "2788-2795 (min:isAlias?1:0 at 2791)", "aliasCaption": "2908-2912", "aliasNote": "2936-2945", "aliasnoteCss": "2951", "aliasExceptionComment": "2737-2742", "introScan": "6105-6191 (ALIAS_NOTE_ROUTES at 6140)", "template": "3056"},
+      "verify-site.js": {"22c_3b": "7966-8002 (check name at 7996)", "22c_9_floors": "8128", "WIDE_MUTATION_TARGETS": "6803 (comment 6796-6802)", "M14": "8321-8324", "M15": "8333-8341", "axisToleranceComment": "6750", "WIDE_DATA_SELECTORS": "6785", "WIDE_INTRO_MAX_LINES": "6834", "WIDE_INTRO_MIN_COLUMN": "6836"},
+      "audience-selftest.js": {"aliasReasonAssertion": "810-821 (check at 818-821)", "INTERNAL_TERMS": "751"},
+      "changes-selftest.js": {"noteMatcherSection": "569-584", "examples": "575-578"},
+      "lib/audience.js": {"aliasExceptionNarrative": "308-335 (319-333)"},
+      "lib/seo.js": {"TEXT_FLOOR_RESIDUALS": "72-79 (6 entries, no alias pages)", "visibleText/thinContent": "417-439", "orphan": "537-549", "aliasChecks": "551-560"}
+    }
+  },
+  "measurements": {
+    "counterConvention": "scripts/lib/seo.js visibleText() swaps each tag for a space then collapses runs; this is the repo-wide口径 for 字数.",
+    "aliasNote": {"need/student-only/": 161, "need/free-api/": 139, "need/dev-credits/": 159,
+      "rawTagStrip": {"need/student-only/": 159, "need/free-api/": 137, "need/dev-credits/": 157},
+      "briefSaid": "139-161 字", "verdict": "brief matches visibleText() 口径 exactly (161/139/159)"},
+    "aliasCaption": {"need/student-only/": 62, "need/free-api/": 62, "need/dev-credits/": 61,
+      "briefSaid": "62-64 字", "verdict": "matches"},
+    "briefWordingCorrection": {
+      "claim": "「同一个数字在『标题行 meta / 数据摘要卡 / 题注』各写一遍」",
+      "finding": "标题行 meta is actually `<span class=\"meta\">共 45 条 · 数据更新 2026-10-08</span>` inside `.cstop` (whitelisted). There is no separate '标题行 meta' element, and the data summary card is `.lsum` (also whitelisted). So the duplication is real: 共 N 条 appears in .cstop .meta (whitelist → keep), .lsum (whitelist → keep) and <caption>. A2's '别名题注与非别名题注完全一致' is the superseding constraint; the whitelisted copies are logged as keep-by-whitelist, not deleted."
+    },
+    "dist": {"htmlPages": 186, "nonHtmlArtifacts": 118, "total": 304,
+      "noindex": 3, "orphan": 0, "sitemapEntries": 183, "sitemapEqualsNonNoindex": true,
+      "note": "303 files before this build; the 304th is dist/_notes.ndjson, emitted by build-local.js:7255 and not present on disk beforehand."},
+    "notesInventory": {"pagesWithSnote": 64, "snoteInMainFromBuild": 268, "pnote": 159, "vsnote": 150},
+    "directoryFamilyPagesWithSnote": ["need/student-only/", "need/free-api/", "need/dev-credits/"],
+    "aliasTargetInbound": {"student/": {"total": 186, "excluding3Aliases": 183}, "free-api/": {"total": 186, "excluding3Aliases": 183}, "developer/": {"total": 186, "excluding3Aliases": 183},
+      "zeroInboundRoutes": 0, "method": "independent href scan by Lead (not seo.js), counting distinct source routes"},
+    "floorMargins": {"need/student-only/": {"chars": 2106, "floor": 1320, "margin": 786}, "need/free-api/": {"chars": 4965, "floor": 3300, "margin": 1665}, "need/dev-credits/": {"chars": 6735, "floor": 4620, "margin": 2115},
+      "registeredResiduals": "none of the three alias pages are in TEXT_FLOOR_RESIDUALS → deleting 137-161 chars cannot trip thin-content-margin"}
+  },
+  "commandsRun": [
+    {"cmd": "node scripts/tools/tree-digest.cjs dist", "when": "before build", "exitCode": 0, "reading": "303 文件 / 20282063 B · 全树摘要 75ecb98344a855b7a72df9df83440b9ebb33eacd3daaa2821f7e4e653fd003a2"},
+    {"cmd": "npm run build", "when": "preflight", "exitCode": 0, "elapsedSeconds": 5, "reading": "产物自检通过；sitemap 183 条；SEO 安全门禁 28 码 × 186 页全过（可索引 183 · 别名 3 · 孤儿 0 · 重复 canonical 0 · 无效内链 0）；页面级说明清单 186 页 × 3 槽位逐页对账一致（.snote 268 / .pnote 159 / .vsnote 150）；台账 0 页"},
+    {"cmd": "node scripts/tools/tree-digest.cjs dist", "when": "after build", "exitCode": 0, "reading": "304 文件 / 20408439 B · 全树摘要 5a1ddfa99563c07b31817cfc88dd6ca331b4c82c34299be55ee460b38461670f（增量只有 dist/_notes.ndjson 126376 B）"},
+    {"cmd": "node scripts/tools/seo-verify.js", "when": "preflight (before build)", "exitCode": 0, "reading": "SEO 验收 19 项 / 失败 0；indexable 183 · orphan 0 · noindex 3 · sitemap 183 · dist 文件 303；正文下限余量 6 页实时余量 ≥ 登记值"},
+    {"cmd": "node scripts/tools/verify-site.js (readings only, via WIDE_DATA_SELECTORS semantics)", "when": "n/a", "exitCode": null, "reading": "NOT RUN in preflight — the full real-browser suite is task T3's deliverable (and must not run concurrently with writers)."}
+  ],
+  "geometryBefore": {
+    "file": "research/_raw/secondary-page-residue-v1/browser/geometry-before.json",
+    "engine": "playwright-core + system Edge (msedge.exe), headless, file:// absolute URL",
+    "definition": "gap = (first WIDE_DATA_SELECTORS match .rect.top + scrollY) − (.cstop .rect.bottom + scrollY); all 12 rows hit .ctable",
+    "rows": [
+      {"route": "need/student-only/", "viewport": "1440x900", "gap": 104.78, "pageHeight": 1783, "horizontalOverflow": 0},
+      {"route": "need/free-api/", "viewport": "1440x900", "gap": 104.78, "pageHeight": 4237, "horizontalOverflow": 0},
+      {"route": "need/dev-credits/", "viewport": "1440x900", "gap": 104.78, "pageHeight": 5720, "horizontalOverflow": 0},
+      {"route": "student/", "viewport": "1440x900", "gap": 52, "pageHeight": 1730, "horizontalOverflow": 0},
+      {"route": "free-api/", "viewport": "1440x900", "gap": 52, "pageHeight": 4184, "horizontalOverflow": 0},
+      {"route": "developer/", "viewport": "1440x900", "gap": 52, "pageHeight": 5668, "horizontalOverflow": 0},
+      {"route": "need/student-only/", "viewport": "390x844", "gap": 205.95, "pageHeight": 2303, "horizontalOverflow": 0},
+      {"route": "need/free-api/", "viewport": "390x844", "gap": 245.95, "pageHeight": 7251, "horizontalOverflow": 0},
+      {"route": "need/dev-credits/", "viewport": "390x844", "gap": 245.95, "pageHeight": 9962, "horizontalOverflow": 0},
+      {"route": "student/", "viewport": "390x844", "gap": 92, "pageHeight": 2119, "horizontalOverflow": 0},
+      {"route": "free-api/", "viewport": "390x844", "gap": 132, "pageHeight": 7119, "horizontalOverflow": 0},
+      {"route": "developer/", "viewport": "390x844", "gap": 132, "pageHeight": 9794, "horizontalOverflow": 0}
+    ],
+    "prediction": "after deleting the alias note the three alias pages should converge to their canonical twins: 52px @1440 and 92/132/132px @390, with page height dropping by exactly the removed line boxes."
+  },
+  "baselineFiles": {
+    "preflight-baseline.json": "sha256 of all 186 HTML + 118 non-HTML artifacts before any change (data-plane byte-equality proof)",
+    "concurrencyCheck": "rebuild produced identical HTML (tree digest delta = _notes.ndjson only), so no other session was mid-write at preflight time"
+  }
+}

@@ -274,6 +274,16 @@ function apiEventLine(event) {
  * 返回空串是完全合法的：所有输入都没有时它什么都不加（因此非厂商页传空上下文
  * 不会多出一个字节）。
  */
+// [T5-vendor-300-official-paren]
+// T5 删除（census A · 半句）：删「（取自本站收录的官方页面地址；本站不推断厂商主页）」—— **来源自证 + 否定式自证**（我们没有推断主页）。链接本身与 `rel="noopener"` 是读者需要的全部。⚠️ 25 个厂商页共用同一模板（改一处全站生效）；它在 `${view.official.matched ? '' : '…'}` 里，删的是那个字符串字面量的内容（**不拆三元**，保持结构）。
+// [T5-vendor-319-api-vsrc]
+// T5 删除（census A · 半句）：删「<span class="vsrc">全部来自 API / Token 计费对比 的同一份数据</span>」—— **数据来源自证**；三组计数（记录 / 计价条目 / 计费通道）是读者要的，保留。
+// [T5-vendor-329-mapping-paren]
+// T5 删除（census A · 半句）：删「（developer/owner 逐字相等，或关系层显式映射到这一家的计费记录；不按名称相似度归并）」—— **归一实现自证**。计数「Model Registry 归属模型 N 个」**保留**（删的只是括号里的实现说明）。
+// [T5-vendor-354-changes-paren]
+// T5 删除（census A · 半句）：删「（同一份事件、同一套措辞，这一层只搬运）」—— **实现自证**（我们这一层只是搬运）。两支的标题与列表保留。
+// [T5-vendor-377-feed-threshold-paren]
+// T5 删除（census A · 半句）：删「（订阅源按「当前有效优惠 ≥ 门槛」生成）」—— **生成门槛自证**。空态事实与「全站订阅见 订阅中心」保留。⚠️ 元素保留（`.vsnote.vnone`，16 页 kind=half⇒ `main-vsnote` 元素数恒为 6 == floor 6，与 captain 的真浏览器实测一致）。
 function renderVendorKnowledgeSections(spec, ctx = {}) {
   if (!spec || spec.kind !== 'vendor') return '';
   const view = ctx.view || vendorViewOf(spec, ctx);
@@ -297,7 +307,7 @@ function renderVendorKnowledgeSections(spec, ctx = {}) {
 
   const officialBlock = view.official
     ? vsnote('official-entry', `<p class="vsnote">${escapeHtml(view.official.label)}：<a href="${escapeHtml(view.official.url)}" rel="noopener">${escapeHtml(view.official.url)} ↗</a>`
-      + `${view.official.matched ? '' : '（取自本站收录的官方页面地址；本站不推断厂商主页）'}`
+      + `${view.official.matched ? '' : ''}`
       + `${view.officialSources.length > 1 ? ` · 另有 ${view.officialSources.length - 1} 个官方地址见各条目` : ''}</p>`)
     : vsnote('official-entry-missing', `<p class="vsnote vnone">${rich('本站尚未收录这家厂商的官方地址（没有可引用的记录），因此不写一个「看起来像主页」的地址。')}</p>`, true);
   const updatedBlock = view.updatedAt
@@ -316,7 +326,7 @@ ${listOrEmpty(view.codingPlans.map(plan => `        <li><a href="${escapeHtml(`$
     + ` · 模型计价条目 <b ${countMark('api-model-items', view.apiModelCount)}>${view.apiModelCount}</b> 条`
     + ` · 计费通道 <b ${countMark('api-channels', view.apiChannels.length)}>${view.apiChannels.length}</b> 类`
     + `${view.apiChannels.length ? `（${escapeHtml(view.apiChannels.join('、'))}）` : ''}`
-    + `<span class="vsrc">全部来自 <a href="${escapeHtml(`${prefix}plans/api/`)}">API / Token 计费对比</a> 的同一份数据</span></p>
+    + `</p>
       <ul class="vlist">
 ${listOrEmpty(view.apiRecords.map(plan => `        <li><a href="${escapeHtml(`${prefix}plans/api/#plan-${plan.id}`)}">${escapeHtml(plan.planName)}</a>`
     + `<small>${escapeHtml(plan.channelLabel)} · ${escapeHtml(plan.unit)} · 模型计价条目 ${plan.modelCount} 条`
@@ -326,7 +336,7 @@ ${listOrEmpty(view.apiRecords.map(plan => `        <li><a href="${escapeHtml(`${
       </ul>`);
 
   const modelsBlock = vsnote('models-count', `<p class="vsnote">Model Registry 归属模型 <b ${countMark('models', view.models.length)}>${view.models.length}</b> 个`
-    + `<span class="vsrc">（developer/owner 逐字相等，或关系层显式映射到这一家的计费记录；不按名称相似度归并）</span></p>
+    + `</p>
       <ul class="vlist">
 ${listOrEmpty(view.models.map(model => `        <li><a href="${escapeHtml(`${prefix}models/${encodeURIComponent(model.slug)}/`)}">${escapeHtml(model.name)}</a>`
     + `<small>${escapeHtml(model.developer)} · ${escapeHtml(model.family)}`
@@ -351,7 +361,7 @@ ${listOrEmpty(view.models.map(model => `        <li><a href="${escapeHtml(`${pre
   const changesBlock = vsnote('changes-lanes', `<p class="vsnote">${rich((ctx.hasTopicChanges
     ? '优惠变化见本页上方的「最近变化」块。'
     : '') + '下面两支来自**套餐变化日志**'
-    + '与 **API 计费变化日志**（同一份事件、同一套措辞，这一层只搬运）。')}</p>
+    + '与 **API 计费变化日志**。')}</p>
       <h3 class="vh3">Coding 套餐变化（${view.planEvents.length} 条）</h3>
       ${view.planAvailability !== 'ok'
     ? vsnote('plan-changes-unavailable', `<p class="vsnote vnone">${rich('本次构建没有拿到套餐变更日志 —— 这不表示「没有变化」。')}</p>`, true)
@@ -374,7 +384,7 @@ ${listOrEmpty(apiChangeLines.map(apiEventLine), '变化日志里没有与这家�
     ? vsnote('vendor-feed', `<p class="vsnote">订阅这一家：<a href="${escapeHtml(`${prefix}${feedSpec.path}`)}">RSS</a>`
       + ` · <a href="${escapeHtml(`${prefix}${feedSpec.jsonPath || feedSpec.path}`)}">JSON Feed</a>`
       + `${feedSpec.title ? `（${escapeHtml(feedSpec.title)}）` : ''}</p>`)
-    : vsnote('vendor-feed-missing', `<p class="vsnote vnone">这家厂商当前没有独立的订阅源（订阅源按「当前有效优惠 ≥ 门槛」生成）；`
+    : vsnote('vendor-feed-missing', `<p class="vsnote vnone">这家厂商当前没有独立的订阅源；`
       + `全站订阅见 <a href="${escapeHtml(`${prefix}feeds/`)}">订阅中心</a>。</p>`, true);
 
   return `      <section class="vknow" id="${KNOWLEDGE_WRAPPER_ID}" aria-labelledby="vendor-knowledge-h">

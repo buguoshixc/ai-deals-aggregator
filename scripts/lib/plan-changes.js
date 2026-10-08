@@ -78,6 +78,10 @@ const PLAN_HOME_PRIORITY = [
 ];
 
 /** 分栏级措辞（类型 / 字段 / 结束原因的措辞在 `plan-history.js`，同一件事只有一种说法） */
+// [T5-plan-changes-104-plansSource]
+// T5 删除（census B · 重复）：「套餐变化来自本站重建套餐数据时的观测记录；」是**生成方式自证**（同一段 disclaimer 的第一句已经说过「本站重建套餐数据时留下的观测记录」），删掉；保留「变更记录自 {date} 起。」—— 起算日是 C 类（读者需要知道时间口径）。
+// [T5-plan-changes-105-disclaimer-tail]
+// T5 删除（census B · 重复）：删「价格、额度与条款最终以厂商官方页面为准。」—— 与共享页脚同义。保留前半句（生命周期状态的必要解释）。⚠️ 同一常量也被套餐变化 Feed 消费 ⇒ 全站同改，收口核对 Feed 产物。
 const PLAN_CHANGES_WORDING = {
   PLAN_CHANGES_SECTION: {
     created: '今日新增',
@@ -101,9 +105,9 @@ const PLAN_CHANGES_WORDING = {
       restored: '没有观测到重新出现的套餐。'
     },
     unavailable: '本次构建没有拿到套餐变更日志（plan-history.json 缺失或损坏）——这不表示「没有变化」。',
-    plansSource: '套餐变化来自本站重建套餐数据时的观测记录；变更记录自 {date} 起。',
+    plansSource: '变更记录自 {date} 起。',
     disclaimer: '以上是本站重建套餐数据时留下的观测记录；「不再收录」表示人工来源层不再列出该套餐，'
-      + '不表示厂商已经下架或套餐已经停售。价格、额度与条款最终以厂商官方页面为准。'
+      + '不表示厂商已经下架或套餐已经停售。'
   }
 };
 
@@ -145,6 +149,8 @@ const API_PLAN_HOME_PRIORITY = [
  * 「分栏标题 / 空态 / 本页摘要」这些**只有 /changes/ 这一层才需要**的槽位 ——
  * 抄一份句子就会立刻出现「同一件事两种说法」。
  */
+// [T5-plan-changes-166-apichange-plansSource]
+// T5 删除（census B · 重复）：与套餐侧同一处置 —— 删生成方式自证，保留起算日。这一条同时被 /plans/ 与 /plans/api/ 的 API 变化块消费（改一处两页生效）。
 const API_PLAN_CHANGES_LABELS = Object.assign(
   {},
   apiPlanHistory.API_PLAN_HISTORY_WORDING.API_PLAN_HISTORY_LABELS,
@@ -163,7 +169,7 @@ const API_PLAN_CHANGES_LABELS = Object.assign(
       ended: '自起算日起，没有观测到不再收录的 API 计费记录。',
       restored: '没有观测到重新出现的 API 计费记录。'
     },
-    plansSource: 'API 价格变化来自本站重建 API 计费数据时的观测记录；变更记录自 {date} 起。',
+    plansSource: '变更记录自 {date} 起。',
     disclaimer: apiPlanHistory.API_PLAN_HISTORY_WORDING.API_PLAN_HISTORY_NOTES.disclaimer
   }
 );

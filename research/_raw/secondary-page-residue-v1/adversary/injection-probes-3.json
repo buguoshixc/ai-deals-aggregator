@@ -1,0 +1,21 @@
+{
+  "probes": [
+    {
+      "id": "P11",
+      "exitCode": 1,
+      "redCount": 6,
+      "redSample": [
+        "  ✗ need/dev-credits/#0 槽位 main-snote 签名 <snote>：清单声明 0 条、产物里数出 1 条 —— 产物里出现了没有登记的说明容器（绕过 noteDeclare() 直接写进页面）",
+        "  ✗ need/dev-credits/ 整页 .snote：清单声明 0 条、产物里数出 1 条（完整对账不许有差额）"
+      ],
+      "greenReadouts": [
+        "  ✓ 二级数据页首屏无说明: 45 页（**含别名页**，没有例外名单） · 残留说明 × 8 个禁词 0 命中",
+        "  ✓ 目录页家族题注形状: 45 条 <caption> 逐字匹配「共 N 条。/ 共 N 个入口。」（另有 56 条非目录页题注不在本规则射程内，只报告不判）"
+      ],
+      "noteInProduct": false,
+      "noteBeforeTable": false,
+      "distPromoted": true,
+      "logFile": "injection-logs/P11.log"
+    }
+  ]
+}

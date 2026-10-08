@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
  * 本地/CI 共用的发布产物组装：
  *   校验数据 → 组装 dist/ → 预渲染静态骨架 → 自检产物内容
@@ -2420,10 +2420,12 @@ ${ungroupedFeeds.map(rowHtml).join('\n')}
     })
     .join('\n');
   const emptyPlanNote = emptyPlanNotes;
-// [T5-build-local-2427-vendor-scope-note]
-// T5 删除（census A · 自证整条）：**整条删除**「厂商订阅门槛口径」那条 .snote。为什么删：它渲染的是**生成门槛的数值与内部理由**（「≥ N 条才给这一家生成订阅」「只出现一两条记录的厂商单独开一个订阅没有价值」「地址来自人工维护的 slug 表」）—— 判据实现 / 取舍理由 / 内部命名机制三类都是维护口径。怎么删：真分支**整支去掉**（不是返回空串）—— 返回空串会留下一个 noteDeclare 的**幽灵声明**（清单声明 1 条 / DOM 0 条 ⇒ §22c ⑨ 逐页逐槽位对账当场红）。门禁核对：`feeds/` 的台账下限是 `floors.main-snote ≥ 4`，本轮同批删掉 3 条分组 note（feeds.js 的 student / developer / category）+ 这一条 ⇒ 8 − 4 = **4 == floor**（压线，未破）；§22c ⑨ 的「结构下限」与「棘轮」在收口时逐条复核（stage-b-deltas.json 的 gatesAffected）。
   const vendorNote = vendorFeeds.length
-    ? ''
+    ? noteDeclare(noteRoute, {
+      kind: 'feed-vendor-scope', slot: 'main-snote', classes: 'snote',
+      declaredBy: 'build-local.js:renderFeedsPage(厂商订阅门槛口径)'
+    }, `<p class="snote">厂商订阅只给「当前收录的优惠 ≥ ${feeds.VENDOR_THRESHOLDS.minDeals} 条」或「历史变更事件 ≥ ${feeds.VENDOR_THRESHOLDS.minEvents} 条」的厂商生成：` +
+      `只出现一两条记录的厂商单独开一个订阅没有价值。厂商改名不会改订阅地址（地址来自人工维护的 slug 表）。</p>`)
     : noteDeclare(noteRoute, {
       kind: 'feed-vendor-empty', slot: 'main-snote', classes: 'snote',
       declaredBy: 'build-local.js:renderFeedsPage(没有达门槛厂商订阅时的说明)'
@@ -2713,9 +2715,7 @@ function renderDirectoryPage(spec, deals, indexHtml, context) {
    *   ① **首屏（标题下）—— 一个字都没有。** 顶部只留 `<h1>` + 「共 N 条 · 数据更新 …」。
    *      上一轮留下的 `userIntro`（0~1 句 `<p class="snote">`）本轮整层删除：
    *      实测 41 个页面每页至少占一行，而它解释的内容读者不看也能用这一页。
-   *      判据在构建期（本文件「首屏说明必须为空」那条结构性扫描）。**没有白名单**：
-   *      `secondary-page-residue-v1` 起别名页那条例外已退役（见下方「为什么现在没有例外」），
-   *      扫描对目录页家族**逐页一视同仁**，多一条即红。
+   *      判据在构建期（本文件「首屏说明必须为空」那条结构性扫描，白名单只有别名页）。
    *   ② `userNotes` —— 底部 `<details class="page-notes">`，只放三类内容
    *      （分类边界 / 来源与条款 / 少量误解说明）。**真没有价值的内容直接不展示**，
    *      不倒进折叠块 —— 把垃圾藏进 `<details>` 不是简化。
@@ -2734,29 +2734,11 @@ function renderDirectoryPage(spec, deals, indexHtml, context) {
    * `seo.js` 的 `visibleText()` 都只剥 script/style/注释/标签，`<details>` 的正文照样计入。
    * 这一点是本轮敢用折叠的前提 —— 折起来的内容仍然能被搜索引擎与「无 JS 读全文」读到。
    *
-   * ## 为什么现在**没有**例外（`secondary-page-residue-v1` 起）
+   * ## 唯一的例外：别名页的 `.aliasnote`
    *
-   * 上一轮留下的唯一例外是别名页（`/need/student-only/` 等三条）顶上那条
-   * `<p class="snote aliasnote">`。上一轮把它判成「导航更正」，理由是「读者点进旧地址时必须
-   * 知道自己在哪、该去哪」—— **这条理由站不住**，本轮实测逐条推翻：
-   *
-   *   · 它渲染出来的**不是导航**：正文里既没有「去目标页」的可点路径（链接的是页面标题，
-   *     不是「换个页面看」这个动作），也没有面包屑之外的任何导航语义 —— 读者真正用来导航的
-   *     是面包屑与站内链接，那两处都不靠这句话。实测三个别名页各有 **183** 个站内入链来源
-   *     （排除三个别名页自身后仍是 183），全站**零入链路由 0**：这句话对「找得到目标页」
-   *     零贡献。
-   *   · 它渲染的是**站务机制与内部标识符**：「保留旧地址可用」「搜索引擎的收录以目标页为准
-   *     （本页为 noindex）」是站务口径；`原因：….studentSignal` / `benefitType 含 free_api`
-   *     是内部判据标识符。两类都在 H11 / H13 的移除之列 —— 上一轮之所以把它当例外留下，
-   *     是因为构建期那条扫描当时用 `class="snote"` **精确串**匹配，对
-   *     `<p class="snote aliasnote">` **一条都照不到**（`changes-selftest` ⑪ 有正反例探针），
-   *     于是它的内部措辞从来没被任何守卫看见过 —— 「没被咬到」被误读成了「判过没问题」。
-   *
-   * 本轮整条删除（不是写短、不是折叠、不是改名），并让**目录页家族（含别名页）**走同一条
-   * 判据：首屏页面级说明 **0 条**。删掉之后三个别名页的底部折叠块仍然非空 —— 它们在按需求页
-   * 注册表里本来就有自己的 `userNotes`（1 / 2 / 2 条），本轮只是删掉了「别名页不吃共享句」
-   * 那个分叉，共享句因此照常进折叠块，不是空容器。机器上由两条牙守着：本文件的首屏扫描
-   * （判据已从「非别名页 0 条」升级为「全家族 0 条」）与 `verify-site.js` §22c ③b。
+   * 旧地址页（`/need/student-only/` 等三条）顶上那条「这一页是旧地址：它与 X 收的是同一批
+   * 条目……该去哪里」**不是**解释性副标题，而是「你在哪、该去哪」的导航更正；页面本身
+   * noindex。它因此是本轮唯一被保留的页面级 `.snote`，并在构建期扫描里逐条登记路由。
    */
 
   /**
@@ -2794,27 +2776,20 @@ function renderDirectoryPage(spec, deals, indexHtml, context) {
     ? [SHARED_NOTES.hub, SHARED_NOTES.hubMissing]
     : [SHARED_NOTES.overlap, SHARED_NOTES.tristate];
   const ownNotes = Array.isArray(spec.userNotes) ? spec.userNotes.filter(line => typeof line === 'string' && line.trim()) : [];
-  // 别名页**不再**吃自己的分叉：它也有自己的 `userNotes`（它在按需求页注册表里），
-  // 但共享句照样进折叠块 —— 「别名页不吃共享句」那个分叉随 `.aliasnote` 一起退役
-  // （见上面那段：例外退役的实测依据）。
-  const noteLines = [...ownNotes, ...sharedNotes];
+  const noteLines = isAlias ? ownNotes : [...ownNotes, ...sharedNotes];
 
   // ---- 说明意图（notes-manifest-v1）：这一页属于哪一族 + 页面族的结构下限 ----
   //
-  // 下限是**页面族不变式**，与「具体哪几条说明」无关：**目录页家族（含别名页）**在 `<main>` 里
-  // 一条 `.snote` 都不该有（首屏说明那一层已删，别名页那条导航更正本轮也整条删除），
+  // 下限是**页面族不变式**，与「具体哪几条说明」无关：别名页必须恰好有 1 条页面级说明
+  // （导航更正），非别名目录页在 `<main>` 里一条 `.snote` 都不该有（首屏说明那一层已删），
   // 底部折叠至少要有共享句那几条，厂商页六节说明一条不少。防的是「登记与模板一起被删」
   // —— 那时两侧会同时少一条，逐条对账看不见，只有下限还站得住。
-  //
-  // ⚠️ 上一版这里写的是「别名页必须恰好有 1 条页面级说明（导航更正）」+ `isAlias ? 1 : 0` ——
-  //    那条例外退役的实测依据见 renderDirectoryPage 顶部的说明块。下限现在**全家族同形**：
-  //    `main-snote` 0 条、`main-pnote` 至少共享句条数 —— 别名页与其它目录页不再有第二种形状。
   const pageRoute = spec.route || `${spec.slug}/`;
   notePage(pageRoute, {
     kind,
     floors: {
-      'main-snote': { min: 0 },
-      'main-pnote': { min: sharedNotes.length },
+      'main-snote': { min: isAlias ? 1 : 0 },
+      'main-pnote': { min: isAlias ? 0 : sharedNotes.length },
       'main-vsnote': { min: kind === 'vendor' ? vendorPage.VENDOR_NOTE_COUNT : 0 }
     }
   });
@@ -2828,8 +2803,7 @@ function renderDirectoryPage(spec, deals, indexHtml, context) {
   const sharedNoteKinds = isHub
     ? ['hub-scope-note', 'hub-threshold-note']
     : ['shared-overlap-note', 'shared-tristate-note'];
-  // 与 noteLines 同一处分叉一起退役：别名页的签名集合 = 自有签名 + 共享签名。
-  const noteKinds = [...ownNoteKinds, ...sharedNoteKinds];
+  const noteKinds = isAlias ? ownNoteKinds : [...ownNoteKinds, ...sharedNoteKinds];
 
   const notesHtml = noteLines.length
     ? `      <details class="page-notes">
@@ -2851,6 +2825,9 @@ ${noteLines.map((line, index) => noteDeclare(pageRoute, {
   const crumbParent = kind === 'category'
     ? { name: '按分类浏览', route: 'category/' }
     : (kind === 'vendor' ? { name: '按厂商浏览', route: 'vendor/' } : null);
+  const aliasTarget = isAlias && plan
+    ? (plan.pages.find(page => page.route === spec.aliasOf) || null)
+    : null;
 
   // JSON-LD：#1 CollectionPage、#2 BreadcrumbList、#3 ItemList。
   // `/status/` 那页连面包屑都只有可见侧、结构化数据一条都没有 —— 这里补齐。
@@ -2925,30 +2902,14 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
    *   · 「没有依据的字段写「尚未确认」，不写成「不可用」」是**用户需要**的图例，
    *     但它属于「少量误解说明」→ 移到底部 `.page-notes`（见 SHARED_NOTES.tristate）。
    *
-   * ## 为什么别名页的题注**不再**保留（`secondary-page-residue-v1`）
-   *
-   * 上一版这里是三支，别名页那一支保留了一句长题注（62 / 63 / 64 字）：
-   * 「共 N 条 —— 与 X 是同一批条目（同一份判据）。这一页保留旧地址可用，但**不参与搜索收录**；
-   * 收录以目标页为准。」上一轮的理由是「读者点进旧地址时必须知道自己在哪、该去哪里，那是
-   * USER_REQUIRED，不是维护口径」—— **这个理由不成立**：
-   *
-   *   · 「保留旧地址可用」与「不参与搜索收录 / 收录以目标页为准」是**站务机制**，
-   *     与读者判断这一页的条目能不能用无关；一句话里点了两次「收录」。
-   *   · 标题下面那行 `meta` 已经写了条数，表格上方再写一遍「共 N 条」是**重复**（本轮要删的
-   *     B 类残留就是这一类）。
-   *   · 读者真正需要的那件事（「这是一条旧地址」）本来就不该靠正文说 —— 那条路走的
-   *     是 `landing-aliases.json` 的机制侧契约（`noindex,follow` + 自指 canonical + 不进 sitemap
-   *     + 条目集合与目标页逐条相同），页面上不再有任何说明文字。
-   *
-   * 于是三支合并成两支：枢纽页写入口数，其余目录页（**含别名页**）写条数。
-   * ⚠️ 判据边界：格式牙（本文件的「目录页家族题注形状」扫描）只能证「每一页的题注都是
-   * `共 N 条。` 形状」，**证不了**「别名页题注 == 非别名页题注」—— 两侧走的是同一条规则，
-   * 这正是它弱的地方；「别名页确实走了同一条分支」由**源码形状**（这一支里没有 kind 分叉）
-   * 与 diff 保证，机器上则由首屏说明 = 0 与题注形状两条各自守着各自的那一半。
+   * 别名页的题注**保留**：读者点进旧地址时必须知道「自己在哪、该去哪里」，
+   * 那是 USER_REQUIRED，不是维护口径。
    */
   const caption = isHub
     ? `共 ${childList.length} 个入口。`
-    : `共 ${deals.length} 条。`;
+    : (isAlias
+      ? `共 ${deals.length} 条 —— 与 <a href="${prefix}${spec.aliasOf}">${htmlEscape(aliasTarget ? aliasTarget.title : spec.aliasOf)}</a> 是同一批条目（同一份判据）。这一页保留旧地址可用，但<b>不参与搜索收录</b>；收录以目标页为准。`
+      : `共 ${deals.length} 条。`);
 
   // 数据摘要（v1.7）：每个数字都带 `data-summary-label/value`，既给读者看，
   // 也给 SEO 门禁**独立重算**用 —— 「页面写 12、实际列 7」因此在构建期就红。
@@ -2972,16 +2933,22 @@ ${summary.map(row => `        <li data-summary-label="${htmlEscape(row.label)}" 
     ? context.renderCore.changesTopicHtml(context.topic, prefix)
     : '';
 
-  // 别名页的可见说明（`.aliasnote`）本轮**整条删除** —— 退役依据见 renderDirectoryPage 顶部
-  // 那段「为什么现在没有例外」。三个别名页在按需求页注册表里本来就有自己的 `userNotes`，
-  // 底部折叠块因此仍然非空（不许空容器的既有断言照旧盯着）。
-  // `spec.aliasReason` 仍在 `landing.js` 里随计划传入（配置侧保留溯源），
-  // 只是不再有任何渲染路径把它写进页面。
+  // 别名页的可见说明：读者点进旧地址时要知道自己在哪、该去哪里。
+  const aliasNote = isAlias
+    ? noteDeclare(pageRoute, {
+      kind: 'alias-note', slot: 'main-snote', classes: 'snote aliasnote',
+      declaredBy: 'build-local.js:renderDirectoryPage(aliasnote)'
+    }, `      <p class="snote aliasnote">这一页是<b>旧地址</b>：它与 <a href="${prefix}${spec.aliasOf}">` +
+      `${htmlEscape(aliasTarget ? aliasTarget.title : spec.aliasOf)}</a> 收的是同一批条目（同一份判据）。` +
+      `页面保留是为了让老链接仍然可用，但搜索引擎的收录以目标页为准（本页为 noindex）。` +
+      `${spec.aliasReason ? `原因：${htmlEscape(spec.aliasReason)}` : ''}</p>`)
+    : '';
 
   const pageCss = `  /* 只用首页已有的设计变量，不新建一套视觉语言 */
   .cstop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
   .cstop h1 { font-size: 19px; margin: 0; }
   .cstop .meta { color: var(--mut); font-size: var(--fs-sm); }
+  .aliasnote { border-left: 3px solid var(--line); padding-left: var(--s2); }
   .lsum { display: flex; flex-wrap: wrap; gap: var(--s2); list-style: none; margin: 0 0 var(--s3); padding: 0; }
   .lsum li { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 6px 10px; font-size: var(--fs-sm); }
   .lsum li span { color: var(--mut); }
@@ -3086,7 +3053,7 @@ ${extraCss}`;
         <h1>${htmlEscape(spec.heading)}</h1>
         <span class="meta">共 ${isHub ? childList.length : deals.length} ${isHub ? '个入口' : '条'} · 数据更新 ${htmlEscape(String(context.lastmod || ''))}</span>
       </div>
-${summaryHtml}
+${aliasNote}${summaryHtml}
 
       <div class="ctable-wrap">
       <table class="ctable">
@@ -6104,9 +6071,9 @@ function selfCheck(built) {
     // 而那是个**非贪婪 `<p class="snote">…</p>` 正则**根本照不到的新容器 ——
     // 「搬个位置就静默失去覆盖」正是这条守卫最该防的失效方式。
     // ⚠️ 两个 `.snote` 文本容器用 **class token 级**匹配（`\bsnote\b` / `\bvsnote\b`），
-    // 不用 `class="snote"` 这种精确串：后者对 `<p class="snote aliasnote">`（历史上）
-    // 与 `<p class="snote mcount">`（`/models/` 里现在真实存在的多 class 形状）**一条都照不到**。
-    // 「换个类名就静默失去覆盖」与本文件反复记录的那次 `.vsnote` 漏网是同一类失效。
+    // 不用 `class="snote"` 这种精确串：后者对 `<p class="snote aliasnote">` **一条都照不到**，
+    // 而别名页那三句里恰好有内部措辞（实测：`benefitType`）—— 「换个类名就静默失去覆盖」
+    // 与本文件反复记录的那次 `.vsnote` 漏网是同一类失效。
     const PROSE_PATTERNS = [
       /<p\b[^>]*\bclass="[^"]*\bsnote\b[^"]*"[^>]*>([\s\S]*?)<\/p>/g,
       /<p\b[^>]*\bclass="[^"]*\bvsnote\b[^"]*"[^>]*>([\s\S]*?)<\/p>/g,
@@ -6148,18 +6115,15 @@ function selfCheck(built) {
     //
     //   · 扫描面**只限 intro 区** —— `.cstop` 结束到第一个数据区（`.lsum` / 表格容器）之间；
     //     表格里的「为什么在这一页」列、底部折叠说明、页脚都不在其中（那三处本来就该有字）。
-    //   · **没有例外**（`secondary-page-residue-v1` 起）：上一版给别名页开了口子
-    //     （`ALIAS_NOTE_ROUTES` / 恰好 1 条 `.aliasnote`），本轮把那条 `.aliasnote` 整条删除、
-    //     口子一并退役。上面的理由（「导航更正」「读者必须知道自己在哪」）被实测推翻，
-    //     详见 `renderDirectoryPage` 顶部那段说明块。**别名页现在与其它目录页走同一条判据**：
-    //     intro 区 `.snote` 必须 **0 条**，多一条即红 —— 没有名单可绕。
+    //   · **唯一的例外是别名页**（`/need/student-only/` 等三条）：旧地址页顶上那条
+    //     「这一页是旧地址……该去哪里」是**导航更正**，不是解释性副标题，而且那三页是 noindex。
+    //     例外逐条登记在 `ALIAS_NOTE_ROUTES`（由计划现算，不是手写名单），并要求恰好一条、
+    //     且必须带 `aliasnote` 类 —— 白名单只放行**那一条**，不是「跳过那一页」。
     //   · 类名匹配是 **class token 级**的（`\bsnote\b`）。上一版用的是 `class="snote"` 精确串，
     //     于是 `<p class="snote aliasnote">` **一条都照不到**：别名页那句里的内部措辞
     //     （`benefitType`）从来没被这条守卫看见过。本轮实测出这个盲区并修掉
     //     （`changes-selftest` 里有正反例探针：旧正则 0 命中 / 新 matcher 必命中）。
-    //     ⚠️ 这条 matcher **逐字保留**，不许改回精确串 —— `class="snote mcount"`（`/models/` 里
-    //     真实存在）这类多 class 形状照样要靠它才照得到。
-    //   · `判据` **不在禁词表里**：它同时是业务语义（例如 `/models/` 的导语），
+    //   · `判据` **不在禁词表里**：它同时是业务语义（别名页那句「同一份判据」），
     //     机械禁掉会变成一条在正常文案上失败的守卫 —— 那比没有守卫更糟。
     //   · 误报的处置是**改文案**或往 ALLOW 里登记理由，不是把词从表里删掉。
     const INTRO_INTERNAL_TERMS = [
@@ -6167,45 +6131,20 @@ function selfCheck(built) {
     ];
     // 逐条登记的白名单（空 = 当前没有例外）。键是 `路由|词`，值是「为什么这里是业务语义」。
     const INTRO_TERM_ALLOW = new Set([]);
-    // class token 级匹配 —— `\bsnote\b` 既能命中 `class="snote aliasnote"`（历史上）与
-    // `class="snote mcount"`（现在真实存在的多 class 形状），又不会误命中 `class="vsnote"`
-    // （`v` 与 `s` 之间没有词边界）。
+    // class token 级匹配 —— `\bsnote\b` 既能命中 `class="snote aliasnote"`，
+    // 又不会误命中 `class="vsnote"`（`v` 与 `s` 之间没有词边界）。
     // 同一个 matcher 也用在上面那段 Markdown 记号扫描里（同一次盲区修复）。
     const INTRO_SNOTE_RE = /<p\b[^>]*\bclass="[^"]*\bsnote\b[^"]*"[^>]*>([\s\S]*?)<\/p>/g;
-    // 题注形状（本轮新增的第三颗牙）：目录页家族的 `<caption>` 只允许两种逐字形状
-    // —— `共 N 条。`（目录页，含别名页）与 `共 N 个入口。`（枢纽页，它没有条目表）。
-    // 判定用**整串**匹配（不是 `includes`）：多一个字、少一个句号、换了破折号都算红。
-    //
-    // ⚠️ 判据是**条件式**的，不许改成「每题注都必须存在」（captain 独立裁定，2026-10-09）：
-    //    `<caption>` 在任何浏览器里都**不渲染**（对读者零可见价值、也零干扰），
-    //    而它有真实的 **a11y 价值**（表格的可访问名）。所以：
-    //      · 题注**存在** ⇒ 渲染文本必须逐字匹配这个形状（长题注回流即红）；
-    //      · 题注**不存在** ⇒ 只有在**这一页根本没有主表**时才算合法。
-    //    「有表却把题注整条删掉」不是合法删除，是结构缺失 ⇒ 红（见下面 EXPECT_RE 的用法）。
-    //    边界必须说清：这条牙**证不了**「别名页题注 == 非别名页题注」（两侧跑同一条规则），
-    //    它证的是「存在的那些题注形状合规，且该有的地方没缺」。
-    //
-    // ## 反空洞守卫：**按产物现算**，不用绝对常量（对抗复核 F1 的第二半）
-    //
-    // 上一版是 `INTRO_CAPTION_MIN_SCANNED = 20` 这样的绝对门槛。它的失效不是「写错数」，
-    // 而是**形态本身错**：门槛与「产物里应该有多少条题注」没有任何联系，于是
-    // `captionScanned` 只要还 ≥ 20，**任意多页的题注都可以不被判形状**而构建全绿
-    // （T4 沙箱 P6b/P6c/P6d 实测：45 页里改掉 3 页的标记即可静默，改满 25 页才会红）。
-    // 现在的判据是 `captionScanned === captionExpected`，其中 `captionExpected`
-    // 由产物现算（目录页家族里含主表的页数）⇒ 少扫到一页就红，不存在可退化的区间。
-    const INTRO_CAPTION_RE = /^共 \d+ (?:条|个入口)。$/;
-    // 题注标签：**容错属性**（`<caption>` / `<caption class="legacy">` 都算），见下面那条注释。
-    const INTRO_CAPTION_TAG_RE = /<caption[^>]*>([\s\S]*?)<\/caption>/g;
-    // 「这一页有主表」的判据 —— `.ctable-wrap` 是目录页的表格容器。
-    // 只用它判「有表却没题注」，**不用它要求每页都有表**。
-    const INTRO_CAPTION_EXPECT_RE = /<div class="ctable-wrap"|<table[\s>]/;
     const introProblems = [];
     const introHits = [];
-    const captionProblems = [];
-    let captionScanned = 0;
-    // 「应有题注」的**现算**值：目录页家族里含主表的页数。与 `captionScanned` 逐页相等才算过。
-    let captionExpected = 0;
-    const directoryRoutes = new Set(built.directoryPages.map(page => page.route));
+    const ALIAS_NOTE_ROUTES = new Set(
+      built.directoryPages.filter(page => page.kind === 'alias').map(page => page.route)
+    );
+    for (const route of ALIAS_NOTE_ROUTES) {
+      if (!built.directoryPages.some(page => page.route === route)) {
+        introHits.push(`别名页白名单里的 ${route} 不在本次计划里 —— 名单是现算的，出现这一条说明计划与产物不一致`);
+      }
+    }
     for (const page of built.directoryPages) {
       const file = path.join(OUT, `${page.route}index.html`);
       if (!fs.existsSync(file)) continue;
@@ -6223,52 +6162,15 @@ function selfCheck(built) {
         classes: (m[0].match(/class="([^"]*)"/) || ['', ''])[1].split(/\s+/).filter(Boolean),
         text: m[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
       })).filter(note => note.text);
-      // ---- 牙 3：目录页家族（含别名页）的题注只允许「共 N 条。」/「共 N 个入口。」形状 ----
-      // 题注取自 `.cstop` 之后的**整段文档**，不限于 intro 区：`<caption>` 是 `<table>` 的第一个
-      // 子元素，而表格容器（`<div class="ctable-wrap"`）落在它**之前** ⇒ intro 区自己不含题注
-      // （第一版把题注也塞进 intro 区里找，实测扫到 0 条 ⇒ 反空洞守卫当场把构建判红，
-      // 这正是那条守卫存在的意义）。改成整段查找之后，属性写法与容器顺序都不再影响命中。
-      // ⚠️ 取**第一条**题注判形状，但**多余条数单独判红**（多于一条 = 结构可疑，不许「取第一条了事」）。
-      // 判据是**整串**逐字匹配，不是 `includes`。
-      //
-      // ⚠️ 判据边界（不许把这条牙说成比它实际更强的东西）：它**证不了**
-      //    「别名页题注 == 非别名页题注」—— 两侧跑的是同一条规则、同一次扫描，
-      //    别名页只是「目录页家族」这个集合里的一个元素，这条牙对任何一个元素一视同仁。
-      //    「别名页确实走了 caption 的同一条分支」由**源码形状**（`const caption` 那一支里
-      //    已经没有任何 kind 分叉）与 diff 保证。这条牙真正回答的是另一个问题：
-      //    「有没有哪一页的题注悄悄长出第三种形状（长题注回流 / 换个说法）」。
-      // ⚠️ **必须容错标签属性**（`secondary-page-residue-v1` · 对抗复核 F1）。
-      //    第一版写的是 `/<caption>([\s\S]*?)<\/caption>/` —— 只认**无属性**标签。
-      //    实测旁路（T4 沙箱 P6b）：把 3 个别名页的题注改成 `<caption class="legacy">`
-      //    并注回 57 字长题注 ⇒ `npm run build` **exit 0**，读数还是「42 条逐字匹配」——
-      //    那 3 页从扫描面里**消失**了，而不是被判红。只改标记不改内容（P6c）同样静默丢覆盖。
-      //    这与「改个类名就隐形」是同一类失效（`.vsnote` / `class="snote"` 精确串都栽过），
-      //    所以这里用 `<caption[^>]*>`，并且**允许多条**：多于一条即单独判红，不许「取第一条了事」。
-      const hasMainTable = INTRO_CAPTION_EXPECT_RE.test(html.slice(cstopEnd));
-      const captions = [...html.slice(cstopEnd).matchAll(INTRO_CAPTION_TAG_RE)];
-      // 「应有题注」= 有主表的那些页 —— **从产物现算**，所以它天然跟着页面结构走，
-      // 不像绝对常量那样留下「不判也绿」的区间。
-      if (hasMainTable) captionExpected += 1;
-      if (captions.length > 1) {
-        captionProblems.push(`${page.route || '/'} 有 ${captions.length} 条 <caption> —— 主表只允许一条题注`);
-      }
-      if (captions.length) {
-        captionScanned += 1;
-        const captionText = captions[0][1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-        if (!INTRO_CAPTION_RE.test(captionText)) {
-          captionProblems.push(`${page.route || '/'} 题注形状不对（${captionText.length} 字）：`
-            + `${captionText.slice(0, 48)}${captionText.length > 48 ? '…' : ''}`);
-        }
-      } else if (hasMainTable) {
-        // 有主表却没有题注 ⇒ 红。这是「整条删除题注」这条路径的收口：
-        // T4 已裁定题注牙是**条件式**的（不要求每页都有题注），但那是针对「页面本来就没有表」；
-        // 有表而没题注属于结构缺失，不是合法删除 —— 否则「把题注整条删掉」就是一条静默旁路。
-        captionProblems.push(`${page.route || '/'} 有主表（${INTRO_CAPTION_EXPECT_RE.source}）却没有 <caption>`);
-      }
       if (!notes.length) continue;
-      // **没有例外**：所有目录页（含别名页）走同一条判据。
-      introProblems.push(`${page.route || '/'} 首屏仍有 ${notes.length} 条说明`
-        + `（二级数据页首屏只允许标题 / 条目数 / 更新时间）：${notes[0].text.slice(0, 40)}…`);
+      const isAlias = ALIAS_NOTE_ROUTES.has(page.route);
+      if (!isAlias) {
+        introProblems.push(`${page.route || '/'} 首屏仍有 ${notes.length} 条说明`
+          + `（二级数据页首屏只允许标题 / 条目数 / 更新时间）：${notes[0].text.slice(0, 40)}…`);
+      } else if (notes.length !== 1 || !notes[0].classes.includes('aliasnote')) {
+        introProblems.push(`${page.route} 是别名页，intro 区应当**恰好**一条 .aliasnote，`
+          + `实际 ${notes.length} 条（类名 ${notes.map(n => n.classes.join('.')).join(' / ')}）`);
+      }
       for (const note of notes) {
         for (const term of INTRO_INTERNAL_TERMS) {
           if (note.text.includes(term) && !INTRO_TERM_ALLOW.has(`${page.route}|${term}`)) {
@@ -6277,64 +6179,15 @@ function selfCheck(built) {
         }
       }
     }
-    // 非目录页只查题注形状（同一段区间）：它们的题目本来就该描述数据形状，不要求逐字形状。
-    // ⚠️ 这里的 `directoryRoutes` 只用来**如实报告**覆盖面，不参与放行 —— 放行与否由
-    //    「目录页家族扫出来的每条题注都必须匹配」决定，非目录页的题注一条都不进 captionProblems。
-    let captionNonDirectoryScanned = 0;
-    {
-      // 产物里**全部** index.html（按目录遍历现算，不写死路由清单）——
-      // 这一段只为「非目录页题注覆盖率」这个**读数**服务，不参与任何判据。
-      const stack = [''];
-      const pageOutputs = [];
-      while (stack.length) {
-        const relDir = stack.pop();
-        const absDir = path.join(OUT, relDir);
-        if (!fs.existsSync(absDir)) continue;
-        for (const entry of fs.readdirSync(absDir, { withFileTypes: true })) {
-          const relPath = relDir ? `${relDir}${entry.name}` : entry.name;
-          if (entry.isDirectory()) stack.push(`${relPath}/`);
-          else if (entry.name === 'index.html') pageOutputs.push(relPath);
-        }
-      }
-      for (const rel of pageOutputs) {
-        const file = path.join(OUT, rel);
-        const route = rel === 'index.html' ? '' : rel.replace(/index\.html$/, '');
-        if (directoryRoutes.has(route)) continue;
-        const pageHtml = fs.readFileSync(file, 'utf8').replace(/<script[\s\S]*?<\/script>/gi, '');
-        const mainStart = pageHtml.indexOf('<main');
-        if (mainStart < 0) continue;
-        // 同一处属性容错：这里只数**读数**（非目录页有多少条题注），但读数若用精确串，
-        // 就会在报告里少报（而「少报」正是 F1 那类静默的开始）。两个计数器用手写同形的正则。
-        if (INTRO_CAPTION_TAG_RE.test(pageHtml.slice(mainStart))) captionNonDirectoryScanned += 1;
-        INTRO_CAPTION_TAG_RE.lastIndex = 0;
-      }
-    }
     if (introProblems.length) {
       fail(`二级数据页首屏出现了说明（分类判据、字段模型与解释性副标题都不占首屏，见 docs/DESIGN-RULES.md H13）：`
         + `${introProblems.slice(0, 4).join('；')}`);
     } else if (introHits.length) {
       fail(`二级页首屏出现内部实现措辞（分类判据 / 字段模型属于维护文档，见 docs/DESIGN-RULES.md 的口径归档）：`
         + `${introHits.slice(0, 4).join('；')}`);
-    } else if (captionProblems.length) {
-      fail(`目录页家族的题注超出「共 N 条。/ 共 N 个入口。」两种形状（长题注回流即红，见 docs/DESIGN-RULES.md H11）：`
-        + `${captionProblems.slice(0, 4).join('；')}`);
-    } else if (captionScanned !== captionExpected) {
-      // 反空洞守卫（对抗复核 F1 后**改为按产物现算**）：判据是
-      // `captionScanned === captionExpected`，其中 expected = 目录页家族里含主表的页数。
-      //
-      // 为什么不用绝对常量：上一版是 `captionScanned < 20` 这种写法，门槛与「应该有多少条题注」
-      // 毫无联系 ⇒ 只要产物里还留着 20 条题注，**任意多页都可以不被判形状**而构建全绿
-      // （T4 实测：45 页里改掉 3 页的标记即可静默，改满 25 页才会红）。
-      // 现在少扫到**一页**就红，没有可退化的区间 —— 这条守卫防的是「扫描面本身坏了」，
-      // 而「扫描面坏了」的精确表述就是「数出来的比该有的少」。
-      fail(`题注形状牙的覆盖面与产物不符（扫描面坏了 / 有页没产出 / 标签写法逃过了匹配）：`
-        + `目录页家族里判了 ${captionScanned} 条 <caption>，但含主表的目录页有 ${captionExpected} 页`);
     } else {
-      console.log(`  ✓ 二级数据页首屏无说明: ${built.directoryPages.length} 页（**含别名页**，没有例外名单）`
-        + ` · 残留说明 × ${INTRO_INTERNAL_TERMS.length} 个禁词 0 命中`);
-      console.log(`  ✓ 目录页家族题注形状: ${captionScanned}/${captionExpected} 条 <caption> 逐字匹配`
-        + `「共 N 条。/ 共 N 个入口。」（判了 ${captionScanned} · 应有 ${captionExpected} —— 两者必须相等）`
-        + `（另有 ${captionNonDirectoryScanned} 条非目录页题注不在本规则射程内，只报告不判）`);
+      console.log(`  ✓ 二级数据页首屏无说明: ${built.directoryPages.length} 页（${ALIAS_NOTE_ROUTES.size} 条别名页`
+        + `各留一条 .aliasnote，逐条登记在 ALIAS_NOTE_ROUTES）· 残留说明 × ${INTRO_INTERNAL_TERMS.length} 个禁词 0 命中`);
     }
   }
 

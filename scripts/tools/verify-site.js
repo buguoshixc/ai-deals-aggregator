@@ -4467,7 +4467,12 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       { route: 'vendor/zhipu/', kind: 'vendor', label: '厂商落地页' },
       { route: 'category/', kind: 'hub', label: '分类枢纽页' },
       { route: 'vendor/', kind: 'hub', label: '厂商枢纽页' },
-      { route: 'need/student-only/', kind: 'alias', label: '别名页' }
+      // 别名页样本：本轮（`secondary-page-residue-v1`）由 `need/student-only/` 换成
+      // `need/free-api/`。**不是为了换而换**：本节的断言全是「别名这条路由在真浏览器里的
+      // 索引策略 / canonical / 行数对账」，三条别名路由逐条等价，换成哪一条都不改变覆盖面；
+      // 换的目的是让 `need/student-only/` 这个字面量在换壳后**不再出现**（换壳记录在
+      // `WIDE_MUTATION_TARGETS` 那一段注释里，那里的字面量是有意的历史记录）。
+      { route: 'need/free-api/', kind: 'alias', label: '别名页' }
     ];
     for (const sample of samples) {
       const errorsBefore = errors.length;
@@ -6747,7 +6752,13 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   // 其余判据与 t7 相同、未动：
   //   · note-axis    ：border-box 与「主数据区」或「页面主容器 <main>」任一同一轴，
   //                    容差 = max(1px, 5% × min(主数据区宽, 页面列宽))（prompt §11 允许 padding /
-  //                    border / scroll wrapper 的少量差异；.aliasnote 的 3px 竖线 + 8px 缩进属此列）。
+  //                    border / scroll wrapper 的少量差异；`index.html` 共享样式里的
+  //                    `.dsrc-quote { border-left: 2px solid …; padding-left: 8px; }` 与
+  //                    `.doffer { border-left: 3px solid var(--deal); padding: var(--s3) 14px; }`
+  //                    属此列。⚠️ 这里原先点名的是 `.aliasnote`（别名页那条说明的
+  //                    3px 竖线 + 8px 缩进）—— `secondary-page-residue-v1` 把 `.aliasnote`
+  //                    整条删除后，那句注释就在解释一个产物里**不存在**的元素，本轮换成
+  //                    仍然存在的两个形状）。
   //   · note-clipped ：说明自身溢出（scrollWidth > clientWidth + 1，**或** scrollHeight > clientHeight + 1
   //      —— 竖直那一半是 judge-hardening-v1a 补的：竖排 + 固定高度 + overflow:hidden 只有竖直方向被裁，
   //      横向量完全看不出来，t5 的 V3 就是从这里零码穿过去的）。
@@ -6793,14 +6804,37 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   // M1–M4 的四个壳（页面级说明曾经各自被压成 70ch 的就是这四个家族）。它们是**固定路由**，
   // 不是数据 id/slug；每条变异都会先守卫「这一页确实是 wide 族、且真有页面级说明」。
   //
-  // ⚠️ 第一个壳在 secondary-page-intro-changes-v1 里换过一次：
-  //   原先靶页是 `student/`（目录页家族）。本轮把二级数据页首屏的说明**整层删掉**之后，
-  //   非别名目录页在 `<main>` 里已经**一条 `.snote` 都没有**（变化块的「全部变化 →」
-  //   也从 `<p class="snote">` 改成了模块头里的链接）—— 变异失去了承重面。
-  //   目录页家族里现在唯一还带页面级说明的是**别名页**（旧地址通知，三条），
-  //   所以第一个壳换成 `need/student-only/`：它仍然走 build-local.js 的**同一个**
-  //   `renderDirectoryPage`，四个壳的覆盖面（四个页面族）因此一点没变。
-  const WIDE_MUTATION_TARGETS = ['need/student-only/', 'status/', 'changes/', 'feeds/'];
+  // ⚠️ 第一个壳换过**两次**，两次的理由都记在这里（换壳不是无痕动作，必须能追溯）：
+  //
+  //   · **第一次**（`secondary-page-intro-changes-v1`）：`student/` → `need/student-only/`。
+  //     那次把二级数据页首屏的说明**整层删掉**之后，非别名目录页在 `<main>` 里已经一条
+  //     `.snote` 都没有（变化块的「全部变化 →」也从 `<p class="snote">` 改成了模块头里的链接）
+  //     —— 变异失去了承重面。
+  //   · **第二次**（`secondary-page-residue-v1`，本轮）：`need/student-only/` → `plans/`。
+  //     上一轮换过去的那个壳之所以还能承重，靠的正是别名页那条 `.aliasnote`（壳守卫要求
+  //     `geometry.noteCount > 0`，而 `noteCount` = `<main>` 内 `.snote` 条数）。本轮把那条
+  //     导航更正**整条删除**（它的「例外」身份被实测推翻，见 `build-local.js`
+  //     `renderDirectoryPage` 顶部那段说明块），于是该页 `noteCount === 0`、壳守卫直接红，
+  //     而硬编码该路由的 M6 / M8 / M10 / M12 / M14 五条牙同时失去承重面。
+  //     换成 `plans/`：它在 `<main>` 里有 **12 条** `.snote`（原靶页只有 1 条），冻结串恰好
+  //     1 次，首条盒宽/列宽 = 1380 / 1328px（与 `need/student-only/` 逐位相同）—— 承重面是
+  //     **变强**，不是平移。首条说明的物理读数（`wideMeasure` 同口径，逐条读数见下面的
+  //     `M8 要害` 断言与 `metrics.layoutMutationCodes`）：121 字 / 1 行 / 字迹宽 1365.09px /
+  //     1 个字形盒。换靶的逐条复测读数（注入出码 + 不注入干净）入库
+  //     `research/_raw/secondary-page-residue-v1/mutation/target-relocation.json`。
+  //
+  // ## 覆盖面变化（逐字写清，不许含糊）
+  //
+  //   · 换壳前：四壳 = `collection`(`need/student-only/`) / `status` / `changes` / `feeds`，
+  //     **五页**（其中 `need/student-only/` 被 M6/M8/M10/M12/M14 共用）。
+  //   · 换壳后：四壳 = `plans-hub`(`plans/`) / `status` / `changes` / `feeds`，**四页**。
+  //   · 净变化：**目录页家族从此没有任何变异壳**。原因不是「省事」，而是该家族在本轮删除后
+  //     在 `<main>` 里已**无页面级说明可变异**（这正是 ③b 与构建期首屏扫描断言的东西）。
+  //     而 M1–M4 守的是 **`.snote` 的宽柱规则本身**（冻结串的 `max-width: none` +
+  //     `overflow-wrap: anywhere`），不是「目录页有说明」—— 所以价值随承重面迁移到
+  //     `plans/`（12 条说明），覆盖面扩大而非缩小；四个壳的**家族多样性**（plans-hub / status /
+  //     changes / feeds）一个都不少，只是不再有一个「零说明的家族」占着壳位。
+  const WIDE_MUTATION_TARGETS = ['plans/', 'status/', 'changes/', 'feeds/'];
 
   /**
    * 首屏说明（intro）的行数上限 —— secondary-page-content-simplification 的新判据。
@@ -7963,7 +7997,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
             : `documentElement.scrollWidth ≤ 视口+${WIDE_TOL} 全部成立`);
       }
 
-      // ---- ③b 二级标签 / 聚合页的首屏**不许有页面级说明**（secondary-page-intro-changes-v1 的主牙）----
+      // ---- ③b 二级标签 / 聚合页的首屏**不许有页面级说明**（secondary-page-intro-changes-v1 的主牙；
+      //          `secondary-page-residue-v1` 起**没有例外**）----
       //
       // 为什么它在浏览器层、而不是只靠构建期扫描：首屏「有没有一行解释文字」是**排版事实**，
       // 构建期只能按字符串切区间推断（`.cstop` → 第一个数据区锚点）。这里用的是同一份现场几何
@@ -7975,29 +8010,86 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       // 的导语是**那一页自己的主体**（例如订阅中心解释怎么订阅），不在本规则射程内 ——
       // 把它们一起判红就是「一条在正常页面上失败的守卫」，比没有守卫更糟。
       //
-      // 唯一的例外是别名页那条「这一页是旧地址……该去哪里」—— 它是导航更正，不是解释性副标题，
-      // 而且那三页 noindex。例外**不是「跳过这些页」**：它们必须恰好一条，多一条即红。
+      // ## 本轮（secondary-page-residue-v1）把这条判据**收窄到一件事**：`introNoteRoutes.length === 0`
+      //
+      // 上一版的判据是三段合取，其中两段读 `landing-aliases.json` 的 `aliases` 键：
+      //   ① `offenders`（有首屏说明、且不在别名表里）· ② `aliasBad`（别名页不是恰好 1 条）·
+      //   ③ `introNoteRoutes.length === aliasRoutes.size`。
+      // **为什么这三段必须整段退役**（不是「删掉不好看」）：
+      //   · ① / ② 让判据的形状取决于**另一个文件**（别名表）——「别名表里没有的目录页悄悄长出
+      //     首屏说明」在 ① 里会红，但 ③ 那句等号把整条断言又绑回别名表的大小：只要别名表与
+      //     实际页面同步，**自言自语**就能成立。判据应该只回答一个问题：目录页家族有没有首屏说明。
+      //   · ③ 是**结构性偷懒**：`introNoteRoutes.length === aliasRoutes.size` 在别名页各有 1 条时
+      //     恰好成立，于是它同时接受「非别名页 0 条」与「别名页 N 条」两种世界 —— 只要总数对上。
+      //     本轮别名页那条导航更正整条删除后，`aliasRoutes.size` 恒为 3 而正确的 `introNoteRoutes`
+      //     是 0，这条等号会**把正确的产物判红**（这正是它错的最直接证据）。
+      //   · 更根本的：别名页的「例外」本身被实测推翻（三个别名页各有 183 个站内入链来源、
+      //     全站零入链路由 0 —— 那句话对「找得到目标页」零贡献；它渲染的是站务机制与内部标识符）。
+      //     例外退役，**名单一起退役**：判据里不再出现任何「哪几页可以例外」的集合。
+      //
+      // 新判据只有一件事：**目录页家族的全部页面（含别名页）首屏页面级说明 = 0 条**。
+      // 这也顺带修掉了旧版的覆盖面漏洞：旧判据第三段只算 `aliasRoutes` 的子集，任何**别名表里
+      // 没有的**目录页悄悄长出首屏说明它都不管；现在整个 `directoryRoutes` 逐页都在判。
       {
-        const aliasRoutes = new Set((() => {
-          const doc = JSON.parse(fs.readFileSync(landingsLib.ALIASES_FILE, 'utf8'));
-          return Object.keys(doc.aliases || {});
-        })());
+        // ## 射程怎么算：**两把尺子取并集**（对抗复核 F2 修对了一次，又修错了一次，两次都记在这里）
+        //
+        // **第一版**（本轮之前）：`new Set([..., 'alias'])` + 只看 `meta.kind`。
+        //   `lib/page-kinds.js` 的 `ROUTE_PATTERNS` 对 `need/<slug>/` 一律返回 `need`，
+        //   所以 `meta.kind` 对别名页是 **`need`**（它们靠路由前缀进集合），
+        //   而 `'alias'` 在这把尺子下**恒不命中** —— 一个**死元素**：看着像在显式覆盖别名页，
+        //   其实一条都没覆盖到。这正是 F2 报的那件事。
+        //
+        // **第二版**（F2 的修法，**修出了新缺陷**）：改成只读 `dist/_notes.ndjson` 的
+        //   `pageKind`，并把 `'alias'` 从集合里删掉。但清单里别名页的 `pageKind` **就是 `'alias'`**
+        //   （`build-local.js` 的 `notePage(route, { kind })` 传的是页面描述符的 kind），
+        //   于是 `'alias'` 不是死元素、而是**清单真会返回的取值之一** —— 删掉它 ⇒ 三个别名页
+        //   当场掉出射程（45 → 42 页）。这个新缺陷被**下面那条覆盖面断言**当场咬住
+        //   （真浏览器实测读数：`⚠️ 未进射程的别名页：need/dev-credits/ need/free-api/ need/student-only/`）。
+        //   这正好证明那条断言不是装饰。
+        //
+        // **现在（并集）**：同时认两把尺子 —— `meta.kind` 与清单的 `pageKind`，任一命中即算目录页家族。
+        //   两边都不是死元素：`meta.kind` 覆盖路由前缀那一族，清单 `pageKind` 覆盖别名
+        //   （且将来别名迁出 `need/` 也照样命中）。`'alias'` 因此**必须留在集合里**。
         const DIRECTORY_KINDS = new Set(['collection', 'need', 'category', 'vendor', 'hub', 'alias']);
-        const directoryRoutes = wideMeta.filter(meta => DIRECTORY_KINDS.has(meta.kind)).map(meta => meta.route);
+        const kindByRoute = new Map();
+        let manifestKindRead = false;
+        try {
+          const manifestFile = path.join(DIR, '_notes.ndjson');
+          if (fs.existsSync(manifestFile)) {
+            for (const line of fs.readFileSync(manifestFile, 'utf8').split('\n')) {
+              if (!line.trim()) continue;
+              const row = JSON.parse(line);
+              if (row && row.kind === 'page') kindByRoute.set(row.route, row.pageKind);
+            }
+            manifestKindRead = kindByRoute.size > 0;
+          }
+        } catch (error) {
+          // 清单坏了由 ⑨ 报红（那里是本清单的 owner）。这里**不静默缩小射程**：
+          // `kindByRoute` 空 ⇒ 退回只用 `meta.kind`（别名仍靠 `need` 前缀进集合），
+          // 且下面把这件事打印出来。
+        }
+        const kindsOf = meta => {
+          const fromManifest = kindByRoute.get(meta.route);
+          return [meta.kind, fromManifest].filter(Boolean);
+        };
+        const isDirectoryMeta = meta => kindsOf(meta).some(kind => DIRECTORY_KINDS.has(kind));
+        const directoryRoutes = wideMeta.filter(isDirectoryMeta).map(meta => meta.route);
+        const aliasRoutes = wideMeta.filter(meta => kindsOf(meta).includes('alias')).map(meta => meta.route);
         const introNoteRoutes = directoryRoutes.filter(route => {
           const geometry = wideGeometry.get(`${WIDE_DESKTOP}|${route}`);
           return Boolean(geometry && geometry.introIndexes && geometry.introIndexes.length);
         });
-        const offenders = introNoteRoutes.filter(route => !aliasRoutes.has(route));
-        const aliasBad = [...aliasRoutes].filter(route => {
-          const geometry = wideGeometry.get(`${WIDE_DESKTOP}|${route}`);
-          return !geometry || !geometry.introIndexes || geometry.introIndexes.length !== 1;
-        });
-        check(`§22c @${WIDE_DESKTOP} 目录页家族（${directoryRoutes.length} 页）首屏没有页面级说明；${aliasRoutes.size} 条别名页各恰好 1 条导航更正`,
-          offenders.length === 0 && aliasBad.length === 0 && introNoteRoutes.length === aliasRoutes.size,
+        // 别名页的覆盖面**单独**钉住：它们必须真的在产物里、且真的进了射程。
+        // 少了这一条，「别名页从集合里消失」会表现成「判据仍然全绿、只是少判了几页」——
+        // 上面第二版就是这么被咬住的（实测读数见那段注释）。
+        const aliasMissing = aliasRoutes.filter(route => !directoryRoutes.includes(route));
+        check(`§22c @${WIDE_DESKTOP} 目录页家族（${directoryRoutes.length} 页，其中别名页 ${aliasRoutes.length} 页）`
+          + '首屏**没有**任何页面级说明',
+          introNoteRoutes.length === 0 && aliasRoutes.length > 0 && aliasMissing.length === 0,
           `有首屏说明的目录页 ${introNoteRoutes.length} 条：${introNoteRoutes.map(r => r || '/').join(' ') || '无'}`
-          + (offenders.length ? ` · 不该有的 ${offenders.length} 页：${offenders.slice(0, 5).map(r => r || '/').join(' ')}` : '')
-          + (aliasBad.length ? ` · 别名页条数不对：${aliasBad.join(' ')}` : '')
+          + ` · 别名页 ${aliasRoutes.length} 页：${aliasRoutes.join(' ') || '（无！）'}`
+          + ` · kind 来源：${manifestKindRead ? 'meta.kind ∪ 清单 pageKind' : '⚠️ 清单读不到，只用 meta.kind（别名靠 need 前缀进集合）'}`
+          + (aliasMissing.length ? ` · ⚠️ 未进射程的别名页：${aliasMissing.join(' ')}` : '')
           + `（其它宽页的导语不在本规则射程内：${wideMeta.length - directoryRoutes.length} 页）`);
       }
 
@@ -8125,10 +8217,11 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
           untrackedProblems.length === 0,
           untrackedProblems.length ? untrackedProblems.slice(0, 4).join('；')
             : `台账逐页成立：每条无条件的说明（见清单里 untracked.structural）都还在页面上`);
-        check('§22c ⑨ 页面族结构下限：别名页恰好 1 条页面级说明、状态页 2 条、订阅中心 3+1 条、目录页 0 条、厂商页六节说明',
+        check('§22c ⑨ 页面族结构下限：目录页家族（**含别名页**）0 条页面级说明、状态页 2 条、订阅中心 3+1 条、厂商页六节说明',
           floorProblems.length === 0,
           floorProblems.length ? floorProblems.slice(0, 4).join('；')
-            : '全部页面族的说明条数下限成立（下限守住「登记与模板一起被删」那种两侧同时消失的改法）');
+            : '全部页面族的说明条数下限成立（下限守住「登记与模板一起被删」那种两侧同时消失的改法；'
+              + '别名页本轮从「恰好 1 条」并入「目录页家族 0 条」—— 依据见 build-local.js renderDirectoryPage 顶部）');
         check(`§22c ⑨ 完整对账：complete 页面的整页 .snote 总数逐字相等（${[...manifestPages.values()].filter(page => !page.untracked).length} 页）`,
           completeProblems.length === 0,
           completeProblems.length ? `${completeProblems.length} 页有差额：${completeProblems.slice(0, 4).join('；')}`
@@ -8282,33 +8375,36 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         anchor: WIDE_SNOTE_FROZEN, replacement: WIDE_SNOTE_NARROW
       }));
       wideMutations.push(
-        { id: 'M6', route: 'need/student-only/', width: WIDE_NARROW, expect: `page-overflow@${WIDE_NARROW}`, target: 'replace', inject: true,
-          what: `拿走 .snote 的 overflow-wrap:anywhere 并注入 ${WIDE_LONG_TOKEN.length} 字符不可断串`,
+        { id: 'M6', route: 'plans/', width: WIDE_NARROW, expect: `page-overflow@${WIDE_NARROW}`, target: 'replace', inject: true,
+          what: `拿走 .snote 的 overflow-wrap:anywhere 并注入 ${WIDE_LONG_TOKEN.length} 字符不可断串`
+            + '（靶页本轮由 need/student-only/ 换到 plans/：前者删掉别名说明后 <main> 内 0 条 .snote，变异没有承重面）',
           anchor: WIDE_SNOTE_FROZEN, replacement: WIDE_SNOTE_NOWRAP },
         { id: 'M7', route: 'status/', width: WIDE_DESKTOP, expect: 'unexpected-detail-main', target: 'dom',
           what: '给宽页的 <main> 加上 detail-main 类（DOM 注入，注入前守卫该类原本不存在）' },
-        { id: 'M8', route: 'need/student-only/', width: WIDE_DESKTOP, expect: 'note-narrow', target: 'extend', expectFirstNote: true,
+        { id: 'M8', route: 'plans/', width: WIDE_DESKTOP, expect: 'note-narrow', target: 'extend', expectFirstNote: true,
           rule: '.snote { padding-right: calc(100% - 70ch); }',
-          what: 'F1 原型：把 .snote 的 padding-right 写成 calc(100% - 70ch) —— 盒宽一字不动、有字区域恒等于 70ch（修复前整轮 0 失败放行的那一条）' },
+          what: 'F1 原型：把 .snote 的 padding-right 写成 calc(100% - 70ch) —— 盒宽一字不动、有字区域恒等于 70ch（修复前整轮 0 失败放行的那一条）'
+            + '（靶页同上换到 plans/：这条断言读**未注入**几何的 notes[0]，plans/ 有 12 条说明，成立性比原靶页的 1 条更好）' },
         { id: 'M9a', route: 'docs/data/', width: WIDE_DESKTOP, expect: 'note-narrow', target: 'extend',
           rule: '.snote ~ .snote { max-width: 70ch; }', selector: '.snote ~ .snote',
           what: 'F2 原型：只压**非首个** .snote（相邻兄弟选择器）' },
         { id: 'M9b', route: 'changes/', width: WIDE_DESKTOP, expect: 'note-narrow', target: 'extend',
           rule: '.snote:not(:first-of-type) { max-width: 70ch; }', selector: '.snote:not(:first-of-type)',
           what: 'F2 原型：只压**非首个** .snote（:not(:first-of-type)）' },
-        { id: 'M10', route: 'need/student-only/', width: WIDE_WIDE, expect: 'note-narrow', target: 'extend',
+        { id: 'M10', route: 'plans/', width: WIDE_WIDE, expect: 'note-narrow', target: 'extend',
           rule: '@media (min-width: 1500px) { .snote { max-width: 70ch; } }',
-          what: 'F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到）' },
+          what: 'F4 原型：缺陷藏在 @media (min-width:1500px) 里（@1440 档物理上看不见，只有 @1600 档咬得到）'
+            + '（靶页同上换到 plans/）' },
         // ---- t14（修复轮 3）新增：两条「盒子满宽、只有排版结果变窄」的牙 ----
         { id: 'M11', route: 'changes/', width: WIDE_DESKTOP, expect: 'note-ink-narrow', target: 'extend', expectInkEvidence: true,
           rule: '.snote { display: grid; grid-template-columns: minmax(0, 70ch) 1fr; }',
           what: 't8 的 F-R2-1 原型：display:grid + minmax(0,70ch) 1fr —— 只改一条 CSS、不动标记，'
             + '盒宽/内容盒都满宽，文字被排进 70ch 那一轨（修复轮 2 时整轮 842 项 EXIT=0 放行的那一条）' },
-        { id: 'M12', route: 'need/student-only/', width: WIDE_DESKTOP, expect: 'note-hidden-text', target: 'extend', expectNoGlyph: true,
+        { id: 'M12', route: 'plans/', width: WIDE_DESKTOP, expect: 'note-hidden-text', target: 'extend', expectNoGlyph: true,
           rule: '.snote { font-size: 0; } .snote::before { content: "§22c-M12 伪元素承载正文（真实文本已不可见）";'
             + ' display: block; max-width: 70ch; font-size: var(--fs-sm); line-height: 1.7; }',
           what: 't8 的 F-R2-2 原型：真实文本 font-size:0（一个字形都不画），正文交给 ::before 的 content 去画'
-            + ' —— 盒宽/行数一切正常，只有字形盒能看穿' },
+            + ' —— 盒宽/行数一切正常，只有字形盒能看穿（靶页同上换到 plans/）' },
         // ---- t24（修复轮 5）新增：把盒高压成 0 的那一类（T22-F1）----
         { id: 'M13', route: 'docs/data/', width: WIDE_DESKTOP, expect: 'note-unrendered', target: 'extend', expectUnrendered: true,
           rule: '.snote { font-size: 0; }',
@@ -8318,27 +8414,55 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         //   与 M1–M13 的 CSS 变异不同，这条**故意**用 DOM 注入：判据量的是行数，
         //   而任何压窄盒子的 CSS 都会先咬中 note-narrow / note-ink-narrow ——
         //   两条码一起响就证明不了新码自己在守东西。注入只推高行数、其余量一个不动。
-        { id: 'M14', route: 'need/student-only/', width: WIDE_DESKTOP, expect: 'note-intro-long', target: 'intro',
+        //
+        //   ⚠️ 靶页换过一次（`secondary-page-residue-v1`，理由如实记）：原靶页
+        //   `need/student-only/` 是别名页，承重面**完全**来自那条 `.aliasnote`（`wideInjectIntroFiller`
+        //   的注入前守卫要求 `<main>` 内存在首个 `.snote`）。本轮把那条导航更正整条删除 ⇒
+        //   该页 `.snote` 0 条 ⇒ 守卫直接红（"页面没有页面级说明"），牙就废了。
+        //   换成 `models/`：它的首屏 intro 区有**真实**页面级说明（103 字，`.ptable` 之前），
+        //   `.lsum` 是数据摘要区、`main.detail-main` 不存在（不在 ③b 射程内：`models-index`
+        //   不是目录页家族的 kind），台账侧也没有与它冲突的 `minNotes` 下限。
+        //   实测注入前读数（@1440）：盒 1380 / 高 20.39 / 1 行 / 字迹 1205.52px / 1 个字形盒。
+        //   ⚠️ 隔离性**必须被断言**，不能只看读数（对抗复核 F4）：本条的通用判据只要求
+        //   `codes.includes('note-intro-long')`，多出伴随码也照样绿 —— 而 M15/M16 都把码集合钉死了。
+        //   今天它恰好只出 `[note-intro-long]`，那是**读数不是判据**。下面 `expectIsolatedCodes`
+        //   把允许集合显式钉住（DOM 注入只推高行数，别的码一条都不该出）。
+        { id: 'M14', route: 'models/', width: WIDE_DESKTOP, expect: 'note-intro-long', target: 'intro',
+          expectIsolatedCodes: ['note-intro-long'],
           filler: '（M14 注入的填充正文，用来把首屏说明撑成更多行，其余量一律不动。）'.repeat(6),
           what: '首屏说明被写长（DOM 注入填充正文）：盒宽 / 内容盒 / 同轴 / 裁切全都不动，'
-            + '只有「行数」越过上限 ⇒ 必须由 note-intro-long 咬住（本轮之前的产物在 1440 档就有多页命中）' },
+            + '只有「行数」越过上限 ⇒ 必须由 note-intro-long 咬住（靶页本轮由 need/student-only/ 换到 models/）' },
         // ---- vertical-note-coverage-v1 新增：把「竖排」这条覆盖不对称钉成常驻牙（闭合 T31 的 P1）----
         //   形态逐字取 T31 现场用的那一份（`verify/t31/mk-form-scratch.cjs` 的 FORM_CSS，
         //   与 adversary 的 `coverage-asymmetry-writing-mode.json` form.injection 同字节）。
         //   为什么必须是这条牙：它是**唯一**能让「盒/内容盒满宽 + 按行归并只有 1 行」同时成立的形态，
         //   也就是旧口径两条判据（① 内容盒、② 逐行字迹）同时静默的那一类。
-        //   ⚠️ 靶页换过一次（如实记）：T31 的原靶页 `category/agent/` 自
-        //   `secondary-page-intro-changes-v1` 起**一条 .snote 都没有**了（目录页首屏说明整层删除）——
-        //   拿它当靶页等于「变异没有承重面」（实测：注入后 noteCount 0、一条码都不出）。
-        //   现在的靶页 `need/free-api/` 是别名页：它的那 1 条导航更正说明由 ③b 断言「恰好 1 条」，
-        //   所以靶页的承重面是**结构性**的（不随数据漂移），盒宽 1380px 与 T31 原靶页逐位相同。
-        { id: 'M15', route: 'need/free-api/', width: WIDE_DESKTOP, expect: 'note-ink-narrow', target: 'extend',
+        //   ⚠️ 靶页换过**两次**（如实记）：
+        //   ① T31 的原靶页 `category/agent/` 自 `secondary-page-intro-changes-v1` 起
+        //   **一条 .snote 都没有**了（目录页首屏说明整层删除）—— 拿它当靶页等于「变异没有承重面」
+        //   （实测：注入后 noteCount 0、一条码都不出），于是换成别名页 `need/free-api/`
+        //   （它的那 1 条导航更正说明由当时的 ③b 断言「恰好 1 条」，承重面是结构性的）。
+        //   ② 本轮（`secondary-page-residue-v1`）把那条导航更正整条删除 ⇒ `need/free-api/`
+        //   同样变成 0 条 `.snote`，`wideMutate` 的「冻结串恰好 1 次」守卫还在（页内 CSS 仍在、
+        //   冻结串仍恰好 1 次），但**注入的规则命不中任何元素** ⇒ 一条码都不会出。
+        //   换成 `feeds/`：首屏 intro 区有真实页面级说明（实测 @1440：106 字 / 1 行 /
+        //   盒 1380 / 数据区 `.flist` 1380），且它在**未注入**状态下 0 违规码、0 竖排说明
+        //   （M15 的正对照断言正好需要一个这样的页）。
+        { id: 'M15', route: 'feeds/', width: WIDE_DESKTOP, expect: 'note-ink-narrow', target: 'extend',
           expectVertical: true,
+          // ⚠️ 允许集**照抄**脚本自己的正对照口径（下面 `m15Expected`），**不许**加第三个数。
+          //    `note-intro-long` 是竖排形态的固有伴随码：首屏区是**注入后的现场几何**，
+          //    竖排让被注入的说明自身变高、数据区被推下 ⇒ 原本在数据区之前的说明相对位置改变。
+          //    （实测否掉过一个假设：`changes/` 也不是「首屏区一条 .snote 都没有」，
+          //     竖排化后有 2 条落进去；所以「另找一个只出一条码的靶页」这条路走不通。）
+          //    把它写成允许项是**如实**，不是放宽：判据仍是「不许出这两个以外的任何码」。
+          expectIsolatedCodes: ['note-ink-narrow', 'note-intro-long'],
           rule: '.snote { writing-mode: vertical-rl; width: 100%; height: 5.6rem; overflow: hidden; }',
           what: 'T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——'
             + '盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /'
             + '24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；'
-            + '轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）' },
+            + '轮 6 口径下 @1440/@1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）'
+            + '（靶页本轮由 need/free-api/ 换到 feeds/，见上面那段两次换靶记录）' },
         // ---- narrow-reading-columns-v1 新增：保留窄阅读列的登记制（M16）----
         //   注入的是「已登记条目的**另一个**取值」：`.pdetailbody` 从 72ch 被覆盖成 70ch ——
         //   选择器、页面、元素全是真实存在的，唯一变化是「这条声明**不在登记清单里**」。
@@ -8486,6 +8610,21 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
             + ` · 列宽 ${wideRound(column)}px · 阈值 ${wideRound(WIDE_NOTE_RATIO * column)}px`
             + ` · note-narrow ${narrowKeys.length} 条（0 = ① 也看不见）· 盒宽与注入前一致 ${boxUnchanged}`);
         }
+        // **隔离性**（对抗复核 F4，`secondary-page-residue-v1`）：
+        //   上面那条通用判据只查 `codes.includes(expect)` —— 多出**伴随码**也照样绿。
+        //   M11/M15/M16 各自把码集合钉住了，M14 却没有：今天 M14 在 `models/` 上恰好只出
+        //   `[note-intro-long]`，但那是**读数不是判据** —— 哪天另一条判据开始误报，这条牙会
+        //   跟着「一起响」而看不出是谁在守。这里把允许集合显式声明出来（`expectIsolatedCodes`），
+        //   与 M16 的 `otherCodes.length === 0` 同一种写法。
+        //   对 DOM 注入型（M14）尤其重要：注入只推高行数，盒宽/内容盒/同轴/裁切/藏字一条都不该出。
+        if (mutation.expectIsolatedCodes) {
+          const allowed = mutation.expectIsolatedCodes;
+          const extraCodes = codes.filter(code => !allowed.includes(code));
+          check(`§22c ${mutation.id} 隔离性：变异后只许出 [${allowed.join(', ')}]，任何伴随码都说明另有缺陷在响`,
+            Boolean(guard && guard.ok) && extraCodes.length === 0,
+            `允许 [${allowed.join(', ')}] · 实测 [${codes.join(', ') || '无'}]`
+            + (extraCodes.length ? ` · ⚠️ 伴随码 [${extraCodes.join(', ')}] —— 这条牙不再是隔离命中` : ' · 无伴随码'));
+        }
         // M16：登记制的**承重证明**（narrow-reading-columns-v1）——
         //   ① 页面里确实多出一条「未登记」的 ch 窄列，且它就是注入的那条（选择器 + 声明逐字对上）；
         //   ② 已登记的那条（72ch）仍然在扫描结果里 ⇒ 扫描不是「见 ch 就报」，是**按清单**判；
@@ -8535,20 +8674,23 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       }
 
       // ---- M6 正对照：同样的 200 字符不可断串、CSS 一个字节都不动 ⇒ 必须不溢出 ----
+      // 靶页与 M6 同步（`need/student-only/` → `plans/`）：正对照必须和变异跑在**同一页**上，
+      // 否则「不溢出」可能只是因为拿了一条没有 `.snote` 的页面（那正是换靶后原靶页的样子：
+      // `wideInjectToken` 会返回 'none'，断言里的 `injected === 'note'` 直接判红）。
       {
         const target = await browser.newPage({ viewport: { width: WIDE_NARROW, height: 800 } });
         let geometry = null;
         let injected = null;
         try {
           wideNavigations += 1;
-          await target.goto(new URL('need/student-only/', base).href, { waitUntil: 'load' });
+          await target.goto(new URL('plans/', base).href, { waitUntil: 'load' });
           injected = await wideInjectToken(target, WIDE_LONG_TOKEN);
           geometry = await wideMeasure(target);
         } finally {
           await target.close();
         }
         const controlProblems = geometry
-          ? wideProblems(geometry, wideMeta.find(item => item.route === 'need/student-only/'))
+          ? wideProblems(geometry, wideMeta.find(item => item.route === 'plans/'))
           : [{ code: '（页面没打开）', msg: '' }];
         const controlOverflow = controlProblems.filter(problem => problem.code.startsWith('page-overflow@'));
         metrics.layoutMutationCodes['M6-control'] = wideCodes(controlOverflow);
@@ -8562,13 +8704,14 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
 
       // ---- M8/M9a/M9b/M10/M15 的正对照：**不注入**时，五个靶页在对应档位没有任何违规码 ----
       const wideNoInjectionControls = [
-        { id: 'M8', route: 'need/student-only/', width: WIDE_DESKTOP },
+        { id: 'M8', route: 'plans/', width: WIDE_DESKTOP },
         { id: 'M9a', route: 'docs/data/', width: WIDE_DESKTOP },
         { id: 'M9b', route: 'changes/', width: WIDE_DESKTOP },
-        { id: 'M10', route: 'need/student-only/', width: WIDE_WIDE },
+        { id: 'M10', route: 'plans/', width: WIDE_WIDE },
         // M15 的正对照（vertical-note-coverage-v1）：同一页不注入竖排 ⇒ 直接量它自己的读数 ——
         // 「该页说明一条都不是竖排 + 0 违规码」同时证明新判据不是「凡是说明就判窄」。
-        { id: 'M15', route: 'need/free-api/', width: WIDE_DESKTOP }
+        // 靶页与 M15 同步换到 `feeds/`（原靶页 `need/free-api/` 删掉别名说明后 0 条 `.snote`）。
+        { id: 'M15', route: 'feeds/', width: WIDE_DESKTOP }
       ].map(control => {
         const problems = wideProblemsAt.get(`${control.width}|${control.route}`);
         const geometry = wideGeometry.get(`${control.width}|${control.route}`);
@@ -8612,13 +8755,16 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       }
 
       // ---- 反空洞守卫自身的负例自检 ----
+      // 用页面只为了拿到一份「页内样式很多」的产物：`plans/` 与 M1/M6/M8/M10/M12 同页
+      // （原靶页 `need/student-only/` 换成 `plans/` 的连带改动 —— 这一条与 `.snote` 无关，
+      // 但换掉可以少一处「注释里点名一个已不再承重的靶页」）。
       {
         const target = await browser.newPage({ viewport: { width: WIDE_DESKTOP, height: 900 } });
         let absent = null;
         let duplicated = null;
         try {
           wideNavigations += 1;
-          await target.goto(new URL('need/student-only/', base).href, { waitUntil: 'load' });
+          await target.goto(new URL('plans/', base).href, { waitUntil: 'load' });
           absent = await wideMutate(target, '§22c-这个锚点在产物里不存在', 'x');
           // `color: var(--mut);` 在整份内联样式里出现几十次（≥2 ⇒ 非唯一）
           duplicated = await wideMutate(target, 'color: var(--mut);', 'color: var(--mut);');
@@ -8947,7 +9093,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
             };
           }),
           control: {
-            m6: { id: 'M6-control', route: 'need/student-only/', width: WIDE_NARROW, expect: `不得出现 page-overflow@${WIDE_NARROW}`,
+            m6: { id: 'M6-control', route: 'plans/', width: WIDE_NARROW, expect: `不得出现 page-overflow@${WIDE_NARROW}`,
               observed: metrics.layoutMutationCodes['M6-control'] || [] },
             noInjection: wideNoInjectionControls.map(row => ({ id: row.id, route: row.route, width: row.width, noteNarrow: row.narrow, codes: row.codes }))
           },
@@ -9010,7 +9156,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
             return [mutation.id, `${mutation.route || '/'}@${mutation.width}`, mutation.expect,
               `[${codes.join(', ') || '（未执行）'}]${codes.includes(mutation.expect) ? '' : ' ←未咬到'}${extra.narrowKeys && extra.narrowKeys.length ? ` 窄条 ${extra.narrowKeys.join(' ')}` : ''}`];
           }),
-          ['M6 正对照', `student/@${WIDE_NARROW}`, '不得出现 page-overflow', `[${(metrics.layoutMutationCodes['M6-control'] || []).join(', ') || '无'}]`],
+          ['M6 正对照', `plans/@${WIDE_NARROW}`, '不得出现 page-overflow', `[${(metrics.layoutMutationCodes['M6-control'] || []).join(', ') || '无'}]`],
           ['M8/M9/M10 正对照', '四个靶页不注入', '不得出现任何违规码',
             ['M8', 'M9a', 'M9b', 'M10'].map(id => `${id}[${(wideNoInjectionControls.find(row => row.id === id) || {}).codes ? (wideNoInjectionControls.find(row => row.id === id).codes.join(',') || '无') : '?'}]`).join(' ')],
           ['M15 正对照', `不注入（${WIDE_DESKTOP}）`, '干净；注入副本轮如实标注', wideControlRowText('M15')],

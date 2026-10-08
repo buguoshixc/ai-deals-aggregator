@@ -1,0 +1,49 @@
+{
+  "probe": "target-relocation",
+  "injectedInto": "verify-site.js WIDE_MUTATION_TARGETS[0] + M6/M8/M10/M12/M14 的 route（M15 见 mutation/*.json）",
+  "contract": "T1 换靶：need/student-only/ 在删掉 .aliasnote 后 <main> 内 .snote 0 条 ⇒ 壳守卫（family=wide && noteCount>0）与 5 条硬编码该路由的牙同时失去承重面。换成 plans/（M14 换 models/、M15 换 feeds/）。",
+  "command": "node .tmp-a/probe-relocation.cjs dist（临时探针；复刻 wideMeasure / wideProblems 的口径，零写盘）",
+  "notInRepo": ".tmp-a/probe-relocation.cjs 是 Tier-3 临时探针，未入库；原始输出见本文件 readings。",
+  "relocation": {
+    "shell[0]": { "from": "need/student-only/", "to": "plans/", "reason": "<main> 内 .snote 12 条（原靶页 1 条），冻结串恰好 1 次，region=.pchglist 1328px" },
+    "M6": { "from": "need/student-only/", "to": "plans/", "expect": "page-overflow@390" },
+    "M8": { "from": "need/student-only/", "to": "plans/", "expect": "note-narrow" },
+    "M10": { "from": "need/student-only/", "to": "plans/", "expect": "note-narrow" },
+    "M12": { "from": "need/student-only/", "to": "plans/", "expect": "note-hidden-text" },
+    "M14": { "from": "need/student-only/", "to": "models/", "expect": "note-intro-long" },
+    "M15": { "from": "need/free-api/", "to": "feeds/", "expect": "note-ink-narrow" },
+    "control(M6)": { "from": "need/student-only/", "to": "plans/" },
+    "control(M8/M10)": { "from": "need/student-only/", "to": "plans/" },
+    "control(M15)": { "from": "need/free-api/", "to": "feeds/" },
+    "mutation-ledger M6-control": { "from": "need/student-only/", "to": "plans/" },
+    "反空洞守卫负例自检": { "from": "need/student-only/", "to": "plans/", "reason": "与该页无关，仅为「页内样式多」；换掉可以少一处点名已不再承重的路由" },
+    "§18 别名页样本": { "from": "need/student-only/", "to": "need/free-api/", "reason": "三条别名路由逐条等价；换掉让 need/student-only/ 的字面量只剩换壳记录" }
+  },
+  "candidateAttempts": [
+    { "candidate": "docs/data/", "verdict": "未采用", "detail": "首条 .snote 有字区域 1165.7px < 阈值 1173px（.85×1380）⇒ 已处于 note-narrow 边界，M8 的 expectFirstNote 前置不成立" },
+    { "candidate": "plans/coding/", "verdict": "未采用", "detail": "有 1 条 <noscript> 未渲染条（.snote pnoscript，盒高 0）—— 注入类牙的读数会被它污染；plans/ 没有这类条" },
+    { "candidate": "plans/", "verdict": "采用", "detail": "12 条说明、冻结串 1 次、首条 121 字/1 行/有字区域 1365.09px（> 阈值 1128.8）、数据区 .pchglist" },
+    { "candidate": "models/", "verdict": "采用（M14）", "detail": "intro=[0,1]、首条 103 字/1 行/盒 1380、region=.ptable 1380、未注入 0 违规码" },
+    { "candidate": "feeds/", "verdict": "采用（M15）", "detail": "8 条说明、intro=[0]、首条 106 字/1 行/盒 1380、未注入 0 违规码、0 竖排条" }
+  ],
+  "readings": [
+    "BASELINE plans/@1440: notes=12 intro=[0,1,2,3,4,5] frozen=1 region=.pchglist/1328 col=1328 码=[无]",
+    "BASELINE plans/@1600: notes=12 intro=[0,1,2,3,4,5] frozen=1 region=.pchglist/1328 col=1328 码=[无]",
+    "BASELINE status/@1440: notes=2 intro=[0] frozen=1 region=.stable/1380 col=1380 码=[无]",
+    "BASELINE changes/@1440: notes=14 intro=[0,1] frozen=1 region=.chgsec/1380 col=1380 码=[无]",
+    "BASELINE feeds/@1440: notes=8 intro=[0] frozen=1 region=.flist/1380 col=1380 码=[无]",
+    "BASELINE models/@1440: notes=3 intro=[0,1] frozen=1 region=.ptable/1380 col=1380 码=[无]",
+    "M1(壳 plans/)@1440: guard.ok=true 窄条=12（期望 note-narrow 命中）",
+    "M6@390: guard.ok=true injected=note scrollWidth=1118 viewport=390 码含 page-overflow@390",
+    "M6-control@390: injected=note scrollWidth=390 viewport=390 溢出码=[无]",
+    "M8@1440: guard.ok=true 窄条=12 首条盒=1380 内容盒=452.812 有字区域=452.812 阈值=1128.8",
+    "M10@1600: guard.ok=true 窄条=12",
+    "M12@1440: guard.ok=true 码=[note-hidden-text ×12] 首条 文本=121 字形盒=0 rendered=true 盒=1380",
+    "M14@1440: guard={\"ok\":true,\"before\":1} intro=[0,1] 码=[note-intro-long] 首条行=3 盒=1380",
+    "M14-control@1440: notes=3 intro=[0,1] 码=[无]",
+    "M15@1440: guard.ok=true note-ink-narrow=8 竖排=vertical-rl/列13/列栈244.69/行1/盒1380 …（其余 7 条同类）窄柱=0",
+    "M15-control@1440: notes=8 竖排条数=0 码=[无]"
+  ],
+  "greenControl": "五页（plans/ status/ changes/ feeds/ models/）在未注入状态下 @1440 全部 0 违规码；M6/M8/M10/M12/M14/M15 各自的正对照见 readings",
+  "coverageChange": "换壳前四壳 = collection(need/student-only/) / status / changes / feeds，五页；换壳后四壳 = plans-hub(plans/) / status / changes / feeds，四页。目录页家族从此没有任何变异壳 —— 原因：该家族删除后已无页面级说明可变异，而 M1–M4 守的是 .snote 的宽柱规则本身，价值随承重面迁移到 plans/（12 条说明）。已逐字写进 verify-site.js:6796-6830 附近那段理由注释。"
+}

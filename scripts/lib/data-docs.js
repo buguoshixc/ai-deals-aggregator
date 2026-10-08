@@ -752,12 +752,13 @@ function timeShapeCount(manifest, shape) {
   return (manifest.datasets || []).filter(dataset => dataset.updatedAtShape === shape).length;
 }
 
+// [T5-data-docs-760-endpoint-note]
+// T5 删除（census A · 自证整条）：整条删 —— 紧跟其后的 `<pre class="codeblock">` 第一行就写着`fetch('…/data/deals.json')`，读者不需要上面再列一遍「用到的 endpoint」；这一句只是渲染层在替数据作保。同一个构造点渲染两条（deals.json 与 api-plans.json 各一次）。
 function examplesHtml(ctx, prefix) {
   return examplesOf(ctx).map(example => {
     const endpoints = example.endpoints
       .map(url => `<a href="${escapeHtml(`${prefix}${url}`)}">${escapeHtml(url)}</a>`).join('、');
     return `      <h3>${escapeHtml(example.title)}</h3>
-      ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">用到的 endpoint：${endpoints}</p>`)}
       <pre class="codeblock"><code>${escapeHtml(example.code)}</code></pre>`;
   }).join('\n');
 }
@@ -785,6 +786,8 @@ function licenseBlockHtml(ctx) {
  *   `siteUrl`   站点根
  *   `prefix`    回到站根的相对前缀（缺省由路由深度推导）
  */
+// [T5-data-docs-838-example-note]
+// T5 删除（census A · 自证整条）：整条 `.snote` 连同 `noteIn(...)` 声明一起删 —— 它在替自己的示例作保（「不是伪代码」是自证）。示例能不能跑由**代码块本身**与 `data-docs-selftest` 的两条断言（`每个 endpoint 在仓库里都真实存在`、`使用示例用的是真实 endpoint（JavaScript + Python）`）守着，不靠这句。
 function renderDataDocsPage(ctx = {}) {
   const prefix = ctx.prefix === undefined ? '../../' : ctx.prefix;
   const manifest = ctx.manifest || buildDatasetManifest([]);
@@ -835,7 +838,6 @@ ${termListHtml(DATA_DOC_TERMS)}
       </ul>
 
       <h2 class="ph2" id="data-examples">使用示例</h2>
-      ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">示例只用到上面列出的真实 endpoint；它们不是"伪代码"，是可以直接复制运行的取数方式。</p>`)}
 ${examplesHtml(ctx, prefix)}
 
       <h2 class="ph2" id="data-citation">引用方式</h2>

@@ -319,6 +319,14 @@ const isFreeApiDeal = deal => freeApiSignal(deal).applies;
  *     （DESIGN-RULES H13）。原先这里是 `userIntro`（0~1 句 `<p class="snote">`），
  *     实测每一页都至少要占一行，而它解释的东西读者不看也能用这一页 —— 于是整层删除。
  *     **回流即红**：注册表里再出现 `userIntro` 字段会被 `audience-selftest` §9 当场拦下。
+ *     ⚠️ `secondary-page-residue-v1` 起这一层**没有例外**：上一轮唯一被保留的页面级说明是
+ *     别名页顶上那条 `<p class="snote aliasnote">`（「这一页是旧地址……该去哪里」），
+ *     本轮整条删除 —— 它渲染的是站务机制（「保留旧地址可用」「收录以目标页为准」）
+ *     与内部判据标识符（`studentSignal` / `benefitType 含 free_api`），不是导航更正；
+ *     实测三个别名页各有 183 个站内入链来源、全站零入链路由 0，那句话对「找得到目标页」
+ *     零贡献。判据来源与实测读数写在 `build-local.js` 的 `renderDirectoryPage` 顶部说明块，
+ *     机器判据是**两条**：构建期首屏扫描（目录页家族含别名页 0 条）与 `verify-site.js`
+ *     §22c ③b（`introNoteRoutes.length === 0`，不再读别名表）。
  *   · `userNotes` —— **底部可折叠**，只放三类：分类边界 / 来源与条款 / 少量误解说明。
  *     真正没有用户价值的内容**直接不展示**，不倒进折叠块（藏垃圾不是简化）。
  *   · **维护口径** —— 判据实现、字段名、"为什么只能按类目收"、"补法是给采集侧加字段"

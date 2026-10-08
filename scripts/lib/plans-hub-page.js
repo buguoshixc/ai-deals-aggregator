@@ -253,6 +253,8 @@ ${statHtml('数据最近核对', a.updatedAt || UNKNOWN_TEXT, '')}
       </section>`;
 }
 
+// [T5-plans-hub-267-268-changes]
+// T5 删除（census A · 两处半句，同一条 .snote 内）：删「变化 <b>直接来自本站的变更日志</b>（优惠、套餐、API 计费三套各自独立），」与「这里只搬运，不另立一套判据；」—— 前者是**数据来源自证**，后者是**实现自证**。保留「「不再收录」表示人工来源层不再列出它，不表示厂商已经下架。」（C 类三态解释）⇒ **元素保留**（这一页 main-snote 仍 ≥ 1）。门禁：`/plans/` 是本轮 M1/M6/M8/M10/M12 的壳（要求 `<main>` 内 `.snote` ≥ 1）—— 本条 kind=half、元素不删 ⇒ 12 条读数不变（收口时复跑壳守卫确认）。
 function changesSectionHtml(view, prefix, note = null) {
   // 这一页没有套餐表格行，因此变化块里「谁变了」的链接必须跨页落到 `/plans/coding/#plan-<id>` ——
   // 复用 `planChangesBlockHtml`（同一份事件、同一句话）但换掉链接落点，
@@ -264,8 +266,7 @@ function changesSectionHtml(view, prefix, note = null) {
   const api = apiPlansPage.apiChangesBlockHtml(view.apiPlanHistoryStore || null, view.apiPlans || [], {}, note);
   return `      <section class="phubsec" id="plans-hub-changes">
         <h2 class="ph2">最近套餐与价格变化</h2>
-        ${noteIn(note)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">变化 <b>直接来自本站的变更日志</b>（优惠、套餐、API 计费三套各自独立），
-          这里只搬运，不另立一套判据；「不再收录」表示人工来源层不再列出它，不表示厂商已经下架。</p>`)}
+        ${noteIn(note)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">「不再收录」表示人工来源层不再列出它，不表示厂商已经下架。</p>`)}
 ${coding}
 ${api}
         ${noteIn(note)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote"><a href="${escapeHtml(`${prefix}changes/`)}">${escapeHtml(changes.CHANGES_WORDING.CHANGES_LABELS.all)} →</a> ·

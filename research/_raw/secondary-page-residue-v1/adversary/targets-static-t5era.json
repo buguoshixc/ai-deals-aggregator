@@ -1,0 +1,127 @@
+{
+  "WIDE_SNOTE_FROZEN": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+  "pages": [
+    {
+      "route": "plans/",
+      "mainStart": 61923,
+      "snoteInMain": 12,
+      "snoteClassSamples": [
+        "snote",
+        "snote",
+        "snote"
+      ],
+      "firstSnoteBeforeFirstDataAnchor": true,
+      "firstSnoteTextLen": 121,
+      "frozenCount": 1,
+      "captionText": null,
+      "buildSideIntroSnote": 12
+    },
+    {
+      "route": "status/",
+      "mainStart": 60906,
+      "snoteInMain": 2,
+      "snoteClassSamples": [
+        "snote",
+        "snote"
+      ],
+      "firstSnoteBeforeFirstDataAnchor": true,
+      "firstSnoteTextLen": 133,
+      "frozenCount": 1,
+      "captionText": "共 9 个来源 · 正常 8 · 异常 0 · 失败 1",
+      "buildSideIntroSnote": 1
+    },
+    {
+      "route": "changes/",
+      "mainStart": 63214,
+      "snoteInMain": 14,
+      "snoteClassSamples": [
+        "snote",
+        "snote",
+        "snote"
+      ],
+      "firstSnoteBeforeFirstDataAnchor": true,
+      "firstSnoteTextLen": 62,
+      "frozenCount": 1,
+      "captionText": null,
+      "buildSideIntroSnote": 14
+    },
+    {
+      "route": "feeds/",
+      "mainStart": 60174,
+      "snoteInMain": 4,
+      "snoteClassSamples": [
+        "snote",
+        "snote",
+        "snote"
+      ],
+      "firstSnoteBeforeFirstDataAnchor": true,
+      "firstSnoteTextLen": 98,
+      "frozenCount": 1,
+      "captionText": null,
+      "buildSideIntroSnote": 4
+    },
+    {
+      "route": "models/",
+      "mainStart": 62236,
+      "snoteInMain": 3,
+      "snoteClassSamples": [
+        "snote",
+        "snote mcount",
+        "snote"
+      ],
+      "firstSnoteBeforeFirstDataAnchor": true,
+      "firstSnoteTextLen": 103,
+      "frozenCount": 1,
+      "captionText": "一行 = registry 里的一个模型： 全部 51 个模型都在这一张表里（默认不隐藏任何一行）。 价格与平台数只统计 已显式映射 的本站数据；「目录状态」是派生分类，「模型角色」来自 registry。",
+      "buildSideIntroSnote": 2
+    },
+    {
+      "route": "need/student-only/",
+      "mainStart": 64959,
+      "snoteInMain": 0,
+      "snoteClassSamples": [],
+      "firstSnoteBeforeFirstDataAnchor": null,
+      "firstSnoteTextLen": null,
+      "frozenCount": 1,
+      "captionText": "共 12 条。",
+      "buildSideIntroSnote": 0
+    },
+    {
+      "route": "need/free-api/",
+      "mainStart": 64956,
+      "snoteInMain": 0,
+      "snoteClassSamples": [],
+      "firstSnoteBeforeFirstDataAnchor": null,
+      "firstSnoteTextLen": null,
+      "frozenCount": 1,
+      "captionText": "共 45 条。",
+      "buildSideIntroSnote": 0
+    },
+    {
+      "route": "need/dev-credits/",
+      "mainStart": 64943,
+      "snoteInMain": 0,
+      "snoteClassSamples": [],
+      "firstSnoteBeforeFirstDataAnchor": null,
+      "firstSnoteTextLen": null,
+      "frozenCount": 1,
+      "captionText": "共 67 条。",
+      "buildSideIntroSnote": 0
+    },
+    {
+      "route": "docs/data/",
+      "mainStart": 62673,
+      "snoteInMain": 6,
+      "snoteClassSamples": [
+        "snote",
+        "snote",
+        "snote"
+      ],
+      "firstSnoteBeforeFirstDataAnchor": true,
+      "firstSnoteTextLen": 108,
+      "frozenCount": 1,
+      "captionText": "一行 = 一份公开数据集（9 份）。",
+      "buildSideIntroSnote": 3
+    }
+  ]
+}

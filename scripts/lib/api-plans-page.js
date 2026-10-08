@@ -399,6 +399,8 @@ function crossLinkHtml(prefix, note = null) {
  * @param {object|null} store   `api-plan-history.json` 的内容（null = 不可用）
  * @param {object[]}    plans   当前记录（取标题快照）
  */
+// [T5-api-plans-435-changes-note-head]
+// T5 删除（census B · 半句）：删「以下是本站重建 API 计费数据时留下的观测记录（最多 ${limit} 条）。」—— 生成方式自证 + 条数上限自证（上限是实现细节，读者看到的就是实际条数）。保留后半句「「不再收录」表示人工来源层不再列出它，**不表示厂商已经下架**」—— 三态解释是 C 类。⚠️ 同一构造点同时供给 /plans/api/ 与 /plans/ 两页。
 function apiChangesBlockHtml(store, plans, { limit = 12 } = {}, note = null) {
   const history = require('./api-plan-history');
   const W = history.API_PLAN_HISTORY_WORDING;
@@ -432,7 +434,7 @@ function apiChangesBlockHtml(store, plans, { limit = 12 } = {}, note = null) {
   }).join('\n');
 
   return `      <h2 class="ph2" id="api-changes">最近变化</h2>
-      ${noteIn(note)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">以下是本站重建 API 计费数据时留下的观测记录（最多 ${limit} 条）。`
+      ${noteIn(note)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">`
     + `「不再收录」表示人工来源层不再列出它，<b>不表示厂商已经下架</b>。</p>`)}
       <ul class="pchglist">
 ${items}

@@ -1,0 +1,467 @@
+{
+  "total": 885,
+  "failed": 3,
+  "threeB": [
+    {
+      "ok": false,
+      "name": "§22c @1440 目录页家族（45 页，含别名页）首屏**没有**任何页面级说明",
+      "detail": "有首屏说明的目录页 3 条：need/dev-credits/ need/free-api/ need/student-only/（其它宽页的导语不在本规则射程内：141 页）"
+    },
+    {
+      "ok": true,
+      "name": "§22c ⑨ 页面族结构下限：目录页家族（**含别名页**）0 条页面级说明、状态页 2 条、订阅中心 3+1 条、厂商页六节说明",
+      "detail": "全部页面族的说明条数下限成立（下限守住「登记与模板一起被删」那种两侧同时消失的改法；别名页本轮从「恰好 1 条」并入「目录页家族 0 条」—— 依据见 build-local.js renderDirectoryPage 顶部）"
+    }
+  ],
+  "shellGuard": [
+    {
+      "ok": true,
+      "name": "§22c M1–M4 的四个壳（plans/ status/ changes/ feeds/）都是 wide 族且带页面级说明",
+      "detail": "plans/ plans-hub/wide · .snote 12 条 · status/ status/wide · .snote 2 条 · changes/ changes/wide · .snote 14 条 · feeds/ feeds/wide · .snote 8 条"
+    }
+  ],
+  "m14": [
+    {
+      "ok": true,
+      "name": "§22c M14 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "detail": "锚点出现 1 次 · 首屏说明被写长（DOM 注入填充正文）：盒宽 / 内容盒 / 同轴 / 裁切全都不动，只有「行数」越过上限 ⇒ 必须由 note-intro-long 咬住（靶页本轮由 need/student-only/ 换到 models/）"
+    },
+    {
+      "ok": true,
+      "name": "§22c M14 变异后复测必须出现「note-intro-long」违规码（首屏说明被写长（DOM 注入填充正文）：盒宽 / 内容盒 / 同轴 / 裁切全都不动，只有「行数」越过上限 ⇒ 必须由 note-intro-long 咬住（靶页本轮由 need/student-only/ 换到 models/））",
+      "detail": "期望 note-intro-long · 实测 [note-intro-long] · 说明 3 条 · 首条 盒 1380px / 有字区域 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [note-intro-long]"
+    }
+  ],
+  "m15": [
+    {
+      "ok": true,
+      "name": "§22c M15 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "detail": "锚点出现 1 次 · T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 @1440/@1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）（靶页本轮由 need/free-api/ 换到 feeds/，见上面那段两次换靶记录）"
+    },
+    {
+      "ok": true,
+      "name": "§22c M15 变异后复测必须出现「note-ink-narrow」违规码（T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 @1440/@1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）（靶页本轮由 need/free-api/ 换到 feeds/，见上面那段两次换靶记录））",
+      "detail": "期望 note-ink-narrow · 实测 [note-ink-narrow, note-intro-long, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow] · 说明 8 条 · 首条 盒 1380px / 有字区域 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [note-ink-narrow, note-intro-long, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow, note-ink-narrow]"
+    },
+    {
+      "ok": true,
+      "name": "§22c M15 承重证明：咬中的条是**竖排按列判**（列数 ≥ 2 · 列栈水平范围 < 0.85×列宽），且旧口径两条判据在它们身上必然静默（按行归并 ≤ 1 行 + 盒/内容盒满宽，盒宽与注入前逐条相同）",
+      "detail": "note-ink-narrow 8 条 [feeds/#0, feeds/#1, feeds/#2, feeds/#3, feeds/#4, feeds/#5, feeds/#6, feeds/#7] · 逐条：#0 vertical-rl 列 13 / 列栈 260.69px / 行 1（最宽 260.69px） / 内容盒 1380px / 字形盒 13 · #1 vertical-rl 列 17 / 列栈 342.25px / 行 1（最宽 342.25px） / 内容盒 1380px / 字形盒 20 · #2 vertical-rl 列 7 / 列栈 138.34px / 行 1（最宽 138.34px） / 内容盒 1380px / 字形盒 9 · #3 vertical-rl 列 8 / 列栈 158.73px / 行 1（最宽 158.73px） / 内容盒 1380px / 字形盒 8 · #4 vertical-rl 列 10 / 列栈 199.52px / 行 1（最宽 199.52px） / 内容盒 1380px / 字形盒 12 · #5 vertical-rl 列 13 / 列栈 260.69px / 行 1（最宽 260.69px） / 内容盒 1380px / 字形盒 13 · #6 vertical-rl 列 13 / 列栈 260.69px / 行 1（最宽 260.69px） / 内容盒 1380px / 字形盒 13 · #7 vertical-rl 列 3 / 列栈 56.78px / 行 1（最宽 56.78px） / 内容盒 1380px / 字形盒 3 · 列宽 1380px · 阈值 1173px · note-narrow 0 条（0 = ① 也看不见）· 盒宽与注入前一致 true"
+    },
+    {
+      "ok": true,
+      "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+      "detail": "feeds/@1440 说明 8 条（竖排 0）违规码 [无] ⇒ 严格形式成立（未注入产物）"
+    }
+  ],
+  "m6": [
+    {
+      "ok": true,
+      "name": "§22c M6 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "detail": "锚点出现 1 次 · 拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串（靶页本轮由 need/student-only/ 换到 plans/：前者删掉别名说明后 <main> 内 0 条 .snote，变异没有承重面）"
+    },
+    {
+      "ok": true,
+      "name": "§22c M6 变异后复测必须出现「page-overflow@390」违规码（拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串（靶页本轮由 need/student-only/ 换到 plans/：前者删掉别名说明后 <main> 内 0 条 .snote，变异没有承重面））",
+      "detail": "期望 page-overflow@390 · 实测 [note-clipped, page-overflow@390] · 说明 12 条 · 首条 盒 358px / 有字区域 358px · detail-main 0 个 · scrollWidth 1118（视口 390） · 不可断串注入位置 note · 窄条 [无] · 违规码 [note-clipped, page-overflow@390]"
+    },
+    {
+      "ok": true,
+      "name": "§22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出",
+      "detail": "不可断串注入位置 note · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [无]，390 档只看溢出）"
+    }
+  ],
+  "m8": [
+    {
+      "ok": true,
+      "name": "§22c M8 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+      "detail": "锚点出现 1 次 · F1 原型：把 .snote 的 padding-right 写成 calc(100% - 70ch) —— 盒宽一字不动、有字区域恒等于 70ch（修复前整轮 0 失败放行的那一条）（靶页同上换到 plans/：这条断言读**未注入**几何的 notes[0]，plans/ 有 12 条说明，成立性比原靶页的 1 条更好）"
+    },
+    {
+      "ok": true,
+      "name": "§22c M8 变异后复测必须出现「note-narrow」违规码（F1 原型：把 .snote 的 padding-right 写成 calc(100% - 70ch) —— 盒宽一字不动、有字区域恒等于 70ch（修复前整轮 0 失败放行的那一条）（靶页同上换到 plans/：这条断言读**未注入**几何的 notes[0]，plans/ 有 12 条说明，成立性比原靶页的 1 条更好））",
+      "detail": "期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-intro-long, note-narrow, note-ink-narrow, note-narrow, note-narrow, note-ink-narrow, note-narrow, note-narrow, note-ink-narrow, note-intro-long, note-narrow, note-ink-narrow, note-narrow, note-narrow, note-ink-narrow, note-narrow, note-narrow, note-narrow] · 说明 12 条 · 首条 盒 1380px / 有字区域 452.81px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [plans/#0, plans/#1, plans/#2, plans/#3, plans/#4, plans/#5, plans/#6, plans/#7, plans/#8, plans/#9, plans/#10, plans/#11] · 违规码 [note-narrow, note-ink-narrow, note-intro-long, note-narrow, note-ink-narrow, note-narrow, note-narrow, note-ink-narrow, note-narrow, note-narrow, note-ink-narrow, note-intro-long, note-narrow, note-ink-narrow, note-narrow, note-narrow, note-ink-narrow, note-narrow, note-narrow, note-narrow]"
+    },
+    {
+      "ok": true,
+      "name": "§22c M8 要害：首条说明的**盒宽没变**（旧判据看不见），只有**有字区域**被压回 70ch 级",
+      "detail": "注入前 盒 1380px / 有字区域 1380px ⇒ 注入后 盒 1380px / 有字区域 452.81px（列宽 1328px · 阈值 1128.8px）—— 盒宽差 0px"
+    },
+    {
+      "ok": true,
+      "name": "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条违规码都没有",
+      "detail": "M8 plans/@1440 说明 12 条（竖排 0）违规码 [无] · M9a docs/data/@1440 说明 9 条（竖排 0）违规码 [无] · M9b changes/@1440 说明 14 条（竖排 0）违规码 [无] · M10 plans/@1600 说明 12 条（竖排 0）违规码 [无]"
+    }
+  ],
+  "floors": [
+    {
+      "ok": false,
+      "name": "§22c ⑨ 逐页逐槽位对账：清单声明的「签名 × 条数」== 真浏览器 DOM 数出来的（580 条登记说明 × 3 个槽位）",
+      "detail": "3 处不一致（route#index 可定位）：need/dev-credits/#0 槽位 main-snote 签名 <aliasnote snote>：清单声明 0 条 / DOM 实测 1 条；need/free-api/#0 槽位 main-snote 签名 <aliasnote snote>：清单声明 0 条 / DOM 实测 1 条；need/student-only/#0 槽位 main-snote 签名 <aliasnote snote>：清单声明 0 条 / DOM 实测 1 条"
+    },
+    {
+      "ok": true,
+      "name": "§22c ⑨ 页面族结构下限：目录页家族（**含别名页**）0 条页面级说明、状态页 2 条、订阅中心 3+1 条、厂商页六节说明",
+      "detail": "全部页面族的说明条数下限成立（下限守住「登记与模板一起被删」那种两侧同时消失的改法；别名页本轮从「恰好 1 条」并入「目录页家族 0 条」—— 依据见 build-local.js renderDirectoryPage 顶部）"
+    },
+    {
+      "ok": false,
+      "name": "§22c ⑨ 完整对账：complete 页面的整页 .snote 总数逐字相等（186 页）",
+      "detail": "3 页有差额：need/dev-credits/ 整页 .snote：清单声明 0 条 / DOM 实测 1 条；need/free-api/ 整页 .snote：清单声明 0 条 / DOM 实测 1 条；need/student-only/ 整页 .snote：清单声明 0 条 / DOM 实测 1 条"
+    }
+  ],
+  "mutationCodes": {
+    "M1": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-intro-long",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-intro-long",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-axis",
+      "narrow-unregistered"
+    ],
+    "M2": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-intro-long",
+      "note-narrow",
+      "note-axis",
+      "narrow-unregistered"
+    ],
+    "M3": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "narrow-unregistered"
+    ],
+    "M4": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-intro-long",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-axis",
+      "narrow-unregistered"
+    ],
+    "M6": [
+      "note-clipped",
+      "page-overflow@390"
+    ],
+    "M7": [
+      "unexpected-detail-main"
+    ],
+    "M8": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-intro-long",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-narrow",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-narrow",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-intro-long",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-narrow",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-narrow",
+      "note-narrow",
+      "note-narrow"
+    ],
+    "M9a": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-intro-long",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-intro-long",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-axis",
+      "narrow-unregistered"
+    ],
+    "M9b": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "narrow-unregistered"
+    ],
+    "M10": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-intro-long",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-intro-long",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-axis",
+      "note-narrow",
+      "note-axis",
+      "narrow-unregistered"
+    ],
+    "M11": [
+      "note-ink-narrow",
+      "note-ink-narrow",
+      "note-ink-narrow",
+      "note-ink-narrow",
+      "note-ink-narrow",
+      "note-ink-narrow"
+    ],
+    "M12": [
+      "note-hidden-text",
+      "note-hidden-text",
+      "note-hidden-text",
+      "note-hidden-text",
+      "note-hidden-text",
+      "note-hidden-text",
+      "note-hidden-text",
+      "note-hidden-text",
+      "note-hidden-text",
+      "note-hidden-text",
+      "note-hidden-text",
+      "note-hidden-text",
+      "narrow-unregistered"
+    ],
+    "M13": [
+      "note-unrendered",
+      "note-unrendered",
+      "note-unrendered",
+      "note-unrendered",
+      "note-unrendered",
+      "note-unrendered",
+      "note-unrendered",
+      "note-unrendered",
+      "note-unrendered"
+    ],
+    "M14": [
+      "note-intro-long"
+    ],
+    "M15": [
+      "note-ink-narrow",
+      "note-intro-long",
+      "note-ink-narrow",
+      "note-ink-narrow",
+      "note-ink-narrow",
+      "note-ink-narrow",
+      "note-ink-narrow",
+      "note-ink-narrow",
+      "note-ink-narrow"
+    ],
+    "M16": [
+      "narrow-unregistered"
+    ],
+    "M6-control": []
+  },
+  "control": {
+    "viewports": [
+      760,
+      360
+    ],
+    "routes": [
+      "",
+      "archive/",
+      "category/",
+      "category/agent/",
+      "changes/",
+      "deal/017bdbc04e70/",
+      "developer/",
+      "docs/data/",
+      "feeds/",
+      "free-api/",
+      "models/",
+      "models/360zhinao-pro/",
+      "models/360zhinao-turbo-llm-geo/",
+      "models/baichuan-m3-plus/",
+      "models/baichuan-m3/",
+      "models/claude-fable-5.1/",
+      "models/claude-haiku-4.5/",
+      "models/claude-opus-5.5/",
+      "models/claude-sonnet-5.5/",
+      "models/deepseek-flash/",
+      "models/deepseek-v3.2/",
+      "models/deepseek-v4-pro/",
+      "models/doubao-seed-2.1-pro/",
+      "models/doubao-seed-2.1-turbo/",
+      "models/doubao-seed-character/",
+      "models/doubao-seed-evolving/",
+      "models/ernie-4.5-turbo-128k/",
+      "models/ernie-5.1/",
+      "models/gemini-3.5-flash/",
+      "models/gemini-3.6-flash/",
+      "models/gemini-3.7-flash/",
+      "models/gemini-3.8-flash/",
+      "models/glm-4.5v/",
+      "models/glm-4.6v-flash/",
+      "models/glm-4.6v-flashx/",
+      "models/glm-4.6v/",
+      "models/glm-4.7-flash/",
+      "models/glm-5.3-flash/",
+      "models/glm-5.3/",
+      "models/glm-5v-turbo/",
+      "models/gpt-6-astra/",
+      "models/gpt-6-luna/",
+      "models/gpt-6.1-sol/",
+      "models/gpt-live-1/",
+      "models/hunyuan-a13b/",
+      "models/hunyuan-embedding/",
+      "models/hunyuan-role-latest/",
+      "models/hunyuan-translation-lite/",
+      "models/hunyuan-translation/",
+      "models/kimi-k2.7-code/",
+      "models/kimi-k3/",
+      "models/minimax-m2.5/",
+      "models/minimax-m2.7-highspeed/",
+      "models/minimax-m2.7/",
+      "models/minimax-m3/",
+      "models/qwen-max/",
+      "models/qwen3-max/",
+      "models/qwen3.8-27b/",
+      "models/qwen3.8-max/",
+      "models/spark-x2.5/",
+      "models/step-3.5-flash/",
+      "models/tencent-hy-vision-1.5-instruct/",
+      "need/ai-coding/",
+      "need/china-usable/",
+      "need/dev-credits/",
+      "need/edu-identity/",
+      "need/free-api/",
+      "need/free-model/",
+      "need/free-tier/",
+      "need/free-tokens/",
+      "need/no-card/",
+      "need/student-only/",
+      "plans/",
+      "plans/api/",
+      "plans/coding/",
+      "status/",
+      "student/",
+      "vendor/",
+      "vendor/ai360/"
+    ]
+  }
+}

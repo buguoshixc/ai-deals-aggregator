@@ -129,6 +129,8 @@ const API_PLAN_UNTRACKED_FIELDS = {
 /* 措辞（唯一权威；前端不需要副本 —— 这些字只在服务端渲染）                */
 /* ------------------------------------------------------------------ */
 
+// [T5-api-plan-history-192-disclaimer-tail]
+// T5 删除（census B · 重复）：删「价格、免费额度与条款最终以厂商官方页面为准。」—— 与共享页脚同义。保留前半句。⚠️ 同一常量（`API_PLAN_HISTORY_NOTES.disclaimer`）也被 /plans/api/、/plans/ 与 API 变化 Feed 消费。
 const API_PLAN_HISTORY_WORDING = {
   API_PLAN_HISTORY_LABELS: {
     sectionTitle: '价格变更记录',
@@ -190,7 +192,7 @@ const API_PLAN_HISTORY_WORDING = {
     emptyNote: '起算日之前的状态没有历史记录，因此这里不显示任何变化。',
     unitNote: '价格数字的口径由「计费单位」决定；单位变化会被单独记为一次变化，本站不做任何单位换算。',
     disclaimer: '以上是本站重建 API 计费数据时留下的观测记录；「不再收录」表示人工来源层不再列出该条记录，'
-      + '不表示厂商已经下架或停止提供。价格、免费额度与条款最终以厂商官方页面为准。'
+      + '不表示厂商已经下架或停止提供。'
   }
 };
 

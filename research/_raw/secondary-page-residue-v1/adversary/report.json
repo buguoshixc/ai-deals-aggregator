@@ -1,0 +1,174 @@
+{
+  "task": "t4 · T4 对抗复核：独立重算门禁强度与判据射程",
+  "reviewer": "d-adversary",
+  "branch": "docs/closures-v4",
+  "headAtStart": "d47ec47de078d1cab496440acb66036e7ceca29b",
+  "headMovedDuringReview": "390e7ccd7d9579b3e3a7208500255785bdf47101（01:46:21 的 docs 提交；**没有**包含本轮的代码改动，build-local.js/verify-site.js 在该提交里仍是 bdaa714/7b49303 基线版）",
+  "scope": {
+    "reviewedArtifacts": [
+      "scripts/tools/build-local.js（T1 Stage A 版本；我复核时的工作区 blob 23efc6b9 = T1 post-image 74f62b7 + captain 的注释一致性修复 + T5 的 feeds 改动）",
+      "scripts/tools/verify-site.js（工作区 blob 588bfee8 = T1 的 post-image，与我复核时逐字节一致）",
+      "scripts/tools/audience-selftest.js（bafc35c4）· scripts/tools/changes-selftest.js（a49ec23c）· scripts/data/landing-aliases.json（31ec3a66）· scripts/lib/audience.js（eaa08da1）—— 全部与 T1 的 diff post-image 逐字节一致",
+      "dist/（T1-era 快照，304 文件；combined sha256 = 6cd60cc0764eaec908205c720e5e8e1e9816fb215bf5c35647351dcf63a93921）",
+      "dist/（T5-era 快照，304 文件；combined sha256 = 08a9078712918996e2ee1e147844f745c7b2a0c3e6f4fcd28b17ae9d8f2c989c）"
+    ],
+    "notReviewed": "T5 对渲染器（feeds/models/plans/vendor/data-docs/changes…）的改动本身不在本任务射程；只在 F5 里作为『靶页承重面读数已过期』的输入。",
+    "sandbox": "research/_raw/secondary-page-residue-v1/adversary/sandbox/（scripts/ 的**副本** + 其余 junction/拷贝）。实测沙箱 `node scripts/tools/build-local.js` 产出的 dist 与仓库 dist **304 个文件逐字节相同**，因此沙箱注入读数可转移到被复核代码上。全程未改 scripts/**、docs/**、dist/**。"
+  },
+  "findings": [
+    {
+      "id": "F1",
+      "severity": "medium",
+      "claim": "题注形状牙（牙 3）对**带属性的 `<caption …>` 完全失明**，而反空洞守卫是绝对值（`INTRO_CAPTION_MIN_SCANNED = 20`，当前 45 页）⇒ 最多 25 个目录页可以在「题注存在、却从不被判形状」的状态下构建全绿。实证：只把 3 个别名页的题注渲染成 `<caption class=\"legacy\">` 并把本轮刚删掉的那条 57 字站务口径长题注注回去，`npm run build` exit 0、两行读数全绿（`42 条 <caption> 逐字匹配`）——「长题注回流即红」这句话在这条路径上不成立。",
+      "evidence": {
+        "command": "node research/_raw/secondary-page-residue-v1/adversary/probe-inject2.cjs   # P6b：别名页题目 → <caption class=\"legacy\"> + 长题注；只改沙箱副本",
+        "output": "P6b: exit=0 红=0\n  ✓ 二级数据页首屏无说明: 45 页（**含别名页**，没有例外名单） · 残留说明 × 8 个禁词 0 命中\n  ✓ 目录页家族题注形状: **42** 条 <caption> 逐字匹配「共 N 条。/ 共 N 个入口。」（另有 56 条非目录页题注不在本规则射程内，只报告不判）\n对照：P6c（只改标记、题注内容仍合规）同样 exit 0 且同样是 42 条 —— 覆盖静默掉了 3 页、没有任何信号；P6d（45 页全改成带属性）才被守卫咬住：`✗ 题注形状牙扫到的题注太少（扫描面坏了或缺产物）：目录页家族里只找到 0 条 <caption> < 20`。\n源码：build-local.js:6226 `const captionMatch = html.slice(cstopEnd).match(/<caption>([\\s\\S]*?)<\\/caption>/);`；6189 `const INTRO_CAPTION_MIN_SCANNED = 20;`；6292 `... < ${INTRO_CAPTION_MIN_SCANNED}`。算术：45 页 − 25 页 = 20，20 < 20 为假 ⇒ 25 页以内改造不断绿。"
+      },
+      "requiredFix": "① 扫描正则容错属性：`/<caption\\b[^>]*>([\\s\\S]*?)<\\/caption>/`（并把第二条非目录页读数一起改，保持同一把尺子）；② 反空洞门槛不要用绝对 20，改成按产物现算：目录页里只要主表 `.ctable` 存在就必须产出一条**被判**的题注（scanned == 有主表的目录页数），或在成功读数里同时打印「被判 / 有主表」两个数并据此判——现在只打印 `42 条`，读者必须自己记住基线是 45 才能发现掉了 3 页。这两条一起做才封住「单页退出判据被总量掩盖」。"
+    },
+    {
+      "id": "F2",
+      "severity": "low",
+      "claim": "③b 的 `DIRECTORY_KINDS` 里 `'alias'` 是**死元素**：`page-kinds.kindOfRoute()` 对任何路由都不会返回 `'alias'`（无别名模式；`wideKindByRoute()` 也只补 collection/need/hub/home）。三条别名页进入集合靠的是 `ROUTE_PATTERNS` 的 `/^need\\/[^/]+\\/$/ → 'need'`。后果：若将来别名页搬到 `need/` 之外，新 ③b 会**静默不覆盖**它，而旧判据（直接遍历别名表）本来会覆盖 —— 这是改写引入的一个『覆盖类』损失（当前不可达）。",
+      "evidence": {
+        "command": "node research/_raw/secondary-page-residue-v1/adversary/probe-static.cjs  /  独立读数见 static-recon-t1era.json",
+        "output": "directoryKindsActuallyPresent: [\"category\",\"collection\",\"hub\",\"need\",\"vendor\"]（**没有 alias**）\naliasMeta: 三条全部 kindRaw=\"need\" / kindResolved=\"need\" / inDirectorySet=true\nsource：scripts/lib/page-kinds.js ROUTE_PATTERNS 无 alias 分支；verify-site.js:8034 `DIRECTORY_KINDS = new Set(['collection','need','category','vendor','hub','alias'])`；scripts/lib/landing.js:430-457 别名 spec 由 **NEED_PAGES** 逐条派生（route 恒为 `need/<slug>/`）⇒ 当前结构性不可达。\n另证：别名页确实在射程内（不是「靠 kind 蒙对」）—— 见 verified V4。"
+      },
+      "requiredFix": "二选一，并写清理由：① 把 `'alias'` 从 DIRECTORY_KINDS 里删掉，注释写明「别名页由 need 模式覆盖，这是唯一入口」；② 或让 ③b 的路由来源 = `wideMeta ∪ 别名表的键`（恢复旧判据对别名表的绑定），这样别名表出现新前缀时判据自动跟随。现状是「集合里写着一个永远不会匹配的成员」，读代码的人会误以为 alias 那一支在做覆盖。"
+    },
+    {
+      "id": "F3",
+      "severity": "low",
+      "claim": "`build-local.js:2716` 这句注释仍写「判据在构建期（本文件「首屏说明必须为空」那条结构性扫描，**白名单只有别名页**）」—— 与本文件 6151-6155 的「**没有例外**（secondary-page-residue-v1 起）… 口子一并退役」直接矛盾。T1 更新了同一段说明的其它几处（2737 起的整块、6151 起的扫描头注释），漏了这一处。",
+      "evidence": {
+        "command": "Select-String -Path scripts/tools/build-local.js -Pattern '白名单只有别名页'  +  git show HEAD:scripts/tools/build-local.js 对照",
+        "output": "2716: *      判据在构建期（本文件「首屏说明必须为空」那条结构性扫描，白名单只有别名页）。\n（该行在 HEAD 里是 2718，T1 未改动它；而 ALIAS_NOTE_ROUTES 白名单已在 6151-6155 退役、6150 明确写「没有例外」。）\n其它残留引用都写的是「退役/整块退役」（NEXT-STEPS.md:36、PROJECT_STATUS.md:18），属正确用法。"
+      },
+      "requiredFix": "把这半句改成「没有例外名单（目录页家族含别名页一律 0 条）」，或直接删掉括号里的旧描述 —— 同一文件里两处互相矛盾的记录正是下一轮误判的种子。"
+    },
+    {
+      "id": "F4",
+      "severity": "low",
+      "claim": "两条承重证明弱于它们的宣称：① 壳守卫（M1–M4）只判 `family === 'wide' && geometry.noteCount > 0` —— 纯**存在性**条件，没有条数下限、也不要求那些说明参与布局/在阅读列里；② **M14 的隔离性没有被判据钉住**：它的 check 只要求 `codes.includes('note-intro-long')`，不像 M15（逐条竖排/列证据 + 盒宽逐条相同）与 M16（`otherCodes.length === 0`）那样把码集合钉死。今天实测 M14 码集合恰好只有 `[note-intro-long]`，但那是**读数**、不是**判据**。",
+      "evidence": {
+        "command": "node scripts/tools/verify-site.js --dir=research/_raw/secondary-page-residue-v1/adversary/dist-mut-aliasnote --json=…/verify-mut-aliasnote.json  +  源码对读",
+        "output": "壳守卫读数（T1-era）：`plans/ plans-hub/wide · .snote 12 条 · status/ 2 · changes/ 14 · feeds/ 8`（verify-site.js:8312-8320 的 ok 条件只有 noteCount > 0）\nM14：`期望 note-intro-long · 实测 [note-intro-long] · 说明 3 条 · 首条 盒 1380px / 有字区域 1380px · 窄条 [无]`，layoutMutationCodes.M14 = [note-intro-long]（n=1）—— 隔离成立，但 check 体（verify-site.js:8480-8484）只查 expect 码出现\n对照 M16（8555-8564）：额外判 `otherCodes.length === 0`（隔离被断言）；M15（8522-8550）逐条判竖排/列证据/盒宽不变"
+      },
+      "requiredFix": "① 壳守卫加下限与位置条件（例如 `noteCount >= 2` 且 `notes[0]` 的 border-box 与主数据区同轴）——「有说明」不该等于「有承重面」；② M14 补一条与 M16 同形的隔离断言：`codes.filter(c => c !== 'note-intro-long').length === 0`（M6 亦可同办：只允许 `page-overflow@390` + 已知的 `note-clipped` 陪跑，其余码判红）。"
+    },
+    {
+      "id": "F5",
+      "severity": "low",
+      "claim": "靶页承重面读数**已被并发改动改写**，T1 报告里的数字在收口时会过期（不是 T1 的缺陷，但直接影响『有没有假绿』的最终叙述）：T5 已把 `feeds/` 的 `.snote` 8 → 4、`docs/data/` 9 → 6。我在 T5-era 快照上独立复跑了**整套** verify-site：885 项 / 0 失败、承重仍在（M14 仍只出 1 个码；M15 承重证明仍在但被咬的条从 8 条降到 4 条），所以不是假绿 —— 是**读数过期**。另：01:41 附近的 T5 中途状态 `npm run build` exit 1（`HISTORY_NOTES.disclaimer` 前后端文案不一致），说明那条链当时尚未落完。",
+      "evidence": {
+        "command": "① node research/_raw/secondary-page-residue-v1/adversary/probe-targets.cjs（对 T1-era 与 T5-era dist 各跑一次）② node scripts/tools/verify-site.js --dir=research/_raw/secondary-page-residue-v1/adversary/dist-control-baseline --json=…/verify-control-t5era.json",
+        "output": "T1-era：plans/ 12 · status/ 2 · changes/ 14 · feeds/ **8** · models/ 3 · docs/data/ **9**；三别名页 0（targets-static-t1era.json）\nT5-era：plans/ 12 · status/ 2 · changes/ 14 · feeds/ **4** · models/ 3 · docs/data/ **6**（targets-static-t5era.json）；目录页家族仍 45 页、首屏说明 0、45 条题注形状全过\nT5-era 全量：`✅ 验收 885 项，失败 0 项`；壳守卫 `feeds/ feeds/wide · .snote 4 条`；M15 承重证明 `note-ink-narrow 4 条 [feeds/#0..#3]`（T1-era 是 8 条）；M13 未渲染 6 条（T1-era 9 条）；M9a 码 15（T1-era 22）\nT1-era 报告与 stage-a-gates.json 里写的是「feeds/ 8 条 / M15 咬中 8 条 / M13 9 条」⇒ 收口时必须替换。\n中途失败证据：research/_raw/secondary-page-residue-v1/adversary/_sbx-current-build.log `✗ 变更记录（v1.4）：HISTORY_NOTES.disclaimer … ≠ …` / `❌ 构建失败`"
+      },
+      "requiredFix": "T5 落盘后（captain 已要求复跑壳守卫）**同一轮**里重跑 `verify-site --dir=dist` 与两处静态读数，把最终报告与 stage-a-gates.json 里所有靶页数字（feeds 8→4、docs/data 9→6、M15 被咬 8→4、M13 9→6、M9a/M12 的 plans/ 读数复核）替换成 T5-era 实测值，并注明「T1 报告里的旧数值是 T1-era dist 的读数」。另：dist 与工作区的一致性现在也断了（当前 dist 是 T5-era 产物，工作区还在改），最终验收必须在**一次干净构建**之后跑。"
+    },
+    {
+      "id": "F6",
+      "severity": "low",
+      "claim": "「首屏说明 0 条」的两条判据**扫描面不是同一段区间**：构建期那条止于 `.lsum`（min(出现位置)(.lsum / .ctable-wrap / <table>)，目录页上 `.lsum` 在前），浏览器 ③b 止于 `.ctable` 顶边（`DATA_SELECTORS` 按**选择器顺序**取第一个命中，`.ctable` 排在 `.lsum` 前面）。实测：插在「摘要 `.lsum` 之后、表格之前」的一条 `.snote`，构建期首屏扫描**✓ 全绿**（`45 页…0 条`）—— 那次构建之所以红，是**说明清单对账**（未登记容器）红的。如果这条说明走 `noteDeclare` 正常登记，构建期两层都不响，而 ③b 会红。⇒ 交付门禁（③b）没有被绕过，但构建期那条的读数不能当成 ③b 的射程来陈述。",
+      "evidence": {
+        "command": "node research/_raw/secondary-page-residue-v1/adversary/probe-inject3.cjs  # P11：只对别名页在 ${summaryHtml} 之后、.ctable-wrap 之前插一条 .snote",
+        "output": "P11: exit=1 红=6\n  ✓ 二级数据页首屏无说明: 45 页（**含别名页**，没有例外名单） · 残留说明 × 8 个禁词 0 命中   ← 首屏扫描没看见\n  ✗ need/dev-credits/#0 槽位 main-snote 签名 <snote>：清单声明 0 条、产物里数出 1 条 —— 产物里出现了没有登记的说明容器   ← 换成清单对账咬住\n源码：build-local.js:6203-6206（anchors 取**最早出现位置**）vs verify-site.js:7219-7224（DATA_SELECTORS 取**选择器顺序**第一个命中，`.ctable` 优先）+ 7261-7265（introIndexes = 顶边 < regionTop）\n旁证：T5-era 全量运行里 `§22c 每一页都判得出主数据区 … .ctable=45` 与目录页家族 45 页完全重合 —— 说明 ③b 的 intro 区确实以表格顶边为界。"
+      },
+      "requiredFix": "二选一：① 把构建期首屏扫描的锚点改成与 ③b 同解（选择器顺序：`.ctable`/`.stable`/… 第一个命中，取**文档位置**时也要保证同名选择器集合一致）；② 或在两处注释里逐字写明两条判据的区间差（构建期止于 `.lsum`、③b 止于 `.ctable`）并声明「这条差由说明清单对账兜住」。别继续让读者以为两条牙在判同一件事。"
+    }
+  ],
+  "verified": [
+    {
+      "claim": "构建期首屏扫描（牙 1）对**别名页**真的会响，而且逐页点名三条别名路由（T1 的 R-1 只列出了 category//vendor/，因为它的注入是全局的、输出被 slice(0,4) 截断）",
+      "verdict": "confirmed",
+      "evidence": "P1（只对别名页注回 `.aliasnote`）：exit 1，`✗ 二级数据页首屏出现了说明（…H13）：need/student-only/ 首屏仍有 1 条说明…；need/free-api/ …；need/dev-credits/ …`（injection-logs/P1.log）"
+    },
+    {
+      "claim": "T1 的 R-1 注入读数对应的**就是**首屏扫描那条 check（不是说明清单对账或别的牙）",
+      "verdict": "confirmed",
+      "evidence": "R-1 的红行文字与我 P1 复现的红行**逐字相同**（`二级数据页首屏出现了说明（分类判据、字段模型与解释性副标题都不占首屏，见 docs/DESIGN-RULES.md H13）`）；同一次构建里还有另一条独立的红（`#0 槽位 main-snote 签名 <aliasnote snote>：清单声明 0 条…`）——两者是两条不同的断言，T1 没把后者当前者。"
+    },
+    {
+      "claim": "构建期牙**不可被外部注入触发**（只能改源码/注册表）：它只读自己这次写的暂存产物",
+      "verdict": "confirmed",
+      "evidence": "源码：build-local.js:6217 `path.join(OUT, page.route + 'index.html')`；`OUT` 全程只有一次赋值（:125 `let OUT = STAGE_OUT;`，🈚 其它赋值）；`selfCheck(built)`（:7369）在 `promoteStaging()`（:7370）之前跑。实验：P10 把「首屏带 .snote」的 HTML **预置进 FINAL_OUT**（`sandbox/dist/need/student-only/index.html`）→ exit 0、预置文件被整套替换（`preNoteStillThere=false`）；P10b 预置进 STAGE_OUT → 构建开头 `rmSync` 清掉、文件不复存在（`stageNoteExistsAfterBuild=false`）。"
+    },
+    {
+      "claim": "③b 的 `directoryRoutes` = 45 页，与 dist 里目录页家族逐页对账一致；**别名页确实在集合里**（浏览器层实证）",
+      "verdict": "confirmed",
+      "evidence": "独立静态重算（probe-static.cjs，逐字复刻 verify-site.js:7728-7731 / 6934-6941）：45 = collection 3 + need 10 + category 5 + vendor 25 + hub 2；unclassified 0；dist 目录面独立计数 category/*=6（hub+5）、vendor/*=26（hub+25）、need/*=10、collection 3 → 45 ✓。别名三页 kindResolved='need' ∈ 集合。浏览器层：在「dist 副本 + 只给 3 个别名页插回 `.aliasnote`」上跑真实 verify-site.js → `✗ §22c @1440 目录页家族（45 页，含别名页）… 有首屏说明的目录页 3 条：need/dev-credits/ need/free-api/ need/student-only/`（885 项里恰这 3 项红：③b + 两条 ⑨ 对账）。"
+    },
+    {
+      "claim": "题注牙能发现「别名页题注写成了别的东西」",
+      "verdict": "confirmed",
+      "evidence": "P5（别名页题注 → `共 N 条（旧地址）。`）：exit 1，`✗ 目录页家族的题注超出…：need/student-only/ 题注形状不对（12 字）…；need/free-api/ …；need/dev-credits/ …`（injection-logs/P5.log）"
+    },
+    {
+      "claim": "题注牙**不能**发现「别名页把题注整条删掉」——这是 captain 已裁定的条件式边界（build-local.js:6177-6182），且**没有别的牙**兜住题注存在性",
+      "verdict": "confirmed",
+      "evidence": "P3b（别名页不再渲染 `<caption>` 元素）：exit 0、`✅ 构建完成`、读数变成 `42 条 <caption>`（45→42）；全仓 grep 无第二处 caption 判据（scripts/** 里除 build-local.js 的牙 3 外，`<caption` 只出现在各页面的题注文本里）。对照：把题注**文本清空**（`<caption></caption>` 仍在）会被咬住（P3a：`题注形状不对（0 字）`）⇒ 边界精确地落在「元素在 / 元素不在」上。"
+    },
+    {
+      "claim": "「题注写对、旁边又加一条 .snote」由**首屏扫描 + ⑨ 对账**兜住（不是题注牙）",
+      "verdict": "confirmed",
+      "evidence": "P4（别名页 intro 区尾插 `.snote`，题注不动）：exit 1，首屏扫描点名三条别名路由；浏览器层同理见 V4（副本上 3 项红，其中两条是 ⑨ 对账）。"
+    },
+    {
+      "claim": "枢纽页的「共 N 个入口。」不会被误判，同时枢纽那一支确实在射程内",
+      "verdict": "confirmed",
+      "evidence": "P0 基线：`✓ 目录页家族题注形状: 45 条 <caption> 逐字匹配…`（45 页含 2 个枢纽页，全绿）；P8（把枢纽题注改成 `共 N 个入口··。`）：exit 1、`category/ 题注形状不对（10 字）…；vendor/ …`。"
+    },
+    {
+      "claim": "T1 的 diff 没有删断言、没有放宽阈值、没有调低 textFloor、没有造白名单、没有 fail→warn、禁词表没有变短",
+      "verdict": "confirmed",
+      "evidence": "check() 计数：删 4 行 / 增 6 行（audience-selftest 1→2：同名 check 换向 + **新增**反向断言「reason 逐字文本 × dist 全部 index.html 0 命中」，dist 缺失时判红；changes-selftest 1→2：正例换到产物里真实存在的 `class=\"snote mcount\"` + **新增**「历史形状 <p class=\"snote aliasnote\"> 同样必命中」；verify-site ③b 1→1 重写、⑨ 1→1 文案）。阈值扫描（git diff -U0 逐行）无 `>`→`>=`、无 `=== 0`→`<= 1`、无精确名→includes、无 warn 化。`INTRO_INTERNAL_TERMS` 与 HEAD **逐字相同**（8 条：数据模型/benefitType/predicate/collections/关键词扫描/映射表/字段/归一规则）；`INTRO_TERM_ALLOW` 仍是 `new Set([])`；被删掉的是**豁免名单** `ALIAS_NOTE_ROUTES`（豁免面缩小）。`scripts/lib/page-kinds.js` / `scripts/lib/seo.js` 不在改动集 ⇒ textFloor 未被触碰（旁证：`node scripts/tools/seo-verify.js` 在 T5-era dist 上仍 `✅ 19 项 0 失败 · indexable 183 / sitemap 183 / noindex 3`）。"
+    },
+    {
+      "claim": "机制侧契约（noindex / 自指 canonical / 不进 sitemap）在删掉可见链接后仍被独立门禁守着 —— `landing-aliases.json` 的 `_note`/`_rule` 改动是**如实登记**的契约变化，不是宽松化",
+      "verdict": "confirmed",
+      "evidence": "seo-verify.js:589-591 `sitemap 成员 == 非 noindex 页面的集合`（现场按 robots meta 判）、:596-598 `noindex 页面 3 条，且都出现在别名表或策略里`、:190 `aliasMissing = 别名表键 − dist 路由`（绑定方向：别名表 ⊆ 产物）；实测 exit 0。被删掉的那条「页面上给出到目标页的可见链接」在 HEAD 里**也没有任何机器断言**（只是 `_note` 里的散文），所以没有机器判据被删；新增的 ⑤/⑥ 各自对应上面这些断言与牙 1/③b。"
+    },
+    {
+      "claim": "M14/M15/壳守卫的承重面在 T1-era dist 上真实成立（不是假绿）",
+      "verdict": "confirmed",
+      "evidence": "浏览器层实跑（dist 副本）读数：壳守卫 `plans/ 12 · status/ 2 · changes/ 14 · feeds/ 8`；M1–M4 各自咬到 note-narrow；**M14** `实测 [note-intro-long]`、说明 3 条、首条盒/有字区域 1380/1380、窄条[]；**M15** `[note-ink-narrow, note-intro-long]` + 承重证明逐条：8 条全 vertical-rl、列 3–17、列栈 56.78–342.25px < 阈值 1173px、按行归并 1 行、内容盒 1380（满宽）、盒宽与注入前逐条相同、note-narrow 0 条；M15 正对照 `feeds/@1440 说明 8 条（竖排 0）违规码 []`；M6 正对照 `plans/@390 scrollWidth 390 · 溢出类 []`。静态独立读数（targets-static-t1era.json）与之逐个吻合。"
+    },
+    {
+      "claim": "T5 落盘（feeds 8→4、docs/data 9→6）之后，这些牙**仍然全绿且承重仍在**",
+      "verdict": "confirmed",
+      "evidence": "在 T5-era dist 的**不可变副本**上跑真实 verify-site.js：`✅ 验收 885 项，失败 0 项`；壳守卫 feeds/ 4 条；M14 `[note-intro-long]`；M15 承重证明 `note-ink-narrow 4 条 [feeds/#0..#3]`（列 13/17/13/3）；M9a/M13 仍咬到期望码。（⇒ 只是读数过期，见 F5。）"
+    },
+    {
+      "claim": "我复核的 T1 代码版本与工作区当前版本一致（除 captain 的注释修复与 T5 的 feeds 改动外）",
+      "verdict": "confirmed",
+      "evidence": "git blob：verify-site.js = 588bfee8（= 我 01:31 捕获的 T1 diff post-image）；audience-selftest = bafc35c4 · changes-selftest = a49ec23c · landing-aliases.json = 31ec3a66 · audience.js = eaa08da1（均与各自 diff 的 post-image 一致）；build-local.js = 23efc6b9，与我探针快照 bbac1af 的差集**只有**两处：① captain 在 01:39 前后把「门槛取 30 / 取 45 的一半」的注释不一致修成「门槛只由常量定义（现值 20）」（我 01:31 的捕获里确实存在那处不一致，**现已修**）；② T5 的 `[T5-build-local-2427-vendor-scope-note]` feeds 改动。探针快照 `_sandbox-build-local.pristine.js` 无 T5 标记（grep `[T5-` = 0 命中）。"
+    },
+    {
+      "claim": "`docs/DESIGN-RULES.md:649` 的「3 条别名页各恰好 1 条导航更正」不是对新判据的描述，而是上一轮的**冻结历史读数**",
+      "verdict": "confirmed",
+      "evidence": "该行在「| 规则 | 状态 | 依据 |」表里，状态列写的是 `**本轮冻结**`、同格写的是 `verify-site.js --dir=dist **862 项 / 失败 0**`（当前是 885 项）、并点名 `M6/M8/M10/M12/M14 与 M1–M4 第一个壳由 student/ 改靶 need/student-only/` —— 全部是 `secondary-page-intro-changes-v1` 那一轮的历史快照，属该表的既定用法。（该表所在文件已被 01:46 的 docs 提交 390e7cc 收进 HEAD。）"
+    },
+    {
+      "claim": "沙箱副本可以忠实复现被复核的构建（因此注入读数可转移）",
+      "verdict": "confirmed",
+      "evidence": "沙箱 `node scripts/tools/build-local.js` 产出的 304 个文件与仓库 `dist/` **逐个 sha256 相同**（combined sha256 与 dist 基线 6cd60cc0… 一致）。"
+    },
+    {
+      "claim": "T1 用来支撑删除决定的实测读数「三个别名页各有 183 个站内入链来源 / 全站零入链路由 0」",
+      "verdict": "cannot-verify",
+      "evidence": "我没有独立重算入链面（不在本任务 6 个问题里；T1 的读数我没找到对应的原始探针输出）。这条只影响『那句话对导航零贡献』的论证强度，不影响任何门禁判据。"
+    },
+    {
+      "claim": "T5 **最终**收口状态下的 §22c 全量（含 M14/M15 承重与 ③b）仍会全绿",
+      "verdict": "cannot-verify",
+      "evidence": "只能证到 01:44 的 T5-era 快照（885/0、承重仍在）。T5 仍在改同一批渲染器（我实测到一次中途状态构建 exit 1），最终值必须由收口时的那次干净构建给出（见 F5 的 requiredFix）。"
+    }
+  ],
+  "notRun": [
+    "没有对「未经注入的 T1-era dist」单独跑一次 verify-site 全量——改用两个更省的等价证据：① 在它的副本上只注入 3 条说明 ⇒ 885 项里**只**红那 3 项（其余 882 项通过）；② 对 T5-era dist 的不可变副本跑了全量 ⇒ 885/0（我自己的绿色对照）。",
+    "没有复核 T1 的 `validate --strict` / `selftest:audience` / `selftest:changes` / `selftest:seo` / `check:ci` / `check:evidence` 读数（只读源码确认了对应断言存在、且新增的两条反向断言不是空转）。",
+    "没有复核 T5 的渲染器改动本身（不在本任务射程），也没有复核 docs 提交 390e7cc 的内容。",
+    "没有独立重算 T1 引用的入链来源数（183 / 0）。",
+    "没有验证 `--out=` 之外是否还有别的注入点（例如通过环境变量改渲染输入）；我按源码逐处核对了 build-local.js 的 OUT 赋值与 selfCheck 调用顺序，并实测了两种外部预置路径。"
+  ]
+}

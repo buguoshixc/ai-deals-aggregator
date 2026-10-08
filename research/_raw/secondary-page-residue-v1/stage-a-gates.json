@@ -1,0 +1,201 @@
+{
+  "task": "T1 Stage A（secondary-page-residue-v1）：三个别名页的残留小字整条删除 + 门禁重瞄 + 新牙",
+  "branch": "docs/closures-v4",
+  "headAtStart": "d47ec47de078d1cab496440acb66036e7ceca29b",
+  "note": "两条实测教训记在这里，免得下一轮再踩：① 变异还原**不要**用 `git show HEAD:<file>` —— 本轮第一次还原时把工作区里本轮的全部改动一起抹掉了（实测）；改用「全绿快照」还原（`.tmp-a/green/build-local.js`），并用「重新构建 + 自检全绿 + 逐项计数」自证复原。② 构建期牙的扫描面必须与题注**真实位置**一致：`<caption>` 是 `<table>` 的第一个子元素，而数据区锚点落在它之前 ⇒ 「intro 区」自己不含题注。第一版按 intro 区扫，实测扫到 0 条，被反空洞守卫当场判红（那次红是守卫正确，不是误报）。",
+  "commands": [
+    {
+      "cmd": "npm run build",
+      "exitCode": 0,
+      "tail": [
+        "  ✓ 二级数据页首屏无说明: 45 页（**含别名页**，没有例外名单） · 残留说明 × 8 个禁词 0 命中",
+        "  ✓ 目录页家族题注形状: 45 条 <caption> 逐字匹配「共 N 条。/ 共 N 个入口。」（另有 56 条非目录页题注不在本规则射程内，只报告不判）",
+        "✅ 产物自检通过",
+        "✅ 构建完成 → dist/（自检全过，已从暂存目录就位）"
+      ]
+    },
+    {
+      "cmd": "node scripts/validate.js --strict",
+      "exitCode": 0,
+      "tail": [
+        "⚠️  警告 4 条：",
+        "✅ 校验通过（strict 模式）"
+      ]
+    },
+    {
+      "cmd": "npm run verify:seo",
+      "exitCode": 0,
+      "tail": [
+        "  category/              923 字 − 下限  800 = 余量  123（登记值 123）· kind=hub count=5",
+        "  category/audio/       1083 字 − 下限  960 = 余量  123（登记值 123）· kind=category count=6",
+        "  need/ai-coding/        976 字 − 下限  840 = 余量  136（登记值 136）· kind=need count=4",
+        "  category/image/       1039 字 − 下限  900 = 余量  139（登记值 139）· kind=category count=5",
+        "  category/agent/        982 字 − 下限  840 = 余量  142（登记值 142）· kind=category count=4",
+        "  ✓ 正文下限余量登记：6 页的实时余量 ≥ 登记值（独立重算，零调低下限）",
+        "  ✓ 余量登记集合 == 实时余量 < 150 的页面集合（6 页；**少登记 / 过期登记都红**）",
+        "✅ SEO 验收 19 项，失败 0 项"
+      ]
+    },
+    {
+      "cmd": "npm run selftest:audience",
+      "exitCode": 0,
+      "tail": [
+        "✅ 受众字段自测：206 项通过，0 项失败"
+      ]
+    },
+    {
+      "cmd": "npm run selftest:changes",
+      "exitCode": 0,
+      "tail": [
+        "=== v1.5 变化雷达演练：120 项通过，0 项失败 ==="
+      ]
+    },
+    {
+      "cmd": "npm run selftest:seo",
+      "exitCode": 0,
+      "tail": [
+        "=== v1.7 SEO 门禁演练：103 项通过，0 项失败 ==="
+      ]
+    },
+    {
+      "cmd": "npm run check:ci",
+      "exitCode": 0,
+      "tail": [
+        "✅ CI 口径检查 39 项，失败 0 项"
+      ]
+    },
+    {
+      "cmd": "npm run check:evidence",
+      "exitCode": 0,
+      "tail": [
+        "✅ 没有新增的 Tier-3 文件（1283 个已跟踪的全部在清单内）",
+        "✅ 清单自证通过：与基线 e0ca04a 的 Tier-3 交集逐项一致（1283 条）"
+      ]
+    },
+    {
+      "cmd": "node scripts/tools/verify-site.js --dir=dist",
+      "exitCode": 0,
+      "tail": [
+        "  ✓ §22c @1440 目录页家族（45 页，含别名页）首屏**没有**任何页面级说明 — 有首屏说明的目录页 0 条：无（其它宽页的导语不在本规则射程内：141 页）",
+        "  ✓ §22c M1–M4 的四个壳（plans/ status/ changes/ feeds/）都是 wide 族且带页面级说明 — plans/ plans-hub/wide · .snote 12 条 · status/ status/wide · .snote 2 条 · changes/ changes/wide · .snote 14 条 · feeds/ feeds/wide · .snote 8 条",
+        "✅ 验收 885 项，失败 0 项"
+      ]
+    }
+  ],
+  "checks": {
+    "build": "exit 0 · ✅ 产物自检通过 · 新增两行读数：`✓ 二级数据页首屏无说明: 45 页（**含别名页**，没有例外名单）· 残留说明 × 8 个禁词 0 命中` / `✓ 目录页家族题注形状: 45 条 <caption> 逐字匹配「共 N 条。/ 共 N 个入口。」（另有 56 条非目录页题注不在本规则射程内，只报告不判）`",
+    "validateStrict": "exit 0 · ✅ 校验通过（strict 模式）· 4 条警告均为既有数据重复提示（AI Manga Translator ↔ …、Seedance 3.0 ↔ …、KREA ↔ Kreado AI、Getsolved ↔ …），与本次改动无关",
+    "verifySeo": "exit 0 · ✅ SEO 验收 19 项，失败 0 项 · 索引面不变：indexable 183 / sitemap 183 / orphan 0 / duplicate canonical 0 / invalid links 0 / noindex 3 · dist 文件数 304",
+    "selftestAudience": "exit 0 · ✅ 受众字段自测：206 项通过，0 项失败（含本轮新换向的两条：配置侧形状 + 反向断言 `reason` 逐字文本 × 186 产物页 0 命中）",
+    "selftestChanges": "exit 0 · ✅ v1.5 变化雷达演练：120 项通过，0 项失败（⑪ 由 3 条扩到 4 条：正例换成 `/models/` 里真实存在的 `class=\"snote mcount\"`）",
+    "selftestSeo": "exit 0 · ✅ v1.7 SEO 门禁演练：103 项通过，0 项失败",
+    "checkCi": "exit 0 · ✅ CI 口径检查 39 项，失败 0 项（(E) 实跑项数 == --expect-checks=39）",
+    "checkEvidence": "exit 0 · ✅ 没有新增的 Tier-3 文件（1283 个已跟踪的全部在清单内）· ✅ 清单自证通过：与基线 e0ca04a 的 Tier-3 交集逐项一致",
+    "verifySite": "exit 0 · ✅ 验收 885 项，失败 0 项（含 ③b 新判据 `有首屏说明的目录页 0 条`、壳守卫 `plans/ status/ changes/ feeds/` 四壳全绿、M1–M16 全部咬到期望码）"
+  },
+  "readings": {
+    "aliasCaptionShape": {
+      "before": {
+        "need/student-only/": "共 12 条 —— 与 学生优惠 是同一批条目（同一份判据）。这一页保留旧地址可用，但不参与搜索收录；收录以目标页为准。",
+        "need/free-api/": "共 45 条 —— 与 免费 API 是同一批条目（同一份判据）。这一页保留旧地址可用，但不参与搜索收录；收录以目标页为准。",
+        "need/dev-credits/": "共 67 条 —— 与 开发者优惠 是同一批条目（同一份判据）。这一页保留旧地址可用，但不参与搜索收录；收录以目标页为准。"
+      },
+      "after": {
+        "need/student-only/": "共 12 条。",
+        "need/free-api/": "共 45 条。",
+        "need/dev-credits/": "共 67 条。"
+      },
+      "shapeCheck": "目录页家族 45 条 <caption> 全部逐字匹配 `^共 \\d+ (?:条|个入口)。$`（条件式判据；45 条题注按 a11y 名价值**保留**）",
+      "removal": "删掉 62 / 63 / 64 字（改成 6 字）"
+    },
+    "introProblems": {
+      "buildGate": "45 页（**含别名页**，没有例外名单）· 首屏说明 0 条 · 残留说明 × 8 个禁词 0 命中",
+      "browserGate": "§22c @1440 目录页家族（45 页，含别名页）首屏**没有**任何页面级说明 — 有首屏说明的目录页 0 条：无（其它宽页的导语不在本规则射程内：141 页）",
+      "aliasPages": {
+        "need/student-only/": "main 内 .snote 1 → 0（原 161 字）",
+        "need/free-api/": "main 内 .snote 1 → 0（原 139 字）",
+        "need/dev-credits/": "main 内 .snote 1 → 0（原 159 字）"
+      },
+      "notEmptyContainers": {
+        "need/student-only/": "details 存在 · .pnote 1 → 3 条",
+        "need/free-api/": "details 存在 · .pnote 2 → 4 条",
+        "need/dev-credits/": "details 存在 · .pnote 2 → 4 条"
+      }
+    },
+    "aliasFloors": {
+      "_notes.ndjson 三页": "main-snote declared 0 / floors {min:0}；main-pnote 3 / 4 / 4（下限 = sharedNotes.length = 2）",
+      "browser": "§22c ⑨ 页面族结构下限：目录页家族（**含别名页**）0 条页面级说明 — 全部页面族的说明条数下限成立",
+      "mechanism": "robots `noindex, follow` · canonical **自指**（三页各自 URL）· 不进 sitemap（sitemap 183 条，3 条别名页已排除）",
+      "itemSets": {
+        "need/student-only/": 12,
+        "need/free-api/": 45,
+        "need/dev-credits/": 67
+      }
+    },
+    "floorMargins": {
+      "note": "用 seo.js 的 **visibleText()** 口径直接量产物（与 verify:seo 的余量登记同一个计数器），并测量「把删掉的两段文字按原样注回内存里的产物」之后的字数 —— 两次相减 = 本轮删掉的可见正文。",
+      "measured": [
+        {
+          "route": "need/student-only/",
+          "count": 12,
+          "charsBefore": 2156,
+          "charsAfter": 1939,
+          "removed": 217,
+          "floor": 1320,
+          "marginAfter": 619,
+          "marginBefore": 836
+        },
+        {
+          "route": "need/free-api/",
+          "count": 45,
+          "charsBefore": 5015,
+          "charsAfter": 4818,
+          "removed": 197,
+          "floor": 3300,
+          "marginAfter": 1518,
+          "marginBefore": 1715
+        },
+        {
+          "route": "need/dev-credits/",
+          "count": 67,
+          "charsBefore": 6785,
+          "charsAfter": 6569,
+          "removed": 216,
+          "floor": 4620,
+          "marginAfter": 1949,
+          "marginBefore": 2165
+        }
+      ],
+      "verdict": "删完余量仍 ≥ 600（619 / 1518 / 1949）⇒ **不应重新登记**；`verify:seo` 的余量登记读数与登记值逐页相同：need/no-card/ 50（710−660）· category/ 123 · category/audio/ 123 · need/ai-coding/ 136 · category/image/ 139 · category/agent/ 142（6 页，一页未动）",
+      "boundary": "本条只否证「需要重新登记」；任务 brief 里的 786 / 1665 / 2115 与本处的 619 / 1518 / 1949 是两个不同读数的口径（前者未说明计数器），**结论一致、数字不同，以本处为准**（本处给出了计数器与算式）。"
+    }
+  },
+  "mutationEvidence": {
+    "R-1": "research/_raw/secondary-page-residue-v1/mutation/R-1-aliasnote-restored.json —— 构建 exit 1（首屏扫描 + 说明清单对账 23 项）· 浏览器层 `verify-site --dir=<副本>` exit 1 / 885 项失败 3 项（③b + 两条 ⑨ 对账）",
+    "R-2": "research/_raw/secondary-page-residue-v1/mutation/R-2-long-caption-restored.json —— 构建 exit 1（题注形状牙逐页点名 66 / 67 / 68 字）",
+    "relocation": "research/_raw/secondary-page-residue-v1/mutation/target-relocation.json —— 换靶的逐条读数（M6/M8/M10/M12 → plans/，M14 → models/，M15 → feeds/）与候选序列的实测淘汰理由",
+    "greenControl": "未注入时 `npm run build` exit 0、`verify-site --dir=dist` 885 项 / 0 失败（两份日志都在 .tmp-a/，Tier-3 未入库）"
+  },
+  "changedFiles": [
+    "scripts/tools/build-local.js",
+    "scripts/tools/verify-site.js",
+    "scripts/tools/audience-selftest.js",
+    "scripts/tools/changes-selftest.js",
+    "scripts/lib/audience.js",
+    "scripts/data/landing-aliases.json",
+    "docs/DESIGN-RULES.md",
+    "docs/SCHEMA-v1.7.md",
+    "README.md",
+    "PROJECT_STATUS.md",
+    "NEXT-STEPS.md",
+    "research/_raw/secondary-page-residue-v1/stage-a-gates.json",
+    "research/_raw/secondary-page-residue-v1/mutation/R-1-aliasnote-restored.json",
+    "research/_raw/secondary-page-residue-v1/mutation/R-2-long-caption-restored.json",
+    "research/_raw/secondary-page-residue-v1/mutation/target-relocation.json"
+  ],
+  "notDone": [
+    "T5（B 类残留：/feeds/ 4 条 whole + /status/ undecided + 116 条 .vsnote half + 42 条题注 keep）**不在本任务射程内** —— 由 T5 的执行者做；本轮只落了别名页这一支与门禁。",
+    "captain 要求「T5 改完 plans-hub-page.js:267-268 之后复跑一次壳守卫确认仍是 12 条」—— 该复跑由 T5 收口时执行（本轮 `plans/` 的 12 条读数已在 verify-site 里逐字记录，T5 之后可直接对比）。",
+    "两条日志文件（`.tmp-a/*.log`）与全部临时探针都留在本机 `.tmp-a/`（Tier-3，未入库、未提交）；仓库内只保留上面 4 个 JSON 证据文件。"
+  ]
+}
