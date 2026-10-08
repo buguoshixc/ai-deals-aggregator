@@ -152,6 +152,32 @@
 10. **流程教训（同日新增，两条）**：① **captain 给的 verify 命令必须可执行** —— 成员按字面执行 `node scripts/tree-digest.cjs dist`，而该脚本**从来不在仓库里**（历轮都是 `.arch-v1` 的 gitignore scratch）；它的处置（临时放进该路径跑通 → 立刻删除 → 确认 `scripts/` 无残留）是对的，**根上修**走 `tree-digest-tooling-v1`（t25：正式放进 `scripts/tools/`，让「产物逐字节未变」这类证明**可由仓库内工具独立复现**）。② **`…/runs/<id>/jobs` 只给 workflow 级步骤** —— 复合 action 的内部步骤**只在日志里**（`gh run view <id> --log` + grep）；要证「某个门禁步骤在远端真跑过」必须用日志。
 11. **发布链收尾复核（`post-merge-deploy-v1`，PR #83，已合并）**：今天 20+ 个合并之后，线上与本地 **14/14 逐字节相同**（含新产物 `/_notes.ndjson` 104,591 B / 187 行全合法 JSON），干净构建 **304 文件**（旧 303 + `_notes.ndjson`）、两次构建逐字节一致；`x-cache` 全部 **MISS + `age=0`** ⇒ 读到的是**源站现取**。**口径**：本轮证明的是「**被复核提交的那次部署 == 它的本地构建**」，**不是**「当前头的部署已就位」；七条「没证明的东西」在报告 §5（14 条 ≠ 全站 · 单边缘单时刻 · 单出口 · 时序 · 内容正确性不在射程 · `_notes.ndjson` 的**语义**对账不在射程 · 两次构建一致 ≠ 跨环境一致）。
 
+12. **出货判据加固 v1a 已落地（`judge-hardening-v1a`，PR #89，已合并）**：`scripts/tools/verify-site.js` 侧的破防收口 ——
+   注释伪造面（sitemap XML 注释剥除 ×2：§18 成员资格 + vendorIndex；冻结串计数前剥 CSS 注释）、登记表扫描面（逗号多选择器**逐段**都要有登记 /
+   `70CH` / `MAX-WIDTH:` 大小写 / `!important` 归一 + `routes`）、§19 **逐条**几何（本条 + 自裁切 + 生效宽 ±20%）+ 幽灵条目报红 + `entries: []` 显式声明、
+   §22c `note-clipped` **竖直分支**（带 `overflow-y ∈ {hidden,clip,auto,scroll}` 或定高的**前置条件**）、`sharedFooterExternalHrefs` 改读 `--dir=`。
+   读数：`verify-site --dir=dist` **880 → 881 项 / 0 失败**（+1；阈值一处未改、`git diff` 无 `WIDE_NOTE_RATIO`/`WIDE_TOL` 改动行、产物逐字节未动，全树 `67d1d0bd…`）；
+   `check:ci` 39/0；四条设计规则已收进 `docs/DESIGN-RULES.md` 的 **N10–N13**。残留**已查实**：R9 的旧「假红 4」是**注入污染**
+   （改写已登记规则内部 ⇒ 把 §19 隔离牙的锚点改掉，报「锚点 0 次」），V3 的旧「残留红」红在 **M15 变异靶页**上 —— 两条都给干净形态读数并写进 `attack-matrix.json` 的 `injectionNote`。
+   **未闭合的另一半**：`lib/seo.js` + `seo-verify.js` 侧（t10）。**在 t11 再攻击给出结论前，不要把这两轮判据整体写成「已加固」。**
+13. **流程教训（同日第三批，`tree-digest-tooling-v1` 报告 §5「同类契约错」= 6 行 + 4 条）**：
+   ① **captain 契约里点名的源件路径也可能是错的** —— 交接写的 `.arch-v1/tree-digest.cjs` **已不在盘上**，该工具在盘上有 **8 份 / 3 个不同版本**；
+   正确做法是**按「哪一份能复现已登记的读数」选参照物**，并把「多版本漂移」本身记成风险（根上修 = 收进 `scripts/tools/tree-digest.cjs` + `npm run report:digest`，
+   与 scratch 版在同一棵 dist 上 `--out` JSON **逐字节相同**、304 条 perFile 逐条 diff=0）。
+   ② **契约正文与交接消息路径不一致时按正文落位**，并让写错的字面路径**响亮失败**（`scripts/tree-digest.cjs` ⇒ exit 1；`dist.nope` ⇒ exit 2，绝不静默成功）。
+   ③ **证据文件与声明面的关系要写明**：`changedPaths` 只列声明面 4 条，提交实含 8 文件，另 4 条是 `research/**` 的 Tier-1 证据（报告 §9 已声明）——
+   「交付 = 报告 + 自审 + Tier-1 证据」这条约定值得在收口时补成通用条款。
+   ④ **成员会话的单次输入上限（512k）是真会到顶的**：三个长会话先后以 `CONTEXT_WINDOW_EXCEEDED` 中断（需重算 620k–700k），
+   处置 = **换新成员 + 转交**（工作树 / 分支 / 还差哪几步）并**先抢救产物再看任务状态**（t24 的 PR 崩前已开且门禁 pass）；手册见 `.arch-v1/RESUME-AFTER-OUTAGE.md` §7。
+14. **新发现的真缺陷已排期（`unavailable-dataset-build-crash-v1`，t29）**：`plan-history.json` / `api-plan-history.json` **不可用**（缺失或非法 JSON）时，
+   构建死在 `scripts/tools/build-local.js:4216 / :4220` 的 **null 解引用** ⇒ 这两份数据集的「如实说没有拿到…日志」**上不了产物**，
+   t4/t7 与 v1a（PR #89）关于「日志不可用而页面照常出页」的结论**只对 deal-history 成立**。
+   deal-history 侧已由 `unavailable-note-machine-independence-v1`（t27，PR #91）修好，并**顺带闭合 t19 的观察 O1**：那份不可用说明原先把**宿主绝对路径**
+   （`D:\…\scripts\data\deal-history.json`）印进了公开数据出口 `dist/data/index.json:45` ⇒ 现在只写 basename，并新增机器无关性判据（盘符 / UNC / 反斜杠目录段 /
+   POSIX 绝对路径 / `~`）挂在**构建期**与 `verify:seo` 两侧；读数：机器相关串 **1/4/1 → 全 0**、「没有拿到」**11 → 11**（渲染侧 6 处同址）、
+   正常路径 **304 文件 0 变化**、`updatedAt` 仍等于日志 `startedAt`（不是「今天」）。同时查实、不入修：`archive.js:524` 的同类文案**不嵌路径**（label 来自常量表）。
+   排期纪律：t14（说明登记残留）与 t29 共用 `build-local.js` ⇒ 用**依赖串行**，不并行改同一个文件。
+
 ---
 
 ## A. 本轮之后仍然存在的风险与长期方向（**不是「已失效」，也不是「已完成」**）
@@ -167,10 +193,25 @@
    但它是官方详细定价页（`platform.claude.com/docs/en/about-claude/pricing`，本网络区域封锁）的**摘要版**：
    4 个模型的 1h 缓存写入档不载，且 Sonnet 5.5 缓存命中价与记录不一致（记录 0.20 vs 页面 $0.10，**原因未证实，不得写成「价格已变化」**；
    同页 legacy `Sonnet 5` 恰是 0.20 ⇒ 也可能是记录取错行）。**16 个可比价格格：15 一致 / 1 不一致。**
+   **【2026-10-08 已定案，推翻上面的「原因未证实」—— 见本条第 3）段】**
    **处置裁定（2026-10-08，captain）：本轮不改** —— 可达页是摘要版且有一格无法定案；且**实测影响面**：改 `officialUrl` 会产生
    1 处字段 diff + **1 条公开变化事件**（`updated officialUrl`，进 `/changes/` 与订阅源）⇒ 不能当成纯后台修正来做。
    处置边界不变：只允许改 URL 与 `officialDomains` 登记（域登记无需改，`providers.json` 已含 `claude.com`），
    **不许改任何价格、不许改既有引文及其 capturedAt/sourceUrl**；**不得写成「价格已变化」**（无证据）。
+   **3）【2026-10-08 定案并落地（`anthropic-cached-price-v1`，PR #87 已合并）】** 那一格定案为 **②「页面确实改价」**（不是取错行），
+   依据是**官方变更记录**：官方 Haiku 5.5 发布稿（页面自印日期 **2026-10-07**）逐字写
+   “First, **starting today**, we're lowering the price of cache reads on Claude Sonnet 5.5. **Cache reads now cost 50% less:
+   $0.10 per million tokens rather than $0.20.**”（<https://www.anthropic.com/claude-haiku-5-5>）；反证「取错行」的是
+   官方 Sonnet 5.5 发布稿（**2026-09-28**）当时写 cache reads **$0.20**（<https://www.anthropic.com/claude-sonnet-5-5>），
+   而记录 `capturedAt` = **2026-10-01 落在两次生效之间** ⇒ **记录当时正确、自 10-07 起过期**（同页 legacy `Sonnet 5` 的 $0.20 是
+   **另一个模型**至今未变的价格，数值相同是巧合）。取证边界如实保留：官方 docs 定价表（`platform.claude.com/docs/**` 与 `llms-full.txt`）
+   **今天仍被区域门 307 拦**（`llms.txt` 索引 200 ⇒ **「索引可达 ≠ 内容可达」**，「换文档路径 / 加 `.md`」**不算独立取证路径**）；
+   出口/镜像（archive.org、web.archive.org、r.jina.ai、codetabs、allorigins、Mintlify×2、raw.githubusercontent）**全部失败**，
+   逐条记为**取证缺口**；生效时刻只有官方原话 “starting today”。
+   **用户裁定（2026-10-08）：落地改价** ⇒ 走 `anthropic-cached-price-landing-v1`（t28）：`rates.cachedInput` **0.2 → 0.1**、
+   新增一条指向官方变更记录的引文（逐字 + 官方日期）、**如实推进一条公开变化事件**（进 `/changes/` 与订阅源；官方生效日 2026-10-07
+   与我们的记录/观察日**分开登记，不许伪造日期**）；**写入档（5m/1h）是否联动官方无说明 ⇒ 不许顺手改**。
+   `officialUrl` **仍按上面的裁定保持不改**（那是另一件事：换 URL 会额外推进一条 `updated officialUrl` 事件）。
 2. **腾讯混元 → TokenHub（来源迁移风险 · 已升级，不再是「未来」提示）**：旧平台计费页（1729/97731）
    今天仍 200 且 6 个模型价格与记录**逐一一致**，但官方公告（/announce/detail/2287）给出的
    **旧平台全面停服日 2026-09-30 已过**（2026-10-08 复核），公告另写明 2026-06-30 起停止售卖。
