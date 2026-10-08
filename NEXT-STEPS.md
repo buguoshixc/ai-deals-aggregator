@@ -160,13 +160,21 @@
    1 处字段 diff + **1 条公开变化事件**（`updated officialUrl`，进 `/changes/` 与订阅源）⇒ 不能当成纯后台修正来做。
    处置边界不变：只允许改 URL 与 `officialDomains` 登记（域登记无需改，`providers.json` 已含 `claude.com`），
    **不许改任何价格、不许改既有引文及其 capturedAt/sourceUrl**；**不得写成「价格已变化」**（无证据）。
-2. **腾讯混元将迁移至 TokenHub（来源迁移风险）**：官方计费页顶部公告「混元相关功能将逐步迁移至 TokenHub…原平台不再新增模型能力、
-   停止支持新购模型服务」。本轮逐项复核该页价格**与记录完全一致**（6 个模型 + 免费额度 100 万 tokens / 1 年），
-   因此这是**未来漂移提示、不是事实错误**；迁移完成后需重新回访。
-   2026-10-08 复核：公告**原文仍在**（逐字）、页面自报更新时间 `2026-06-26 10:56:00`、**6/6 模型价格与记录逐一相同**、
-   免费额度 **100 万 tokens / 1 年**一致 ⇒ 残留成立、**0 改动**；页面今天比记录**多**的 4 行（turbos-vision / t1-vision /
-   turbos-vision-video / 腾讯元器）在注册表里**没有模型身份** ⇒ 是**覆盖边界、不是漂移**。
-   线索：TokenHub 已有自己的公开计费页（`product/1823/130054`、`130055`），逐项对账排进 `sources-residue-v1b`。
+2. **腾讯混元 → TokenHub（来源迁移风险 · 已升级，不再是「未来」提示）**：旧平台计费页（1729/97731）
+   今天仍 200 且 6 个模型价格与记录**逐一一致**，但官方公告（/announce/detail/2287）给出的
+   **旧平台全面停服日 2026-09-30 已过**（2026-10-08 复核），公告另写明 2026-06-30 起停止售卖。
+   迁移目标 TokenHub 的公开计费面（1823/130054 · 130055 · 130051）逐项对账结果为
+   **一致 1 / 不一致 0 / 该页不载 5**：只有 `hunyuan-role-latest`（展示名 Hy-Role-Latest，
+   模型 id 同名，广州 tab 2.4 / 9.6）在 TokenHub 上对得上；`hunyuan-a13b`、`hunyuan-translation`、
+   `hunyuan-translation-lite` 被迁移指南**点名「TokenHub 将不再支持」**；
+   `tencent-hy-vision-1.5-instruct`、`hunyuan-embedding` 不在 TokenHub（页面只有后缀/id 不同的近亲）。
+   免费额度（100 万 tokens / 1 年）在 TokenHub 的**计费面**上不载（130054 只有指向 130053 新人免费体验包的
+   指针；该体验包是活动包、截至 2026-12-31，与记录所述不是同一条）。
+   **不得写成「价格已变化」**（不一致 = 0）；也**不得**把公告写的要求当成「服务确已停止」——那是公告口径，不是实测服务状态。
+   触发条件（满足任一条**先报 captain**）：**T1** 旧计费页非 200 / 跳转 / 内容变更；**T2** TokenHub 出现另外 5 个模型的
+   同名 id 或官方给出旧名→新名映射；**T3** TokenHub 对 `hunyuan-role-latest` 改价；**T4** 旧计费页被重定向到 TokenHub。
+   复核脚本：`research/_raw/sources-residue-v1b/build-v1b-evidence.js`（锚点找不到即**报错退出**，不静默出空证据）。
+   **记录层本轮不动**（加注记会被 officialUrl / sourceUrl / 价格 / 引文四条边界挡住，且会推进一条公开变化事件）。
 3. **术语残留（DEFERRED）**：历史层 / 信息流仍把 `sourceUrl` 叫「原始出处」，而该 URL 在生产数据里**今日不可达/语义已分角色**
    （`officialUrl` / `url` / `sourceUrl` / `evidence[].sourceUrl` 四者角色见 `docs/SCHEMA-v3.0.md` §10 ⑤）。
    本轮只统一了契约与页面措辞，**历史文档里的旧称保留**，标记为 DEFERRED。
@@ -175,6 +183,11 @@
    活路径 3 处（`scripts/lib/history.js:192` · `index.html:1348` · `scripts/lib/archive.js:685`）—— **维持 DEFERRED**。
    另：`scripts/data/official_urls.json:3` 的括注「（渲染成「原始出处」行）」**已陈旧**（deal 侧行标签早已是「收录渠道」，
    `audience.js:749`；plans 侧根本不渲染该字段）⇒ 校正排进 `sources-residue-v1b`。
+   ⇒ 2026-10-08 追加（`sources-residue-v1b` 已完成）：该括注**已校正**（产物 **0 变化** —— 对照组同源码连构两次
+   changed=0，实验组改后 changed=0；变化日志 **0 条**），并新增一条**可复核判据**（注里的行标签必须逐字等于
+   `SOURCE_LABELS.origin`；**改回旧写法 ⇒ 2/8 红**、**内存里改名 `SOURCE_LABELS.origin` ⇒ 红且磁盘 sha256 不变**）。
+   该判据的**固化**（迁到 `scripts/tools/` 的自测住址 + 登记进 `.github/actions/gate/action.yml`）见 `roles-note-tooth-v1`（t18）——
+   **一条不进 CI 的牙不是牙**，所以这里不写成「已解决」。
 4. **引文预算的结构上限（重要口径）**：单条记录**最多 3 条引文**（`MAX_EVIDENCE_ITEMS = 3`，实测 16 条记录用满），
    2026-10-08 实测：发布数据 **24 条 API 计费记录 / 59 条引文** —— **40 条模型级绑定**（`models.<modelKey>`），
    其中引文里 input 与 output 同时出现的 **39 组顺序对（39/39 顺序正确）**；**维度级绑定（`…rates.<dim>`）0 条**，
