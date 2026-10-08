@@ -1,0 +1,259 @@
+{
+ "what": "对抗性验证结论：守住 / 破防 / 未覆盖 / 假红 —— 每条附最小形态、原始读数、绕过的是哪条承诺、修法建议",
+ "counts": {
+  "guarded": 15,
+  "broken": 9,
+  "uncovered": 6,
+  "false_red": 1
+ },
+ "items": [
+  {
+   "id": "R1-entries-empty",
+   "verdict": "guarded",
+   "promise": "登记制：任何 ch 窄列都必须登记（清空登记表必须立刻红）",
+   "form": "scripts/data/narrow-reading-columns.json → entries: []（沙箱副本）",
+   "reading": "S1：874 项 / **失败 5**；未登记窄列页 [plans/coding/]；§22c 逐条判据 4 档全红 + M16 承重证明红（\"已登记条目仍在 false\"）",
+   "fix": "无需修改；这条实跑回答了自审里登记的「没实跑」"
+  },
+  {
+   "id": "R2-comma-borrow",
+   "verdict": "broken",
+   "promise": "登记制：产物里任何 ch 窄列都必须登记（selector + 归一声明文本逐字匹配）",
+   "form": "`.pnote, .pdetailbody { max-width: 72ch; }`（need/ai-coding/）",
+   "reading": "扫描面 = `.pnote, .pdetailbody { max-width: 72ch }` **registered=true** ⇒ 全站 0 码；对照 RA2 `.pnote { max-width: 72ch }` ⇒ 判红。探针：`.pnote` 生效宽 **465.75px**（真的变窄）",
+   "fix": "匹配改成「声明在**每个**选择器段下都登记」或按段拆开逐段匹配；登记条目加 routes 约束"
+  },
+  {
+   "id": "R3-comment-eats-rule",
+   "verdict": "broken",
+   "promise": "登记制：内联 <style> 里任何 ch 窄列都必须登记",
+   "form": ".arch-decoy::before { content: \"/*\"; } .pnote { max-width: 70ch; } /* arch-end */",
+   "reading": "扫描面**没有**这条声明 ⇒ 0 码；探针：`.pnote` 生效宽 **452.81px**",
+   "fix": "剥注释要用 CSS 感知的方式（或用 CSSOM 的 cssRules 走规范围），不要用 `/*…*/` 非贪心正则"
+  },
+  {
+   "id": "R4-case-CH",
+   "verdict": "broken",
+   "promise": "登记制：ch 窄列必须登记（单位大小写）",
+   "form": "`.pnote { max-width: 70CH; }` + 可见版 `.page-notes-summary { max-width: 70CH; }`",
+   "reading": "两条都**不在扫描面** ⇒ 0 码；探针：生效 max-width **452.812px / 466.348px**（CSS 单位大小写不敏感，真的生效）",
+   "fix": "正则加 `i`（`/\\d+(\\.\\d+)?ch\\b/i`）"
+  },
+  {
+   "id": "R5-case-property",
+   "verdict": "broken",
+   "promise": "登记制：ch 窄列必须登记（属性名大小写）",
+   "form": "`.pnote { MAX-WIDTH: 70ch; }`",
+   "reading": "不在扫描面 ⇒ 0 码；探针：生效 max-width **452.812px**",
+   "fix": "属性名比较前 lowercase"
+  },
+  {
+   "id": "R5b-px-effective-width",
+   "verdict": "uncovered",
+   "promise": "登记的条目必须居中且真的比容器窄（生效值 vs 声明值）",
+   "form": "`.pdetailbody { width: 300px; }`（登记声明 72ch 一字未动）",
+   "reading": "G300：**874/0 全绿**；§19 读数 `.pdetailbody 300px / 单元格 1357px · 左 528.5 · 右 528.5`",
+   "fix": "加一条「生效宽 ≈ 声明 ch 的现场换算值 ±20%」或把扫描面扩到 px/rem 的 max-width"
+  },
+  {
+   "id": "R6-media-nested",
+   "verdict": "guarded",
+   "promise": "登记制：内联 <style> 里 ch 窄列必须登记（@media 内不能漏）",
+   "form": "@media (min-width: 1px) { .pnote { max-width: 70ch; } }",
+   "reading": "扫描面命中（registered=false）⇒ 判红 ✓",
+   "fix": "无"
+  },
+  {
+   "id": "R7-supports-comment",
+   "verdict": "guarded",
+   "promise": "同上（注释 + @supports 混排）",
+   "form": "/* 形态说明 */ @supports (display: grid) { .pnote { max-width: 70ch; } }",
+   "reading": "扫描面命中 ⇒ 判红 ✓",
+   "fix": "无"
+  },
+  {
+   "id": "R8-important",
+   "verdict": "guarded",
+   "promise": "未登记的 ch 窄列带 !important 仍要判红",
+   "form": "`.pnote { max-width: 70ch !important; }`",
+   "reading": "扫描面 `max-width: 70ch !important` registered=false ⇒ 判红 ✓",
+   "fix": "无"
+  },
+  {
+   "id": "R9-important-registered",
+   "verdict": "false_red",
+   "promise": "登记条目按 selector + 归一声明文本逐字匹配",
+   "form": "`.pdetailbody { max-width: 72ch !important; }`（plans/coding/）",
+   "reading": "RA10：扫描面 = `max-width: 72ch !important` registered=**false** ⇒ 判红（同一处已登记声明只多了 !important）",
+   "fix": "归一化时剥掉 `!important`（与折叠空白同一层）"
+  },
+  {
+   "id": "R10-inline-style-px",
+   "verdict": "uncovered",
+   "promise": "登记清单 scanScope = 页面内联 <style> 的规则块（已声明射程）",
+   "form": "`style=\"max-width: 70ch;\"`（RA12）/ `.pnote { max-width: 465px; }`（RA7）/ `.pnote { min-width: 70ch }`（RA8）",
+   "reading": "三条都 0 码；探针：RA12 生效 452.812px、RA7 生效 465px、RA8 未变宽（1380px，min-width 不构成窄列）",
+   "fix": "若要把行内 style / px 纳入射程，需在 scanScope 里显式写清「不覆盖」并另开一轮（当前是**已声明**的射程外）"
+  },
+  {
+   "id": "R11-second-entry-no-geometry",
+   "verdict": "broken",
+   "promise": "「登记的条目还必须居中（§19 的几何断言）」",
+   "form": "沙箱 S2：entries = [.pdetailbody（原样）, .page-notes-summary{max-width:70ch}, .ghost-nowhere] + 产物里真的写入未居中的 .page-notes-summary",
+   "reading": "**874/0 全绿**；§19 只量 entries[0]（`.pdetailbody 465.75px · 左 445.63 / 右 445.63`）；探针：`.page-notes-summary` 生效 466.348px、**左 0 / 右 913.66**（未居中）⇒ 承诺只对第一条成立；幽灵条目也没有任何断言",
+   "fix": "§19 按 entries 逐条开测（选择器 + 期望 ch 的现场换算），并加一条「登记条目必须在某个产物页面里命中」的断言"
+  },
+  {
+   "id": "V1-sideways-rl",
+   "verdict": "guarded",
+   "promise": "§22c ②：竖排（sideways-*）按列判",
+   "form": "`.snote { writing-mode: sideways-rl; width: 100%; height: 5.6rem; overflow: hidden; }`",
+   "reading": "note#0：wm=sideways-rl · 列 18 · 列栈 **362.64px** < 1173 ⇒ `note-ink-narrow` ✓（@1440/@1600/@760 三档全中）",
+   "fix": "无"
+  },
+  {
+   "id": "V2-vertical-lr",
+   "verdict": "guarded",
+   "promise": "同上（vertical-lr）",
+   "form": "同上，`writing-mode: vertical-lr`",
+   "reading": "列 20 · 列栈 **403.42px** ⇒ 判红 ✓",
+   "fix": "无"
+  },
+  {
+   "id": "V3-single-column-clip",
+   "verdict": "broken",
+   "promise": "§22c ② 的前置条件「排版单元数 ≥ 2」不许松（1 列 = 没有排版证据）",
+   "form": "`.snote { writing-mode: vertical-rl; width: 100%; height: 5.6rem; overflow: hidden; white-space: nowrap; }`",
+   "reading": "**0 码**（列 1 / 列栈 16px ⇒ ② 前置不成立；内容盒 1377px ⇒ ① 看不见）；探针：盒 1380×89.59 · **scrollHeight 1489 / clientHeight 90** · 字迹 16×1489 ⇒ 157 字里 ~94% 被裁掉（`note-clipped` 只看横向 scrollWidth 1377 = clientWidth 1377）",
+   "fix": "竖排的裁切需要一个对应量（`scrollHeight > clientHeight + tol` 判红），或把「1 列」豁免限定在「无固定高度/无裁切」"
+  },
+  {
+   "id": "V4-full-span-spill",
+   "verdict": "guarded",
+   "promise": "列栈铺满列宽 ⇒ 放行；同时不能靠溢出买覆盖率",
+   "form": "`.snote { writing-mode: vertical-rl; width: 100%; height: 1rem; overflow: hidden; }`",
+   "reading": "列栈 1993–2360px ≥ 1173 ⇒ ② 确实放行，但 `note-clipped`（scrollWidth > clientWidth）与 `note-intro-long` 立刻咬住 ⇒ 组合红；短说明（#3–#8）仍被 ② 判红",
+   "fix": "无（但「铺满」这个量可以被**盒外**的列买到，见报告 §6.2）"
+  },
+  {
+   "id": "V5-media-760",
+   "verdict": "guarded",
+   "promise": "只在 760 生效的竖排形态（样本档）",
+   "form": "@media (min-width: 700px) and (max-width: 800px) { .snote { writing-mode: vertical-rl; width: 100%; height: 5.6rem; overflow: hidden; } }（status/，在 29 页样本集里）",
+   "reading": "@760 样本档：`status/#0 note-ink-narrow, status/#1 note-ink-narrow` ✓；@1440/@1600 不生效 ⇒ 0 码（设计如此）。探针 @760：wm=vertical-rl、字迹 342.2px / 24 个字形盒",
+   "fix": "无"
+  },
+  {
+   "id": "V6-viewport-gap",
+   "verdict": "uncovered",
+   "promise": "同一份判据在 1440/1600 全站 + 760/360 样本集生效",
+   "form": "@media (min-width: 900px) and (max-width: 1000px) { …竖排形态… }（feeds/）/ 同一形态挂在**样本集外**的页（models/deepseek-v3.2/）",
+   "reading": "两条都**全站 0 码**；探针 @950：feeds/ 的 note wm=vertical-rl、字迹 **260.7px**（< 0.85×910）⇒ 形态在 900–1000px 真的成立；探针 @760：models/deepseek-v3.2/ 的 note wm=vertical-rl、字迹 **179.1px** ⇒ 形态在 760 成立但该页不在样本集里",
+   "fix": "把「未量测档位」写进登记表（已知边界），或让 760 档覆盖全部有说明的页（63 页而不是 29 页）"
+  },
+  {
+   "id": "V7-ancestor-writing-mode",
+   "verdict": "guarded",
+   "promise": "轴选择读 .snote 自身 computed writingMode（祖先继承也算）",
+   "form": "外层 <div class=\"arch-anc\" style=\"writing-mode: vertical-rl\"> 包住每一条 .snote（CSS: `.arch-anc { writing-mode: vertical-rl } .arch-anc > .snote { width:100%; height:5.6rem; overflow:hidden }`）",
+   "reading": "note 的 computed wm=**vertical-rl**（继承可见）· 列 5–15 · 列栈 97.56–301.47px ⇒ `note-ink-narrow` ✓（同时 ①/note-axis 也出码）",
+   "fix": "无（继承路径是安全的：读的是 computed style 而不是自身声明）"
+  },
+  {
+   "id": "V8-axis-desync",
+   "verdict": "uncovered",
+   "promise": "轴按 .snote 的 writing-mode 选，而字迹的轴由后代决定",
+   "form": "`.snote { writing-mode: vertical-rl; width: 100%; }` + 子元素 `.arch-h { writing-mode: horizontal-tb }`（正文按 16 字一行加 <br>）",
+   "reading": "② **静默**（列 1 ⇒ 前置不成立），但 ① 接住：内容盒 192/107px ⇒ `note-narrow`；VA8b（加 `height:5.6rem; overflow:hidden`）同样被 ① 接住。⇒ 轴 desync 本身成立，但这一形态由 ① 兜住",
+   "fix": "登记表条目：**② 的轴可被后代 desync**；若要闭合，判据应同时看「后代 writing-mode」或改用「字迹并集的实际支配轴」"
+  },
+  {
+   "id": "V9-scaleX",
+   "verdict": "guarded",
+   "promise": "transform: scaleX() 这类绘制期缩放会一并影响 getClientRects ⇒ 逐行判据量得到",
+   "form": "`.snote { transform: scaleX(0.35) }`（横排）/ 竖排 + `scaleX(0.2)` / 竖排 + `scaleX(5)`",
+   "reading": "横排 models/：字迹 0.35×=**421.93px** 但**单行**（lineCount=1 ⇒ ② 前置不成立）⇒ ② 静默、`note-axis` 咬住；竖排 plans/：列栈 7.28–68.45px ⇒ ② 判红 ✓；竖排 changes/ + scaleX(5)：多数条被 ② 判红、两条被放大到 1201.48px 逃过 ②，但 `note-axis` + `page-overflow@1440` 咬住",
+   "fix": "无（组合有牙）；登记表条目：**单行说明的 scaleX 不由 ② 覆盖**（由 note-axis 兜）"
+  },
+  {
+   "id": "V10-vertical-false-red-band",
+   "verdict": "uncovered",
+   "promise": "「不是凡竖排必红」——判据仍是量出来的（≥73 列/≈366 字才铺满列宽）",
+   "form": "任何 <366 字的竖排说明（真实形态：T31 的 137/159 字）",
+   "reading": "凡 2–72 列一律判红：137 字 ⇒ 18 列/362.64px、159 字 ⇒ 20 列/403.42px，阈值 1173px ⇒ 距阈值还有 3.2 倍",
+   "fix": "登记表条目：竖排说明的**设计意图面**（标题条/竖排标签）目前一律红；若产品要允许「竖排短条」，需要一条明确的登记面（不在本轮承诺内）"
+  },
+  {
+   "id": "G1-tolerance-inside",
+   "verdict": "guarded",
+   "promise": "§19：|左内边距 − 右内边距| ≤ 2px",
+   "form": "`.pdetailbody { position: relative; left: 0.95px; }`",
+   "reading": "§19 ✓ 左 **446.56** / 右 **444.69**（差 **1.87px** ≤ 2）· 874 项 / 0 失败（该副本唯一失败是 RA1b）",
+   "fix": "无"
+  },
+  {
+   "id": "G2-tolerance-outside",
+   "verdict": "guarded",
+   "promise": "§19：差 > 2px 必须红",
+   "form": "`.pdetailbody { position: relative; left: 1.05px; }`",
+   "reading": "§19 ✗ 左 **446.67** / 右 **444.58**（差 **2.09px** > 2）⇒ 判红 ✓（Chromium 把位移量化到 1/64px，所以标称 1.90/2.10 实测 1.87/2.09）",
+   "fix": "无"
+  },
+  {
+   "id": "G3-narrow-by-min-width",
+   "verdict": "guarded",
+   "promise": "§19：登记条目必须真的比容器窄 ≥ 40px",
+   "form": "`.pdetailbody { min-width: 1400px; }`",
+   "reading": "§19 ✗ `.pdetailbody 1400px / 单元格 1401px`（只窄 1px）⇒ 判红 ✓",
+   "fix": "无"
+  },
+  {
+   "id": "G4-ancestor-rtl",
+   "verdict": "guarded",
+   "promise": "§19 居中几何在父级 direction: rtl 下依然成立",
+   "form": "`tr.pdetail td { direction: rtl; }`",
+   "reading": "§19 ✓ 左 445.63 / 右 445.63；隔离牙读数变成 左 890.75 / 右 0.5（判据判的是「不相等」，与方向无关）⇒ 874/0",
+   "fix": "无"
+  },
+  {
+   "id": "G5-ancestor-transform",
+   "verdict": "guarded",
+   "promise": "§19 居中几何在祖先 transform 下依然成立",
+   "form": "`tr.pdetail { transform: scaleX(0.9); }`",
+   "reading": "§19 ✓ 盒 419.17px / 单元格 1219.1px · 左 399.96 / 右 399.96（整体等比缩放，差不变量）⇒ 874/0",
+   "fix": "无"
+  },
+  {
+   "id": "F1-frozen-comment",
+   "verdict": "broken",
+   "promise": "§22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次",
+   "form": "把真规则换成 CSS 注释里的同一串（`/* … .snote { color: var(--mut); … } */`）",
+   "reading": "判据 ✓ **186/186 页恰好 1 次**（被骗过）；探针证明真规则已不在：note 的 computed 从 `12px / 20.4px / margin-bottom 12px`（基线）变成 `14px / 21px / 0px` ⇒ 该页说明的基础样式整段消失。整轮红是**副作用**：M15 的变异锚点落在注释里，注入的 CSS 被注释吞掉 ⇒ `note-ink-narrow 0 条`",
+   "fix": "计数前先剥 CSS 注释（或在 CSSOM 上数规则），否则「冻结串」这条判据只是字符串计数"
+  },
+  {
+   "id": "F2-sitemap-comment",
+   "verdict": "broken",
+   "promise": "§18 sitemap 成员资格与索引策略一致 + `/vendor/` 枢纽入口数 + verify:seo 的「sitemap == 非 noindex 页面集合」",
+   "form": "把 `sitemap.xml` 里 `vendor/zhipu/` 的整个 <url> 块包进 XML 注释（`<!-- <url>…</url> -->`）",
+   "reading": "伪造副本：三条判据全 ✓（`厂商落地页 /vendor/zhipu/ … sitemap 有`、`/vendor/ 枢纽列出 24 个厂商入口 :: 页面 25 行 / sitemap 24 个`、`verify:seo 11 项 / 0 失败`，且 `sitemap entries` 仍是 183）。**真删对照**：三条全红（`sitemap 无` / `页面 25 行 / sitemap 24 个` / `verify:seo 2 失败：漏 vendor/zhipu/`）",
+   "fix": "读 XML 前先剥注释（`<!--[sS]*?-->`）或用真正的 XML 解析器；verify-site 的 sitemap 成员资格也应改走 DOM/解析而不是 `split('<loc>')`"
+  },
+  {
+   "id": "F3-canonical-comment",
+   "verdict": "broken",
+   "promise": "canonical 自指（verify:seo 的 canonical-self / canonical-unique）",
+   "form": "把 `<link rel=\"canonical\" href=\"…\">` 用 HTML 注释包起来（DOM 里没有 canonical）",
+   "reading": "`verify:seo` 11 项 / **0 失败**（规则层的 canonical-self 被注释骗过）；真删对照：`❌ [canonical-self] need/student-only/ 没有 canonical`。**但** verify-site 的 DOM 判据把它兜住（`✗ 别名页 /need/student-only/ canonical 自指`）⇒ 组合仍红",
+   "fix": "lib/seo.js 的 `stripless()` 顺带剥 HTML 注释（`canonicalOf/titleOf/robotsOf/h1Count/rowMarkers` 全部读原始文本）"
+  },
+  {
+   "id": "A1-raw-text-decision-sites",
+   "verdict": "uncovered",
+   "promise": "（captain 增补线索）出货判据里读原始 HTML/CSS/XML 的决定点",
+   "form": "逐处静态审计（行号见报告 §7 表）",
+   "reading": "verify-site.js：4112–4115 / 4138–4141（`id=\"plan-…\"` 原始正则）、4338+4382（sitemap `<loc>` 原始 split）、5472–5474（首页页脚外链例外集，且读的是 **ROOT/dist** 而不是 `--dir` 指定的副本）、6792（登记制扫描，已证实可被注释/大小写绕过）、6943（冻结串计数，已证实可被注释绕过）；lib/seo.js：88/93/98/103/108/115/163（title/canonical/description/robots/h1/JSON-LD/rowMarkers 全读原始文本，未剥注释；只有 `visibleText` 剥注释）；seo-verify.js：48（`strip` 不剥注释）、94、105–106、156（sitemap 原始正则）",
+   "fix": "统一一条纪律：**凡是判据，先剥注释（HTML/CSS/XML 三种）或走解析器/DOM**；把「读原始文本」的位置在一处登记"
+  }
+ ]
+}

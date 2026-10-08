@@ -1,0 +1,2836 @@
+{
+ "what": "每份副本的门禁原始读数切片（只留结论性读数；完整 JSON 在 .arch-v1/json/）",
+ "runs": [
+  {
+   "key": "base",
+   "label": "基线副本（未注入）",
+   "total": 874,
+   "failed": 0,
+   "failedChecks": [],
+   "macro": {
+    "narrowNotes": 0,
+    "inkNarrowNotes": 0,
+    "narrowRegistryEntries": 1,
+    "narrowUnregisteredPages": []
+   },
+   "narrowChDeclarationsAt1440": [
+    {
+     "route": "plans/coding/",
+     "declarations": [
+      {
+       "selector": ".pdetailbody",
+       "declaration": "max-width: 72ch",
+       "registered": true
+      }
+     ]
+    }
+   ],
+   "perRoute": []
+  },
+  {
+   "key": "att",
+   "label": "攻击副本 #1（24 条形态）",
+   "total": 874,
+   "failed": 15,
+   "failedChecks": [
+    {
+     "name": "390px：/changes/ 零横向溢出（列表式布局，不是宽表）",
+     "detail": "溢出 1416px · 分栏 7"
+    },
+    {
+     "name": "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行",
+     "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 9（落在 2 页） · note-ink-narrow 36（6 页） · 并集 40 条 / 7 页 · 藏字 0 · 不同轴 33 · 裁切 3 · 首屏说明过长 13 条 / 6 页 · 多行说明（有行证据）10 条 · 竖排 47 条（其中列证据 ≥ 2 列、即 ② 按列判的：41 条） · textFallback 回落 1 条 · 未登记的窄阅读列 5 页（登记清单 1 条） · 命中：archive/#0 内容盒 192px / 盒 1380px / 列 1380px · 行 7（最宽 192px） · **竖排** 列 1（列栈 192px） · 判据用列：1 / 192px · 字形盒 7 · 主数据区 <main> · codes [note-narrow] · 「本站的原则是：资料失效不等于资料」；archive/#1 内容盒 107px / 盒 1354px / 列 1380px · 行 3（最宽 107.27px） · **竖排** 列 1（列栈 107.27px） · 判据用列：1 / 107.27px · 字形盒 3 · 主数据区 <main> · codes [note-narrow] · 「结束 0 条 · 恢复 0 条 」；archive/#2 内容盒 107px / 盒 1354px / 列 1380px · 行 3（最宽 107.27px） · **竖排** 列 1（列栈 107.27px） · 判据用列：1 / 107.27px · 字形盒 3 · 主数据区 <main> · codes [note-narrow] · 「结束 0 条 · 恢复 0 条 」；archive/#3 内容盒 107px / 盒 1354px / 列 1380px · 行 3（最宽 107.27px） · **竖排** 列 1（列栈 107.27"
+    },
+    {
+     "name": "§22c @1440 全站 186 页都没有横向溢出",
+     "detail": "1 页溢出：changes/"
+    },
+    {
+     "name": "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行",
+     "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 9（落在 2 页） · note-ink-narrow 36（6 页） · 并集 40 条 / 7 页 · 藏字 0 · 不同轴 33 · 裁切 3 · 首屏说明过长 13 条 / 6 页 · 多行说明（有行证据）10 条 · 竖排 47 条（其中列证据 ≥ 2 列、即 ② 按列判的：41 条） · textFallback 回落 1 条 · 未登记的窄阅读列 5 页（登记清单 1 条） · 命中：archive/#0 内容盒 192px / 盒 1380px / 列 1380px · 行 7（最宽 192px） · **竖排** 列 1（列栈 192px） · 判据用列：1 / 192px · 字形盒 7 · 主数据区 <main> · codes [note-narrow] · 「本站的原则是：资料失效不等于资料」；archive/#1 内容盒 107px / 盒 1354px / 列 1380px · 行 3（最宽 107.27px） · **竖排** 列 1（列栈 107.27px） · 判据用列：1 / 107.27px · 字形盒 3 · 主数据区 <main> · codes [note-narrow] · 「结束 0 条 · 恢复 0 条 」；archive/#2 内容盒 107px / 盒 1354px / 列 1380px · 行 3（最宽 107.27px） · **竖排** 列 1（列栈 107.27px） · 判据用列：1 / 107.27px · 字形盒 3 · 主数据区 <main> · codes [note-narrow] · 「结束 0 条 · 恢复 0 条 」；archive/#3 内容盒 107px / 盒 1354px / 列 1380px · 行 3（最宽 107.27px） · **竖排** 列 1（列栈 107.27"
+    },
+    {
+     "name": "§22c @1600 全站 186 页都没有横向溢出",
+     "detail": "1 页溢出：changes/"
+    },
+    {
+     "name": "§22c @390 全站 186 页 documentElement.scrollWidth ≤ 视口+1",
+     "detail": "1 页溢出：changes/=1806px"
+    },
+    {
+     "name": "§22c @760 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+     "detail": "86 条违规码 [archive/#0 note-narrow, archive/#1 note-narrow, archive/#2 note-narrow, archive/#3 note-narrow, changes/#0 note-axis, changes/#1 note-ink-narrow, changes/#1 note-axis, changes/#2 note-axis, changes/#3 note-ink-narrow, changes/#3 note-axis, changes/#4 note-axis, changes/#5 note-ink-narrow, changes/#5 note-axis, changes/#6 note-ink-narrow, changes/#6 note-axis, changes/#7 note-ink-narrow, changes/#7 note-axis, changes/#8 note-axis, changes/#9 note-ink-narrow, changes/#9 note-axis, changes/#10 note-ink-narrow, changes/#10 note-axis, changes/#11 note-ink-narrow, changes/#11 note-axis, changes/#12 note-axis, changes/#? page-overflow@760, docs/data/#0 note-clipped, docs/data/#1 note-clipped, docs/data/#2 note-clipped, docs/data/#3 note-clipped, docs/data/#4 note-ink-narrow, docs/data/#5 note-ink-narrow, docs/data/#7 note-ink-narrow, docs/data/#8 note-clipped, free-api/#? narrow-unregi"
+    },
+    {
+     "name": "§22c @360 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+     "detail": "56 条违规码 [archive/#0 note-narrow, archive/#1 note-narrow, archive/#2 note-narrow, archive/#3 note-narrow, changes/#0 note-axis, changes/#1 note-axis, changes/#2 note-axis, changes/#3 note-axis, changes/#4 note-axis, changes/#5 note-axis, changes/#6 note-axis, changes/#7 note-axis, changes/#8 note-axis, changes/#9 note-axis, changes/#10 note-axis, changes/#11 note-axis, changes/#12 note-axis, changes/#? page-overflow@360, docs/data/#0 note-clipped, docs/data/#1 note-clipped, docs/data/#2 note-clipped, docs/data/#3 note-clipped, docs/data/#6 note-clipped, docs/data/#8 note-clipped, free-api/#? narrow-unregistered, models/#0 note-axis, models/#1 note-axis, models/#2 note-axis, need/china-usable/#? narrow-unregistered, need/edu-identity/#? narrow-unregistered, need/free-api/#0 note-clipped, need/free-model/#? narrow-unregistered, need/student-only/#0 note-clipped, plans/#0 note-axis, plans/#0"
+    },
+    {
+     "name": "§22c M6 变异后复测必须出现「page-overflow@390」违规码（拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串）",
+     "detail": "期望 page-overflow@390 · 实测 [无] · 说明 1 条 · 首条 盒 358px / 有字区域 347px · detail-main 0 个 · scrollWidth 390（视口 390） · 不可断串注入位置 note · 窄条 [无] · 违规码 [无]"
+    },
+    {
+     "name": "§22c M11 承重证明：旧判据（内容盒 textWidth）**一条都没咬**，咬中的全是新的逐行字迹码",
+     "detail": "note-narrow 0 条（0 = 盒子/内容盒满宽，旧口径确实看不见）· note-ink-narrow 11 条 [changes/#0, changes/#1, changes/#2, changes/#3, changes/#4, changes/#5, changes/#6, changes/#7, changes/#9, changes/#10, changes/#11] · 这些条的行证据：#0 1 行 / 最宽 895.63px / 内容盒 1380px · #1 1 行 / 最宽 589.77px / 内容盒 1380px · #2 1 行 / 最宽 691.72px / 内容盒 1380px · #3 1 行 / 最宽 589.77px / 内容盒 1380px · #4 1 行 / 最宽 997.58px / 内容盒 1380px · #5 1 行 / 最宽 487.81px / 内容盒 1380px · #6 1 行 / 最宽 283.91px / 内容盒 1380px · #7 1 行 / 最宽 181.95px / 内容盒 1380px · #9 1 行 / 最宽 589.77px / 内容盒 1380px · #10 1 行 / 最宽 385.86px / 内容盒 1380px · #11 1 行 / 最宽 283.91px / 内容盒 1380px"
+    },
+    {
+     "name": "§22c M13 变异后复测必须出现「note-unrendered」违规码（T22-F1 原型：**裸** font-size:0（没有 ::before 高度恢复器）—— 盒高被压成 0 ⇒ rendered=false，修复前会让窄柱",
+     "detail": "期望 note-unrendered · 实测 [note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text] · 说明 9 条 · 首条 盒 1380px / 有字区域 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text]"
+    },
+    {
+     "name": "§22c M13 承重证明：盒高被压成 0 的条**全部**由 note-unrendered 咬中，且窄柱/字迹/藏字三条判据在它们身上确实看不见",
+     "detail": "未渲染条 0 条 [] · 它们的 textLength [] · glyphRects [] · note-unrendered 命中 [无] · 窄柱/字迹/藏字码 [note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text]"
+    },
+    {
+     "name": "§22c M14 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+     "detail": "首个 .snote 注入前已经是 4 行（> 2）—— 注入不是它的原因 ⇒ 变异未生效，判红（不允许「变异不生效却算通过」）"
+    },
+    {
+     "name": "§22c M14 变异后复测必须出现「note-intro-long」违规码（首屏说明被写长（DOM 注入填充正文）：盒宽 / 内容盒 / 同轴 / 裁切全都不动，只有「行数」越过上限 ⇒ 必须由 note-intro-long 咬住（本轮",
+     "detail": "锚点不唯一/不存在 ⇒ 变异没落地，按红处理（同一个判据不可能被这条牙咬到）"
+    },
+    {
+     "name": "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条违规码都没有",
+     "detail": "M8 need/student-only/@1440 说明 1 条（竖排 1）违规码 [note-ink-narrow,note-intro-long] · M9a docs/data/@1440 说明 9 条（竖排 9）违规码 [note-clipped,note-intro-long,note-clipped,note-intro-long,note-clipped,note-intro-long,note-ink-narrow,note-ink-narrow,note-ink-narrow,note-ink-narrow,note-ink-narrow,note-ink-narrow] · M9b changes/@1440 说明 13 条（竖排 13）违规码 [note-ink-narrow,note-axis,note-intro-long,note-ink-narrow,note-axis,note-intro-long,note-ink-narrow,note-axis,note-ink-narrow,note-axis,note-ink-narrow,note-axis,note-ink-narrow,note-axis,note-ink-narrow,note-axis,note-ink-narrow,note-axis,note-axis,note-ink-narrow,note-axis,note-ink-narrow,note-axis,note-ink-narrow,note-axis,note-axis,page-overflow@1440] · M10 need/student-only/@1600 说明 1 条（竖排 1）违规码 [note-ink-narrow,note-intro-long]"
+    }
+   ],
+   "macro": {
+    "narrowNotes": 9,
+    "inkNarrowNotes": 36,
+    "narrowRegistryEntries": 1,
+    "narrowUnregisteredPages": [
+     "free-api/",
+     "need/china-usable/",
+     "need/edu-identity/",
+     "need/free-model/",
+     "plans/coding/"
+    ]
+   },
+   "narrowChDeclarationsAt1440": [
+    {
+     "route": "free-api/",
+     "declarations": [
+      {
+       "selector": ".pnote",
+       "declaration": "max-width: 70ch !important",
+       "registered": false
+      }
+     ]
+    },
+    {
+     "route": "need/ai-coding/",
+     "declarations": [
+      {
+       "selector": ".pnote, .pdetailbody",
+       "declaration": "max-width: 72ch",
+       "registered": true
+      }
+     ]
+    },
+    {
+     "route": "need/china-usable/",
+     "declarations": [
+      {
+       "selector": ".pnote",
+       "declaration": "max-width: 70ch",
+       "registered": false
+      }
+     ]
+    },
+    {
+     "route": "need/edu-identity/",
+     "declarations": [
+      {
+       "selector": ".pnote",
+       "declaration": "max-width: 70ch",
+       "registered": false
+      }
+     ]
+    },
+    {
+     "route": "need/free-model/",
+     "declarations": [
+      {
+       "selector": ".pnote",
+       "declaration": "max-width: 72ch",
+       "registered": false
+      }
+     ]
+    },
+    {
+     "route": "plans/coding/",
+     "declarations": [
+      {
+       "selector": ".pdetailbody",
+       "declaration": "max-width: 72ch",
+       "registered": true
+      },
+      {
+       "selector": ".pdetailbody",
+       "declaration": "max-width: 72ch !important",
+       "registered": false
+      }
+     ]
+    }
+   ],
+   "perRoute": [
+    {
+     "route": "need/free-api/",
+     "pageCodes": [
+      "note-ink-narrow",
+      "note-intro-long"
+     ],
+     "notes": [
+      {
+       "index": 0,
+       "codes": [
+        "note-ink-narrow",
+        "note-intro-long"
+       ],
+       "writingMode": "sideways-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 362.64,
+       "columnCount": 18,
+       "columnSpan": 362.64,
+       "inkUnit": "column",
+       "inkCount": 18,
+       "inkSpan": 362.64,
+       "glyphRects": 22,
+       "textWidth": 1369,
+       "textLength": 137
+      }
+     ],
+     "sampleMentions": [
+      "row-unregistered, need/edu-identity/#? narrow-unregistered, need/free-api/#0 note-ink-narrow, need/free-model/#? narrow-unregistered, need/student-only/#0 note-ink-narrow, plans/#0 note-ink-narrow, plans/#0 note-axis, plans/#1 note-ink-narr",
+      "row-unregistered, need/edu-identity/#? narrow-unregistered, need/free-api/#0 note-clipped, need/free-model/#? narrow-unregistered, need/student-only/#0 note-clipped, plans/#0 note-axis, plans/#0 note-clipped, plans/#1 note-axis, plans/#2 no"
+     ]
+    },
+    {
+     "route": "need/student-only/",
+     "pageCodes": [
+      "note-ink-narrow",
+      "note-intro-long"
+     ],
+     "notes": [
+      {
+       "index": 0,
+       "codes": [
+        "note-ink-narrow",
+        "note-intro-long"
+       ],
+       "writingMode": "vertical-lr",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 403.42,
+       "columnCount": 20,
+       "columnSpan": 403.42,
+       "inkUnit": "column",
+       "inkCount": 20,
+       "inkSpan": 403.42,
+       "glyphRects": 24,
+       "textWidth": 1369,
+       "textLength": 159
+      }
+     ],
+     "sampleMentions": [
+      "#0 note-ink-narrow, need/free-model/#? narrow-unregistered, need/student-only/#0 note-ink-narrow, plans/#0 note-ink-narrow, plans/#0 note-axis, plans/#1 note-ink-narrow, plans/#1 note-axis, plans/#2 note-ink-narrow, plans/#2 note-axis, plan",
+      "pi/#0 note-clipped, need/free-model/#? narrow-unregistered, need/student-only/#0 note-clipped, plans/#0 note-axis, plans/#0 note-clipped, plans/#1 note-axis, plans/#2 note-axis, plans/#3 note-axis, plans/#4 note-axis, plans/#5 note-axis, pl"
+     ]
+    },
+    {
+     "route": "need/dev-credits/",
+     "pageCodes": [],
+     "notes": [
+      {
+       "index": 0,
+       "codes": [],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 5,
+       "widestLine": 16,
+       "columnCount": 1,
+       "columnSpan": 16,
+       "inkUnit": "column",
+       "inkCount": 1,
+       "inkSpan": 16,
+       "glyphRects": 5,
+       "textWidth": 1369,
+       "textLength": 157
+      }
+     ],
+     "sampleMentions": []
+    },
+    {
+     "route": "docs/data/",
+     "pageCodes": [
+      "note-clipped",
+      "note-intro-long",
+      "note-ink-narrow"
+     ],
+     "notes": [
+      {
+       "index": 0,
+       "codes": [
+        "note-clipped",
+        "note-intro-long"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 2075.45,
+       "columnCount": 102,
+       "columnSpan": 2075.45,
+       "inkUnit": "column",
+       "inkCount": 102,
+       "inkSpan": 2075.45,
+       "glyphRects": 102,
+       "textWidth": 1380,
+       "textLength": 108
+      },
+      {
+       "index": 1,
+       "codes": [
+        "note-clipped",
+        "note-intro-long"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 2360.92,
+       "columnCount": 116,
+       "columnSpan": 2360.92,
+       "inkUnit": "column",
+       "inkCount": 116,
+       "inkSpan": 2360.92,
+       "glyphRects": 116,
+       "textWidth": 1380,
+       "textLength": 196
+      },
+      {
+       "index": 2,
+       "codes": [
+        "note-clipped",
+        "note-intro-long"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 1993.89,
+       "columnCount": 98,
+       "columnSpan": 1993.89,
+       "inkUnit": "column",
+       "inkCount": 98,
+       "inkSpan": 1993.89,
+       "glyphRects": 98,
+       "textWidth": 1380,
+       "textLength": 110
+      },
+      {
+       "index": 3,
+       "codes": [
+        "note-ink-narrow"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 852.02,
+       "columnCount": 42,
+       "columnSpan": 852.02,
+       "inkUnit": "column",
+       "inkCount": 42,
+       "inkSpan": 852.02,
+       "glyphRects": 42,
+       "textWidth": 1380,
+       "textLength": 47
+      },
+      {
+       "index": 4,
+       "codes": [
+        "note-ink-narrow"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 240.3,
+       "columnCount": 12,
+       "columnSpan": 240.3,
+       "inkUnit": "column",
+       "inkCount": 12,
+       "inkSpan": 240.3,
+       "glyphRects": 12,
+       "textWidth": 1380,
+       "textLength": 23
+      },
+      {
+       "index": 5,
+       "codes": [
+        "note-ink-narrow"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 281.08,
+       "columnCount": 14,
+       "columnSpan": 281.08,
+       "inkUnit": "column",
+       "inkCount": 14,
+       "inkSpan": 281.08,
+       "glyphRects": 14,
+       "textWidth": 1380,
+       "textLength": 27
+      },
+      {
+       "index": 6,
+       "codes": [
+        "note-ink-narrow"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 688.89,
+       "columnCount": 34,
+       "columnSpan": 688.89,
+       "inkUnit": "column",
+       "inkCount": 34,
+       "inkSpan": 688.89,
+       "glyphRects": 34,
+       "textWidth": 1380,
+       "textLength": 34
+      },
+      {
+       "index": 7,
+       "codes": [
+        "note-ink-narrow"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 56.78,
+       "columnCount": 3,
+       "columnSpan": 56.78,
+       "inkUnit": "column",
+       "inkCount": 3,
+       "inkSpan": 56.78,
+       "glyphRects": 3,
+       "textWidth": 1380,
+       "textLength": 3
+      },
+      {
+       "index": 8,
+       "codes": [
+        "note-ink-narrow"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 770.45,
+       "columnCount": 38,
+       "columnSpan": 770.45,
+       "inkUnit": "column",
+       "inkCount": 38,
+       "inkSpan": 770.45,
+       "glyphRects": 38,
+       "textWidth": 1380,
+       "textLength": 50
+      }
+     ],
+     "sampleMentions": [
+      "-axis, changes/#12 note-axis, changes/#? page-overflow@760, docs/data/#0 note-clipped, docs/data/#1 note-clipped, docs/data/#2 note-clipped, docs/data/#3 note-clipped, docs/data/#4 note-ink-narrow, docs/data/#5 note-ink-narrow, docs/data/#7",
+      "-axis, changes/#12 note-axis, changes/#? page-overflow@360, docs/data/#0 note-clipped, docs/data/#1 note-clipped, docs/data/#2 note-clipped, docs/data/#3 note-clipped, docs/data/#6 note-clipped, docs/data/#8 note-clipped, free-api/#? narrow"
+     ]
+    },
+    {
+     "route": "status/",
+     "pageCodes": [],
+     "notes": [
+      {
+       "index": 0,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 2,
+       "widestLine": 1364.48,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 2,
+       "inkSpan": 1364.48,
+       "glyphRects": 10,
+       "textWidth": 1380,
+       "textLength": 128
+      },
+      {
+       "index": 1,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 241.06,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 241.06,
+       "glyphRects": 3,
+       "textWidth": 1380,
+       "textLength": 30
+      }
+     ],
+     "sampleMentions": [
+      "lans/api/#4 note-axis, plans/coding/#? narrow-unregistered, status/#0 note-ink-narrow, status/#1 note-ink-narrow]：archive/#0 note-narrow：archive/#0 有字区域宽（内容盒代理量）192px < 0.85 × 列宽（承载文本块 1 个）—— 盒宽 728px · 内容盒 728px · 行 7 行（最宽一行 192px） · **竖排*"
+     ]
+    },
+    {
+     "route": "feeds/",
+     "pageCodes": [],
+     "notes": [
+      {
+       "index": 0,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 1041.06,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 1041.06,
+       "glyphRects": 1,
+       "textWidth": 1380,
+       "textLength": 98
+      },
+      {
+       "index": 1,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 1263.19,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 1263.19,
+       "glyphRects": 5,
+       "textWidth": 1380,
+       "textLength": 129
+      },
+      {
+       "index": 2,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 511.67,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 511.67,
+       "glyphRects": 3,
+       "textWidth": 1380,
+       "textLength": 59
+      },
+      {
+       "index": 3,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 600,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 600,
+       "glyphRects": 1,
+       "textWidth": 1380,
+       "textLength": 50
+      },
+      {
+       "index": 4,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 751.45,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 751.45,
+       "glyphRects": 3,
+       "textWidth": 1380,
+       "textLength": 71
+      },
+      {
+       "index": 5,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 1025.53,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 1025.53,
+       "glyphRects": 1,
+       "textWidth": 1380,
+       "textLength": 95
+      },
+      {
+       "index": 6,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 1041.88,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 1041.88,
+       "glyphRects": 1,
+       "textWidth": 1380,
+       "textLength": 89
+      },
+      {
+       "index": 7,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 252,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 252,
+       "glyphRects": 1,
+       "textWidth": 1380,
+       "textLength": 21
+      }
+     ],
+     "sampleMentions": []
+    },
+    {
+     "route": "plans/api/",
+     "pageCodes": [
+      "note-narrow",
+      "note-ink-narrow",
+      "note-axis",
+      "note-intro-long"
+     ],
+     "notes": [
+      {
+       "index": 0,
+       "codes": [
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-intro-long"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 301.47,
+       "columnCount": 15,
+       "columnSpan": 301.47,
+       "inkUnit": "column",
+       "inkCount": 15,
+       "inkSpan": 301.47,
+       "glyphRects": 15,
+       "textWidth": 306,
+       "textLength": 116
+      },
+      {
+       "index": 1,
+       "codes": [
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 260.69,
+       "columnCount": 13,
+       "columnSpan": 260.69,
+       "inkUnit": "column",
+       "inkCount": 13,
+       "inkSpan": 260.69,
+       "glyphRects": 14,
+       "textWidth": 265,
+       "textLength": 93
+      },
+      {
+       "index": 2,
+       "codes": [
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 179.13,
+       "columnCount": 9,
+       "columnSpan": 179.13,
+       "inkUnit": "column",
+       "inkCount": 9,
+       "inkSpan": 179.13,
+       "glyphRects": 11,
+       "textWidth": 184,
+       "textLength": 63
+      },
+      {
+       "index": 3,
+       "codes": [
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 199.52,
+       "columnCount": 10,
+       "columnSpan": 199.52,
+       "inkUnit": "column",
+       "inkCount": 10,
+       "inkSpan": 199.52,
+       "glyphRects": 11,
+       "textWidth": 204,
+       "textLength": 80
+      },
+      {
+       "index": 4,
+       "codes": [
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 97.56,
+       "columnCount": 5,
+       "columnSpan": 97.56,
+       "inkUnit": "column",
+       "inkCount": 5,
+       "inkSpan": 97.56,
+       "glyphRects": 9,
+       "textWidth": 102,
+       "textLength": 43
+      }
+     ],
+     "sampleMentions": [
+      " note-axis, plans/#11 note-ink-narrow, plans/#11 note-axis, plans/api/#0 note-narrow, plans/api/#0 note-ink-narrow, plans/api/#0 note-axis, plans/api/#1 note-narrow, plans/api/#1 note-ink-narrow, plans/api/#1 note-axis, plans/api/#2 note-na",
+      "ans/#9 note-axis, plans/#10 note-axis, plans/#11 note-axis, plans/api/#0 note-axis, plans/api/#1 note-narrow, plans/api/#1 note-axis, plans/api/#2 note-narrow, plans/api/#2 note-axis, plans/api/#3 note-narrow, plans/api/#3 note-axis, plans/"
+     ]
+    },
+    {
+     "route": "archive/",
+     "pageCodes": [
+      "note-narrow"
+     ],
+     "notes": [
+      {
+       "index": 0,
+       "codes": [
+        "note-narrow"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 7,
+       "widestLine": 192,
+       "columnCount": 1,
+       "columnSpan": 192,
+       "inkUnit": "column",
+       "inkCount": 1,
+       "inkSpan": 192,
+       "glyphRects": 7,
+       "textWidth": 192,
+       "textLength": 100
+      },
+      {
+       "index": 1,
+       "codes": [
+        "note-narrow"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 3,
+       "widestLine": 107.27,
+       "columnCount": 1,
+       "columnSpan": 107.27,
+       "inkUnit": "column",
+       "inkCount": 1,
+       "inkSpan": 107.27,
+       "glyphRects": 3,
+       "textWidth": 107,
+       "textLength": 36
+      },
+      {
+       "index": 2,
+       "codes": [
+        "note-narrow"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 3,
+       "widestLine": 107.27,
+       "columnCount": 1,
+       "columnSpan": 107.27,
+       "inkUnit": "column",
+       "inkCount": 1,
+       "inkSpan": 107.27,
+       "glyphRects": 3,
+       "textWidth": 107,
+       "textLength": 36
+      },
+      {
+       "index": 3,
+       "codes": [
+        "note-narrow"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 3,
+       "widestLine": 107.27,
+       "columnCount": 1,
+       "columnSpan": 107.27,
+       "inkUnit": "column",
+       "inkCount": 1,
+       "inkSpan": 107.27,
+       "glyphRects": 3,
+       "textWidth": 107,
+       "textLength": 36
+      },
+      {
+       "index": 4,
+       "codes": [],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 10,
+       "widestLine": 16,
+       "columnCount": 1,
+       "columnSpan": 16,
+       "inkUnit": "column",
+       "inkCount": 1,
+       "inkSpan": 16,
+       "glyphRects": 10,
+       "textWidth": 1380,
+       "textLength": 50
+      }
+     ],
+     "sampleMentions": [
+      "86 条违规码 [archive/#0 note-narrow, archive/#1 note-narrow, archive/#2 note-narrow, archive/#3 note-narrow, changes/#0 note-axis, changes/#1 note-ink-narrow, changes/#1 note-axis, changes/#2 n",
+      "56 条违规码 [archive/#0 note-narrow, archive/#1 note-narrow, archive/#2 note-narrow, archive/#3 note-narrow, changes/#0 note-axis, changes/#1 note-axis, changes/#2 note-axis, changes/#3 note-ax"
+     ]
+    },
+    {
+     "route": "models/",
+     "pageCodes": [
+      "note-axis"
+     ],
+     "notes": [
+      {
+       "index": 0,
+       "codes": [
+        "note-axis"
+       ],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 421.93,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 421.93,
+       "glyphRects": 1,
+       "textWidth": 1380,
+       "textLength": 103
+      },
+      {
+       "index": 1,
+       "codes": [
+        "note-axis"
+       ],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 160.76,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 160.76,
+       "glyphRects": 1,
+       "textWidth": 1380,
+       "textLength": 47
+      },
+      {
+       "index": 2,
+       "codes": [
+        "note-axis"
+       ],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 170.68,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 170.68,
+       "glyphRects": 10,
+       "textWidth": 1380,
+       "textLength": 60
+      }
+     ],
+     "sampleMentions": [
+      "docs/data/#8 note-clipped, free-api/#? narrow-unregistered, models/#0 note-ink-narrow, models/#0 note-axis, models/#1 note-axis, models/#2 note-axis, need/china-usable/#? narrow-unregistered, need/edu-identity/#? narrow-unregistered, need/f",
+      "docs/data/#8 note-clipped, free-api/#? narrow-unregistered, models/#0 note-axis, models/#1 note-axis, models/#2 note-axis, need/china-usable/#? narrow-unregistered, need/edu-identity/#? narrow-unregistered, need/free-api/#0 note-clipped, ne"
+     ]
+    },
+    {
+     "route": "plans/",
+     "pageCodes": [
+      "note-ink-narrow",
+      "note-axis",
+      "note-intro-long"
+     ],
+     "notes": [
+      {
+       "index": 0,
+       "codes": [
+        "note-ink-narrow",
+        "note-axis",
+        "note-intro-long"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 68.45,
+       "columnCount": 17,
+       "columnSpan": 68.45,
+       "inkUnit": "column",
+       "inkCount": 17,
+       "inkSpan": 68.45,
+       "glyphRects": 17,
+       "textWidth": 1380,
+       "textLength": 121
+      },
+      {
+       "index": 1,
+       "codes": [
+        "note-ink-narrow",
+        "note-axis",
+        "note-intro-long"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 35.83,
+       "columnCount": 9,
+       "columnSpan": 35.83,
+       "inkUnit": "column",
+       "inkCount": 9,
+       "inkSpan": 35.83,
+       "glyphRects": 11,
+       "textWidth": 1354,
+       "textLength": 66
+      },
+      {
+       "index": 2,
+       "codes": [
+        "note-ink-narrow",
+        "note-axis",
+        "note-intro-long"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 19.51,
+       "columnCount": 5,
+       "columnSpan": 19.51,
+       "inkUnit": "column",
+       "inkCount": 5,
+       "inkSpan": 19.51,
+       "glyphRects": 5,
+       "textWidth": 1354,
+       "textLength": 46
+      },
+      {
+       "index": 3,
+       "codes": [
+        "note-ink-narrow",
+        "note-axis",
+        "note-intro-long"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 48.06,
+       "columnCount": 12,
+       "columnSpan": 48.06,
+       "inkUnit": "column",
+       "inkCount": 12,
+       "inkSpan": 48.06,
+       "glyphRects": 14,
+       "textWidth": 1354,
+       "textLength": 92
+      },
+      {
+       "index": 4,
+       "codes": [
+        "note-ink-narrow",
+        "note-axis"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 7.28,
+       "columnCount": 2,
+       "columnSpan": 7.28,
+       "inkUnit": "column",
+       "inkCount": 2,
+       "inkSpan": 7.28,
+       "glyphRects": 2,
+       "textWidth": 1354,
+       "textLength": 18
+      },
+      {
+       "index": 5,
+       "codes": [
+        "note-ink-narrow",
+        "note-axis",
+        "note-intro-long"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 43.98,
+       "columnCount": 11,
+       "columnSpan": 43.98,
+       "inkUnit": "column",
+       "inkCount": 11,
+       "inkSpan": 43.98,
+       "glyphRects": 12,
+       "textWidth": 1354,
+       "textLength": 79
+      },
+      {
+       "index": 6,
+       "codes": [
+        "note-ink-narrow",
+        "note-axis"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 35.83,
+       "columnCount": 9,
+       "columnSpan": 35.83,
+       "inkUnit": "column",
+       "inkCount": 9,
+       "inkSpan": 35.83,
+       "glyphRects": 11,
+       "textWidth": 1354,
+       "textLength": 63
+      },
+      {
+       "index": 7,
+       "codes": [
+        "note-ink-narrow",
+        "note-axis"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 11.36,
+       "columnCount": 3,
+       "columnSpan": 11.36,
+       "inkUnit": "column",
+       "inkCount": 3,
+       "inkSpan": 11.36,
+       "glyphRects": 5,
+       "textWidth": 1354,
+       "textLength": 32
+      },
+      {
+       "index": 8,
+       "codes": [
+        "note-ink-narrow",
+        "note-axis"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 39.9,
+       "columnCount": 10,
+       "columnSpan": 39.9,
+       "inkUnit": "column",
+       "inkCount": 10,
+       "inkSpan": 39.9,
+       "glyphRects": 11,
+       "textWidth": 1354,
+       "textLength": 67
+      },
+      {
+       "index": 9,
+       "codes": [
+        "note-ink-narrow",
+        "note-axis"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 7.28,
+       "columnCount": 2,
+       "columnSpan": 7.28,
+       "inkUnit": "column",
+       "inkCount": 2,
+       "inkSpan": 7.28,
+       "glyphRects": 2,
+       "textWidth": 1354,
+       "textLength": 12
+      },
+      {
+       "index": 10,
+       "codes": [
+        "note-ink-narrow",
+        "note-axis"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 2,
+       "widestLine": 19.51,
+       "columnCount": 5,
+       "columnSpan": 19.51,
+       "inkUnit": "column",
+       "inkCount": 5,
+       "inkSpan": 19.51,
+       "glyphRects": 10,
+       "textWidth": 1380,
+       "textLength": 53
+      },
+      {
+       "index": 11,
+       "codes": [
+        "note-ink-narrow",
+        "note-axis"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 2,
+       "widestLine": 15.43,
+       "columnCount": 4,
+       "columnSpan": 15.43,
+       "inkUnit": "column",
+       "inkCount": 4,
+       "inkSpan": 15.43,
+       "glyphRects": 11,
+       "textWidth": 1380,
+       "textLength": 35
+      }
+     ],
+     "sampleMentions": [
+      " narrow-unregistered, need/student-only/#0 note-ink-narrow, plans/#0 note-ink-narrow, plans/#0 note-axis, plans/#1 note-ink-narrow, plans/#1 note-axis, plans/#2 note-ink-narrow, plans/#2 note-axis, plans/#3 note-ink-narrow, plans/#3 note-ax",
+      "/#? narrow-unregistered, need/student-only/#0 note-clipped, plans/#0 note-axis, plans/#0 note-clipped, plans/#1 note-axis, plans/#2 note-axis, plans/#3 note-axis, plans/#4 note-axis, plans/#5 note-axis, plans/#6 note-axis, plans/#7 note-axi"
+     ]
+    },
+    {
+     "route": "changes/",
+     "pageCodes": [
+      "note-ink-narrow",
+      "note-axis",
+      "note-intro-long",
+      "page-overflow@1440"
+     ],
+     "notes": [
+      {
+       "index": 0,
+       "codes": [
+        "note-ink-narrow",
+        "note-axis",
+        "note-intro-long"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 895.63,
+       "columnCount": 9,
+       "columnSpan": 895.62,
+       "inkUnit": "column",
+       "inkCount": 9,
+       "inkSpan": 895.62,
+       "glyphRects": 9,
+       "textWidth": 1380,
+       "textLength": 62
+      },
+      {
+       "index": 1,
+       "codes": [
+        "note-ink-narrow",
+        "note-axis",
+        "note-intro-long"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 589.77,
+       "columnCount": 6,
+       "columnSpan": 589.77,
+       "inkUnit": "column",
+       "inkCount": 6,
+       "inkSpan": 589.77,
+       "glyphRects": 6,
+       "textWidth": 1380,
+       "textLength": 45
+      },
+      {
+       "index": 2,
+       "codes": [
+        "note-ink-narrow",
+        "note-axis"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 691.72,
+       "columnCount": 7,
+       "columnSpan": 691.72,
+       "inkUnit": "column",
+       "inkCount": 7,
+       "inkSpan": 691.72,
+       "glyphRects": 7,
+       "textWidth": 1380,
+       "textLength": 48
+      },
+      {
+       "index": 3,
+       "codes": [
+        "note-ink-narrow",
+        "note-axis"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 589.77,
+       "columnCount": 6,
+       "columnSpan": 589.77,
+       "inkUnit": "column",
+       "inkCount": 6,
+       "inkSpan": 589.77,
+       "glyphRects": 6,
+       "textWidth": 1380,
+       "textLength": 40
+      },
+      {
+       "index": 4,
+       "codes": [
+        "note-ink-narrow",
+        "note-axis"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 997.58,
+       "columnCount": 10,
+       "columnSpan": 997.58,
+       "inkUnit": "column",
+       "inkCount": 10,
+       "inkSpan": 997.58,
+       "glyphRects": 10,
+       "textWidth": 1380,
+       "textLength": 68
+      },
+      {
+       "index": 5,
+       "codes": [
+        "note-ink-narrow",
+        "note-axis"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 487.81,
+       "columnCount": 5,
+       "columnSpan": 487.81,
+       "inkUnit": "column",
+       "inkCount": 5,
+       "inkSpan": 487.81,
+       "glyphRects": 5,
+       "textWidth": 1380,
+       "textLength": 40
+      },
+      {
+       "index": 6,
+       "codes": [
+        "note-ink-narrow",
+        "note-axis"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 283.91,
+       "columnCount": 3,
+       "columnSpan": 283.91,
+       "inkUnit": "column",
+       "inkCount": 3,
+       "inkSpan": 283.91,
+       "glyphRects": 3,
+       "textWidth": 1380,
+       "textLength": 19
+      },
+      {
+       "index": 7,
+       "codes": [
+        "note-ink-narrow",
+        "note-axis"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 181.95,
+       "columnCount": 2,
+       "columnSpan": 181.95,
+       "inkUnit": "column",
+       "inkCount": 2,
+       "inkSpan": 181.95,
+       "glyphRects": 2,
+       "textWidth": 1380,
+       "textLength": 13
+      },
+      {
+       "index": 8,
+       "codes": [
+        "note-axis"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 1201.48,
+       "columnCount": 12,
+       "columnSpan": 1201.48,
+       "inkUnit": "column",
+       "inkCount": 12,
+       "inkSpan": 1201.48,
+       "glyphRects": 12,
+       "textWidth": 1380,
+       "textLength": 78
+      },
+      {
+       "index": 9,
+       "codes": [
+        "note-ink-narrow",
+        "note-axis"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 589.77,
+       "columnCount": 6,
+       "columnSpan": 589.77,
+       "inkUnit": "column",
+       "inkCount": 6,
+       "inkSpan": 589.77,
+       "glyphRects": 6,
+       "textWidth": 1380,
+       "textLength": 49
+      },
+      {
+       "index": 10,
+       "codes": [
+        "note-ink-narrow",
+        "note-axis"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 385.86,
+       "columnCount": 4,
+       "columnSpan": 385.86,
+       "inkUnit": "column",
+       "inkCount": 4,
+       "inkSpan": 385.86,
+       "glyphRects": 4,
+       "textWidth": 1380,
+       "textLength": 26
+      },
+      {
+       "index": 11,
+       "codes": [
+        "note-ink-narrow",
+        "note-axis"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 283.91,
+       "columnCount": 3,
+       "columnSpan": 283.91,
+       "inkUnit": "column",
+       "inkCount": 3,
+       "inkSpan": 283.91,
+       "glyphRects": 3,
+       "textWidth": 1380,
+       "textLength": 20
+      },
+      {
+       "index": 12,
+       "codes": [
+        "note-axis"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 1201.48,
+       "columnCount": 12,
+       "columnSpan": 1201.48,
+       "inkUnit": "column",
+       "inkCount": 12,
+       "inkSpan": 1201.48,
+       "glyphRects": 12,
+       "textWidth": 1380,
+       "textLength": 84
+      }
+     ],
+     "sampleMentions": [
+      "ote-narrow, archive/#2 note-narrow, archive/#3 note-narrow, changes/#0 note-axis, changes/#1 note-ink-narrow, changes/#1 note-axis, changes/#2 note-axis, changes/#3 note-ink-narrow, changes/#3 note-axis, changes/#4 note-axis, changes/#5 not",
+      "ote-narrow, archive/#2 note-narrow, archive/#3 note-narrow, changes/#0 note-axis, changes/#1 note-axis, changes/#2 note-axis, changes/#3 note-axis, changes/#4 note-axis, changes/#5 note-axis, changes/#6 note-axis, changes/#7 note-axis, chan"
+     ]
+    },
+    {
+     "route": "need/ai-coding/",
+     "pageCodes": [],
+     "notes": [],
+     "sampleMentions": []
+    },
+    {
+     "route": "need/free-model/",
+     "pageCodes": [
+      "narrow-unregistered"
+     ],
+     "notes": [],
+     "sampleMentions": [
+      "y/#? narrow-unregistered, need/free-api/#0 note-ink-narrow, need/free-model/#? narrow-unregistered, need/student-only/#0 note-ink-narrow, plans/#0 note-ink-narrow, plans/#0 note-axis, plans/#1 note-ink-narrow, plans/#1 note-axis, plans/#2 n",
+      "tity/#? narrow-unregistered, need/free-api/#0 note-clipped, need/free-model/#? narrow-unregistered, need/student-only/#0 note-clipped, plans/#0 note-axis, plans/#0 note-clipped, plans/#1 note-axis, plans/#2 note-axis, plans/#3 note-axis, pl"
+     ]
+    },
+    {
+     "route": "need/china-usable/",
+     "pageCodes": [
+      "narrow-unregistered"
+     ],
+     "notes": [],
+     "sampleMentions": [
+      "els/#0 note-axis, models/#1 note-axis, models/#2 note-axis, need/china-usable/#? narrow-unregistered, need/edu-identity/#? narrow-unregistered, need/free-api/#0 note-ink-narrow, need/free-model/#? narrow-unregistered, need/student-only/#0 n",
+      "els/#0 note-axis, models/#1 note-axis, models/#2 note-axis, need/china-usable/#? narrow-unregistered, need/edu-identity/#? narrow-unregistered, need/free-api/#0 note-clipped, need/free-model/#? narrow-unregistered, need/student-only/#0 note"
+     ]
+    },
+    {
+     "route": "need/edu-identity/",
+     "pageCodes": [
+      "narrow-unregistered"
+     ],
+     "notes": [],
+     "sampleMentions": [
+      "els/#2 note-axis, need/china-usable/#? narrow-unregistered, need/edu-identity/#? narrow-unregistered, need/free-api/#0 note-ink-narrow, need/free-model/#? narrow-unregistered, need/student-only/#0 note-ink-narrow, plans/#0 note-ink-narrow, ",
+      "els/#2 note-axis, need/china-usable/#? narrow-unregistered, need/edu-identity/#? narrow-unregistered, need/free-api/#0 note-clipped, need/free-model/#? narrow-unregistered, need/student-only/#0 note-clipped, plans/#0 note-axis, plans/#0 not"
+     ]
+    },
+    {
+     "route": "need/free-tier/",
+     "pageCodes": [],
+     "notes": [],
+     "sampleMentions": []
+    },
+    {
+     "route": "need/free-tokens/",
+     "pageCodes": [],
+     "notes": [],
+     "sampleMentions": []
+    },
+    {
+     "route": "need/no-card/",
+     "pageCodes": [],
+     "notes": [],
+     "sampleMentions": []
+    },
+    {
+     "route": "developer/",
+     "pageCodes": [],
+     "notes": [],
+     "sampleMentions": []
+    },
+    {
+     "route": "free-api/",
+     "pageCodes": [
+      "narrow-unregistered"
+     ],
+     "notes": [],
+     "sampleMentions": [
+      "w, docs/data/#7 note-ink-narrow, docs/data/#8 note-clipped, free-api/#? narrow-unregistered, models/#0 note-ink-narrow, models/#0 note-axis, models/#1 note-axis, models/#2 note-axis, need/china-usable/#? narrow-unregistered, need/edu-identi",
+      "pped, docs/data/#6 note-clipped, docs/data/#8 note-clipped, free-api/#? narrow-unregistered, models/#0 note-axis, models/#1 note-axis, models/#2 note-axis, need/china-usable/#? narrow-unregistered, need/edu-identity/#? narrow-unregistered, "
+     ]
+    },
+    {
+     "route": "plans/coding/",
+     "pageCodes": [
+      "narrow-unregistered"
+     ],
+     "notes": [
+      {
+       "index": 0,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 935.09,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 935.09,
+       "glyphRects": 1,
+       "textWidth": 1380,
+       "textLength": 84
+      },
+      {
+       "index": 1,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 0,
+       "widestLine": 0,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 0,
+       "inkSpan": 0,
+       "glyphRects": 0,
+       "textWidth": 1380,
+       "textLength": 0
+      },
+      {
+       "index": 2,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 408.22,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 408.22,
+       "glyphRects": 1,
+       "textWidth": 1380,
+       "textLength": 41
+      },
+      {
+       "index": 3,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 805.48,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 805.48,
+       "glyphRects": 3,
+       "textWidth": 1354,
+       "textLength": 80
+      },
+      {
+       "index": 4,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 2,
+       "widestLine": 1372.22,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 2,
+       "inkSpan": 1372.22,
+       "glyphRects": 4,
+       "textWidth": 1380,
+       "textLength": 136
+      }
+     ],
+     "sampleMentions": [
+      "rrow, plans/api/#4 note-ink-narrow, plans/api/#4 note-axis, plans/coding/#? narrow-unregistered, status/#0 note-ink-narrow, status/#1 note-ink-narrow]：archive/#0 note-narrow：archive/#0 有字区域宽（内容盒代理量）192px < 0.85 × 列宽（承载文本块 1 个）—— 盒宽 728px · ",
+      "ote-axis, plans/api/#4 note-narrow, plans/api/#4 note-axis, plans/coding/#? narrow-unregistered]：archive/#0 note-narrow：archive/#0 有字区域宽（内容盒代理量）192px < 0.85 × 列宽（承载文本块 1 个）—— 盒宽 328px · 内容盒 328px · 行 7 行（最宽一行 192px） · **竖排**（vertical-rl）：列 "
+     ]
+    },
+    {
+     "route": "student/",
+     "pageCodes": [],
+     "notes": [],
+     "sampleMentions": []
+    },
+    {
+     "route": "category/chat/",
+     "pageCodes": [],
+     "notes": [],
+     "sampleMentions": []
+    },
+    {
+     "route": "vendor/openai/",
+     "pageCodes": [],
+     "notes": [],
+     "sampleMentions": []
+    }
+   ]
+  },
+  {
+   "key": "att2",
+   "label": "攻击副本 #2（VA8b/VA5b）",
+   "total": 874,
+   "failed": 4,
+   "failedChecks": [
+    {
+     "name": "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行",
+     "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 4（落在 1 页） · note-ink-narrow 1（1 页） · 并集 5 条 / 1 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）10 条 · 竖排 5 条（其中列证据 ≥ 2 列、即 ② 按列判的：1 条） · textFallback 回落 1 条 · 未登记的窄阅读列 0 页（登记清单 1 条） · 命中：archive/#0 内容盒 192px / 盒 1380px / 列 1380px · 行 7（最宽 192px） · **竖排** 列 1（列栈 192px） · 判据用列：1 / 192px · 字形盒 7 · 主数据区 <main> · codes [note-narrow] · 「本站的原则是：资料失效不等于资料」；archive/#1 内容盒 107px / 盒 1354px / 列 1380px · 行 3（最宽 107.27px） · **竖排** 列 1（列栈 107.27px） · 判据用列：1 / 107.27px · 字形盒 3 · 主数据区 <main> · codes [note-narrow] · 「结束 0 条 · 恢复 0 条 」；archive/#2 内容盒 107px / 盒 1354px / 列 1380px · 行 3（最宽 107.27px） · **竖排** 列 1（列栈 107.27px） · 判据用列：1 / 107.27px · 字形盒 3 · 主数据区 <main> · codes [note-narrow] · 「结束 0 条 · 恢复 0 条 」；archive/#3 内容盒 107px / 盒 1354px / 列 1380px · 行 3（最宽 107.27px） · **竖排** 列 1（列栈 107.27px） · "
+    },
+    {
+     "name": "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行",
+     "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 4（落在 1 页） · note-ink-narrow 1（1 页） · 并集 5 条 / 1 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）10 条 · 竖排 5 条（其中列证据 ≥ 2 列、即 ② 按列判的：1 条） · textFallback 回落 1 条 · 未登记的窄阅读列 0 页（登记清单 1 条） · 命中：archive/#0 内容盒 192px / 盒 1380px / 列 1380px · 行 7（最宽 192px） · **竖排** 列 1（列栈 192px） · 判据用列：1 / 192px · 字形盒 7 · 主数据区 <main> · codes [note-narrow] · 「本站的原则是：资料失效不等于资料」；archive/#1 内容盒 107px / 盒 1354px / 列 1380px · 行 3（最宽 107.27px） · **竖排** 列 1（列栈 107.27px） · 判据用列：1 / 107.27px · 字形盒 3 · 主数据区 <main> · codes [note-narrow] · 「结束 0 条 · 恢复 0 条 」；archive/#2 内容盒 107px / 盒 1354px / 列 1380px · 行 3（最宽 107.27px） · **竖排** 列 1（列栈 107.27px） · 判据用列：1 / 107.27px · 字形盒 3 · 主数据区 <main> · codes [note-narrow] · 「结束 0 条 · 恢复 0 条 」；archive/#3 内容盒 107px / 盒 1354px / 列 1380px · 行 3（最宽 107.27px） · **竖排** 列 1（列栈 107.27px） · "
+    },
+    {
+     "name": "§22c @760 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+     "detail": "5 条违规码 [archive/#0 note-narrow, archive/#1 note-narrow, archive/#2 note-narrow, archive/#3 note-narrow, archive/#4 note-ink-narrow]：archive/#0 note-narrow：archive/#0 有字区域宽（内容盒代理量）192px < 0.85 × 列宽（承载文本块 1 个）—— 盒宽 728px · 内容盒 728px · 行 7 行（最宽一行 192px） · **竖排**（vertical-rl）：列 1 列（列栈水平范围 192px） · 字形盒 7 个 · 列宽 728px · 阈值 618.8px（主数据区 <main> 728px / 页面列 728px）；archive/#1 note-narrow：archive/#1 有字区域宽（内容盒代理量）107px < 0.85 × 列宽（承载文本块 1 个）—— 盒宽 702px · 内容盒 702px · 行 3 行（最宽一行 107.27px） · **竖排**（vertical-rl）：列 1 列（列栈水平范围 107.27px） · 字形盒 3 个 · 列宽 728px · 阈值 618.8px（主数据区 <main> 728px / 页面列 728px）；archive/#2 note-narrow：archive/#2 有字区域宽（内容盒代理量）107px < 0.85 × 列宽（承载文本块 1 个）—— 盒宽 702px · 内容盒 702px · 行 3 行（最宽一行 107.27px） · **竖排**（vertical-rl）：列 1 列（列栈水平范围 107.27px） · 字形盒 3 个 · 列宽 728px · 阈值 618.8px（主数据区 <main> 728px / 页面列 728px）；archive/#3 note-narrow：archive/#3 有字区域宽（内容盒代理量）107px < 0.85 × 列宽（承载文本块 1 个）—— "
+    },
+    {
+     "name": "§22c @360 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+     "detail": "4 条违规码 [archive/#0 note-narrow, archive/#1 note-narrow, archive/#2 note-narrow, archive/#3 note-narrow]：archive/#0 note-narrow：archive/#0 有字区域宽（内容盒代理量）192px < 0.85 × 列宽（承载文本块 1 个）—— 盒宽 328px · 内容盒 328px · 行 7 行（最宽一行 192px） · **竖排**（vertical-rl）：列 1 列（列栈水平范围 192px） · 字形盒 7 个 · 列宽 328px · 阈值 278.8px（主数据区 <main> 328px / 页面列 328px）；archive/#1 note-narrow：archive/#1 有字区域宽（内容盒代理量）107px < 0.85 × 列宽（承载文本块 1 个）—— 盒宽 302px · 内容盒 302px · 行 3 行（最宽一行 107.27px） · **竖排**（vertical-rl）：列 1 列（列栈水平范围 107.27px） · 字形盒 3 个 · 列宽 328px · 阈值 278.8px（主数据区 <main> 328px / 页面列 328px）；archive/#2 note-narrow：archive/#2 有字区域宽（内容盒代理量）107px < 0.85 × 列宽（承载文本块 1 个）—— 盒宽 302px · 内容盒 302px · 行 3 行（最宽一行 107.27px） · **竖排**（vertical-rl）：列 1 列（列栈水平范围 107.27px） · 字形盒 3 个 · 列宽 328px · 阈值 278.8px（主数据区 <main> 328px / 页面列 328px）；archive/#3 note-narrow：archive/#3 有字区域宽（内容盒代理量）107px < 0.85 × 列宽（承载文本块 1 个）—— 盒宽 302px · 内容盒 302px · 行 3 行"
+    }
+   ],
+   "macro": {
+    "narrowNotes": 4,
+    "inkNarrowNotes": 1,
+    "narrowRegistryEntries": 1,
+    "narrowUnregisteredPages": []
+   },
+   "narrowChDeclarationsAt1440": [
+    {
+     "route": "plans/coding/",
+     "declarations": [
+      {
+       "selector": ".pdetailbody",
+       "declaration": "max-width: 72ch",
+       "registered": true
+      }
+     ]
+    }
+   ],
+   "perRoute": [
+    {
+     "route": "archive/",
+     "pageCodes": [
+      "note-narrow",
+      "note-ink-narrow"
+     ],
+     "notes": [
+      {
+       "index": 0,
+       "codes": [
+        "note-narrow"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 7,
+       "widestLine": 192,
+       "columnCount": 1,
+       "columnSpan": 192,
+       "inkUnit": "column",
+       "inkCount": 1,
+       "inkSpan": 192,
+       "glyphRects": 7,
+       "textWidth": 192,
+       "textLength": 100
+      },
+      {
+       "index": 1,
+       "codes": [
+        "note-narrow"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 3,
+       "widestLine": 107.27,
+       "columnCount": 1,
+       "columnSpan": 107.27,
+       "inkUnit": "column",
+       "inkCount": 1,
+       "inkSpan": 107.27,
+       "glyphRects": 3,
+       "textWidth": 107,
+       "textLength": 36
+      },
+      {
+       "index": 2,
+       "codes": [
+        "note-narrow"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 3,
+       "widestLine": 107.27,
+       "columnCount": 1,
+       "columnSpan": 107.27,
+       "inkUnit": "column",
+       "inkCount": 1,
+       "inkSpan": 107.27,
+       "glyphRects": 3,
+       "textWidth": 107,
+       "textLength": 36
+      },
+      {
+       "index": 3,
+       "codes": [
+        "note-narrow"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 3,
+       "widestLine": 107.27,
+       "columnCount": 1,
+       "columnSpan": 107.27,
+       "inkUnit": "column",
+       "inkCount": 1,
+       "inkSpan": 107.27,
+       "glyphRects": 3,
+       "textWidth": 107,
+       "textLength": 36
+      },
+      {
+       "index": 4,
+       "codes": [
+        "note-ink-narrow"
+       ],
+       "writingMode": "vertical-rl",
+       "vertical": true,
+       "lineCount": 1,
+       "widestLine": 117.95,
+       "columnCount": 6,
+       "columnSpan": 117.95,
+       "inkUnit": "column",
+       "inkCount": 6,
+       "inkSpan": 117.95,
+       "glyphRects": 13,
+       "textWidth": 1380,
+       "textLength": 50
+      }
+     ],
+     "sampleMentions": [
+      "5 条违规码 [archive/#0 note-narrow, archive/#1 note-narrow, archive/#2 note-narrow, archive/#3 note-narrow, archive/#4 note-ink-narrow]：archive/#0 note-narrow：archive/#0 有字区域宽（内容盒代理量）192px < 0",
+      "4 条违规码 [archive/#0 note-narrow, archive/#1 note-narrow, archive/#2 note-narrow, archive/#3 note-narrow]：archive/#0 note-narrow：archive/#0 有字区域宽（内容盒代理量）192px < 0.85 × 列宽（承载文本块 1 个）—— 盒宽 328"
+     ]
+    },
+    {
+     "route": "models/deepseek-v3.2/",
+     "pageCodes": [],
+     "notes": [
+      {
+       "index": 0,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 685.09,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 685.09,
+       "glyphRects": 5,
+       "textWidth": 1120,
+       "textLength": 67
+      },
+      {
+       "index": 1,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 664.48,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 664.48,
+       "glyphRects": 3,
+       "textWidth": 1120,
+       "textLength": 69
+      },
+      {
+       "index": 2,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 342.58,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 342.58,
+       "glyphRects": 3,
+       "textWidth": 1120,
+       "textLength": 30
+      },
+      {
+       "index": 3,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 540.23,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 540.23,
+       "glyphRects": 3,
+       "textWidth": 1120,
+       "textLength": 48
+      }
+     ],
+     "sampleMentions": []
+    }
+   ]
+  },
+  {
+   "key": "g19",
+   "label": "G19 容差内（1.87px）",
+   "total": 874,
+   "failed": 4,
+   "failedChecks": [
+    {
+     "name": "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行",
+     "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）6 条 · 竖排 0 条（其中列证据 ≥ 2 列、即 ② 按列判的：0 条） · textFallback 回落 1 条 · 未登记的窄阅读列 1 页（登记清单 1 条） · 命中： · 未登记窄列页：need/ai-coding/"
+    },
+    {
+     "name": "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行",
+     "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）6 条 · 竖排 0 条（其中列证据 ≥ 2 列、即 ② 按列判的：0 条） · textFallback 回落 1 条 · 未登记的窄阅读列 1 页（登记清单 1 条） · 命中： · 未登记窄列页：need/ai-coding/"
+    },
+    {
+     "name": "§22c @760 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+     "detail": "1 条违规码 [need/ai-coding/#? narrow-unregistered]：need/ai-coding/#? narrow-unregistered：路由「need/ai-coding/」有 1 条未登记的窄阅读列：.arch-a, .pdetailbody { max-width: 70ch }（保留窄阅读列必须在 scripts/data/narrow-reading-columns.json 登记，并且居中、真的比容器窄） · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②"
+    },
+    {
+     "name": "§22c @360 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+     "detail": "1 条违规码 [need/ai-coding/#? narrow-unregistered]：need/ai-coding/#? narrow-unregistered：路由「need/ai-coding/」有 1 条未登记的窄阅读列：.arch-a, .pdetailbody { max-width: 70ch }（保留窄阅读列必须在 scripts/data/narrow-reading-columns.json 登记，并且居中、真的比容器窄） · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②"
+    }
+   ],
+   "macro": {
+    "narrowNotes": 0,
+    "inkNarrowNotes": 0,
+    "narrowRegistryEntries": 1,
+    "narrowUnregisteredPages": [
+     "need/ai-coding/"
+    ]
+   },
+   "narrowChDeclarationsAt1440": [
+    {
+     "route": "need/ai-coding/",
+     "declarations": [
+      {
+       "selector": ".arch-a, .pdetailbody",
+       "declaration": "max-width: 70ch",
+       "registered": false
+      }
+     ]
+    },
+    {
+     "route": "plans/coding/",
+     "declarations": [
+      {
+       "selector": ".pdetailbody",
+       "declaration": "max-width: 72ch",
+       "registered": true
+      }
+     ]
+    }
+   ],
+   "perRoute": [
+    {
+     "route": "plans/coding/",
+     "pageCodes": [],
+     "notes": [
+      {
+       "index": 0,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 935.09,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 935.09,
+       "glyphRects": 1,
+       "textWidth": 1380,
+       "textLength": 84
+      },
+      {
+       "index": 1,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 0,
+       "widestLine": 0,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 0,
+       "inkSpan": 0,
+       "glyphRects": 0,
+       "textWidth": 1380,
+       "textLength": 0
+      },
+      {
+       "index": 2,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 408.22,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 408.22,
+       "glyphRects": 1,
+       "textWidth": 1380,
+       "textLength": 41
+      },
+      {
+       "index": 3,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 805.48,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 805.48,
+       "glyphRects": 3,
+       "textWidth": 1354,
+       "textLength": 80
+      },
+      {
+       "index": 4,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 2,
+       "widestLine": 1372.22,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 2,
+       "inkSpan": 1372.22,
+       "glyphRects": 4,
+       "textWidth": 1380,
+       "textLength": 136
+      }
+     ],
+     "sampleMentions": []
+    },
+    {
+     "route": "need/ai-coding/",
+     "pageCodes": [
+      "narrow-unregistered"
+     ],
+     "notes": [],
+     "sampleMentions": [
+      "1 条违规码 [need/ai-coding/#? narrow-unregistered]：need/ai-coding/#? narrow-unregistered：路由「need/ai-coding/」有 1 条未登记的窄阅读列：.arch-a, .pdetailbody { max-width: 70ch }（保留窄阅读列必须在 scripts/data/narro",
+      "1 条违规码 [need/ai-coding/#? narrow-unregistered]：need/ai-coding/#? narrow-unregistered：路由「need/ai-coding/」有 1 条未登记的窄阅读列：.arch-a, .pdetailbody { max-width: 70ch }（保留窄阅读列必须在 scripts/data/narro"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "g21",
+   "label": "G21 容差外（2.09px）",
+   "total": 874,
+   "failed": 2,
+   "failedChecks": [
+    {
+     "name": "§19 .pdetailbody 是**居中**的保留窄阅读列（max-width: 72ch）：比单元格窄 ≥ 40px、左右内边距差 ≤ 2px、自身不裁切（登记清单 scripts/data/narrow-reading-column",
+     "detail": ".pdetailbody 465.75px / 单元格 1357px · 左 446.67px · 右 444.58px · max-width 465.75px · margin 445.125px/445.125px · 自身 466/466 · rendered true"
+    },
+    {
+     "name": "§19 上一条判据的隔离牙：把 margin-inline: auto 就地删掉后，左右内边距不再相等（承重证明）",
+     "detail": "删掉前 左 446.67 / 右 444.58 ⇒ 删掉后 左 1.55 / 右 889.7（盒宽 465.75 → 465.75px：只挪位置、不改变宽度）"
+    }
+   ],
+   "macro": {
+    "narrowNotes": 0,
+    "inkNarrowNotes": 0,
+    "narrowRegistryEntries": 1,
+    "narrowUnregisteredPages": []
+   },
+   "narrowChDeclarationsAt1440": [
+    {
+     "route": "plans/coding/",
+     "declarations": [
+      {
+       "selector": ".pdetailbody",
+       "declaration": "max-width: 72ch",
+       "registered": true
+      }
+     ]
+    }
+   ],
+   "perRoute": [
+    {
+     "route": "plans/coding/",
+     "pageCodes": [],
+     "notes": [
+      {
+       "index": 0,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 935.09,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 935.09,
+       "glyphRects": 1,
+       "textWidth": 1380,
+       "textLength": 84
+      },
+      {
+       "index": 1,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 0,
+       "widestLine": 0,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 0,
+       "inkSpan": 0,
+       "glyphRects": 0,
+       "textWidth": 1380,
+       "textLength": 0
+      },
+      {
+       "index": 2,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 408.22,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 408.22,
+       "glyphRects": 1,
+       "textWidth": 1380,
+       "textLength": 41
+      },
+      {
+       "index": 3,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 805.48,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 805.48,
+       "glyphRects": 3,
+       "textWidth": 1354,
+       "textLength": 80
+      },
+      {
+       "index": 4,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 2,
+       "widestLine": 1372.22,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 2,
+       "inkSpan": 1372.22,
+       "glyphRects": 4,
+       "textWidth": 1380,
+       "textLength": 136
+      }
+     ],
+     "sampleMentions": [
+      "-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/ · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②",
+      "-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/ · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "g300",
+   "label": "G300 生效宽 300px",
+   "total": 874,
+   "failed": 0,
+   "failedChecks": [],
+   "macro": {
+    "narrowNotes": 0,
+    "inkNarrowNotes": 0,
+    "narrowRegistryEntries": 1,
+    "narrowUnregisteredPages": []
+   },
+   "narrowChDeclarationsAt1440": [
+    {
+     "route": "plans/coding/",
+     "declarations": [
+      {
+       "selector": ".pdetailbody",
+       "declaration": "max-width: 72ch",
+       "registered": true
+      }
+     ]
+    }
+   ],
+   "perRoute": [
+    {
+     "route": "plans/coding/",
+     "pageCodes": [],
+     "notes": [
+      {
+       "index": 0,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 935.09,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 935.09,
+       "glyphRects": 1,
+       "textWidth": 1380,
+       "textLength": 84
+      },
+      {
+       "index": 1,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 0,
+       "widestLine": 0,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 0,
+       "inkSpan": 0,
+       "glyphRects": 0,
+       "textWidth": 1380,
+       "textLength": 0
+      },
+      {
+       "index": 2,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 408.22,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 408.22,
+       "glyphRects": 1,
+       "textWidth": 1380,
+       "textLength": 41
+      },
+      {
+       "index": 3,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 805.48,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 805.48,
+       "glyphRects": 3,
+       "textWidth": 1354,
+       "textLength": 80
+      },
+      {
+       "index": 4,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 2,
+       "widestLine": 1372.22,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 2,
+       "inkSpan": 1372.22,
+       "glyphRects": 4,
+       "textWidth": 1380,
+       "textLength": 136
+      }
+     ],
+     "sampleMentions": [
+      "-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/ · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②",
+      "-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/ · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "g1400",
+   "label": "G1400 min-width 1400px",
+   "total": 874,
+   "failed": 2,
+   "failedChecks": [
+    {
+     "name": "§19 .pdetailbody 是**居中**的保留窄阅读列（max-width: 72ch）：比单元格窄 ≥ 40px、左右内边距差 ≤ 2px、自身不裁切（登记清单 scripts/data/narrow-reading-column",
+     "detail": ".pdetailbody 1400px / 单元格 1401px · 左 0.5px · 右 0.5px · max-width 465.75px · margin 0px/0px · 自身 1400/1400 · rendered true"
+    },
+    {
+     "name": "§19 上一条判据的隔离牙：把 margin-inline: auto 就地删掉后，左右内边距不再相等（承重证明）",
+     "detail": "删掉前 左 0.5 / 右 0.5 ⇒ 删掉后 左 0.5 / 右 0.5（盒宽 1400 → 1400px：只挪位置、不改变宽度）"
+    }
+   ],
+   "macro": {
+    "narrowNotes": 0,
+    "inkNarrowNotes": 0,
+    "narrowRegistryEntries": 1,
+    "narrowUnregisteredPages": []
+   },
+   "narrowChDeclarationsAt1440": [
+    {
+     "route": "plans/coding/",
+     "declarations": [
+      {
+       "selector": ".pdetailbody",
+       "declaration": "max-width: 72ch",
+       "registered": true
+      }
+     ]
+    }
+   ],
+   "perRoute": [
+    {
+     "route": "plans/coding/",
+     "pageCodes": [],
+     "notes": [
+      {
+       "index": 0,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 935.09,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 935.09,
+       "glyphRects": 1,
+       "textWidth": 1380,
+       "textLength": 84
+      },
+      {
+       "index": 1,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 0,
+       "widestLine": 0,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 0,
+       "inkSpan": 0,
+       "glyphRects": 0,
+       "textWidth": 1380,
+       "textLength": 0
+      },
+      {
+       "index": 2,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 408.22,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 408.22,
+       "glyphRects": 1,
+       "textWidth": 1380,
+       "textLength": 41
+      },
+      {
+       "index": 3,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 805.48,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 805.48,
+       "glyphRects": 3,
+       "textWidth": 1354,
+       "textLength": 80
+      },
+      {
+       "index": 4,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 2,
+       "widestLine": 1372.22,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 2,
+       "inkSpan": 1372.22,
+       "glyphRects": 4,
+       "textWidth": 1380,
+       "textLength": 136
+      }
+     ],
+     "sampleMentions": [
+      "-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/ · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②",
+      "-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/ · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "grtl",
+   "label": "GRTL 祖先 direction: rtl",
+   "total": 874,
+   "failed": 0,
+   "failedChecks": [],
+   "macro": {
+    "narrowNotes": 0,
+    "inkNarrowNotes": 0,
+    "narrowRegistryEntries": 1,
+    "narrowUnregisteredPages": []
+   },
+   "narrowChDeclarationsAt1440": [
+    {
+     "route": "plans/coding/",
+     "declarations": [
+      {
+       "selector": ".pdetailbody",
+       "declaration": "max-width: 72ch",
+       "registered": true
+      }
+     ]
+    }
+   ],
+   "perRoute": [
+    {
+     "route": "plans/coding/",
+     "pageCodes": [],
+     "notes": [
+      {
+       "index": 0,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 935.09,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 935.09,
+       "glyphRects": 1,
+       "textWidth": 1380,
+       "textLength": 84
+      },
+      {
+       "index": 1,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 0,
+       "widestLine": 0,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 0,
+       "inkSpan": 0,
+       "glyphRects": 0,
+       "textWidth": 1380,
+       "textLength": 0
+      },
+      {
+       "index": 2,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 408.22,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 408.22,
+       "glyphRects": 1,
+       "textWidth": 1380,
+       "textLength": 41
+      },
+      {
+       "index": 3,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 805.48,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 805.48,
+       "glyphRects": 3,
+       "textWidth": 1354,
+       "textLength": 80
+      },
+      {
+       "index": 4,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 2,
+       "widestLine": 1372.22,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 2,
+       "inkSpan": 1372.22,
+       "glyphRects": 4,
+       "textWidth": 1380,
+       "textLength": 136
+      }
+     ],
+     "sampleMentions": [
+      "-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/ · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②",
+      "-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/ · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "gxf",
+   "label": "GXF 祖先 transform scaleX(0.9)",
+   "total": 874,
+   "failed": 0,
+   "failedChecks": [],
+   "macro": {
+    "narrowNotes": 0,
+    "inkNarrowNotes": 0,
+    "narrowRegistryEntries": 1,
+    "narrowUnregisteredPages": []
+   },
+   "narrowChDeclarationsAt1440": [
+    {
+     "route": "plans/coding/",
+     "declarations": [
+      {
+       "selector": ".pdetailbody",
+       "declaration": "max-width: 72ch",
+       "registered": true
+      }
+     ]
+    }
+   ],
+   "perRoute": [
+    {
+     "route": "plans/coding/",
+     "pageCodes": [],
+     "notes": [
+      {
+       "index": 0,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 935.09,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 935.09,
+       "glyphRects": 1,
+       "textWidth": 1380,
+       "textLength": 84
+      },
+      {
+       "index": 1,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 0,
+       "widestLine": 0,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 0,
+       "inkSpan": 0,
+       "glyphRects": 0,
+       "textWidth": 1380,
+       "textLength": 0
+      },
+      {
+       "index": 2,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 408.22,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 408.22,
+       "glyphRects": 1,
+       "textWidth": 1380,
+       "textLength": 41
+      },
+      {
+       "index": 3,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 1,
+       "widestLine": 805.48,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 1,
+       "inkSpan": 805.48,
+       "glyphRects": 3,
+       "textWidth": 1354,
+       "textLength": 80
+      },
+      {
+       "index": 4,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 2,
+       "widestLine": 1372.22,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 2,
+       "inkSpan": 1372.22,
+       "glyphRects": 4,
+       "textWidth": 1380,
+       "textLength": 136
+      }
+     ],
+     "sampleMentions": [
+      "-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/ · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②",
+      "-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/ · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "forge",
+   "label": "伪造副本（冻结串进注释 + sitemap 进注释）",
+   "total": 874,
+   "failed": 2,
+   "failedChecks": [
+    {
+     "name": "§22c M15 变异后复测必须出现「note-ink-narrow」违规码（T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hid",
+     "detail": "期望 note-ink-narrow · 实测 [无] · 说明 1 条 · 首条 盒 1380px / 有字区域 1369px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [无]"
+    },
+    {
+     "name": "§22c M15 承重证明：咬中的条是**竖排按列判**（列数 ≥ 2 · 列栈水平范围 < 0.85×列宽），且旧口径两条判据在它们身上必然静默（按行归并 ≤ 1 行 + 盒/内容盒满宽，盒宽与注入前逐条相同）",
+     "detail": "note-ink-narrow 0 条 [] · 逐条：（无） · 列宽 1380px · 阈值 1173px · note-narrow 0 条（0 = ① 也看不见）· 盒宽与注入前一致 true"
+    }
+   ],
+   "macro": {
+    "narrowNotes": 0,
+    "inkNarrowNotes": 0,
+    "narrowRegistryEntries": 1,
+    "narrowUnregisteredPages": []
+   },
+   "narrowChDeclarationsAt1440": [
+    {
+     "route": "plans/coding/",
+     "declarations": [
+      {
+       "selector": ".pdetailbody",
+       "declaration": "max-width: 72ch",
+       "registered": true
+      }
+     ]
+    }
+   ],
+   "perRoute": [
+    {
+     "route": "need/free-api/",
+     "pageCodes": [],
+     "notes": [
+      {
+       "index": 0,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 2,
+       "widestLine": 1356.2,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 2,
+       "inkSpan": 1356.2,
+       "glyphRects": 6,
+       "textWidth": 1369,
+       "textLength": 137
+      }
+     ],
+     "sampleMentions": [
+      "ng/ need/china-usable/ need/dev-credits/ need/edu-identity/ need/free-api/ need/free-model/ need/free-tier/ need/free-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/ · 物理作用域：@7",
+      "ng/ need/china-usable/ need/dev-credits/ need/edu-identity/ need/free-api/ need/free-model/ need/free-tier/ need/free-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/ · 物理作用域：@7"
+     ]
+    },
+    {
+     "route": "sitemap.xml",
+     "pageCodes": [],
+     "notes": [],
+     "sampleMentions": []
+    }
+   ]
+  },
+  {
+   "key": "forge-ctl",
+   "label": "对照副本（sitemap 真删）",
+   "total": 874,
+   "failed": 4,
+   "failedChecks": [
+    {
+     "name": "厂商落地页 /vendor/zhipu/ 的 sitemap 成员资格与索引策略一致",
+     "detail": "sitemap 无"
+    },
+    {
+     "name": "§22c M15 变异后复测必须出现「note-ink-narrow」违规码（T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hid",
+     "detail": "期望 note-ink-narrow · 实测 [无] · 说明 1 条 · 首条 盒 1380px / 有字区域 1369px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [无]"
+    },
+    {
+     "name": "§22c M15 承重证明：咬中的条是**竖排按列判**（列数 ≥ 2 · 列栈水平范围 < 0.85×列宽），且旧口径两条判据在它们身上必然静默（按行归并 ≤ 1 行 + 盒/内容盒满宽，盒宽与注入前逐条相同）",
+     "detail": "note-ink-narrow 0 条 [] · 逐条：（无） · 列宽 1380px · 阈值 1173px · note-narrow 0 条（0 = ① 也看不见）· 盒宽与注入前一致 true"
+    },
+    {
+     "name": "/vendor/ 枢纽列出 24 个厂商入口",
+     "detail": "页面 25 行 / sitemap 24 个"
+    }
+   ],
+   "macro": {
+    "narrowNotes": 0,
+    "inkNarrowNotes": 0,
+    "narrowRegistryEntries": 1,
+    "narrowUnregisteredPages": []
+   },
+   "narrowChDeclarationsAt1440": [
+    {
+     "route": "plans/coding/",
+     "declarations": [
+      {
+       "selector": ".pdetailbody",
+       "declaration": "max-width: 72ch",
+       "registered": true
+      }
+     ]
+    }
+   ],
+   "perRoute": [
+    {
+     "route": "need/free-api/",
+     "pageCodes": [],
+     "notes": [
+      {
+       "index": 0,
+       "codes": [],
+       "writingMode": "horizontal-tb",
+       "vertical": false,
+       "lineCount": 2,
+       "widestLine": 1356.2,
+       "columnCount": 0,
+       "columnSpan": 0,
+       "inkUnit": "line",
+       "inkCount": 2,
+       "inkSpan": 1356.2,
+       "glyphRects": 6,
+       "textWidth": 1369,
+       "textLength": 137
+      }
+     ],
+     "sampleMentions": [
+      "ng/ need/china-usable/ need/dev-credits/ need/edu-identity/ need/free-api/ need/free-model/ need/free-tier/ need/free-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/ · 物理作用域：@7",
+      "ng/ need/china-usable/ need/dev-credits/ need/edu-identity/ need/free-api/ need/free-model/ need/free-tier/ need/free-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/ · 物理作用域：@7"
+     ]
+    },
+    {
+     "route": "sitemap.xml",
+     "pageCodes": [],
+     "notes": [],
+     "sampleMentions": []
+    }
+   ]
+  },
+  {
+   "key": "forge3",
+   "label": "F3 副本（canonical 进注释）",
+   "total": 874,
+   "failed": 2,
+   "failedChecks": [
+    {
+     "name": "/need/student-only/ canonical 自指 + 2 个订阅源 + 三段 JSON-LD",
+     "detail": " · feed 2 · JSON-LD [CollectionPage, BreadcrumbList, ItemList]"
+    },
+    {
+     "name": "别名页 /need/student-only/ canonical 自指",
+     "detail": ""
+    }
+   ],
+   "macro": {
+    "narrowNotes": 0,
+    "inkNarrowNotes": 0,
+    "narrowRegistryEntries": 1,
+    "narrowUnregisteredPages": []
+   },
+   "narrowChDeclarationsAt1440": [
+    {
+     "route": "plans/coding/",
+     "declarations": [
+      {
+       "selector": ".pdetailbody",
+       "declaration": "max-width: 72ch",
+       "registered": true
+      }
+     ]
+    }
+   ],
+   "perRoute": []
+  },
+  {
+   "key": "sb-empty",
+   "label": "沙箱 S1：entries = []",
+   "total": 874,
+   "failed": 5,
+   "failedChecks": [
+    {
+     "name": "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行",
+     "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）6 条 · 竖排 0 条（其中列证据 ≥ 2 列、即 ② 按列判的：0 条） · textFallback 回落 1 条 · 未登记的窄阅读列 1 页（登记清单 0 条） · 命中： · 未登记窄列页：plans/coding/"
+    },
+    {
+     "name": "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行",
+     "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）6 条 · 竖排 0 条（其中列证据 ≥ 2 列、即 ② 按列判的：0 条） · textFallback 回落 1 条 · 未登记的窄阅读列 1 页（登记清单 0 条） · 命中： · 未登记窄列页：plans/coding/"
+    },
+    {
+     "name": "§22c @760 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+     "detail": "1 条违规码 [plans/coding/#? narrow-unregistered]：plans/coding/#? narrow-unregistered：路由「plans/coding/」有 1 条未登记的窄阅读列：.pdetailbody { max-width: 72ch }（保留窄阅读列必须在 scripts/data/narrow-reading-columns.json 登记，并且居中、真的比容器窄） · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②"
+    },
+    {
+     "name": "§22c @360 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+     "detail": "1 条违规码 [plans/coding/#? narrow-unregistered]：plans/coding/#? narrow-unregistered：路由「plans/coding/」有 1 条未登记的窄阅读列：.pdetailbody { max-width: 72ch }（保留窄阅读列必须在 scripts/data/narrow-reading-columns.json 登记，并且居中、真的比容器窄） · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②"
+    },
+    {
+     "name": "§22c M16 承重证明：注入的那条 ch 窄列被认成**未登记**、已登记的 72ch 仍在扫描结果里、且除 narrow-unregistered 外没有任何别的码（注入不影响布局）",
+     "detail": "现场扫描到 2 条 ch 窄列：.pdetailbody{max-width: 72ch}（未登记） · .pdetailbody{max-width: 70ch}（未登记） · 注入的那条命中 true · 已登记条目仍在 false · 除登记码之外的码 [无]"
+    }
+   ],
+   "macro": {
+    "narrowNotes": 0,
+    "inkNarrowNotes": 0,
+    "narrowRegistryEntries": 0,
+    "narrowUnregisteredPages": [
+     "plans/coding/"
+    ]
+   },
+   "narrowChDeclarationsAt1440": [
+    {
+     "route": "plans/coding/",
+     "declarations": [
+      {
+       "selector": ".pdetailbody",
+       "declaration": "max-width: 72ch",
+       "registered": false
+      }
+     ]
+    }
+   ],
+   "perRoute": []
+  },
+  {
+   "key": "sb-two",
+   "label": "沙箱 S2：entries[0] 原样 + entries[1] 未居中 + entries[2] 幽灵",
+   "total": 874,
+   "failed": 0,
+   "failedChecks": [],
+   "macro": {
+    "narrowNotes": 0,
+    "inkNarrowNotes": 0,
+    "narrowRegistryEntries": 3,
+    "narrowUnregisteredPages": []
+   },
+   "narrowChDeclarationsAt1440": [
+    {
+     "route": "need/ai-coding/",
+     "declarations": [
+      {
+       "selector": ".page-notes-summary",
+       "declaration": "max-width: 70ch",
+       "registered": true
+      }
+     ]
+    },
+    {
+     "route": "plans/coding/",
+     "declarations": [
+      {
+       "selector": ".pdetailbody",
+       "declaration": "max-width: 72ch",
+       "registered": true
+      }
+     ]
+    }
+   ],
+   "perRoute": []
+  }
+ ]
+}
