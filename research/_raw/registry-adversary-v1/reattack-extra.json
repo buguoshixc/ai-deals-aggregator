@@ -1,0 +1,809 @@
+{
+ "generatedAt": "2026-10-08T14:33:59.316Z",
+ "verifySeo": {
+  "what": "verify:seo 在注释伪造副本上的读数（t5 时 F2/F3 是「被注释骗过」，本轮期望与真删对照同解）",
+  "forge": {
+   "exit": 1,
+   "summary": "19 项 / 失败 2 项",
+   "cmd": "node scripts/tools/seo-verify.js --dir=.arch-v1/dist-forge"
+  },
+  "forgeCtl": {
+   "exit": 1,
+   "summary": "19 项 / 失败 2 项",
+   "cmd": "... --dir=.arch-v1/dist-forge-ctl（真删对照）"
+  },
+  "forge3": {
+   "exit": 1,
+   "summary": "19 项 / 失败 1 项",
+   "cmd": "... --dir=.arch-v1/dist-forge3"
+  },
+  "forge3Ctl": {
+   "exit": 1,
+   "summary": "19 项 / 失败 1 项",
+   "cmd": "... --dir=.arch-v1/dist-forge3-ctl（真删对照）"
+  },
+  "newe": {
+   "exit": 1,
+   "summary": "19 项 / 失败 2 项",
+   "failing": [
+    "sitemap 成员 == 非 noindex 页面的集合",
+    "规则层检查码列表"
+   ]
+  },
+  "base": {
+   "exit": 0,
+   "summary": "19 项 / 失败 0 项",
+   "cmd": "npm run verify:seo（干净 dist）"
+  }
+ },
+ "probes": {
+  "t11-clip-base": [
+   {
+    "label": "N12-vertical-maxheight-clip",
+    "route": "status/",
+    "selector": ".snote",
+    "fontSize": "12px",
+    "lineHeight": "20.4px",
+    "maxWidth": "none",
+    "writingMode": "horizontal-tb",
+    "overflow": "visible",
+    "box": "1380x40.78",
+    "client": "1380x41",
+    "scroll": "1380x41",
+    "parent": "main"
+   },
+   {
+    "label": "N13-vertical-overflowy-visible",
+    "route": "feeds/",
+    "selector": ".snote",
+    "fontSize": "12px",
+    "lineHeight": "20.4px",
+    "maxWidth": "none",
+    "writingMode": "horizontal-tb",
+    "overflow": "visible",
+    "box": "1380x20.39",
+    "client": "1380x20",
+    "scroll": "1380x20",
+    "parent": "main"
+   },
+   {
+    "label": "N14-clipping-ancestor",
+    "route": "plans/api/",
+    "selector": ".snote",
+    "fontSize": "12px",
+    "lineHeight": "20.4px",
+    "maxWidth": "none",
+    "writingMode": "horizontal-tb",
+    "overflow": "visible",
+    "box": "1380x20.39",
+    "client": "1380x20",
+    "scroll": "1380x20",
+    "parent": "main"
+   },
+   {
+    "label": "BASE-status/",
+    "route": "status/",
+    "selector": ".snote",
+    "fontSize": "12px",
+    "lineHeight": "20.4px",
+    "maxWidth": "none",
+    "writingMode": "horizontal-tb",
+    "overflow": "visible",
+    "box": "1380x40.78",
+    "client": "1380x41",
+    "scroll": "1380x41",
+    "parent": "main"
+   },
+   {
+    "label": "BASE-feeds/",
+    "route": "feeds/",
+    "selector": ".snote",
+    "fontSize": "12px",
+    "lineHeight": "20.4px",
+    "maxWidth": "none",
+    "writingMode": "horizontal-tb",
+    "overflow": "visible",
+    "box": "1380x20.39",
+    "client": "1380x20",
+    "scroll": "1380x20",
+    "parent": "main"
+   },
+   {
+    "label": "BASE-plans/api/",
+    "route": "plans/api/",
+    "selector": ".snote",
+    "fontSize": "12px",
+    "lineHeight": "20.4px",
+    "maxWidth": "none",
+    "writingMode": "horizontal-tb",
+    "overflow": "visible",
+    "box": "1380x20.39",
+    "client": "1380x20",
+    "scroll": "1380x20",
+    "parent": "main"
+   }
+  ],
+  "t11-clip": [
+   {
+    "label": "N12-vertical-maxheight-clip",
+    "route": "status/",
+    "selector": ".snote",
+    "fontSize": "12px",
+    "lineHeight": "20.4px",
+    "maxWidth": "none",
+    "writingMode": "vertical-rl",
+    "overflow": "clip",
+    "box": "1380x89.59",
+    "client": "1380x90",
+    "scroll": "1380x1387",
+    "parent": "main"
+   },
+   {
+    "label": "N13-vertical-overflowy-visible",
+    "route": "feeds/",
+    "selector": ".snote",
+    "fontSize": "12px",
+    "lineHeight": "20.4px",
+    "maxWidth": "none",
+    "writingMode": "vertical-rl",
+    "overflow": "hidden auto",
+    "box": "1380x89.59",
+    "client": "1380x90",
+    "scroll": "1380x1041",
+    "parent": "main"
+   },
+   {
+    "label": "N14-clipping-ancestor",
+    "route": "plans/api/",
+    "selector": ".snote",
+    "fontSize": "12px",
+    "lineHeight": "20.4px",
+    "maxWidth": "none",
+    "writingMode": "horizontal-tb",
+    "overflow": "visible",
+    "box": "1380x20.39",
+    "client": "1380x20",
+    "scroll": "1380x20",
+    "parent": "div.arch-clip"
+   },
+   {
+    "label": "BASE-status/",
+    "route": "status/",
+    "selector": ".snote",
+    "fontSize": "12px",
+    "lineHeight": "20.4px",
+    "maxWidth": "none",
+    "writingMode": "vertical-rl",
+    "overflow": "clip",
+    "box": "1380x89.59",
+    "client": "1380x90",
+    "scroll": "1380x1387",
+    "parent": "main"
+   },
+   {
+    "label": "BASE-feeds/",
+    "route": "feeds/",
+    "selector": ".snote",
+    "fontSize": "12px",
+    "lineHeight": "20.4px",
+    "maxWidth": "none",
+    "writingMode": "vertical-rl",
+    "overflow": "hidden auto",
+    "box": "1380x89.59",
+    "client": "1380x90",
+    "scroll": "1380x1041",
+    "parent": "main"
+   },
+   {
+    "label": "BASE-plans/api/",
+    "route": "plans/api/",
+    "selector": ".snote",
+    "fontSize": "12px",
+    "lineHeight": "20.4px",
+    "maxWidth": "none",
+    "writingMode": "horizontal-tb",
+    "overflow": "visible",
+    "box": "1380x20.39",
+    "client": "1380x20",
+    "scroll": "1380x20",
+    "parent": "div.arch-clip"
+   }
+  ],
+  "t11-clip2": [
+   {
+    "label": "N12-vertical-maxheight-clip",
+    "route": "status/",
+    "selector": ".snote",
+    "fontSize": "12px",
+    "lineHeight": "20.4px",
+    "maxWidth": "none",
+    "writingMode": "horizontal-tb",
+    "overflow": "visible",
+    "box": "1380x40.78",
+    "client": "1380x41",
+    "scroll": "1380x41",
+    "parent": "main"
+   },
+   {
+    "label": "N13-vertical-overflowy-visible",
+    "route": "feeds/",
+    "selector": ".snote",
+    "fontSize": "12px",
+    "lineHeight": "20.4px",
+    "maxWidth": "none",
+    "writingMode": "horizontal-tb",
+    "overflow": "visible",
+    "box": "1380x20.39",
+    "client": "1380x20",
+    "scroll": "1380x20",
+    "parent": "main"
+   },
+   {
+    "label": "N14-clipping-ancestor",
+    "route": "plans/api/",
+    "selector": ".snote",
+    "fontSize": "12px",
+    "lineHeight": "20.4px",
+    "maxWidth": "none",
+    "writingMode": "horizontal-tb",
+    "overflow": "visible",
+    "box": "1380x20.39",
+    "client": "1380x20",
+    "scroll": "1380x20",
+    "parent": "div.arch-clip"
+   },
+   {
+    "label": "BASE-status/",
+    "route": "status/",
+    "selector": ".snote",
+    "fontSize": "12px",
+    "lineHeight": "20.4px",
+    "maxWidth": "none",
+    "writingMode": "horizontal-tb",
+    "overflow": "visible",
+    "box": "1380x40.78",
+    "client": "1380x41",
+    "scroll": "1380x41",
+    "parent": "main"
+   },
+   {
+    "label": "BASE-feeds/",
+    "route": "feeds/",
+    "selector": ".snote",
+    "fontSize": "12px",
+    "lineHeight": "20.4px",
+    "maxWidth": "none",
+    "writingMode": "horizontal-tb",
+    "overflow": "visible",
+    "box": "1380x20.39",
+    "client": "1380x20",
+    "scroll": "1380x20",
+    "parent": "main"
+   },
+   {
+    "label": "BASE-plans/api/",
+    "route": "plans/api/",
+    "selector": ".snote",
+    "fontSize": "12px",
+    "lineHeight": "20.4px",
+    "maxWidth": "none",
+    "writingMode": "horizontal-tb",
+    "overflow": "visible",
+    "box": "1380x20.39",
+    "client": "1380x20",
+    "scroll": "1380x20",
+    "parent": "div.arch-clip"
+   }
+  ],
+  "t11-clip3": [
+   {
+    "label": "N12-vertical-maxheight-clip",
+    "route": "status/",
+    "selector": ".snote",
+    "fontSize": "12px",
+    "lineHeight": "20.4px",
+    "maxWidth": "none",
+    "writingMode": "horizontal-tb",
+    "overflow": "visible",
+    "box": "1380x40.78",
+    "client": "1380x41",
+    "scroll": "1380x41",
+    "parent": "main"
+   },
+   {
+    "label": "N13-vertical-overflowy-visible",
+    "route": "feeds/",
+    "selector": ".snote",
+    "fontSize": "12px",
+    "lineHeight": "20.4px",
+    "maxWidth": "none",
+    "writingMode": "horizontal-tb",
+    "overflow": "visible",
+    "box": "1380x20.39",
+    "client": "1380x20",
+    "scroll": "1380x20",
+    "parent": "main"
+   },
+   {
+    "label": "N14-clipping-ancestor",
+    "route": "plans/api/",
+    "selector": ".snote",
+    "fontSize": "12px",
+    "lineHeight": "20.4px",
+    "maxWidth": "none",
+    "writingMode": "horizontal-tb",
+    "overflow": "visible",
+    "box": "1380x20.39",
+    "client": "1380x20",
+    "scroll": "1380x20",
+    "parent": "div.arch-clip"
+   },
+   {
+    "label": "BASE-status/",
+    "route": "status/",
+    "selector": ".snote",
+    "fontSize": "12px",
+    "lineHeight": "20.4px",
+    "maxWidth": "none",
+    "writingMode": "horizontal-tb",
+    "overflow": "visible",
+    "box": "1380x40.78",
+    "client": "1380x41",
+    "scroll": "1380x41",
+    "parent": "main"
+   },
+   {
+    "label": "BASE-feeds/",
+    "route": "feeds/",
+    "selector": ".snote",
+    "fontSize": "12px",
+    "lineHeight": "20.4px",
+    "maxWidth": "none",
+    "writingMode": "horizontal-tb",
+    "overflow": "visible",
+    "box": "1380x20.39",
+    "client": "1380x20",
+    "scroll": "1380x20",
+    "parent": "main"
+   },
+   {
+    "label": "BASE-plans/api/",
+    "route": "plans/api/",
+    "selector": ".snote",
+    "fontSize": "12px",
+    "lineHeight": "20.4px",
+    "maxWidth": "none",
+    "writingMode": "horizontal-tb",
+    "overflow": "visible",
+    "box": "1380x20.39",
+    "client": "1380x20",
+    "scroll": "1380x20",
+    "parent": "div.arch-clip"
+   }
+  ],
+  "t11-frozen-base": [
+   {
+    "label": "frozen-need/free-api/",
+    "route": "need/free-api/",
+    "selector": ".snote",
+    "fontSize": "12px",
+    "lineHeight": "20.4px",
+    "maxWidth": "none",
+    "writingMode": "horizontal-tb",
+    "overflow": "visible",
+    "box": "1380x40.78",
+    "client": "1377x41",
+    "scroll": "1377x41",
+    "parent": "main"
+   },
+   {
+    "label": "frozen-need/student-only/",
+    "route": "need/student-only/",
+    "selector": ".snote",
+    "fontSize": "12px",
+    "lineHeight": "20.4px",
+    "maxWidth": "none",
+    "writingMode": "horizontal-tb",
+    "overflow": "visible",
+    "box": "1380x40.78",
+    "client": "1377x41",
+    "scroll": "1377x41",
+    "parent": "main"
+   }
+  ],
+  "t11-frozen": [
+   {
+    "label": "frozen-need/free-api/",
+    "route": "need/free-api/",
+    "selector": ".snote",
+    "fontSize": "14px",
+    "lineHeight": "21px",
+    "maxWidth": "none",
+    "writingMode": "horizontal-tb",
+    "overflow": "visible",
+    "box": "1380x42",
+    "client": "1377x42",
+    "scroll": "1377x42",
+    "parent": "main"
+   },
+   {
+    "label": "frozen-need/student-only/",
+    "route": "need/student-only/",
+    "selector": ".snote",
+    "fontSize": "14px",
+    "lineHeight": "21px",
+    "maxWidth": "none",
+    "writingMode": "horizontal-tb",
+    "overflow": "visible",
+    "box": "1380x42",
+    "client": "1377x42",
+    "scroll": "1377x42",
+    "parent": "main"
+   }
+  ],
+  "t11-inline": [
+   {
+    "label": "inline-plans/coding/",
+    "route": "plans/coding/",
+    "selector": ".pdetailbody"
+   }
+  ],
+  "t11-newa-base": [
+   {
+    "label": "N5-student/.pnote",
+    "route": "student/",
+    "selector": ".pnote",
+    "fontSize": "12px",
+    "lineHeight": "20.4px",
+    "maxWidth": "none",
+    "writingMode": "horizontal-tb",
+    "overflow": "visible",
+    "box": "1380x28.39",
+    "client": "1380x28",
+    "scroll": "1380x28",
+    "parent": "details.page-notes"
+   },
+   {
+    "label": "N6-category/chat/.pnote",
+    "route": "category/chat/",
+    "selector": ".pnote",
+    "fontSize": "12px",
+    "lineHeight": "20.4px",
+    "maxWidth": "none",
+    "writingMode": "horizontal-tb",
+    "overflow": "visible",
+    "box": "1380x28.39",
+    "client": "1380x28",
+    "scroll": "1380x28",
+    "parent": "details.page-notes"
+   }
+  ],
+  "t11-newa": [
+   {
+    "label": "N5-student/.pnote",
+    "route": "student/",
+    "selector": ".pnote",
+    "fontSize": "12px",
+    "lineHeight": "20.4px",
+    "maxWidth": "none",
+    "writingMode": "horizontal-tb",
+    "overflow": "visible",
+    "box": "1380x28.39",
+    "client": "1380x28",
+    "scroll": "1380x28",
+    "parent": "details.page-notes"
+   },
+   {
+    "label": "N6-category/chat/.pnote",
+    "route": "category/chat/",
+    "selector": ".pnote",
+    "fontSize": "12px",
+    "lineHeight": "20.4px",
+    "maxWidth": "452.812px",
+    "writingMode": "horizontal-tb",
+    "overflow": "visible",
+    "box": "452.81x28.39",
+    "client": "453x28",
+    "scroll": "453x28",
+    "parent": "details.page-notes"
+   }
+  ],
+  "t11-registered-base": [
+   {
+    "label": "registered-plans/coding/",
+    "route": "plans/coding/",
+    "selector": ".pdetailbody"
+   }
+  ],
+  "t11-registered": [
+   {
+    "label": "registered-plans/coding/",
+    "route": "plans/coding/",
+    "selector": ".pdetailbody"
+   }
+  ]
+ },
+ "productDigests": {
+  "what": "产品零改动证明：整合树 dist/ 的全树摘要（注入前后同一串）+ 基线副本逐文件等价 + 原 dist 未被写",
+  "distTreeDigestBefore": "df43587cfe90a60453e29df96599b138a8dd02242130968340cba589e6979675",
+  "distTreeDigestAfter": "df43587cfe90a60453e29df96599b138a8dd02242130968340cba589e6979675",
+  "distFiles": 304,
+  "distBaseCopyIdenticalToDist": true,
+  "perCopy": {
+   "att": {
+    "files": 304,
+    "changedFiles": [
+     "archive/index.html",
+     "category/chat/index.html",
+     "changes/index.html",
+     "developer/index.html",
+     "docs/data/index.html",
+     "feeds/index.html",
+     "free-api/index.html",
+     "models/index.html",
+     "need/ai-coding/index.html",
+     "need/china-usable/index.html",
+     "need/dev-credits/index.html",
+     "need/edu-identity/index.html",
+     "need/free-api/index.html",
+     "need/free-model/index.html",
+     "need/free-tier/index.html",
+     "need/free-tokens/index.html",
+     "need/no-card/index.html",
+     "need/student-only/index.html",
+     "plans/api/index.html",
+     "plans/coding/index.html",
+     "plans/index.html",
+     "status/index.html",
+     "student/index.html",
+     "vendor/openai/index.html"
+    ],
+    "unexpectedChanged": 0,
+    "copyByteIdentical": true,
+    "records": [
+     "VA1-sideways-rl → need/free-api/index.html 62ae8f3d→402efa25",
+     "VA2-vertical-lr → need/student-only/index.html 1e66f93f→9f9098f4",
+     "VA3-single-column-clipped → need/dev-credits/index.html 32f5482e→b3e80d2a",
+     "VA4-full-span-spill → docs/data/index.html 28b1386b→0bec20ef",
+     "VA5-media-760 → status/index.html 096e1fd0→2d07a6a2",
+     "VA6-media-unmeasured-gap → feeds/index.html b08670fb→617ae7e8",
+     "VA7-ancestor-writing-mode → plans/api/index.html 2e5a095a→eb91158d",
+     "VA8-axis-desync → archive/index.html 71689ea9→f007ab4e",
+     "VA9-scaleX-horizontal → models/index.html 8a50d5d4→57e1da96",
+     "VA10-scaleX-vertical-narrow → plans/index.html dd22bf3d→370f3782",
+     "VA11-scaleX-vertical-wide → changes/index.html 5477661c→410acce1",
+     "RA1-comma-borrowed-registration → need/ai-coding/index.html d36585f4→f6e25227",
+     "RA2-comma-control → need/free-model/index.html cecacf95→9e9a7727",
+     "RA3-media-nested → need/china-usable/index.html c6b71d23→f39b00c7",
+     "RA4-supports-and-comment → need/edu-identity/index.html edbbc70a→ba234320",
+     "RA5-unit-case-CH → need/free-tier/index.html 49faf34a→9f2a92bf",
+     "RA6-property-case-MAX-WIDTH → need/free-tokens/index.html 68283f99→a436a5c1",
+     "RA7-px-out-of-scope → need/no-card/index.html 4fafdbea→699dc184",
+     "RA8-min-width-out-of-scope → developer/index.html 2bd977e6→d40d30d7",
+     "RA9-important-unregistered → free-api/index.html 42656273→777a6b05",
+     "RA10-important-registered-declaration → plans/coding/index.html 2f593e87→df60509a",
+     "RA11-comment-string-eats-rule → student/index.html 1c77fdbf→08fd07d0",
+     "RA12-inline-style-attribute → category/chat/index.html 824f7e51→6e52d23a",
+     "RA14-visible-unit-case-CH → vendor/openai/index.html 60b8054c→d0675c52"
+    ]
+   },
+   "att2": {
+    "files": 304,
+    "changedFiles": [
+     "archive/index.html",
+     "models/deepseek-v3.2/index.html"
+    ],
+    "unexpectedChanged": 0,
+    "copyByteIdentical": true,
+    "records": [
+     "VA8b-axis-desync-fullwidth → archive/index.html 71689ea9→b5eca013",
+     "VA5b-media-760-unsampled → models/deepseek-v3.2/index.html 5c9458a9→a2ada216"
+    ]
+   },
+   "g19": {
+    "files": 304,
+    "changedFiles": [
+     "need/ai-coding/index.html",
+     "plans/coding/index.html"
+    ],
+    "unexpectedChanged": 0,
+    "copyByteIdentical": true,
+    "records": [
+     "G19-tolerance-inside → plans/coding/index.html 2f593e87→f3c3c1b8",
+     "RA1b-comma-literal-70ch → need/ai-coding/index.html d36585f4→35f9fd22"
+    ]
+   },
+   "g21": {
+    "files": 304,
+    "changedFiles": [
+     "plans/coding/index.html"
+    ],
+    "unexpectedChanged": 0,
+    "copyByteIdentical": true,
+    "records": [
+     "G21-tolerance-outside → plans/coding/index.html 2f593e87→e1939311"
+    ]
+   },
+   "g300": {
+    "files": 304,
+    "changedFiles": [
+     "plans/coding/index.html"
+    ],
+    "unexpectedChanged": 0,
+    "copyByteIdentical": true,
+    "records": [
+     "G300-narrowed-by-px → plans/coding/index.html 2f593e87→b139291b"
+    ]
+   },
+   "g1400": {
+    "files": 304,
+    "changedFiles": [
+     "plans/coding/index.html"
+    ],
+    "unexpectedChanged": 0,
+    "copyByteIdentical": true,
+    "records": [
+     "G1400-widened-by-min-width → plans/coding/index.html 2f593e87→d132d362"
+    ]
+   },
+   "grtl": {
+    "files": 304,
+    "changedFiles": [
+     "plans/coding/index.html"
+    ],
+    "unexpectedChanged": 0,
+    "copyByteIdentical": true,
+    "records": [
+     "GRTL-ancestor-direction → plans/coding/index.html 2f593e87→1298b7f9"
+    ]
+   },
+   "gxf": {
+    "files": 304,
+    "changedFiles": [
+     "plans/coding/index.html"
+    ],
+    "unexpectedChanged": 0,
+    "copyByteIdentical": true,
+    "records": [
+     "GXF-ancestor-transform → plans/coding/index.html 2f593e87→02ed2af7"
+    ]
+   },
+   "forge": {
+    "files": 304,
+    "changedFiles": [
+     "need/free-api/index.html",
+     "sitemap.xml"
+    ],
+    "unexpectedChanged": 0,
+    "copyByteIdentical": true,
+    "records": [
+     "F1-frozen-declaration-only-in-comment → need/free-api/index.html 62ae8f3d→fb4fbbad",
+     "F2-sitemap-loc-only-in-comment → sitemap.xml 18c7c9d3→1e9e7d56"
+    ]
+   },
+   "forge-ctl": {
+    "files": 304,
+    "changedFiles": [
+     "need/free-api/index.html",
+     "sitemap.xml"
+    ],
+    "unexpectedChanged": 0,
+    "copyByteIdentical": true,
+    "records": [
+     "F1-frozen-declaration-only-in-comment → need/free-api/index.html 62ae8f3d→fb4fbbad",
+     "F2c-sitemap-url-deleted → sitemap.xml 18c7c9d3→477881c7"
+    ]
+   },
+   "newa": {
+    "files": 304,
+    "changedFiles": [
+     "category/chat/index.html",
+     "need/china-usable/index.html",
+     "need/edu-identity/index.html",
+     "need/free-model/index.html",
+     "need/free-tier/index.html",
+     "plans/api/index.html",
+     "student/index.html"
+    ],
+    "unexpectedChanged": 0,
+    "copyByteIdentical": true,
+    "records": [
+     "N1-reversed-comma-borrow → need/free-model/index.html cecacf95→f8317114",
+     "N2-is-selector-borrow → need/free-tier/index.html 49faf34a→d1647fba",
+     "N3-space-before-colon → need/china-usable/index.html c6b71d23→b091f2fe",
+     "N4-newline-in-declaration → need/edu-identity/index.html edbbc70a→d7913298",
+     "N5-comment-inside-declaration → student/index.html 1c77fdbf→4bd463ea",
+     "N6-comment-before-brace → category/chat/index.html 824f7e51→498b4e34",
+     "N7-case-mangled-value → plans/api/index.html 2e5a095a→df6ee49c"
+    ]
+   },
+   "newb": {
+    "files": 304,
+    "changedFiles": [
+     "need/free-api/index.html",
+     "need/student-only/index.html"
+    ],
+    "unexpectedChanged": 0,
+    "copyByteIdentical": true,
+    "records": [
+     "N8-frozen-in-media-not-all → need/free-api/index.html 62ae8f3d→c47a207b",
+     "N9-frozen-in-supports-false → need/student-only/index.html 1e66f93f→f3a5a579"
+    ]
+   },
+   "newc": {
+    "files": 304,
+    "changedFiles": [
+     "plans/coding/index.html"
+    ],
+    "unexpectedChanged": 0,
+    "copyByteIdentical": true,
+    "records": [
+     "N10-registered-rule-in-media-not-all → plans/coding/index.html 2f593e87→5f947988"
+    ]
+   },
+   "newd": {
+    "files": 304,
+    "changedFiles": [
+     "feeds/index.html",
+     "status/index.html"
+    ],
+    "unexpectedChanged": 0,
+    "copyByteIdentical": true,
+    "records": [
+     "N12-vertical-maxheight-clip → status/index.html 096e1fd0→2b14715a",
+     "N13-vertical-overflowy-visible → feeds/index.html b08670fb→e5bf86e1"
+    ]
+   },
+   "newd2": {
+    "files": 304,
+    "changedFiles": [
+     "plans/api/index.html"
+    ],
+    "unexpectedChanged": 0,
+    "copyByteIdentical": true,
+    "records": [
+     "N14-clipping-ancestor → plans/api/index.html 2e5a095a→166f1b93"
+    ]
+   },
+   "newe": {
+    "files": 304,
+    "changedFiles": [
+     "need/student-only/index.html",
+     "sitemap.xml"
+    ],
+    "unexpectedChanged": 0,
+    "copyByteIdentical": true,
+    "records": [
+     "N15-sitemap-unclosed-comment → sitemap.xml 18c7c9d3→be5564b0",
+     "N16-canonical-in-template → need/student-only/index.html 1e66f93f→15ab4751"
+    ]
+   },
+   "newf": {
+    "files": 304,
+    "changedFiles": [
+     "plans/coding/index.html"
+    ],
+    "unexpectedChanged": 0,
+    "copyByteIdentical": true,
+    "records": [
+     "N11-inline-style-on-registered → plans/coding/index.html 2f593e87→0a1b1ca9"
+    ]
+   },
+   "newg": {
+    "files": 304,
+    "changedFiles": [
+     "developer/index.html",
+     "feeds/index.html",
+     "status/index.html"
+    ],
+    "unexpectedChanged": 0,
+    "copyByteIdentical": true,
+    "records": [
+     "N17-comment-in-value → status/index.html 096e1fd0→9729e519",
+     "N18-three-level-at-rules → feeds/index.html b08670fb→293566f5",
+     "N19-noscript-style → developer/index.html 2bd977e6→fd61e32d"
+    ]
+   }
+  }
+ }
+}

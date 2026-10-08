@@ -1,0 +1,603 @@
+{
+ "what": "t11 逐副本门禁读数（总项/失败数/失败检查名与明细/条级码样本/完整未登记页清单）",
+ "generatedAt": "2026-10-08T14:33:59.280Z",
+ "copies": {
+  "base": {
+   "what": "干净基线（t9+t10 整合树）",
+   "total": 881,
+   "failed": 0,
+   "failedChecks": [],
+   "noteCodesSample": {}
+  },
+  "att": {
+   "what": "原 24 条形态",
+   "total": 881,
+   "failed": 15,
+   "failedChecks": [
+    {
+     "name": "390px：/changes/ 零横向溢出（列表式布局，不是宽表）",
+     "detail": "溢出 1416px · 分栏 7"
+    },
+    {
+     "name": "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记",
+     "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 9（落在 2 页） · note-ink-narrow 36（6 页） · 并集 40 条 / 7 页 · 藏字 0 · 不同轴 33 · 裁切 4 · 首屏说明过长 13 条 / 6 页 · 多行说明（有行证据）10 条 · 竖排 47 条（其中列证据 ≥ 2 列、即 ② 按列判的：41 条） · textFallback 回落 1 条 · 未登记的窄阅读列 9 页（登记清单 1 条） · 命中：archive/#0 内容盒 192px / 盒 1380px / 列 1380px · 行 7（最宽 192px） · **竖排** 列 1（列栈 192px） · 判据用列：1 / 192px · 字形盒 7 · 主数据区 <main> · codes [note-narrow] · 「本站的原则是：资料失效不等于资料」；archive/#1 内容盒 107px / 盒 1354px / 列 1380px · 行 3（最宽 107.27px） · **竖排** 列 1（列栈 107.27px） · 判据用列：1 / 107.27px · 字形盒 3 · 主数据区 <main> · codes [note-narrow] · 「结束 0 条 · 恢复 0 条 」；archive/#2 内容盒 107px / 盒 1354px / 列 1380px · 行 3（最宽 107.2"
+    },
+    {
+     "name": "§22c @1440 全站 186 页都没有横向溢出",
+     "detail": "1 页溢出：changes/"
+    },
+    {
+     "name": "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记",
+     "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 9（落在 2 页） · note-ink-narrow 36（6 页） · 并集 40 条 / 7 页 · 藏字 0 · 不同轴 33 · 裁切 4 · 首屏说明过长 13 条 / 6 页 · 多行说明（有行证据）10 条 · 竖排 47 条（其中列证据 ≥ 2 列、即 ② 按列判的：41 条） · textFallback 回落 1 条 · 未登记的窄阅读列 9 页（登记清单 1 条） · 命中：archive/#0 内容盒 192px / 盒 1380px / 列 1380px · 行 7（最宽 192px） · **竖排** 列 1（列栈 192px） · 判据用列：1 / 192px · 字形盒 7 · 主数据区 <main> · codes [note-narrow] · 「本站的原则是：资料失效不等于资料」；archive/#1 内容盒 107px / 盒 1354px / 列 1380px · 行 3（最宽 107.27px） · **竖排** 列 1（列栈 107.27px） · 判据用列：1 / 107.27px · 字形盒 3 · 主数据区 <main> · codes [note-narrow] · 「结束 0 条 · 恢复 0 条 」；archive/#2 内容盒 107px / 盒 1354px / 列 1380px · 行 3（最宽 107.2"
+    },
+    {
+     "name": "§22c @1600 全站 186 页都没有横向溢出",
+     "detail": "1 页溢出：changes/"
+    },
+    {
+     "name": "§22c @390 全站 186 页 documentElement.scrollWidth ≤ 视口+1",
+     "detail": "1 页溢出：changes/=1806px"
+    },
+    {
+     "name": "§22c @760 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+     "detail": "90 条违规码 [archive/#0 note-narrow, archive/#1 note-narrow, archive/#2 note-narrow, archive/#3 note-narrow, changes/#0 note-axis, changes/#1 note-ink-narrow, changes/#1 note-axis, changes/#2 note-axis, changes/#3 note-ink-narrow, changes/#3 note-axis, changes/#4 note-axis, changes/#5 note-ink-narrow, changes/#5 note-axis, changes/#6 note-ink-narrow, changes/#6 note-axis, changes/#7 note-ink-narrow, changes/#7 note-axis, changes/#8 note-axis, changes/#9 note-ink-narrow, changes/#9 note-axis, changes/#10 note-ink-narrow, changes/#10 note-axis, changes/#11 note-ink-narrow, changes/#11 note-axis, changes/#12 note-axis, changes/#? page-overflow@760, docs/data/#0 note-clipped, docs/data/#1 note-clipp"
+    },
+    {
+     "name": "§22c @360 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+     "detail": "60 条违规码 [archive/#0 note-narrow, archive/#1 note-narrow, archive/#2 note-narrow, archive/#3 note-narrow, changes/#0 note-axis, changes/#1 note-axis, changes/#2 note-axis, changes/#3 note-axis, changes/#4 note-axis, changes/#5 note-axis, changes/#6 note-axis, changes/#7 note-axis, changes/#8 note-axis, changes/#9 note-axis, changes/#10 note-axis, changes/#11 note-axis, changes/#12 note-axis, changes/#? page-overflow@360, docs/data/#0 note-clipped, docs/data/#1 note-clipped, docs/data/#2 note-clipped, docs/data/#3 note-clipped, docs/data/#6 note-clipped, docs/data/#8 note-clipped, free-api/#? narrow-unregistered, models/#0 note-axis, models/#1 note-axis, models/#2 note-axis, need/ai-coding/#? "
+    },
+    {
+     "name": "§22c M6 变异后复测必须出现「page-overflow@390」违规码（拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串）",
+     "detail": "期望 page-overflow@390 · 实测 [note-clipped] · 说明 1 条 · 首条 盒 358px / 有字区域 347px · detail-main 0 个 · scrollWidth 390（视口 390） · 不可断串注入位置 note · 窄条 [无] · 违规码 [note-clipped]"
+    },
+    {
+     "name": "§22c M11 承重证明：旧判据（内容盒 textWidth）**一条都没咬**，咬中的全是新的逐行字迹码",
+     "detail": "note-narrow 0 条（0 = 盒子/内容盒满宽，旧口径确实看不见）· note-ink-narrow 11 条 [changes/#0, changes/#1, changes/#2, changes/#3, changes/#4, changes/#5, changes/#6, changes/#7, changes/#9, changes/#10, changes/#11] · 这些条的行证据：#0 1 行 / 最宽 895.63px / 内容盒 1380px · #1 1 行 / 最宽 589.77px / 内容盒 1380px · #2 1 行 / 最宽 691.72px / 内容盒 1380px · #3 1 行 / 最宽 589.77px / 内容盒 1380px · #4 1 行 / 最宽 997.58px / 内容盒 1380px · #5 1 行 / 最宽 487.81px / 内容盒 1380px · #6 1 行 / 最宽 283.91px / 内容盒 1380px · #7 1 行 / 最宽 181.95px / 内容盒 1380px · #9 1 行 / 最宽 589.77px / 内容盒 1380px · #10 1 行 / 最宽 385.86px / 内容盒 1380px · #11 1 行 / 最宽 283.91px / 内容盒 1380px"
+    },
+    {
+     "name": "§22c M13 变异后复测必须出现「note-unrendered」违规码（T22-F1 原型：**裸** font-size:0（没有 ::before 高度恢复器）—— 盒高被压成 0 ⇒ rendered=false，修复前会让窄柱 / 逐行字迹 / 藏字三条判据同时静默（整页零码）；现在由 note-unrendered 咬住）",
+     "detail": "期望 note-unrendered · 实测 [note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text] · 说明 9 条 · 首条 盒 1380px / 有字区域 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text]"
+    },
+    {
+     "name": "§22c M13 承重证明：盒高被压成 0 的条**全部**由 note-unrendered 咬中，且窄柱/字迹/藏字三条判据在它们身上确实看不见",
+     "detail": "未渲染条 0 条 [] · 它们的 textLength [] · glyphRects [] · note-unrendered 命中 [无] · 窄柱/字迹/藏字码 [note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text, note-hidden-text]"
+    },
+    {
+     "name": "§22c M14 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+     "detail": "首个 .snote 注入前已经是 4 行（> 2）—— 注入不是它的原因 ⇒ 变异未生效，判红（不允许「变异不生效却算通过」）"
+    },
+    {
+     "name": "§22c M14 变异后复测必须出现「note-intro-long」违规码（首屏说明被写长（DOM 注入填充正文）：盒宽 / 内容盒 / 同轴 / 裁切全都不动，只有「行数」越过上限 ⇒ 必须由 note-intro-long 咬住（本轮之前的产物在 1440 档就有多页命中））",
+     "detail": "锚点不唯一/不存在 ⇒ 变异没落地，按红处理（同一个判据不可能被这条牙咬到）"
+    },
+    {
+     "name": "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条违规码都没有",
+     "detail": "M8 need/student-only/@1440 说明 1 条（竖排 1）违规码 [note-ink-narrow,note-intro-long] · M9a docs/data/@1440 说明 9 条（竖排 9）违规码 [note-clipped,note-intro-long,note-clipped,note-intro-long,note-clipped,note-intro-long,note-ink-narrow,note-ink-narrow,note-ink-narrow,note-ink-narrow,note-ink-narrow,note-ink-narrow] · M9b changes/@1440 说明 13 条（竖排 13）违规码 [note-ink-narrow,note-axis,note-intro-long,note-ink-narrow,note-axis,note-intro-long,note-ink-narrow,note-axis,note-ink-narrow,note-axis,note-ink-narrow,note-axis,note-ink-narrow,note-axis,note-ink-narrow,note-axis,note-ink-narrow,note-axis,note-axis,note-ink-narrow,note-axis,note-ink-narrow,note-axis,note-ink-narrow,note-axis,note-axis,page-overflow@1440] · M"
+    }
+   ],
+   "noteCodesSample": {
+    "archive/#0": [
+     "note-narrow"
+    ],
+    "archive/#1": [
+     "note-narrow"
+    ],
+    "archive/#2": [
+     "note-narrow"
+    ],
+    "archive/#3": [
+     "note-narrow"
+    ]
+   },
+   "unregisteredPagesFull": [
+    "free-api/",
+    "need/ai-coding/",
+    "need/china-usable/",
+    "need/edu-identity/",
+    "need/free-model/",
+    "need/free-tier/",
+    "need/free-tokens/",
+    "student/",
+    "vendor/openai/"
+   ],
+   "unregisteredPagesFullSource": "把 verify-site.js 7881 行 narrowUnregisteredPages.slice(0, 4) 改成 slice(0, 200) 的**沙箱副本**（sb-list-att / sb-list-newa），产品未改"
+  },
+  "att2": {
+   "what": "VA8b+VA5b",
+   "total": 881,
+   "failed": 4,
+   "failedChecks": [
+    {
+     "name": "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记",
+     "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 4（落在 1 页） · note-ink-narrow 1（1 页） · 并集 5 条 / 1 页 · 藏字 0 · 不同轴 0 · 裁切 1 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）10 条 · 竖排 5 条（其中列证据 ≥ 2 列、即 ② 按列判的：1 条） · textFallback 回落 1 条 · 未登记的窄阅读列 0 页（登记清单 1 条） · 命中：archive/#0 内容盒 192px / 盒 1380px / 列 1380px · 行 7（最宽 192px） · **竖排** 列 1（列栈 192px） · 判据用列：1 / 192px · 字形盒 7 · 主数据区 <main> · codes [note-narrow,note-clipped] · 「本站的原则是：资料失效不等于资料」；archive/#1 内容盒 107px / 盒 1354px / 列 1380px · 行 3（最宽 107.27px） · **竖排** 列 1（列栈 107.27px） · 判据用列：1 / 107.27px · 字形盒 3 · 主数据区 <main> · codes [note-narrow] · 「结束 0 条 · 恢复 0 条 」；archive/#2 内容盒 107px / 盒 1354px / 列 1380px · 行 3（最"
+    },
+    {
+     "name": "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记",
+     "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 4（落在 1 页） · note-ink-narrow 1（1 页） · 并集 5 条 / 1 页 · 藏字 0 · 不同轴 0 · 裁切 1 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）10 条 · 竖排 5 条（其中列证据 ≥ 2 列、即 ② 按列判的：1 条） · textFallback 回落 1 条 · 未登记的窄阅读列 0 页（登记清单 1 条） · 命中：archive/#0 内容盒 192px / 盒 1380px / 列 1380px · 行 7（最宽 192px） · **竖排** 列 1（列栈 192px） · 判据用列：1 / 192px · 字形盒 7 · 主数据区 <main> · codes [note-narrow,note-clipped] · 「本站的原则是：资料失效不等于资料」；archive/#1 内容盒 107px / 盒 1354px / 列 1380px · 行 3（最宽 107.27px） · **竖排** 列 1（列栈 107.27px） · 判据用列：1 / 107.27px · 字形盒 3 · 主数据区 <main> · codes [note-narrow] · 「结束 0 条 · 恢复 0 条 」；archive/#2 内容盒 107px / 盒 1354px / 列 1380px · 行 3（最"
+    },
+    {
+     "name": "§22c @760 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+     "detail": "6 条违规码 [archive/#0 note-narrow, archive/#0 note-clipped, archive/#1 note-narrow, archive/#2 note-narrow, archive/#3 note-narrow, archive/#4 note-ink-narrow]：archive/#0 note-narrow：archive/#0 有字区域宽（内容盒代理量）192px < 0.85 × 列宽（承载文本块 1 个）—— 盒宽 728px · 内容盒 728px · 行 7 行（最宽一行 192px） · **竖排**（vertical-rl）：列 1 列（列栈水平范围 192px） · 字形盒 7 个 · 列宽 728px · 阈值 618.8px（主数据区 <main> 728px / 页面列 728px）；archive/#0 note-clipped：archive/#0 说明自身**竖直**溢出 53px（scrollHeight 143 > clientHeight 90 · 竖排 vertical-rl：横向量 728/728 看不出问题）；archive/#1 note-narrow：archive/#1 有字区域宽（内容盒代理量）107px < 0.85 × 列宽（承载文本块 1 个）—— 盒宽 702px · 内容盒 702px · 行 3 行（最宽一行 107.27px） · **竖排**（vertical-rl）：列 1 列（列栈水平范围 107.27px） · 字形盒 3 个 · 列宽 728px · 阈值 "
+    },
+    {
+     "name": "§22c @360 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+     "detail": "5 条违规码 [archive/#0 note-narrow, archive/#0 note-clipped, archive/#1 note-narrow, archive/#2 note-narrow, archive/#3 note-narrow]：archive/#0 note-narrow：archive/#0 有字区域宽（内容盒代理量）192px < 0.85 × 列宽（承载文本块 1 个）—— 盒宽 328px · 内容盒 328px · 行 7 行（最宽一行 192px） · **竖排**（vertical-rl）：列 1 列（列栈水平范围 192px） · 字形盒 7 个 · 列宽 328px · 阈值 278.8px（主数据区 <main> 328px / 页面列 328px）；archive/#0 note-clipped：archive/#0 说明自身**竖直**溢出 53px（scrollHeight 143 > clientHeight 90 · 竖排 vertical-rl：横向量 328/328 看不出问题）；archive/#1 note-narrow：archive/#1 有字区域宽（内容盒代理量）107px < 0.85 × 列宽（承载文本块 1 个）—— 盒宽 302px · 内容盒 302px · 行 3 行（最宽一行 107.27px） · **竖排**（vertical-rl）：列 1 列（列栈水平范围 107.27px） · 字形盒 3 个 · 列宽 328px · 阈值 278.8px（主数据区 <main> 328px / "
+    }
+   ],
+   "noteCodesSample": {
+    "archive/#0": [
+     "note-narrow",
+     "note-clipped"
+    ],
+    "archive/#1": [
+     "note-narrow"
+    ],
+    "archive/#2": [
+     "note-narrow"
+    ],
+    "archive/#3": [
+     "note-narrow"
+    ]
+   }
+  },
+  "g19": {
+   "what": "G19 容差内 + RA1b 逗号字面例",
+   "total": 881,
+   "failed": 4,
+   "failedChecks": [
+    {
+     "name": "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记",
+     "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）6 条 · 竖排 0 条（其中列证据 ≥ 2 列、即 ② 按列判的：0 条） · textFallback 回落 1 条 · 未登记的窄阅读列 1 页（登记清单 1 条） · 命中： · 未登记窄列页：need/ai-coding/"
+    },
+    {
+     "name": "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记",
+     "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）6 条 · 竖排 0 条（其中列证据 ≥ 2 列、即 ② 按列判的：0 条） · textFallback 回落 1 条 · 未登记的窄阅读列 1 页（登记清单 1 条） · 命中： · 未登记窄列页：need/ai-coding/"
+    },
+    {
+     "name": "§22c @760 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+     "detail": "1 条违规码 [need/ai-coding/#? narrow-unregistered]：need/ai-coding/#? narrow-unregistered：路由「need/ai-coding/」有 1 条未登记的窄阅读列：.arch-a, .pdetailbody { max-width: 70ch }（保留窄阅读列必须在 scripts/data/narrow-reading-columns.json 登记，并且居中、真的比容器窄） · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②"
+    },
+    {
+     "name": "§22c @360 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+     "detail": "1 条违规码 [need/ai-coding/#? narrow-unregistered]：need/ai-coding/#? narrow-unregistered：路由「need/ai-coding/」有 1 条未登记的窄阅读列：.arch-a, .pdetailbody { max-width: 70ch }（保留窄阅读列必须在 scripts/data/narrow-reading-columns.json 登记，并且居中、真的比容器窄） · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②"
+    }
+   ],
+   "noteCodesSample": {}
+  },
+  "g21": {
+   "what": "G21 容差外",
+   "total": 881,
+   "failed": 2,
+   "failedChecks": [
+    {
+     "name": "§19 登记的窄阅读列第 1/1 条 .pdetailbody（plans/coding/）：**真的在产物里命中**、比容器窄 ≥ 40px、左右内边距差 ≤ 2px、自身不裁切（横竖都算）",
+     "detail": ".pdetailbody 465.75px / 容器 1357px · 左 446.67px · 右 444.58px · max-width 465.75px · margin 445.125px/445.125px · 自身横 466/466 竖 362/362 · rendered true"
+    },
+    {
+     "name": "§19 上一条判据的隔离牙：把 margin-inline: auto 就地删掉后，左右内边距不再相等（承重证明）",
+     "detail": "删掉前 左 446.67 / 右 444.58 ⇒ 删掉后 左 1.55 / 右 889.7（盒宽 465.75 → 465.75px：只挪位置、不改变宽度）"
+    }
+   ],
+   "noteCodesSample": {}
+  },
+  "g300": {
+   "what": "G300 width:300px",
+   "total": 881,
+   "failed": 1,
+   "failedChecks": [
+    {
+     "name": "§19 登记的窄阅读列第 1/1 条 .pdetailbody 的**生效宽** ≈ 声明「max-width: 72ch」的现场换算值（±20%）—— 不许被别的规则顶掉",
+     "detail": "生效宽 300px ÷ 现场 465.75px = 比值 0.644（容差 0.8–1.2）"
+    }
+   ],
+   "noteCodesSample": {}
+  },
+  "g1400": {
+   "what": "G1400 min-width:1400px",
+   "total": 881,
+   "failed": 3,
+   "failedChecks": [
+    {
+     "name": "§19 登记的窄阅读列第 1/1 条 .pdetailbody（plans/coding/）：**真的在产物里命中**、比容器窄 ≥ 40px、左右内边距差 ≤ 2px、自身不裁切（横竖都算）",
+     "detail": ".pdetailbody 1400px / 容器 1401px · 左 0.5px · 右 0.5px · max-width 465.75px · margin 0px/0px · 自身横 1400/1400 竖 308/308 · rendered true"
+    },
+    {
+     "name": "§19 登记的窄阅读列第 1/1 条 .pdetailbody 的**生效宽** ≈ 声明「max-width: 72ch」的现场换算值（±20%）—— 不许被别的规则顶掉",
+     "detail": "生效宽 1400px ÷ 现场 465.75px = 比值 3.006（容差 0.8–1.2）"
+    },
+    {
+     "name": "§19 上一条判据的隔离牙：把 margin-inline: auto 就地删掉后，左右内边距不再相等（承重证明）",
+     "detail": "删掉前 左 0.5 / 右 0.5 ⇒ 删掉后 左 0.5 / 右 0.5（盒宽 1400 → 1400px：只挪位置、不改变宽度）"
+    }
+   ],
+   "noteCodesSample": {}
+  },
+  "grtl": {
+   "what": "GRTL 祖先 rtl",
+   "total": 881,
+   "failed": 0,
+   "failedChecks": [],
+   "noteCodesSample": {}
+  },
+  "gxf": {
+   "what": "GXF 祖先 transform",
+   "total": 881,
+   "failed": 0,
+   "failedChecks": [],
+   "noteCodesSample": {}
+  },
+  "forge": {
+   "what": "F1 冻结串进注释 + F2 sitemap 进注释",
+   "total": 881,
+   "failed": 5,
+   "failedChecks": [
+    {
+     "name": "厂商落地页 /vendor/zhipu/ 的 sitemap 成员资格与索引策略一致",
+     "detail": "sitemap 无"
+    },
+    {
+     "name": "§22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页）",
+     "detail": "1 页不符（改动前产物在这里必然全红，这正是 M0 的反证面之一）：need/free-api/=0 次"
+    },
+    {
+     "name": "§22c M15 变异后复测必须出现「note-ink-narrow」违规码（T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里））",
+     "detail": "期望 note-ink-narrow · 实测 [无] · 说明 1 条 · 首条 盒 1380px / 有字区域 1369px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [无]"
+    },
+    {
+     "name": "§22c M15 承重证明：咬中的条是**竖排按列判**（列数 ≥ 2 · 列栈水平范围 < 0.85×列宽），且旧口径两条判据在它们身上必然静默（按行归并 ≤ 1 行 + 盒/内容盒满宽，盒宽与注入前逐条相同）",
+     "detail": "note-ink-narrow 0 条 [] · 逐条：（无） · 列宽 1380px · 阈值 1173px · note-narrow 0 条（0 = ① 也看不见）· 盒宽与注入前一致 true"
+    },
+    {
+     "name": "/vendor/ 枢纽列出 24 个厂商入口",
+     "detail": "页面 25 行 / sitemap 24 个"
+    }
+   ],
+   "noteCodesSample": {}
+  },
+  "forge-ctl": {
+   "what": "F1 + F2c 真删对照",
+   "total": 881,
+   "failed": 5,
+   "failedChecks": [
+    {
+     "name": "厂商落地页 /vendor/zhipu/ 的 sitemap 成员资格与索引策略一致",
+     "detail": "sitemap 无"
+    },
+    {
+     "name": "§22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页）",
+     "detail": "1 页不符（改动前产物在这里必然全红，这正是 M0 的反证面之一）：need/free-api/=0 次"
+    },
+    {
+     "name": "§22c M15 变异后复测必须出现「note-ink-narrow」违规码（T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里））",
+     "detail": "期望 note-ink-narrow · 实测 [无] · 说明 1 条 · 首条 盒 1380px / 有字区域 1369px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [无]"
+    },
+    {
+     "name": "§22c M15 承重证明：咬中的条是**竖排按列判**（列数 ≥ 2 · 列栈水平范围 < 0.85×列宽），且旧口径两条判据在它们身上必然静默（按行归并 ≤ 1 行 + 盒/内容盒满宽，盒宽与注入前逐条相同）",
+     "detail": "note-ink-narrow 0 条 [] · 逐条：（无） · 列宽 1380px · 阈值 1173px · note-narrow 0 条（0 = ① 也看不见）· 盒宽与注入前一致 true"
+    },
+    {
+     "name": "/vendor/ 枢纽列出 24 个厂商入口",
+     "detail": "页面 25 行 / sitemap 24 个"
+    }
+   ],
+   "noteCodesSample": {}
+  },
+  "forge3": {
+   "what": "F3 canonical 进注释",
+   "total": 881,
+   "failed": 2,
+   "failedChecks": [
+    {
+     "name": "/need/student-only/ canonical 自指 + 2 个订阅源 + 三段 JSON-LD",
+     "detail": " · feed 2 · JSON-LD [CollectionPage, BreadcrumbList, ItemList]"
+    },
+    {
+     "name": "别名页 /need/student-only/ canonical 自指",
+     "detail": ""
+    }
+   ],
+   "noteCodesSample": {}
+  },
+  "newa": {
+   "what": "N1–N7 登记表等价变形",
+   "total": 881,
+   "failed": 4,
+   "failedChecks": [
+    {
+     "name": "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记",
+     "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）6 条 · 竖排 0 条（其中列证据 ≥ 2 列、即 ② 按列判的：0 条） · textFallback 回落 1 条 · 未登记的窄阅读列 6 页（登记清单 1 条） · 命中： · 未登记窄列页：category/chat/ need/china-usable/ need/edu-identity/ need/free-model/"
+    },
+    {
+     "name": "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记",
+     "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）6 条 · 竖排 0 条（其中列证据 ≥ 2 列、即 ② 按列判的：0 条） · textFallback 回落 1 条 · 未登记的窄阅读列 6 页（登记清单 1 条） · 命中： · 未登记窄列页：category/chat/ need/china-usable/ need/edu-identity/ need/free-model/"
+    },
+    {
+     "name": "§22c @760 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+     "detail": "5 条违规码 [need/china-usable/#? narrow-unregistered, need/edu-identity/#? narrow-unregistered, need/free-model/#? narrow-unregistered, need/free-tier/#? narrow-unregistered, plans/api/#? narrow-unregistered]：need/china-usable/#? narrow-unregistered：路由「need/china-usable/」有 1 条未登记的窄阅读列：.pnote { max-width: 70ch }（保留窄阅读列必须在 scripts/data/narrow-reading-columns.json 登记，并且居中、真的比容器窄）；need/edu-identity/#? narrow-unregistered：路由「need/edu-identity/」有 1 条未登记的窄阅读列：.pnote { max-width: 70ch }（保留窄阅读列必须在 scripts/data/narrow-reading-columns.json 登记，并且居中、真的比容器窄）；need/free-model/#? narrow-unregistered：路由「need/free-model/」有 1 条未登记的窄阅读列：.pdetailbody, .pnote { max-width: 70ch }（保留窄阅读列必须在 scripts/data/narrow-reading-c"
+    },
+    {
+     "name": "§22c @360 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+     "detail": "5 条违规码 [need/china-usable/#? narrow-unregistered, need/edu-identity/#? narrow-unregistered, need/free-model/#? narrow-unregistered, need/free-tier/#? narrow-unregistered, plans/api/#? narrow-unregistered]：need/china-usable/#? narrow-unregistered：路由「need/china-usable/」有 1 条未登记的窄阅读列：.pnote { max-width: 70ch }（保留窄阅读列必须在 scripts/data/narrow-reading-columns.json 登记，并且居中、真的比容器窄）；need/edu-identity/#? narrow-unregistered：路由「need/edu-identity/」有 1 条未登记的窄阅读列：.pnote { max-width: 70ch }（保留窄阅读列必须在 scripts/data/narrow-reading-columns.json 登记，并且居中、真的比容器窄）；need/free-model/#? narrow-unregistered：路由「need/free-model/」有 1 条未登记的窄阅读列：.pdetailbody, .pnote { max-width: 70ch }（保留窄阅读列必须在 scripts/data/narrow-reading-c"
+    }
+   ],
+   "noteCodesSample": {},
+   "unregisteredPagesFull": [
+    "category/chat/",
+    "need/china-usable/",
+    "need/edu-identity/",
+    "need/free-model/",
+    "need/free-tier/",
+    "plans/api/"
+   ],
+   "unregisteredPagesFullSource": "把 verify-site.js 7881 行 narrowUnregisteredPages.slice(0, 4) 改成 slice(0, 200) 的**沙箱副本**（sb-list-att / sb-list-newa），产品未改"
+  },
+  "newb": {
+   "what": "N8/N9 冻结串包进永不生效的 at-rule",
+   "total": 881,
+   "failed": 9,
+   "failedChecks": [
+    {
+     "name": "§22c M1 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（need/student-only/ 这一族的页面级说明曾被压窄））",
+     "detail": "期望 note-narrow · 实测 [narrow-unregistered] · 说明 1 条 · 首条 盒 1380px / 有字区域 1369px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [narrow-unregistered]"
+    },
+    {
+     "name": "§22c M8 变异后复测必须出现「note-narrow」违规码（F1 原型：把 .snote 的 padding-right 写成 calc(100% - 70ch) —— 盒宽一字不动、有字区域恒等于 70ch（修复前整轮 0 失败放行的那一条））",
+     "detail": "期望 note-narrow · 实测 [无] · 说明 1 条 · 首条 盒 1380px / 有字区域 1369px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [无]"
+    },
+    {
+     "name": "§22c M8 要害：首条说明的**盒宽没变**（旧判据看不见），只有**有字区域**被压回 70ch 级",
+     "detail": "注入前 盒 1380px / 有字区域 1369px ⇒ 注入后 盒 1380px / 有字区域 1369px（列宽 1380px · 阈值 1173px）—— 盒宽差 0px"
+    },
+    {
+     "name": "§22c M10 变异后复测必须出现「note-narrow」违规码（F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到））",
+     "detail": "期望 note-narrow · 实测 [narrow-unregistered] · 说明 1 条 · 首条 盒 1380px / 有字区域 1369px · detail-main 0 个 · scrollWidth 1600（视口 1600） · 窄条 [无] · 违规码 [narrow-unregistered]"
+    },
+    {
+     "name": "§22c M12 变异后复测必须出现「note-hidden-text」违规码（t8 的 F-R2-2 原型：真实文本 font-size:0（一个字形都不画），正文交给 ::before 的 content 去画 —— 盒宽/行数一切正常，只有字形盒能看穿）",
+     "detail": "期望 note-hidden-text · 实测 [narrow-unregistered] · 说明 1 条 · 首条 盒 1380px / 有字区域 1369px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [narrow-unregistered]"
+    },
+    {
+     "name": "§22c M12 承重证明：真实文本**一个字形盒都没有**（盒宽/行数正常），咬中的是 note-hidden-text",
+     "detail": "首条：文本 159 字 · 字形盒 6 个 · 盒宽 1380px（rendered=true） · 行 2 行 · note-hidden-text 命中 [无] · note-ink-narrow 无"
+    },
+    {
+     "name": "§22c M15 变异后复测必须出现「note-ink-narrow」违规码（T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里））",
+     "detail": "期望 note-ink-narrow · 实测 [无] · 说明 1 条 · 首条 盒 1380px / 有字区域 1369px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [无]"
+    },
+    {
+     "name": "§22c M15 承重证明：咬中的条是**竖排按列判**（列数 ≥ 2 · 列栈水平范围 < 0.85×列宽），且旧口径两条判据在它们身上必然静默（按行归并 ≤ 1 行 + 盒/内容盒满宽，盒宽与注入前逐条相同）",
+     "detail": "note-ink-narrow 0 条 [] · 逐条：（无） · 列宽 1380px · 阈值 1173px · note-narrow 0 条（0 = ① 也看不见）· 盒宽与注入前一致 true"
+    },
+    {
+     "name": "§22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出",
+     "detail": "不可断串注入位置 note · scrollWidth 1312（视口 390） · 溢出类违规码 [page-overflow@390]（全部码 [note-clipped, page-overflow@390]，390 档只看溢出）"
+    }
+   ],
+   "noteCodesSample": {}
+  },
+  "newc": {
+   "what": "N10 已登记规则包进 @media not all",
+   "total": 881,
+   "failed": 3,
+   "failedChecks": [
+    {
+     "name": "§19 登记的窄阅读列第 1/1 条 .pdetailbody（plans/coding/）：**真的在产物里命中**、比容器窄 ≥ 40px、左右内边距差 ≤ 2px、自身不裁切（横竖都算）",
+     "detail": ".pdetailbody 1356px / 容器 1357px · 左 0.5px · 右 0.5px · max-width none · margin 0px/0px · 自身横 1356/1356 竖 308/308 · rendered true"
+    },
+    {
+     "name": "§19 登记的窄阅读列第 1/1 条 .pdetailbody 的**生效宽** ≈ 声明「max-width: 72ch」的现场换算值（±20%）—— 不许被别的规则顶掉",
+     "detail": "生效宽 1356px ÷ 现场 465.75px = 比值 2.911（容差 0.8–1.2）"
+    },
+    {
+     "name": "§19 上一条判据的隔离牙：把 margin-inline: auto 就地删掉后，左右内边距不再相等（承重证明）",
+     "detail": "删掉前 左 0.5 / 右 0.5 ⇒ 删掉后 左 0.5 / 右 0.5（盒宽 1356 → 1356px：只挪位置、不改变宽度）"
+    }
+   ],
+   "noteCodesSample": {}
+  },
+  "newd": {
+   "what": "N12 竖排 max-height+clip + N13 竖排 overflow-x:hidden",
+   "total": 881,
+   "failed": 4,
+   "failedChecks": [
+    {
+     "name": "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记",
+     "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 10 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）10 条 · 竖排 10 条（其中列证据 ≥ 2 列、即 ② 按列判的：0 条） · textFallback 回落 1 条 · 未登记的窄阅读列 0 页（登记清单 1 条） · 命中：feeds/#0 内容盒 1380px / 盒 1380px / 列 1380px · 行 1（最宽 16px） · **竖排** 列 1（列栈 16px） · 判据用列：1 / 16px · 字形盒 1 · 主数据区 .flist · codes [note-clipped] · 「把下面的地址粘进任意 RSS /」；feeds/#1 内容盒 1380px / 盒 1380px / 列 1380px · 行 5（最宽 16px） · **竖排** 列 1（列栈 16px） · 判据用列：1 / 16px · 字形盒 5 · 主数据区 .flist · codes [note-clipped] · 「套餐变化来自人工逐条核对官方页后」；feeds/#2 内容盒 1380px / 盒 1380px / 列 1380px · 行 3（最宽 16px） · **竖排** 列 1（列栈 16p"
+    },
+    {
+     "name": "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记",
+     "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 10 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）10 条 · 竖排 10 条（其中列证据 ≥ 2 列、即 ② 按列判的：0 条） · textFallback 回落 1 条 · 未登记的窄阅读列 0 页（登记清单 1 条） · 命中：feeds/#0 内容盒 1380px / 盒 1380px / 列 1380px · 行 1（最宽 16px） · **竖排** 列 1（列栈 16px） · 判据用列：1 / 16px · 字形盒 1 · 主数据区 .flist · codes [note-clipped] · 「把下面的地址粘进任意 RSS /」；feeds/#1 内容盒 1380px / 盒 1380px / 列 1380px · 行 5（最宽 16px） · **竖排** 列 1（列栈 16px） · 判据用列：1 / 16px · 字形盒 5 · 主数据区 .flist · codes [note-clipped] · 「套餐变化来自人工逐条核对官方页后」；feeds/#2 内容盒 1380px / 盒 1380px / 列 1380px · 行 3（最宽 16px） · **竖排** 列 1（列栈 16p"
+    },
+    {
+     "name": "§22c @760 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+     "detail": "10 条违规码 [feeds/#0 note-clipped, feeds/#1 note-clipped, feeds/#2 note-clipped, feeds/#3 note-clipped, feeds/#4 note-clipped, feeds/#5 note-clipped, feeds/#6 note-clipped, feeds/#7 note-clipped, status/#0 note-clipped, status/#1 note-clipped]：feeds/#0 note-clipped：feeds/#0 说明自身**竖直**溢出 951px（scrollHeight 1041 > clientHeight 90 · 竖排 vertical-rl：横向量 728/728 看不出问题）；feeds/#1 note-clipped：feeds/#1 说明自身**竖直**溢出 1173px（scrollHeight 1263 > clientHeight 90 · 竖排 vertical-rl：横向量 728/728 看不出问题）；feeds/#2 note-clipped：feeds/#2 说明自身**竖直**溢出 422px（scrollHeight 512 > clientHeight 90 · 竖排 vertical-rl：横向量 728/728 看不出问题）；feeds/#3 note-clipped：feeds/#3 说明自身**竖直**溢出 510px（scrollHeight 600 > clientHeight 90 · 竖排 ver"
+    },
+    {
+     "name": "§22c @360 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+     "detail": "10 条违规码 [feeds/#0 note-clipped, feeds/#1 note-clipped, feeds/#2 note-clipped, feeds/#3 note-clipped, feeds/#4 note-clipped, feeds/#5 note-clipped, feeds/#6 note-clipped, feeds/#7 note-clipped, status/#0 note-clipped, status/#1 note-clipped]：feeds/#0 note-clipped：feeds/#0 说明自身**竖直**溢出 951px（scrollHeight 1041 > clientHeight 90 · 竖排 vertical-rl：横向量 328/328 看不出问题）；feeds/#1 note-clipped：feeds/#1 说明自身**竖直**溢出 1173px（scrollHeight 1263 > clientHeight 90 · 竖排 vertical-rl：横向量 328/328 看不出问题）；feeds/#2 note-clipped：feeds/#2 说明自身**竖直**溢出 422px（scrollHeight 512 > clientHeight 90 · 竖排 vertical-rl：横向量 328/328 看不出问题）；feeds/#3 note-clipped：feeds/#3 说明自身**竖直**溢出 510px（scrollHeight 600 > clientHeight 90 · 竖排 ver"
+    }
+   ],
+   "noteCodesSample": {
+    "feeds/#0": [
+     "note-clipped"
+    ],
+    "feeds/#1": [
+     "note-clipped"
+    ],
+    "feeds/#2": [
+     "note-clipped"
+    ],
+    "feeds/#3": [
+     "note-clipped"
+    ]
+   }
+  },
+  "newd2": {
+   "what": "N14 裁切祖先（8px 高 + overflow:hidden 的父盒子）",
+   "total": 881,
+   "failed": 0,
+   "failedChecks": [],
+   "noteCodesSample": {}
+  },
+  "newe": {
+   "what": "N15 sitemap 未闭合注释 + N16 canonical 进 <template>",
+   "total": 881,
+   "failed": 2,
+   "failedChecks": [
+    {
+     "name": "/need/student-only/ canonical 自指 + 2 个订阅源 + 三段 JSON-LD",
+     "detail": " · feed 2 · JSON-LD [CollectionPage, BreadcrumbList, ItemList]"
+    },
+    {
+     "name": "别名页 /need/student-only/ canonical 自指",
+     "detail": ""
+    }
+   ],
+   "noteCodesSample": {}
+  },
+  "newf": {
+   "what": "N11 行内 style 顶掉登记声明",
+   "total": 881,
+   "failed": 1,
+   "failedChecks": [
+    {
+     "name": "§19 登记的窄阅读列第 1/1 条 .pdetailbody 的**生效宽** ≈ 声明「max-width: 72ch」的现场换算值（±20%）—— 不许被别的规则顶掉",
+     "detail": "生效宽 300px ÷ 现场 465.75px = 比值 0.644（容差 0.8–1.2）"
+    }
+   ],
+   "noteCodesSample": {}
+  },
+  "newg": {
+   "what": "N17/N18/N19 合法注释位 / 三层嵌套 / <noscript>",
+   "total": 881,
+   "failed": 4,
+   "failedChecks": [
+    {
+     "name": "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记",
+     "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）6 条 · 竖排 0 条（其中列证据 ≥ 2 列、即 ② 按列判的：0 条） · textFallback 回落 1 条 · 未登记的窄阅读列 2 页（登记清单 1 条） · 命中： · 未登记窄列页：feeds/ status/"
+    },
+    {
+     "name": "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记",
+     "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）6 条 · 竖排 0 条（其中列证据 ≥ 2 列、即 ② 按列判的：0 条） · textFallback 回落 1 条 · 未登记的窄阅读列 2 页（登记清单 1 条） · 命中： · 未登记窄列页：feeds/ status/"
+    },
+    {
+     "name": "§22c @760 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+     "detail": "2 条违规码 [feeds/#? narrow-unregistered, status/#? narrow-unregistered]：feeds/#? narrow-unregistered：路由「feeds/」有 1 条未登记的窄阅读列：.pnote { max-width: 70ch }（保留窄阅读列必须在 scripts/data/narrow-reading-columns.json 登记，并且居中、真的比容器窄）；status/#? narrow-unregistered：路由「status/」有 1 条未登记的窄阅读列：.pnote { max-width: 70ch }（保留窄阅读列必须在 scripts/data/narrow-reading-columns.json 登记，并且居中、真的比容器窄） · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②"
+    },
+    {
+     "name": "§22c @360 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+     "detail": "2 条违规码 [feeds/#? narrow-unregistered, status/#? narrow-unregistered]：feeds/#? narrow-unregistered：路由「feeds/」有 1 条未登记的窄阅读列：.pnote { max-width: 70ch }（保留窄阅读列必须在 scripts/data/narrow-reading-columns.json 登记，并且居中、真的比容器窄）；status/#? narrow-unregistered：路由「status/」有 1 条未登记的窄阅读列：.pnote { max-width: 70ch }（保留窄阅读列必须在 scripts/data/narrow-reading-columns.json 登记，并且居中、真的比容器窄） · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②"
+    }
+   ],
+   "noteCodesSample": {}
+  },
+  "sb-empty": {
+   "what": "沙箱：entries: []",
+   "total": 879,
+   "failed": 5,
+   "failedChecks": [
+    {
+     "name": "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记",
+     "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）6 条 · 竖排 0 条（其中列证据 ≥ 2 列、即 ② 按列判的：0 条） · textFallback 回落 1 条 · 未登记的窄阅读列 1 页（登记清单 0 条） · 命中： · 未登记窄列页：plans/coding/"
+    },
+    {
+     "name": "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记",
+     "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）6 条 · 竖排 0 条（其中列证据 ≥ 2 列、即 ② 按列判的：0 条） · textFallback 回落 1 条 · 未登记的窄阅读列 1 页（登记清单 0 条） · 命中： · 未登记窄列页：plans/coding/"
+    },
+    {
+     "name": "§22c @760 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+     "detail": "1 条违规码 [plans/coding/#? narrow-unregistered]：plans/coding/#? narrow-unregistered：路由「plans/coding/」有 1 条未登记的窄阅读列：.pdetailbody { max-width: 72ch }（保留窄阅读列必须在 scripts/data/narrow-reading-columns.json 登记，并且居中、真的比容器窄） · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②"
+    },
+    {
+     "name": "§22c @360 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+     "detail": "1 条违规码 [plans/coding/#? narrow-unregistered]：plans/coding/#? narrow-unregistered：路由「plans/coding/」有 1 条未登记的窄阅读列：.pdetailbody { max-width: 72ch }（保留窄阅读列必须在 scripts/data/narrow-reading-columns.json 登记，并且居中、真的比容器窄） · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②"
+    },
+    {
+     "name": "§22c M16 承重证明：注入的那条 ch 窄列被认成**未登记**、已登记的 72ch 仍在扫描结果里、且除 narrow-unregistered 外没有任何别的码（注入不影响布局）",
+     "detail": "现场扫描到 2 条 ch 窄列：.pdetailbody{max-width: 72ch}（未登记） · .pdetailbody{max-width: 70ch}（未登记） · 注入的那条命中 true · 已登记条目仍在 false · 除登记码之外的码 [无]"
+    }
+   ],
+   "noteCodesSample": {}
+  },
+  "sb-two": {
+   "what": "沙箱：第二条登记 + 幽灵条目",
+   "total": 885,
+   "failed": 3,
+   "failedChecks": [
+    {
+     "name": "§19 登记的窄阅读列第 2/3 条 .page-notes-summary（need/ai-coding/）：**真的在产物里命中**、比容器窄 ≥ 40px、左右内边距差 ≤ 2px、自身不裁切（横竖都算）",
+     "detail": ".page-notes-summary 466.34px / 容器 1380px · 左 0px · 右 913.66px · max-width 466.348px · margin 0px/0px · 自身横 466/466 竖 44/44 · rendered true"
+    },
+    {
+     "name": "§19 登记的窄阅读列第 3/3 条 .ghost-nowhere（plans/coding/）：**真的在产物里命中**、比容器窄 ≥ 40px、左右内边距差 ≤ 2px、自身不裁切（横竖都算）",
+     "detail": "页面上**找不到** .ghost-nowhere（plans/coding/ 展开详情后仍找不到）⇒ 幽灵登记条目/选择器已改名"
+    },
+    {
+     "name": "§19 登记的窄阅读列第 3/3 条 .ghost-nowhere 的**生效宽** ≈ 声明「max-width: 65ch」的现场换算值（±20%）—— 不许被别的规则顶掉",
+     "detail": "量不到现场换算值（选择器不在场或声明里没有 ch 数字）"
+    }
+   ],
+   "noteCodesSample": {}
+  },
+  "sb-ghost": {
+   "what": "沙箱：只有幽灵条目",
+   "total": 883,
+   "failed": 2,
+   "failedChecks": [
+    {
+     "name": "§19 登记的窄阅读列第 2/2 条 .ghost-nowhere（plans/coding/）：**真的在产物里命中**、比容器窄 ≥ 40px、左右内边距差 ≤ 2px、自身不裁切（横竖都算）",
+     "detail": "页面上**找不到** .ghost-nowhere（plans/coding/ 展开详情后仍找不到）⇒ 幽灵登记条目/选择器已改名"
+    },
+    {
+     "name": "§19 登记的窄阅读列第 2/2 条 .ghost-nowhere 的**生效宽** ≈ 声明「max-width: 65ch」的现场换算值（±20%）—— 不许被别的规则顶掉",
+     "detail": "量不到现场换算值（选择器不在场或声明里没有 ch 数字）"
+    }
+   ],
+   "noteCodesSample": {}
+  },
+  "sb-second": {
+   "what": "沙箱：只有第二条登记（产物真存在、不居中）",
+   "total": 883,
+   "failed": 1,
+   "failedChecks": [
+    {
+     "name": "§19 登记的窄阅读列第 2/2 条 .page-notes-summary（need/ai-coding/）：**真的在产物里命中**、比容器窄 ≥ 40px、左右内边距差 ≤ 2px、自身不裁切（横竖都算）",
+     "detail": ".page-notes-summary 466.34px / 容器 1380px · 左 0px · 右 913.66px · max-width 466.348px · margin 0px/0px · 自身横 466/466 竖 44/44 · rendered true"
+    }
+   ],
+   "noteCodesSample": {}
+  },
+  "sb-routes": {
+   "what": "沙箱：登记条目 routes 写错（元素在别的路由）",
+   "total": 883,
+   "failed": 6,
+   "failedChecks": [
+    {
+     "name": "§19 登记的窄阅读列第 2/2 条 .page-notes-summary（plans/coding/）：**真的在产物里命中**、比容器窄 ≥ 40px、左右内边距差 ≤ 2px、自身不裁切（横竖都算）",
+     "detail": "页面上**找不到** .page-notes-summary（plans/coding/ 展开详情后仍找不到）⇒ 幽灵登记条目/选择器已改名"
+    },
+    {
+     "name": "§19 登记的窄阅读列第 2/2 条 .page-notes-summary 的**生效宽** ≈ 声明「max-width: 70ch」的现场换算值（±20%）—— 不许被别的规则顶掉",
+     "detail": "量不到现场换算值（选择器不在场或声明里没有 ch 数字）"
+    },
+    {
+     "name": "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记",
+     "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）6 条 · 竖排 0 条（其中列证据 ≥ 2 列、即 ② 按列判的：0 条） · textFallback 回落 1 条 · 未登记的窄阅读列 1 页（登记清单 2 条） · 命中： · 未登记窄列页：need/ai-coding/"
+    },
+    {
+     "name": "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记",
+     "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）6 条 · 竖排 0 条（其中列证据 ≥ 2 列、即 ② 按列判的：0 条） · textFallback 回落 1 条 · 未登记的窄阅读列 1 页（登记清单 2 条） · 命中： · 未登记窄列页：need/ai-coding/"
+    },
+    {
+     "name": "§22c @760 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+     "detail": "1 条违规码 [need/ai-coding/#? narrow-unregistered]：need/ai-coding/#? narrow-unregistered：路由「need/ai-coding/」有 1 条未登记的窄阅读列：.page-notes-summary { max-width: 70ch }（保留窄阅读列必须在 scripts/data/narrow-reading-columns.json 登记，并且居中、真的比容器窄） · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②"
+    },
+    {
+     "name": "§22c @360 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+     "detail": "1 条违规码 [need/ai-coding/#? narrow-unregistered]：need/ai-coding/#? narrow-unregistered：路由「need/ai-coding/」有 1 条未登记的窄阅读列：.page-notes-summary { max-width: 70ch }（保留窄阅读列必须在 scripts/data/narrow-reading-columns.json 登记，并且居中、真的比容器窄） · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②"
+    }
+   ],
+   "noteCodesSample": {}
+  }
+ }
+}
