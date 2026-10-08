@@ -1,0 +1,127 @@
+{
+  "task": "narrow-reading-columns-v1",
+  "what": "发布读数：PR / CI / 合并 / Deploy 三个 job / 线上冒烟（含部署前 vs 部署后逐字节对比）",
+  "branch": "narrow-reading-columns-v1",
+  "readingsBranch": "docs/narrow-reading-columns-v1-release-readings",
+  "worktree": ".worktrees/release-v2",
+  "commits": {
+    "fix": "e96afc46548c4979e8aea53e4ada59096edb9a23",
+    "onMaster": "ef395c0c9a81afc738df341e6fdd7b48b93c139a",
+    "readings": "本文件所在的这个提交（分支 docs/narrow-reading-columns-v1-release-readings 的 head，单提交；sha 无法在自身内容里自引用）"
+  },
+  "base": {
+    "master": "8d3767c",
+    "note": "PR #58 合并后的 master；PR #59 的基点即它（merge-base 逐字相等），合并时 master 未前进，mergeStateStatus=CLEAN"
+  },
+  "pr": {
+    "number": 59,
+    "url": "https://github.com/buguoshixc/ai-deals-aggregator/pull/59",
+    "title": "fix(narrow-reading-columns-v1): 保留窄阅读列改登记制 + .pdetailbody 按 S4 居中",
+    "state": "MERGED",
+    "mergedAt": "2026-10-08T09:13:50Z",
+    "mergedAtCST": "2026-10-08 17:13:50 +08:00",
+    "mergeCommit": "ef395c0c9a81afc738df341e6fdd7b48b93c139a",
+    "mergeMethod": "merge",
+    "branchDeleted": false
+  },
+  "ci": {
+    "pullRequestGate": {
+      "run": 37753654110,
+      "event": "pull_request",
+      "headSha": "e96afc46548c4979e8aea53e4ada59096edb9a23",
+      "conclusion": "success",
+      "startedAt": "2026-10-08T09:00:28Z",
+      "finishedAt": "2026-10-08T09:05:36Z"
+    },
+    "masterGate": {
+      "run": 37755202815,
+      "event": "push",
+      "headSha": "ef395c0c9a81afc738df341e6fdd7b48b93c139a",
+      "conclusion": "success",
+      "startedAt": "2026-10-08T09:13:52Z",
+      "finishedAt": "2026-10-08T09:18:51Z"
+    }
+  },
+  "master": {
+    "deploy": {
+      "run": 37755202858,
+      "event": "push",
+      "headSha": "ef395c0c9a81afc738df341e6fdd7b48b93c139a",
+      "conclusion": "success",
+      "startedAt": "2026-10-08T09:13:52Z",
+      "finishedAt": "2026-10-08T09:19:38Z",
+      "jobs": {
+        "prepublish": { "conclusion": "success", "startedAt": "2026-10-08T09:13:55Z", "finishedAt": "2026-10-08T09:19:02Z" },
+        "build": { "conclusion": "success", "startedAt": "2026-10-08T09:19:05Z", "finishedAt": "2026-10-08T09:19:18Z" },
+        "deploy": { "conclusion": "success", "startedAt": "2026-10-08T09:19:22Z", "finishedAt": "2026-10-08T09:19:37Z" }
+      }
+    }
+  },
+  "onlineSmoke": {
+    "apparatus": ".arch-v1/nrc-online-smoke.cjs —— captain 的 .arch-v1/vn-online-smoke.cjs（上一轮已实测可用）的逐字副本，只改三处与产物路径/轮次标签有关的地方（OUT 目录、OUT 文件名可由 argv[3] 指定、doc.task），判据一条未动",
+    "base": "https://buguoshixc.github.io/ai-deals-aggregator/",
+    "routes": 14,
+    "plusChangesPage": true,
+    "criterion": "线上 HTML 必须与本地 dist 的同一个文件**逐字节相同**（sha256 相等）+ HTTP 200 + canonical 自指 + 每页冻结串恰好 1 次 + 无 writing-mode 竖排泄漏 + 载体页 need/free-api/ 恰好 1 条页面级说明。本轮 dist 相对上一轮**只改 1 个文件**（plans/coding/index.html），所以这条逐字节判据这次是**真部署证明**（上一轮产物未变，同样的判据只能证明「线上没坏」）。",
+    "preDeploy": {
+      "verdict": "FAIL",
+      "captainRun": {
+        "startedAt": "2026-10-08T09:01:09.884Z",
+        "finishedAt": "2026-10-08T09:01:26.374Z",
+        "byteIdentical": "13/14",
+        "problems": ["plans/coding/: 线上与本地产物**不是同一份字节**（online 184bdbd3d5a5 / local 2f593e8742a2）"]
+      },
+      "myRun": {
+        "startedAt": "2026-10-08T09:15:05.560Z",
+        "finishedAt": "2026-10-08T09:15:16.528Z",
+        "verdict": "FAIL",
+        "byteIdentical": "13/14",
+        "fieldDiffsVsCaptain": 0,
+        "note": "同一个装置、同一份本地 dist（2f593e87…）、独立跑一次：14 条路由的 onlineSha256 / sameBytes / frozenCount / snoteCount / verticalLeak / canonicalSelf / bytes 与 captain 的部署前读数**逐字段相同**（0 处差异）"
+      },
+      "plansCoding": {
+        "onlineSha256": "184bdbd3d5a5c2a6b9285d996afd1bcf6c84f47ea39b238b78bc3f6add470885",
+        "onlineBytes": 282081,
+        "localSha256": "2f593e8742a2d56099521e01e1f2b91b489db0f67677b975ee7dc7e186e7de27",
+        "localBytes": 282427,
+        "sameBytes": false
+      },
+      "otherRoutes": "其余 13 条路由（/ · /changes/ · /feeds/ · /plans/ · /plans/api/ · /docs/data/ · /status/ · /need/free-api/ · /need/no-card/ · /category/agent/ · /student/ · /models/deepseek-v3.2/ · /vendor/ai360/）逐字节相同 —— 与「本轮只改 1 个文件」的产物对账互相印证"
+    },
+    "postDeploy": {
+      "verdict": "PASS",
+      "startedAt": "2026-10-08T09:20:20.681Z",
+      "finishedAt": "2026-10-08T09:20:30.530Z",
+      "http200": "14/14",
+      "byteIdentical": "14/14",
+      "canonicalSelf": "14/14",
+      "frozenExactlyOnce": "14/14",
+      "verticalLeak": 0,
+      "problems": [],
+      "plansCoding": {
+        "onlineSha256": "2f593e8742a2d56099521e01e1f2b91b489db0f67677b975ee7dc7e186e7de27",
+        "onlineBytes": 282427,
+        "localSha256": "2f593e8742a2d56099521e01e1f2b91b489db0f67677b975ee7dc7e186e7de27",
+        "localBytes": 282427,
+        "sameBytes": true,
+        "note": "线上字节 = 本地重建字节 = 部署前那份 localSha256（部署前线上是 184bdbd3…，即上一轮产物）"
+      },
+      "changesPage": { "status": 200, "sections": 7, "since": true, "disclaimer": true },
+      "carrierPage": { "route": "need/free-api/", "snoteCount": 1, "verticalLeak": false },
+      "note": "本机直连 Pages 通（未用代理）；Deploy 的 deploy job 09:19:37Z 结束，冒烟在 09:20:20Z 开跑（约 43s 后）"
+    },
+    "evidenceChain": "部署前 plans/coding/ 线上 184bdbd3… ≠ 本地 2f593e87…（FAIL，且 captain 与我两次独立跑读数逐字段相同）→ 合并 ef395c0c + Deploy run 37755202858 三个 job 全 success → 部署后 线上 2f593e87… == 本地（PASS，14/14 逐字节相同）⇒ 线上**真的换成了本轮产物**，「部署发生了」不再是推断",
+    "artifacts": {
+      "online-smoke-predeploy.json": { "bytes": 10215, "sha256": "131201081317e36dc319ca84bba80a644509056b9a19f7dcee5363c6b90ed26c", "source": ".worktrees/vertical-note-coverage-v1/.arch-v1/nrc-smoke-predeploy.json（captain 抓的部署前读数，逐字节拷入）" },
+      "online-smoke.json": { "bytes": 10097, "sha256": "cc997e205c0ddb49d8183a028e1352519a9e307617f9bbd3b24fbf92910d6192", "source": "本工作树重建 dist 后实跑" }
+    },
+    "quirk": "online-smoke-predeploy.json 是 captain 那份的**逐字节拷贝**（sha256 1312…，两者相同），其内部 `task` 字段仍写着 vertical-note-coverage-v1 —— 因为它是用那一轮的脚本副本跑的。为保证据完整性**未做任何改写**；本文件与报告里的解读以实测字段为准。"
+  },
+  "product": {
+    "distFiles": 303,
+    "treeDigest": "75ecb98344a855b7a72df9df83440b9ebb33eacd3daaa2821f7e4e653fd003a2",
+    "manifestSha256": "1398a352c12aa8939a6c1602d5073da821e3140397deedee92349c13dcd07c12",
+    "changedFiles": ["plans/coding/index.html"],
+    "note": "本工作树从 origin/master（ef395c0c）重建 dist：303 文件 / 20282063 B / 全树摘要 75ecb983…，与报告 §4 与自审 C5 登记的改后读数一致（独立复现，不是引用）"
+  }
+}
