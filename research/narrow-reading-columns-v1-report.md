@@ -114,6 +114,50 @@ node .arch-v1/tree-digest.cjs dist --out=.arch-v1/nrc-digest.json            # �
 
 * **类名无关的散文普查**（「判据只认 `.snote`」那一半）：需要构建期机器可读的「这一页应有多少条说明」清单。
 * 生产环境「最近变化」非空分支的真实样本（三份日志 19 条事件全是 `fields.type = tool`，**不造数据**）。
+
+  **本轮把它从「印象」做成了实测复核（2026-10-08），结论仍然是 0 个生产样本**，判据如下两半。
+
+  **线上侧**（`.arch-v1/nrc-online-sweep.cjs`；sitemap 183 条 + dist 补 3 条 noindex 别名 = **186 页全抓 · 0 错误**）：
+
+  | 判据 | 读数 |
+  | --- | --- |
+  | `class="chgsec chgtopic"`（**条件模块本体**） | **0 页** |
+  | `data-topic-total`（模块自带的相关变化总数） | **0 页** |
+  | 条件模块的 `<h2>最近变化</h2>` | **0 页** |
+  | 对照组：任意 `class="chgsec"` | 1 页（`/changes/`，整页雷达） |
+  | 对照组：`#plan-changes` / `#api-changes`（**无条件**模块，零变化时给空态） | `/plans/coding/` + `/plans/` · `/plans/api/` + `/plans/`；这 3 页有 `h2.ph2` 的「最近变化」标题，**不是**条件模块 |
+  | HTTP 非 200 | 0 |
+
+  **数据面侧**（判据不新写：直接调构建同一份 `scripts/lib/changes.js` 的 `buildRadar()`，再与线上 `/changes/` 的行标记对账 —— 19/19 逐条命中，说明推导与线上渲染一致）：
+
+  | 日志 | 事件数 | 事件类型 | 记录类型 | 落地 |
+  | --- | --- | --- | --- | --- |
+  | `deal-history.json` | 19 | 全 `created` | **全 `fields.type = "tool"`** | 雷达：今日新增 15 + 最近 7 天变化 4；**deal 型事件 0 条** |
+  | `plan-history.json` | 35 | 全 `created` | `planId` | 只进 `/plans/coding/` 的 `#plan-changes`（无条件块） |
+  | `api-plan-history.json` | 17 | 全 `created` | `planId` | 只进 `/plans/api/` 的 `#api-changes`（无条件块） |
+
+  **为什么仍无样本（可判定的集合关系，不是印象）**：条件模块的渲染条件只有一条 ——
+  `本页条目 id 集 ∩ (created ∪ changed ∪ endingSoon ∪ ended ∪ restored) ≠ ∅`（且该页不是 hub / alias；
+  判据在 `index.html` 的 `changesTopicHtml()`：`if (!rows.length) return ''`）。
+  而 ① 页面条目池只收 `type === 'deal'` 的记录（`landing.js:283`），② 这 19 条事件的记录类型**全是 tool**、
+  tool 没有详情页也不进任何页面的条目池 ⇒ 交集在结构上必然为空：**0 页**。
+  「即将结束」同样 0：80 条 deal 里 **0 条写了 `expiresAt`**（是「一条都没写截止日期」这种数据缺口，
+  不是「有截止日期但都不在 7 天内」）。
+
+  **下一轮要看什么信号**（任一发生，条件模块就会有第一个生产样本）：
+
+  1. 出现 `fields.type = "deal"` 的 `created` 事件（首次收录一条**优惠**，而不是工具）；
+  2. 某条 deal 出现 `benefit_changed` / `expiry_changed` / `eligibility_changed`（高价值字段变化）；
+  3. 某条 deal 出现 `ended` / `restored`（30 天窗口内）；
+  4. 数据里首次出现带 `expiresAt` 的 deal 且距基准日 ≤ 7 天（**不需要任何事件**，纯状态量也会点亮）；
+  5. 复跑同一装置：`pagesWithConditionalModule` 应从 0 变成 ≥ 1，且命中的页面必须同时带 `data-topic-total`
+     与条件模块自己的 `<h2>最近变化</h2>`。
+
+  **证据**：[`_raw/narrow-reading-columns-v1/change-module-production-audit.json`](_raw/narrow-reading-columns-v1/change-module-production-audit.json)
+  （186 页逐页读数 + 三份日志逐条归属 + 19 条事件的逐条判定，结论 `NO_PRODUCTION_SAMPLE`）。
+  装置的**两个坑**已登记在该文件 `apparatusNotes`：① 首页把 RENDER-CORE 内联进页面，扫整份 HTML 会把模板源码里的
+  `class="chgsec chgtopic"` 字符串当成真模块（必须先剥 `<script>`，第一版扫描就是这么误报首页的）；
+  ② 线上行标记是 `data-deal-id`，`data-item` 只落在**有详情页**的条目上（本轮 tool 记录 ⇒ `data-item` 数 0）。
 * `sideways-rl` / `vertical-lr` 无真实样本；竖排轴上没做 0.85 vs 0.5 的阈值 A/B 标定（上一轮登记）。
 
 ## 发布链（本轮实测读数）
