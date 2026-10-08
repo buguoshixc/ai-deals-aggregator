@@ -1,0 +1,56 @@
+{
+  "judgement": "official_urls._roles 的 sourceUrl 行标签括注 ↔ 今天的渲染行为",
+  "rolesPath": "scripts/data/official_urls.json",
+  "liveLabel": "收录渠道",
+  "pass": true,
+  "checks": [
+    {
+      "id": "note-quotes-live-label",
+      "description": "_roles 注逐字引用今天渲染的标签「收录渠道」（出处：audience.js SOURCE_LABELS.origin）",
+      "ok": true,
+      "detail": "注里出现了「收录渠道」"
+    },
+    {
+      "id": "note-has-no-stale-term",
+      "description": "_roles 注不再把旧称「原始出处」写成本字段的行标签",
+      "ok": true,
+      "detail": "没有旧称"
+    },
+    {
+      "id": "note-names-source-of-truth",
+      "description": "_roles 注指明措辞的唯一出处（`SOURCE_LABELS.origin` + `audience.js`）",
+      "ok": true,
+      "detail": "已指明"
+    },
+    {
+      "id": "note-states-plans-not-rendered",
+      "description": "_roles 注写明 plans 侧不渲染该字段的行标签",
+      "ok": true,
+      "detail": "已写明"
+    },
+    {
+      "id": "note-points-at-this-probe",
+      "description": "_roles 注指向本判据（可复核入口）",
+      "ok": true,
+      "detail": "已指向"
+    },
+    {
+      "id": "frontend-copy-agrees-with-lib",
+      "description": "index.html 的 SOURCE_WORDING 前端副本与 lib 常量逐字一致（checkWordingContract）",
+      "ok": true,
+      "detail": "一致"
+    },
+    {
+      "id": "plans-page-passes-value-through",
+      "description": "plans 侧仍然只把该字段的值原样贴进句子（plans-page.js 的 case 后 String(value)）",
+      "ok": true,
+      "detail": "成立"
+    },
+    {
+      "id": "api-plans-page-has-no-label-map",
+      "description": "api-plans 侧没有给 plan.sourceUrl 建行标签表",
+      "ok": true,
+      "detail": "成立"
+    }
+  ]
+}
