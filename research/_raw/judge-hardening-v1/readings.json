@@ -1,0 +1,60 @@
+{
+  "what": "本轮读数汇总",
+  "verifySite": {
+    "masterBaseline": "880 项 / 0 失败（4c52d47）",
+    "afterFixPristine": "881 项 / 0 失败（新增「§19 生效宽 ±20%」一条；§19 逐条几何与旧的单条断言 1:1 替换）",
+    "copyBaseline": "881/0（BASE = 产物副本，证明副本法不引入差）"
+  },
+  "thresholdsUnchanged": "WIDE_NOTE_RATIO 0.85（0.85×列宽）· WIDE_TOL 1 · 登记表 centeringTolerancePx 2 —— 一处未改（git diff 无改动行）",
+  "newOrHardened": [
+    "F1 冻结串计数前剥 CSS 注释（字符串感知）",
+    "F2 sitemap XML 注释剥除（§18 成员资格 + vendorIndex 两处）",
+    "R2 逗号多选择器：每个选择器段都要有登记",
+    "R4/R5 单位与属性名大小写 + R9 !important 归一（登记项与现场扫描同一函数）",
+    "R3 字符串感知剥注释（content:\"/*\" 不再吞规则）",
+    "R11 §19 逐条遍历登记项（幽灵条目 / 未居中 / 自裁切）+ entries: [] 显式声明 + 生效宽 ±20%",
+    "V3 note-clipped 增竖直分支（前置条件：overflow-y ∈ {hidden,clip,auto,scroll} 或声明固定高度）",
+    "A1 sharedFooterExternalHrefs 改读 --dir（--url 语义不变；读不到仍是空集 = 更严一侧）",
+    "t6 订正：§22c 0.85/0.5 注释按实测改写（判别区 [0.5,0.85)、0.6609、0.6470），常数未动"
+  ],
+  "probes": {
+    "R5b-effective-width": {
+      "exitCode": 1,
+      "summary": "❌ 验收 881 项，失败 1 项 · 红 2 条",
+      "failures": [
+        "- ✗ §19 登记的窄阅读列第 1/1 条 .pdetailbody 的**生效宽** ≈ 声明「max-width: 72ch」的现场换算值（±20%）—— 不许被别的规则顶掉 — 生效宽 300px ÷ 现场 465.75px = 比值 0.644（容差 0.8–1.2）"
+      ],
+      "failureCount": 1
+    },
+    "R9b-important-separate-rule": {
+      "exitCode": 0,
+      "summary": "✅ 验收 881 项，失败 0 项 · 红 0 条",
+      "failures": [],
+      "failureCount": 0
+    },
+    "V3c-vertical-dev-credits": {
+      "exitCode": 0,
+      "summary": "✅ 验收 881 项，失败 0 项 · 红 0 条",
+      "failures": [],
+      "failureCount": 0
+    },
+    "V3d-fixed-height-dev-credits": {
+      "exitCode": 0,
+      "summary": "✅ 验收 881 项，失败 0 项 · 红 0 条",
+      "failures": [],
+      "failureCount": 0
+    },
+    "V3e-fixed-height-plans": {
+      "exitCode": 0,
+      "summary": "✅ 验收 881 项，失败 0 项 · 红 0 条",
+      "failures": [],
+      "failureCount": 0
+    },
+    "V3f-vertical-plans": {
+      "exitCode": 0,
+      "summary": "✅ 验收 881 项，失败 0 项 · 红 0 条",
+      "failures": [],
+      "failureCount": 0
+    }
+  }
+}

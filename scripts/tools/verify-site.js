@@ -6833,6 +6833,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
           // 竖直方向的同一对量（judge-hardening-v1a / t5 V3）：竖排 + 固定高度 + overflow:hidden 时
           // 横向量可以完全不动（scrollWidth == clientWidth），竖直方向却被裁掉 ~94% —— 旧口径零码。
           scrollH: el.scrollHeight, clientH: el.clientHeight,
+          // 竖直裁切的**前置条件**要用的两个量（t17 裁定 ②）：会不会被裁 = overflow-y 切不切 + 有没有固定高度
+          overflowY: cs.overflowY, heightStyle: cs.height,
           padLeft: parseFloat(cs.paddingLeft) || 0, padRight: parseFloat(cs.paddingRight) || 0,
           maxWidth: cs.maxWidth, overflowWrap: cs.overflowWrap
         };
