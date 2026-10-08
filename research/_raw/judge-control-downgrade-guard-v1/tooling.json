@@ -1,0 +1,115 @@
+{
+  "task": "judge-control-downgrade-guard-v1 (t34)",
+  "at": "2026-10-08T17:25:50.101Z",
+  "base": "origin/judge-hardening-v1c-pr @ 2ad0e97（= master 2253be8 + t33 的 verify-site 改动 +169/−5）",
+  "preChangeTool": {
+    "file": ".arch-v1/base/verify-site.base.js",
+    "from": "scripts/tools/verify-site.js（**改前**冻结副本）",
+    "sha256Source": "1b2774b183c8511e0f8965f3b470153db11a522b67a011177b7a1dde8a6410c7",
+    "sha256Base": "bee064340daf957cf8a6eb587f257663a3b90d2caa667f67c208b3900d274994",
+    "edits": [
+      {
+        "label": "ROOT 指回工作树",
+        "occurrences": 1
+      },
+      {
+        "label": "require(../lib/…) → path.join(ROOT, scripts/lib/…)",
+        "occurrences": 5
+      }
+    ]
+  },
+  "patchedTool": {
+    "file": "scripts/tools/verify-site.js",
+    "sha256AtBase": "1b2774b183c8511e0f8965f3b470153db11a522b67a011177b7a1dde8a6410c7",
+    "sha256AfterPatch": "61b7d6607c3f168176d9dd68c62d8e00932a394490dc8153ece915cfaaec1050",
+    "diffStat": "scripts/tools/verify-site.js | 87 ++++++++++++++++++++++++++++++++++++++++++++\n 1 file changed, 87 insertions(+)",
+    "diffNumstat": "87\t0\tscripts/tools/verify-site.js",
+    "newChecks": [
+      "§22c M15 靶页前提：靶页必须含 ≥1 条页面级说明（否则变异没有承重面 —— 注入后一条码都不会出）",
+      "§22c 对照豁免必须显式声明（--allow-control-exemption）：走豁免形式 ⇒ 默认判红",
+      "§22c 对照豁免登记制：被污染的对照行必须逐条登记（可 grep 的码 + 计数），登记数 == 独立重算的污染行数"
+    ],
+    "newFlag": "--allow-control-exemption",
+    "greppableTokens": [
+      "CONTROL-EXEMPTION",
+      "对照豁免登记",
+      "layoutControlExemptionCount"
+    ],
+    "assertionCount": {
+      "before": 887,
+      "after": 890,
+      "delta": "+3（只增不减；diff 为 +87/−0，无删除行）"
+    }
+  },
+  "distCopies": {
+    "clean": {
+      "dir": ".arch-v1/dist-clean",
+      "files": 304,
+      "byteEqualToDist": true
+    },
+    "contaminated": {
+      "dir": ".arch-v1/dist-contaminated",
+      "files": 304,
+      "target": "need/free-api/index.html",
+      "rule": ".snote { writing-mode: vertical-rl; width: 100%; height: 5.6rem; overflow: hidden; }",
+      "frozenOccurrences": 1,
+      "sha256Before": "62ae8f3d736691a08665680bec15a8dfd61925f1a2b3d03e57863b38669893bb",
+      "sha256After": "07cc3fef27367073f836907f9d97ec9561e35255be96b3368a43f1f35f3d6c9c"
+    }
+  },
+  "dist": {
+    "dir": "dist",
+    "files": 304,
+    "bytes": 20408439,
+    "treeDigest": "5a1ddfa99563c07b31817cfc88dd6ca331b4c82c34299be55ee460b38461670f",
+    "manifestSha256": "504865e929fea06a1d13c1a14125adf2aa426e225ba7f1678940f37084abebfe",
+    "unchangedByRuns": true,
+    "unchangedProof": "用例结束后，dist 与**用例之前**建的逐字节副本 .arch-v1/dist-clean 再比一次：不同 0 个文件（0 = 用例期间 dist 没被写过）",
+    "note": "所有用例都跑在 dist 的副本上（--dir=.arch-v1/dist-*）；dist 只被读"
+  },
+  "untouchedScope": {
+    "paths": "scripts/lib · scripts/data · scripts/tools/build-local.js · dist · docs · NEXT-STEPS.md",
+    "gitStatusPorcelain": "（空）"
+  },
+  "probe": {
+    "file": ".arch-v1/probe/verify-site.probe.js",
+    "sha256": "2e4e49ae7c9d97c84937e92cab8a0e0d8ca6d1624cc7efa8179301eb8b1c67e7",
+    "edits": [
+      {
+        "label": "① ROOT 指回工作树",
+        "occurrences": 1
+      },
+      {
+        "label": "⑤ 插入 PROBE 常量块",
+        "occurrences": 1
+      },
+      {
+        "label": "③ M15 变异靶页",
+        "occurrences": 1
+      },
+      {
+        "label": "③ M15 正对照靶页",
+        "occurrences": 1
+      },
+      {
+        "label": "④ M10 变异靶位（route + width）",
+        "occurrences": 1
+      },
+      {
+        "label": "④ M10 正对照靶位",
+        "occurrences": 1
+      },
+      {
+        "label": "② require(../lib/…) → path.join(ROOT, scripts/lib/…)",
+        "occurrences": 5
+      }
+    ],
+    "unifiedDiff": {
+      "hunks": 5,
+      "addedLines": 18,
+      "removedLines": 10,
+      "file": ".arch-v1/probe/probe.diff"
+    },
+    "why": "前提断言的红读数需要把 M15 靶页换成 0 条说明的页；靶位在工具里是字面量 ⇒ 用副本探针改靶页（与 t31 同法），仓库那一份的靶页不动"
+  }
+}
