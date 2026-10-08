@@ -1,0 +1,1783 @@
+{
+  "task": "judge-calibration-v1",
+  "what": "T3 §22c 竖排轴阈值 0.85 vs 0.5 的 A/B",
+  "base": {
+    "head": "e455b3a69428f11d67189e304d4cc676610838b5",
+    "note": "本轮工作树建立时的 origin/master；期间 master 被队友推进到 95dfeb99（见 source-unchanged.json 的 criteria-region-hash）"
+  },
+  "apparatus": ".arch-v1/（Tier-3 探针与原始读数，gitignore；本轮未改任何判据源码）",
+  "at": "2026-10-08T10:34:07.018Z",
+  "constant": {
+    "name": "WIDE_NOTE_RATIO",
+    "value": 0.85,
+    "predicate": "note.rendered || note.glyphRects > 0 且 column > ch70 且 ink.count >= 2 且 ink.span < ratio × column − 0.01（轴按 writing-mode 选：横排 = 行数/最宽行；竖排 = 列数/列栈水平范围）"
+  },
+  "abRuns": {
+    "0.85": {
+      "report": ".arch-v1/verify-ab-085.json",
+      "dir": "dist.calib.synth",
+      "total": 874,
+      "failed": 8,
+      "notes": 286,
+      "inkNarrowTotal": 7,
+      "inkNarrowOnRealPages": 0
+    },
+    "0.5": {
+      "report": ".arch-v1/verify-ab-050.json",
+      "dir": "dist.calib.synth",
+      "total": 874,
+      "failed": 8,
+      "notes": 286,
+      "inkNarrowTotal": 5,
+      "inkNarrowOnRealPages": 0
+    },
+    "delta": [
+      {
+        "route": "synth/h-mc3-auto/",
+        "ratio": 0.6609,
+        "why": "在 [0.5, 0.85) 区间：0.85 咬中、0.5 放行"
+      },
+      {
+        "route": "synth/v-h12/",
+        "ratio": 0.647,
+        "why": "在 [0.5, 0.85) 区间：0.85 咬中、0.5 放行"
+      }
+    ],
+    "consistentOnRealPages": true,
+    "runsNote": "两档各跑一整轮真判据：0.85 = 源文件 scripts/tools/verify-site.js；0.5 = 只改 ROOT 与阈值两行的 scratch 副本（.arch-v1/verify-site.ratio05.cjs，源 0 改动）"
+  },
+  "ratioCopies": {
+    "what": "#22c WIDE_NOTE_RATIO 的 A/B 副本（只改 ROOT 与阈值两行）",
+    "source": {
+      "file": "scripts/tools/verify-site.js",
+      "sha256": "fdab655d8ed71c4335ab2c1f8c8873914eaf896b12f46171fb3ff70c394063a3"
+    },
+    "copies": {
+      "0.5": {
+        "file": ".arch-v1/verify-site.ratio05.cjs",
+        "sha256": "a832ec5ad876843846c4506ae22be8c5c5e3da2ae4396b2bb1d054aa3057d819",
+        "changedLines": 7,
+        "requireRewrites": 5
+      },
+      "0.85": {
+        "file": ".arch-v1/verify-site.ratio085.cjs",
+        "sha256": "468b88e6779a70eb5fd3eca907ceac61720abebce4115966984ece3edbab7d58",
+        "changedLines": 7,
+        "requireRewrites": 5
+      }
+    },
+    "at": "2026-10-08T10:25:10.751Z"
+  },
+  "syntheticForms": [
+    {
+      "route": "synth/v-t31-exact/",
+      "name": "v-t31-exact",
+      "css": "writing-mode: vertical-rl; height: 5.6rem; overflow: hidden;",
+      "textLength": 130,
+      "note": "T31 原形态的长度复刻（目标 ≈ 24 列 / 342px）",
+      "column": 1380,
+      "ch70": 452.81,
+      "inkScope": true,
+      "vertical": true,
+      "inkCount": 19,
+      "inkSpan": 383.03,
+      "ratio": 0.2776,
+      "lineCount": 1,
+      "columnCount": 19,
+      "widestLine": 383.03,
+      "columnSpan": 383.03,
+      "boxWidth": 387.42,
+      "contentBox": 387,
+      "lines": 1,
+      "lineRects": [
+        {
+          "left": 32.39,
+          "right": 415.42,
+          "width": 383.03
+        }
+      ],
+      "columnRects": [
+        {
+          "left": 32.39,
+          "right": 48.39,
+          "width": 16
+        },
+        {
+          "left": 52.78,
+          "right": 68.78,
+          "width": 16
+        },
+        {
+          "left": 73.17,
+          "right": 89.17,
+          "width": 16
+        },
+        {
+          "left": 93.56,
+          "right": 109.56,
+          "width": 16
+        },
+        {
+          "left": 113.95,
+          "right": 129.95,
+          "width": 16
+        },
+        {
+          "left": 134.34,
+          "right": 150.34,
+          "width": 16
+        },
+        {
+          "left": 154.73,
+          "right": 170.73,
+          "width": 16
+        },
+        {
+          "left": 175.13,
+          "right": 191.13,
+          "width": 16
+        },
+        {
+          "left": 195.52,
+          "right": 211.52,
+          "width": 16
+        },
+        {
+          "left": 215.91,
+          "right": 231.91,
+          "width": 16
+        },
+        {
+          "left": 236.3,
+          "right": 252.3,
+          "width": 16
+        },
+        {
+          "left": 256.69,
+          "right": 272.69,
+          "width": 16
+        },
+        {
+          "left": 277.08,
+          "right": 293.08,
+          "width": 16
+        },
+        {
+          "left": 297.47,
+          "right": 313.47,
+          "width": 16
+        },
+        {
+          "left": 317.86,
+          "right": 333.86,
+          "width": 16
+        },
+        {
+          "left": 338.25,
+          "right": 354.25,
+          "width": 16
+        },
+        {
+          "left": 358.64,
+          "right": 374.64,
+          "width": 16
+        },
+        {
+          "left": 379.03,
+          "right": 395.03,
+          "width": 16
+        },
+        {
+          "left": 399.42,
+          "right": 415.42,
+          "width": 16
+        }
+      ],
+      "hitAt085": true,
+      "hitAt050": true,
+      "delta": "caught by both"
+    },
+    {
+      "route": "synth/v-t31/",
+      "name": "v-t31",
+      "css": "writing-mode: vertical-rl; height: 5.6rem; overflow: hidden;",
+      "textLength": 700,
+      "note": "同一形态 + 700 字长文本（列栈更宽）",
+      "column": 1380,
+      "ch70": 452.81,
+      "inkScope": true,
+      "vertical": true,
+      "inkCount": 102,
+      "inkSpan": 2075.45,
+      "ratio": 1.5039,
+      "lineCount": 1,
+      "columnCount": 102,
+      "widestLine": 2075.45,
+      "columnSpan": 2075.45,
+      "boxWidth": 2079.84,
+      "contentBox": 2080,
+      "lines": 1,
+      "lineRects": [
+        {
+          "left": 32.39,
+          "right": 2107.84,
+          "width": 2075.45
+        }
+      ],
+      "columnRects": [
+        {
+          "left": 32.39,
+          "right": 48.39,
+          "width": 16
+        },
+        {
+          "left": 52.78,
+          "right": 68.78,
+          "width": 16
+        },
+        {
+          "left": 73.17,
+          "right": 89.17,
+          "width": 16
+        },
+        {
+          "left": 93.56,
+          "right": 109.56,
+          "width": 16
+        },
+        {
+          "left": 113.95,
+          "right": 129.95,
+          "width": 16
+        },
+        {
+          "left": 134.34,
+          "right": 150.34,
+          "width": 16
+        },
+        {
+          "left": 154.73,
+          "right": 170.73,
+          "width": 16
+        },
+        {
+          "left": 175.13,
+          "right": 191.13,
+          "width": 16
+        },
+        {
+          "left": 195.52,
+          "right": 211.52,
+          "width": 16
+        },
+        {
+          "left": 215.91,
+          "right": 231.91,
+          "width": 16
+        },
+        {
+          "left": 236.3,
+          "right": 252.3,
+          "width": 16
+        },
+        {
+          "left": 256.69,
+          "right": 272.69,
+          "width": 16
+        },
+        {
+          "left": 277.08,
+          "right": 293.08,
+          "width": 16
+        },
+        {
+          "left": 297.47,
+          "right": 313.47,
+          "width": 16
+        },
+        {
+          "left": 317.86,
+          "right": 333.86,
+          "width": 16
+        },
+        {
+          "left": 338.25,
+          "right": 354.25,
+          "width": 16
+        },
+        {
+          "left": 358.64,
+          "right": 374.64,
+          "width": 16
+        },
+        {
+          "left": 379.03,
+          "right": 395.03,
+          "width": 16
+        },
+        {
+          "left": 399.42,
+          "right": 415.42,
+          "width": 16
+        },
+        {
+          "left": 419.81,
+          "right": 435.81,
+          "width": 16
+        },
+        {
+          "left": 440.2,
+          "right": 456.2,
+          "width": 16
+        },
+        {
+          "left": 460.59,
+          "right": 476.59,
+          "width": 16
+        },
+        {
+          "left": 480.98,
+          "right": 496.98,
+          "width": 16
+        },
+        {
+          "left": 501.38,
+          "right": 517.38,
+          "width": 16
+        },
+        {
+          "left": 521.77,
+          "right": 537.77,
+          "width": 16
+        },
+        {
+          "left": 542.16,
+          "right": 558.16,
+          "width": 16
+        },
+        {
+          "left": 562.55,
+          "right": 578.55,
+          "width": 16
+        },
+        {
+          "left": 582.94,
+          "right": 598.94,
+          "width": 16
+        },
+        {
+          "left": 603.33,
+          "right": 619.33,
+          "width": 16
+        },
+        {
+          "left": 623.72,
+          "right": 639.72,
+          "width": 16
+        },
+        {
+          "left": 644.11,
+          "right": 660.11,
+          "width": 16
+        },
+        {
+          "left": 664.5,
+          "right": 680.5,
+          "width": 16
+        },
+        {
+          "left": 684.89,
+          "right": 700.89,
+          "width": 16
+        },
+        {
+          "left": 705.28,
+          "right": 721.28,
+          "width": 16
+        },
+        {
+          "left": 725.67,
+          "right": 741.67,
+          "width": 16
+        },
+        {
+          "left": 746.06,
+          "right": 762.06,
+          "width": 16
+        },
+        {
+          "left": 766.45,
+          "right": 782.45,
+          "width": 16
+        },
+        {
+          "left": 786.84,
+          "right": 802.84,
+          "width": 16
+        },
+        {
+          "left": 807.23,
+          "right": 823.23,
+          "width": 16
+        },
+        {
+          "left": 827.63,
+          "right": 843.63,
+          "width": 16
+        },
+        {
+          "left": 848.02,
+          "right": 864.02,
+          "width": 16
+        },
+        {
+          "left": 868.41,
+          "right": 884.41,
+          "width": 16
+        },
+        {
+          "left": 888.8,
+          "right": 904.8,
+          "width": 16
+        },
+        {
+          "left": 909.19,
+          "right": 925.19,
+          "width": 16
+        },
+        {
+          "left": 929.58,
+          "right": 945.58,
+          "width": 16
+        },
+        {
+          "left": 949.97,
+          "right": 965.97,
+          "width": 16
+        },
+        {
+          "left": 970.36,
+          "right": 986.36,
+          "width": 16
+        },
+        {
+          "left": 990.75,
+          "right": 1006.75,
+          "width": 16
+        },
+        {
+          "left": 1011.14,
+          "right": 1027.14,
+          "width": 16
+        },
+        {
+          "left": 1031.53,
+          "right": 1047.53,
+          "width": 16
+        },
+        {
+          "left": 1051.92,
+          "right": 1067.92,
+          "width": 16
+        },
+        {
+          "left": 1072.31,
+          "right": 1088.31,
+          "width": 16
+        },
+        {
+          "left": 1092.7,
+          "right": 1108.7,
+          "width": 16
+        },
+        {
+          "left": 1113.09,
+          "right": 1129.09,
+          "width": 16
+        },
+        {
+          "left": 1133.48,
+          "right": 1149.48,
+          "width": 16
+        },
+        {
+          "left": 1153.88,
+          "right": 1169.88,
+          "width": 16
+        },
+        {
+          "left": 1174.27,
+          "right": 1190.27,
+          "width": 16
+        },
+        {
+          "left": 1194.66,
+          "right": 1210.66,
+          "width": 16
+        },
+        {
+          "left": 1215.05,
+          "right": 1231.05,
+          "width": 16
+        },
+        {
+          "left": 1235.44,
+          "right": 1251.44,
+          "width": 16
+        },
+        {
+          "left": 1255.83,
+          "right": 1271.83,
+          "width": 16
+        },
+        {
+          "left": 1276.22,
+          "right": 1292.22,
+          "width": 16
+        },
+        {
+          "left": 1296.61,
+          "right": 1312.61,
+          "width": 16
+        },
+        {
+          "left": 1317,
+          "right": 1333,
+          "width": 16
+        },
+        {
+          "left": 1337.39,
+          "right": 1353.39,
+          "width": 16
+        },
+        {
+          "left": 1357.78,
+          "right": 1373.78,
+          "width": 16
+        },
+        {
+          "left": 1378.17,
+          "right": 1394.17,
+          "width": 16
+        },
+        {
+          "left": 1398.56,
+          "right": 1414.56,
+          "width": 16
+        },
+        {
+          "left": 1418.95,
+          "right": 1434.95,
+          "width": 16
+        },
+        {
+          "left": 1439.34,
+          "right": 1455.34,
+          "width": 16
+        },
+        {
+          "left": 1459.73,
+          "right": 1475.73,
+          "width": 16
+        },
+        {
+          "left": 1480.13,
+          "right": 1496.13,
+          "width": 16
+        },
+        {
+          "left": 1500.52,
+          "right": 1516.52,
+          "width": 16
+        },
+        {
+          "left": 1520.91,
+          "right": 1536.91,
+          "width": 16
+        },
+        {
+          "left": 1541.3,
+          "right": 1557.3,
+          "width": 16
+        },
+        {
+          "left": 1561.69,
+          "right": 1577.69,
+          "width": 16
+        },
+        {
+          "left": 1582.08,
+          "right": 1598.08,
+          "width": 16
+        },
+        {
+          "left": 1602.47,
+          "right": 1618.47,
+          "width": 16
+        },
+        {
+          "left": 1622.86,
+          "right": 1638.86,
+          "width": 16
+        },
+        {
+          "left": 1643.25,
+          "right": 1659.25,
+          "width": 16
+        },
+        {
+          "left": 1663.64,
+          "right": 1679.64,
+          "width": 16
+        },
+        {
+          "left": 1684.03,
+          "right": 1700.03,
+          "width": 16
+        },
+        {
+          "left": 1704.42,
+          "right": 1720.42,
+          "width": 16
+        },
+        {
+          "left": 1724.81,
+          "right": 1740.81,
+          "width": 16
+        },
+        {
+          "left": 1745.2,
+          "right": 1761.2,
+          "width": 16
+        },
+        {
+          "left": 1765.59,
+          "right": 1781.59,
+          "width": 16
+        },
+        {
+          "left": 1785.98,
+          "right": 1801.98,
+          "width": 16
+        },
+        {
+          "left": 1806.38,
+          "right": 1822.38,
+          "width": 16
+        },
+        {
+          "left": 1826.77,
+          "right": 1842.77,
+          "width": 16
+        },
+        {
+          "left": 1847.16,
+          "right": 1863.16,
+          "width": 16
+        },
+        {
+          "left": 1867.55,
+          "right": 1883.55,
+          "width": 16
+        },
+        {
+          "left": 1887.94,
+          "right": 1903.94,
+          "width": 16
+        },
+        {
+          "left": 1908.33,
+          "right": 1924.33,
+          "width": 16
+        },
+        {
+          "left": 1928.72,
+          "right": 1944.72,
+          "width": 16
+        },
+        {
+          "left": 1949.11,
+          "right": 1965.11,
+          "width": 16
+        },
+        {
+          "left": 1969.5,
+          "right": 1985.5,
+          "width": 16
+        },
+        {
+          "left": 1989.89,
+          "right": 2005.89,
+          "width": 16
+        },
+        {
+          "left": 2010.28,
+          "right": 2026.28,
+          "width": 16
+        },
+        {
+          "left": 2030.67,
+          "right": 2046.67,
+          "width": 16
+        },
+        {
+          "left": 2051.06,
+          "right": 2067.06,
+          "width": 16
+        },
+        {
+          "left": 2071.45,
+          "right": 2087.45,
+          "width": 16
+        },
+        {
+          "left": 2091.84,
+          "right": 2107.84,
+          "width": 16
+        }
+      ],
+      "hitAt085": false,
+      "hitAt050": false,
+      "delta": "passed by both"
+    },
+    {
+      "route": "synth/v-h9/",
+      "name": "v-h9",
+      "css": "writing-mode: vertical-rl; height: 9rem; overflow: hidden;",
+      "textLength": 700,
+      "note": "竖排·加高",
+      "column": 1380,
+      "ch70": 452.81,
+      "inkScope": true,
+      "vertical": true,
+      "inkCount": 59,
+      "inkSpan": 1198.66,
+      "ratio": 0.8686,
+      "lineCount": 1,
+      "columnCount": 59,
+      "widestLine": 1198.66,
+      "columnSpan": 1198.66,
+      "boxWidth": 1203.05,
+      "contentBox": 1203,
+      "lines": 1,
+      "lineRects": [
+        {
+          "left": 32.39,
+          "right": 1231.05,
+          "width": 1198.66
+        }
+      ],
+      "columnRects": [
+        {
+          "left": 32.39,
+          "right": 48.39,
+          "width": 16
+        },
+        {
+          "left": 52.78,
+          "right": 68.78,
+          "width": 16
+        },
+        {
+          "left": 73.17,
+          "right": 89.17,
+          "width": 16
+        },
+        {
+          "left": 93.56,
+          "right": 109.56,
+          "width": 16
+        },
+        {
+          "left": 113.95,
+          "right": 129.95,
+          "width": 16
+        },
+        {
+          "left": 134.34,
+          "right": 150.34,
+          "width": 16
+        },
+        {
+          "left": 154.73,
+          "right": 170.73,
+          "width": 16
+        },
+        {
+          "left": 175.13,
+          "right": 191.13,
+          "width": 16
+        },
+        {
+          "left": 195.52,
+          "right": 211.52,
+          "width": 16
+        },
+        {
+          "left": 215.91,
+          "right": 231.91,
+          "width": 16
+        },
+        {
+          "left": 236.3,
+          "right": 252.3,
+          "width": 16
+        },
+        {
+          "left": 256.69,
+          "right": 272.69,
+          "width": 16
+        },
+        {
+          "left": 277.08,
+          "right": 293.08,
+          "width": 16
+        },
+        {
+          "left": 297.47,
+          "right": 313.47,
+          "width": 16
+        },
+        {
+          "left": 317.86,
+          "right": 333.86,
+          "width": 16
+        },
+        {
+          "left": 338.25,
+          "right": 354.25,
+          "width": 16
+        },
+        {
+          "left": 358.64,
+          "right": 374.64,
+          "width": 16
+        },
+        {
+          "left": 379.03,
+          "right": 395.03,
+          "width": 16
+        },
+        {
+          "left": 399.42,
+          "right": 415.42,
+          "width": 16
+        },
+        {
+          "left": 419.81,
+          "right": 435.81,
+          "width": 16
+        },
+        {
+          "left": 440.2,
+          "right": 456.2,
+          "width": 16
+        },
+        {
+          "left": 460.59,
+          "right": 476.59,
+          "width": 16
+        },
+        {
+          "left": 480.98,
+          "right": 496.98,
+          "width": 16
+        },
+        {
+          "left": 501.38,
+          "right": 517.38,
+          "width": 16
+        },
+        {
+          "left": 521.77,
+          "right": 537.77,
+          "width": 16
+        },
+        {
+          "left": 542.16,
+          "right": 558.16,
+          "width": 16
+        },
+        {
+          "left": 562.55,
+          "right": 578.55,
+          "width": 16
+        },
+        {
+          "left": 582.94,
+          "right": 598.94,
+          "width": 16
+        },
+        {
+          "left": 603.33,
+          "right": 619.33,
+          "width": 16
+        },
+        {
+          "left": 623.72,
+          "right": 639.72,
+          "width": 16
+        },
+        {
+          "left": 644.11,
+          "right": 660.11,
+          "width": 16
+        },
+        {
+          "left": 664.5,
+          "right": 680.5,
+          "width": 16
+        },
+        {
+          "left": 684.89,
+          "right": 700.89,
+          "width": 16
+        },
+        {
+          "left": 705.28,
+          "right": 721.28,
+          "width": 16
+        },
+        {
+          "left": 725.67,
+          "right": 741.67,
+          "width": 16
+        },
+        {
+          "left": 746.06,
+          "right": 762.06,
+          "width": 16
+        },
+        {
+          "left": 766.45,
+          "right": 782.45,
+          "width": 16
+        },
+        {
+          "left": 786.84,
+          "right": 802.84,
+          "width": 16
+        },
+        {
+          "left": 807.23,
+          "right": 823.23,
+          "width": 16
+        },
+        {
+          "left": 827.63,
+          "right": 843.63,
+          "width": 16
+        },
+        {
+          "left": 848.02,
+          "right": 864.02,
+          "width": 16
+        },
+        {
+          "left": 868.41,
+          "right": 884.41,
+          "width": 16
+        },
+        {
+          "left": 888.8,
+          "right": 904.8,
+          "width": 16
+        },
+        {
+          "left": 909.19,
+          "right": 925.19,
+          "width": 16
+        },
+        {
+          "left": 929.58,
+          "right": 945.58,
+          "width": 16
+        },
+        {
+          "left": 949.97,
+          "right": 965.97,
+          "width": 16
+        },
+        {
+          "left": 970.36,
+          "right": 986.36,
+          "width": 16
+        },
+        {
+          "left": 990.75,
+          "right": 1006.75,
+          "width": 16
+        },
+        {
+          "left": 1011.14,
+          "right": 1027.14,
+          "width": 16
+        },
+        {
+          "left": 1031.53,
+          "right": 1047.53,
+          "width": 16
+        },
+        {
+          "left": 1051.92,
+          "right": 1067.92,
+          "width": 16
+        },
+        {
+          "left": 1072.31,
+          "right": 1088.31,
+          "width": 16
+        },
+        {
+          "left": 1092.7,
+          "right": 1108.7,
+          "width": 16
+        },
+        {
+          "left": 1113.09,
+          "right": 1129.09,
+          "width": 16
+        },
+        {
+          "left": 1133.48,
+          "right": 1149.48,
+          "width": 16
+        },
+        {
+          "left": 1153.88,
+          "right": 1169.88,
+          "width": 16
+        },
+        {
+          "left": 1174.27,
+          "right": 1190.27,
+          "width": 16
+        },
+        {
+          "left": 1194.66,
+          "right": 1210.66,
+          "width": 16
+        },
+        {
+          "left": 1215.05,
+          "right": 1231.05,
+          "width": 16
+        }
+      ],
+      "hitAt085": false,
+      "hitAt050": false,
+      "delta": "passed by both"
+    },
+    {
+      "route": "synth/v-h12/",
+      "name": "v-h12",
+      "css": "writing-mode: vertical-rl; height: 12rem; overflow: hidden;",
+      "textLength": 700,
+      "note": "竖排·再高",
+      "column": 1380,
+      "ch70": 452.81,
+      "inkScope": true,
+      "vertical": true,
+      "inkCount": 44,
+      "inkSpan": 892.8,
+      "ratio": 0.647,
+      "lineCount": 1,
+      "columnCount": 44,
+      "widestLine": 892.8,
+      "columnSpan": 892.8,
+      "boxWidth": 897.19,
+      "contentBox": 897,
+      "lines": 1,
+      "lineRects": [
+        {
+          "left": 32.39,
+          "right": 925.19,
+          "width": 892.8
+        }
+      ],
+      "columnRects": [
+        {
+          "left": 32.39,
+          "right": 48.39,
+          "width": 16
+        },
+        {
+          "left": 52.78,
+          "right": 68.78,
+          "width": 16
+        },
+        {
+          "left": 73.17,
+          "right": 89.17,
+          "width": 16
+        },
+        {
+          "left": 93.56,
+          "right": 109.56,
+          "width": 16
+        },
+        {
+          "left": 113.95,
+          "right": 129.95,
+          "width": 16
+        },
+        {
+          "left": 134.34,
+          "right": 150.34,
+          "width": 16
+        },
+        {
+          "left": 154.73,
+          "right": 170.73,
+          "width": 16
+        },
+        {
+          "left": 175.13,
+          "right": 191.13,
+          "width": 16
+        },
+        {
+          "left": 195.52,
+          "right": 211.52,
+          "width": 16
+        },
+        {
+          "left": 215.91,
+          "right": 231.91,
+          "width": 16
+        },
+        {
+          "left": 236.3,
+          "right": 252.3,
+          "width": 16
+        },
+        {
+          "left": 256.69,
+          "right": 272.69,
+          "width": 16
+        },
+        {
+          "left": 277.08,
+          "right": 293.08,
+          "width": 16
+        },
+        {
+          "left": 297.47,
+          "right": 313.47,
+          "width": 16
+        },
+        {
+          "left": 317.86,
+          "right": 333.86,
+          "width": 16
+        },
+        {
+          "left": 338.25,
+          "right": 354.25,
+          "width": 16
+        },
+        {
+          "left": 358.64,
+          "right": 374.64,
+          "width": 16
+        },
+        {
+          "left": 379.03,
+          "right": 395.03,
+          "width": 16
+        },
+        {
+          "left": 399.42,
+          "right": 415.42,
+          "width": 16
+        },
+        {
+          "left": 419.81,
+          "right": 435.81,
+          "width": 16
+        },
+        {
+          "left": 440.2,
+          "right": 456.2,
+          "width": 16
+        },
+        {
+          "left": 460.59,
+          "right": 476.59,
+          "width": 16
+        },
+        {
+          "left": 480.98,
+          "right": 496.98,
+          "width": 16
+        },
+        {
+          "left": 501.38,
+          "right": 517.38,
+          "width": 16
+        },
+        {
+          "left": 521.77,
+          "right": 537.77,
+          "width": 16
+        },
+        {
+          "left": 542.16,
+          "right": 558.16,
+          "width": 16
+        },
+        {
+          "left": 562.55,
+          "right": 578.55,
+          "width": 16
+        },
+        {
+          "left": 582.94,
+          "right": 598.94,
+          "width": 16
+        },
+        {
+          "left": 603.33,
+          "right": 619.33,
+          "width": 16
+        },
+        {
+          "left": 623.72,
+          "right": 639.72,
+          "width": 16
+        },
+        {
+          "left": 644.11,
+          "right": 660.11,
+          "width": 16
+        },
+        {
+          "left": 664.5,
+          "right": 680.5,
+          "width": 16
+        },
+        {
+          "left": 684.89,
+          "right": 700.89,
+          "width": 16
+        },
+        {
+          "left": 705.28,
+          "right": 721.28,
+          "width": 16
+        },
+        {
+          "left": 725.67,
+          "right": 741.67,
+          "width": 16
+        },
+        {
+          "left": 746.06,
+          "right": 762.06,
+          "width": 16
+        },
+        {
+          "left": 766.45,
+          "right": 782.45,
+          "width": 16
+        },
+        {
+          "left": 786.84,
+          "right": 802.84,
+          "width": 16
+        },
+        {
+          "left": 807.23,
+          "right": 823.23,
+          "width": 16
+        },
+        {
+          "left": 827.63,
+          "right": 843.63,
+          "width": 16
+        },
+        {
+          "left": 848.02,
+          "right": 864.02,
+          "width": 16
+        },
+        {
+          "left": 868.41,
+          "right": 884.41,
+          "width": 16
+        },
+        {
+          "left": 888.8,
+          "right": 904.8,
+          "width": 16
+        },
+        {
+          "left": 909.19,
+          "right": 925.19,
+          "width": 16
+        }
+      ],
+      "hitAt085": true,
+      "hitAt050": false,
+      "delta": "DISCRIMINATING"
+    },
+    {
+      "route": "synth/v-h16/",
+      "name": "v-h16",
+      "css": "writing-mode: vertical-rl; height: 16rem; overflow: hidden;",
+      "textLength": 700,
+      "note": "竖排·更少列",
+      "column": 1380,
+      "ch70": 452.81,
+      "inkScope": true,
+      "vertical": true,
+      "inkCount": 34,
+      "inkSpan": 688.89,
+      "ratio": 0.4992,
+      "lineCount": 1,
+      "columnCount": 34,
+      "widestLine": 688.89,
+      "columnSpan": 688.89,
+      "boxWidth": 693.28,
+      "contentBox": 693,
+      "lines": 1,
+      "lineRects": [
+        {
+          "left": 32.39,
+          "right": 721.28,
+          "width": 688.89
+        }
+      ],
+      "columnRects": [
+        {
+          "left": 32.39,
+          "right": 48.39,
+          "width": 16
+        },
+        {
+          "left": 52.78,
+          "right": 68.78,
+          "width": 16
+        },
+        {
+          "left": 73.17,
+          "right": 89.17,
+          "width": 16
+        },
+        {
+          "left": 93.56,
+          "right": 109.56,
+          "width": 16
+        },
+        {
+          "left": 113.95,
+          "right": 129.95,
+          "width": 16
+        },
+        {
+          "left": 134.34,
+          "right": 150.34,
+          "width": 16
+        },
+        {
+          "left": 154.73,
+          "right": 170.73,
+          "width": 16
+        },
+        {
+          "left": 175.13,
+          "right": 191.13,
+          "width": 16
+        },
+        {
+          "left": 195.52,
+          "right": 211.52,
+          "width": 16
+        },
+        {
+          "left": 215.91,
+          "right": 231.91,
+          "width": 16
+        },
+        {
+          "left": 236.3,
+          "right": 252.3,
+          "width": 16
+        },
+        {
+          "left": 256.69,
+          "right": 272.69,
+          "width": 16
+        },
+        {
+          "left": 277.08,
+          "right": 293.08,
+          "width": 16
+        },
+        {
+          "left": 297.47,
+          "right": 313.47,
+          "width": 16
+        },
+        {
+          "left": 317.86,
+          "right": 333.86,
+          "width": 16
+        },
+        {
+          "left": 338.25,
+          "right": 354.25,
+          "width": 16
+        },
+        {
+          "left": 358.64,
+          "right": 374.64,
+          "width": 16
+        },
+        {
+          "left": 379.03,
+          "right": 395.03,
+          "width": 16
+        },
+        {
+          "left": 399.42,
+          "right": 415.42,
+          "width": 16
+        },
+        {
+          "left": 419.81,
+          "right": 435.81,
+          "width": 16
+        },
+        {
+          "left": 440.2,
+          "right": 456.2,
+          "width": 16
+        },
+        {
+          "left": 460.59,
+          "right": 476.59,
+          "width": 16
+        },
+        {
+          "left": 480.98,
+          "right": 496.98,
+          "width": 16
+        },
+        {
+          "left": 501.38,
+          "right": 517.38,
+          "width": 16
+        },
+        {
+          "left": 521.77,
+          "right": 537.77,
+          "width": 16
+        },
+        {
+          "left": 542.16,
+          "right": 558.16,
+          "width": 16
+        },
+        {
+          "left": 562.55,
+          "right": 578.55,
+          "width": 16
+        },
+        {
+          "left": 582.94,
+          "right": 598.94,
+          "width": 16
+        },
+        {
+          "left": 603.33,
+          "right": 619.33,
+          "width": 16
+        },
+        {
+          "left": 623.72,
+          "right": 639.72,
+          "width": 16
+        },
+        {
+          "left": 644.11,
+          "right": 660.11,
+          "width": 16
+        },
+        {
+          "left": 664.5,
+          "right": 680.5,
+          "width": 16
+        },
+        {
+          "left": 684.89,
+          "right": 700.89,
+          "width": 16
+        },
+        {
+          "left": 705.28,
+          "right": 721.28,
+          "width": 16
+        }
+      ],
+      "hitAt085": true,
+      "hitAt050": true,
+      "delta": "caught by both"
+    },
+    {
+      "route": "synth/v-h20/",
+      "name": "v-h20",
+      "css": "writing-mode: vertical-rl; height: 20rem; overflow: hidden;",
+      "textLength": 700,
+      "note": "竖排·接近铺满",
+      "column": 1380,
+      "ch70": 452.81,
+      "inkScope": true,
+      "vertical": true,
+      "inkCount": 27,
+      "inkSpan": 546.16,
+      "ratio": 0.3958,
+      "lineCount": 1,
+      "columnCount": 27,
+      "widestLine": 546.16,
+      "columnSpan": 546.16,
+      "boxWidth": 550.55,
+      "contentBox": 551,
+      "lines": 1,
+      "lineRects": [
+        {
+          "left": 32.39,
+          "right": 578.55,
+          "width": 546.16
+        }
+      ],
+      "columnRects": [
+        {
+          "left": 32.39,
+          "right": 48.39,
+          "width": 16
+        },
+        {
+          "left": 52.78,
+          "right": 68.78,
+          "width": 16
+        },
+        {
+          "left": 73.17,
+          "right": 89.17,
+          "width": 16
+        },
+        {
+          "left": 93.56,
+          "right": 109.56,
+          "width": 16
+        },
+        {
+          "left": 113.95,
+          "right": 129.95,
+          "width": 16
+        },
+        {
+          "left": 134.34,
+          "right": 150.34,
+          "width": 16
+        },
+        {
+          "left": 154.73,
+          "right": 170.73,
+          "width": 16
+        },
+        {
+          "left": 175.13,
+          "right": 191.13,
+          "width": 16
+        },
+        {
+          "left": 195.52,
+          "right": 211.52,
+          "width": 16
+        },
+        {
+          "left": 215.91,
+          "right": 231.91,
+          "width": 16
+        },
+        {
+          "left": 236.3,
+          "right": 252.3,
+          "width": 16
+        },
+        {
+          "left": 256.69,
+          "right": 272.69,
+          "width": 16
+        },
+        {
+          "left": 277.08,
+          "right": 293.08,
+          "width": 16
+        },
+        {
+          "left": 297.47,
+          "right": 313.47,
+          "width": 16
+        },
+        {
+          "left": 317.86,
+          "right": 333.86,
+          "width": 16
+        },
+        {
+          "left": 338.25,
+          "right": 354.25,
+          "width": 16
+        },
+        {
+          "left": 358.64,
+          "right": 374.64,
+          "width": 16
+        },
+        {
+          "left": 379.03,
+          "right": 395.03,
+          "width": 16
+        },
+        {
+          "left": 399.42,
+          "right": 415.42,
+          "width": 16
+        },
+        {
+          "left": 419.81,
+          "right": 435.81,
+          "width": 16
+        },
+        {
+          "left": 440.2,
+          "right": 456.2,
+          "width": 16
+        },
+        {
+          "left": 460.59,
+          "right": 476.59,
+          "width": 16
+        },
+        {
+          "left": 480.98,
+          "right": 496.98,
+          "width": 16
+        },
+        {
+          "left": 501.38,
+          "right": 517.38,
+          "width": 16
+        },
+        {
+          "left": 521.77,
+          "right": 537.77,
+          "width": 16
+        },
+        {
+          "left": 542.16,
+          "right": 558.16,
+          "width": 16
+        },
+        {
+          "left": 562.55,
+          "right": 578.55,
+          "width": 16
+        }
+      ],
+      "hitAt085": true,
+      "hitAt050": true,
+      "delta": "caught by both"
+    },
+    {
+      "route": "synth/v-single/",
+      "name": "v-single",
+      "css": "writing-mode: vertical-rl; height: 5.6rem; overflow: hidden;",
+      "textLength": 8,
+      "note": "竖排·极短文本（仍被高度逼成 2 列）",
+      "column": 1380,
+      "ch70": 452.81,
+      "inkScope": true,
+      "vertical": true,
+      "inkCount": 2,
+      "inkSpan": 36.39,
+      "ratio": 0.0264,
+      "lineCount": 1,
+      "columnCount": 2,
+      "widestLine": 36.39,
+      "columnSpan": 36.39,
+      "boxWidth": 40.78,
+      "contentBox": 41,
+      "lines": 1,
+      "lineRects": [
+        {
+          "left": 32.39,
+          "right": 68.78,
+          "width": 36.39
+        }
+      ],
+      "columnRects": [
+        {
+          "left": 32.39,
+          "right": 48.39,
+          "width": 16
+        },
+        {
+          "left": 52.78,
+          "right": 68.78,
+          "width": 16
+        }
+      ],
+      "hitAt085": true,
+      "hitAt050": true,
+      "delta": "caught by both"
+    },
+    {
+      "route": "synth/v-short-tall/",
+      "name": "v-short-tall",
+      "css": "writing-mode: vertical-rl; height: 30rem; overflow: hidden;",
+      "textLength": 8,
+      "note": "竖排·极短文本 + 高盒（应只有 1 列 ⇒ 前置条件不成立）",
+      "column": 1380,
+      "ch70": 452.81,
+      "inkScope": true,
+      "vertical": true,
+      "inkCount": 1,
+      "inkSpan": 16,
+      "ratio": 0.0116,
+      "lineCount": 1,
+      "columnCount": 1,
+      "widestLine": 16,
+      "columnSpan": 16,
+      "boxWidth": 20.39,
+      "contentBox": 20,
+      "lines": 1,
+      "lineRects": [
+        {
+          "left": 32.39,
+          "right": 48.39,
+          "width": 16
+        }
+      ],
+      "columnRects": [
+        {
+          "left": 32.39,
+          "right": 48.39,
+          "width": 16
+        }
+      ],
+      "hitAt085": false,
+      "hitAt050": false,
+      "delta": "passed by both"
+    }
+  ],
+  "direction": {
+    "monotone": "0.5 的命中集合 ⊆ 0.85 的命中集合（阈值越小 = 越晚咬 = 越宽）",
+    "discriminatingZone": "[0.5, 0.85) × 列宽的形态：0.85 咬中、0.5 放行",
+    "note": "任务书里「哪些形态在 0.5 下会新咬中」的措辞方向与此相反：0.5 不会新咬中任何形态，它只会**少咬**。本文件按实测方向记录。"
+  },
+  "distNote": "合成形态只存在于 dist.calib.synth（产物副本），真实产物上竖排说明 0 条"
+}
