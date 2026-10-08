@@ -279,15 +279,31 @@ function renderVendorKnowledgeSections(spec, ctx = {}) {
   const view = ctx.view || vendorViewOf(spec, ctx);
   const prefix = ctx.prefix || '../';
 
+  /**
+   * 说明意图（notes-manifest-v1）：本节的每一条 `.vsnote` 都走「先登记、后输出」。
+   *
+   * `ctx.note` 由构建期注入（`build-local.js` 的目录页循环把 route 绑成一个登记入口），
+   * 登记出的清单落进 `dist/_notes.ndjson`，构建期与 §22c 各自回读 HTML / DOM 对账。
+   * 没有注入时（离线自测、报告工具直接调用本模块）退化成恒等函数：**不登记也不拦**，
+   * 那种调用路径不产出页面；一旦构建期漏注入，厂商页的 `main-vsnote` 结构下限
+   * （6 条）会当场把它抓出来，不会静默。
+   */
+  const note = typeof ctx.note === 'function' ? ctx.note : (decl, html) => html;
+  const DECLARED_BY = 'lib/vendor-page.js:renderVendorKnowledgeSections';
+  /** 登记一条 `.vsnote` 并原样返回。`vnone`（缺数据形态）是**不同的容器签名**，必须分开登记。 */
+  const vsnote = (kind, html, missing = false) => note({
+    kind, slot: 'main-vsnote', classes: missing ? 'vsnote vnone' : 'vsnote', declaredBy: DECLARED_BY
+  }, html);
+
   const officialBlock = view.official
-    ? `<p class="vsnote">${escapeHtml(view.official.label)}：<a href="${escapeHtml(view.official.url)}" rel="noopener">${escapeHtml(view.official.url)} ↗</a>`
+    ? vsnote('official-entry', `<p class="vsnote">${escapeHtml(view.official.label)}：<a href="${escapeHtml(view.official.url)}" rel="noopener">${escapeHtml(view.official.url)} ↗</a>`
       + `${view.official.matched ? '' : '（取自本站收录的官方页面地址；本站不推断厂商主页）'}`
-      + `${view.officialSources.length > 1 ? ` · 另有 ${view.officialSources.length - 1} 个官方地址见各条目` : ''}</p>`
-    : `<p class="vsnote vnone">${rich('本站尚未收录这家厂商的官方地址（没有可引用的记录），因此不写一个「看起来像主页」的地址。')}</p>`;
+      + `${view.officialSources.length > 1 ? ` · 另有 ${view.officialSources.length - 1} 个官方地址见各条目` : ''}</p>`)
+    : vsnote('official-entry-missing', `<p class="vsnote vnone">${rich('本站尚未收录这家厂商的官方地址（没有可引用的记录），因此不写一个「看起来像主页」的地址。')}</p>`, true);
   const updatedBlock = view.updatedAt
-    ? `<p class="vsnote">数据最后更新时间：<time datetime="${escapeHtml(view.updatedAt)}">${escapeHtml(view.updatedAt)}</time>`
-      + `<span class="vsrc">（各数据集里这一家的最近核对日；不是官方承诺不变的日期）</span></p>`
-    : `<p class="vsnote vnone">${rich('这家厂商的资料还没有任何核对日期 —— 尚未确认，不写今天。')}</p>`;
+    ? vsnote('updated-at', `<p class="vsnote">数据最后更新时间：<time datetime="${escapeHtml(view.updatedAt)}">${escapeHtml(view.updatedAt)}</time>`
+      + `<span class="vsrc">（各数据集里这一家的最近核对日；不是官方承诺不变的日期）</span></p>`)
+    : vsnote('updated-at-missing', `<p class="vsnote vnone">${rich('这家厂商的资料还没有任何核对日期 —— 尚未确认，不写今天。')}</p>`, true);
 
   const plansBlock = `<ul class="vlist">
 ${listOrEmpty(view.codingPlans.map(plan => `        <li><a href="${escapeHtml(`${prefix}plans/coding/#plan-${plan.id}`)}">${escapeHtml(plan.planName)}</a>`
@@ -296,7 +312,7 @@ ${listOrEmpty(view.codingPlans.map(plan => `        <li><a href="${escapeHtml(`$
   '本站尚未收录这家厂商的 Coding 套餐（这是「我们还没查到」，不是「它没有套餐」）。')}
       </ul>`;
 
-  const apiBlock = `<p class="vsnote">计费记录 <b ${countMark('api-records', view.apiRecords.length)}>${view.apiRecords.length}</b> 条`
+  const apiBlock = vsnote('api-counts', `<p class="vsnote">计费记录 <b ${countMark('api-records', view.apiRecords.length)}>${view.apiRecords.length}</b> 条`
     + ` · 模型计价条目 <b ${countMark('api-model-items', view.apiModelCount)}>${view.apiModelCount}</b> 条`
     + ` · 计费通道 <b ${countMark('api-channels', view.apiChannels.length)}>${view.apiChannels.length}</b> 类`
     + `${view.apiChannels.length ? `（${escapeHtml(view.apiChannels.join('、'))}）` : ''}`
@@ -307,9 +323,9 @@ ${listOrEmpty(view.apiRecords.map(plan => `        <li><a href="${escapeHtml(`${
     + `${plan.lastSeen ? ` · 最近核对 ${escapeHtml(plan.lastSeen)}` : ''}`
     + `${plan.officialUrl ? ` · <a href="${escapeHtml(plan.officialUrl)}" rel="noopener">官方页 ↗</a>` : ''}</small></li>`),
   '本站尚未收录这家厂商的 API 计费记录。')}
-      </ul>`;
+      </ul>`);
 
-  const modelsBlock = `<p class="vsnote">Model Registry 归属模型 <b ${countMark('models', view.models.length)}>${view.models.length}</b> 个`
+  const modelsBlock = vsnote('models-count', `<p class="vsnote">Model Registry 归属模型 <b ${countMark('models', view.models.length)}>${view.models.length}</b> 个`
     + `<span class="vsrc">（developer/owner 逐字相等，或关系层显式映射到这一家的计费记录；不按名称相似度归并）</span></p>
       <ul class="vlist">
 ${listOrEmpty(view.models.map(model => `        <li><a href="${escapeHtml(`${prefix}models/${encodeURIComponent(model.slug)}/`)}">${escapeHtml(model.name)}</a>`
@@ -317,7 +333,7 @@ ${listOrEmpty(view.models.map(model => `        <li><a href="${escapeHtml(`${pre
     + `${model.apiItemCount ? ` · 在这一家的计价条目 ${model.apiItemCount} 条` : ''}`
     + `${model.owned ? '' : ' · 由关系层映射到这一家的计费记录'}</small></li>`),
   'Model Registry 里没有归属这家厂商、也没有映射到这家计费记录的模型。')}
-      </ul>`;
+      </ul>`);
 
   const planChangeLines = view.planEvents.slice().sort((a, b) => (a.at === b.at ? 0 : a.at < b.at ? 1 : -1)).slice(0, 5);
   const apiChangeLines = view.apiEvents.slice().sort((a, b) => (a.at === b.at ? 0 : a.at < b.at ? 1 : -1)).slice(0, 5);
@@ -332,22 +348,22 @@ ${listOrEmpty(view.models.map(model => `        <li><a href="${escapeHtml(`${pre
   // RENDER-CORE 的 changesTopicHtml），所以这句必须跟着条件化 —— 否则 25 个厂商页里绝大多数
   // 会指向一块不存在的模块。没有那一块时**只删掉指向子句**，不补任何关于变化的断言：
   // 「没有变化」这句话我们不能说（我们只是没有可展示的事件），而不写才是诚实的写法。
-  const changesBlock = `<p class="vsnote">${rich((ctx.hasTopicChanges
+  const changesBlock = vsnote('changes-lanes', `<p class="vsnote">${rich((ctx.hasTopicChanges
     ? '优惠变化见本页上方的「最近变化」块。'
     : '') + '下面两支来自**套餐变化日志**'
     + '与 **API 计费变化日志**（同一份事件、同一套措辞，这一层只搬运）。')}</p>
       <h3 class="vh3">Coding 套餐变化（${view.planEvents.length} 条）</h3>
       ${view.planAvailability !== 'ok'
-    ? `<p class="vsnote vnone">${rich('本次构建没有拿到套餐变更日志 —— 这不表示「没有变化」。')}</p>`
+    ? vsnote('plan-changes-unavailable', `<p class="vsnote vnone">${rich('本次构建没有拿到套餐变更日志 —— 这不表示「没有变化」。')}</p>`, true)
     : `<ul class="vchglist">
 ${listOrEmpty(planChangeLines.map(planEventLine), '变化日志里没有与这家厂商的套餐相关的事件。')}
       </ul>`}
       <h3 class="vh3">API 计费变化（${view.apiEvents.length} 条）</h3>
       ${view.apiAvailability !== 'ok'
-    ? `<p class="vsnote vnone">${rich('本次构建没有拿到 API 计费变更日志 —— 这不表示「没有变化」。')}</p>`
+    ? vsnote('api-changes-unavailable', `<p class="vsnote vnone">${rich('本次构建没有拿到 API 计费变更日志 —— 这不表示「没有变化」。')}</p>`, true)
     : `<ul class="vchglist">
 ${listOrEmpty(apiChangeLines.map(apiEventLine), '变化日志里没有与这家厂商的计费记录相关的事件。')}
-      </ul>`}`;
+      </ul>`}`);
 
   // ⚠️ t13 跨范围修复（阻断级）：`ctx.feeds` 是 `feeds.feedsForPage()` 的产物 —— 一个
   // **feed bundle 数组**（`{spec, items, …}`），不是 spec 数组。此前这里直接读 `view.feed.path`，
@@ -355,11 +371,11 @@ ${listOrEmpty(apiChangeLines.map(apiEventLine), '变化日志里没有与这家�
   // 而只传 `feeds: []` 的自测看不见这个形状）。两种形状都接受，取 spec 再读 path。
   const feedSpec = view.feed ? (view.feed.spec || view.feed) : null;
   const feedsBlock = feedSpec
-    ? `<p class="vsnote">订阅这一家：<a href="${escapeHtml(`${prefix}${feedSpec.path}`)}">RSS</a>`
+    ? vsnote('vendor-feed', `<p class="vsnote">订阅这一家：<a href="${escapeHtml(`${prefix}${feedSpec.path}`)}">RSS</a>`
       + ` · <a href="${escapeHtml(`${prefix}${feedSpec.jsonPath || feedSpec.path}`)}">JSON Feed</a>`
-      + `${feedSpec.title ? `（${escapeHtml(feedSpec.title)}）` : ''}</p>`
-    : `<p class="vsnote vnone">这家厂商当前没有独立的订阅源（订阅源按「当前有效优惠 ≥ 门槛」生成）；`
-      + `全站订阅见 <a href="${escapeHtml(`${prefix}feeds/`)}">订阅中心</a>。</p>`;
+      + `${feedSpec.title ? `（${escapeHtml(feedSpec.title)}）` : ''}</p>`)
+    : vsnote('vendor-feed-missing', `<p class="vsnote vnone">这家厂商当前没有独立的订阅源（订阅源按「当前有效优惠 ≥ 门槛」生成）；`
+      + `全站订阅见 <a href="${escapeHtml(`${prefix}feeds/`)}">订阅中心</a>。</p>`, true);
 
   return `      <section class="vknow" id="${KNOWLEDGE_WRAPPER_ID}" aria-labelledby="vendor-knowledge-h">
         <h2 class="vh2" id="vendor-knowledge-h">${escapeHtml(view.vendorName)} 的资料（来自已有数据关系）</h2>
@@ -570,6 +586,16 @@ const VENDOR_KNOWLEDGE_CSS = `  /* v3.0 Stage E：厂商统一资料页的追加
 `;
 
 /**
+ * 厂商资料页**无条件**产出的说明条数（`.vsnote`）—— 六节各一条：
+ * 官方入口 · 数据更新时间 · API 计数 · 模型计数 · 变化来源 · 订阅。
+ *
+ * 判据在 `notes-manifest-v1`（`build-local.js` 的说明意图清单）：它是厂商页族的
+ * **结构下限**（整节说明连同它的登记一起被删 ⇒ 红），而「每条是哪一条」由各自的
+ * `vsnote()` 构造点登记。另有两支 `vnone` 形态（日志不可用时）是条件产出的，不计入下限。
+ */
+const VENDOR_NOTE_COUNT = 6;
+
+/**
  * 渲染结果 + 需要的样式（接线方一次拿全，避免"忘了加 CSS"这种看不见的缺陷）。
  * 非厂商页返回 `{ html: '', css: '' }`。
  */
@@ -642,6 +668,7 @@ module.exports = {
   KNOWLEDGE_WRAPPER_ID,
   SECTION_IDS,
   VENDOR_KNOWLEDGE_CSS,
+  VENDOR_NOTE_COUNT,
   FORBIDDEN_CLAIM_WORDS,
   markupOnly,
   rich,
