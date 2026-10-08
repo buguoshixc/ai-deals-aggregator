@@ -1,0 +1,57 @@
+{
+  "task": "judge-target-relocation-control-v1 (t31)",
+  "at": "2026-10-08T13:57:32.039Z",
+  "source": {
+    "file": "scripts/tools/verify-site.js",
+    "sha256": "bcd4ceaad71ce60b07ce31db82a6099d3dceed0d17e65cfc5fbd7da2926fa9c0",
+    "bytes": 621868
+  },
+  "probe": {
+    "file": ".arch-v1/probe/verify-site.probe.js",
+    "sha256": "f6b9da5d2cb91888cf5bd584e4486b428d80168b66d54f84b1c2152090cc1789",
+    "bytes": 622564
+  },
+  "edits": [
+    {
+      "label": "① ROOT 指回工作树",
+      "occurrences": 1
+    },
+    {
+      "label": "⑤ 插入 PROBE 常量块",
+      "occurrences": 1
+    },
+    {
+      "label": "③ M15 变异靶页",
+      "occurrences": 1
+    },
+    {
+      "label": "③ M15 正对照靶页",
+      "occurrences": 1
+    },
+    {
+      "label": "④ M10 变异靶位（route + width）",
+      "occurrences": 1
+    },
+    {
+      "label": "④ M10 正对照靶位",
+      "occurrences": 1
+    },
+    {
+      "label": "② require(../lib/…) → path.join(ROOT, scripts/lib/…)",
+      "occurrences": 5
+    }
+  ],
+  "unifiedDiff": {
+    "hunks": 5,
+    "addedLines": 18,
+    "removedLines": 10,
+    "file": ".arch-v1/probe/probe.diff"
+  },
+  "untouched": [
+    "WIDE_NOTE_RATIO / WIDE_TOL / WIDE_DESKTOP / WIDE_WIDE / WIDE_MID 等阈值",
+    "wideProblems() / wideCodes() / wideMeasure() 判据函数",
+    "全部断言文本"
+  ],
+  "whyProbe": "靶位在 verify-site.js 里是字面量，而本轮硬约束是 scripts/** 一个字都不许改 ⇒ 用一份副本改靶位（与 t17/t22 的既有做法一致）",
+  "diffFile": ".arch-v1/probe/probe.diff（scratch，.arch-v1/ 内，gitignore）"
+}

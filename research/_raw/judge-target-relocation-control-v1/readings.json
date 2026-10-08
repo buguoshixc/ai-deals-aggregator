@@ -1,0 +1,745 @@
+{
+  "task": "judge-target-relocation-control-v1 (t31)",
+  "at": "2026-10-08T14:19:19.299Z",
+  "probe": ".arch-v1/probe/verify-site.probe.js",
+  "distCopy": ".arch-v1/dist-copy",
+  "modes": [
+    {
+      "mode": "base",
+      "what": "对照组：探针默认靶位（= 产物原值）在干净副本上",
+      "dir": ".arch-v1/dist-copy",
+      "env": {},
+      "exitCode": 0,
+      "seconds": 162.5,
+      "total": 883,
+      "failed": 0,
+      "status": "GREEN",
+      "failedNames": [],
+      "mutationCodes": {
+        "M15": [
+          "note-ink-narrow",
+          "note-intro-long"
+        ],
+        "M10": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis",
+          "note-intro-long",
+          "narrow-unregistered"
+        ]
+      },
+      "navigations": 920,
+      "m15": [
+        {
+          "name": "§22c M15 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "ok": true,
+          "detail": "锚点出现 1 次 · T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）"
+        },
+        {
+          "name": "§22c M15 变异后复测必须出现「note-ink-narrow」违规码（T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里））",
+          "ok": true,
+          "detail": "期望 note-ink-narrow · 实测 [note-ink-narrow, note-intro-long] · 说明 1 条 · 首条 盒 1380px / 有字区域 1369px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [note-ink-narrow, note-intro-long]"
+        },
+        {
+          "name": "§22c M15 承重证明：咬中的条是**竖排按列判**（列数 ≥ 2 · 列栈水平范围 < 0.85×列宽），且旧口径两条判据在它们身上必然静默（按行归并 ≤ 1 行 + 盒/内容盒满宽，盒宽与注入前逐条相同）",
+          "ok": true,
+          "detail": "note-ink-narrow 1 条 [need/free-api/#0] · 逐条：#0 vertical-rl 列 18 / 列栈 362.64px / 行 1（最宽 362.64px） / 内容盒 1369px / 字形盒 22 · 列宽 1380px · 阈值 1173px · note-narrow 0 条（0 = ① 也看不见）· 盒宽与注入前一致 true"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "need/free-api/@1440 说明 1 条（竖排 0）违规码 [无] ⇒ 严格形式成立（未注入产物）"
+        }
+      ],
+      "m10": [
+        {
+          "name": "§22c M10 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "ok": true,
+          "detail": "锚点出现 1 次 · F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到）"
+        },
+        {
+          "name": "§22c M10 变异后复测必须出现「note-narrow」违规码（F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到））",
+          "ok": true,
+          "detail": "期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-axis, note-intro-long, narrow-unregistered] · 说明 1 条 · 首条 盒 452.81px / 有字区域 442px · detail-main 0 个 · scrollWidth 1600（视口 1600） · 窄条 [need/student-only/#0] · 违规码 [note-narrow, note-ink-narrow, note-axis, note-intro-long, narrow-unregistered]"
+        },
+        {
+          "name": "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条违规码都没有",
+          "ok": true,
+          "detail": "M8 need/student-only/@1440 说明 1 条（竖排 0）违规码 [无] · M9a docs/data/@1440 说明 9 条（竖排 0）违规码 [无] · M9b changes/@1440 说明 13 条（竖排 0）违规码 [无] · M10 need/student-only/@1600 说明 1 条（竖排 0）违规码 [无]"
+        }
+      ],
+      "controls": [
+        {
+          "name": "§22b M4 正对照：同样注入 200 字符超长 URL、不动 CSS ⇒ @390 不得溢出",
+          "ok": true,
+          "detail": "超长 URL 注入位置 link · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [width]，390 档只看溢出）"
+        },
+        {
+          "name": "§22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出",
+          "ok": true,
+          "detail": "不可断串注入位置 note · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [无]，390 档只看溢出）"
+        },
+        {
+          "name": "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条违规码都没有",
+          "ok": true,
+          "detail": "M8 need/student-only/@1440 说明 1 条（竖排 0）违规码 [无] · M9a docs/data/@1440 说明 9 条（竖排 0）违规码 [无] · M9b changes/@1440 说明 13 条（竖排 0）违规码 [无] · M10 need/student-only/@1600 说明 1 条（竖排 0）违规码 [无]"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "need/free-api/@1440 说明 1 条（竖排 0）违规码 [无] ⇒ 严格形式成立（未注入产物）"
+        }
+      ],
+      "logFile": ".arch-v1/log/base.log",
+      "jsonFile": ".arch-v1/json/base.json"
+    },
+    {
+      "mode": "m15-target-devcredits",
+      "what": "M15 靶页→need/dev-credits/（正对照同时挪）",
+      "dir": ".arch-v1/dist-copy",
+      "env": {
+        "PROBE_M15_ROUTE": "need/dev-credits/"
+      },
+      "exitCode": 0,
+      "seconds": 205.9,
+      "total": 883,
+      "failed": 0,
+      "status": "GREEN",
+      "failedNames": [],
+      "mutationCodes": {
+        "M15": [
+          "note-ink-narrow",
+          "note-intro-long"
+        ],
+        "M10": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis",
+          "note-intro-long",
+          "narrow-unregistered"
+        ]
+      },
+      "navigations": 920,
+      "m15": [
+        {
+          "name": "§22c M15 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "ok": true,
+          "detail": "锚点出现 1 次 · T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）"
+        },
+        {
+          "name": "§22c M15 变异后复测必须出现「note-ink-narrow」违规码（T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里））",
+          "ok": true,
+          "detail": "期望 note-ink-narrow · 实测 [note-ink-narrow, note-intro-long] · 说明 1 条 · 首条 盒 1380px / 有字区域 1369px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [note-ink-narrow, note-intro-long]"
+        },
+        {
+          "name": "§22c M15 承重证明：咬中的条是**竖排按列判**（列数 ≥ 2 · 列栈水平范围 < 0.85×列宽），且旧口径两条判据在它们身上必然静默（按行归并 ≤ 1 行 + 盒/内容盒满宽，盒宽与注入前逐条相同）",
+          "ok": true,
+          "detail": "note-ink-narrow 1 条 [need/dev-credits/#0] · 逐条：#0 vertical-rl 列 20 / 列栈 403.42px / 行 1（最宽 403.42px） / 内容盒 1369px / 字形盒 24 · 列宽 1380px · 阈值 1173px · note-narrow 0 条（0 = ① 也看不见）· 盒宽与注入前一致 true"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "need/dev-credits/@1440 说明 1 条（竖排 0）违规码 [无] ⇒ 严格形式成立（未注入产物）"
+        }
+      ],
+      "m10": [
+        {
+          "name": "§22c M10 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "ok": true,
+          "detail": "锚点出现 1 次 · F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到）"
+        },
+        {
+          "name": "§22c M10 变异后复测必须出现「note-narrow」违规码（F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到））",
+          "ok": true,
+          "detail": "期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-axis, note-intro-long, narrow-unregistered] · 说明 1 条 · 首条 盒 452.81px / 有字区域 442px · detail-main 0 个 · scrollWidth 1600（视口 1600） · 窄条 [need/student-only/#0] · 违规码 [note-narrow, note-ink-narrow, note-axis, note-intro-long, narrow-unregistered]"
+        },
+        {
+          "name": "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条违规码都没有",
+          "ok": true,
+          "detail": "M8 need/student-only/@1440 说明 1 条（竖排 0）违规码 [无] · M9a docs/data/@1440 说明 9 条（竖排 0）违规码 [无] · M9b changes/@1440 说明 13 条（竖排 0）违规码 [无] · M10 need/student-only/@1600 说明 1 条（竖排 0）违规码 [无]"
+        }
+      ],
+      "controls": [
+        {
+          "name": "§22b M4 正对照：同样注入 200 字符超长 URL、不动 CSS ⇒ @390 不得溢出",
+          "ok": true,
+          "detail": "超长 URL 注入位置 link · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [width]，390 档只看溢出）"
+        },
+        {
+          "name": "§22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出",
+          "ok": true,
+          "detail": "不可断串注入位置 note · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [无]，390 档只看溢出）"
+        },
+        {
+          "name": "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条违规码都没有",
+          "ok": true,
+          "detail": "M8 need/student-only/@1440 说明 1 条（竖排 0）违规码 [无] · M9a docs/data/@1440 说明 9 条（竖排 0）违规码 [无] · M9b changes/@1440 说明 13 条（竖排 0）违规码 [无] · M10 need/student-only/@1600 说明 1 条（竖排 0）违规码 [无]"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "need/dev-credits/@1440 说明 1 条（竖排 0）违规码 [无] ⇒ 严格形式成立（未注入产物）"
+        }
+      ],
+      "logFile": ".arch-v1/log/m15-target-devcredits.log",
+      "jsonFile": ".arch-v1/json/m15-target-devcredits.json"
+    },
+    {
+      "mode": "m15-target-student",
+      "what": "M15 靶页→need/student-only/",
+      "dir": ".arch-v1/dist-copy",
+      "env": {
+        "PROBE_M15_ROUTE": "need/student-only/"
+      },
+      "exitCode": 0,
+      "seconds": 177,
+      "total": 883,
+      "failed": 0,
+      "status": "GREEN",
+      "failedNames": [],
+      "mutationCodes": {
+        "M15": [
+          "note-ink-narrow",
+          "note-intro-long"
+        ],
+        "M10": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis",
+          "note-intro-long",
+          "narrow-unregistered"
+        ]
+      },
+      "navigations": 920,
+      "m15": [
+        {
+          "name": "§22c M15 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "ok": true,
+          "detail": "锚点出现 1 次 · T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）"
+        },
+        {
+          "name": "§22c M15 变异后复测必须出现「note-ink-narrow」违规码（T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里））",
+          "ok": true,
+          "detail": "期望 note-ink-narrow · 实测 [note-ink-narrow, note-intro-long] · 说明 1 条 · 首条 盒 1380px / 有字区域 1369px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [note-ink-narrow, note-intro-long]"
+        },
+        {
+          "name": "§22c M15 承重证明：咬中的条是**竖排按列判**（列数 ≥ 2 · 列栈水平范围 < 0.85×列宽），且旧口径两条判据在它们身上必然静默（按行归并 ≤ 1 行 + 盒/内容盒满宽，盒宽与注入前逐条相同）",
+          "ok": true,
+          "detail": "note-ink-narrow 1 条 [need/student-only/#0] · 逐条：#0 vertical-rl 列 20 / 列栈 403.42px / 行 1（最宽 403.42px） / 内容盒 1369px / 字形盒 24 · 列宽 1380px · 阈值 1173px · note-narrow 0 条（0 = ① 也看不见）· 盒宽与注入前一致 true"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "need/student-only/@1440 说明 1 条（竖排 0）违规码 [无] ⇒ 严格形式成立（未注入产物）"
+        }
+      ],
+      "m10": [
+        {
+          "name": "§22c M10 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "ok": true,
+          "detail": "锚点出现 1 次 · F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到）"
+        },
+        {
+          "name": "§22c M10 变异后复测必须出现「note-narrow」违规码（F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到））",
+          "ok": true,
+          "detail": "期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-axis, note-intro-long, narrow-unregistered] · 说明 1 条 · 首条 盒 452.81px / 有字区域 442px · detail-main 0 个 · scrollWidth 1600（视口 1600） · 窄条 [need/student-only/#0] · 违规码 [note-narrow, note-ink-narrow, note-axis, note-intro-long, narrow-unregistered]"
+        },
+        {
+          "name": "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条违规码都没有",
+          "ok": true,
+          "detail": "M8 need/student-only/@1440 说明 1 条（竖排 0）违规码 [无] · M9a docs/data/@1440 说明 9 条（竖排 0）违规码 [无] · M9b changes/@1440 说明 13 条（竖排 0）违规码 [无] · M10 need/student-only/@1600 说明 1 条（竖排 0）违规码 [无]"
+        }
+      ],
+      "controls": [
+        {
+          "name": "§22b M4 正对照：同样注入 200 字符超长 URL、不动 CSS ⇒ @390 不得溢出",
+          "ok": true,
+          "detail": "超长 URL 注入位置 link · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [width]，390 档只看溢出）"
+        },
+        {
+          "name": "§22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出",
+          "ok": true,
+          "detail": "不可断串注入位置 note · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [无]，390 档只看溢出）"
+        },
+        {
+          "name": "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条违规码都没有",
+          "ok": true,
+          "detail": "M8 need/student-only/@1440 说明 1 条（竖排 0）违规码 [无] · M9a docs/data/@1440 说明 9 条（竖排 0）违规码 [无] · M9b changes/@1440 说明 13 条（竖排 0）违规码 [无] · M10 need/student-only/@1600 说明 1 条（竖排 0）违规码 [无]"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "need/student-only/@1440 说明 1 条（竖排 0）违规码 [无] ⇒ 严格形式成立（未注入产物）"
+        }
+      ],
+      "logFile": ".arch-v1/log/m15-target-student.log",
+      "jsonFile": ".arch-v1/json/m15-target-student.json"
+    },
+    {
+      "mode": "m15-split-target-devcredits-control-freeapi",
+      "what": "M15 只挪变异靶页、正对照留在原靶位",
+      "dir": ".arch-v1/dist-copy",
+      "env": {
+        "PROBE_M15_ROUTE": "need/dev-credits/",
+        "PROBE_M15_CONTROL_ROUTE": "need/free-api/"
+      },
+      "exitCode": 0,
+      "seconds": 147.2,
+      "total": 883,
+      "failed": 0,
+      "status": "GREEN",
+      "failedNames": [],
+      "mutationCodes": {
+        "M15": [
+          "note-ink-narrow",
+          "note-intro-long"
+        ],
+        "M10": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis",
+          "note-intro-long",
+          "narrow-unregistered"
+        ]
+      },
+      "navigations": 920,
+      "m15": [
+        {
+          "name": "§22c M15 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "ok": true,
+          "detail": "锚点出现 1 次 · T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）"
+        },
+        {
+          "name": "§22c M15 变异后复测必须出现「note-ink-narrow」违规码（T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里））",
+          "ok": true,
+          "detail": "期望 note-ink-narrow · 实测 [note-ink-narrow, note-intro-long] · 说明 1 条 · 首条 盒 1380px / 有字区域 1369px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [note-ink-narrow, note-intro-long]"
+        },
+        {
+          "name": "§22c M15 承重证明：咬中的条是**竖排按列判**（列数 ≥ 2 · 列栈水平范围 < 0.85×列宽），且旧口径两条判据在它们身上必然静默（按行归并 ≤ 1 行 + 盒/内容盒满宽，盒宽与注入前逐条相同）",
+          "ok": true,
+          "detail": "note-ink-narrow 1 条 [need/dev-credits/#0] · 逐条：#0 vertical-rl 列 20 / 列栈 403.42px / 行 1（最宽 403.42px） / 内容盒 1369px / 字形盒 24 · 列宽 1380px · 阈值 1173px · note-narrow 0 条（0 = ① 也看不见）· 盒宽与注入前一致 true"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "need/free-api/@1440 说明 1 条（竖排 0）违规码 [无] ⇒ 严格形式成立（未注入产物）"
+        }
+      ],
+      "m10": [
+        {
+          "name": "§22c M10 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "ok": true,
+          "detail": "锚点出现 1 次 · F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到）"
+        },
+        {
+          "name": "§22c M10 变异后复测必须出现「note-narrow」违规码（F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到））",
+          "ok": true,
+          "detail": "期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-axis, note-intro-long, narrow-unregistered] · 说明 1 条 · 首条 盒 452.81px / 有字区域 442px · detail-main 0 个 · scrollWidth 1600（视口 1600） · 窄条 [need/student-only/#0] · 违规码 [note-narrow, note-ink-narrow, note-axis, note-intro-long, narrow-unregistered]"
+        },
+        {
+          "name": "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条违规码都没有",
+          "ok": true,
+          "detail": "M8 need/student-only/@1440 说明 1 条（竖排 0）违规码 [无] · M9a docs/data/@1440 说明 9 条（竖排 0）违规码 [无] · M9b changes/@1440 说明 13 条（竖排 0）违规码 [无] · M10 need/student-only/@1600 说明 1 条（竖排 0）违规码 [无]"
+        }
+      ],
+      "controls": [
+        {
+          "name": "§22b M4 正对照：同样注入 200 字符超长 URL、不动 CSS ⇒ @390 不得溢出",
+          "ok": true,
+          "detail": "超长 URL 注入位置 link · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [width]，390 档只看溢出）"
+        },
+        {
+          "name": "§22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出",
+          "ok": true,
+          "detail": "不可断串注入位置 note · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [无]，390 档只看溢出）"
+        },
+        {
+          "name": "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条违规码都没有",
+          "ok": true,
+          "detail": "M8 need/student-only/@1440 说明 1 条（竖排 0）违规码 [无] · M9a docs/data/@1440 说明 9 条（竖排 0）违规码 [无] · M9b changes/@1440 说明 13 条（竖排 0）违规码 [无] · M10 need/student-only/@1600 说明 1 条（竖排 0）违规码 [无]"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "need/free-api/@1440 说明 1 条（竖排 0）违规码 [无] ⇒ 严格形式成立（未注入产物）"
+        }
+      ],
+      "logFile": ".arch-v1/log/m15-split-target-devcredits-control-freeapi.log",
+      "jsonFile": ".arch-v1/json/m15-split-target-devcredits-control-freeapi.json"
+    },
+    {
+      "mode": "m15-contaminated-freeapi-on-disk",
+      "what": "把 M15 的形态**落在产物里**（靶页副本自带竖排）后照常跑",
+      "dir": ".arch-v1/dist-inject-m15",
+      "env": {},
+      "exitCode": 1,
+      "seconds": 145.8,
+      "total": 883,
+      "failed": 5,
+      "status": "RED",
+      "failedNames": [
+        "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记",
+        "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记",
+        "§22c @950 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记",
+        "§22c @760 样本集 79 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+        "§22c @360 样本集 79 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）"
+      ],
+      "mutationCodes": {
+        "M15": [
+          "note-ink-narrow",
+          "note-intro-long"
+        ],
+        "M10": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis",
+          "note-intro-long",
+          "narrow-unregistered"
+        ]
+      },
+      "navigations": 920,
+      "m15": [
+        {
+          "name": "§22c M15 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "ok": true,
+          "detail": "锚点出现 1 次 · T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）"
+        },
+        {
+          "name": "§22c M15 变异后复测必须出现「note-ink-narrow」违规码（T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里））",
+          "ok": true,
+          "detail": "期望 note-ink-narrow · 实测 [note-ink-narrow, note-intro-long] · 说明 1 条 · 首条 盒 1380px / 有字区域 1369px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [note-ink-narrow, note-intro-long]"
+        },
+        {
+          "name": "§22c M15 承重证明：咬中的条是**竖排按列判**（列数 ≥ 2 · 列栈水平范围 < 0.85×列宽），且旧口径两条判据在它们身上必然静默（按行归并 ≤ 1 行 + 盒/内容盒满宽，盒宽与注入前逐条相同）",
+          "ok": true,
+          "detail": "note-ink-narrow 1 条 [need/free-api/#0] · 逐条：#0 vertical-rl 列 18 / 列栈 362.64px / 行 1（最宽 362.64px） / 内容盒 1369px / 字形盒 22 · 列宽 1380px · 阈值 1173px · note-narrow 0 条（0 = ① 也看不见）· 盒宽与注入前一致 true"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "need/free-api/@1440 说明 1 条（竖排 1）违规码 [note-ink-narrow,note-intro-long] ⇒ 本轮目录本身带竖排 ⇒ 严格形式由 --dir=dist 的那一次运行承担"
+        }
+      ],
+      "m10": [
+        {
+          "name": "§22c M10 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "ok": true,
+          "detail": "锚点出现 1 次 · F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到）"
+        },
+        {
+          "name": "§22c M10 变异后复测必须出现「note-narrow」违规码（F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到））",
+          "ok": true,
+          "detail": "期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-axis, note-intro-long, narrow-unregistered] · 说明 1 条 · 首条 盒 452.81px / 有字区域 442px · detail-main 0 个 · scrollWidth 1600（视口 1600） · 窄条 [need/student-only/#0] · 违规码 [note-narrow, note-ink-narrow, note-axis, note-intro-long, narrow-unregistered]"
+        },
+        {
+          "name": "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条违规码都没有",
+          "ok": true,
+          "detail": "M8 need/student-only/@1440 说明 1 条（竖排 0）违规码 [无] · M9a docs/data/@1440 说明 9 条（竖排 0）违规码 [无] · M9b changes/@1440 说明 13 条（竖排 0）违规码 [无] · M10 need/student-only/@1600 说明 1 条（竖排 0）违规码 [无]"
+        }
+      ],
+      "controls": [
+        {
+          "name": "§22b M4 正对照：同样注入 200 字符超长 URL、不动 CSS ⇒ @390 不得溢出",
+          "ok": true,
+          "detail": "超长 URL 注入位置 link · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [width]，390 档只看溢出）"
+        },
+        {
+          "name": "§22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出",
+          "ok": true,
+          "detail": "不可断串注入位置 note · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [无]，390 档只看溢出）"
+        },
+        {
+          "name": "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条违规码都没有",
+          "ok": true,
+          "detail": "M8 need/student-only/@1440 说明 1 条（竖排 0）违规码 [无] · M9a docs/data/@1440 说明 9 条（竖排 0）违规码 [无] · M9b changes/@1440 说明 13 条（竖排 0）违规码 [无] · M10 need/student-only/@1600 说明 1 条（竖排 0）违规码 [无]"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "need/free-api/@1440 说明 1 条（竖排 1）违规码 [note-ink-narrow,note-intro-long] ⇒ 本轮目录本身带竖排 ⇒ 严格形式由 --dir=dist 的那一次运行承担"
+        }
+      ],
+      "logFile": ".arch-v1/log/m15-contaminated-freeapi-on-disk.log",
+      "jsonFile": ".arch-v1/json/m15-contaminated-freeapi-on-disk.json"
+    },
+    {
+      "mode": "m10-width-950",
+      "what": "M10 靶位宽度 1600→950（route 不变）",
+      "dir": ".arch-v1/dist-copy",
+      "env": {
+        "PROBE_M10_WIDTH": "950"
+      },
+      "exitCode": 1,
+      "seconds": 147.3,
+      "total": 883,
+      "failed": 1,
+      "status": "RED",
+      "failedNames": [
+        "§22c M10 变异后复测必须出现「note-narrow」违规码（F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到））"
+      ],
+      "mutationCodes": {
+        "M15": [
+          "note-ink-narrow",
+          "note-intro-long"
+        ],
+        "M10": [
+          "narrow-unregistered"
+        ]
+      },
+      "navigations": 920,
+      "m15": [
+        {
+          "name": "§22c M15 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "ok": true,
+          "detail": "锚点出现 1 次 · T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）"
+        },
+        {
+          "name": "§22c M15 变异后复测必须出现「note-ink-narrow」违规码（T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里））",
+          "ok": true,
+          "detail": "期望 note-ink-narrow · 实测 [note-ink-narrow, note-intro-long] · 说明 1 条 · 首条 盒 1380px / 有字区域 1369px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [note-ink-narrow, note-intro-long]"
+        },
+        {
+          "name": "§22c M15 承重证明：咬中的条是**竖排按列判**（列数 ≥ 2 · 列栈水平范围 < 0.85×列宽），且旧口径两条判据在它们身上必然静默（按行归并 ≤ 1 行 + 盒/内容盒满宽，盒宽与注入前逐条相同）",
+          "ok": true,
+          "detail": "note-ink-narrow 1 条 [need/free-api/#0] · 逐条：#0 vertical-rl 列 18 / 列栈 362.64px / 行 1（最宽 362.64px） / 内容盒 1369px / 字形盒 22 · 列宽 1380px · 阈值 1173px · note-narrow 0 条（0 = ① 也看不见）· 盒宽与注入前一致 true"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "need/free-api/@1440 说明 1 条（竖排 0）违规码 [无] ⇒ 严格形式成立（未注入产物）"
+        }
+      ],
+      "m10": [
+        {
+          "name": "§22c M10 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "ok": true,
+          "detail": "锚点出现 1 次 · F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到）"
+        },
+        {
+          "name": "§22c M10 变异后复测必须出现「note-narrow」违规码（F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到））",
+          "ok": false,
+          "detail": "期望 note-narrow · 实测 [narrow-unregistered] · 说明 1 条 · 首条 盒 910px / 有字区域 899px · detail-main 0 个 · scrollWidth 950（视口 950） · 窄条 [无] · 违规码 [narrow-unregistered]"
+        },
+        {
+          "name": "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条违规码都没有",
+          "ok": true,
+          "detail": "M8 need/student-only/@1440 说明 1 条（竖排 0）违规码 [无] · M9a docs/data/@1440 说明 9 条（竖排 0）违规码 [无] · M9b changes/@1440 说明 13 条（竖排 0）违规码 [无] · M10 need/student-only/@950 说明 1 条（竖排 0）违规码 [无]"
+        }
+      ],
+      "controls": [
+        {
+          "name": "§22b M4 正对照：同样注入 200 字符超长 URL、不动 CSS ⇒ @390 不得溢出",
+          "ok": true,
+          "detail": "超长 URL 注入位置 link · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [width]，390 档只看溢出）"
+        },
+        {
+          "name": "§22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出",
+          "ok": true,
+          "detail": "不可断串注入位置 note · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [无]，390 档只看溢出）"
+        },
+        {
+          "name": "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条违规码都没有",
+          "ok": true,
+          "detail": "M8 need/student-only/@1440 说明 1 条（竖排 0）违规码 [无] · M9a docs/data/@1440 说明 9 条（竖排 0）违规码 [无] · M9b changes/@1440 说明 13 条（竖排 0）违规码 [无] · M10 need/student-only/@950 说明 1 条（竖排 0）违规码 [无]"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "need/free-api/@1440 说明 1 条（竖排 0）违规码 [无] ⇒ 严格形式成立（未注入产物）"
+        }
+      ],
+      "logFile": ".arch-v1/log/m10-width-950.log",
+      "jsonFile": ".arch-v1/json/m10-width-950.json"
+    },
+    {
+      "mode": "m10-width-1440",
+      "what": "M10 靶位宽度 1600→1440",
+      "dir": ".arch-v1/dist-copy",
+      "env": {
+        "PROBE_M10_WIDTH": "1440"
+      },
+      "exitCode": 1,
+      "seconds": 153.8,
+      "total": 883,
+      "failed": 1,
+      "status": "RED",
+      "failedNames": [
+        "§22c M10 变异后复测必须出现「note-narrow」违规码（F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到））"
+      ],
+      "mutationCodes": {
+        "M15": [
+          "note-ink-narrow",
+          "note-intro-long"
+        ],
+        "M10": [
+          "narrow-unregistered"
+        ]
+      },
+      "navigations": 920,
+      "m15": [
+        {
+          "name": "§22c M15 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "ok": true,
+          "detail": "锚点出现 1 次 · T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）"
+        },
+        {
+          "name": "§22c M15 变异后复测必须出现「note-ink-narrow」违规码（T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里））",
+          "ok": true,
+          "detail": "期望 note-ink-narrow · 实测 [note-ink-narrow, note-intro-long] · 说明 1 条 · 首条 盒 1380px / 有字区域 1369px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [note-ink-narrow, note-intro-long]"
+        },
+        {
+          "name": "§22c M15 承重证明：咬中的条是**竖排按列判**（列数 ≥ 2 · 列栈水平范围 < 0.85×列宽），且旧口径两条判据在它们身上必然静默（按行归并 ≤ 1 行 + 盒/内容盒满宽，盒宽与注入前逐条相同）",
+          "ok": true,
+          "detail": "note-ink-narrow 1 条 [need/free-api/#0] · 逐条：#0 vertical-rl 列 18 / 列栈 362.64px / 行 1（最宽 362.64px） / 内容盒 1369px / 字形盒 22 · 列宽 1380px · 阈值 1173px · note-narrow 0 条（0 = ① 也看不见）· 盒宽与注入前一致 true"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "need/free-api/@1440 说明 1 条（竖排 0）违规码 [无] ⇒ 严格形式成立（未注入产物）"
+        }
+      ],
+      "m10": [
+        {
+          "name": "§22c M10 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "ok": true,
+          "detail": "锚点出现 1 次 · F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到）"
+        },
+        {
+          "name": "§22c M10 变异后复测必须出现「note-narrow」违规码（F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到））",
+          "ok": false,
+          "detail": "期望 note-narrow · 实测 [narrow-unregistered] · 说明 1 条 · 首条 盒 1380px / 有字区域 1369px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [narrow-unregistered]"
+        },
+        {
+          "name": "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条违规码都没有",
+          "ok": true,
+          "detail": "M8 need/student-only/@1440 说明 1 条（竖排 0）违规码 [无] · M9a docs/data/@1440 说明 9 条（竖排 0）违规码 [无] · M9b changes/@1440 说明 13 条（竖排 0）违规码 [无] · M10 need/student-only/@1440 说明 1 条（竖排 0）违规码 [无]"
+        }
+      ],
+      "controls": [
+        {
+          "name": "§22b M4 正对照：同样注入 200 字符超长 URL、不动 CSS ⇒ @390 不得溢出",
+          "ok": true,
+          "detail": "超长 URL 注入位置 link · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [width]，390 档只看溢出）"
+        },
+        {
+          "name": "§22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出",
+          "ok": true,
+          "detail": "不可断串注入位置 note · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [无]，390 档只看溢出）"
+        },
+        {
+          "name": "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条违规码都没有",
+          "ok": true,
+          "detail": "M8 need/student-only/@1440 说明 1 条（竖排 0）违规码 [无] · M9a docs/data/@1440 说明 9 条（竖排 0）违规码 [无] · M9b changes/@1440 说明 13 条（竖排 0）违规码 [无] · M10 need/student-only/@1440 说明 1 条（竖排 0）违规码 [无]"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "need/free-api/@1440 说明 1 条（竖排 0）违规码 [无] ⇒ 严格形式成立（未注入产物）"
+        }
+      ],
+      "logFile": ".arch-v1/log/m10-width-1440.log",
+      "jsonFile": ".arch-v1/json/m10-width-1440.json"
+    },
+    {
+      "mode": "m10-target-devcredits-1600",
+      "what": "M10 靶页→need/dev-credits/（宽度仍 1600）",
+      "dir": ".arch-v1/dist-copy",
+      "env": {
+        "PROBE_M10_ROUTE": "need/dev-credits/"
+      },
+      "exitCode": 0,
+      "seconds": 155.2,
+      "total": 883,
+      "failed": 0,
+      "status": "GREEN",
+      "failedNames": [],
+      "mutationCodes": {
+        "M15": [
+          "note-ink-narrow",
+          "note-intro-long"
+        ],
+        "M10": [
+          "note-narrow",
+          "note-ink-narrow",
+          "note-axis",
+          "note-intro-long",
+          "narrow-unregistered"
+        ]
+      },
+      "navigations": 920,
+      "m15": [
+        {
+          "name": "§22c M15 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "ok": true,
+          "detail": "锚点出现 1 次 · T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）"
+        },
+        {
+          "name": "§22c M15 变异后复测必须出现「note-ink-narrow」违规码（T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里））",
+          "ok": true,
+          "detail": "期望 note-ink-narrow · 实测 [note-ink-narrow, note-intro-long] · 说明 1 条 · 首条 盒 1380px / 有字区域 1369px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [note-ink-narrow, note-intro-long]"
+        },
+        {
+          "name": "§22c M15 承重证明：咬中的条是**竖排按列判**（列数 ≥ 2 · 列栈水平范围 < 0.85×列宽），且旧口径两条判据在它们身上必然静默（按行归并 ≤ 1 行 + 盒/内容盒满宽，盒宽与注入前逐条相同）",
+          "ok": true,
+          "detail": "note-ink-narrow 1 条 [need/free-api/#0] · 逐条：#0 vertical-rl 列 18 / 列栈 362.64px / 行 1（最宽 362.64px） / 内容盒 1369px / 字形盒 22 · 列宽 1380px · 阈值 1173px · note-narrow 0 条（0 = ① 也看不见）· 盒宽与注入前一致 true"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "need/free-api/@1440 说明 1 条（竖排 0）违规码 [无] ⇒ 严格形式成立（未注入产物）"
+        }
+      ],
+      "m10": [
+        {
+          "name": "§22c M10 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "ok": true,
+          "detail": "锚点出现 1 次 · F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到）"
+        },
+        {
+          "name": "§22c M10 变异后复测必须出现「note-narrow」违规码（F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到））",
+          "ok": true,
+          "detail": "期望 note-narrow · 实测 [note-narrow, note-ink-narrow, note-axis, note-intro-long, narrow-unregistered] · 说明 1 条 · 首条 盒 452.81px / 有字区域 442px · detail-main 0 个 · scrollWidth 1600（视口 1600） · 窄条 [need/dev-credits/#0] · 违规码 [note-narrow, note-ink-narrow, note-axis, note-intro-long, narrow-unregistered]"
+        },
+        {
+          "name": "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条违规码都没有",
+          "ok": true,
+          "detail": "M8 need/student-only/@1440 说明 1 条（竖排 0）违规码 [无] · M9a docs/data/@1440 说明 9 条（竖排 0）违规码 [无] · M9b changes/@1440 说明 13 条（竖排 0）违规码 [无] · M10 need/dev-credits/@1600 说明 1 条（竖排 0）违规码 [无]"
+        }
+      ],
+      "controls": [
+        {
+          "name": "§22b M4 正对照：同样注入 200 字符超长 URL、不动 CSS ⇒ @390 不得溢出",
+          "ok": true,
+          "detail": "超长 URL 注入位置 link · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [width]，390 档只看溢出）"
+        },
+        {
+          "name": "§22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出",
+          "ok": true,
+          "detail": "不可断串注入位置 note · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [无]，390 档只看溢出）"
+        },
+        {
+          "name": "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条违规码都没有",
+          "ok": true,
+          "detail": "M8 need/student-only/@1440 说明 1 条（竖排 0）违规码 [无] · M9a docs/data/@1440 说明 9 条（竖排 0）违规码 [无] · M9b changes/@1440 说明 13 条（竖排 0）违规码 [无] · M10 need/dev-credits/@1600 说明 1 条（竖排 0）违规码 [无]"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "need/free-api/@1440 说明 1 条（竖排 0）违规码 [无] ⇒ 严格形式成立（未注入产物）"
+        }
+      ],
+      "logFile": ".arch-v1/log/m10-target-devcredits-1600.log",
+      "jsonFile": ".arch-v1/json/m10-target-devcredits-1600.json"
+    }
+  ],
+  "repoToolControl": {
+    "file": "scripts/tools/verify-site.js（未改，sha256 bcd4ceaad71ce60b…）",
+    "dir": ".arch-v1/dist-copy",
+    "total": 883,
+    "failed": 0,
+    "status": "GREEN",
+    "probeBase": 883,
+    "probeMatchesRepoTool": true,
+    "jsonFile": ".arch-v1/json/repo-tool-control.json"
+  }
+}
