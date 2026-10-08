@@ -126,9 +126,12 @@
    **下限公式一个字未改**；处置是新增**余量登记**（6 页，`scripts/lib/seo.js` 的 `TEXT_FLOOR_RESIDUALS`
    + JSON 转写 `research/_raw/p2-residuals-v1/text-floor-margins.json`）与检查码 **`thin-content-margin`**
    （27 → 28，跌破登记值即红，比 `thin-content` 至多早 50 个字；沙箱砍 8 个字实跑点名变红）。
-   ② **不可用日志的处置**：与 **H14** 一致（零变化 / 日志不可用 ⇒ 整块不渲染），**无需修复**；
-   真函数三层实跑：不可用 ⇒ 0 字节、零变化 ⇒ 0 字节、正对照 478 字节；判据出处 `selftest:changes`
-   的 R2 / R2b / R2c / R2d，另补产物级独立复查（`verify:seo` §③″）。
+   ② **不可用日志的处置**：**渲染口径**与 **H14** 一致（真函数三层实跑：不可用 ⇒ 0 字节、零变化 ⇒ 0 字节、
+   正对照 478 字节；判据出处 `selftest:changes` 的 R2 / R2b / R2c / R2d，另补产物级独立复查 `verify:seo` §③″）；
+   **但构建链上仍有一处残留**：日志缺失或损坏时构建在 **Dataset Manifest** 步就失败（`dataset deal-history: 缺少 updatedAt`），
+   「产物自检」与 SEO 门禁都没跑到 ⇒ 已写好的诚实性措辞**到不了读者眼前**（报告 §2.2′ 与 §7-1；
+   独立复核 PR #69 §4 观察 1 —— 本行原文曾写成「无需修复」，那是把「未决」写成「已决」，已按复核意见改正）。
+   待裁定二选一：(a) 让它上线（`updatedAt` 回落到数据基准日 / 显式 unavailable 状态）；(b) 把 fail-closed 写成策略并说明该分支何时才会到读者眼前。
    ③ **入口文案**：全站 186 页里入口锚 **4 个 / 3 页**（`/` `/plans/`×2 `/plans/coding/`）逐字
    「全部变化 →」，「查看全部」**0 处**（产物与 7 个渲染源文件都扫过）；**如实偏差**：
    `plans-hub-page.js:251` 是硬编码字面量（已登记，补丁待下一轮）。
@@ -144,20 +147,42 @@
 
 > 以下四条都是**如实登记的残留**：它们各自有明确理由，**当前不修**；写进这里是为了不让人误以为已经解决。
 
-1. **anthropic 官方定价页已迁移（来源新鲜度）**：`docs.anthropic.com/en/docs/about-claude/pricing`
-   现在**跨域重定向**到 `platform.claude.com` → `www.anthropic.com`（营销首页，**没有 API 价格表**）。
+1. **anthropic 官方定价页已迁移（来源新鲜度）**：`docs.anthropic.com/en/docs/about-claude/pricing` 现在
+   301 → `platform.claude.com/docs/en/docs/about-claude/pricing` → 307 路径归一 → 307
+   `www.anthropic.com/app-unavailable-in-region?utm_source=country` → 301 → `claude.com/app-unavailable-in-region`（200，**区域封锁页**；
+   2026-10-08 从 HKG 出口实测，与旧登记的「营销首页」终点**不同** —— 换了出口 IP 才能分辨谁对）。
    记录里的 `officialUrl` 仍是旧地址 ⇒ 用户点到的「官方定价页」当前不是定价页。
-   处置边界（本轮已定）：**只允许改 URL 与 `officialDomains` 登记，不许改任何价格、不许改既有引文及其 capturedAt/sourceUrl**；
-   在找到**可读的新官方定价页**之前不改数据、只留处置理由。**不得写成「价格已变化」**（无证据）。
+   **候选**：`https://claude.com/pricing`（API tab 有逐模型 Input/Output/缓存价；数据层要求写规范 URL，带 `#api` 会被重建拒绝）。
+   但它是官方详细定价页（`platform.claude.com/docs/en/about-claude/pricing`，本网络区域封锁）的**摘要版**：
+   4 个模型的 1h 缓存写入档不载，且 Sonnet 5.5 缓存命中价与记录不一致（记录 0.20 vs 页面 $0.10，**原因未证实，不得写成「价格已变化」**；
+   同页 legacy `Sonnet 5` 恰是 0.20 ⇒ 也可能是记录取错行）。**16 个可比价格格：15 一致 / 1 不一致。**
+   **处置裁定（2026-10-08，captain）：本轮不改** —— 可达页是摘要版且有一格无法定案；且**实测影响面**：改 `officialUrl` 会产生
+   1 处字段 diff + **1 条公开变化事件**（`updated officialUrl`，进 `/changes/` 与订阅源）⇒ 不能当成纯后台修正来做。
+   处置边界不变：只允许改 URL 与 `officialDomains` 登记（域登记无需改，`providers.json` 已含 `claude.com`），
+   **不许改任何价格、不许改既有引文及其 capturedAt/sourceUrl**；**不得写成「价格已变化」**（无证据）。
 2. **腾讯混元将迁移至 TokenHub（来源迁移风险）**：官方计费页顶部公告「混元相关功能将逐步迁移至 TokenHub…原平台不再新增模型能力、
    停止支持新购模型服务」。本轮逐项复核该页价格**与记录完全一致**（6 个模型 + 免费额度 100 万 tokens / 1 年），
    因此这是**未来漂移提示、不是事实错误**；迁移完成后需重新回访。
+   2026-10-08 复核：公告**原文仍在**（逐字）、页面自报更新时间 `2026-06-26 10:56:00`、**6/6 模型价格与记录逐一相同**、
+   免费额度 **100 万 tokens / 1 年**一致 ⇒ 残留成立、**0 改动**；页面今天比记录**多**的 4 行（turbos-vision / t1-vision /
+   turbos-vision-video / 腾讯元器）在注册表里**没有模型身份** ⇒ 是**覆盖边界、不是漂移**。
+   线索：TokenHub 已有自己的公开计费页（`product/1823/130054`、`130055`），逐项对账排进 `sources-residue-v1b`。
 3. **术语残留（DEFERRED）**：历史层 / 信息流仍把 `sourceUrl` 叫「原始出处」，而该 URL 在生产数据里**今日不可达/语义已分角色**
    （`officialUrl` / `url` / `sourceUrl` / `evidence[].sourceUrl` 四者角色见 `docs/SCHEMA-v3.0.md` §10 ⑤）。
    本轮只统一了契约与页面措辞，**历史文档里的旧称保留**，标记为 DEFERRED。
-4. **引文预算的结构上限（重要口径）**：单条记录**最多 3 条引文**，这使「逐格式维度证据绑定」**不可能**覆盖全部 66 个计价条目 ——
-   当前实际是 **26 条模型级绑定 + 24 组 input/output 顺序对**。
-   ⇒ **任何报告都不得写成「input/output 已逐条证据绑定」**；正确的写法是「模型级 + 部分格式级绑定，其余由结构判据兜住」。
+   2026-10-08 复核：全库 `原始出处` **57 次 / 44 行 / 27 文件**（文档 40 · 源码 16 · 产物 1）；
+   **今天真的渲染出来：0 处**（71 条历史事件全为 `created`/`field=null`，档案详情页 0 个）；
+   活路径 3 处（`scripts/lib/history.js:192` · `index.html:1348` · `scripts/lib/archive.js:685`）—— **维持 DEFERRED**。
+   另：`scripts/data/official_urls.json:3` 的括注「（渲染成「原始出处」行）」**已陈旧**（deal 侧行标签早已是「收录渠道」，
+   `audience.js:749`；plans 侧根本不渲染该字段）⇒ 校正排进 `sources-residue-v1b`。
+4. **引文预算的结构上限（重要口径）**：单条记录**最多 3 条引文**（`MAX_EVIDENCE_ITEMS = 3`，实测 16 条记录用满），
+   2026-10-08 实测：发布数据 **24 条 API 计费记录 / 59 条引文** —— **40 条模型级绑定**（`models.<modelKey>`），
+   其中引文里 input 与 output 同时出现的 **39 组顺序对（39/39 顺序正确）**；**维度级绑定（`…rates.<dim>`）0 条**，
+   分母 `(模型 × 维度)` 非空格子 **308** 个一个都没被维度绑定单独认领（报告 §5.1 另给另一种算法口径 **108**）。
+   ⇒ **任何报告都不得写成「input/output 已逐条证据绑定」**；正确写法是「模型级绑定 40 条 + 引文内 input/output 顺序对 39 组（B2 判据）
+   + 结构判据（B1/B3 · 单位见证 · 维度域扩展）兜住其余」。
+   （旧文写的「66 个计价条目 / 26 条模型级绑定 / 24 组顺序对」是 2026-10 早期口径，**已随数据增长过期**；
+   越界表述扫描 **0 处** —— 该短语只出现在 7 行**否定句**里。）
 
 > **v3.0 之后最值得投入的方向（历史段落，保留原样）**：把「未映射」的套餐模型串收干净、
 > 给 `/archive/` 攒出真实样本、以及把 API 计费的单位换算**明确地不做**这件事写得更显眼。
