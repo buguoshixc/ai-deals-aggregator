@@ -1,0 +1,30 @@
+{
+  "note": "改前 = git checkout -- scripts/lib/changes.js（HEAD 的 master 版，49e86666…）；改后 = 本分支提交 c18e0f9（07887908…）",
+  "before": [
+    "[selftest:changes] exit=0 ::  / === v1.5 变化雷达演练：119 项通过，0 项失败 ===",
+    "[selftest:feeds] exit=0 ::  / === v1.6 订阅层演练：145 项通过，0 项失败 ===",
+    "[selftest:seo] exit=0 ::  / === v1.7 SEO 门禁演练：88 项通过，0 项失败 ===",
+    "[verify:seo] exit=0 ::  / ✅ SEO 验收 18 项，失败 0 项"
+  ],
+  "after": [
+    "build:",
+    "build: ✅ 构建完成 → dist/（自检全过，已从暂存目录就位）",
+    "[selftest:changes] exit=0 ::  / === v1.5 变化雷达演练：119 项通过，0 项失败 ===",
+    "[selftest:feeds] exit=0 ::  / === v1.6 订阅层演练：145 项通过，0 项失败 ===",
+    "[selftest:seo] exit=0 ::  / === v1.7 SEO 门禁演练：88 项通过，0 项失败 ===",
+    "[verify:seo] exit=0 ::  / ✅ SEO 验收 18 项，失败 0 项"
+  ],
+  "afterFinalChain": [
+    "=== build exit=0 ===",
+    "=== selftest:changes exit=0 ===",
+    "=== v1.5 变化雷达演练：119 项通过，0 项失败 ===",
+    "=== selftest:feeds exit=0 ===",
+    "=== v1.6 订阅层演练：145 项通过，0 项失败 ===",
+    "=== selftest:seo exit=0 ===",
+    "=== v1.7 SEO 门禁演练：88 项通过，0 项失败 ===",
+    "=== verify:seo exit=0 ===",
+    "=== verify-site exit=0 ===",
+    "=== check:evidence exit=0 ===",
+    "=== gate exit=0 ==="
+  ]
+}

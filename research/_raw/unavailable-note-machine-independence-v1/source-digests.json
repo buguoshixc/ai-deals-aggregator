@@ -1,0 +1,35 @@
+{
+  "inScopeSources": [
+    {
+      "rel": "scripts/lib/changes.js",
+      "sha256": "07887908679b2dd5587c790cc4a785964e474c94637d10c4eeeeed5a1d8a1014"
+    },
+    {
+      "rel": "scripts/lib/plan-history.js",
+      "sha256": "ffe98528f6ada9d902e3adbc5ef4d730a5eb3e3649b661b75d02daaf33ca7d68"
+    },
+    {
+      "rel": "scripts/lib/api-plan-history.js",
+      "sha256": "7b27b492c5cbab990449d283237494c791e71a008f76b5560c71590b5945b109"
+    }
+  ],
+  "logDataFiles": [
+    {
+      "rel": "scripts/data/deal-history.json",
+      "sha256": "563bcfd0e00e3211995bdefe097b3096ed778a7ebed69c4e1c1614ca8187802e"
+    },
+    {
+      "rel": "scripts/data/plan-history.json",
+      "sha256": "8c0003aa37521c8688b875852392d826dc18de58b4bdbf00fa1e12cc670c9c74"
+    },
+    {
+      "rel": "scripts/data/api-plan-history.json",
+      "sha256": "d5ffdcaf8f935351bec275e3b132084bbadb762a82b1adb0ae234bd6ad3b2251"
+    }
+  ],
+  "knownHashes": {
+    "49e86666eae62ad2ac8a3fc53147505d81d5d7e8a6b1560903d289abce295181": "scripts/lib/changes.js 改前（master）",
+    "07887908679b2dd5587c790cc4a785964e474c94637d10c4eeeeed5a1d8a1014": "scripts/lib/changes.js 改后（本分支提交 c18e0f9）",
+    "563bcfd0e00e3211995bdefe097b3096ed778a7ebed69c4e1c1614ca8187802e": "scripts/data/deal-history.json（每次临时移走/写坏后都还原到这个哈希）"
+  }
+}

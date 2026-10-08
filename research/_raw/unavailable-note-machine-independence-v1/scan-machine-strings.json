@@ -1,0 +1,181 @@
+{
+  "generatedBy": "make-evidence.cjs（读 .arch-v1/t27/dist-* 原始产物树）",
+  "trees": {
+    "normalBefore": {
+      "dir": "dist-normal-before",
+      "files": 303,
+      "counts": {
+        "noteWording": 2,
+        "winDrivePath": 0,
+        "absoluteBackslash": 0,
+        "hostUser": 0,
+        "hostRoot": 0,
+        "repoRoot": 0
+      },
+      "machineHits": {
+        "noteWording": [],
+        "winDrivePath": [],
+        "absoluteBackslash": [],
+        "hostUser": [],
+        "hostRoot": [],
+        "repoRoot": []
+      }
+    },
+    "normalAfter": {
+      "dir": "dist-normal-after",
+      "files": 303,
+      "counts": {
+        "noteWording": 2,
+        "winDrivePath": 0,
+        "absoluteBackslash": 0,
+        "hostUser": 0,
+        "hostRoot": 0,
+        "repoRoot": 0
+      },
+      "machineHits": {
+        "noteWording": [],
+        "winDrivePath": [],
+        "absoluteBackslash": [],
+        "hostUser": [],
+        "hostRoot": [],
+        "repoRoot": []
+      }
+    },
+    "unavailBefore": {
+      "dir": "dist-unavail-before",
+      "files": 303,
+      "counts": {
+        "noteWording": 11,
+        "winDrivePath": 1,
+        "absoluteBackslash": 4,
+        "hostUser": 0,
+        "hostRoot": 1,
+        "repoRoot": 0
+      },
+      "machineHits": {
+        "noteWording": [],
+        "winDrivePath": [
+          {
+            "file": "data/index.json",
+            "line": 45,
+            "text": "\"updatedAtNote\": \"本次构建没有拿到 D:\\\\OneDrive\\\\Desktop\\\\Code\\\\AI Page\\\\.worktrees\\\\notes-manifest-residual-v1\\\\scripts\\\\data\\\\deal-history.json（文件缺失）——这份数据集的更新时间不可公布，这不表示「没有变化」。\""
+          }
+        ],
+        "absoluteBackslash": [
+          {
+            "file": "data/index.json",
+            "line": 45,
+            "text": "\"updatedAtNote\": \"本次构建没有拿到 D:\\\\OneDrive\\\\Desktop\\\\Code\\\\AI Page\\\\.worktrees\\\\notes-manifest-residual-v1\\\\scripts\\\\data\\\\deal-history.json（文件缺失）——这份数据集的更新时间不可公布，这不表示「没有变化」。\""
+          }
+        ],
+        "hostUser": [],
+        "hostRoot": [
+          {
+            "file": "data/index.json",
+            "line": 45,
+            "text": "\"updatedAtNote\": \"本次构建没有拿到 D:\\\\OneDrive\\\\Desktop\\\\Code\\\\AI Page\\\\.worktrees\\\\notes-manifest-residual-v1\\\\scripts\\\\data\\\\deal-history.json（文件缺失）——这份数据集的更新时间不可公布，这不表示「没有变化」。\""
+          }
+        ],
+        "repoRoot": []
+      }
+    },
+    "unavailAfter": {
+      "dir": "dist-unavail-after4",
+      "files": 303,
+      "counts": {
+        "noteWording": 11,
+        "winDrivePath": 0,
+        "absoluteBackslash": 0,
+        "hostUser": 0,
+        "hostRoot": 0,
+        "repoRoot": 0
+      },
+      "machineHits": {
+        "noteWording": [],
+        "winDrivePath": [],
+        "absoluteBackslash": [],
+        "hostUser": [],
+        "hostRoot": [],
+        "repoRoot": []
+      }
+    },
+    "unavailBroken": {
+      "dir": "dist-unavail-broken",
+      "files": 303,
+      "counts": {
+        "noteWording": 11,
+        "winDrivePath": 0,
+        "absoluteBackslash": 0,
+        "hostUser": 0,
+        "hostRoot": 0,
+        "repoRoot": 0
+      },
+      "machineHits": {
+        "noteWording": [],
+        "winDrivePath": [],
+        "absoluteBackslash": [],
+        "hostUser": [],
+        "hostRoot": [],
+        "repoRoot": []
+      }
+    },
+    "unavailAfterRestore": {
+      "dir": "dist-unavail-after3",
+      "files": 303,
+      "counts": {
+        "noteWording": 11,
+        "winDrivePath": 0,
+        "absoluteBackslash": 0,
+        "hostUser": 0,
+        "hostRoot": 0,
+        "repoRoot": 0
+      },
+      "machineHits": {
+        "noteWording": [],
+        "winDrivePath": [],
+        "absoluteBackslash": [],
+        "hostUser": [],
+        "hostRoot": [],
+        "repoRoot": []
+      }
+    },
+    "unavailPoisoned": {
+      "dir": "dist-unavail-poisoned",
+      "files": 303,
+      "counts": {
+        "noteWording": 11,
+        "winDrivePath": 1,
+        "absoluteBackslash": 3,
+        "hostUser": 0,
+        "hostRoot": 1,
+        "repoRoot": 0
+      },
+      "machineHits": {
+        "noteWording": [],
+        "winDrivePath": [
+          {
+            "file": "data/index.json",
+            "line": 45,
+            "text": "\"updatedAtNote\": \"本次构建没有拿到 D:\\\\OneDrive\\\\Desktop\\\\Code\\\\AI Page\\\\scripts\\\\data\\\\deal-history.json（文件缺失）——这份数据集的更新时间不可公布，这不表示「没有变化」。\""
+          }
+        ],
+        "absoluteBackslash": [
+          {
+            "file": "data/index.json",
+            "line": 45,
+            "text": "\"updatedAtNote\": \"本次构建没有拿到 D:\\\\OneDrive\\\\Desktop\\\\Code\\\\AI Page\\\\scripts\\\\data\\\\deal-history.json（文件缺失）——这份数据集的更新时间不可公布，这不表示「没有变化」。\""
+          }
+        ],
+        "hostUser": [],
+        "hostRoot": [
+          {
+            "file": "data/index.json",
+            "line": 45,
+            "text": "\"updatedAtNote\": \"本次构建没有拿到 D:\\\\OneDrive\\\\Desktop\\\\Code\\\\AI Page\\\\scripts\\\\data\\\\deal-history.json（文件缺失）——这份数据集的更新时间不可公布，这不表示「没有变化」。\""
+          }
+        ],
+        "repoRoot": []
+      }
+    }
+  }
+}

@@ -1,0 +1,474 @@
+{
+  "note": "renderedConditional = 渲染侧那句话（「本次构建没有拿到历史日志」）出现在哪些文件；wordingTable = 页面内嵌的措辞表（与可用性无关）",
+  "source": "readings.json（.arch-v1/t27/readings.cjs 生成）",
+  "trees": {
+    "dist-normal-before": {
+      "files": 249,
+      "wordingTotal": 1,
+      "wordingHits": [
+        {
+          "file": "index.html",
+          "line": 1446,
+          "count": 1
+        }
+      ],
+      "conditionalNoteTotal": 1,
+      "conditionalNoteHits": [
+        {
+          "file": "index.html",
+          "line": 1446,
+          "count": 1
+        }
+      ],
+      "datasets": {
+        "deal-history": {
+          "diskExists": true,
+          "diskStartedAt": "2026-09-30",
+          "manifestUpdatedAt": "2026-09-30",
+          "manifestUpdatedAtNote": null,
+          "equalToStartedAt": true,
+          "noteHasWording": false,
+          "noteHasDrivePath": false
+        },
+        "plan-history": {
+          "diskExists": true,
+          "diskStartedAt": "2026-10-01",
+          "manifestUpdatedAt": "2026-10-01",
+          "manifestUpdatedAtNote": null,
+          "equalToStartedAt": true,
+          "noteHasWording": false,
+          "noteHasDrivePath": false
+        },
+        "api-plan-history": {
+          "diskExists": true,
+          "diskStartedAt": "2026-10-01",
+          "manifestUpdatedAt": "2026-10-01",
+          "manifestUpdatedAtNote": null,
+          "equalToStartedAt": true,
+          "noteHasWording": false,
+          "noteHasDrivePath": false
+        }
+      }
+    },
+    "dist-normal-after": {
+      "files": 249,
+      "wordingTotal": 1,
+      "wordingHits": [
+        {
+          "file": "index.html",
+          "line": 1446,
+          "count": 1
+        }
+      ],
+      "conditionalNoteTotal": 1,
+      "conditionalNoteHits": [
+        {
+          "file": "index.html",
+          "line": 1446,
+          "count": 1
+        }
+      ],
+      "datasets": {
+        "deal-history": {
+          "diskExists": true,
+          "diskStartedAt": "2026-09-30",
+          "manifestUpdatedAt": "2026-09-30",
+          "manifestUpdatedAtNote": null,
+          "equalToStartedAt": true,
+          "noteHasWording": false,
+          "noteHasDrivePath": false
+        },
+        "plan-history": {
+          "diskExists": true,
+          "diskStartedAt": "2026-10-01",
+          "manifestUpdatedAt": "2026-10-01",
+          "manifestUpdatedAtNote": null,
+          "equalToStartedAt": true,
+          "noteHasWording": false,
+          "noteHasDrivePath": false
+        },
+        "api-plan-history": {
+          "diskExists": true,
+          "diskStartedAt": "2026-10-01",
+          "manifestUpdatedAt": "2026-10-01",
+          "manifestUpdatedAtNote": null,
+          "equalToStartedAt": true,
+          "noteHasWording": false,
+          "noteHasDrivePath": false
+        }
+      }
+    },
+    "dist-unavail-before": {
+      "files": 249,
+      "wordingTotal": 10,
+      "wordingHits": [
+        {
+          "file": "archive/index.html",
+          "line": 1245,
+          "count": 1
+        },
+        {
+          "file": "changes/index.html",
+          "line": 1227,
+          "count": 1
+        },
+        {
+          "file": "data/index.json",
+          "line": 45,
+          "count": 1
+        },
+        {
+          "file": "feed/changes.json",
+          "line": 6,
+          "count": 1
+        },
+        {
+          "file": "feed/changes.xml",
+          "line": 6,
+          "count": 1
+        },
+        {
+          "file": "feed/new.json",
+          "line": 6,
+          "count": 1
+        },
+        {
+          "file": "feed/new.xml",
+          "line": 6,
+          "count": 1
+        },
+        {
+          "file": "feeds/index.html",
+          "line": 1172,
+          "count": 1
+        },
+        {
+          "file": "index.html",
+          "line": 1225,
+          "count": 1
+        },
+        {
+          "file": "index.html",
+          "line": 1446,
+          "count": 1
+        }
+      ],
+      "conditionalNoteTotal": 7,
+      "conditionalNoteHits": [
+        {
+          "file": "changes/index.html",
+          "line": 1227,
+          "count": 1
+        },
+        {
+          "file": "feed/changes.json",
+          "line": 6,
+          "count": 1
+        },
+        {
+          "file": "feed/changes.xml",
+          "line": 6,
+          "count": 1
+        },
+        {
+          "file": "feed/new.json",
+          "line": 6,
+          "count": 1
+        },
+        {
+          "file": "feed/new.xml",
+          "line": 6,
+          "count": 1
+        },
+        {
+          "file": "index.html",
+          "line": 1225,
+          "count": 1
+        },
+        {
+          "file": "index.html",
+          "line": 1446,
+          "count": 1
+        }
+      ],
+      "datasets": {
+        "deal-history": {
+          "diskExists": true,
+          "diskStartedAt": "2026-09-30",
+          "manifestUpdatedAt": null,
+          "manifestAvailability": "unavailable",
+          "manifestUpdatedAtNote": "本次构建没有拿到 D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\notes-manifest-residual-v1\\scripts\\data\\deal-history.json（文件缺失）——这份数据集的更新时间不可公布，这不表示「没有变化」。",
+          "equalToStartedAt": false,
+          "noteHasWording": true,
+          "noteHasDrivePath": true
+        },
+        "plan-history": {
+          "diskExists": true,
+          "diskStartedAt": "2026-10-01",
+          "manifestUpdatedAt": "2026-10-01",
+          "manifestUpdatedAtNote": null,
+          "equalToStartedAt": true,
+          "noteHasWording": false,
+          "noteHasDrivePath": false
+        },
+        "api-plan-history": {
+          "diskExists": true,
+          "diskStartedAt": "2026-10-01",
+          "manifestUpdatedAt": "2026-10-01",
+          "manifestUpdatedAtNote": null,
+          "equalToStartedAt": true,
+          "noteHasWording": false,
+          "noteHasDrivePath": false
+        }
+      }
+    },
+    "dist-unavail-after4": {
+      "files": 249,
+      "wordingTotal": 10,
+      "wordingHits": [
+        {
+          "file": "archive/index.html",
+          "line": 1245,
+          "count": 1
+        },
+        {
+          "file": "changes/index.html",
+          "line": 1227,
+          "count": 1
+        },
+        {
+          "file": "data/index.json",
+          "line": 45,
+          "count": 1
+        },
+        {
+          "file": "feed/changes.json",
+          "line": 6,
+          "count": 1
+        },
+        {
+          "file": "feed/changes.xml",
+          "line": 6,
+          "count": 1
+        },
+        {
+          "file": "feed/new.json",
+          "line": 6,
+          "count": 1
+        },
+        {
+          "file": "feed/new.xml",
+          "line": 6,
+          "count": 1
+        },
+        {
+          "file": "feeds/index.html",
+          "line": 1172,
+          "count": 1
+        },
+        {
+          "file": "index.html",
+          "line": 1225,
+          "count": 1
+        },
+        {
+          "file": "index.html",
+          "line": 1446,
+          "count": 1
+        }
+      ],
+      "conditionalNoteTotal": 7,
+      "conditionalNoteHits": [
+        {
+          "file": "changes/index.html",
+          "line": 1227,
+          "count": 1
+        },
+        {
+          "file": "feed/changes.json",
+          "line": 6,
+          "count": 1
+        },
+        {
+          "file": "feed/changes.xml",
+          "line": 6,
+          "count": 1
+        },
+        {
+          "file": "feed/new.json",
+          "line": 6,
+          "count": 1
+        },
+        {
+          "file": "feed/new.xml",
+          "line": 6,
+          "count": 1
+        },
+        {
+          "file": "index.html",
+          "line": 1225,
+          "count": 1
+        },
+        {
+          "file": "index.html",
+          "line": 1446,
+          "count": 1
+        }
+      ],
+      "datasets": {
+        "deal-history": {
+          "diskExists": true,
+          "diskStartedAt": "2026-09-30",
+          "manifestUpdatedAt": null,
+          "manifestAvailability": "unavailable",
+          "manifestUpdatedAtNote": "本次构建没有拿到 deal-history.json（文件缺失）——这份数据集的更新时间不可公布，这不表示「没有变化」。",
+          "equalToStartedAt": false,
+          "noteHasWording": true,
+          "noteHasDrivePath": false
+        },
+        "plan-history": {
+          "diskExists": true,
+          "diskStartedAt": "2026-10-01",
+          "manifestUpdatedAt": "2026-10-01",
+          "manifestUpdatedAtNote": null,
+          "equalToStartedAt": true,
+          "noteHasWording": false,
+          "noteHasDrivePath": false
+        },
+        "api-plan-history": {
+          "diskExists": true,
+          "diskStartedAt": "2026-10-01",
+          "manifestUpdatedAt": "2026-10-01",
+          "manifestUpdatedAtNote": null,
+          "equalToStartedAt": true,
+          "noteHasWording": false,
+          "noteHasDrivePath": false
+        }
+      }
+    },
+    "dist-unavail-broken": {
+      "files": 249,
+      "wordingTotal": 10,
+      "wordingHits": [
+        {
+          "file": "archive/index.html",
+          "line": 1245,
+          "count": 1
+        },
+        {
+          "file": "changes/index.html",
+          "line": 1227,
+          "count": 1
+        },
+        {
+          "file": "data/index.json",
+          "line": 45,
+          "count": 1
+        },
+        {
+          "file": "feed/changes.json",
+          "line": 6,
+          "count": 1
+        },
+        {
+          "file": "feed/changes.xml",
+          "line": 6,
+          "count": 1
+        },
+        {
+          "file": "feed/new.json",
+          "line": 6,
+          "count": 1
+        },
+        {
+          "file": "feed/new.xml",
+          "line": 6,
+          "count": 1
+        },
+        {
+          "file": "feeds/index.html",
+          "line": 1172,
+          "count": 1
+        },
+        {
+          "file": "index.html",
+          "line": 1225,
+          "count": 1
+        },
+        {
+          "file": "index.html",
+          "line": 1446,
+          "count": 1
+        }
+      ],
+      "conditionalNoteTotal": 7,
+      "conditionalNoteHits": [
+        {
+          "file": "changes/index.html",
+          "line": 1227,
+          "count": 1
+        },
+        {
+          "file": "feed/changes.json",
+          "line": 6,
+          "count": 1
+        },
+        {
+          "file": "feed/changes.xml",
+          "line": 6,
+          "count": 1
+        },
+        {
+          "file": "feed/new.json",
+          "line": 6,
+          "count": 1
+        },
+        {
+          "file": "feed/new.xml",
+          "line": 6,
+          "count": 1
+        },
+        {
+          "file": "index.html",
+          "line": 1225,
+          "count": 1
+        },
+        {
+          "file": "index.html",
+          "line": 1446,
+          "count": 1
+        }
+      ],
+      "datasets": {
+        "deal-history": {
+          "diskExists": true,
+          "diskStartedAt": "2026-09-30",
+          "manifestUpdatedAt": null,
+          "manifestAvailability": "unavailable",
+          "manifestUpdatedAtNote": "本次构建没有拿到 deal-history.json（Bad escaped character in JSON at position 33 (line 1 column 34)）——这份数据集的更新时间不可公布，这不表示「没有变化」。",
+          "equalToStartedAt": false,
+          "noteHasWording": true,
+          "noteHasDrivePath": false
+        },
+        "plan-history": {
+          "diskExists": true,
+          "diskStartedAt": "2026-10-01",
+          "manifestUpdatedAt": "2026-10-01",
+          "manifestUpdatedAtNote": null,
+          "equalToStartedAt": true,
+          "noteHasWording": false,
+          "noteHasDrivePath": false
+        },
+        "api-plan-history": {
+          "diskExists": true,
+          "diskStartedAt": "2026-10-01",
+          "manifestUpdatedAt": "2026-10-01",
+          "manifestUpdatedAtNote": null,
+          "equalToStartedAt": true,
+          "noteHasWording": false,
+          "noteHasDrivePath": false
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,159 @@
+{
+  "cases": [
+    {
+      "name": "Windows 盘符绝对路径（正例：含路径的说明）",
+      "expected": [
+        "Windows 盘符绝对路径",
+        "反斜杠目录段"
+      ],
+      "got": [
+        "Windows 盘符绝对路径",
+        "反斜杠目录段"
+      ],
+      "ok": true
+    },
+    {
+      "name": "POSIX 绝对路径（正例）",
+      "expected": [
+        "POSIX 绝对路径"
+      ],
+      "got": [
+        "POSIX 绝对路径"
+      ],
+      "ok": true
+    },
+    {
+      "name": "UNC 路径（正例）",
+      "expected": [
+        "UNC 路径",
+        "反斜杠目录段"
+      ],
+      "got": [
+        "UNC 路径",
+        "反斜杠目录段"
+      ],
+      "ok": true
+    },
+    {
+      "name": "家目录记号（正例）",
+      "expected": [
+        "家目录记号 ~"
+      ],
+      "got": [
+        "家目录记号 ~"
+      ],
+      "ok": true
+    },
+    {
+      "name": "basename 说明（反例：机器无关，必须沉默）",
+      "expected": [],
+      "got": [],
+      "ok": true
+    },
+    {
+      "name": "中文说明 + 斜杠短语（反例：不许误伤）",
+      "expected": [],
+      "got": [],
+      "ok": true
+    },
+    {
+      "name": "URL（反例：不许把 https:// 当盘符）",
+      "expected": [],
+      "got": [],
+      "ok": true
+    }
+  ],
+  "generator": [
+    {
+      "input": {
+        "file": "D:\\OneDrive\\Desktop\\Code\\AI Page\\scripts\\data\\deal-history.json",
+        "reason": "文件缺失"
+      },
+      "note": "本次构建没有拿到 deal-history.json（文件缺失）——这份数据集的更新时间不可公布，这不表示「没有变化」。",
+      "machineShapes": [],
+      "hasWording": true,
+      "ok": true
+    },
+    {
+      "input": {
+        "file": "/home/runner/work/ai-deals/scripts/data/deal-history.json",
+        "reason": null
+      },
+      "note": "本次构建没有拿到 deal-history.json（缺失或损坏）——这份数据集的更新时间不可公布，这不表示「没有变化」。",
+      "machineShapes": [],
+      "hasWording": true,
+      "ok": true
+    },
+    {
+      "input": {
+        "file": "D:\\a\\b\\plan-history.json",
+        "reason": "EACCES: permission denied, open 'D:\\a\\b\\plan-history.json'"
+      },
+      "note": "本次构建没有拿到 plan-history.json（EACCES: permission denied, open 'plan-history.json'）——这份数据集的更新时间不可公布，这不表示「没有变化」。",
+      "machineShapes": [],
+      "hasWording": true,
+      "ok": true
+    },
+    {
+      "input": {
+        "file": "deal-history.json",
+        "reason": "不是 JSON 对象"
+      },
+      "note": "本次构建没有拿到 deal-history.json（不是 JSON 对象）——这份数据集的更新时间不可公布，这不表示「没有变化」。",
+      "machineShapes": [],
+      "hasWording": true,
+      "ok": true
+    }
+  ],
+  "edge": [
+    {
+      "name": "file:///D:/a/b/deal-history.json（URL 形式的绝对路径）",
+      "got": [
+        "Windows 盘符绝对路径"
+      ]
+    },
+    {
+      "name": "\\\\?\\D:\\a\\b\\deal-history.json（Windows 扩展长度前缀）",
+      "got": [
+        "Windows 盘符绝对路径",
+        "UNC 路径",
+        "反斜杠目录段"
+      ]
+    },
+    {
+      "name": "//server/share/deal-history.json（POSIX 双斜杠 UNC）",
+      "got": [
+        "POSIX 绝对路径"
+      ]
+    },
+    {
+      "name": "~user/work/deal-history.json（不带分隔符的 ~ 家目录名）",
+      "got": []
+    },
+    {
+      "name": "https://example.com/a/b.json（反例：URL 必须沉默）",
+      "got": []
+    },
+    {
+      "name": "3 / 4 条（反例：中文里的斜杠必须沉默）",
+      "got": []
+    }
+  ],
+  "reasonChain": {
+    "availabilityRows": [
+      {
+        "id": "deal-history",
+        "file": "deal-history.json",
+        "label": "deal-history",
+        "availability": "unavailable",
+        "reason": "EPERM: operation not permitted, open 'D:\\OneDrive\\Desktop\\Code\\AI Page\\scripts\\data\\deal-history.json'"
+      }
+    ],
+    "updatedAt": null,
+    "updatedAtShape": null,
+    "updatedAtNote": "本次构建没有拿到 deal-history.json（EPERM: operation not permitted, open 'deal-history.json'）——这份数据集的更新时间不可公布，这不表示「没有变化」。",
+    "machineShapes": [],
+    "honestyProblems": []
+  },
+  "allOk": true
+}

@@ -1,0 +1,34 @@
+{
+  "note": "treeDigest = 逐文件 sha256 排序后再哈希（与 verify 的门禁口径一致）",
+  "pairs": {
+    "normalBefore→normalAfter": {
+      "filesA": 304,
+      "filesB": 304,
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "treeDigestA": "2d2d15b3ffceea705333e1444dcc5d8e537d41acda811731b7538e1db28d2a40",
+      "treeDigestB": "2d2d15b3ffceea705333e1444dcc5d8e537d41acda811731b7538e1db28d2a40"
+    },
+    "unavailBefore→unavailAfter": {
+      "filesA": 304,
+      "filesB": 304,
+      "added": [],
+      "removed": [],
+      "changed": [
+        "data/index.json"
+      ],
+      "treeDigestA": "39b26a1ff51a4c32298b9f40c8bc8b55ebf2cfb4927735f185612cff97dae339",
+      "treeDigestB": "4eab9832f3a7601382b8998b54a010eb80bc5818c3ae03536cefcb24ba7b11aa"
+    },
+    "unavailAfter→unavailAfterRestore": {
+      "filesA": 304,
+      "filesB": 304,
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "treeDigestA": "4eab9832f3a7601382b8998b54a010eb80bc5818c3ae03536cefcb24ba7b11aa",
+      "treeDigestB": "4eab9832f3a7601382b8998b54a010eb80bc5818c3ae03536cefcb24ba7b11aa"
+    }
+  }
+}

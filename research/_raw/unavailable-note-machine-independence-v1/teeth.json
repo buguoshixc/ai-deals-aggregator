@@ -1,0 +1,42 @@
+{
+  "T1_buildSide": {
+    "what": "把 logUnavailableNote() 改回「印 item.file（绝对路径）」的 O1 修复前写法，登记不动",
+    "command": "node scripts/tools/build-local.js --out=.arch-v1/t27/dist-tooth-t1（临时移走 scripts/data/deal-history.json）",
+    "exitCode": 1,
+    "errorHead": "❌ 构建失败：Error: Dataset Manifest 形状/诚实性不合法（2 处）：",
+    "problems": [
+      "- deal-history: updatedAtNote 含机器相关形状「Windows 盘符绝对路径」——不可用说明必须跨机器可复现（日志名只写 basename，不许出现宿主绝对路径）",
+      "- deal-history: updatedAtNote 含机器相关形状「反斜杠目录段」——不可用说明必须跨机器可复现（日志名只写 basename，不许出现宿主绝对路径）"
+    ],
+    "restore": "git checkout -- scripts/lib/changes.js ⇒ sha256 = 07887908679b2dd5587c790cc4a785964e474c94637d10c4eeeeed5a1d8a1014（与提交 c18e0f9 一致）"
+  },
+  "T2_independentGate": {
+    "what": "只毒化产物副本的 updatedAtNote（改回含盘符绝对路径），源码与清单不动",
+    "poison": {
+      "roundTripIdentical": true,
+      "touchedDatasets": [
+        "deal-history"
+      ],
+      "poisonedNote": "本次构建没有拿到 D:\\OneDrive\\Desktop\\Code\\AI Page\\scripts\\data\\deal-history.json（文件缺失）——这份数据集的更新时间不可公布，这不表示「没有变化」。",
+      "poisonedNoteHasDrivePath": true,
+      "otherFilesUnchanged": "cpSync 只改 data/index.json 一个文件"
+    },
+    "cleanArtifact": {
+      "command": "node scripts/tools/seo-verify.js --dir=.arch-v1/t27/dist-unavail-after4",
+      "exitCode": 0,
+      "line": "✅ SEO 验收 18 项，失败 0 项"
+    },
+    "poisonedArtifact": {
+      "command": "node scripts/tools/seo-verify.js --dir=.arch-v1/t27/dist-unavail-poisoned",
+      "exitCode": 1,
+      "failedAssertion": "✗ 数据集的可用性：Manifest 的如实登记 ↔ 产物文件逐条一致（9 份，其中登记为不可用 1 份） —— deal-history: updatedAtNote 含机器相关形状「Windows 盘符绝对路径」——不可用说明必须跨机器可复现（日志名只写 basename，不许出现宿主绝对路径）；deal-history: updatedAtNote 含机器相关形状「反斜杠目录段」——不可用说明必须跨机器可复现（日志名只写 basename，不许出现宿主绝对路径）",
+      "summary": "❌ SEO 验收 18 项，失败 1 项"
+    },
+    "preFixArtifact": {
+      "command": "node scripts/tools/seo-verify.js --dir=.arch-v1/t27/dist-unavail-before",
+      "exitCode": 1,
+      "failedAssertion": "✗ 数据集的可用性：Manifest 的如实登记 ↔ 产物文件逐条一致（9 份，其中登记为不可用 1 份） —— deal-history: updatedAtNote 含机器相关形状「Windows 盘符绝对路径」——不可用说明必须跨机器可复现（日志名只写 basename，不许出现宿主绝对路径）；deal-history: updatedAtNote 含机器相关形状「反斜杠目录段」——不可用说明必须跨机器可复现（日志名只写 basename，不许出现宿主绝对路径）",
+      "summary": "❌ SEO 验收 18 项，失败 1 项"
+    }
+  }
+}
