@@ -1,0 +1,1792 @@
+{
+  "what": "全站 186 页的「可见正文 − 下限」普查（kind/count 取自构建期同一份计划与 page-kinds 声明）",
+  "engine": "scripts/lib/seo.js 的 visibleText() + scripts/lib/page-kinds.js 的 textFloor()",
+  "asOf": "2026-10-08T12:40:33+08:00",
+  "pages": 186,
+  "tightest": [
+    {
+      "route": "need/no-card/",
+      "kind": "need",
+      "count": 1,
+      "chars": 710,
+      "floor": 660,
+      "margin": 50,
+      "indexable": true
+    },
+    {
+      "route": "category/",
+      "kind": "hub",
+      "count": 5,
+      "chars": 923,
+      "floor": 800,
+      "margin": 123,
+      "indexable": true
+    },
+    {
+      "route": "category/audio/",
+      "kind": "category",
+      "count": 6,
+      "chars": 1083,
+      "floor": 960,
+      "margin": 123,
+      "indexable": true
+    },
+    {
+      "route": "need/ai-coding/",
+      "kind": "need",
+      "count": 4,
+      "chars": 976,
+      "floor": 840,
+      "margin": 136,
+      "indexable": true
+    },
+    {
+      "route": "category/image/",
+      "kind": "category",
+      "count": 5,
+      "chars": 1039,
+      "floor": 900,
+      "margin": 139,
+      "indexable": true
+    },
+    {
+      "route": "category/agent/",
+      "kind": "category",
+      "count": 4,
+      "chars": 982,
+      "floor": 840,
+      "margin": 142,
+      "indexable": true
+    },
+    {
+      "route": "need/edu-identity/",
+      "kind": "need",
+      "count": 7,
+      "chars": 1429,
+      "floor": 1020,
+      "margin": 409,
+      "indexable": true
+    },
+    {
+      "route": "student/",
+      "kind": "collection",
+      "count": 12,
+      "chars": 1773,
+      "floor": 1320,
+      "margin": 453,
+      "indexable": true
+    },
+    {
+      "route": "need/free-model/",
+      "kind": "need",
+      "count": 12,
+      "chars": 1774,
+      "floor": 1320,
+      "margin": 454,
+      "indexable": true
+    },
+    {
+      "route": "models/qwen-max/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1323,
+      "floor": 700,
+      "margin": 623,
+      "indexable": true
+    },
+    {
+      "route": "models/gpt-live-1/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1327,
+      "floor": 700,
+      "margin": 627,
+      "indexable": true
+    },
+    {
+      "route": "status/",
+      "kind": "status",
+      "count": 0,
+      "chars": 1228,
+      "floor": 600,
+      "margin": 628,
+      "indexable": true
+    }
+  ],
+  "rows": [
+    {
+      "route": "need/no-card/",
+      "kind": "need",
+      "count": 1,
+      "chars": 710,
+      "floor": 660,
+      "margin": 50,
+      "indexable": true
+    },
+    {
+      "route": "category/",
+      "kind": "hub",
+      "count": 5,
+      "chars": 923,
+      "floor": 800,
+      "margin": 123,
+      "indexable": true
+    },
+    {
+      "route": "category/audio/",
+      "kind": "category",
+      "count": 6,
+      "chars": 1083,
+      "floor": 960,
+      "margin": 123,
+      "indexable": true
+    },
+    {
+      "route": "need/ai-coding/",
+      "kind": "need",
+      "count": 4,
+      "chars": 976,
+      "floor": 840,
+      "margin": 136,
+      "indexable": true
+    },
+    {
+      "route": "category/image/",
+      "kind": "category",
+      "count": 5,
+      "chars": 1039,
+      "floor": 900,
+      "margin": 139,
+      "indexable": true
+    },
+    {
+      "route": "category/agent/",
+      "kind": "category",
+      "count": 4,
+      "chars": 982,
+      "floor": 840,
+      "margin": 142,
+      "indexable": true
+    },
+    {
+      "route": "need/edu-identity/",
+      "kind": "need",
+      "count": 7,
+      "chars": 1429,
+      "floor": 1020,
+      "margin": 409,
+      "indexable": true
+    },
+    {
+      "route": "student/",
+      "kind": "collection",
+      "count": 12,
+      "chars": 1773,
+      "floor": 1320,
+      "margin": 453,
+      "indexable": true
+    },
+    {
+      "route": "need/free-model/",
+      "kind": "need",
+      "count": 12,
+      "chars": 1774,
+      "floor": 1320,
+      "margin": 454,
+      "indexable": true
+    },
+    {
+      "route": "models/qwen-max/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1323,
+      "floor": 700,
+      "margin": 623,
+      "indexable": true
+    },
+    {
+      "route": "models/gpt-live-1/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1327,
+      "floor": 700,
+      "margin": 627,
+      "indexable": true
+    },
+    {
+      "route": "status/",
+      "kind": "status",
+      "count": 0,
+      "chars": 1228,
+      "floor": 600,
+      "margin": 628,
+      "indexable": true
+    },
+    {
+      "route": "models/spark-x2.5/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1338,
+      "floor": 700,
+      "margin": 638,
+      "indexable": true
+    },
+    {
+      "route": "models/baichuan-m3/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1340,
+      "floor": 700,
+      "margin": 640,
+      "indexable": true
+    },
+    {
+      "route": "models/doubao-seed-2.1-pro/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1341,
+      "floor": 700,
+      "margin": 641,
+      "indexable": true
+    },
+    {
+      "route": "models/doubao-seed-evolving/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1345,
+      "floor": 700,
+      "margin": 645,
+      "indexable": true
+    },
+    {
+      "route": "models/doubao-seed-2.1-turbo/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1355,
+      "floor": 700,
+      "margin": 655,
+      "indexable": true
+    },
+    {
+      "route": "models/hunyuan-embedding/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1357,
+      "floor": 700,
+      "margin": 657,
+      "indexable": true
+    },
+    {
+      "route": "deal/adcb6471a512/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1163,
+      "floor": 500,
+      "margin": 663,
+      "indexable": true
+    },
+    {
+      "route": "deal/ead998e58cd9/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1163,
+      "floor": 500,
+      "margin": 663,
+      "indexable": true
+    },
+    {
+      "route": "category/chat/",
+      "kind": "category",
+      "count": 15,
+      "chars": 2164,
+      "floor": 1500,
+      "margin": 664,
+      "indexable": true
+    },
+    {
+      "route": "models/baichuan-m3-plus/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1375,
+      "floor": 700,
+      "margin": 675,
+      "indexable": true
+    },
+    {
+      "route": "models/minimax-m2.5/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1379,
+      "floor": 700,
+      "margin": 679,
+      "indexable": true
+    },
+    {
+      "route": "deal/c694e7c5f125/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1188,
+      "floor": 500,
+      "margin": 688,
+      "indexable": true
+    },
+    {
+      "route": "vendor/cursor/",
+      "kind": "vendor",
+      "count": 1,
+      "chars": 1360,
+      "floor": 660,
+      "margin": 700,
+      "indexable": true
+    },
+    {
+      "route": "deal/5253b5ed77b1/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1201,
+      "floor": 500,
+      "margin": 701,
+      "indexable": true
+    },
+    {
+      "route": "models/hunyuan-translation/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1403,
+      "floor": 700,
+      "margin": 703,
+      "indexable": true
+    },
+    {
+      "route": "models/360zhinao-pro/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1419,
+      "floor": 700,
+      "margin": 719,
+      "indexable": true
+    },
+    {
+      "route": "models/doubao-seed-character/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1419,
+      "floor": 700,
+      "margin": 719,
+      "indexable": true
+    },
+    {
+      "route": "deal/833a9889bfb7/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1220,
+      "floor": 500,
+      "margin": 720,
+      "indexable": true
+    },
+    {
+      "route": "models/hunyuan-a13b/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1426,
+      "floor": 700,
+      "margin": 726,
+      "indexable": true
+    },
+    {
+      "route": "models/ernie-4.5-turbo-128k/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1428,
+      "floor": 700,
+      "margin": 728,
+      "indexable": true
+    },
+    {
+      "route": "deal/4caf88e30671/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1229,
+      "floor": 500,
+      "margin": 729,
+      "indexable": true
+    },
+    {
+      "route": "models/hunyuan-role-latest/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1436,
+      "floor": 700,
+      "margin": 736,
+      "indexable": true
+    },
+    {
+      "route": "deal/c59299cdc88e/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1243,
+      "floor": 500,
+      "margin": 743,
+      "indexable": true
+    },
+    {
+      "route": "models/glm-4.6v-flash/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1443,
+      "floor": 700,
+      "margin": 743,
+      "indexable": true
+    },
+    {
+      "route": "models/ernie-5.1/",
+      "kind": "model",
+      "count": 2,
+      "chars": 1445,
+      "floor": 700,
+      "margin": 745,
+      "indexable": true
+    },
+    {
+      "route": "archive/",
+      "kind": "archive-index",
+      "count": 0,
+      "chars": 1348,
+      "floor": 600,
+      "margin": 748,
+      "indexable": true
+    },
+    {
+      "route": "deal/1688614d6669/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1254,
+      "floor": 500,
+      "margin": 754,
+      "indexable": true
+    },
+    {
+      "route": "models/hunyuan-translation-lite/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1458,
+      "floor": 700,
+      "margin": 758,
+      "indexable": true
+    },
+    {
+      "route": "vendor/notion/",
+      "kind": "vendor",
+      "count": 2,
+      "chars": 1479,
+      "floor": 720,
+      "margin": 759,
+      "indexable": true
+    },
+    {
+      "route": "models/qwen3.8-max/",
+      "kind": "model",
+      "count": 2,
+      "chars": 1461,
+      "floor": 700,
+      "margin": 761,
+      "indexable": true
+    },
+    {
+      "route": "models/360zhinao-turbo-llm-geo/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1462,
+      "floor": 700,
+      "margin": 762,
+      "indexable": true
+    },
+    {
+      "route": "deal/b75b42583ad8/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1263,
+      "floor": 500,
+      "margin": 763,
+      "indexable": true
+    },
+    {
+      "route": "vendor/replit/",
+      "kind": "vendor",
+      "count": 1,
+      "chars": 1424,
+      "floor": 660,
+      "margin": 764,
+      "indexable": true
+    },
+    {
+      "route": "models/deepseek-v3.2/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1469,
+      "floor": 700,
+      "margin": 769,
+      "indexable": true
+    },
+    {
+      "route": "deal/e4bd8003b3d6/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1270,
+      "floor": 500,
+      "margin": 770,
+      "indexable": true
+    },
+    {
+      "route": "models/qwen3.8-27b/",
+      "kind": "model",
+      "count": 3,
+      "chars": 1470,
+      "floor": 700,
+      "margin": 770,
+      "indexable": true
+    },
+    {
+      "route": "models/tencent-hy-vision-1.5-instruct/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1473,
+      "floor": 700,
+      "margin": 773,
+      "indexable": true
+    },
+    {
+      "route": "deal/0c30d79a5016/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1275,
+      "floor": 500,
+      "margin": 775,
+      "indexable": true
+    },
+    {
+      "route": "models/claude-haiku-4.5/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1477,
+      "floor": 700,
+      "margin": 777,
+      "indexable": true
+    },
+    {
+      "route": "need/student-only/",
+      "kind": "alias",
+      "count": 12,
+      "chars": 2106,
+      "floor": 1320,
+      "margin": 786,
+      "indexable": false
+    },
+    {
+      "route": "models/minimax-m2.7-highspeed/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1496,
+      "floor": 700,
+      "margin": 796,
+      "indexable": true
+    },
+    {
+      "route": "models/qwen3-max/",
+      "kind": "model",
+      "count": 2,
+      "chars": 1500,
+      "floor": 700,
+      "margin": 800,
+      "indexable": true
+    },
+    {
+      "route": "deal/6869e7866510/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1301,
+      "floor": 500,
+      "margin": 801,
+      "indexable": true
+    },
+    {
+      "route": "deal/e4f7271cf7dc/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1304,
+      "floor": 500,
+      "margin": 804,
+      "indexable": true
+    },
+    {
+      "route": "deal/4bda0ebbb091/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1307,
+      "floor": 500,
+      "margin": 807,
+      "indexable": true
+    },
+    {
+      "route": "models/claude-sonnet-5.5/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1507,
+      "floor": 700,
+      "margin": 807,
+      "indexable": true
+    },
+    {
+      "route": "deal/d8d0ba522315/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1313,
+      "floor": 500,
+      "margin": 813,
+      "indexable": true
+    },
+    {
+      "route": "deal/bcba406ed9ff/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1315,
+      "floor": 500,
+      "margin": 815,
+      "indexable": true
+    },
+    {
+      "route": "models/glm-4.6v-flashx/",
+      "kind": "model",
+      "count": 2,
+      "chars": 1515,
+      "floor": 700,
+      "margin": 815,
+      "indexable": true
+    },
+    {
+      "route": "deal/4d4bcb5b6829/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1318,
+      "floor": 500,
+      "margin": 818,
+      "indexable": true
+    },
+    {
+      "route": "deal/62e3166acec0/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1318,
+      "floor": 500,
+      "margin": 818,
+      "indexable": true
+    },
+    {
+      "route": "vendor/microsoft/",
+      "kind": "vendor",
+      "count": 2,
+      "chars": 1540,
+      "floor": 720,
+      "margin": 820,
+      "indexable": true
+    },
+    {
+      "route": "deal/4c7952115477/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1321,
+      "floor": 500,
+      "margin": 821,
+      "indexable": true
+    },
+    {
+      "route": "deal/5c38e515a3ae/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1321,
+      "floor": 500,
+      "margin": 821,
+      "indexable": true
+    },
+    {
+      "route": "deal/913211f6d165/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1324,
+      "floor": 500,
+      "margin": 824,
+      "indexable": true
+    },
+    {
+      "route": "deal/df1210f69a39/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1326,
+      "floor": 500,
+      "margin": 826,
+      "indexable": true
+    },
+    {
+      "route": "deal/a1255b2fbae2/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1327,
+      "floor": 500,
+      "margin": 827,
+      "indexable": true
+    },
+    {
+      "route": "deal/6798f78de5ce/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1328,
+      "floor": 500,
+      "margin": 828,
+      "indexable": true
+    },
+    {
+      "route": "models/glm-4.6v/",
+      "kind": "model",
+      "count": 2,
+      "chars": 1532,
+      "floor": 700,
+      "margin": 832,
+      "indexable": true
+    },
+    {
+      "route": "deal/9180073deef1/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1333,
+      "floor": 500,
+      "margin": 833,
+      "indexable": true
+    },
+    {
+      "route": "deal/5dedb9455508/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1334,
+      "floor": 500,
+      "margin": 834,
+      "indexable": true
+    },
+    {
+      "route": "deal/e7e8f538456c/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1335,
+      "floor": 500,
+      "margin": 835,
+      "indexable": true
+    },
+    {
+      "route": "vendor/coze/",
+      "kind": "vendor",
+      "count": 4,
+      "chars": 1678,
+      "floor": 840,
+      "margin": 838,
+      "indexable": true
+    },
+    {
+      "route": "deal/aacd5856bba2/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1338,
+      "floor": 500,
+      "margin": 838,
+      "indexable": true
+    },
+    {
+      "route": "deal/8814355d59e1/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1339,
+      "floor": 500,
+      "margin": 839,
+      "indexable": true
+    },
+    {
+      "route": "deal/8b2e8d64f11f/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1339,
+      "floor": 500,
+      "margin": 839,
+      "indexable": true
+    },
+    {
+      "route": "deal/ad1d0c83909d/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1339,
+      "floor": 500,
+      "margin": 839,
+      "indexable": true
+    },
+    {
+      "route": "deal/bf156583e97c/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1339,
+      "floor": 500,
+      "margin": 839,
+      "indexable": true
+    },
+    {
+      "route": "deal/9c12f13df3ba/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1342,
+      "floor": 500,
+      "margin": 842,
+      "indexable": true
+    },
+    {
+      "route": "models/glm-4.7-flash/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1544,
+      "floor": 700,
+      "margin": 844,
+      "indexable": true
+    },
+    {
+      "route": "deal/2eae0e246de2/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1345,
+      "floor": 500,
+      "margin": 845,
+      "indexable": true
+    },
+    {
+      "route": "deal/e384895f5935/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1345,
+      "floor": 500,
+      "margin": 845,
+      "indexable": true
+    },
+    {
+      "route": "deal/176234a80147/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1347,
+      "floor": 500,
+      "margin": 847,
+      "indexable": true
+    },
+    {
+      "route": "models/claude-opus-5.5/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1547,
+      "floor": 700,
+      "margin": 847,
+      "indexable": true
+    },
+    {
+      "route": "models/glm-4.5v/",
+      "kind": "model",
+      "count": 2,
+      "chars": 1550,
+      "floor": 700,
+      "margin": 850,
+      "indexable": true
+    },
+    {
+      "route": "deal/e91f65960877/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1362,
+      "floor": 500,
+      "margin": 862,
+      "indexable": true
+    },
+    {
+      "route": "deal/e65f54470862/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1363,
+      "floor": 500,
+      "margin": 863,
+      "indexable": true
+    },
+    {
+      "route": "vendor/sensetime/",
+      "kind": "vendor",
+      "count": 1,
+      "chars": 1525,
+      "floor": 660,
+      "margin": 865,
+      "indexable": true
+    },
+    {
+      "route": "deal/8b609cb05116/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1366,
+      "floor": 500,
+      "margin": 866,
+      "indexable": true
+    },
+    {
+      "route": "deal/78384299b660/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1369,
+      "floor": 500,
+      "margin": 869,
+      "indexable": true
+    },
+    {
+      "route": "deal/0273d8b23412/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1370,
+      "floor": 500,
+      "margin": 870,
+      "indexable": true
+    },
+    {
+      "route": "deal/017bdbc04e70/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1372,
+      "floor": 500,
+      "margin": 872,
+      "indexable": true
+    },
+    {
+      "route": "deal/f22e3cd094ad/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1373,
+      "floor": 500,
+      "margin": 873,
+      "indexable": true
+    },
+    {
+      "route": "models/minimax-m2.7/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1573,
+      "floor": 700,
+      "margin": 873,
+      "indexable": true
+    },
+    {
+      "route": "deal/4e659666cbb2/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1375,
+      "floor": 500,
+      "margin": 875,
+      "indexable": true
+    },
+    {
+      "route": "deal/c4ab5c5d8101/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1375,
+      "floor": 500,
+      "margin": 875,
+      "indexable": true
+    },
+    {
+      "route": "models/gemini-3.5-flash/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1575,
+      "floor": 700,
+      "margin": 875,
+      "indexable": true
+    },
+    {
+      "route": "vendor/windsurf/",
+      "kind": "vendor",
+      "count": 1,
+      "chars": 1537,
+      "floor": 660,
+      "margin": 877,
+      "indexable": true
+    },
+    {
+      "route": "vendor/aws/",
+      "kind": "vendor",
+      "count": 1,
+      "chars": 1541,
+      "floor": 660,
+      "margin": 881,
+      "indexable": true
+    },
+    {
+      "route": "models/glm-5v-turbo/",
+      "kind": "model",
+      "count": 2,
+      "chars": 1583,
+      "floor": 700,
+      "margin": 883,
+      "indexable": true
+    },
+    {
+      "route": "vendor/baichuan/",
+      "kind": "vendor",
+      "count": 1,
+      "chars": 1544,
+      "floor": 660,
+      "margin": 884,
+      "indexable": true
+    },
+    {
+      "route": "deal/b8f11a235591/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1398,
+      "floor": 500,
+      "margin": 898,
+      "indexable": true
+    },
+    {
+      "route": "deal/2db62eb1a8a0/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1399,
+      "floor": 500,
+      "margin": 899,
+      "indexable": true
+    },
+    {
+      "route": "deal/47a4c57f3a15/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1399,
+      "floor": 500,
+      "margin": 899,
+      "indexable": true
+    },
+    {
+      "route": "deal/8dada3205ed8/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1399,
+      "floor": 500,
+      "margin": 899,
+      "indexable": true
+    },
+    {
+      "route": "models/kimi-k2.7-code/",
+      "kind": "model",
+      "count": 2,
+      "chars": 1608,
+      "floor": 700,
+      "margin": 908,
+      "indexable": true
+    },
+    {
+      "route": "deal/b4d87c02f4d9/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1411,
+      "floor": 500,
+      "margin": 911,
+      "indexable": true
+    },
+    {
+      "route": "deal/c433fee91818/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1413,
+      "floor": 500,
+      "margin": 913,
+      "indexable": true
+    },
+    {
+      "route": "models/step-3.5-flash/",
+      "kind": "model",
+      "count": 2,
+      "chars": 1615,
+      "floor": 700,
+      "margin": 915,
+      "indexable": true
+    },
+    {
+      "route": "vendor/ai360/",
+      "kind": "vendor",
+      "count": 1,
+      "chars": 1575,
+      "floor": 660,
+      "margin": 915,
+      "indexable": true
+    },
+    {
+      "route": "deal/45ead69d60cc/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1417,
+      "floor": 500,
+      "margin": 917,
+      "indexable": true
+    },
+    {
+      "route": "deal/6644f3b43bdb/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1417,
+      "floor": 500,
+      "margin": 917,
+      "indexable": true
+    },
+    {
+      "route": "deal/7f8c32f6a327/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1417,
+      "floor": 500,
+      "margin": 917,
+      "indexable": true
+    },
+    {
+      "route": "deal/e237cab7c007/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1417,
+      "floor": 500,
+      "margin": 917,
+      "indexable": true
+    },
+    {
+      "route": "deal/c25b0ed788e3/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1418,
+      "floor": 500,
+      "margin": 918,
+      "indexable": true
+    },
+    {
+      "route": "deal/6013b80f266f/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1420,
+      "floor": 500,
+      "margin": 920,
+      "indexable": true
+    },
+    {
+      "route": "deal/514a84a1064a/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1425,
+      "floor": 500,
+      "margin": 925,
+      "indexable": true
+    },
+    {
+      "route": "deal/57847fbcc1ed/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1426,
+      "floor": 500,
+      "margin": 926,
+      "indexable": true
+    },
+    {
+      "route": "deal/d6aaee8c7379/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1429,
+      "floor": 500,
+      "margin": 929,
+      "indexable": true
+    },
+    {
+      "route": "deal/1c057c22422c/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1436,
+      "floor": 500,
+      "margin": 936,
+      "indexable": true
+    },
+    {
+      "route": "deal/1888ab62bd67/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1438,
+      "floor": 500,
+      "margin": 938,
+      "indexable": true
+    },
+    {
+      "route": "models/glm-5.3-flash/",
+      "kind": "model",
+      "count": 3,
+      "chars": 1640,
+      "floor": 700,
+      "margin": 940,
+      "indexable": true
+    },
+    {
+      "route": "models/gemini-3.8-flash/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1642,
+      "floor": 700,
+      "margin": 942,
+      "indexable": true
+    },
+    {
+      "route": "deal/407572a1e046/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1446,
+      "floor": 500,
+      "margin": 946,
+      "indexable": true
+    },
+    {
+      "route": "vendor/moonshot/",
+      "kind": "vendor",
+      "count": 1,
+      "chars": 1608,
+      "floor": 660,
+      "margin": 948,
+      "indexable": true
+    },
+    {
+      "route": "deal/e63402b5cc83/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1459,
+      "floor": 500,
+      "margin": 959,
+      "indexable": true
+    },
+    {
+      "route": "deal/219f6fca7f31/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1469,
+      "floor": 500,
+      "margin": 969,
+      "indexable": true
+    },
+    {
+      "route": "models/claude-fable-5.1/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1683,
+      "floor": 700,
+      "margin": 983,
+      "indexable": true
+    },
+    {
+      "route": "models/kimi-k3/",
+      "kind": "model",
+      "count": 4,
+      "chars": 1685,
+      "floor": 700,
+      "margin": 985,
+      "indexable": true
+    },
+    {
+      "route": "models/gemini-3.7-flash/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1706,
+      "floor": 700,
+      "margin": 1006,
+      "indexable": true
+    },
+    {
+      "route": "vendor/iflytek/",
+      "kind": "vendor",
+      "count": 2,
+      "chars": 1728,
+      "floor": 720,
+      "margin": 1008,
+      "indexable": true
+    },
+    {
+      "route": "models/gpt-6-luna/",
+      "kind": "model",
+      "count": 4,
+      "chars": 1710,
+      "floor": 700,
+      "margin": 1010,
+      "indexable": true
+    },
+    {
+      "route": "deal/3c8a9a6a9ee9/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1522,
+      "floor": 500,
+      "margin": 1022,
+      "indexable": true
+    },
+    {
+      "route": "vendor/anthropic/",
+      "kind": "vendor",
+      "count": 1,
+      "chars": 1686,
+      "floor": 660,
+      "margin": 1026,
+      "indexable": true
+    },
+    {
+      "route": "vendor/deepseek/",
+      "kind": "vendor",
+      "count": 0,
+      "chars": 1636,
+      "floor": 600,
+      "margin": 1036,
+      "indexable": true
+    },
+    {
+      "route": "models/gpt-6.1-sol/",
+      "kind": "model",
+      "count": 4,
+      "chars": 1739,
+      "floor": 700,
+      "margin": 1039,
+      "indexable": true
+    },
+    {
+      "route": "deal/f578493037d4/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1542,
+      "floor": 500,
+      "margin": 1042,
+      "indexable": true
+    },
+    {
+      "route": "models/gemini-3.6-flash/",
+      "kind": "model",
+      "count": 1,
+      "chars": 1743,
+      "floor": 700,
+      "margin": 1043,
+      "indexable": true
+    },
+    {
+      "route": "vendor/github/",
+      "kind": "vendor",
+      "count": 3,
+      "chars": 1833,
+      "floor": 780,
+      "margin": 1053,
+      "indexable": true
+    },
+    {
+      "route": "models/gpt-6-astra/",
+      "kind": "model",
+      "count": 4,
+      "chars": 1766,
+      "floor": 700,
+      "margin": 1066,
+      "indexable": true
+    },
+    {
+      "route": "deal/97d21ff73d3e/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1598,
+      "floor": 500,
+      "margin": 1098,
+      "indexable": true
+    },
+    {
+      "route": "deal/65f0bdd295ac/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1609,
+      "floor": 500,
+      "margin": 1109,
+      "indexable": true
+    },
+    {
+      "route": "vendor/stepfun/",
+      "kind": "vendor",
+      "count": 1,
+      "chars": 1786,
+      "floor": 660,
+      "margin": 1126,
+      "indexable": true
+    },
+    {
+      "route": "deal/9c553dd82d2d/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1642,
+      "floor": 500,
+      "margin": 1142,
+      "indexable": true
+    },
+    {
+      "route": "vendor/tencent-cloud/",
+      "kind": "vendor",
+      "count": 1,
+      "chars": 1808,
+      "floor": 660,
+      "margin": 1148,
+      "indexable": true
+    },
+    {
+      "route": "vendor/google/",
+      "kind": "vendor",
+      "count": 1,
+      "chars": 1809,
+      "floor": 660,
+      "margin": 1149,
+      "indexable": true
+    },
+    {
+      "route": "deal/8e7b0fd03e73/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1653,
+      "floor": 500,
+      "margin": 1153,
+      "indexable": true
+    },
+    {
+      "route": "deal/42c65c0d8d9d/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1657,
+      "floor": 500,
+      "margin": 1157,
+      "indexable": true
+    },
+    {
+      "route": "vendor/siliconflow/",
+      "kind": "vendor",
+      "count": 1,
+      "chars": 1817,
+      "floor": 660,
+      "margin": 1157,
+      "indexable": true
+    },
+    {
+      "route": "vendor/volcengine/",
+      "kind": "vendor",
+      "count": 13,
+      "chars": 2541,
+      "floor": 1380,
+      "margin": 1161,
+      "indexable": true
+    },
+    {
+      "route": "deal/ebd47f6d2522/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1675,
+      "floor": 500,
+      "margin": 1175,
+      "indexable": true
+    },
+    {
+      "route": "models/glm-5.3/",
+      "kind": "model",
+      "count": 5,
+      "chars": 1899,
+      "floor": 700,
+      "margin": 1199,
+      "indexable": true
+    },
+    {
+      "route": "deal/c05dc74bfd78/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1720,
+      "floor": 500,
+      "margin": 1220,
+      "indexable": true
+    },
+    {
+      "route": "deal/4a875a435019/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1731,
+      "floor": 500,
+      "margin": 1231,
+      "indexable": true
+    },
+    {
+      "route": "models/deepseek-v4-pro/",
+      "kind": "model",
+      "count": 5,
+      "chars": 1931,
+      "floor": 700,
+      "margin": 1231,
+      "indexable": true
+    },
+    {
+      "route": "deal/7691c150c8e5/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1732,
+      "floor": 500,
+      "margin": 1232,
+      "indexable": true
+    },
+    {
+      "route": "deal/c971e33a9cd0/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1780,
+      "floor": 500,
+      "margin": 1280,
+      "indexable": true
+    },
+    {
+      "route": "deal/4987c183fc1a/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1790,
+      "floor": 500,
+      "margin": 1290,
+      "indexable": true
+    },
+    {
+      "route": "deal/df8ec56faa17/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1793,
+      "floor": 500,
+      "margin": 1293,
+      "indexable": true
+    },
+    {
+      "route": "models/deepseek-flash/",
+      "kind": "model",
+      "count": 5,
+      "chars": 2030,
+      "floor": 700,
+      "margin": 1330,
+      "indexable": true
+    },
+    {
+      "route": "vendor/minimax/",
+      "kind": "vendor",
+      "count": 3,
+      "chars": 2143,
+      "floor": 780,
+      "margin": 1363,
+      "indexable": true
+    },
+    {
+      "route": "deal/b56f33b3d4f3/",
+      "kind": "deal",
+      "count": 0,
+      "chars": 1899,
+      "floor": 500,
+      "margin": 1399,
+      "indexable": true
+    },
+    {
+      "route": "need/free-tokens/",
+      "kind": "need",
+      "count": 44,
+      "chars": 4652,
+      "floor": 3240,
+      "margin": 1412,
+      "indexable": true
+    },
+    {
+      "route": "models/minimax-m3/",
+      "kind": "model",
+      "count": 5,
+      "chars": 2112,
+      "floor": 700,
+      "margin": 1412,
+      "indexable": true
+    },
+    {
+      "route": "vendor/aliyun/",
+      "kind": "vendor",
+      "count": 1,
+      "chars": 2081,
+      "floor": 660,
+      "margin": 1421,
+      "indexable": true
+    },
+    {
+      "route": "vendor/openai/",
+      "kind": "vendor",
+      "count": 1,
+      "chars": 2131,
+      "floor": 660,
+      "margin": 1471,
+      "indexable": true
+    },
+    {
+      "route": "free-api/",
+      "kind": "collection",
+      "count": 45,
+      "chars": 4777,
+      "floor": 3300,
+      "margin": 1477,
+      "indexable": true
+    },
+    {
+      "route": "vendor/zhipu/",
+      "kind": "vendor",
+      "count": 12,
+      "chars": 2935,
+      "floor": 1320,
+      "margin": 1615,
+      "indexable": true
+    },
+    {
+      "route": "vendor/",
+      "kind": "hub",
+      "count": 9,
+      "chars": 2699,
+      "floor": 1040,
+      "margin": 1659,
+      "indexable": true
+    },
+    {
+      "route": "need/free-api/",
+      "kind": "alias",
+      "count": 45,
+      "chars": 4965,
+      "floor": 3300,
+      "margin": 1665,
+      "indexable": false
+    },
+    {
+      "route": "need/china-usable/",
+      "kind": "need",
+      "count": 30,
+      "chars": 4156,
+      "floor": 2400,
+      "margin": 1756,
+      "indexable": true
+    },
+    {
+      "route": "category/api/",
+      "kind": "category",
+      "count": 36,
+      "chars": 4609,
+      "floor": 2760,
+      "margin": 1849,
+      "indexable": true
+    },
+    {
+      "route": "developer/",
+      "kind": "collection",
+      "count": 67,
+      "chars": 6655,
+      "floor": 4620,
+      "margin": 2035,
+      "indexable": true
+    },
+    {
+      "route": "vendor/baidu-ai-cloud/",
+      "kind": "vendor",
+      "count": 17,
+      "chars": 3695,
+      "floor": 1620,
+      "margin": 2075,
+      "indexable": true
+    },
+    {
+      "route": "models/",
+      "kind": "models-index",
+      "count": 51,
+      "chars": 5740,
+      "floor": 3660,
+      "margin": 2080,
+      "indexable": true
+    },
+    {
+      "route": "need/dev-credits/",
+      "kind": "alias",
+      "count": 67,
+      "chars": 6735,
+      "floor": 4620,
+      "margin": 2115,
+      "indexable": false
+    },
+    {
+      "route": "plans/",
+      "kind": "plans-hub",
+      "count": 2,
+      "chars": 3362,
+      "floor": 820,
+      "margin": 2542,
+      "indexable": true
+    },
+    {
+      "route": "need/free-tier/",
+      "kind": "need",
+      "count": 60,
+      "chars": 7017,
+      "floor": 4200,
+      "margin": 2817,
+      "indexable": true
+    },
+    {
+      "route": "feeds/",
+      "kind": "feeds",
+      "count": 0,
+      "chars": 4254,
+      "floor": 600,
+      "margin": 3654,
+      "indexable": true
+    },
+    {
+      "route": "changes/",
+      "kind": "changes",
+      "count": 0,
+      "chars": 4786,
+      "floor": 600,
+      "margin": 4186,
+      "indexable": true
+    },
+    {
+      "route": "docs/data/",
+      "kind": "data-docs",
+      "count": 9,
+      "chars": 5664,
+      "floor": 1200,
+      "margin": 4464,
+      "indexable": true
+    },
+    {
+      "route": "",
+      "kind": "home",
+      "count": 0,
+      "chars": 13306,
+      "floor": 3000,
+      "margin": 10306,
+      "indexable": true
+    },
+    {
+      "route": "plans/api/",
+      "kind": "plans",
+      "count": 108,
+      "chars": 30816,
+      "floor": 7080,
+      "margin": 23736,
+      "indexable": true
+    },
+    {
+      "route": "plans/coding/",
+      "kind": "plans",
+      "count": 44,
+      "chars": 33360,
+      "floor": 3240,
+      "margin": 30120,
+      "indexable": true
+    }
+  ]
+}
