@@ -1,0 +1,301 @@
+{
+  "task": "ci-master-gate-concurrency-v1",
+  "what": "master push 触发的 Verify site (gate) 运行统计与「被谁取代」关系（裁定依据）",
+  "at": "2026-10-08T10:45:35.361Z",
+  "how": "gh api \"repos/buguoshixc/ai-deals-aggregator/actions/runs?event=push&per_page=100\"（原始 JSON 的 sha256 见 rawApiSha256）",
+  "rawApiSha256": {
+    "runs-live.json": "7828f8f14afb234ebe2522b2a967a732fd59bc3769497c4901fe4ed1859cbee4",
+    "runs-live2.json": "fb6b8df89f0abfb63f0c00257263ee4c849b68c9ee9f3ac82e0cfecb0fa21a04",
+    "runs-live3.json": "825a34956b25208b0e60daa5338252a02a529639e53d433312fcbab5ddeb1c05",
+    "runs-push.json": "980f9390248ae6722bae118c8a57ad65665226b706faa759833460f81e5bf333"
+  },
+  "totals": {
+    "runsPulled": 100,
+    "byWorkflow": {
+      "Deploy to GitHub Pages": 50,
+      "Verify site (gate)": 50
+    },
+    "gateAllBranches": 50
+  },
+  "masterGate": {
+    "count": 50,
+    "byConclusion": {
+      "pending": 1,
+      "in_progress": 1,
+      "success": 46,
+      "cancelled": 2
+    },
+    "cancelledPct": 4,
+    "successPct": 92
+  },
+  "deployMaster": {
+    "count": 50,
+    "byConclusion": {
+      "pending": 1,
+      "in_progress": 1,
+      "success": 47,
+      "failure": 1
+    }
+  },
+  "supersedeRelations": [
+    {
+      "cancelledRun": {
+        "id": 37761851998,
+        "runNumber": 151,
+        "headSha": "33d247225870",
+        "createdAt": "2026-10-08T10:11:40Z",
+        "startedAt": "2026-10-08T10:11:40Z",
+        "updatedAt": "2026-10-08T10:16:59Z"
+      },
+      "supersededBy": {
+        "id": 37762409826,
+        "runNumber": 154,
+        "headSha": "8c9fb29d93c3",
+        "createdAt": "2026-10-08T10:16:42Z",
+        "conclusion": "cancelled"
+      },
+      "gapSeconds": 302
+    },
+    {
+      "cancelledRun": {
+        "id": 37762409826,
+        "runNumber": 154,
+        "headSha": "8c9fb29d93c3",
+        "createdAt": "2026-10-08T10:16:42Z",
+        "startedAt": "2026-10-08T10:16:42Z",
+        "updatedAt": "2026-10-08T10:22:18Z"
+      },
+      "supersededBy": {
+        "id": 37762919782,
+        "runNumber": 156,
+        "headSha": "95dfeb99035c",
+        "createdAt": "2026-10-08T10:21:22Z",
+        "conclusion": "success"
+      },
+      "gapSeconds": 280
+    }
+  ],
+  "recentMasterGateRuns": [
+    {
+      "runNumber": 108,
+      "id": 37314684508,
+      "headSha": "4927fe3d175a",
+      "createdAt": "2026-10-05T13:09:46Z",
+      "conclusion": "success",
+      "event": "push",
+      "deployOnSameSha": "success"
+    },
+    {
+      "runNumber": 111,
+      "id": 37409729153,
+      "headSha": "c9b967243e39",
+      "createdAt": "2026-10-06T03:35:49Z",
+      "conclusion": "success",
+      "event": "push",
+      "deployOnSameSha": "success"
+    },
+    {
+      "runNumber": 113,
+      "id": 37502684190,
+      "headSha": "9251e83b68a7",
+      "createdAt": "2026-10-06T17:19:42Z",
+      "conclusion": "success",
+      "event": "push",
+      "deployOnSameSha": "success"
+    },
+    {
+      "runNumber": 115,
+      "id": 37506217510,
+      "headSha": "e09f4a4ea7a4",
+      "createdAt": "2026-10-06T17:47:07Z",
+      "conclusion": "success",
+      "event": "push",
+      "deployOnSameSha": "success"
+    },
+    {
+      "runNumber": 118,
+      "id": 37583953962,
+      "headSha": "39def54ff272",
+      "createdAt": "2026-10-07T06:52:37Z",
+      "conclusion": "success",
+      "event": "push",
+      "deployOnSameSha": "success"
+    },
+    {
+      "runNumber": 120,
+      "id": 37585164937,
+      "headSha": "a795ce3a4e5d",
+      "createdAt": "2026-10-07T07:04:58Z",
+      "conclusion": "success",
+      "event": "push",
+      "deployOnSameSha": "success"
+    },
+    {
+      "runNumber": 122,
+      "id": 37614845701,
+      "headSha": "5e130618522c",
+      "createdAt": "2026-10-07T11:33:09Z",
+      "conclusion": "success",
+      "event": "push",
+      "deployOnSameSha": "success"
+    },
+    {
+      "runNumber": 124,
+      "id": 37616278795,
+      "headSha": "7872c049af5c",
+      "createdAt": "2026-10-07T11:45:44Z",
+      "conclusion": "success",
+      "event": "push",
+      "deployOnSameSha": "success"
+    },
+    {
+      "runNumber": 126,
+      "id": 37640227396,
+      "headSha": "4b54cae67053",
+      "createdAt": "2026-10-07T14:51:27Z",
+      "conclusion": "success",
+      "event": "push",
+      "deployOnSameSha": "success"
+    },
+    {
+      "runNumber": 128,
+      "id": 37642482115,
+      "headSha": "a57670ddcac8",
+      "createdAt": "2026-10-07T15:16:58Z",
+      "conclusion": "success",
+      "event": "push",
+      "deployOnSameSha": "success"
+    },
+    {
+      "runNumber": 130,
+      "id": 37649032608,
+      "headSha": "fa1e4ce40309",
+      "createdAt": "2026-10-07T16:03:32Z",
+      "conclusion": "success",
+      "event": "push",
+      "deployOnSameSha": "success"
+    },
+    {
+      "runNumber": 132,
+      "id": 37659228952,
+      "headSha": "5a031cb150a2",
+      "createdAt": "2026-10-07T17:27:39Z",
+      "conclusion": "success",
+      "event": "push",
+      "deployOnSameSha": "success"
+    },
+    {
+      "runNumber": 134,
+      "id": 37661080935,
+      "headSha": "11f9ee00faef",
+      "createdAt": "2026-10-07T17:41:56Z",
+      "conclusion": "success",
+      "event": "push",
+      "deployOnSameSha": "success"
+    },
+    {
+      "runNumber": 136,
+      "id": 37729817611,
+      "headSha": "7ba81021c7ee",
+      "createdAt": "2026-10-08T04:55:31Z",
+      "conclusion": "success",
+      "event": "push",
+      "deployOnSameSha": "success"
+    },
+    {
+      "runNumber": 139,
+      "id": 37747903611,
+      "headSha": "1c02d84b07a0",
+      "createdAt": "2026-10-08T08:08:46Z",
+      "conclusion": "success",
+      "event": "push",
+      "deployOnSameSha": "success"
+    },
+    {
+      "runNumber": 141,
+      "id": 37750216733,
+      "headSha": "8d3767c04b5e",
+      "createdAt": "2026-10-08T08:29:52Z",
+      "conclusion": "success",
+      "event": "push",
+      "deployOnSameSha": "success"
+    },
+    {
+      "runNumber": 143,
+      "id": 37755202815,
+      "headSha": "ef395c0c9a81",
+      "createdAt": "2026-10-08T09:13:52Z",
+      "conclusion": "success",
+      "event": "push",
+      "deployOnSameSha": "success"
+    },
+    {
+      "runNumber": 145,
+      "id": 37757338613,
+      "headSha": "4b366d273391",
+      "createdAt": "2026-10-08T09:32:18Z",
+      "conclusion": "success",
+      "event": "push",
+      "deployOnSameSha": "success"
+    },
+    {
+      "runNumber": 147,
+      "id": 37760487492,
+      "headSha": "e455b3a69428",
+      "createdAt": "2026-10-08T09:59:47Z",
+      "conclusion": "success",
+      "event": "push",
+      "deployOnSameSha": "success"
+    },
+    {
+      "runNumber": 151,
+      "id": 37761851998,
+      "headSha": "33d247225870",
+      "createdAt": "2026-10-08T10:11:40Z",
+      "conclusion": "cancelled",
+      "event": "push",
+      "deployOnSameSha": "success"
+    },
+    {
+      "runNumber": 154,
+      "id": 37762409826,
+      "headSha": "8c9fb29d93c3",
+      "createdAt": "2026-10-08T10:16:42Z",
+      "conclusion": "cancelled",
+      "event": "push",
+      "deployOnSameSha": "success"
+    },
+    {
+      "runNumber": 156,
+      "id": 37762919782,
+      "headSha": "95dfeb99035c",
+      "createdAt": "2026-10-08T10:21:22Z",
+      "conclusion": "success",
+      "event": "push",
+      "deployOnSameSha": "success"
+    },
+    {
+      "runNumber": 163,
+      "id": 37765080265,
+      "headSha": "049388546356",
+      "createdAt": "2026-10-08T10:41:02Z",
+      "conclusion": null,
+      "event": "push",
+      "deployOnSameSha": null
+    },
+    {
+      "runNumber": 164,
+      "id": 37765384216,
+      "headSha": "24ce23bc30fa",
+      "createdAt": "2026-10-08T10:43:48Z",
+      "conclusion": null,
+      "event": "push",
+      "deployOnSameSha": null
+    }
+  ],
+  "coverage": {
+    "masterGateRunsObserved": 50,
+    "requirement": "任务要求最近 ≥20 次 master push 触发的 gate 运行 —— 本文件覆盖 50 次"
+  },
+  "note": "API 的列表端点有 ~1 分钟级缓存：同一 run 在两次拉取里可能给出不同 status（实测踩过）。因此本文件只信「最终态」并在 burst 文件里用 created/updated 时间戳交叉核对。"
+}

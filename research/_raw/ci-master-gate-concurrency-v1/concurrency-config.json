@@ -1,0 +1,74 @@
+{
+  "task": "ci-master-gate-concurrency-v1",
+  "what": "两侧 workflow 的并发配置、分支保护/规则集要求、仓库可见性（取舍分析的事实底座）",
+  "at": "2026-10-08T10:57:44.735Z",
+  "verifyWorkflow": {
+    "concurrencyBlock": "concurrency:\n  group: verify-${{ github.ref }}\n  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}",
+    "currentLine": "cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}",
+    "group": "group: verify-${{ github.ref }}",
+    "jobName": "name: gate",
+    "sha256": "8714da90643deccd62b95f970b14a15f53ac94aaf1e69db63d67b209182f05b3"
+  },
+  "deployWorkflow": {
+    "concurrencyBlock": "concurrency:\n  group: pages\n  cancel-in-progress: false",
+    "prepublishRunsSameGateAction": true,
+    "prepublishStrictness": "allow_degraded_run: 'false'",
+    "sha256": "97e4ca755f90d7a42b8a5d702adb9745033a3e2eead71dbb4d61c1766de7dc21"
+  },
+  "ruleset": {
+    "name": "master-gate",
+    "enforcement": "active",
+    "conditions": {
+      "ref_name": {
+        "exclude": [],
+        "include": [
+          "~DEFAULT_BRANCH"
+        ]
+      }
+    },
+    "rules": [
+      {
+        "type": "non_fast_forward"
+      },
+      {
+        "type": "pull_request",
+        "parameters": {
+          "required_approving_review_count": 0,
+          "dismiss_stale_reviews_on_push": false,
+          "required_reviewers": [],
+          "require_code_owner_review": false,
+          "require_last_push_approval": false,
+          "required_review_thread_resolution": false,
+          "require_extra_approval_for_unattributed_changes": true,
+          "allowed_merge_methods": [
+            "merge",
+            "squash",
+            "rebase"
+          ]
+        }
+      },
+      {
+        "type": "deletion"
+      },
+      {
+        "type": "required_status_checks",
+        "parameters": {
+          "strict_required_status_checks_policy": false,
+          "do_not_enforce_on_create": false,
+          "required_status_checks": [
+            {
+              "context": "gate",
+              "integration_id": 15368
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "repository": {
+    "private": false,
+    "visibility": "public",
+    "note": "public ⇒ 标准 runner 分钟不计费（成本论证的事实底座）"
+  },
+  "gateCallersNote": "verify.yml 的 gate、deploy.yml 的 prepublish、collect.yml 的提交前检查调用的是**同一个** .github/actions/gate（check-ci (11) 守着这件事）"
+}
