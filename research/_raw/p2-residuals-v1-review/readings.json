@@ -1,0 +1,115 @@
+{
+  "review": "t13 · p2-residuals-v1 独立复核",
+  "reviewedCommit": "33d2472（PR #62 合并提交）",
+  "reviewerWorktree": ".worktrees/p2-review（detached @33d2472）",
+  "baselineWorktree": ".worktrees/nm-baseline（@4b366d2；已核 `git diff 4b366d2 e455b3a -- scripts/ index.html package.json` 为空 ⇒ 与 PR #62 的父提交同源）",
+  "environment": "Windows · Node v24.13.1 · 全部读数本机一次跑出",
+  "note": "复核刻意在 **t4 的合并提交**上做（不是当前 master）：当前 master 已含 t3（notes-manifest-v1），verify-site 会显示 880 项、dist 会多一个 `_notes.ndjson`（303 → 304）—— 那两处差异是 t3 自己的、有报告记录的产物面变化，不是 t4 的读数错误。",
+  "claims": [
+    {
+      "claim": "新检查码 thin-content-margin（27 → 28）",
+      "reportValue": "27 → 28",
+      "myValue": "基线树（4b366d2）`require('./scripts/lib/seo').PROBLEM_CODES.length` = 27；复核树（33d2472）= 28；构建日志逐字 `✓ SEO 安全门禁: 28 个检查码 × 186 个页面全过`",
+      "method": "node -e 读模块导出 + 实跑构建看日志",
+      "verdict": "一致"
+    },
+    {
+      "claim": "余量登记 6 页",
+      "reportValue": "6 页（need/no-card 50 · category/ 123 · category/audio/ 123 · need/ai-coding/ 136 · category/image/ 139 · category/agent/ 142）",
+      "myValue": "6 页，**逐条 ★一致**（chars / floor / margin 三个数逐值相同）。我用的是自己写的可见正文计数器 + 自己从页面标记独立判定的 count（data-item / data-child）",
+      "method": ".arch-v1/rev-margins.cjs（自写计数器；HTML 实体解码 → 去 script/style/注释/标签 → 空白折叠 → 计数）",
+      "verdict": "一致"
+    },
+    {
+      "claim": "/need/no-card/ 710 − 660 = 50",
+      "reportValue": "710 / 660 / 50",
+      "myValue": "710 − 660 = 50（我的计数器数到 710；floor = pageKinds.textFloor('need', 1) = 600 + 60×1 = 660）",
+      "method": ".arch-v1/rev-margins.cjs + 直接读 page-kinds 的 textFloor",
+      "verdict": "一致"
+    },
+    {
+      "claim": "次薄 123；第 7 页起 409",
+      "reportValue": "次薄 123（category/ 与 category/audio/）；第 7 页 409",
+      "myValue": "全站余量升序：50 · 123 · 123 · 136 · 139 · 142 · **409**（need/edu-identity/）—— 150 以下正好 6 页，与我独立判定 count 的页面集合一致",
+      "method": ".arch-v1/rev-margins.cjs 的全站普查（186 页；唯一没能独立判定 count 的是 archive/，perItem≠0，但它的余量远在 150 以上）",
+      "verdict": "一致"
+    },
+    {
+      "claim": "npm run selftest:seo 69 → 87",
+      "reportValue": "69 / 0 → 87 / 0",
+      "myValue": "基线树 69 项 / 0 失败；复核树 87 项 / 0 失败",
+      "method": "两棵 worktree 各跑一次 node scripts/tools/seo-selftest.js",
+      "verdict": "一致"
+    },
+    {
+      "claim": "npm run verify:seo 11 → 17",
+      "reportValue": "11 / 0 → 17 / 0",
+      "myValue": "基线树 11 项 / 0 失败（--dir=dist.master）；复核树 17 项 / 0 失败（--dir=dist，`dist 文件数: 303`）",
+      "method": "两棵树各跑一次 node scripts/tools/seo-verify.js",
+      "verdict": "一致"
+    },
+    {
+      "claim": "npm run verify（verify-site --dir=dist）874 / 0",
+      "reportValue": "874 项 / 0 失败",
+      "myValue": "874 项 / 0 失败（--json=.arch-v1/rev-verify.json）",
+      "method": "node scripts/tools/verify-site.js --dir=dist --json=…",
+      "verdict": "一致"
+    },
+    {
+      "claim": "npm run check:ci 39 / 0",
+      "reportValue": "39 / 0",
+      "myValue": "39 项 / 0 失败（`--expect-checks=39`；任务 Verify 行指定的就是这个调用）",
+      "method": "node scripts/tools/check-ci-consistency.js --expect-checks=39",
+      "verdict": "一致"
+    },
+    {
+      "claim": "产物 303/303 逐字节未变（判据原样 vs 判据带改动）",
+      "reportValue": "303 / 303 · 逐文件 sha256 0 差异 · 全树摘要 75ecb98344a855b7a72df9df83440b9ebb33eacd3daaa2821f7e4e653fd003a2",
+      "myValue": "复核树 dist：303 文件 / 20,282,063 B / 全树摘要 75ecb983…；基线树构建（我在 4b366d2 上亲手构建的 dist.master）：同一摘要。逐文件对账：只在 A 0 · 只在 B 0 · 同名不同内容 0",
+      "method": ".arch-v1/rev-digest.cjs（自写）+ .arch-v1/rev-diff.cjs",
+      "verdict": "一致"
+    },
+    {
+      "claim": "selftest:changes 119（未改，不该变）",
+      "reportValue": "119 / 0 → 119 / 0",
+      "myValue": "两棵树都是 119 项 / 0 失败",
+      "method": "两棵 worktree 各跑一次 changes-selftest.js",
+      "verdict": "一致"
+    },
+    {
+      "claim": "check:evidence 绿（无新增 Tier-3）",
+      "reportValue": "绿",
+      "myValue": "✅ 没有新增的 Tier-3 文件（1283 个已跟踪的全部在清单内）+ 清单自证通过",
+      "method": "npm run check:evidence（复核树）",
+      "verdict": "一致"
+    },
+    {
+      "claim": "e3：入口锚 4 个 / 3 页，逐字「全部变化 →」；「查看全部」0 处",
+      "reportValue": "4 锚 / 3 页（/ · /plans/×2 · /plans/coding/）；「查看全部」静态 DOM 0、含 script 模板 0",
+      "myValue": "4 锚 / 3 页，**4/4 逐字都是「全部变化 →」**；「查看全部」静态 DOM 0 页、原始文件（含 script）0 页。⚠️ 我第一版手写扫描只数到 2 个 —— 因为锚点 href 形如 `../changes/#plans`（带片段），我的正则要求 `changes/\"` 引号紧跟 ⇒ 漏了两条；修正后与报告一致",
+      "method": ".arch-v1/rev-wording.cjs（自写扫描）+ .arch-v1/rev-anchors.cjs（把差查到底）",
+      "verdict": "一致（差异原因在我这一侧，已定位）"
+    },
+    {
+      "claim": "e3：7 个渲染源文件里「查看全部」0 处；全仓 1 处在旧报告的决定记录里",
+      "reportValue": "源文件 0 处",
+      "myValue": "未逐文件复核（自审的 §七 断言覆盖这一半：7 个源文件无「查看全部」）；我复核的是**产物侧 0 处**与**`scripts/lib/` 里硬编码字面量只有 plans-hub-page.js 一处**",
+      "method": "见 teeth.json 的 literal-second-site（那条断言真的会咬人）",
+      "verdict": "部分复核（产物侧与字面量登记已复核；「7 个源文件」的清单本身没逐条核）"
+    },
+    {
+      "claim": "§7 第 3 条：check-ci-consistency.js:191 的注释漂移（写着 27，实际 28）",
+      "reportValue": "注释里是 27（漂移，待下一轮改）",
+      "myValue": "L191 逐字：`// v1.7 新增：SEO 门禁自测（27 个检查码逐条定向篡改 + …` —— 漂移真实存在，且与 check:ci 39/0 无关",
+      "method": "读文件 + .arch-v1/rev-wording.cjs ④",
+      "verdict": "一致（如实登记）"
+    },
+    {
+      "claim": "自审 §3-6：跨平台（Ubuntu CI）可能影响 §七 的字面量位置断言",
+      "reportValue": "「以 CI 为准」（自审列为风险）",
+      "myValue": "PR #62 的 gate run 37760907386 = **pass（4m34s，Ubuntu）** ⇒ 该断言在 Linux 上通过，这条风险已由 CI 证据闭合",
+      "method": "gh pr checks 62 / gh run list --branch p2-residuals-v1",
+      "verdict": "风险闭合"
+    }
+  ]
+}
