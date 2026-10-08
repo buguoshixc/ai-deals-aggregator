@@ -1,0 +1,80 @@
+{
+  "how": "自写 DOM 探针（.arch-v1/dom-probe.cjs desync）：在**浏览器里**注入「外层竖排 + 后代横排」，按 verify-site 的口径量 ①（最窄承载块的 content box）与 ②（列数 / 列栈），阈值 = 0.85 × min(主数据区, 页面列宽) = 1173px",
+  "staticScan": {
+    "pagesWithWritingModeInArtifacts": 0,
+    "how": "扫全部 186 页内联 <style> 里的 `writing-mode` 声明（.arch-v1/static-scan.cjs S2）"
+  },
+  "forms": [
+    {
+      "form": "A-后代横排(auto宽)",
+      "writingMode": "vertical-rl",
+      "textWidth": 1104,
+      "bearingContentBoxes": [
+        1104
+      ],
+      "innerWidth": 1104.39,
+      "columnCount": 1,
+      "threshold": 1173,
+      "firesNarrow": true,
+      "firesInkNarrow": false,
+      "verticalClippingPx": 0
+    },
+    {
+      "form": "C-后代横排(100%宽)",
+      "writingMode": "vertical-rl",
+      "textWidth": 1380,
+      "bearingContentBoxes": [
+        1380
+      ],
+      "innerWidth": 1380,
+      "columnCount": 1,
+      "threshold": 1173,
+      "firesNarrow": false,
+      "firesInkNarrow": false,
+      "verticalClippingPx": 0
+    },
+    {
+      "form": "D-后代横排+每16字换行",
+      "writingMode": "vertical-rl",
+      "textWidth": 192,
+      "bearingContentBoxes": [
+        192
+      ],
+      "innerWidth": 192,
+      "columnCount": 1,
+      "threshold": 1173,
+      "firesNarrow": true,
+      "firesInkNarrow": false,
+      "verticalClippingPx": 0
+    },
+    {
+      "form": "E-固定高+裁切+nowrap",
+      "writingMode": "vertical-rl",
+      "textWidth": 1104,
+      "bearingContentBoxes": [
+        1104
+      ],
+      "innerWidth": 1104.39,
+      "columnCount": 1,
+      "threshold": 1173,
+      "firesNarrow": true,
+      "firesInkNarrow": false,
+      "verticalClippingPx": 0
+    },
+    {
+      "form": "F-后代横排+100%宽+多行+裁切",
+      "writingMode": "vertical-rl",
+      "textWidth": 1380,
+      "bearingContentBoxes": [
+        1380
+      ],
+      "innerWidth": 1380,
+      "columnCount": 1,
+      "threshold": 1173,
+      "firesNarrow": false,
+      "firesInkNarrow": false,
+      "verticalClippingPx": 53
+    }
+  ],
+  "conclusion": "② 在所有形态下都静默（列数恒为 1）；① 能接住「后代真的变窄」的两种（A/D/E），但接不住 F：后代撑满宽 + 多行 + 外层定高裁切 ⇒ textWidth 1380 ≥ 1173、列 1 ⇒ **零码**，而竖直方向被裁掉 53px（scrollHeight 143 vs clientHeight 90，≈37% 的行高）"
+}

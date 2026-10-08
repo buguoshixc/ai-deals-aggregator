@@ -1,0 +1,74 @@
+{
+  "what": "把 verify-site.js **拷贝**到 .arch-v1/probe/ 后按模式改一处行为常量（原件零改动）再跑",
+  "modes": {
+    "base": {
+      "seconds": 137.4,
+      "total": 880,
+      "failed": 0,
+      "pagesWithViolations": 0,
+      "notesJudged": 271,
+      "narrowUnionNotes": 0,
+      "inkNarrowNotes": 0,
+      "samplePages": 29,
+      "desktopViewports": [
+        1440,
+        1600
+      ],
+      "failedChecks": []
+    },
+    "w950": {
+      "seconds": 141.2,
+      "total": 880,
+      "failed": 1,
+      "pagesWithViolations": 0,
+      "notesJudged": 271,
+      "narrowUnionNotes": 0,
+      "inkNarrowNotes": 0,
+      "samplePages": 29,
+      "desktopViewports": [
+        1440,
+        950
+      ],
+      "failedChecks": [
+        "§22c M10 变异后复测必须出现「note-narrow」违规码（F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到））"
+      ]
+    },
+    "all760": {
+      "seconds": 174.9,
+      "total": 880,
+      "failed": 0,
+      "pagesWithViolations": 0,
+      "notesJudged": 271,
+      "narrowUnionNotes": 0,
+      "inkNarrowNotes": 0,
+      "samplePages": 186,
+      "desktopViewports": [
+        1440,
+        1600
+      ],
+      "failedChecks": []
+    },
+    "notes760": {
+      "seconds": 170,
+      "total": 880,
+      "failed": 0,
+      "pagesWithViolations": 0,
+      "notesJudged": 271,
+      "narrowUnionNotes": 0,
+      "inkNarrowNotes": 0,
+      "samplePages": 63,
+      "desktopViewports": [
+        1440,
+        1600
+      ],
+      "failedChecks": []
+    }
+  },
+  "w950addCrash": {
+    "mode": "w950add（桌面档 [1440,1600] → [1440,1600,950]，**加**一档而不是替换）",
+    "exitCode": 1,
+    "error": "TypeError: Cannot read properties of undefined (reading 'filter')",
+    "location": "scripts/tools/verify-site.js:7549–7557（拷贝与原件行号一致）：`wideNoteRowsByViewport` 只用 `[WIDE_DESKTOP]`/`[WIDE_WIDE]` 两个键建表，而下面的循环遍历 `WIDE_DESKTOP_VIEWPORTS`",
+    "implication": "「补一档」不是改一个常量：§22c 的读数汇总处按两档写死，需要同步改；M10 变异牙也锚在 1600 档"
+  }
+}

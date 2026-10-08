@@ -1,0 +1,24 @@
+{
+  "how": "静态取产物里所有「声明了 max-width: N ch」的规则，再在浏览器里量生效宽 ÷ (N × ch 现场换算值)",
+  "baseline": [
+    {
+      "route": "plans/coding/",
+      "selector": ".pdetailbody",
+      "declaredCh": 72,
+      "declaredPx": 465.75,
+      "effectiveWidth": 465.75,
+      "ratio": 1
+    }
+  ],
+  "attackWidth300px": [
+    {
+      "route": "plans/coding/",
+      "selector": ".pdetailbody",
+      "beforeEffectiveWidth": 465.75,
+      "afterEffectiveWidth": 300,
+      "declaredPx": 465.75,
+      "ratioAfter": 0.644
+    }
+  ],
+  "conclusion": "产物里只有 1 条 ch 声明（.pdetailbody{max-width:72ch}，1 页）；它的生效宽恰好 = 72ch（比值 1.000）⇒ 「±20%」判据今天的假阳性面 = 0；t5 的 R5b 形态注入后比值 0.644 ⇒ 该判据会红（有牙）"
+}
