@@ -231,7 +231,7 @@
 | **模型级绑定**（`field = models.<modelKey>`） | **40** | 口径：`parseEvidenceBinding` 判 `kind==='model' && !variant` |
 | 其中 input 与 output **都**出现在引文里的 | **39** | B2 顺序判据的作用域 |
 | 其中「input 出现在 output 之前」的 | **39 / 39** | 顺序判据全部通过 |
-| **维度级绑定**（`…rates.<dim>`） | **0 条** | 全库 `evidence[].field` 只出现三种形态：`pricing.unit` ×11、`pricing.currency` ×4、`freeTier` ×3、`limits` ×1、`models.<key>` ×40 |
+| **维度级绑定**（`…rates.<dim>`） | **0 条** | 全库 `evidence[].field` 只有**两种粒度**：记录级（`pricing.unit` ×11、`pricing.currency` ×4、`freeTier` ×3、`limits` ×1）与模型级（`models.<key>` ×40）；`…rates.<dim>` / `mediaRates.<unit>` 一条都没有 |
 | 分母：`(模型 × 维度)` 非空格子 | **308**（模型行 108） | 被维度绑定**认领**的：**0** |
 
 ⇒ **结构上限的结论今天更强地成立**：即便把每一条绑定都用满，59 条引文 ≤ 3 × 24 = 72 条，也覆盖不了 308 个格子的每一个维度。写报告时**不得**写成「input/output 已逐条证据绑定」；今天的准确写法是：
