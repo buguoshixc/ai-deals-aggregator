@@ -1,0 +1,194 @@
+{
+  "what": "t5 的 9 条破防：修复前（预复现）· 修复后（同一套注入脚本、真 verify-site --dir=副本）· 对照（真破）",
+  "base": "judge-hardening-v1a @ 6587be7（master 4c52d47）；9 条全部落在 verify-site.js",
+  "counts": {
+    "forms": 10,
+    "afterRed": 10
+  },
+  "rows": [
+    {
+      "id": "F1-frozen-comment",
+      "before": "假绿 exit 0 · 880/0（只改一页时）",
+      "after": {
+        "exitCode": 1,
+        "summary": "❌ 验收 881 项，失败 21 项",
+        "failures": 42,
+        "firstFailure": "✗ §22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页） — 186 页不符（改动前产物在这里必然全红，这正是 M0 的反证面之一）：/=0 次 archive/=0 次 category/=0 次 category/agent/=0 次",
+        "what": "把 186 页的冻结串整条包进 CSS 注释"
+      },
+      "control": {
+        "exitCode": 1,
+        "summary": "",
+        "failures": 33,
+        "firstFailure": "✗ §22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（186 页） — 186 页不符（改动前产物在这里必然全红，这正是 M0 的反证面之一）：/=0 次 archive/=0 次 category/=0 次 category/agent/=0 次",
+        "what": "把 186 页的冻结串换成一条**不同**的规则（等价于「冻结串没出现」）"
+      },
+      "injectionNote": null
+    },
+    {
+      "id": "F2-sitemap-comment",
+      "before": "假绿 exit 0 · 880/0",
+      "after": {
+        "exitCode": 1,
+        "summary": "❌ 验收 881 项，失败 2 项",
+        "failures": 4,
+        "firstFailure": "✗ 厂商落地页 /vendor/zhipu/ 的 sitemap 成员资格与索引策略一致 — sitemap 无",
+        "what": "把 vendor/zhipu/ 的整个 <url> 块包进 XML 注释"
+      },
+      "control": {
+        "exitCode": 1,
+        "summary": "❌ 验收 881 项，失败 2 项",
+        "failures": 4,
+        "firstFailure": "✗ 厂商落地页 /vendor/zhipu/ 的 sitemap 成员资格与索引策略一致 — sitemap 无",
+        "what": "真删 vendor/zhipu/ 的 <url> 块"
+      },
+      "injectionNote": null
+    },
+    {
+      "id": "F3-canonical-comment",
+      "before": "组合红 exit 1 · 2 条红（DOM 兜住；lib/seo.js 半属 t10）",
+      "after": {
+        "exitCode": 1,
+        "summary": "❌ 验收 881 项，失败 2 项",
+        "failures": 4,
+        "firstFailure": "✗ /need/student-only/ canonical 自指 + 2 个订阅源 + 三段 JSON-LD —  · feed 2 · JSON-LD [CollectionPage, BreadcrumbList, ItemList]",
+        "what": "把 need/student-only/ 的 canonical 链接包进 HTML 注释"
+      },
+      "control": {
+        "exitCode": 1,
+        "summary": "❌ 验收 881 项，失败 2 项",
+        "failures": 4,
+        "firstFailure": "✗ /need/student-only/ canonical 自指 + 2 个订阅源 + 三段 JSON-LD —  · feed 2 · JSON-LD [CollectionPage, BreadcrumbList, ItemList]",
+        "what": "真删 canonical 链接"
+      },
+      "injectionNote": null
+    },
+    {
+      "id": "R2-comma-borrow",
+      "before": "假绿 exit 0 · 880/0",
+      "after": {
+        "exitCode": 1,
+        "summary": "❌ 验收 881 项，失败 4 项",
+        "failures": 8,
+        "firstFailure": "✗ §22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记 — 全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）6 条 · 竖排 0 条（其中列证据 ≥ 2 列、即 ② 按列判的：0 条） · textFallback 回落 1 条 · 未登记的窄阅读列 1 页（登记清单 1 条） · 命中： · 未登记窄列页：need/ai-coding/",
+        "what": "need/ai-coding/ 注入 `.pnote, .pdetailbody { max-width: 72ch; }`"
+      },
+      "control": {
+        "exitCode": 1,
+        "summary": "❌ 验收 881 项，失败 4 项",
+        "failures": 8,
+        "firstFailure": "✗ §22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记 — 全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）6 条 · 竖排 0 条（其中列证据 ≥ 2 列、即 ② 按列判的：0 条） · textFallback 回落 1 条 · 未登记的窄阅读列 1 页（登记清单 1 条） · 命中： · 未登记窄列页：need/ai-coding/",
+        "what": "need/ai-coding/ 注入**单独**的 `.pnote { max-width: 72ch; }`（真·未登记窄列）"
+      },
+      "injectionNote": null
+    },
+    {
+      "id": "R3-comment-eats-rule",
+      "before": "假绿 exit 0 · 880/0",
+      "after": {
+        "exitCode": 1,
+        "summary": "❌ 验收 881 项，失败 4 项",
+        "failures": 8,
+        "firstFailure": "✗ §22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记 — 全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）6 条 · 竖排 0 条（其中列证据 ≥ 2 列、即 ② 按列判的：0 条） · textFallback 回落 1 条 · 未登记的窄阅读列 1 页（登记清单 1 条） · 命中： · 未登记窄列页：need/ai-coding/",
+        "what": "need/ai-coding/ 注入 `content:\"/*\"` 诱饵 + `.pnote { max-width: 70ch; }`"
+      },
+      "control": {
+        "exitCode": 1,
+        "summary": "❌ 验收 881 项，失败 4 项",
+        "failures": 8,
+        "firstFailure": "✗ §22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记 — 全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）6 条 · 竖排 0 条（其中列证据 ≥ 2 列、即 ② 按列判的：0 条） · textFallback 回落 1 条 · 未登记的窄阅读列 1 页（登记清单 1 条） · 命中： · 未登记窄列页：need/ai-coding/",
+        "what": "只注入 `.pnote { max-width: 70ch; }`（没有诱饵）"
+      },
+      "injectionNote": null
+    },
+    {
+      "id": "R4-case-CH",
+      "before": "假绿 exit 0 · 880/0",
+      "after": {
+        "exitCode": 1,
+        "summary": "❌ 验收 881 项，失败 4 项",
+        "failures": 8,
+        "firstFailure": "✗ §22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记 — 全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）6 条 · 竖排 0 条（其中列证据 ≥ 2 列、即 ② 按列判的：0 条） · textFallback 回落 1 条 · 未登记的窄阅读列 1 页（登记清单 1 条） · 命中： · 未登记窄列页：need/ai-coding/",
+        "what": "need/ai-coding/ 注入 `.pnote { max-width: 70CH; }` + `.page-notes-summary { max-width: 70CH; }`（大写单位）"
+      },
+      "control": {
+        "exitCode": 1,
+        "summary": "❌ 验收 881 项，失败 4 项",
+        "failures": 8,
+        "firstFailure": "✗ §22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记 — 全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）6 条 · 竖排 0 条（其中列证据 ≥ 2 列、即 ② 按列判的：0 条） · textFallback 回落 1 条 · 未登记的窄阅读列 1 页（登记清单 1 条） · 命中： · 未登记窄列页：need/ai-coding/",
+        "what": "同两条声明但用小写 `ch`"
+      },
+      "injectionNote": null
+    },
+    {
+      "id": "R5-case-property",
+      "before": "假绿 exit 0 · 880/0",
+      "after": {
+        "exitCode": 1,
+        "summary": "❌ 验收 881 项，失败 4 项",
+        "failures": 8,
+        "firstFailure": "✗ §22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记 — 全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）6 条 · 竖排 0 条（其中列证据 ≥ 2 列、即 ② 按列判的：0 条） · textFallback 回落 1 条 · 未登记的窄阅读列 1 页（登记清单 1 条） · 命中： · 未登记窄列页：need/ai-coding/",
+        "what": "need/ai-coding/ 注入 `.pnote { MAX-WIDTH: 70ch; }`"
+      },
+      "control": {
+        "exitCode": 1,
+        "summary": "❌ 验收 881 项，失败 4 项",
+        "failures": 8,
+        "firstFailure": "✗ §22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记 — 全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）6 条 · 竖排 0 条（其中列证据 ≥ 2 列、即 ② 按列判的：0 条） · textFallback 回落 1 条 · 未登记的窄阅读列 1 页（登记清单 1 条） · 命中： · 未登记窄列页：need/ai-coding/",
+        "what": "同一处小写属性名"
+      },
+      "injectionNote": null
+    },
+    {
+      "id": "R9-important-registered",
+      "before": "**假红** exit 1 · 4 条红（同一处已登记声明 + !important）",
+      "after": {
+        "exitCode": 1,
+        "summary": "❌ 验收 881 项，失败 1 项",
+        "failures": 2,
+        "firstFailure": "✗ §19 上一条判据的隔离牙：把 margin-inline: auto 就地删掉后，左右内边距不再相等（承重证明） — 锚点在内联样式里出现 0 次（必须恰好 1 次） ⇒ 按红处理",
+        "what": "plans/coding/ 的已登记声明加 `!important`"
+      },
+      "control": {
+        "exitCode": 0,
+        "summary": "✅ 验收 881 项，失败 0 项",
+        "failures": 0,
+        "firstFailure": null,
+        "what": "已登记声明原样（不做任何改动）"
+      },
+      "injectionNote": "本表 R9 attack 用的是「改写已登记规则内部」的旧注入形态 ⇒ 会毁掉 §19 隔离牙的锚点（t6 §3 坑 #2）；**干净形态见 probes.R9b**"
+    },
+    {
+      "id": "R11-second-entry-no-geometry",
+      "before": "假绿 exit 0 · 880/0（entries=3 + 未居中 + 幽灵）",
+      "after": {
+        "exitCode": 1,
+        "summary": "❌ 验收 885 项，失败 3 项",
+        "failures": 6,
+        "firstFailure": "✗ §19 登记的窄阅读列第 2/3 条 .page-notes-summary（need/ai-coding/）：**真的在产物里命中**、比容器窄 ≥ 40px、左右内边距差 ≤ 2px、自身不裁切（横竖都算） — .page-notes-summary 466.34px / 容器 1380px · 左 0px · 右 913.66px · max-width 466.348px · margin 0px/0px · 自身横 466/466 竖 44/44 · rendered true",
+        "what": "沙箱登记表 entries 加到 3 条（含未居中 + 幽灵）+ need/ai-coding/ 注入未居中的 `.page-notes-summary { max-width: 70ch; }`"
+      },
+      "control": {
+        "exitCode": 1,
+        "summary": "❌ 验收 881 项，失败 4 项",
+        "failures": 8,
+        "firstFailure": "✗ §22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记 — 全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）6 条 · 竖排 0 条（其中列证据 ≥ 2 列、即 ② 按列判的：0 条） · textFallback 回落 1 条 · 未登记的窄阅读列 1 页（登记清单 1 条） · 命中： · 未登记窄列页：need/ai-coding/",
+        "what": "登记表保持原样（1 条）但产物里多一条未登记的 ch 窄列"
+      },
+      "injectionNote": null
+    },
+    {
+      "id": "V3-single-column-clip",
+      "before": "假绿 exit 0 · 880/0（注入非靶页）",
+      "after": {
+        "exitCode": 1,
+        "summary": "❌ 验收 881 项，失败 2 项",
+        "failures": 4,
+        "firstFailure": "✗ §22c M15 变异后复测必须出现「note-ink-narrow」违规码（T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）） — 期望 note-ink-narrow · 实测 [无] · 说明 1 条 · 首条 盒 1380px / 有字区域 1369px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [无]",
+        "what": "need/free-api/ 注入竖排固定高 + overflow:hidden"
+      },
+      "control": null,
+      "injectionNote": "本表 V3 注入的是 need/free-api/ = M15 的变异靶页 ⇒ 红的是 M15 控制组；**干净形态见 probes.V3e/V3f**"
+    }
+  ]
+}

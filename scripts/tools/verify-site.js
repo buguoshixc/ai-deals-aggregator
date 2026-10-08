@@ -4335,7 +4335,12 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   {
     console.log('\n=== 18) 落地页（分类 / 厂商 / 枢纽 / 别名）===');
     const sitemapFile = path.join(DIR, 'sitemap.xml');
-    const sitemapText = fs.existsSync(sitemapFile) ? fs.readFileSync(sitemapFile, 'utf8') : '';
+    const sitemapRaw = fs.existsSync(sitemapFile) ? fs.readFileSync(sitemapFile, 'utf8') : '';
+    // ⚠️ 判据决定文本必须先剥 **XML 注释**（judge-hardening-v1a / t5 F2）：
+    //    旧写法用 `sitemapText.split('<loc>')`，把 `<!-- <url>…</url> -->` 里的 `<loc>` 也算成员
+    //    ⇒ 把某厂商的整块 `<url>` 包进注释，§18 的「sitemap 成员资格」与 `/vendor/` 枢纽入口数
+    //    仍然全绿，而那一页在 sitemap 里其实已经不存在了（真删对照才会红）。
+    const sitemapText = sitemapRaw.replace(/<!--[\s\S]*?-->/g, ' ');
     const samples = [
       { route: 'category/api/', kind: 'category', label: '分类落地页' },
       { route: 'vendor/zhipu/', kind: 'vendor', label: '厂商落地页' },
@@ -4781,72 +4786,132 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         (await page.evaluate(() => document.querySelectorAll('tr.pdetail').length)) === 0);
     }
 
-    // ⑦b 保留窄阅读列的**几何**判据（narrow-reading-columns-v1）：登记的窄列必须居中、真的比容器窄、不自裁切。
+    // ⑦b 保留窄阅读列的**几何**判据（narrow-reading-columns-v1；judge-hardening-v1a 起**逐条**登记项）
     //
     // 为什么在真浏览器里量、而不是只看 CSS 文本：S4 要求的是**排版事实**（「必须居中」），
     // 而「CSS 里写了 margin-inline: auto」与「它真的被居中」是两件事（父级宽度 / 方向 / 覆盖都能毁掉它）。
-    // 这一块**自己开一条 page**（零污染）：先把 `.pdetailbody` 的行内详情展开量一次，
-    // 再把同一份样式里的 `margin-inline: auto` 就地删掉再量一次 —— 后者证明这条判据**有牙**。
+    // 这一块**自己开 page**（零污染）：先把 `margin-inline: auto` 就地删掉量一次 —— 后者证明这条判据**有牙**。
+    //
+    // ⚠️ t5 的 R11（judge-hardening-v1a 修）：旧实现只量 `WIDE_NARROW_ENTRIES[0]`，其余登记项 ——
+    //    包括**幽灵条目**（任何产物页面里都不存在的选择器）—— 完全不判。实测：登记三条
+    //    （含一条未居中的、一条幽灵的）+ 产物里真写入未居中窄列 ⇒ 整轮 874/0 全绿。
+    //    现在逐条量：找不到元素 = 幽灵 ⇒ 红；未居中 ⇒ 红；自身裁切 ⇒ 红。
     {
-      const entry = WIDE_NARROW_ENTRIES[0] || { selector: '.pdetailbody', declaration: 'max-width: 72ch' };
       const tol = WIDE_NARROW_REGISTRY.ratio.centeringTolerancePx;
-      const anchor = `.pdetailbody { ${entry.declaration}; margin-inline: auto; }`;
-      const loose = `.pdetailbody { ${entry.declaration}; }`;
-      const narrowPage = await browser.newPage({ viewport: { width: WIDE_DESKTOP, height: 900 } });
-      let measured = null;
-      let uncentered = null;
-      let mutateGuard = null;
-      try {
-        await narrowPage.goto(new URL('plans/coding/', base).href, { waitUntil: 'load' });
-        await narrowPage.click('.ptable [data-detail]');
-        const readGeometry = () => narrowPage.evaluate(`(() => {
-          const body = document.querySelector('${entry.selector}');
-          if (!body) return null;
-          const cell = body.closest('td') || body.parentElement;
-          const cs = getComputedStyle(cell);
-          const cellBox = cell.getBoundingClientRect();
-          const bodyBox = body.getBoundingClientRect();
-          const contentLeft = cellBox.left + (parseFloat(cs.paddingLeft) || 0);
-          const contentRight = cellBox.right - (parseFloat(cs.paddingRight) || 0);
-          return {
-            cellWidth: Math.round((contentRight - contentLeft) * 100) / 100,
-            bodyWidth: Math.round(bodyBox.width * 100) / 100,
-            leftInset: Math.round((bodyBox.left - contentLeft) * 100) / 100,
-            rightInset: Math.round((contentRight - bodyBox.right) * 100) / 100,
-            clientWidth: body.clientWidth, scrollWidth: body.scrollWidth,
-            maxWidth: getComputedStyle(body).maxWidth,
-            marginLeft: getComputedStyle(body).marginLeft, marginRight: getComputedStyle(body).marginRight,
-            rendered: bodyBox.width > 0 && bodyBox.height > 0
-          };
-        })()`);
-        measured = await readGeometry();
-        const centeredOk = Boolean(measured) && measured.rendered
-          && measured.bodyWidth < measured.cellWidth - 40
-          && Math.abs(measured.leftInset - measured.rightInset) <= tol
-          && measured.scrollWidth <= measured.clientWidth + WIDE_TOL;
-        check(`§19 ${entry.selector} 是**居中**的保留窄阅读列（${entry.declaration}）：比单元格窄 ≥ 40px、`
-          + `左右内边距差 ≤ ${tol}px、自身不裁切（登记清单 scripts/data/narrow-reading-columns.json）`,
-          centeredOk,
-          measured
-            ? `${entry.selector} ${measured.bodyWidth}px / 单元格 ${measured.cellWidth}px · 左 ${measured.leftInset}px · 右 ${measured.rightInset}px`
-              + ` · max-width ${measured.maxWidth} · margin ${measured.marginLeft}/${measured.marginRight}`
-              + ` · 自身 ${measured.scrollWidth}/${measured.clientWidth} · rendered ${measured.rendered}`
-            : `页面上没有 ${entry.selector}（展开详情后仍找不到）`);
-        // 隔离牙：把 `margin-inline: auto` 就地删掉（锚点必须恰好 1 次）⇒ 左右内边距必须变得不相等。
-        mutateGuard = await wideMutate(narrowPage, anchor, loose);
-        if (mutateGuard.ok) uncentered = await readGeometry();
-        check('§19 上一条判据的隔离牙：把 margin-inline: auto 就地删掉后，左右内边距不再相等（承重证明）',
-          Boolean(mutateGuard && mutateGuard.ok && measured && uncentered)
-          && Math.abs(uncentered.leftInset - uncentered.rightInset) > tol
-          && Math.abs(measured.leftInset - measured.rightInset) <= tol
-          && Math.abs(uncentered.bodyWidth - measured.bodyWidth) <= WIDE_TOL,
-          mutateGuard && mutateGuard.ok
-            ? `删掉前 左 ${measured ? measured.leftInset : '?'} / 右 ${measured ? measured.rightInset : '?'} ⇒ 删掉后`
-              + ` 左 ${uncentered ? uncentered.leftInset : '?'} / 右 ${uncentered ? uncentered.rightInset : '?'}`
-              + `（盒宽 ${measured ? measured.bodyWidth : '?'} → ${uncentered ? uncentered.bodyWidth : '?'}px：只挪位置、不改变宽度）`
-            : `${mutateGuard ? mutateGuard.reason : '变异未执行'} ⇒ 按红处理`);
-      } finally {
-        await narrowPage.close();
+      if (!WIDE_NARROW_ENTRIES.length) {
+        // 空登记清单**不留几何空窗**：显式声明「本轮没有几何对象」，不再回落到 `.pdetailbody` 的隐式默认。
+        // 此时「产物里不许再出现任何 ch 窄列」由 §22c ⑥ 的 narrow-unregistered 咬住（两条合起来才没洞）。
+        check('§19 保留窄阅读列的几何：登记清单为空 ⇒ 显式声明「本轮没有几何对象」（不再回落隐式默认）', true,
+          'scripts/data/narrow-reading-columns.json 的 entries 为空；此时产物里任何 ch 窄列都会被 §22c ⑥ 的 narrow-unregistered 咬住');
+      }
+      for (const [entryIndex, entry] of WIDE_NARROW_ENTRIES.entries()) {
+        const route = (Array.isArray(entry.routes) && entry.routes[0]) || 'plans/coding/';
+        const tolFor = tol;
+        const anchor = `${entry.selector} { ${entry.declaration}; margin-inline: auto; }`;
+        const loose = `${entry.selector} { ${entry.declaration}; }`;
+        const narrowPage = await browser.newPage({ viewport: { width: WIDE_DESKTOP, height: 900 } });
+        let measured = null;
+        let uncentered = null;
+        let mutateGuard = null;
+        try {
+          await narrowPage.goto(new URL(route, base).href, { waitUntil: 'load' });
+          const readGeometry = () => narrowPage.evaluate(`(() => {
+            const body = document.querySelector('${entry.selector}');
+            if (!body) return null;
+            const cell = body.closest('td') || body.parentElement;
+            const cs = getComputedStyle(cell);
+            const cellBox = cell.getBoundingClientRect();
+            const bodyBox = body.getBoundingClientRect();
+            const contentLeft = cellBox.left + (parseFloat(cs.paddingLeft) || 0);
+            const contentRight = cellBox.right - (parseFloat(cs.paddingRight) || 0);
+            return {
+              cellWidth: Math.round((contentRight - contentLeft) * 100) / 100,
+              bodyWidth: Math.round(bodyBox.width * 100) / 100,
+              leftInset: Math.round((bodyBox.left - contentLeft) * 100) / 100,
+              rightInset: Math.round((contentRight - bodyBox.right) * 100) / 100,
+              clientWidth: body.clientWidth, scrollWidth: body.scrollWidth,
+              clientHeight: body.clientHeight, scrollHeight: body.scrollHeight,
+              overflowY: getComputedStyle(body).overflowY, heightStyle: getComputedStyle(body).height,
+              // 声明的 ch 在**这一页这一处**的现场换算值（t17 裁定 ① 的尺子）：
+              // 把该元素的计算字体复制到屏外探针上量「声明里那个数字 + ch」的像素宽。
+              // 载体：「.pdetailbody{72ch}」实测 465.75px ⇒ 比值 1.000。
+              declaredChPx: (() => {
+                const decl = ${JSON.stringify(entry.declaration)};
+                const m = /(max-width|width|inline-size)\\s*:\\s*([\\d.]+)ch/i.exec(decl);
+                if (!m) return null;
+                const ecs = getComputedStyle(body);
+                const probe = document.createElement('span');
+                probe.style.position = 'absolute';
+                probe.style.visibility = 'hidden';
+                probe.style.whiteSpace = 'nowrap';
+                ['fontSize', 'fontFamily', 'fontWeight', 'letterSpacing', 'fontFeatureSettings', 'fontVariantNumeric']
+                  .forEach(prop => { probe.style[prop] = ecs[prop]; });
+                probe.style.width = m[2] + 'ch';
+                document.body.appendChild(probe);
+                const px = probe.getBoundingClientRect().width;
+                probe.remove();
+                return Math.round(px * 100) / 100;
+              })(),
+              maxWidth: getComputedStyle(body).maxWidth,
+              marginLeft: getComputedStyle(body).marginLeft, marginRight: getComputedStyle(body).marginRight,
+              rendered: bodyBox.width > 0 && bodyBox.height > 0
+            };
+          })()`);
+          measured = await readGeometry();
+          // 元素不在场（幽灵条目 / 选择器改名）⇒ 先试着展开行内详情再量一次（`.pdetailbody` 这一类
+          // 只在展开后参与布局），仍不在场就是**幽灵**。
+          if (!measured) {
+            const expandable = await narrowPage.$('.ptable [data-detail]');
+            if (expandable) {
+              await narrowPage.click('.ptable [data-detail]');
+              measured = await readGeometry();
+            }
+          }
+          const centeredOk = Boolean(measured) && measured.rendered
+            && measured.bodyWidth < measured.cellWidth - 40
+            && Math.abs(measured.leftInset - measured.rightInset) <= tolFor
+            && measured.scrollWidth <= measured.clientWidth + WIDE_TOL
+            && measured.scrollHeight <= measured.clientHeight + WIDE_TOL;
+          check(`§19 登记的窄阅读列第 ${entryIndex + 1}/${WIDE_NARROW_ENTRIES.length} 条 ${entry.selector}（${route}）：`
+            + `**真的在产物里命中**、比容器窄 ≥ 40px、左右内边距差 ≤ ${tolFor}px、自身不裁切（横竖都算）`,
+            centeredOk,
+            measured
+              ? `${entry.selector} ${measured.bodyWidth}px / 容器 ${measured.cellWidth}px · 左 ${measured.leftInset}px · 右 ${measured.rightInset}px`
+                + ` · max-width ${measured.maxWidth} · margin ${measured.marginLeft}/${measured.marginRight}`
+                + ` · 自身横 ${measured.scrollWidth}/${measured.clientWidth} 竖 ${measured.scrollHeight}/${measured.clientHeight} · rendered ${measured.rendered}`
+              : `页面上**找不到** ${entry.selector}（${route} 展开详情后仍找不到）⇒ 幽灵登记条目/选择器已改名`,
+            entryIndex === 0 ? undefined : 'registered-narrow');
+          // 生效宽 ≈ 声明 ch 的**现场换算值 ± 20%**（t17 裁定 ①：唯一「低成本 + 0 假阳性 + 实测有牙」的一条）。
+          // 它抓的是「CSS 里写着 72ch、实际生效的是别的宽度」（例如另一条 `width: 300px` 把它覆盖了 ——
+          // t5 的 R5b 就是这种未覆盖形态：声明不动、比值 0.644 ⇒ 旧判据零码）。
+          // ⚠️ 阈值 20% 是**实测标定**（载体实测比值 1.000；全站只有 1 条 ch 声明 ⇒ 误报面 0），不是随手取的。
+          const chPx = measured ? measured.declaredChPx : null;
+          const ratio = (chPx && measured && measured.bodyWidth) ? measured.bodyWidth / chPx : null;
+          check(`§19 登记的窄阅读列第 ${entryIndex + 1}/${WIDE_NARROW_ENTRIES.length} 条 ${entry.selector} 的**生效宽**`
+            + ` ≈ 声明「${entry.declaration}」的现场换算值（±20%）—— 不许被别的规则顶掉`,
+            Boolean(ratio !== null && ratio >= 0.8 && ratio <= 1.2),
+            ratio === null
+              ? '量不到现场换算值（选择器不在场或声明里没有 ch 数字）'
+              : `生效宽 ${measured.bodyWidth}px ÷ 现场 ${chPx}px = 比值 ${Math.round(ratio * 1000) / 1000}（容差 0.8–1.2）`,
+            'registered-narrow-effective');
+          // 隔离牙只对**第 1 条**跑（旧锚点逐字保留）：把 `margin-inline: auto` 就地删掉 ⇒ 左右必须不再相等。
+          if (entryIndex === 0) {
+            mutateGuard = await wideMutate(narrowPage, anchor, loose);
+            if (mutateGuard.ok) uncentered = await readGeometry();
+            check('§19 上一条判据的隔离牙：把 margin-inline: auto 就地删掉后，左右内边距不再相等（承重证明）',
+              Boolean(mutateGuard && mutateGuard.ok && measured && uncentered)
+              && Math.abs(uncentered.leftInset - uncentered.rightInset) > tolFor
+              && Math.abs(measured.leftInset - measured.rightInset) <= tolFor
+              && Math.abs(uncentered.bodyWidth - measured.bodyWidth) <= WIDE_TOL,
+              mutateGuard && mutateGuard.ok
+                ? `删掉前 左 ${measured ? measured.leftInset : '?'} / 右 ${measured ? measured.rightInset : '?'} ⇒ 删掉后`
+                  + ` 左 ${uncentered ? uncentered.leftInset : '?'} / 右 ${uncentered ? uncentered.rightInset : '?'}`
+                  + `（盒宽 ${measured ? measured.bodyWidth : '?'} → ${uncentered ? uncentered.bodyWidth : '?'}px：只挪位置、不改变宽度）`
+                : `${mutateGuard ? mutateGuard.reason : '变异未执行'} ⇒ 按红处理`);
+          }
+        } finally {
+          await narrowPage.close();
+        }
       }
     }
 
@@ -5466,10 +5531,16 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
    *
    * `--url=` 线上冒烟时读不到 dist，这时返回空集：例外集为空 = 恢复成「一条站外链接都不许」，
    * 是更严的一侧，不会让线上冒烟假绿。
+   *
+   * ⚠️ **读的是 `DIR`（`--dir=` 指向的那份产物），不是写死的 `ROOT/dist`**（judge-hardening-v1a / t5 A1）：
+   * 旧写法在「只有副本、没有 dist/」的工作树里必然读不到 ⇒ `catch` 返回**空例外集** ⇒
+   * 5 个枢纽页各多报一条「按设计没有站外链接」= 10 条假失败（t6 实测）。
+   * 现在：`--dir=dist.calib` 读副本的首页页脚；不传 `--dir` 时 `DIR` 就是 `dist`（与旧行为逐字相同，
+   * 线上冒烟因此不受影响）；文件真的读不到时仍然返回空集（fail-strict，不放宽）。
    */
   const sharedFooterExternalHrefs = (() => {
     try {
-      const home = fs.readFileSync(path.join(ROOT, 'dist', 'index.html'), 'utf8');
+      const home = fs.readFileSync(path.join(DIR, 'index.html'), 'utf8');
       const fragment = (home.match(/<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/) || [])[1] || '';
       return new Set([...fragment.matchAll(/href="(https?:\/\/[^"]+)"/g)].map(m => m[1]));
     } catch (error) {
@@ -6498,8 +6569,12 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   //     （t19 / R3-2 复算：`rendered && !vertical && lineCount === 1 && widestLine < 0.85 × 列宽`
   //     在 @1440 与 @1600 都是 319 条；例「全部变化 →」字迹 61.64px < 0.85×1380 —— 短文本不是缺陷）；
   //   · 也**不许**加码到 `>= 3`：multicol 形态只有 2 行，提到 3 命中数直接掉到 0；
-  //   · 阈值 0.85：t11 已验证 0.85× 与 0.5× 在 A/B/C 三个集合上给出**完全相同**的命中集合
-  //     ⇒ 这个口径不卡在阈值边缘。
+  //   · 阈值 0.85：**不许放宽**。原注释写「t11 已验证 0.85× 与 0.5× 在 A/B/C 三个集合上给出
+  //     **完全相同**的命中集合」—— 那句话**只在当年那三个集合上成立**（judge-calibration-v1 / t6 订正）：
+  //     两档各跑一整轮真判据实测 **0.5 的命中集合 ⊆ 0.85，判别区 = [0.5, 0.85)**，
+  //     而判别区里正躺着本注释自己点名的目标形态 —— **66% multicol**（复刻 912px/1380 = **0.6609**）
+  //     与 `v-h12`（**0.6470**）⇒ 降到 0.5 会**放行判据自己的目标形态**。读数：
+  //     `research/_raw/judge-calibration-v1/vertical-ratio-ab.json`（t6 的 A/B 两档整轮）。
   //
   // ② 的**语义**（t11 发现并验证，写在这里免得下一轮当 bug 提）：
   //   它量的是「字迹在横向铺到哪里」，不是「单列有多宽」。multicol 形态命中读数是 **912.63px（66%）**，
@@ -6552,7 +6627,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   //   · note-axis    ：border-box 与「主数据区」或「页面主容器 <main>」任一同一轴，
   //                    容差 = max(1px, 5% × min(主数据区宽, 页面列宽))（prompt §11 允许 padding /
   //                    border / scroll wrapper 的少量差异；.aliasnote 的 3px 竖线 + 8px 缩进属此列）。
-  //   · note-clipped ：说明自身横向溢出（scrollWidth > clientWidth + 1）。
+  //   · note-clipped ：说明自身溢出（scrollWidth > clientWidth + 1，**或** scrollHeight > clientHeight + 1
+  //      —— 竖直那一半是 judge-hardening-v1a 补的：竖排 + 固定高度 + overflow:hidden 只有竖直方向被裁，
+  //      横向量完全看不出来，t5 的 V3 就是从这里零码穿过去的）。
   //   · 逐条：<main> 内**每一条** .snote 都判，码带 route#index；零条说明的页面才跳过。
   //   · 视口：1440 与 1600 全站逐条、390 全站 scrollWidth、760/360 样本集。
   //
@@ -6742,7 +6819,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       const NARROW_REGISTRY = ${JSON.stringify(WIDE_NARROW_ENTRIES)};
       const FROZEN = ${JSON.stringify(WIDE_SNOTE_FROZEN)};
       const round = n => Math.round(n * 100) / 100;
-      const zeroBox = { count: 0, left: 0, right: 0, width: 0, height: 0, top: 0, scrollW: 0, clientW: 0, padLeft: 0, padRight: 0, maxWidth: '', overflowWrap: '' };
+      const zeroBox = { count: 0, left: 0, right: 0, width: 0, height: 0, top: 0, scrollW: 0, clientW: 0, scrollH: 0, clientH: 0, padLeft: 0, padRight: 0, maxWidth: '', overflowWrap: '' };
       const box = el => {
         if (!el) return Object.assign({}, zeroBox);
         const cs = getComputedStyle(el);
@@ -6753,6 +6830,11 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
           // height/top：「已渲染」的判定要用（<noscript> 说明整块高度 0）
           height: round(r.height), top: round(r.top + window.scrollY),
           scrollW: el.scrollWidth, clientW: el.clientWidth,
+          // 竖直方向的同一对量（judge-hardening-v1a / t5 V3）：竖排 + 固定高度 + overflow:hidden 时
+          // 横向量可以完全不动（scrollWidth == clientWidth），竖直方向却被裁掉 ~94% —— 旧口径零码。
+          scrollH: el.scrollHeight, clientH: el.clientHeight,
+          // 竖直裁切的**前置条件**要用的两个量（t17 裁定 ②）：会不会被裁 = overflow-y 切不切 + 有没有固定高度
+          overflowY: cs.overflowY, heightStyle: cs.height,
           padLeft: parseFloat(cs.paddingLeft) || 0, padRight: parseFloat(cs.paddingRight) || 0,
           maxWidth: cs.maxWidth, overflowWrap: cs.overflowWrap
         };
@@ -6788,13 +6870,43 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
        * ⚠️ 归一必须与 wideNarrowDeclaration() 同口径（折叠空白 + 去行尾分号），否则会假红。
        * ⚠️ 这段在浏览器侧模板字符串里：注释里**不许**出现反引号。
        */
+      /**
+       * 剥 CSS 注释 —— **字符串感知**（judge-hardening-v1a / t5 R3）。
+       *
+       * 旧的扁平正则会被 CSS 字符串里的「斜杠 + 星号」序列（例如 content 值写成 "／＊"）骗过：
+       * 那个序列一旦出现，剥注释会一直吃到下一个「星号 + 斜杠」，把中间的**真规则**一起吞掉
+       * （实测「.pnote { max-width: 70ch }」生效 452.812px 却 0 码）。
+       * 两步走：① 先把**字符串字面量里**的该序列换成两个空格（保持长度、不动别的内容）；
+       * ② 再剥注释。这样注释起始只可能来自真的注释。
+       * ⚠️ 上面这段注释里**不许**写出那两个字符组合（会提前闭合本文件里的块注释）—— 实测踩过。
+       */
+      const stripCssComments = text => {
+        const masked = String(text).replace(/"(?:[^"\\\\]|\\\\.)*"|'(?:[^'\\\\]|\\\\.)*'/g, m => m.replace(/\\/\\*/g, '  '));
+        return masked.replace(/\\/\\*[\\s\\S]*?\\*\\//g, ' ');
+      };
+      /**
+       * 归一声明文本 —— **登记项与现场扫描必须走同一个函数**（否则会假红/假绿）：
+       *   · 折叠空白、「:」两侧归一到 1 个空格、去行尾分号；
+       *   · 去掉「!important」（t5 R9：同一处已登记声明只多了「!important」就被判成「未登记」= 假红；
+       *     优先级不改变「它是不是一条窄列声明」这件事）；
+       *   · 属性名与值统一小写（CSS 的属性名与单位大小写不敏感 ⇒ t5 R4「70CH」/ R5「MAX-WIDTH:」之前静默）。
+       */
+      const narrowNormDeclaration = text => String(text)
+        .replace(/!important/gi, ' ')
+        .replace(/\\s*:\\s*/g, ': ')
+        .replace(/\\s+/g, ' ')
+        .replace(/;\\s*$/, '')
+        .trim().toLowerCase();
+      /** 当前页面的路由（浏览器侧现读；供登记项的 routes 约束用） */
+      const narrowRoute = (() => {
+        try { return decodeURIComponent(location.pathname).replace(/^\\//, ''); } catch (error) { return ''; }
+      })();
       const narrowChDeclarations = (registered) => {
         const found = [];
         const styles = Array.prototype.slice.call(document.querySelectorAll('style'));
         for (const style of styles) {
-          // ⚠️ 必须先剥掉 CSS 注释：页面级样式里规则前面常常有一整段说明注释，
-          //    扁平正则会把注释当成选择器的一部分（实测：这会让已登记的 .pdetailbody 被误判成未登记）。
-          const text = (style.textContent || '').replace(/\\/\\*[\\s\\S]*?\\*\\//g, ' ');
+          // ⚠️ 必须走 stripCssComments（字符串感知）：旧的扁平正则会「content:"/*"」吞规则。
+          const text = stripCssComments(style.textContent || '');
           const ruleRe = /([^{}]{1,200})\{([^{}]*)\}/g;
           let rule = ruleRe.exec(text);
           while (rule) {
@@ -6805,12 +6917,16 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
               if (idx < 0) continue;
               const property = decl.slice(0, idx).trim();
               const value = decl.slice(idx + 1).trim();
-              if (!/^(max-width|inline-size|width)$/.test(property)) continue;
-              if (!/\\d+(\\.\\d+)?ch\\b/.test(value)) continue;
-              const declaration = property + ': ' + value;
-              const hit = registered.some(entry => (entry.declaration === declaration)
-                && selectors.some(sel => sel === entry.selector));
-              found.push({ selector: selectors.join(', '), declaration: declaration, registered: hit });
+              if (!/^(max-width|inline-size|width)$/i.test(property)) continue;
+              if (!/\\d+(\\.\\d+)?ch\\b/i.test(value)) continue;
+              const declaration = narrowNormDeclaration(property + ': ' + value);
+              // 登记 = **这一条规则的每一个选择器段**都有登记（t5 R2：「.pnote, .pdetailbody { 72ch }」
+              // 不许借已登记选择器的名字蒙混过关），且登记项的 routes（写了的话）包含当前路由。
+              const hit = selectors.length > 0 && selectors.every(sel =>
+                registered.some(entry => narrowNormDeclaration(entry.declaration) === declaration
+                  && String(entry.selector).trim() === sel
+                  && (!Array.isArray(entry.routes) || entry.routes.includes(narrowRoute))));
+              found.push({ selector: selectors.join(', '), declaration: declaration, registered: hit, route: narrowRoute });
             }
             rule = ruleRe.exec(text);
           }
@@ -6945,7 +7061,10 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       }
       const styles = Array.prototype.slice.call(document.querySelectorAll('style'));
       let frozenCount = 0;
-      for (const style of styles) frozenCount += style.textContent.split(FROZEN).length - 1;
+      // ⚠️ 计数前先剥 CSS 注释（judge-hardening-v1a / t5 F1）：把真规则整条包进「/* … */」时，
+      //    旧写法仍然数到「恰好 1 次」（字符串还在），而那条规则**已经不在**（computed 从
+      //    12px/20.4px/margin-bottom 12px 变成 14px/21px/0）。剥注释后计数变 0 ⇒ 判红。
+      for (const style of styles) frozenCount += stripCssComments(style.textContent || '').split(FROZEN).length - 1;
       const notes = main ? Array.prototype.slice.call(main.querySelectorAll('.snote')) : [];
       /**
        * ★ notes-manifest-v1：说明容器按「槽位 id × class token 集合」分组计数。
@@ -7180,6 +7299,11 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         //    flex / 匿名盒…，以及竖排），但排版结果铺不开 ⇒ 这里咬。
         //    前置条件 `ink.count ≥ 2` 不许松（去掉它 dist 上会误报 319 条单行说明）；也不许提到 ≥3
         //    （multicol 只有 2 行）。
+        //    **单列豁免的边界（judge-hardening-v1a 起写清）**：这条前置条件豁免的是
+        //    「**无固定高度且无裁切**」的单列形态 —— 也就是「一行字就是一行字」的正常短说明。
+        //    一旦单列说明自身有裁切（横或竖），它由 `note-clipped` 两轴版本咬住（t5 的 V3：
+        //    `height: 5.6rem + overflow: hidden` 裁掉 ~94% 而整页零码）；有固定高度但不裁切、
+        //    字形又铺不开的形态仍由 ① `note-narrow`（内容盒代理量）覆盖。
         //    **竖排按列**：count = 列数、span = 列栈水平范围（T31 的 P1 就是在这里闭合的；
         //    旧口径「竖排显式不判」即使删掉豁免也救不了 —— 按行归并时竖排恒为 1 行，前置条件不成立）。
         //    ⚠️ 作用域 = 物理前置条件（R3-1）：`column > note.ch70`（现场换算的 70ch，见上方注释），
@@ -7234,6 +7358,23 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         if (boxed && note.box.scrollW > note.box.clientW + WIDE_TOL) {
           push('note-clipped', `${where} 说明自身横向溢出 ${note.box.scrollW - note.box.clientW}px`
             + `（scrollWidth ${note.box.scrollW} > clientWidth ${note.box.clientW}）`, note.index);
+        }
+        // 裁切的**竖直**那一半（judge-hardening-v1a / t5 V3）：`writing-mode: vertical-rl` +
+        // 固定高度 + `overflow: hidden` 的形态下，横向量恒相等（实测 scrollWidth 1377 == clientWidth 1377），
+        // 只有竖直方向被裁 —— `scrollHeight 1489 / clientHeight 90` ⇒ 157 字里约 94% 看不见。
+        // 同一条码（note-clipped 覆盖两个轴），因为对读者是同一件事：说明的字被切掉了。
+        // ⚠️ **前置条件**（t17 裁定 ② 要求；t5 的 V3 只是它的一个特例）：
+        //   竖直溢出只有在「能被裁」的形态下才算缺陷 —— `overflow-y ∈ {hidden, clip, auto, scroll}`
+        //   或**声明了固定高度**（`height ≠ auto`）。否则竖直溢出是**正常文档流**（内容自然撑高、
+        //   页面照样能滚到）—— 不加这条前置会误报。实测误报面见报告的逐档读数。
+        // 单列豁免因此被限定为「**无固定高度且无裁切**」：竖排单列不再等于免判。
+        const clipPossible = boxed && (['hidden', 'clip', 'auto', 'scroll'].includes(String(note.box.overflowY))
+          || (note.box.heightStyle && note.box.heightStyle !== 'auto'));
+        if (clipPossible && note.box.scrollH > note.box.clientH + WIDE_TOL) {
+          push('note-clipped', `${where} 说明自身**竖直**溢出 ${note.box.scrollH - note.box.clientH}px`
+            + `（scrollHeight ${note.box.scrollH} > clientHeight ${note.box.clientH}`
+            + `${note.vertical ? ` · 竖排 ${note.writingMode}：横向量 ${note.box.scrollW}/${note.box.clientW} 看不出问题` : ''}）`,
+          note.index);
         }
         // ⑤ 首屏说明过长（secondary-page-content-simplification）。
         //    只判 **intro 区**（首个数据区之前的说明），上限 2 行。
@@ -8762,7 +8903,10 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   console.log('\n=== 23) 厂商资料页（/vendor/）===');
   {
     const vendorIndex = await page.evaluate(`(async () => {
-      const sm = await (await fetch(${JSON.stringify(new URL('sitemap.xml', base).href)})).text();
+      const raw = await (await fetch(${JSON.stringify(new URL('sitemap.xml', base).href)})).text();
+      // ⚠️ 先剥 XML 注释（judge-hardening-v1a / t5 F2）：否则把某厂商的 <url> 块包进注释，
+      //    这里仍会把它数成「进了 sitemap」的厂商入口（与 §18 的成员资格同一条缺口）。
+      const sm = raw.replace(/<!--[\\s\\S]*?-->/g, ' ');
       const list = [...sm.matchAll(/<loc>([^<]+)<\\/loc>/g)].map(m => m[1])
         .filter(url => /\\/vendor\\/[a-z0-9-]+\\/$/.test(url));
       return { routes: list.map(url => new URL(url).pathname.replace(/^.*\\/ai-deals-aggregator\\//, '')), count: list.length };

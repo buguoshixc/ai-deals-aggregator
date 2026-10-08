@@ -1,0 +1,12 @@
+{
+  "what": "产物未被本轮触动（判据改动不写产物；本轮唯一改动文件 = scripts/tools/verify-site.js）",
+  "before": {
+    "files": 304,
+    "treeDigest": "67d1d0bdcdffe29f1b2bd0185c35408da897d53d20e44c495fec385f7ec1337d"
+  },
+  "after": {
+    "files": 304,
+    "treeDigest": "67d1d0bdcdffe29f1b2bd0185c35408da897d53d20e44c495fec385f7ec1337d"
+  },
+  "verdict": "逐字节相同（全树摘要相同）"
+}
