@@ -1,0 +1,21 @@
+{
+ "what": "产品零改动证明：dist 逐文件 sha256 前后全等 + 全部变形只落在 .arch-v1/ 副本",
+ "distBaseline": {
+  "count": 304,
+  "tree": "df43587cfe90a60453e29df96599b138a8dd02242130968340cba589e6979675"
+ },
+ "distAfter": {
+  "count": 304,
+  "tree": "df43587cfe90a60453e29df96599b138a8dd02242130968340cba589e6979675"
+ },
+ "identical": true,
+ "sourceTreeChanges": 3,
+ "mutatedCopies": [
+  ".arch-v1/dist-notes（4 个文件：3 页 + _notes.ndjson）",
+  ".arch-v1/dist-thin（1 个文件：need/no-card/index.html）",
+  ".arch-v1/sb-seo（scripts/ 副本 + 裁到 1 条的登记表/转写）",
+  ".arch-v1/sb-roles（scripts/ 副本 + 别处的陈旧注记）",
+  ".arch-v1/roles-word.json / roles-minimal.json / roles-none.json（三个 official_urls 副本）"
+ ],
+ "note": "判据脚本本身（scripts/**）在本次验证中一个字节未改：所有变形都作用于上述副本"
+}

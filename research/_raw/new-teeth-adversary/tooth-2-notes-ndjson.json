@@ -1,0 +1,101 @@
+{
+ "what": "牙 2（t3 / PR #63）：「每页说明条数」意图清单（dist/_notes.ndjson）↔ 真浏览器 DOM 的逐页逐槽位对账",
+ "criterionSource": "scripts/tools/verify-site.js §22c ⑨（6 条检查）+ 构建期 noteManifestSelfCheck",
+ "attack": {
+  "copy": ".arch-v1/dist-notes（4 个文件被改：status/ · vendor/cursor/ · need/dev-credits/ 三页 + _notes.ndjson）",
+  "manifest": {
+   "what": "dist-notes 的篡改面（5 形态）",
+   "records": [
+    {
+     "file": ".arch-v1/dist-notes/status/index.html",
+     "label": "① page+1（一致）",
+     "sha256Before": "096e1fd06e470d74d4942cdc6bdb55a5c68373d767b6e1c7c1849b7e14fcd1f2",
+     "sha256After": "7a1d2ee495c00f335f2516a543508b8aa04438bf1c10f9be6a6b98687c5ace02",
+     "bytesDelta": 438
+    },
+    {
+     "file": ".arch-v1/dist-notes/vendor/cursor/index.html",
+     "label": "③ page+1（单侧）",
+     "sha256Before": "cad0800030e448dfbe11b8a893a54769af031bb389175f5832d331b827902c54",
+     "sha256After": "f11fda3f089aa6638210451cab3a7b3e1607b841af8c8121ae29d8a5f0a9bd6a",
+     "bytesDelta": 85
+    },
+    {
+     "file": ".arch-v1/dist-notes/need/dev-credits/index.html",
+     "label": "④ page-1（一致）",
+     "sha256Before": "32f5482ee790cb039bedb062d4847b05538908d1668ed192a4aaa876c6a3142a",
+     "sha256After": "fda97b028bdd7c5da896bec44a900e88f3502633707222093f52f8224fb14aaf",
+     "bytesDelta": -420
+    },
+    {
+     "file": ".arch-v1/dist-notes/_notes.ndjson",
+     "label": "⑤⑥ ndjson（删页 + 空行）",
+     "sha256Before": "58a7373b502dbbdeb6d9292a0ba4df95140a3f6bd70d041286b69c1f978ee27c",
+     "sha256After": "f23acbc41d33f1767637bf1e5ccab889229beb2ce3ec824b6e6da11cd47aea31",
+     "bytesDelta": -398
+    }
+   ]
+  },
+  "command": "node scripts/tools/verify-site.js --dir=.arch-v1/dist-notes --json=.arch-v1/json/notes-attack.json",
+  "exit": 1,
+  "totals": {
+   "total": 880,
+   "failed": 6
+  }
+ },
+ "matrix": [
+  {
+   "id": "N1",
+   "form": "一致篡改 +1：status/ 页面加一条 .snote，清单同步 +1（声明 3 / DOM 3）",
+   "verdict": "绿（不响）",
+   "reading": "多形态副本里 ⑨ 六条检查都没有点名 status/（点名的是 feeds/ 与 vendor/cursor/）；**单独跑这一处篡改的副本**（.arch-v1/dist-notes-n1）⇒ 880 项 / 失败 0，六条 ⑨ 全绿（lane「逐条一致 324 条」· complete「128 页逐字相等」· 棘轮「63 页全部登记过」）",
+   "why": "结构下限 min 2 是**下界**，+1 不越；complete 页的「整页 .snote 总数」两侧相等"
+  },
+  {
+   "id": "N2",
+   "form": "只改清单 +1：feeds/ 声明 9 / DOM 8",
+   "verdict": "红",
+   "reading": "✗ 逐页逐槽位对账：feeds/#0 槽位 main-snote 签名 <snote>：清单声明 9 条 / DOM 实测 8 条；✗ 完整对账：feeds/ 整页 .snote：清单声明 9 条 / DOM 实测 8 条"
+  },
+  {
+   "id": "N3",
+   "form": "只改页面 +1：vendor/cursor/ 加一条 .snote（清单声明 0）",
+   "verdict": "红",
+   "reading": "✗ 逐页逐槽位对账：vendor/cursor/#0 槽位 main-snote 签名 <snote>：清单声明 0 条 / DOM 实测 1 条；✗ 完整对账：vendor/cursor/ 整页 .snote：清单声明 0 条 / DOM 实测 1 条"
+  },
+  {
+   "id": "N4",
+   "form": "一致篡改 −1：need/dev-credits/ 页面删掉唯一的 .snote，清单同步 0（下限 min 1）",
+   "verdict": "红（被**结构下限**咬住）",
+   "reading": "✗ 页面族结构下限：need/dev-credits/ 槽位 main-snote：结构下限 1 条 / DOM 实测 0 条"
+  },
+  {
+   "id": "N5",
+   "form": "清单整页缺失：删掉 need/student-only/ 那一行（页面仍有 1 条 .snote）",
+   "verdict": "红",
+   "reading": "✗ 说明清单可读…：清单 185 页 / 产物 186 页 · 产物里有、清单里没有：need/student-only/；✗ 棘轮：need/student-only/（need）DOM 里有 1 条 .snote，但清单里没有这一页"
+  },
+  {
+   "id": "N6",
+   "form": "NDJSON 里插一个空行（第 2 行）",
+   "verdict": "容忍（不响）",
+   "reading": "6 条红里没有任何一条与空行相关；读端 `lines.filter(line => line.trim())`（verify-site.js:7744）"
+  },
+  {
+   "id": "N7",
+   "form": "台账页面（58 页 / 8 族）在一致篡改下的单向性",
+   "verdict": "保持绿（设计如此）",
+   "reading": "✓ 台账页面仍带说明：58 页 / 8 个页面族（台账页 DOM 多出来的说明由那个模块的下限守；清单声明的必须逐条对上）"
+  }
+ ],
+ "boundary": [
+  "**单侧改动必红**：只改清单（N2）或只改页面（N3）都会红，且点名 route#index 与两侧读数。",
+  "**一致篡改在本条判据里看不出来**（N1）：清单与页面同时 +1 时，逐页逐槽位与完整对账两侧都相等 —— 这是这条判据**承诺之外**的面（它守的是「登记与模板一起消失」「新的隐形说明面悄悄出现」，不是「产物被同步改写」）。",
+  "**一致篡改会被结构下限/棘轮/页集合咬住**（N4 / N5）：下限（别名页 1 条、状态页 2 条、订阅中心 3+1、厂商页六节）与「DOM 有 .snote 的页面必须在清单里」把两侧同时消失/出现的改法挡住了。",
+  "**空行不是话**（N6）：NDJSON 读端显式 filter 空行 ⇒ 夹带空行不会改变任何判定（也不该）。",
+  "⇒ 可登记的边界一句话：**这条对账的强度 = 「页集合 + 每页每槽位的签名×条数 + 结构下限 + 棘轮」；两边同时改且不越下限 ⇒ 绿。**"
+ ],
+ "newFindings": [
+  "一致篡改（N1）是**当前已知的强度边界**，不是缺陷 —— 但收口文件里应当写成「登记制 ≠ 内容完整性证明」，免得下一轮把它当成「双源=不可篡改」的证据。"
+ ]
+}

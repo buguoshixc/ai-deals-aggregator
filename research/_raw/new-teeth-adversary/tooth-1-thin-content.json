@@ -1,0 +1,129 @@
+{
+ "what": "牙 1（t4 / PR #62）：正文下限**余量登记** —— 边界两侧（规则层精确摆位）+ 产物级 + 登记表被裁",
+ "criterionSource": "scripts/lib/seo.js:345-363（`margin < residual.margin ⇒ thin-content-margin`）+ `TEXT_FLOOR_RESIDUALS`",
+ "registeredRoute": "need/no-card/（登记 margin 50：710 字 − 下限 660）",
+ "ruleLevelBoundary": {
+  "what": "thin-content-margin 的规则层边界两侧（合成描述符，只走 lib/seo.js 的纯函数）",
+  "route": "need/no-card/",
+  "registered": {
+   "route": "need/no-card/",
+   "kind": "need",
+   "count": 1,
+   "chars": 710,
+   "floor": 660,
+   "margin": 50,
+   "registeredAt": "2026-10-08"
+  },
+  "readings": [
+   {
+    "label": "恰好等于登记值（margin = 登记值）",
+    "textLength": 710,
+    "floor": 660,
+    "margin": 50,
+    "registeredMargin": 50,
+    "codes": [
+     "title-length",
+     "desc-nonempty",
+     "canonical-self",
+     "h1-count",
+     "sitemap-policy",
+     "itemlist-arity",
+     "breadcrumb-target-exists",
+     "orphan"
+    ],
+    "thinContentMargin": 0,
+    "thinContent": 0,
+    "detail": "（无码）"
+   },
+   {
+    "label": "少 1 字（margin = 登记值 − 1）",
+    "textLength": 709,
+    "floor": 660,
+    "margin": 49,
+    "registeredMargin": 50,
+    "codes": [
+     "title-length",
+     "desc-nonempty",
+     "canonical-self",
+     "h1-count",
+     "sitemap-policy",
+     "thin-content-margin",
+     "itemlist-arity",
+     "breadcrumb-target-exists",
+     "orphan"
+    ],
+    "thinContentMargin": 1,
+    "thinContent": 0,
+    "detail": "可见正文 709 字符，下限 660，余量 49 < 登记值 50（登记于 2026-10-08：本页 710 字 − 下限 660 = 余量 50）；余量已跌破登记底线（还没到 thin-content 的红线，但这一页是全站最薄的几页之一）——补回内容，或显式重新登记：node scripts/tools/seo-verify.js --print-floor-margins"
+   },
+   {
+    "label": "多 1 字（margin = 登记值 + 1）",
+    "textLength": 711,
+    "floor": 660,
+    "margin": 51,
+    "registeredMargin": 50,
+    "codes": [
+     "title-length",
+     "desc-nonempty",
+     "canonical-self",
+     "h1-count",
+     "sitemap-policy",
+     "itemlist-arity",
+     "breadcrumb-target-exists",
+     "orphan"
+    ],
+    "thinContentMargin": 0,
+    "thinContent": 0,
+    "detail": "（无码）"
+   }
+  ]
+ },
+ "productLevel": {
+  "what": "产物副本 `.arch-v1/dist-thin`：把 need/no-card/ 的**可见正文**砍 1 个字（710 → 709，删的是可见的「。」）",
+  "mutation": {
+   "what": "dist-thin 的篡改面（最薄页砍 1 个可见字）",
+   "records": [
+    {
+     "file": ".arch-v1/dist-thin/need/no-card/index.html",
+     "label": "thin-minus-1-visible-char",
+     "sha256Before": "4fafdbeaefcad040f909eeac4ef986401b51eadb6e81ae3da1739e99046313ef",
+     "sha256After": "810db98d159d13c46c3cd0d7a6c71eaa3963ce0eb1e21ab6f7bb0671636a9766",
+     "bytesDelta": -3
+    }
+   ]
+  },
+  "command": "node scripts/tools/seo-verify.js --dir=.arch-v1/dist-thin",
+  "exit": 1,
+  "reading": "[thin-content-margin] need/no-card/ 可见正文 709 字符，下限 660，余量 49 < 登记值 50（登记于 2026-10-08：本页 710 字 − 下限 660 = 余量 50）",
+  "control": {
+   "command": "npm run verify:seo（原样 dist）",
+   "exit": 0,
+   "reading": "✅ SEO 验收 18 项，失败 0 项"
+  }
+ },
+ "registrationTrim": {
+  "what": "把登记表 6 条裁到 1 条（沙箱副本 .arch-v1/sb-seo/scripts/lib/seo.js）—— t13 观察 2 的当前行为",
+  "singleSided": {
+   "command": "node .arch-v1/sb-seo/scripts/tools/seo-selftest.js（转写 JSON 未动）",
+   "exit": 1,
+   "reading": "v1.7 SEO 门禁演练：87 项通过，1 项失败 —— ✗ 登记的 JSON 转写与声明逐字节相同（997 字节 ≠ 声明 165 字节）"
+  },
+  "consistent": {
+   "what": "登记表与转写**同步**裁到 1 条（两侧一起改）",
+   "selftest": {
+    "exit": 0,
+    "reading": "v1.7 SEO 门禁演练：88 项通过，0 项失败"
+   },
+   "seoVerify": {
+    "command": "node .arch-v1/sb-seo/scripts/tools/seo-verify.js --dir=../../dist",
+    "exit": 0,
+    "reading": "✅ SEO 验收 18 项，失败 0 项"
+   },
+   "note": "两侧同时裁 ⇒ **两个门禁都不响**：登记表的「完整性」没有任何一侧在看（t10 的修法面）"
+  },
+  "independentGate": {
+   "what": "只裁登记表（转写哪怕还在）时，独立门禁 seo-verify 的读数",
+   "reading": "✅ SEO 验收 18 项，失败 0 项（**不响**）—— 它只查「登记的路由是否还在产物里」，不查登记表的条数"
+  }
+ }
+}
