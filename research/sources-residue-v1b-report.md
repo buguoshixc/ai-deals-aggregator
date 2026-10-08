@@ -11,7 +11,7 @@
 
 | # | 事 | 结果 |
 |---|---|---|
-| ① | `scripts/data/official_urls.json:3` 的 `_roles` 括注校正 | **已落地**（一行）；产品**0 变化**（对照组 + 实验组逐文件 sha256：304 个文件 `changed=0`）；三份数据重建 dry-run **0 条变化事件**；新增一条**会响的判据** `check-roles-note.js`（8 条检查），实跑 红 → 逐字节还原 → 绿，另有一种「标签改名」方向的变异（内存改名，磁盘不动）也实跑为红 |
+| ① | `scripts/data/official_urls.json:3` 的 `_roles` 括注校正 | **已落地**（一行）；产品**0 变化**（对照组 + 实验组逐文件 sha256：304 个文件 `changed=0`）；三份数据重建 dry-run **0 条变化事件**；新增一条**会响的判据**（t16 原址 `research/_raw/…/check-roles-note.js`；**t18 已迁到门禁住址 `scripts/tools/roles-note-selftest.js` 并进 CI**，见 §7）（8 条检查），实跑 红 → 逐字节还原 → 绿，另有一种「标签改名」方向的变异（内存改名，磁盘不动）也实跑为红 |
 | ② | TokenHub ↔ 记录（混元 6 模型 + 免费额度）逐项对账 | 6 模型：**一致 1 / 不一致 0 / 该页不载 5**；免费额度：**该页不载**（TokenHub 的计费面无金额，只有指向另一个产品页的指针） |
 | ② 裁定 | 「混元 → TokenHub」这条残留 | **升级**（不是维持「未来漂移提示」）：官方公告写的**旧平台全面停服日 2026-09-30 已过**（今天 10-08），而旧平台计费页仍 200 且价格未变；迁移目标上 3/6 模型被官方明确「不再支持」，6 个模型里只有 1 个还能在 TokenHub 找到同名 id。触发条件与登记面建议见 §3.3 |
 
@@ -57,7 +57,7 @@
 
 ### 1.4 「括注再脱节会被发现吗」：加了一条**会响的判据**（8 条检查）
 
-判据脚本：`research/_raw/sources-residue-v1b/check-roles-note.js`。它把三处串起来，任一处脱节即红：
+判据脚本（**t16 原址**）：`research/_raw/sources-residue-v1b/check-roles-note.js`。**t18 已把它迁到 `scripts/tools/roles-note-selftest.js` 并装进门禁**（迁址、登记、三段实跑的读数见 §7）。它把三处串起来，任一处脱节即红：
 
 1. `note-quotes-live-label`：注必须逐字引用 `audience.js` 的 `WORDING_CONTRACT.SOURCE_LABELS.origin` 的**当前值**；
 2. `note-has-no-stale-term`：注里不得再出现旧称「原始出处」；
@@ -72,7 +72,7 @@
 
 | 步骤 | 命令 | 结果 |
 |---|---|---|
-| 绿（改动后） | `node …/check-roles-note.js` | **8/8 通过**，exit 0 → `roles-note-check-green.json` |
+| 绿（改动后） | `node …/check-roles-note.js`（**现址** `npm run selftest:roles-note`） | **8/8 通过**，exit 0 → `roles-note-check-green.json` |
 | 红（变异 M1：把括注改回旧写法） | `node …/note-mutation.js --bend` → 判据 | **2/8 失败**（`note-quotes-live-label`、`note-has-no-stale-term`），exit 1 → `roles-note-check-red-bent.json` |
 | 逐字节还原 | `node …/note-mutation.js --restore` | 还原前 sha256 `3483dfaf…` → 还原后 `183f5b63…` = 备份 sha256；「✅ 逐字节还原成功」 |
 | 绿（还原后） | 判据再跑 | **8/8 通过**，exit 0；`git diff --stat` 只剩「1 file changed, 1 insertion(+), 1 deletion(-)」 |
@@ -80,7 +80,8 @@
 
 M2 回答的正是「括注为什么不会再次脱节」：**标签改名那一刻**，判据就会红（而不是等读者发现）。
 
-**没有把它装进门禁**（如实说明）：本任务 in-scope 只有 `scripts/data/official_urls.json` 与 `research/**`，`scripts/lib/`、`scripts/tools/` 明确在 out-of-scope 里 —— 而门禁断言必须住在 `scripts/tools/*selftest*.js` 并且**登记进 `.github/actions/gate/action.yml`**（`check:ci` 的第 19 条断言会拒绝「写了 selftest 但没进门的脚本」）。所以这轮交付的是**可复核判据**而不是门禁牙；把它固化成门禁牙的建议行见 §5.1（预计改 2 个文件：一个 selftest + action.yml 的步骤清单，都要走 `check:ci` 的双向对账）。
+**当时没有把它装进门禁**（t16 的如实说明，历史记录）：那一轮 in-scope 只有 `scripts/data/official_urls.json` 与 `research/**`，`scripts/lib/`、`scripts/tools/` 在 out-of-scope 里 —— 而门禁断言必须住在 `scripts/tools/*selftest*.js` 并且**登记进 `.github/actions/gate/action.yml`**（`check:ci` 的第 19 条断言会拒绝「写了 selftest 但没进门的脚本」）。
+⇒ **t18 已补上**：迁到 `scripts/tools/roles-note-selftest.js`、加 `selftest:roles-note`、登记进 action.yml 与两处冻结/分层表，`check:ci` 仍 39/0；迁址与三段实跑读数见 **§7**。
 
 ---
 
@@ -212,9 +213,9 @@ M2 回答的正是「括注为什么不会再次脱节」：**标签改名那一
   它们写的是「页面会渲染成什么」，而渲染措辞的唯一出处是 `scripts/lib/audience.js` 的措辞常量。
   只写文字、没有判据的注记，会在下一次改名时静默变成假话（t8 实测：`official_urls.json` 的 `_roles`
   写着「渲染成「原始出处」行」，而 deal 侧标签早在 t7 就改成了「收录渠道」）。
-  本轮的可复核判据：`research/_raw/sources-residue-v1b/check-roles-note.js`（8 条检查，
-  指认「注里的标签必须逐字等于 `SOURCE_LABELS.origin`」；变异实测：改回旧括注 → 红，内存改名 → 红）；
-  建议下一轮把它固化成 `scripts/tools/` 里的 selftest 并登记进 `.github/actions/gate/action.yml`。
+  判据已在位（**t18 已落地**）：`scripts/tools/roles-note-selftest.js`（8 条检查，`selftest:roles-note`），
+  已登记进 `.github/actions/gate/action.yml`（步骤名 `Roles-note self-test (official_urls note vs live wording)`）；
+  变异实测：改回旧括注 → 红（exit 1），内存改名 → 红（且磁盘不变）。
 ```
 
 ### 5.2 `NEXT-STEPS.md` §A.2（整条替换）
@@ -241,14 +242,19 @@ M2 回答的正是「括注为什么不会再次脱节」：**标签改名那一
 
 ```
    ⇒ 2026-10-08 追加：该括注已按 t16 校正，并且新增一条可复核判据
-     （`research/_raw/sources-residue-v1b/check-roles-note.js`：注里的行标签必须逐字等于
+     （`scripts/tools/roles-note-selftest.js`：注里的行标签必须逐字等于
      `SOURCE_LABELS.origin`；改回旧写法 / 内存改名两种变异都实测为红）。
-     建议下一轮把它固化进 selftest（需要动 `scripts/tools/` 与 `.github/actions/gate/action.yml`）。
+     **该判据已装进门禁**（t18：`selftest:roles-note` + action.yml 的 `Roles-note self-test …` 步骤，
+     `check:ci` 仍 39/0）—— 门的这一半已经闭上。
 ```
 
 ---
 
 ## 6. 本轮改动与验证
+
+> 本节描述的是 **t16**（`sources-residue-v1b`）那一轮的改动面。**t18 的改动面见 §7** ——
+> 那一轮动了 `scripts/tools/`、`package.json`、`.github/actions/gate/action.yml`、`scripts/test/layers.js`
+> 与 `scripts/data/official_urls.json` 的一处引用（都只为了把 §1.4 的判据装进门禁）。
 
 **改了什么**：
 
@@ -259,3 +265,99 @@ M2 回答的正是「括注为什么不会再次脱节」：**标签改名那一
 **没改什么**：价格、引文、`capturedAt`、`sourceUrl`、`officialUrl`、`NEXT-STEPS.md`、`docs/DESIGN-RULES.md`、`scripts/lib/**`、`scripts/tools/**`、`dist/**`（构建产物是验证用，不入库）。
 
 **验证命令**：见 `research/sources-residue-v1b-self-audit.md` §3（含 `npm run build` / `verify-site.js --dir=dist` / `check-ci-consistency.js --expect-checks=39` / `check:evidence` 的实跑读数）。
+
+---
+
+## 7. 门禁固化（t18 / `roles-note-tooth-v1`）：把 §1.4 的牙装进 CI
+
+**一句话**：§1.4 那条判据从 `research/_raw/…/check-roles-note.js` 迁到 `scripts/tools/roles-note-selftest.js`，
+加了 `selftest:roles-note`，登记进 `.github/actions/gate/action.yml`（`Roles-note self-test (official_urls note vs live wording)`），
+并把仓库要求的两处**登记表/分层表**各追加一条 —— `check:ci` 仍 **39/0**，`--expect-checks=39` 不变、没有删改任何既有断言。
+
+### 7.1 做了什么（8 处）
+
+| # | 文件 | 改动 | 为什么 |
+|---|---|---|---|
+| 1 | `scripts/tools/roles-note-selftest.js` | **新增**：判据本体（8 条检查，仓库自测的样式：`check()` + 分节打印 + 现场读数 + 汇总 + 失败 `exit 1`） | 门禁认可的住址是 `scripts/tools/*selftest*.js` |
+| 2 | `package.json` | **新增** `"selftest:roles-note": "node scripts/tools/roles-note-selftest.js"`（放在 `selftest:audience` 之后） | 可独立复跑；`check:ci` (17) 会核对每个 `selftest:*` 是否真的被门禁跑到 |
+| 3 | `.github/actions/gate/action.yml` | 在 `Audience self-test` 之后**新增步骤**（带一段「为什么必须进门禁」的注释） | 进门禁本体 |
+| 4 | `scripts/tools/check-ci-consistency.js` | `GATE_STEP_NAMES` 与 `GATE_STEP_RUN` 各**追加一条**（同名、同位置、纯追加） | 登记制：新增门禁步骤必须同时登记**步骤名序列**与 **run 体指纹**，否则 (10) 红（实测见 §7.2） |
+| 5 | `scripts/test/layers.js` | L2 的 script 列表**追加** `selftest:roles-note` | `fitness` ④：每个 `selftest:*` 必须**恰好属于一层** |
+| 6 | `scripts/data/official_urls.json` | `_roles` 括注末尾的判据路径：`research/_raw/…/check-roles-note.js` → `scripts/tools/roles-note-selftest.js`（并写出步骤名） | 迁址的引用更新；**不更新判据自己会红**（第 5 条检查「注里指向本判据」） |
+| 7 | `research/_raw/sources-residue-v1b/check-roles-note.js` | **删除**（迁走） | 一个判据只有一个住址 |
+| 8 | `research/_raw/sources-residue-v1b/{note-mutation.js,mutate-live-label.js,README.md}` + 本报告 | 引用更新（现址/原址、复跑命令） | 变异工具与文档指向新址 |
+
+### 7.2 越界说明：为什么动了 `check-ci-consistency.js` 与 `scripts/test/layers.js`
+
+这两个文件在 t18 的 **out-of-scope** 清单里。动它们的理由是**实测**出来的，不是为了让门禁变绿而放宽：
+
+**只登记 action.yml、两张表不动时的实测读数**（这就是登记制本身的证据）：
+
+```
+✗ (10) gate 复合 action 存在且步骤名序列等于冻结清单 — #19 期望「App-token self-test」实得
+      「Roles-note self-test (official_urls note vs live wording)」；#20 期望「AI layer self-test」实得「App-token self-test」…
+❌ CI 口径检查 39 项，失败 1 项            （exit 1）
+```
+
+⇒ 那张冻结表**就是门禁强度**：不登记，门禁红；登记，这一步从此被 CI **真的执行**（这正是本任务的目的）。
+两处改动的边界（可逐条复核）：
+
+- **纯追加**：`git diff --numstat` 实读 `scripts/tools/check-ci-consistency.js` = **+7 / −0**、`scripts/test/layers.js` = **+1 / −0**（删除行数都是 0，含注释），**没有修改、没有删除任何既有条目**；
+- **断言数不变**：`--expect-checks=39` 通过、(W) 仍是「实跑 38 条 = 冻结清单 38 条 + 本看门狗」⇒ 没有删改任何既有断言；
+- **既有步骤的 run 体指纹逐字未动**（`git diff` 里只有新增行）；
+- `fitness` ④ 报「**26** 个 `selftest:*` 全部已分层」（t16 前是 25）⇒ 新脚本已归层。
+
+**回退方式（如果 captain 认为这两处不该在本轮动）**：撤掉 #3（action.yml 步骤）与 #4（两条登记）即可 ——
+`selftest:*` 脚本、分层表、脚本本体都保留，`check:ci` 仍是 39/0，但这条牙**不在门禁里**（退回到 t16 的状态）。
+
+### 7.3 三段实跑（干净绿 → 沙箱红 → 逐字节还原绿）
+
+| 段 | 命令 | 读数 | `official_urls.json` sha256（前 16） |
+|---|---|---|---|
+| ① 干净树 | `node scripts/tools/roles-note-selftest.js` | **8 项通过 / 0 失败 · exit 0** | `d2197a952a74cf96` |
+| ② 沙箱变异：把括注改回旧称 | `node research/_raw/sources-residue-v1b/note-mutation.js --bend` → 同一条判据 | **6 通过 / 2 失败 · exit 1** —— 红在「注里逐字引用今天的标签「收录渠道」」与「注里不再把旧称「原始出处」写成本字段的行标签」 | `3327de0756ebed8a` |
+| ③ 逐字节还原 → 复跑 | `…/note-mutation.js --restore` → 同一条判据 | 还原 sha256 与 ① **完全一致**；判据 **8 / 0 · exit 0** | `d2197a952a74cf96` |
+
+- 驱动器：`research/_raw/sources-residue-v1b/roles-note-gate-3phase.js`（把三段串起来，**还原放在 `finally` 里** ——
+  中途失败也会还原，不会把生产数据留在被改坏的状态）；读数：`roles-note-gate-3phase.json`。
+- 另一个方向（**内存里**把 live 常量 `收录渠道` 改名，不写盘）：判据 **6 / 2 · exit 1**，
+  且 `scripts/lib/audience.js` 的 sha256 前后一致（`e8150b25e41c251c`）⇒ 磁盘未被改动。
+
+### 7.4 「它在 CI 里真的会跑」的证据（三个独立角度）
+
+1. **门禁步骤清单命中**：`check:ci` 的 (10) 绿 —— 它逐个比对 action.yml 的**步骤名序列**与**run 体指纹**，我的步骤在两张冻结表里；`--expect-checks=39` 通过。
+2. **门禁的唯一实现会执行它**：`node scripts/test/run.js --gate` 是「本地跑一遍 CI 门禁」的入口 —— 它**直接解析 `.github/actions/gate/action.yml` 并按顺序执行其中的 `node` 步骤**（不抄第二份清单）。见下方日志读数。
+3. **分层入口命中**：`node scripts/test/run.js --list` 的 L2 里有 `selftest:roles-note`（同一份 `scripts/test/layers.js` 也是 CI 的分层定义）。
+
+`run.js --gate` 的日志读数：
+
+```
+$ node scripts/test/run.js --gate
+门禁步骤（读自 .github/actions/gate/action.yml）：52 个
+  ✓     0.2s  [17] SEO self-test
+  ✓     0.1s  [18] Audience self-test
+  ✓     0.1s  [19] Roles-note self-test (official_urls note vs live wording)   ← 本任务新增的那一步
+  ✓     0.4s  [20] App-token self-test
+  …
+合计 308.9s / 48 个脚本，失败 0
+跳过的 4 个非 node 步骤（本地无意义或需要 bash/网络）：Install dependencies · Prepare browser for the real-browser gate · Browser availability decision (never silent) · Gate conclusion
+✅ 本地门禁链全过（与 CI 读同一份 action.yml）        （exit 0）
+```
+
+读数归档：`research/_raw/sources-residue-v1b/gate-run-evidence.json`（由 `gate-run-evidence.js` 从 gate 日志解析：
+实跑 40 条步骤行 / 失败 0 / 本步骤 `[19] ✓ 0.1s`）。**本机 Full Gate 是跑完的**（48 个脚本，0 失败；本次 elapsed **308.9s**）；
+rebase 到最新 master（`26c6614`）**之前**还跑过一次同样全过的（380.0s），两次的步骤序列与我的步骤读数相同，归档的是**最终那次**。
+
+### 7.5 我没能证明的东西（t18）
+
+1. **GitHub Actions 上的真实运行没实测**：本机没有 runner。「CI 会跑它」我证明到的是
+   「CI 使用的唯一门禁实现（`action.yml`）里有这一步」+「本地用同一份 `action.yml` 执行到了它」+「`check:ci` 的步骤/指纹双表比对绿」。
+   远端那次运行不在本机能力范围内。
+2. **本机 Full Gate 的完整结果**：见 §7.4 的如实记录（跑完 / 没跑完 + 原因）。
+3. **`--roles=<path>` 覆盖参数**：判据支持它（给变异实验指向被改坏的副本）。门禁调用**不带参数**，
+   而且调用形态被冻结在 `GATE_STEP_RUN` 的指纹里（`node scripts/tools/roles-note-selftest.js`）——改指纹会红。
+   它**不能**被用来让门禁看到另一份文件。
+4. **t16 的 `-self-audit.md` 里仍写着旧路径**（那份文档不在 t18 的 in-scope 清单里，未改）：
+   它是 t16 的历史读数；迁址后的现状以本报告 §7 与 `research/_raw/sources-residue-v1b/README.md` 为准。
+5. **判据的语义边界**：第 7、8 条检查是「`plans-page.js` 仍原样透传 / `api-plans-page.js` 没有 `case 'sourceUrl':`」——
+   如果将来 plans 侧改成在**别处**拼一个标签，这两条机械核对可能看不见。边界写在这里，不假装它覆盖一切。

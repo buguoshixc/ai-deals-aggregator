@@ -1,0 +1,43 @@
+{
+  "task": "roles-note-tooth-v1",
+  "date": "2026-10-08",
+  "source": "node scripts/test/run.js --gate（解析 .github/actions/gate/action.yml 并按顺序执行，唯一一份步骤定义）",
+  "logFile": "_full-gate.log",
+  "declaredSteps": "门禁步骤（读自 .github/actions/gate/action.yml）：52 个",
+  "totals": "合计 308.9s / 48 个脚本，失败 0",
+  "failureCount": 0,
+  "skippedNonNodeSteps": [
+    "跳过的 4 个非 node 步骤（本地无意义或需要 bash/网络）：",
+    "· Install dependencies",
+    "· Prepare browser for the real-browser gate",
+    "· Browser availability decision (never silent)",
+    "· Gate conclusion"
+  ],
+  "rolesNoteStep": {
+    "status": "✓",
+    "seconds": 0.1,
+    "index": 19,
+    "name": "Roles-note self-test (official_urls note vs live wording)"
+  },
+  "rolesNoteNeighbours": [
+    {
+      "status": "✓",
+      "seconds": 0.1,
+      "index": 18,
+      "name": "Audience self-test"
+    },
+    {
+      "status": "✓",
+      "seconds": 0.1,
+      "index": 19,
+      "name": "Roles-note self-test (official_urls note vs live wording)"
+    },
+    {
+      "status": "✓",
+      "seconds": 0.3,
+      "index": 20,
+      "name": "App-token self-test"
+    }
+  ],
+  "conclusion": "✅ 本地门禁链全过（与 CI 读同一份 action.yml）"
+}

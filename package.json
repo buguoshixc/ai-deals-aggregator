@@ -31,6 +31,7 @@
     "selftest:expiry": "node scripts/tools/expiry-selftest.js",
     "selftest:text": "node scripts/tools/text-selftest.js",
     "selftest:audience": "node scripts/tools/audience-selftest.js",
+    "selftest:roles-note": "node scripts/tools/roles-note-selftest.js",
     "selftest:provenance": "node scripts/tools/provenance-selftest.js",
     "selftest:history": "node scripts/tools/history-selftest.js",
     "check:history": "node scripts/tools/history-verify.js",

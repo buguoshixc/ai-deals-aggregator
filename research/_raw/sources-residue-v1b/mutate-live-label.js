@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 /**
- * 变异工具（t16 / sources-residue-v1b）：在**内存里**把 `SOURCE_LABELS.origin` 改名，再跑判据。
+ * 变异工具（t16 / sources-residue-v1b；t18 起判据已迁到门禁住址）：在**内存里**把
+ * `SOURCE_LABELS.origin` 改名，再跑 `scripts/tools/roles-note-selftest.js`。
  *
- * 为什么要它：`check-roles-note.js` 的判据建立在「注里的标签必须逐字等于 live 常量」上 ——
+ * 为什么要它：那条判据建立在「注里的标签必须逐字等于 live 常量」上 ——
  * 这条关系只有在**有人把常量改名**的时候才会响。直接在磁盘上改 `scripts/lib/audience.js`
  * 是越界（本任务 in-scope 只有 `scripts/data/official_urls.json` 与 research/ 下的交付物），
  * 所以这里用 Node 的模块缓存做内存改名：`require` 拿到的是同一个对象，改它不会写盘。
@@ -39,5 +40,5 @@ process.on('exit', () => {
 });
 
 // 让判据看到被改名的常量（同一个模块对象），并把它自己的参数收窄成默认值
-process.argv = [process.argv[0], path.join(__dirname, 'check-roles-note.js')];
-require(path.join(__dirname, 'check-roles-note.js'));
+process.argv = [process.argv[0], path.join(ROOT, 'scripts', 'tools', 'roles-note-selftest.js')];
+require(path.join(ROOT, 'scripts', 'tools', 'roles-note-selftest.js'));
