@@ -178,6 +178,15 @@ function assertNoDuplicateScriptKeys() {
 assertNoDuplicateScriptKeys();
 
 /**
+ * 页面级说明意图清单的产物文件名。
+ *
+ * 为什么是 `.ndjson` 而不是 `.json`：产物里每个 `*.json` 都必须被某个注册表认领
+ * （`lib/data-docs.js` §10.7 方向 2 的 fail-closed 判据），而本轮 in-scope 路径不含那个注册表。
+ * 完整论证见下面「页面级说明的构建期意图清单」一节。
+ */
+const NOTES_MANIFEST_FILE = '_notes.ndjson';
+
+/**
  * 原样拷贝到产物根的源码文件。
  *
  * v2.1：`plans.json` 从这一版起**发布**（此前它只是仓库里的输入数据）。
@@ -191,9 +200,386 @@ assertNoDuplicateScriptKeys();
 const PUBLIC_FILES = ['index.html', 'favicon.svg', 'robots.txt', '.nojekyll', ...dataDocs.datasetCopyUrls()];
 /** 构建期生成、不走源码拷贝的产物 */
 const GENERATED_FILES = ['logos.css', 'sitemap.xml', 'og-image.png', 'feed.xml', 'feed.json', 'icon.png', 'source-health.json',
-  ...dataDocs.datasetGeneratedUrls(), dataDocs.MANIFEST_URL];
+  ...dataDocs.datasetGeneratedUrls(), dataDocs.MANIFEST_URL, NOTES_MANIFEST_FILE];
 // 站点常量与 XML 转义的**唯一出处**是 lib/feeds.js（v1.6 起订阅层也要用它们）。
 const { SITE_URL, SITE_NAME, SITE_DESCRIPTION, xmlEscape } = feeds;
+
+/* ------------------------------------------------------------------ */
+/* 页面级说明的**构建期意图清单**（notes-manifest-v1）                    */
+/* ------------------------------------------------------------------ */
+
+/**
+ * ## 这一节解决什么问题
+ *
+ * 长期挂在 `NEXT-STEPS.md` §0 剩余事项里的那条 P1 是：**判据只认 `.snote` 这个类名**
+ * （把类名换掉、或者把说明换进别的容器，门禁就再也看不见它了）。今天所有与说明有关的
+ * 断言（`verify-site.js` §22c 的窄柱 / 字迹 / 同轴 / 未渲染、构建期的 Markdown 记号扫描、
+ * 「每页冻结串恰好 1 次」）都是**只看渲染结果**的：它们回答的是「已经叫 `.snote` 的那些
+ * 元素长得对不对」，从来没有人问过**「这一页本来打算输出几条说明、每条在哪一类容器里」**。
+ * 于是「故意改个名」是一次静默的失效，而不是一次会红的决定。
+ *
+ * 修法是**跨源对账**，两个来源互相独立：
+ *
+ *   ① **意图源（本文件）** —— 在**内容构造点**登记：这一页打算输出几条说明、每条的槽位
+ *      （`snote` / `pnote` / `vsnote`）与**完整 class token 集合**、以及它是哪一处构造分支
+ *      产出的。登记与输出是同一次调用（`noteDeclare()` 返回它收到的 HTML，
+ *      「先登记、后输出」），所以**登记不出来的说明也输出不出去**。
+ *      ⚠️ 意图源**不读产物、也不拿正则去扫 HTML**：它只由代码里的构造分支说出口。
+ *   ② **渲染源（产物 / DOM）** —— 构建期自检回读**刚生成的 HTML**、§22c 回读**真浏览器里的
+ *      DOM**，按同一把尺子（`<main>` 内、class token 级、按 token 集合分组计数）数出来。
+ *
+ * 两侧相等才放行；不等就点名 `route#index` 并**同时给出两侧读数**。改名（`snote` → 别的）、
+ * 换容器（`<p>` → `<div>`、或换成一个不含该 token 的 class）、漏渲染，三种都会让渲染侧
+ * 比意图侧少一条 ⇒ 构建期或 §22c 至少一处红。
+ *
+ * ## 为什么清单落成 `_notes.ndjson` 而不是 `_notes.json`
+ *
+ * 产物里**每一个 `*.json` 都必须被某个注册表认领**（`lib/data-docs.js` §10.7 方向 2 的
+ * fail-closed 判据：Manifest 自身 / Feed 家族 / `INTERNAL_ARTIFACTS` 豁免项 / 已登记的公开
+ * 数据集）。本轮 in-scope 路径**不含** `lib/data-docs.js`，而把一个内部清单塞进
+ * `PUBLIC_DATASETS` 会让它出现在 `/docs/data/` 的公开数据集索引里（那是产品面变化，
+ * 不只是多一个文件）。所以清单用 **NDJSON**（一行一个 JSON 对象：首行头部，其余每行一页）
+ * —— 机器可读、可 `grep`、可逐字节重建，且不冒充公开数据集。
+ *
+ * ## 覆盖边界（**写在代码里，不写在别处**）
+ *
+ * 意图源只能登记**它自己代码路径上**的说明构造点。全站 `<main>` 里的说明容器实测
+ * （2026-10-08，`dist` 186 页）分三类：`.snote` 271 条 · `.pnote` 159 条 · `.vsnote` 150 条。
+ * 其中**由本文件 / `lib/landing.js` / `lib/vendor-page.js` 构造**的由本节逐条登记；
+ * 其余（`/models/`、`/plans/`、`/plans/coding/`、`/plans/api/`、`/docs/data/`、`/archive/`、
+ * `/changes/` 这些页面的 `.snote`）构造点在**本轮范围之外**的模块里
+ * （`lib/models-page.js` / `lib/plans-page.js` / `lib/api-plans-page.js` / `lib/plans-hub-page.js` /
+ * `lib/data-docs.js` / `lib/archive.js` / `index.html` 的 RENDER-CORE 区块）。
+ * 对这些页面本节用**台账（`untracked`）**如实声明：说明不属于本清单，归属哪个模块、
+ * 该模块里**无条件产出**的那一条在哪一行。台账不是豁免 —— 它要求这些页面**仍然至少有
+ * `minNotes` 条说明**（整族被改名 / 整族被删 ⇒ 红），且**新增一条带说明的页面族必须显式
+ * 登记**（否则红）。逐条登记它们要动上面那几个模块，是下一轮的机械改动（见报告）。
+ *
+ * 文件名常量 `NOTES_MANIFEST_FILE` 与产物清单放在一起（`GENERATED_FILES` 那一段）。
+ */
+
+/**
+ * 说明槽位 —— 全站只有这三种容器 token（`<main>` 内、class token 级匹配）。
+ *
+ * ⚠️ token 必须**互为非前缀**且不与站点别处的 class 撞名：`snote` / `vsnote` 之间靠
+ * **token 边界**区分（`vendor-page.js` 里那条历史教训：`class="snote aliasnote"` 用
+ * `class="snote"` 精确串匹配时一条都照不到，`.vsnote` 反过来又会被 `\bsnote\b` 放过）。
+ * 这里一律按**分词后的 token 集合**比，不做子串匹配。
+ */
+const NOTE_SLOTS = [
+  { id: 'main-snote', token: 'snote', description: '页面级说明（§22c 逐条几何判据的对象）' },
+  { id: 'main-pnote', token: 'pnote', description: '底部折叠说明（<details class="page-notes"> 内）' },
+  { id: 'main-vsnote', token: 'vsnote', description: '厂商资料页的区段说明' }
+];
+
+/** 意图登记表：route → { pageKind, notes[], floors{}, untracked }。构建期一次性，持在内存里。 */
+const noteIntent = new Map();
+
+/** 取（或建）某一页的意图登记项。路由用站根相对形式，**首页是空串**（与全站其它登记口径一致）。 */
+function notePageEntry(route) {
+  if (typeof route !== 'string') {
+    throw new Error(`说明登记：route 必须是页面路由字符串（得到 ${JSON.stringify(route)}）`);
+  }
+  if (!noteIntent.has(route)) {
+    noteIntent.set(route, { route, pageKind: null, notes: [], floors: {}, untracked: null });
+  }
+  return noteIntent.get(route);
+}
+
+/** 归一化 class token 串 → 排序后的 token 数组（两侧对账用的「签名」口径） */
+function noteSignatureOf(classes) {
+  return String(classes || '').trim().split(/\s+/).filter(Boolean).sort();
+}
+
+/**
+ * **登记一条页面级说明，并原样返回它的 HTML**。
+ *
+ * 这是「先登记、后输出」的唯一入口：模板再也不能「直接把一段 `<p class="snote">` 写进
+ * 页面」—— 想输出就得先说出（槽位 / 完整 class token / 哪一处构造分支）。
+ *
+ * @param {string} route 该页的站根相对路由（首页是 `''`）
+ * @param {{kind:string, slot:string, classes:string, declaredBy:string}} decl
+ *        `kind` 是**类型标签**（给读者看的分类：`alias-note` / `page-note` / `noscript-hint` / …）；
+ *        `classes` 是**完整** class token 串（两侧对账按排序后的集合比）；
+ *        `declaredBy` 是构造点位置（`文件:函数`），出错时点名用。
+ * @param {string} html 这一段说明的 HTML（原样返回，保证「登记与输出是同一次调用」）
+ */
+function noteDeclare(route, decl, html) {
+  if (typeof html !== 'string' || !html.trim()) {
+    throw new Error(`说明登记：${route} 的 ${decl.kind} 没有可输出的 HTML —— 「先登记、后输出」不接受空说明`);
+  }
+  noteRegister(route, decl);
+  return html;
+}
+
+/**
+ * **组装点登记（pin）**：这一条说明的构造点在**本轮范围之外**的模块里，由组装点按它的
+ * 容器签名把意图说出来（并写明它在哪个模块的哪一行输出）。
+ *
+ * 它与 `noteDeclare()` 的区别是**可验证的方向相反**：`noteDeclare` 自己产出 HTML，
+ * `notePinned` 只能被产物/ DOM 验证（登记说「这一页应当恰好有 1 条这个签名的说明」，
+ * 谁去渲染由那个模块负责）。为什么仍然要登记：改名 / 换容器 / 不再输出，三种都会让
+ * 渲染侧比意图侧少一条 ⇒ 构建期或 §22c 至少一处红。清单里它带 `pinned: true` 与
+ * `source`（下一轮把构造点接管过来时，这两项就是待删的「已接管」标记）。
+ */
+function notePinned(route, decl, pin) {
+  if (!pin || !pin.source || !pin.reason) {
+    throw new Error(`说明登记：${route} 的 ${decl.kind} 是组装点登记，必须写明 source 与 reason`);
+  }
+  noteRegister(route, Object.assign({}, decl, { pinned: pin.source, pinnedReason: pin.reason }));
+}
+
+/** `noteDeclare` / `notePinned` 共用的校验与入表 */
+function noteRegister(route, decl) {
+  const page = notePageEntry(route);
+  const slot = NOTE_SLOTS.find(item => item.id === decl.slot);
+  if (!slot) {
+    throw new Error(`说明登记：${route} 的 ${decl.kind} 用了未登记的槽位「${decl.slot}」` +
+      `（合法值：${NOTE_SLOTS.map(item => item.id).join(' / ')}）`);
+  }
+  const tokens = noteSignatureOf(decl.classes);
+  if (!tokens.includes(slot.token)) {
+    throw new Error(`说明登记：${route} 的 ${decl.kind} 声明 class="${decl.classes}"，`
+      + `但槽位 ${slot.id} 要求 token「${slot.token}」在其中 —— 声明与容器不符，登记没有意义`);
+  }
+  if (!decl.declaredBy) {
+    throw new Error(`说明登记：${route} 的 ${decl.kind} 没有 declaredBy（说明是哪一处构造点产出的）`);
+  }
+  page.notes.push({
+    kind: decl.kind, slot: slot.id, signature: tokens.join(' '), declaredBy: decl.declaredBy,
+    pinned: decl.pinned || null, pinnedReason: decl.pinnedReason || null
+  });
+}
+
+/** 给某一页登记「这一页属于哪一族」与**结构下限**（页面族不变式，与具体哪几条说明无关）。 */
+function notePage(route, spec = {}) {
+  const page = notePageEntry(route);
+  if (spec.kind) page.pageKind = spec.kind;
+  if (spec.floors) {
+    for (const [slotId, floor] of Object.entries(spec.floors)) {
+      if (!NOTE_SLOTS.some(item => item.id === slotId)) {
+        throw new Error(`说明登记：${route} 的 floors 里有未登记的槽位「${slotId}」`);
+      }
+      page.floors[slotId] = floor;
+    }
+  }
+  return page;
+}
+
+/**
+ * **台账**：这一页的 `.snote` 由**本轮范围之外**的模块构造（本清单不逐条登记它们）。
+ *
+ * 台账必须写明归属模块与该模块里**无条件**产出那一条说明的位置 —— 它是「下一轮要接管
+ * 哪些构造点」的可执行清单，也是 `minNotes` 这条下限的依据。台账不是豁免：构建期与
+ * §22c 都要求这些页面**仍然至少有 `minNotes` 条 `.snote`**（整族改名 / 整族被删 ⇒ 红）。
+ */
+function noteUntracked(route, spec) {
+  const page = notePageEntry(route);
+  if (page.untracked) {
+    throw new Error(`说明登记：${route} 重复登记台账（先登记的是 ${page.untracked.family}）`);
+  }
+  const minNotes = spec.minNotes === undefined ? 1 : spec.minNotes;
+  if (!spec.family || !spec.owner || !spec.structural) {
+    throw new Error(`说明登记：${route} 的台账缺 family / owner / structural —— 台账必须能指出「下一轮接管哪一处」`);
+  }
+  page.untracked = { family: spec.family, owner: spec.owner, structural: spec.structural, minNotes };
+  return page;
+}
+
+/** 某一页 → 产物内路径（首页是 `index.html`，其余是 `<route>index.html`） */
+function noteArtifactPathOf(route) {
+  return route ? `${route}index.html` : 'index.html';
+}
+
+/**
+ * 把某一页绑成一个「先登记、后输出」的登记入口，交给**别的模块**在它自己的构造点调用。
+ *
+ * 为什么需要它：厂商资料页的六节说明由 `lib/vendor-page.js` 构造。清单的意图必须从
+ * **构造点**说出口，而不是由调用方猜（猜出来的数字就是回扫产物）。所以登记入口连同 route
+ * 一起注入（`ctx.note`），模块在它构造那一条说明的同一次调用里登记 —— 登记与输出仍然是
+ * 同一次调用，只是这次跨了一层模块边界。
+ */
+function noteDeclarerFor(route) {
+  return (decl, html) => noteDeclare(route, decl, html);
+}
+
+/**
+ * 把 `<main>` 里的说明容器按**槽位 × class token 集合**分组计数。
+ *
+ * 只用刚生成的 HTML（构建期自检）——**不是**清单的来源，是清单的对照面。
+ * 扫描面刻意与浏览器侧的同名实现（`verify-site.js` 的 `wideMeasure`）保持同一口径：
+ * 去注释 / 去 `<script>` / 去 `<style>`、`class` 属性分词、按排序后的 token 集合分组。
+ * 检测是「token 级」（含槽位 token 即算），判定是「集合级」（签名必须逐字相等）——
+ * 前者决定能不能看见，后者才是判据，改名只会让后者对不上。
+ */
+function noteSignaturesInMain(html) {
+  const out = new Map(NOTE_SLOTS.map(slot => [slot.id, new Map()]));
+  const mainMatch = html.match(/<main\b[^>]*>([\s\S]*)<\/main>/);
+  if (!mainMatch) return out;
+  const body = mainMatch[1]
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/<script\b[\s\S]*?<\/script>/gi, '')
+    .replace(/<style\b[\s\S]*?<\/style>/gi, '');
+  const tagRe = /<([a-z][a-z0-9-]*)\b([^>]*)>/gi;
+  let match;
+  while ((match = tagRe.exec(body))) {
+    const attr = (match[2].match(/(?:^|\s)class\s*=\s*"([^"]*)"/i) || [])[1];
+    if (!attr) continue;
+    const tokens = noteSignatureOf(attr);
+    const slot = NOTE_SLOTS.find(item => tokens.includes(item.token));
+    if (!slot) continue;
+    const signature = tokens.join(' ');
+    const bucket = out.get(slot.id);
+    bucket.set(signature, (bucket.get(signature) || 0) + 1);
+  }
+  return out;
+}
+
+/** 清单文本（NDJSON；页按 route 排序 ⇒ 与登记顺序无关，连续两次构建逐字节一致） */
+function notesManifestText() {
+  const routes = [...noteIntent.keys()].sort();
+  const declaredBySlot = new Map(NOTE_SLOTS.map(slot => [slot.id, 0]));
+  for (const page of noteIntent.values()) {
+    for (const note of page.notes) declaredBySlot.set(note.slot, declaredBySlot.get(note.slot) + 1);
+  }
+  const header = {
+    kind: 'header',
+    schemaVersion: 1,
+    generator: 'scripts/tools/build-local.js',
+    slots: NOTE_SLOTS.map(slot => ({ id: slot.id, token: slot.token, description: slot.description })),
+    totals: {
+      pages: routes.length,
+      declaredNotes: [...declaredBySlot.values()].reduce((sum, n) => sum + n, 0),
+      declaredBySlot: Object.fromEntries(NOTE_SLOTS.map(slot => [slot.id, declaredBySlot.get(slot.id)])),
+      untrackedPages: [...noteIntent.values()].filter(page => page.untracked).length
+    }
+  };
+  const lines = [JSON.stringify(header)];
+  for (const route of routes) {
+    const page = noteIntent.get(route);
+    const declared = {};
+    for (const slot of NOTE_SLOTS) declared[slot.id] = page.notes.filter(note => note.slot === slot.id).length;
+    lines.push(JSON.stringify({
+      kind: 'page',
+      route: route,
+      pageKind: page.pageKind,
+      // complete = 「本页 `<main>` 里的 `.snote` 全在清单里」 ⇒ 构建期与 §22c 都要求**逐字相等**
+      complete: !page.untracked,
+      declared: declared,
+      floors: page.floors,
+      untracked: page.untracked,
+      notes: page.notes.map((note, index) => Object.assign({ index }, note))
+    }));
+  }
+  return `${lines.join('\n')}\n`;
+}
+
+/**
+ * 构建期自检：清单 ↔ **刚生成的 HTML** 逐页对账。
+ *
+ * 判据四条（与 §22c 的 ⑨ 同一套，两侧口径必须一致）：
+ *   ① 路由集双向相等：产物里每个 HTML 都登记过意图，反之亦然（漏登记的页面族 = 红）；
+ *   ② 逐页逐槽位：清单声明的每个「token 集合 × 条数」都必须与 HTML 里数出来的相等，
+ *      反向也成立（多出来的说明 = 有人绕过了登记 ⇒ 红）；不等时点名 `route#index` 并给两侧读数；
+ *   ③ 结构下限：页面族不变式（如别名页恰好 1 条页面级说明）—— 它防的是「登记与模板一起被删」；
+ *   ④ 台账下限：`untracked` 页面仍必须有 `minNotes` 条 `.snote`。
+ *
+ * @returns {{ problems: string[], readings: object[] }}
+ */
+function noteManifestSelfCheck() {
+  const problems = [];
+  const readings = [];
+  const htmlFiles = listArtifactFiles(OUT).filter(file => file.endsWith('.html'));
+  const diskRoutes = new Set(htmlFiles.map(file => file.replace(/index\.html$/, '')));
+  for (const route of [...diskRoutes].sort()) {
+    if (!noteIntent.has(route)) {
+      problems.push(`${route || '(首页)'} 有产物页面但清单里没有这一页的说明意图 `
+        + `—— 新增页面族必须显式登记（notePage(route, …)），否则它就是一个新的隐形说明面`);
+    }
+  }
+  for (const route of [...noteIntent.keys()].sort()) {
+    if (!diskRoutes.has(route)) {
+      problems.push(`清单登记了 ${route || '(首页)'} 的说明意图，但产物里没有这一页 —— 清单与产物分家了`);
+    }
+  }
+  for (const route of [...noteIntent.keys()].sort()) {
+    if (!diskRoutes.has(route)) continue;
+    const page = noteIntent.get(route);
+    const html = fs.readFileSync(path.join(OUT, noteArtifactPathOf(route)), 'utf8');
+    const dom = noteSignaturesInMain(html);
+    const where = route || '(首页)';
+    const declaredTotals = new Map(NOTE_SLOTS.map(slot => [slot.id, 0]));
+    for (const note of page.notes) declaredTotals.set(note.slot, declaredTotals.get(note.slot) + 1);
+    const domTotals = new Map(NOTE_SLOTS.map(slot => [slot.id, [...dom.get(slot.id).values()].reduce((sum, n) => sum + n, 0)]));
+
+    // ① 逐签名对账（双向）：签名 = 排序后的完整 class token 集合
+    for (const slot of NOTE_SLOTS) {
+      const domBucket = dom.get(slot.id);
+      const declaredSignatures = new Map();
+      page.notes.filter(note => note.slot === slot.id).forEach(note => {
+        declaredSignatures.set(note.signature, (declaredSignatures.get(note.signature) || 0) + 1);
+      });
+      const signatures = new Set([...declaredSignatures.keys(), ...domBucket.keys()]);
+      for (const signature of signatures) {
+        const declaredCount = declaredSignatures.get(signature) || 0;
+        const domCount = domBucket.get(signature) || 0;
+        if (declaredCount === domCount) continue;
+        // 台账页面只做**单向**对账：多出来的说明属于范围之外的那个模块（它们由 minNotes 下限守），
+        // 但「清单声明的容器必须真的渲染出来」这一条对台账页面同样成立。
+        if (page.untracked && domCount > declaredCount) continue;
+        // 报错位点：取该签名在清单里的第一条（没有登记时取 slot 的第 0 条）—— route#index 可定位
+        const noteIndex = page.notes.findIndex(note => note.slot === slot.id && note.signature === signature);
+        const at = `${where}#${noteIndex === -1 ? 0 : noteIndex}`;
+        problems.push(`${at} 槽位 ${slot.id} 签名 <${signature || slot.token}>：`
+          + `清单声明 ${declaredCount} 条、产物里数出 ${domCount} 条 —— `
+          + (declaredCount > domCount
+            ? '说明没有按登记的容器渲染（换名 / 换容器 / 漏渲染）'
+            : '产物里出现了没有登记的说明容器（绕过 noteDeclare() 直接写进页面）'));
+      }
+    }
+
+    // ② 结构下限（页面族不变式）
+    for (const [slotId, floor] of Object.entries(page.floors)) {
+      const min = floor && floor.min !== undefined ? floor.min : 0;
+      const actual = domTotals.get(slotId) || 0;
+      if (actual < min) {
+        problems.push(`${where} 槽位 ${slotId}：页面族的**结构下限**是 ${min} 条，产物里只有 ${actual} 条 `
+          + `—— 这一族的说明被整条删掉或改成了别的容器（登记与模板一起消失时，只有下限能挡住它）`);
+      }
+      if (floor && floor.max !== undefined && actual > floor.max) {
+        problems.push(`${where} 槽位 ${slotId}：页面族的上限是 ${floor.max} 条，产物里有 ${actual} 条`);
+      }
+    }
+
+    // ③ 台账下限（范围之外的模块构造的说明）
+    if (page.untracked) {
+      const actual = domTotals.get('main-snote') || 0;
+      if (actual < page.untracked.minNotes) {
+        problems.push(`${where} 台账 ${page.untracked.family}（${page.untracked.owner}）：`
+          + `要求至少 ${page.untracked.minNotes} 条 .snote，产物里只有 ${actual} 条 `
+          + `—— 无条件的说明（${page.untracked.structural}）没有渲染出来`);
+      }
+    }
+
+    // ④ complete 页面：整页 `.snote` 总数逐字相等（两侧读数都记进报告）
+    if (!page.untracked) {
+      const declared = declaredTotals.get('main-snote') || 0;
+      const actual = domTotals.get('main-snote') || 0;
+      if (declared !== actual) {
+        problems.push(`${where} 整页 .snote：清单声明 ${declared} 条、产物里数出 ${actual} 条（完整对账不许有差额）`);
+      }
+    }
+    readings.push({
+      route,
+      kind: page.pageKind,
+      declared: Object.fromEntries(declaredTotals),
+      dom: Object.fromEntries(domTotals),
+      complete: !page.untracked,
+      untracked: page.untracked ? page.untracked.family : null
+    });
+  }
+  return { problems, readings };
+}
 
 /**
  * 站内独立路由（非首页、非详情页）的**唯一清单**：占位符 → 相对路径。
@@ -852,6 +1238,10 @@ ${vendorPage
 
     const dir = path.join(OUT, 'deal', deal.id);
     fs.mkdirSync(dir, { recursive: true });
+    // 说明意图（notes-manifest-v1）：详情页的正文由 RENDER-CORE 的 detailHtml 渲染，
+    // 它**不产出**页面级说明 ⇒ 声明「0 条」。这一行同时是「这一页存在」的登记：
+    // 清单的路由集与产物页面集是双向对账的，漏登记会被构建期点名。
+    notePage(`deal/${deal.id}/`, { kind: 'deal-detail' });
     fs.writeFileSync(path.join(dir, 'index.html'), html, 'utf8');
     pages.push({ id: deal.id, url: pageUrl, title: deal.title, text: String(deal.discountInfo || '') });
   }
@@ -982,6 +1372,9 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
      但必须能被订阅发现 —— 与首页、详情页、分类页声明同两个 feed。
      这一条是 v1.1 收口补的：此页原先只满足五条既有约定里的两条。 -->
 ${feeds.rootFeedTags('../')}`;
+  // 说明意图（notes-manifest-v1）：状态页**恰好两条**页面级说明（判读口径 + 机器可读出口），
+  // 两条都在上面各自的构造点登记；这里登记页面族与结构下限（两条都是无条件的）。
+  notePage(route, { kind: 'status', floors: { 'main-snote': { min: 2 } } });
   return `${shell.docStart({
     kind: 'status',
     route,
@@ -1002,12 +1395,15 @@ ${feeds.rootFeedTags('../')}`;
         <h1>${htmlEscape(STATUS_HEADING)}</h1>
         <span class="meta">数据生成时间 ${htmlEscape(health.formatCN(healthDoc && healthDoc.generatedAt))}（北京时间）</span>
       </div>
-      <p class="snote">
+${noteDeclare(route, {
+    kind: 'status-reading-guide', slot: 'main-snote', classes: 'snote',
+    declaredBy: 'build-local.js:renderStatusPage(判读口径)'
+  }, `      <p class="snote">
         这一页列出每个采集来源<b>最近一次</b>的结果与跨运行的连续性。
         采集器报错、或连续 3 次零产出即 <b>❌ 失败</b>；请求成功但条数掉到上次一半以下、
         或零产出但还没到 3 次即 <b>⚠️ 异常</b>；其余为 <b>✅ 正常</b>。
         「连续失败 / 连续零产出」两列分别是这两个计数器的当前值。
-      </p>
+      </p>`)}
 
       <div class="stable-wrap">
       <table class="stable">
@@ -1027,9 +1423,12 @@ ${feeds.rootFeedTags('../')}`;
       </table>
       </div>
 
-      <p class="snote" style="margin-top: var(--s3)">
+${noteDeclare(route, {
+    kind: 'status-machine-readable', slot: 'main-snote', classes: 'snote',
+    declaredBy: 'build-local.js:renderStatusPage(机器可读出口)'
+  }, `      <p class="snote" style="margin-top: var(--s3)">
         机器可读的同一份数据：<a href="../source-health.json">source-health.json</a>。
-      </p>${shell.docEnd({ route, prefix: '../', parts, extraScript: pageScript, where: 'renderStatusPage' })}`;
+      </p>`)}${shell.docEnd({ route, prefix: '../', parts, extraScript: pageScript, where: 'renderStatusPage' })}`;
 }
 
 /* ------------------------------------------------------------------ */
@@ -1941,12 +2340,22 @@ function renderFeedsPage(feedList, indexHtml, context = {}) {
       </li>`;
   };
 
+  // 说明意图（notes-manifest-v1）：这一页的每条 `.snote` 都在它**自己的分支里**登记
+  // （`noteDeclare()` 与输出是同一次调用），因此「清单里的条数」按定义等于「真的输出了几条」；
+  // 结构下限 4 条是页面族不变式：订阅方法说明 / 厂商订阅口径 / 两组「怎么读」说明，四条无条件。
+  const FEEDS_ROUTE = 'feeds/';
+  const noteRoute = FEEDS_ROUTE;
+  notePage(FEEDS_ROUTE, { kind: 'feeds', floors: { 'main-snote': { min: 4 } } });
+
   const groupHtml = groups.map(group => {
     const rows = group.feeds;
     if (!rows.length) return '';
     return `    <section class="fsec">
       <h2>${htmlEscape(group.label)}</h2>
-      ${group.note ? `<p class="snote">${group.note}</p>` : ''}
+      ${group.note ? noteDeclare(noteRoute, {
+    kind: 'feed-group-scope', slot: 'main-snote', classes: 'snote',
+    declaredBy: 'build-local.js:renderFeedsPage(FEED_LIST_GROUPS 的分组口径)'
+  }, `<p class="snote">${group.note}</p>`) : ''}
       <ul class="flist">
 ${rows.map(rowHtml).join('\n')}
       </ul>
@@ -1957,7 +2366,10 @@ ${rows.map(rowHtml).join('\n')}
   const ungroupedHtml = ungroupedFeeds.length
     ? `    <section class="fsec">
       <h2>其他订阅</h2>
-      <p class="snote">这些订阅源还没在注册表里声明分组（见 lib/feeds.js 的 FEED_LIST_GROUPS），先照实列出。</p>
+      ${noteDeclare(noteRoute, {
+    kind: 'feed-ungrouped', slot: 'main-snote', classes: 'snote',
+    declaredBy: 'build-local.js:renderFeedsPage(未分组订阅的兜底说明)'
+  }, '<p class="snote">这些订阅源还没在注册表里声明分组（见 lib/feeds.js 的 FEED_LIST_GROUPS），先照实列出。</p>')}
       <ul class="flist">
 ${ungroupedFeeds.map(rowHtml).join('\n')}
       </ul>
@@ -1966,9 +2378,12 @@ ${ungroupedFeeds.map(rowHtml).join('\n')}
 
   const emptyChangeFeeds = feedList.filter(feed => feed.spec.kind === 'changes' && !feed.items.length);
   const emptyNote = emptyChangeFeeds.length
-    ? `<p class="snote">最近变化与最近新增现在是空的：本站的变更记录自 ${htmlEscape(context.startedAt || context.asOf || '未知')} 起算，此前没有历史。` +
+    ? noteDeclare(noteRoute, {
+      kind: 'feed-empty-changes', slot: 'main-snote', classes: 'snote',
+      declaredBy: 'build-local.js:renderFeedsPage(变化订阅为空时的说明)'
+    }, `<p class="snote">最近变化与最近新增现在是空的：本站的变更记录自 ${htmlEscape(context.startedAt || context.asOf || '未知')} 起算，此前没有历史。` +
       `空订阅是<b>事实</b>，不是故障 —— 一旦有新增或重要变化，它们会出现在这里。` +
-      `${context.availability !== 'ok' ? '（本次构建没有拿到变更日志，因此无法确认有没有变化。）' : ''}</p>`
+      `${context.availability !== 'ok' ? '（本次构建没有拿到变更日志，因此无法确认有没有变化。）' : ''}</p>`)
     : '';
   // v2.3 / v3.0：变化源的空态**逐条自己说**（各自的起算日与可用性是另一份数据，
   // 不能拿 deals 的话顶上，也不能让 API 那条借用套餐的起算日）。
@@ -1984,17 +2399,26 @@ ${ungroupedFeeds.map(rowHtml).join('\n')}
       const what = spec.changeSource === 'api'
         ? 'API 计费数据（api-plans.json）'
         : '套餐数据（plans.json）';
-      return `<p class="snote">${htmlEscape(spec.title)}现在是空的：这套变更记录自 `
+      return noteDeclare(noteRoute, {
+        kind: 'feed-empty-plan-changes', slot: 'main-snote', classes: 'snote',
+        declaredBy: 'build-local.js:renderFeedsPage(套餐/API 变化订阅为空时的说明)'
+      }, `<p class="snote">${htmlEscape(spec.title)}现在是空的：这套变更记录自 `
         + `${htmlEscape(spec.startedAt || context.asOf || '未知')} 起算，`
         + `此前只沉淀了一份「既有状态」基线（它不是创建事件）。空订阅是<b>事实</b>，不是故障。`
-        + `${unavailable ? `（本次构建没有拿到这份变化日志，因此无法确认 ${htmlEscape(what)} 有没有变化。）` : ''}</p>`;
+        + `${unavailable ? `（本次构建没有拿到这份变化日志，因此无法确认 ${htmlEscape(what)} 有没有变化。）` : ''}</p>`);
     })
     .join('\n');
   const emptyPlanNote = emptyPlanNotes;
   const vendorNote = vendorFeeds.length
-    ? `<p class="snote">厂商订阅只给「当前收录的优惠 ≥ ${feeds.VENDOR_THRESHOLDS.minDeals} 条」或「历史变更事件 ≥ ${feeds.VENDOR_THRESHOLDS.minEvents} 条」的厂商生成：` +
-      `只出现一两条记录的厂商单独开一个订阅没有价值。厂商改名不会改订阅地址（地址来自人工维护的 slug 表）。</p>`
-    : '<p class="snote">当前没有达到门槛的厂商订阅。</p>';
+    ? noteDeclare(noteRoute, {
+      kind: 'feed-vendor-scope', slot: 'main-snote', classes: 'snote',
+      declaredBy: 'build-local.js:renderFeedsPage(厂商订阅门槛口径)'
+    }, `<p class="snote">厂商订阅只给「当前收录的优惠 ≥ ${feeds.VENDOR_THRESHOLDS.minDeals} 条」或「历史变更事件 ≥ ${feeds.VENDOR_THRESHOLDS.minEvents} 条」的厂商生成：` +
+      `只出现一两条记录的厂商单独开一个订阅没有价值。厂商改名不会改订阅地址（地址来自人工维护的 slug 表）。</p>`)
+    : noteDeclare(noteRoute, {
+      kind: 'feed-vendor-empty', slot: 'main-snote', classes: 'snote',
+      declaredBy: 'build-local.js:renderFeedsPage(没有达门槛厂商订阅时的说明)'
+    }, '<p class="snote">当前没有达到门槛的厂商订阅。</p>');
 
   const jsonLdBlocks = [
     {
@@ -2045,8 +2469,11 @@ ${feeds.feedLinkTags(ownFeed ? [ownFeed] : [], '../')}`,
   })}
       <nav class="crumb" aria-label="面包屑"><a href="../">首页</a> › <span>${htmlEscape(PAGE_HEADING)}</span></nav>
       <h1>${htmlEscape(PAGE_HEADING)}</h1>
-      <p class="snote">把下面的地址粘进任意 RSS / JSON Feed 阅读器即可订阅。本站没有账号、没有邮件列表、没有推送服务，
-        也不会记录谁订阅了哪一份 —— 这些就是一个静态文件，和打开任何一个网页没有区别。</p>
+      ${noteDeclare(noteRoute, {
+    kind: 'feed-how-to-subscribe', slot: 'main-snote', classes: 'snote',
+    declaredBy: 'build-local.js:renderFeedsPage(怎么订阅)'
+  }, `<p class="snote">把下面的地址粘进任意 RSS / JSON Feed 阅读器即可订阅。本站没有账号、没有邮件列表、没有推送服务，
+        也不会记录谁订阅了哪一份 —— 这些就是一个静态文件，和打开任何一个网页没有区别。</p>`)}
       ${emptyNote}
       ${emptyPlanNote}
 ${groupHtml}
@@ -2060,9 +2487,15 @@ ${vendorFeeds.map(rowHtml).join('\n')}
     </section>
     <section class="fsec">
       <h2>说明</h2>
-      <p class="snote">优惠订阅回答「当前有哪些符合这个条件的优惠」；最近变化与最近新增回答「最近发生了什么」，
-        只收优惠内容、领取条件、有效期与收录状态的变化 —— 改一个标点、换一处分类不会推给你。</p>
-      <p class="snote">${htmlEscape(W.FEEDS_NOTES.officialNote)}</p>
+      ${noteDeclare(noteRoute, {
+    kind: 'feed-reading-guide', slot: 'main-snote', classes: 'snote',
+    declaredBy: 'build-local.js:renderFeedsPage(两类订阅的区别)'
+  }, `<p class="snote">优惠订阅回答「当前有哪些符合这个条件的优惠」；最近变化与最近新增回答「最近发生了什么」，
+        只收优惠内容、领取条件、有效期与收录状态的变化 —— 改一个标点、换一处分类不会推给你。</p>`)}
+      ${noteDeclare(noteRoute, {
+    kind: 'feed-source-note', slot: 'main-snote', classes: 'snote',
+    declaredBy: 'build-local.js:renderFeedsPage(信息来源说明)'
+  }, `<p class="snote">${htmlEscape(W.FEEDS_NOTES.officialNote)}</p>`)}
     </section>${shell.docEnd({ route: 'feeds/', prefix: '../', parts, where: 'renderFeedsPage' })}`;
 }
 
@@ -2122,7 +2555,6 @@ function renderDirectoryPage(spec, deals, indexHtml, context) {
     : { html: context.extraSections || '', css: context.extraSectionsCss || '' };
   const extraHtml = extraBundle.html || '';
   const extraCss = extraBundle.css || '';
-
   // 订阅声明：本页自己的 Feed（如果有）+ 站点根 Feed。两者都要 ——
   // 根 Feed 是「全部优惠」，本页 Feed 是「这一类」，读者的选择不同。
   const ownFeedTags = pageFeeds.length ? feeds.feedLinkTags(pageFeeds, prefix) : '';
@@ -2334,13 +2766,44 @@ function renderDirectoryPage(spec, deals, indexHtml, context) {
     : [SHARED_NOTES.overlap, SHARED_NOTES.tristate];
   const ownNotes = Array.isArray(spec.userNotes) ? spec.userNotes.filter(line => typeof line === 'string' && line.trim()) : [];
   const noteLines = isAlias ? ownNotes : [...ownNotes, ...sharedNotes];
+
+  // ---- 说明意图（notes-manifest-v1）：这一页属于哪一族 + 页面族的结构下限 ----
+  //
+  // 下限是**页面族不变式**，与「具体哪几条说明」无关：别名页必须恰好有 1 条页面级说明
+  // （导航更正），非别名目录页在 `<main>` 里一条 `.snote` 都不该有（首屏说明那一层已删），
+  // 底部折叠至少要有共享句那几条，厂商页六节说明一条不少。防的是「登记与模板一起被删」
+  // —— 那时两侧会同时少一条，逐条对账看不见，只有下限还站得住。
+  const pageRoute = spec.route || `${spec.slug}/`;
+  notePage(pageRoute, {
+    kind,
+    floors: {
+      'main-snote': { min: isAlias ? 1 : 0 },
+      'main-pnote': { min: isAlias ? 0 : sharedNotes.length },
+      'main-vsnote': { min: kind === 'vendor' ? vendorPage.VENDOR_NOTE_COUNT : 0 }
+    }
+  });
+
+  // 自有说明的类型标签：`landing.js` 的厂商页会带 `noteRows`（scope-note / vendor-material-note）；
+  // 其余目录页的 `userNotes` 来自 `lib/audience.js` 的页面拷贝注册表 ⇒ 一律 `page-note`。
+  const ownNoteKinds = ownNotes.map((line, index) => {
+    const row = Array.isArray(spec.noteRows) ? spec.noteRows[index] : null;
+    return (row && row.kind) || 'page-note';
+  });
+  const sharedNoteKinds = isHub
+    ? ['hub-scope-note', 'hub-threshold-note']
+    : ['shared-overlap-note', 'shared-tristate-note'];
+  const noteKinds = isAlias ? ownNoteKinds : [...ownNoteKinds, ...sharedNoteKinds];
+
   const notesHtml = noteLines.length
     ? `      <details class="page-notes">
         <summary class="page-notes-summary">
           <span class="page-notes-leading"><span class="page-notes-chevron" aria-hidden="true"></span><span class="page-notes-title">分类说明</span></span>
           <span class="page-notes-action" aria-hidden="true"></span>
         </summary>
-${noteLines.map(line => `        <p class="pnote">${line}</p>`).join('\n')}
+${noteLines.map((line, index) => noteDeclare(pageRoute, {
+    kind: noteKinds[index] || 'page-note', slot: 'main-pnote', classes: 'pnote',
+    declaredBy: 'build-local.js:renderDirectoryPage(page-notes)'
+  }, `        <p class="pnote">${line}</p>`)).join('\n')}
       </details>
 
 `
@@ -2461,10 +2924,13 @@ ${summary.map(row => `        <li data-summary-label="${htmlEscape(row.label)}" 
 
   // 别名页的可见说明：读者点进旧地址时要知道自己在哪、该去哪里。
   const aliasNote = isAlias
-    ? `      <p class="snote aliasnote">这一页是<b>旧地址</b>：它与 <a href="${prefix}${spec.aliasOf}">` +
+    ? noteDeclare(pageRoute, {
+      kind: 'alias-note', slot: 'main-snote', classes: 'snote aliasnote',
+      declaredBy: 'build-local.js:renderDirectoryPage(aliasnote)'
+    }, `      <p class="snote aliasnote">这一页是<b>旧地址</b>：它与 <a href="${prefix}${spec.aliasOf}">` +
       `${htmlEscape(aliasTarget ? aliasTarget.title : spec.aliasOf)}</a> 收的是同一批条目（同一份判据）。` +
       `页面保留是为了让老链接仍然可用，但搜索引擎的收录以目标页为准（本页为 noindex）。` +
-      `${spec.aliasReason ? `原因：${htmlEscape(spec.aliasReason)}` : ''}</p>`
+      `${spec.aliasReason ? `原因：${htmlEscape(spec.aliasReason)}` : ''}</p>`)
     : '';
 
   const pageCss = `  /* 只用首页已有的设计变量，不新建一套视觉语言 */
@@ -3142,6 +3608,10 @@ function assemble() {
   // （首页 `status/`、详情页 `../../status/`、状态页自己 `../status/`），
   // 所以源码里只有一处占位符，各自在写出前替换。这里先只处理**首页那一份**，
   // 详情页与状态页的替换在各自的写出函数里做（它们拿到的是同一份含占位符的 html）。
+  // 说明意图（notes-manifest-v1）：首页 `<main>` 里**一条** `.snote` 都没有（7 条在 `<main>`
+  // 之外：详情模板与页脚那几处不在本清单的扫描面内），所以它的声明是「0 条」而不是跳过 ——
+  // 「这一页不打算输出页面级说明」本身也是一个决定，漏登记会让它变成未纳管的页面。
+  notePage('', { kind: 'home' });
   fs.writeFileSync(indexFile, shell.finalizePage(html, '', '', ROUTE_HREFS, 'index.html'), 'utf8');
 
   // OG 分享图。
@@ -3210,7 +3680,10 @@ function assemble() {
           providerTable,
           feeds: pageFeeds,
           hasTopicChanges: Boolean(topic && topic.sections && topic.sections.length),
-          prefix: '../'.repeat(vendorSpec.depth || spec.depth || 1)
+          prefix: '../'.repeat(vendorSpec.depth || spec.depth || 1),
+          // 说明意图（notes-manifest-v1）：厂商页那六节 `.vsnote` 由 vendor-page.js 构造，
+          // 登记入口连同 route 一起注入 —— 它不再是「调用方猜出来的条数」，而是构造点自己说出口。
+          note: noteDeclarerFor(vendorSpec.route || spec.route)
         }))
         : null
     });
@@ -3263,6 +3736,16 @@ function assemble() {
   // v2.3：这一页同时列出**套餐变化**（同一份 planRadar），顶部多一行锚点导航。
   const changesDir = path.join(OUT, 'changes');
   fs.mkdirSync(changesDir, { recursive: true });
+  // 说明意图（notes-manifest-v1）：正文由 RENDER-CORE（`index.html` 的 RENDER-CORE 区块）
+  // 渲染、套餐/API 两块由 `plans-page.js` / `api-plans-page.js` 渲染 —— 构造点都不在本文件，
+  // 所以这一页进**台账**而不是逐条登记（见本节开头的覆盖边界）。
+  notePage('changes/', { kind: 'changes' });
+  noteUntracked('changes/', {
+    family: 'changes',
+    owner: 'index.html 的 RENDER-CORE 区块（changesPageHtml）+ lib/plans-page.js + lib/api-plans-page.js',
+    structural: 'index.html:3930（分栏口径说明 N.scope，无条件输出）',
+    minNotes: 2
+  });
   fs.writeFileSync(path.join(changesDir, 'index.html'), renderChangesPage(radar, html, renderCore, {
     // 这一页订阅「变化」本身：声明变化 Feed 而不是全量 Feed（v1.5 报告 §九-5 的遗留项）。
     // v2.3：这一页同时列出**套餐变化**，所以那一份订阅也在这里声明（两者是两条独立的变化流）。
@@ -3294,6 +3777,25 @@ function assemble() {
     planHistoryStore,
     allFeeds: feedBundle.feeds,
     dealLinks: dealLinksView
+  });
+  // 说明意图：`/plans/coding/` 的**无 JS 提示**（`.snote.pnoscript`）是这一页对读者的
+  // 一条页面级说明，它由 `lib/plans-page.js` 输出（该模块不在本轮 in-scope 路径里），
+  // 所以在这一页的**组装点**按容器签名做一次「pin」登记：应当恰好 1 条 no-JS 提示。
+  // 改名 / 换容器 / 不再输出，三种都会让渲染侧与它差一条。
+  notePinned('plans/coding/', {
+    kind: 'noscript-hint', slot: 'main-snote', classes: 'snote pnoscript',
+    declaredBy: 'build-local.js:renderPlansPage（组装点登记）'
+  }, {
+    source: 'lib/plans-page.js:1013',
+    reason: '无 JS 可读性是这一页的产品口径（筛选/搜索/排序全由内联脚本建控件），'
+      + '而构造点在范围之外的模块里 —— 先按容器签名钉住，下一轮接管构造点时改成 noteDeclare()'
+  });
+  notePage('plans/coding/', { kind: 'plans' });
+  noteUntracked('plans/coding/', {
+    family: 'plans-coding',
+    owner: 'lib/plans-page.js',
+    structural: 'lib/plans-page.js:1010（PLANS_DESCRIPTION 口径说明，无条件输出）',
+    minNotes: 1
   });
   fs.writeFileSync(path.join(plansDir, 'index.html'), plansHtml, 'utf8');
   {
@@ -3330,6 +3832,13 @@ function assemble() {
     // v3.0 Stage H4：这一页要在 <head> 里声明自己那份订阅源 —— 从注册表取，不写死 id。
     allFeeds: feedBundle.feeds
   });
+  notePage(apiPlansPage.API_PLANS_ROUTE, { kind: 'api-plans' });
+  noteUntracked(apiPlansPage.API_PLANS_ROUTE, {
+    family: 'api-plans-index',
+    owner: 'lib/api-plans-page.js',
+    structural: 'lib/api-plans-page.js:613（API_PLANS_DESCRIPTION 口径说明，无条件输出）',
+    minNotes: 1
+  });
   fs.writeFileSync(path.join(apiPlansDir, 'index.html'), apiPlansHtml, 'utf8');
   {
     const pageProblems = apiPlansPage.assertPageHonesty(apiPlansHtml, apiPlansStore.plans, { providerTable });
@@ -3358,6 +3867,13 @@ function assemble() {
     asOf: dealLinksAsOf,
     // v3.0 Stage G 落地之后，资料入口才给出「数据文档」链接（此前是刻意不给的死链）。
     dataDocs: true
+  });
+  notePage(plansHubPage.PLANS_HUB_ROUTE, { kind: 'plans-hub' });
+  noteUntracked(plansHubPage.PLANS_HUB_ROUTE, {
+    family: 'plans-hub',
+    owner: 'lib/plans-hub-page.js',
+    structural: 'lib/plans-hub-page.js:313（PLANS_HUB_DESCRIPTION 口径说明，无条件输出）',
+    minNotes: 1
   });
   fs.writeFileSync(path.join(OUT, plansHubPage.PLANS_HUB_ROUTE, 'index.html'), plansHubHtml, 'utf8');
   {
@@ -3434,6 +3950,13 @@ function assemble() {
       jsonLd: modelsPage.modelsIndexJsonLd(modelsTable, modelsIndexCtx),
       prefix: '../'
     }, html);
+    notePage(modelsPage.MODELS_INDEX_ROUTE, { kind: 'models-index' });
+    noteUntracked(modelsPage.MODELS_INDEX_ROUTE, {
+      family: 'models-index',
+      owner: 'lib/models-page.js',
+      structural: 'lib/models-page.js:845（MODELS_INDEX_DESCRIPTION 口径说明，无条件输出）',
+      minNotes: 1
+    });
     fs.writeFileSync(path.join(OUT, modelsPage.MODELS_INDEX_ROUTE, 'index.html'), indexHtml, 'utf8');
     const indexProblems = modelsPage.assertPageHonesty(indexHtml, {
       // 断言必须与**页面**读同一份数据：索引页是用派生记录（`modelRecords`）渲染的，
@@ -3467,6 +3990,15 @@ function assemble() {
         // 索引页 / 档案页 / 数据文档页都不传它，继续吃 .wrap 的 1420px。
         mainClass: 'detail-main'
       }, html);
+      // 说明意图：模型详情页的 `.snote` 全部由 `lib/models-page.js` 渲染（范围之外）。
+      // 台账写的是**无条件**的那两条（计价条目口径 + 变化记录是派生视图）。
+      notePage(route, { kind: 'model' });
+      noteUntracked(route, {
+        family: 'models-detail',
+        owner: 'lib/models-page.js',
+        structural: 'lib/models-page.js:1112 与 1123（计价条目口径 / 派生视图说明，均无条件输出）',
+        minNotes: 2
+      });
       fs.writeFileSync(path.join(OUT, route, 'index.html'), detailHtml, 'utf8');
       const problems = modelsPage.assertPageHonesty(detailHtml, {
         kind: 'model', model, ctx: { ...detailCtx, siteUrl: SITE_URL }
@@ -3533,6 +4065,13 @@ function assemble() {
       prefix: '../',
       extraCss: ARCHIVE_PAGE_CSS
     }, html);
+    notePage(archiveLib.ARCHIVE_INDEX_ROUTE, { kind: 'archive-index' });
+    noteUntracked(archiveLib.ARCHIVE_INDEX_ROUTE, {
+      family: 'archive-index',
+      owner: 'lib/archive.js',
+      structural: 'lib/archive.js:589 与 601（ARCHIVE_DESCRIPTION 口径说明 / 相关资料库，均无条件输出）',
+      minNotes: 2
+    });
     fs.writeFileSync(path.join(archiveDir, 'index.html'), indexHtml, 'utf8');
     const problems = archiveLib.assertPageHonesty(indexHtml, { kind: 'archive-index', archives });
     if (problems.length) {
@@ -3562,6 +4101,16 @@ function assemble() {
         // 今天生产 0 个实例，`assertPageHonesty()`（下面那次调用）从整页上反查这条约束。
         mainClass: archiveLib.ARCHIVE_ENTRY_MAIN_CLASS
       }, html);
+      // 说明意图：档案详情页的 `.snote` 由 `lib/archive.js` 的 renderArchiveEntry 渲染。
+      // 目前**一条 ended/restored 都没有**（这个循环不跑）；一旦跑起来，下面两行会随之上场 ——
+      // 台账要求它至少还有那一条「结束那一刻的字段值」说明。
+      notePage(route, { kind: 'archive-entry' });
+      noteUntracked(route, {
+        family: 'archive-detail',
+        owner: 'lib/archive.js',
+        structural: 'lib/archive.js:715（「结束那一刻的字段值」说明，无条件输出）',
+        minNotes: 1
+      });
       fs.writeFileSync(path.join(OUT, route, 'index.html'), entryHtml, 'utf8');
       const entryProblems = archiveLib.assertPageHonesty(entryHtml, { kind: 'archive-entry', entry });
       if (entryProblems.length) {
@@ -3671,6 +4220,13 @@ function assemble() {
       prefix: '../../',
       extraCss: DATA_DOCS_PAGE_CSS
     }, html);
+    notePage(dataDocs.DATA_DOCS_ROUTE, { kind: 'data-docs' });
+    noteUntracked(dataDocs.DATA_DOCS_ROUTE, {
+      family: 'data-docs',
+      owner: 'lib/data-docs.js',
+      structural: 'lib/data-docs.js:794（DATA_DOCS_DESCRIPTION 口径说明，无条件输出）',
+      minNotes: 1
+    });
     fs.writeFileSync(path.join(docsDir, 'index.html'), docsHtml, 'utf8');
     const problems = dataDocs.assertPageHonesty(docsHtml, dataDocsCtx);
     if (problems.length) {
@@ -3994,6 +4550,17 @@ ${dataDocsUrl}
       ...directoryPages.map(page => page.route)
     ])
   });
+}
+
+/**
+ * 把页面级说明的**意图清单**写进产物（`dist/_notes.ndjson`）。
+ *
+ * 位置在 `assemble()` 的最后一步：此时全部页面都已经写进暂存目录，清单是本次构建的
+ * 意图侧快照；紧接着 `selfCheck()` 会回读刚生成的 HTML 与它逐页对账（渲染侧）。
+ * 文件是 NDJSON（见本节开头「为什么不是 `.json`」），页按 route 排序 ⇒ 连续两次构建逐字节一致。
+ */
+function writeNotesManifest() {
+  fs.writeFileSync(path.join(OUT, NOTES_MANIFEST_FILE), notesManifestText(), 'utf8');
 }
 
 /**
@@ -6492,6 +7059,33 @@ function selfCheck(built) {
   else if (pngW !== 1200 || pngH !== 630) fail(`og-image.png 尺寸异常 ${pngW}x${pngH}`);
   else console.log(`  ✓ og-image.png: ${pngW}x${pngH}`);
 
+  // ---- 页面级说明的「意图 × 渲染」逐页对账（notes-manifest-v1）------------------------
+  //
+  // 收盘的那一条：清单是意图侧（内容构造点登记，**不看** class 名的来源），这里回读刚生成的
+  // HTML 当渲染侧，逐页逐槽位按「class token 集合 × 条数」对账。改名（`.snote` → 别的）、
+  // 换容器（`<p>` → `<div>` / 换成不含该 token 的 class）、漏渲染，三种都会让渲染侧少一条
+  // ⇒ 这里红，消息点名 `route#index` 并给出两侧读数。台账（范围之外的模块）与页面族结构下限
+  // 各自守一条：整族说明被删 / 被改名时，逐条对账两侧会同时少，只有下限还能把它挡住。
+  {
+    const { problems, readings } = noteManifestSelfCheck();
+    const total = slotId => readings.reduce((sum, row) => sum + (row.dom[slotId] || 0), 0);
+    const declaredTotal = slotId => readings.reduce((sum, row) => sum + (row.declared[slotId] || 0), 0);
+    const untrackedPages = readings.filter(row => row.untracked);
+    const pinnedNotes = noteIntent.size
+      ? [...noteIntent.values()].reduce((sum, page) => sum + page.notes.filter(note => note.pinned).length, 0)
+      : 0;
+    for (const problem of problems.slice(0, 8)) fail(problem);
+    if (problems.length > 8) fail(`…另有 ${problems.length - 8} 条说明对账差异（上面是前 8 条）`);
+    if (!problems.length) {
+      const slotLine = NOTE_SLOTS.map(slot => `${slot.id.replace('main-', '.')} 声明 ${declaredTotal(slot.id)} / 产物 ${total(slot.id)}`).join(' · ');
+      console.log(`  ✓ 页面级说明清单: ${readings.length} 页 × ${NOTE_SLOTS.length} 个槽位逐页对账一致（${slotLine}）`);
+      console.log(`    · 逐条登记 ${[...noteIntent.values()].reduce((sum, page) => sum + page.notes.length, 0)} 条`
+        + `（其中组装点 pin ${pinnedNotes} 条）· 台账（构造点在范围之外的页面族）${untrackedPages.length} 页`
+        + `${untrackedPages.length ? `：${[...new Set(untrackedPages.map(row => row.untracked))].join(' / ')}` : ''}`);
+      console.log(`    · 清单文件 ${NOTES_MANIFEST_FILE}（${Buffer.byteLength(notesManifestText(), 'utf8')} 字节，NDJSON：首行 header + 每行一页，按 route 排序 ⇒ 逐字节可重建）`);
+    }
+  }
+
   const size = fs.readdirSync(OUT).reduce((n, f) => n + fs.statSync(path.join(OUT, f)).size, 0);
   console.log(`  产物总大小: ${(size / 1024).toFixed(1)} KB`);
   console.log(failed ? `\n❌ 产物自检失败（${failed} 项）` : '\n✅ 产物自检通过');
@@ -6583,6 +7177,9 @@ function discardStaging() {
 function main() {
   runValidate();
   const built = assemble();
+  // 说明意图清单落盘（`dist/_notes.ndjson`）：必须在 selfCheck 之前 —— 自检要一边回读它、
+  // 一边回读刚生成的 HTML，做「意图 × 渲染」的逐页对账。
+  writeNotesManifest();
   // selfCheck 用「返回 false」而不是抛错表示失败；抛错（如 og-image 自检）与返回 false
   // 都必须走下面同一个 catch。只有全部自检通过，才允许把暂存目录换成最终目录。
   if (!selfCheck(built)) throw new SelfCheckFailed('产物自检未通过');

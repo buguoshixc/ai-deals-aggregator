@@ -6579,6 +6579,11 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   const WIDE_DATA_SELECTORS = ['.ctable', '.stable', '.chgsec', '.chglist', '.flist', '.fsec', '.ptable', '.lsum', '.pchglist'];
   // 不可断的 200 字符串：`.snote` 的 overflow-wrap:anywhere 是不是真的在兜底，只有它能量出来。
   const WIDE_LONG_TOKEN = 'x'.repeat(200);
+  // 说明槽位（notes-manifest-v1）：`[槽位 id, 检测 token]` 两张表**逐字镜像**
+  // `build-local.js` 的 `NOTE_SLOTS`。id 只是清单与消息里的键；token 是**检测**用的
+  // （含 token 即算这一类说明），不是判据 —— 判据是「清单声明的签名与条数」与「DOM 里
+  // 数出来的签名与条数」是否相等（见本节 ⑨）。
+  const NOTE_SLOT_TOKENS = [['main-snote', 'snote'], ['main-pnote', 'pnote'], ['main-vsnote', 'vsnote']];
   // M1–M4 的四个壳（页面级说明曾经各自被压成 70ch 的就是这四个家族）。它们是**固定路由**，
   // 不是数据 id/slug；每条变异都会先守卫「这一页确实是 wide 族、且真有页面级说明」。
   //
@@ -6942,6 +6947,30 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       let frozenCount = 0;
       for (const style of styles) frozenCount += style.textContent.split(FROZEN).length - 1;
       const notes = main ? Array.prototype.slice.call(main.querySelectorAll('.snote')) : [];
+      /**
+       * ★ notes-manifest-v1：说明容器按「槽位 id × class token 集合」分组计数。
+       *
+       * 这是跨源对账里**渲染侧**的读数：清单（dist/_notes.ndjson）说「这一页的哪个槽位
+       * 应当有几条什么签名的说明」，这里数真浏览器 DOM 里实际有几条。口径必须与
+       * build-local.js 的 noteSignaturesInMain() **逐字同构**：class 属性分词、按排序后的
+       * token 集合分组；检测是 token 级（含槽位 token 即算），判定是集合级（签名必须相等）。
+       * 改名 / 换容器只会让后者对不上 —— 这正是那条 P1 要闭合的地方。
+       * ⚠️ 本段是浏览器侧的模板字符串：注释里不许出现反引号（会提前截断模板）。
+       */
+      const NOTE_SLOT_PAIRS = ${JSON.stringify(NOTE_SLOT_TOKENS)};
+      const notesBySignature = (() => {
+        const out = {};
+        if (!main) return out;
+        const list = main.querySelectorAll('[class]');
+        for (let i = 0; i < list.length; i++) {
+          const tokens = String(list[i].getAttribute('class') || '').trim().split(/\\s+/).filter(Boolean);
+          const slot = NOTE_SLOT_PAIRS.filter(pair => tokens.indexOf(pair[1]) !== -1)[0];
+          if (!slot) continue;
+          const key = slot[0] + '|' + tokens.slice().sort().join(' ');
+          out[key] = (out[key] || 0) + 1;
+        }
+        return out;
+      })();
       // intro 区 = 首个数据区**之前**的那些说明。判据：说明的 border-box 顶边 < 数据区顶边。
       // 没有数据区（/plans/、/archive/ 这类）时退化成「全部说明都不算 intro」——
       // 宁可漏判也不误判：一条在正常页面上失败的守卫比没有守卫更糟。
@@ -7038,7 +7067,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
             ink: inkOf(el)
           };
         }),
-        frozenCount: frozenCount
+        frozenCount: frozenCount,
+        notesBySignature: notesBySignature
       };
     })()`);
     // 向后兼容：老口径的「文档序第一条」读数（抽取式对抗工具读 geometry.note.*）
@@ -7687,6 +7717,155 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
           + (offenders.length ? ` · 不该有的 ${offenders.length} 页：${offenders.slice(0, 5).map(r => r || '/').join(' ')}` : '')
           + (aliasBad.length ? ` · 别名页条数不对：${aliasBad.join(' ')}` : '')
           + `（其它宽页的导语不在本规则射程内：${wideMeta.length - directoryRoutes.length} 页）`);
+      }
+
+      // ---- ⑨ 说明清单 × DOM 跨源对账（notes-manifest-v1）--------------------------------
+      //
+      // 闭合 `NEXT-STEPS` §0 里那条 P1「判据只认 `.snote` 这个类名（换名 / 换容器即隐形）」。
+      // 清单（`dist/_notes.ndjson`）是**意图侧**：构建期在内容构造点登记「这一页打算输出几条
+      // 说明、每条的槽位与完整 class token 集合」；这里是**渲染侧**：真浏览器 DOM 里数出来。
+      // 两侧按 `route × 槽位 × 签名` 逐条对账，不等 ⇒ 红，消息点名 `route#index` 并给两侧读数。
+      //
+      // 判据与构建期自检（`build-local.js` 的 noteManifestSelfCheck）**同一套口径**，两侧必须一致：
+      //   ① 逐页逐槽位：清单声明的「签名 × 条数」== DOM 数出来的（台账页面只做单向 —— DOM 多出来
+      //      的说明属于范围之外的那个模块，由下面的下限守）；
+      //   ② complete 页面：整页 `.snote` 总数逐字相等；
+      //   ③ 台账下限 + 页面族结构下限：守住「登记与模板一起被删」那种两侧同时消失的改法；
+      //   ④ 棘轮：DOM 里有 `.snote` 的页面必须全部登记过 —— 新的隐形说明面不许悄悄出现。
+      {
+        const manifestPath = path.join(DIR, '_notes.ndjson');
+        const manifestLabel = path.relative(ROOT, manifestPath).split(path.sep).join('/');
+        const manifestProblems = [];
+        let manifestPages = new Map();
+        let manifestHeader = null;
+        if (!fs.existsSync(manifestPath)) {
+          manifestProblems.push(`缺少 ${manifestLabel} —— 清单必须进产物（构建期 writeNotesManifest() 写入）`);
+        } else {
+          const lines = fs.readFileSync(manifestPath, 'utf8').split('\n').filter(line => line.trim());
+          try {
+            const rows = lines.map(line => JSON.parse(line));
+            manifestHeader = rows.find(row => row.kind === 'header') || null;
+            const pages = rows.filter(row => row.kind === 'page');
+            if (!manifestHeader) manifestProblems.push('清单没有 header 行（第一行应当是 {"kind":"header",…}）');
+            if (!pages.length) manifestProblems.push('清单里没有任何 page 行');
+            for (const page of pages) {
+              if (manifestPages.has(page.route)) manifestProblems.push(`清单里 ${page.route || '(首页)'} 出现两次`);
+              manifestPages.set(page.route, page);
+            }
+          } catch (err) {
+            manifestProblems.push(`清单不是合法 NDJSON：${err.message}`);
+          }
+        }
+        const domOf = route => {
+          const geometry = wideGeometry.get(`${WIDE_DESKTOP}|${route}`);
+          return geometry && geometry.notesBySignature ? geometry.notesBySignature : {};
+        };
+        const slotTotalOf = (signatures, slotId) => Object.keys(signatures)
+          .filter(key => key.startsWith(`${slotId}|`))
+          .reduce((sum, key) => sum + signatures[key], 0);
+        const laneProblems = [];
+        const floorProblems = [];
+        const untrackedProblems = [];
+        const completeProblems = [];
+        const ratchetProblems = [];
+        let declaredLaneCount = 0;
+        let untrackedPageCount = 0;
+        let pinnedCount = 0;
+        for (const meta of wideMeta) {
+          const route = meta.route;
+          const where = route || '(首页)';
+          const signatures = domOf(route);
+          const page = manifestPages.get(route);
+          if (!page) {
+            if (slotTotalOf(signatures, 'main-snote') > 0) {
+              ratchetProblems.push(`${where}（${meta.kind}）DOM 里有 ${slotTotalOf(signatures, 'main-snote')} 条 .snote，`
+                + '但清单里没有这一页 —— 新的说明面必须在构造点登记（或写进台账）');
+            }
+            continue;
+          }
+          const declaredByKey = new Map();
+          for (const note of page.notes || []) {
+            const key = `${note.slot}|`;
+            declaredByKey.set(key + note.signature, (declaredByKey.get(key + note.signature) || 0) + 1);
+            declaredLaneCount++;
+            if (note.pinned) pinnedCount++;
+          }
+          const keys = new Set([...declaredByKey.keys(), ...Object.keys(signatures)]);
+          for (const key of keys) {
+            const declared = declaredByKey.get(key) || 0;
+            const dom = signatures[key] || 0;
+            if (declared === dom) continue;
+            // 台账页面单向：DOM 多出来的部分由那个模块负责（下限守），清单声明的必须逐条对上
+            if (page.untracked && dom > declared) continue;
+            const slotId = key.split('|')[0];
+            const signature = key.split('|')[1];
+            const index = (page.notes || []).findIndex(note => note.slot === slotId
+              && note.signature === signature);
+            laneProblems.push(`${where}#${index === -1 ? 0 : index} 槽位 ${slotId} 签名 <${signature}>：`
+              + `清单声明 ${declared} 条 / DOM 实测 ${dom} 条`);
+          }
+          for (const [slotId, floor] of Object.entries(page.floors || {})) {
+            const actual = slotTotalOf(signatures, slotId);
+            const min = floor && floor.min !== undefined ? floor.min : 0;
+            if (actual < min) {
+              floorProblems.push(`${where} 槽位 ${slotId}：结构下限 ${min} 条 / DOM 实测 ${actual} 条`);
+            }
+          }
+          if (page.untracked) {
+            untrackedPageCount++;
+            const actual = slotTotalOf(signatures, 'main-snote');
+            if (actual < page.untracked.minNotes) {
+              untrackedProblems.push(`${where} 台账 ${page.untracked.family}（${page.untracked.owner}）：`
+                + `下限 ${page.untracked.minNotes} 条 / DOM 实测 ${actual} 条（无条件的那条：${page.untracked.structural}）`);
+            }
+          } else {
+            const declared = (page.notes || []).filter(note => note.slot === 'main-snote').length;
+            const actual = slotTotalOf(signatures, 'main-snote');
+            if (declared !== actual) {
+              completeProblems.push(`${where} 整页 .snote：清单声明 ${declared} 条 / DOM 实测 ${actual} 条`);
+            }
+          }
+        }
+        const missingPages = wideMeta.filter(meta => !manifestPages.has(meta.route)).map(meta => meta.route);
+        const extraPages = [...manifestPages.keys()].filter(route => !wideDiskSet.has(route));
+        check('§22c ⑨ 说明清单可读、每页一条、与产物页面对得上（`dist/_notes.ndjson`）',
+          manifestProblems.length === 0 && extraPages.length === 0 && missingPages.length === 0,
+          (manifestProblems.length ? `清单问题：${manifestProblems.join('；')}；` : '')
+          + `清单 ${manifestPages.size} 页 / 产物 ${wideMeta.length} 页 · schemaVersion ${manifestHeader ? manifestHeader.schemaVersion : '—'}`
+          + ` · 槽位 ${NOTE_SLOT_TOKENS.map(pair => pair[0]).join(' / ')}`
+          + (missingPages.length ? ` · 产物里有、清单里没有：${wideSamples(missingPages)}` : '')
+          + (extraPages.length ? ` · 清单里有、产物里没有：${wideSamples(extraPages)}` : ''));
+        check(`§22c ⑨ 逐页逐槽位对账：清单声明的「签名 × 条数」== 真浏览器 DOM 数出来的（${declaredLaneCount} 条登记说明 × ${NOTE_SLOT_TOKENS.length} 个槽位）`,
+          laneProblems.length === 0,
+          laneProblems.length ? `${laneProblems.length} 处不一致（route#index 可定位）：${laneProblems.slice(0, 4).join('；')}`
+            : `逐条一致（登记说明 ${declaredLaneCount} 条${pinnedCount ? `，其中组装点 pin ${pinnedCount} 条` : ''}）`);
+        check(`§22c ⑨ 台账页面仍带说明：范围之外的构造点没有整族消失（${untrackedPageCount} 页 / ${new Set([...manifestPages.values()].filter(p => p.untracked).map(p => p.untracked.family)).size} 个页面族）`,
+          untrackedProblems.length === 0,
+          untrackedProblems.length ? untrackedProblems.slice(0, 4).join('；')
+            : `台账逐页成立：每条无条件的说明（见清单里 untracked.structural）都还在页面上`);
+        check('§22c ⑨ 页面族结构下限：别名页恰好 1 条页面级说明、状态页 2 条、订阅中心 3+1 条、目录页 0 条、厂商页六节说明',
+          floorProblems.length === 0,
+          floorProblems.length ? floorProblems.slice(0, 4).join('；')
+            : '全部页面族的说明条数下限成立（下限守住「登记与模板一起被删」那种两侧同时消失的改法）');
+        check(`§22c ⑨ 完整对账：complete 页面的整页 .snote 总数逐字相等（${[...manifestPages.values()].filter(page => !page.untracked).length} 页）`,
+          completeProblems.length === 0,
+          completeProblems.length ? `${completeProblems.length} 页有差额：${completeProblems.slice(0, 4).join('；')}`
+            : '整页条数逐字相等（清单声明的 = DOM 数出来的）');
+        check('§22c ⑨ 棘轮：DOM 里有 `.snote` 的页面必须在清单里登记过（新的隐形说明面不许悄悄出现）',
+          ratchetProblems.length === 0,
+          ratchetProblems.length ? ratchetProblems.slice(0, 4).join('；')
+            : `有 .snote 的页面全部登记过（DOM 侧 ${wideMeta.filter(meta => slotTotalOf(domOf(meta.route), 'main-snote') > 0).length} 页有页面级说明）`);
+        metrics.layoutNotesManifest = {
+          manifestPath: manifestLabel,
+          pages: manifestPages.size,
+          declaredLanes: declaredLaneCount,
+          pinnedLanes: pinnedCount,
+          untrackedPages: untrackedPageCount,
+          domBySlot: Object.fromEntries(NOTE_SLOT_TOKENS.map(pair => [pair[0],
+            wideMeta.reduce((sum, meta) => sum + slotTotalOf(domOf(meta.route), pair[0]), 0)])),
+          problems: laneProblems.length + floorProblems.length + untrackedProblems.length
+            + completeProblems.length + ratchetProblems.length + manifestProblems.length
+        };
       }
 
       // ---- ④b 未渲染说明：上界断言（t24 立 / t28 收紧计数）----

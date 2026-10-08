@@ -574,18 +574,28 @@ function planLandingPages(options = {}) {
     const scopeNote = nonDealOnly
       ? '本站目前没有收录这家厂商当前有效的优惠；下面是它的套餐、API 计费与模型资料。'
       : '只列当前有效的优惠；已结束的条目在历史档案里。';
-    const userNotes = [scopeNote];
+    /**
+     * 本页的**自有说明**（进底部折叠 `.page-notes`）——「先登记、后输出」的那一侧：
+     * 每一条都带**类型标签**（`kind`），因为清单（`dist/_notes.ndjson`）要按它分类；
+     * 文字仍然是纯字符串数组 `userNotes`（`audience-selftest` 校验的就是那个形状，
+     * 也是渲染层唯一的输入）。
+     */
+    const noteRows = [{ kind: 'scope-note', text: scopeNote }];
     if (material.nonDeal) {
       // ⚠️ t13 跨范围修复（阻断级）：这里原本写的是 `**join**` —— Markdown 记号会被**逐字**
       // 渲染给读者（当时 `.snote` 是纯 HTML 容器），并被构建期的「作者正文无 Markdown 记号」
       // 门禁当场判红。强调一律用 `<b>`，去掉记号后可见文本一个字都没变。
-      userNotes.push(`这一页还<b>关联</b>了该厂商的非优惠资料：Coding 套餐 ${material.codingPlans} 条、`
-        + `API 计费记录 ${material.apiRecords} 条、Model Registry 归属模型 ${material.models} 个，`
-        + `全部来自既有数据关系的显式匹配。`);
+      noteRows.push({
+        kind: 'vendor-material-note',
+        text: `这一页还<b>关联</b>了该厂商的非优惠资料：Coding 套餐 ${material.codingPlans} 条、`
+          + `API 计费记录 ${material.apiRecords} 条、Model Registry 归属模型 ${material.models} 个，`
+          + `全部来自既有数据关系的显式匹配。`
+      });
     }
+    const userNotes = noteRows.map(row => row.text);
     vendorPages.push({
       kind: 'vendor', key: name, slug, route, depth: depthOf(route), indexable: true, pinned,
-      title, heading, description, userNotes,
+      title, heading, description, userNotes, noteRows,
       match: { by: 'vendor', value: name }, count, eventCount,
       // v3.0 Stage E：资料页 join 的输入（渲染层只读这些键，不重新判据）。
       material,
