@@ -1,0 +1,102 @@
+{
+  "task": "narrow-reading-columns-v1",
+  "what": "保留窄阅读列的登记制 + 几何（居中）判据 · 逐条读数",
+  "document": {
+    "total": 874,
+    "failed": 0,
+    "target": "http://127.0.0.1:54617/"
+  },
+  "registry": {
+    "entries": [
+      {
+        "selector": ".pdetailbody",
+        "declaration": "max-width: 72ch",
+        "kind": "ch",
+        "routes": [
+          "plans/coding/"
+        ],
+        "why": "套餐对比页**行内展开**详情的正文块（首次收录 / 核对日期 / 来源类型 / 官方链接 / 逐条引文）。它是长文形态的 dd 列表 + 引文，72ch 是阅读行宽；但它长在一个 1386px 宽的表格单元格里 ⇒ 按 S4 必须**居中**，否则就是「另一页的内容贴在左边」的观感",
+        "centeredBy": "margin-inline: auto",
+        "registeredAt": "2026-10-08",
+        "registeredBy": "narrow-reading-columns-v1",
+        "evidence": "research/_raw/narrow-reading-columns-v1/geometry.json"
+      }
+    ],
+    "ratio": {
+      "centeringTolerancePx": 2,
+      "whyCh": "65ch / 70ch / 72ch / 80ch 正是 S4 点名的「阅读列」宽度 —— ch 是**阅读度量单位**；px/rem 的宽度多半是控件与容器，不构成阅读列声明"
+    },
+    "scanScope": "产物每个页面内联 <style> 里的规则块（与 §22c 的冻结串同一份扫描面）。px / rem 的窄列不在本清单射程内：`.detail-main` 的 `width: min(1120px, 100%)` 由 §22b 原有断言（居中 + 宽度 ∈ [1080,1120]）承担，不在这里重复。"
+  },
+  "census": {
+    "what": "产物里以 ch 为单位声明的窄阅读列（1440 档现场扫描）",
+    "pages": [
+      {
+        "route": "plans/coding/",
+        "declarations": [
+          {
+            "selector": ".pdetailbody",
+            "declaration": "max-width: 72ch",
+            "registered": true
+          }
+        ]
+      }
+    ],
+    "unregisteredPages": [],
+    "registryEntries": 1
+  },
+  "geometry": {
+    "centered": [
+      {
+        "ok": true,
+        "name": "§19 .pdetailbody 是**居中**的保留窄阅读列（max-width: 72ch）：比单元格窄 ≥ 40px、左右内边距差 ≤ 2px、自身不裁切（登记清单 scripts/data/narrow-reading-columns.json）",
+        "detail": ".pdetailbody 465.75px / 单元格 1357px · 左 445.63px · 右 445.63px · max-width 465.75px · margin 445.125px/445.125px · 自身 466/466 · rendered true"
+      }
+    ],
+    "isolationTooth": [
+      {
+        "ok": true,
+        "name": "§19 上一条判据的隔离牙：把 margin-inline: auto 就地删掉后，左右内边距不再相等（承重证明）",
+        "detail": "删掉前 左 445.63 / 右 445.63 ⇒ 删掉后 左 0.5 / 右 890.75（盒宽 465.75 → 465.75px：只挪位置、不改变宽度）"
+      }
+    ]
+  },
+  "mutationM16": {
+    "anchorGuard": [
+      {
+        "ok": true,
+        "name": "§22c M16 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+        "detail": "锚点出现 1 次 · 保留窄阅读列的登记制：把已登记的 `.pdetailbody { max-width: 72ch }` 覆盖成 **70ch**（DOM 追加一条 <style>，命中真实元素但未展开 ⇒ 不影响布局）⇒ 现场扫描必须认出「未登记的 ch 窄列」"
+      }
+    ],
+    "expectedCode": [
+      {
+        "ok": true,
+        "name": "§22c M16 变异后复测必须出现「narrow-unregistered」违规码（保留窄阅读列的登记制：把已登记的 `.pdetailbody { max-width: 72ch }` 覆盖成 **70ch**（DOM 追加一条 <style>，命中真实元素但未展开 ⇒ 不影响布局）⇒ 现场扫描必须认出「未登记的 ch 窄列」）",
+        "detail": "期望 narrow-unregistered · 实测 [narrow-unregistered] · 说明 5 条 · 首条 盒 1380px / 有字区域 1380px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [narrow-unregistered]"
+      }
+    ],
+    "loadBearing": [
+      {
+        "ok": true,
+        "name": "§22c M16 承重证明：注入的那条 ch 窄列被认成**未登记**、已登记的 72ch 仍在扫描结果里、且除 narrow-unregistered 外没有任何别的码（注入不影响布局）",
+        "detail": "现场扫描到 2 条 ch 窄列：.pdetailbody{max-width: 72ch}（已登记） · .pdetailbody{max-width: 70ch}（未登记） · 注入的那条命中 true · 已登记条目仍在 true · 除登记码之外的码 [无]"
+      }
+    ]
+  },
+  "scopeSelfChecks": [
+    {
+      "ok": true,
+      "name": "§22c narrow-unregistered 的适用范围自检：同一个 ch 窄列，未登记 ⇒ 报、已登记 ⇒ 不报",
+      "detail": "未登记 ⇒ [narrow-unregistered] · 已登记 ⇒ []"
+    }
+  ],
+  "sweepTail": [
+    "textFallback 回落 1 条 · 未登记的窄阅读列 0 页（登记清单 1 条）"
+  ],
+  "sweep1440": {
+    "ok": true,
+    "name": "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记",
+    "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）6 条 · 竖排 0 条（其中列证据 ≥ 2 列、即 ② 按列判的：0 条） · textFallback 回落 1 条 · 未登记的窄阅读列 0 页（登记清单 1 条）"
+  }
+}

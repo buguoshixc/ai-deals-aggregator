@@ -36,6 +36,22 @@ const analytics = require('../lib/analytics');
 // secondary-page-layout-unification（§22c）：布局族的**唯一**真值出处。这里是 require，不是
 // 第二份 kind→layout 表 —— 谁改了 page-kinds.js 的声明，§22c 的全站扫描立刻跟着变。
 const pageKinds = require('../lib/page-kinds');
+/**
+ * 「保留窄阅读列」的**机器可读清单**（narrow-reading-columns-v1）—— 读在文件顶部，
+ * 因为 §19（套餐页行内详情的几何判据，在文件里出现得更早）与 §22c（登记制扫描）都要用它。
+ * 为什么需要它：上一轮把页面级说明的窄柱修完之后，仍有两处「故意保留的窄宽」只写在**报告与散文**里 ——
+ * 谁都可以再加一条 `max-width: 70ch` 而没有任何断言会响；反过来，谁把保留的那条删了/挪了，
+ * 也没有断言会告诉你「承诺少了一条」。这份 JSON 把「保留」变成**可失败的登记制**：
+ *   · 产物里**任何以 ch 为单位声明的窄阅读列**都必须登记（未登记 ⇒ §22c 的 `narrow-unregistered`）；
+ *   · 登记的条目必须在真实浏览器里**居中**（§19 的几何判据）且**真的比容器窄**（否则声明已过时）。
+ * 作用域：ch 才是阅读度量单位（65/70/72/80ch 正是 DESIGN-RULES S4 点名的阅读列）；px/rem 的窄宽
+ * （例：`.detail-main` 的 `min(1120px,100%)`）由 §22b 的原有断言承担，不在这里重复。
+ */
+const WIDE_NARROW_REGISTRY = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts/data/narrow-reading-columns.json'), 'utf8'));
+const WIDE_NARROW_ENTRIES = WIDE_NARROW_REGISTRY.entries || [];
+// 这两个量同时被 §19（更早出现）与 §22c（判定主体）用到 ⇒ 声明在顶部，避免 TDZ。
+const WIDE_TOL = 1;                        // 亚像素取整容差（px）
+const WIDE_DESKTOP = 1440;                 // 桌面档一（全站逐条）
 
 /**
  * 某个落地页**应该**声明几条 `rel="alternate"`：站点根 Feed 对（2 条）
@@ -4765,6 +4781,75 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         (await page.evaluate(() => document.querySelectorAll('tr.pdetail').length)) === 0);
     }
 
+    // ⑦b 保留窄阅读列的**几何**判据（narrow-reading-columns-v1）：登记的窄列必须居中、真的比容器窄、不自裁切。
+    //
+    // 为什么在真浏览器里量、而不是只看 CSS 文本：S4 要求的是**排版事实**（「必须居中」），
+    // 而「CSS 里写了 margin-inline: auto」与「它真的被居中」是两件事（父级宽度 / 方向 / 覆盖都能毁掉它）。
+    // 这一块**自己开一条 page**（零污染）：先把 `.pdetailbody` 的行内详情展开量一次，
+    // 再把同一份样式里的 `margin-inline: auto` 就地删掉再量一次 —— 后者证明这条判据**有牙**。
+    {
+      const entry = WIDE_NARROW_ENTRIES[0] || { selector: '.pdetailbody', declaration: 'max-width: 72ch' };
+      const tol = WIDE_NARROW_REGISTRY.ratio.centeringTolerancePx;
+      const anchor = `.pdetailbody { ${entry.declaration}; margin-inline: auto; }`;
+      const loose = `.pdetailbody { ${entry.declaration}; }`;
+      const narrowPage = await browser.newPage({ viewport: { width: WIDE_DESKTOP, height: 900 } });
+      let measured = null;
+      let uncentered = null;
+      let mutateGuard = null;
+      try {
+        await narrowPage.goto(new URL('plans/coding/', base).href, { waitUntil: 'load' });
+        await narrowPage.click('.ptable [data-detail]');
+        const readGeometry = () => narrowPage.evaluate(`(() => {
+          const body = document.querySelector('${entry.selector}');
+          if (!body) return null;
+          const cell = body.closest('td') || body.parentElement;
+          const cs = getComputedStyle(cell);
+          const cellBox = cell.getBoundingClientRect();
+          const bodyBox = body.getBoundingClientRect();
+          const contentLeft = cellBox.left + (parseFloat(cs.paddingLeft) || 0);
+          const contentRight = cellBox.right - (parseFloat(cs.paddingRight) || 0);
+          return {
+            cellWidth: Math.round((contentRight - contentLeft) * 100) / 100,
+            bodyWidth: Math.round(bodyBox.width * 100) / 100,
+            leftInset: Math.round((bodyBox.left - contentLeft) * 100) / 100,
+            rightInset: Math.round((contentRight - bodyBox.right) * 100) / 100,
+            clientWidth: body.clientWidth, scrollWidth: body.scrollWidth,
+            maxWidth: getComputedStyle(body).maxWidth,
+            marginLeft: getComputedStyle(body).marginLeft, marginRight: getComputedStyle(body).marginRight,
+            rendered: bodyBox.width > 0 && bodyBox.height > 0
+          };
+        })()`);
+        measured = await readGeometry();
+        const centeredOk = Boolean(measured) && measured.rendered
+          && measured.bodyWidth < measured.cellWidth - 40
+          && Math.abs(measured.leftInset - measured.rightInset) <= tol
+          && measured.scrollWidth <= measured.clientWidth + WIDE_TOL;
+        check(`§19 ${entry.selector} 是**居中**的保留窄阅读列（${entry.declaration}）：比单元格窄 ≥ 40px、`
+          + `左右内边距差 ≤ ${tol}px、自身不裁切（登记清单 scripts/data/narrow-reading-columns.json）`,
+          centeredOk,
+          measured
+            ? `${entry.selector} ${measured.bodyWidth}px / 单元格 ${measured.cellWidth}px · 左 ${measured.leftInset}px · 右 ${measured.rightInset}px`
+              + ` · max-width ${measured.maxWidth} · margin ${measured.marginLeft}/${measured.marginRight}`
+              + ` · 自身 ${measured.scrollWidth}/${measured.clientWidth} · rendered ${measured.rendered}`
+            : `页面上没有 ${entry.selector}（展开详情后仍找不到）`);
+        // 隔离牙：把 `margin-inline: auto` 就地删掉（锚点必须恰好 1 次）⇒ 左右内边距必须变得不相等。
+        mutateGuard = await wideMutate(narrowPage, anchor, loose);
+        if (mutateGuard.ok) uncentered = await readGeometry();
+        check('§19 上一条判据的隔离牙：把 margin-inline: auto 就地删掉后，左右内边距不再相等（承重证明）',
+          Boolean(mutateGuard && mutateGuard.ok && measured && uncentered)
+          && Math.abs(uncentered.leftInset - uncentered.rightInset) > tol
+          && Math.abs(measured.leftInset - measured.rightInset) <= tol
+          && Math.abs(uncentered.bodyWidth - measured.bodyWidth) <= WIDE_TOL,
+          mutateGuard && mutateGuard.ok
+            ? `删掉前 左 ${measured ? measured.leftInset : '?'} / 右 ${measured ? measured.rightInset : '?'} ⇒ 删掉后`
+              + ` 左 ${uncentered ? uncentered.leftInset : '?'} / 右 ${uncentered ? uncentered.rightInset : '?'}`
+              + `（盒宽 ${measured ? measured.bodyWidth : '?'} → ${uncentered ? uncentered.bodyWidth : '?'}px：只挪位置、不改变宽度）`
+            : `${mutateGuard ? mutateGuard.reason : '变异未执行'} ⇒ 按红处理`);
+      } finally {
+        await narrowPage.close();
+      }
+    }
+
     // ⑧ 移动端：筛选 + 展开之后仍不溢出，关键列钉在视口里，官方链接仍可点
     for (const width of [390, 360]) {
       await page.setViewportSize({ width, height: 844 });
@@ -6477,10 +6562,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   //   page-overflow@<vw> / data-region-missing
   //   （note-unrendered 是 t24 新增：盒高被压成 0 ⇒ ①②③ 同时静默的那一类，闭合 T22-F1）
 
-  const WIDE_TOL = 1;                        // 亚像素取整容差（px）
   const WIDE_AXIS_RATIO = 0.05;              // 轴的比例容差：max(1px, 5% × min(主数据区宽, 页面列宽))
   const WIDE_NOTE_RATIO = 0.85;              // 有字区域宽 ≥ 0.85 × min(主数据区宽, 页面列宽)
-  const WIDE_DESKTOP = 1440;                 // 桌面档一（全站逐条）
   const WIDE_WIDE = 1600;                    // 桌面档二（全站逐条；只在 ≥1500px 生效的缺陷靠它）
   const WIDE_NARROW = 390;                   // 全站溢出档（只量 documentElement.scrollWidth）
   const WIDE_SAMPLE_VIEWPORTS = [760, 360];  // 只量样本集的两档
@@ -6540,11 +6623,13 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   const WIDE_INTRO_MAX_LINES = 2;
   /** 判 intro 行数所需的**最小阅读列宽**（实测：1440 档 ≥1120px · 760 档 ≤728px） */
   const WIDE_INTRO_MIN_COLUMN = 1100;
+  /** 归一声明文本：折叠空白、去掉行尾分号 —— 登记项与现场扫描用同一个口径比较。 */
+  const wideNarrowDeclaration = (property, value) => `${String(property).trim()}: ${String(value).trim().replace(/;$/, '')}`;
   /** §22c 的全部违规码（判据自检用：一个都不能少、也不能多）。 */
   const WIDE_CODE_VOCABULARY = [
     'unclassified-layout', 'unexpected-detail-main', 'missing-detail-main', 'note-narrow', 'note-ink-narrow',
     'note-axis', 'note-clipped', 'note-hidden-text', 'note-unrendered', 'note-intro-long',
-    'page-overflow@<vw>', 'data-region-missing'
+    'narrow-unregistered', 'page-overflow@<vw>', 'data-region-missing'
   ];
 
   const wideRound = n => Math.round(n * 100) / 100;
@@ -6649,6 +6734,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   async function wideMeasure(target) {
     const geometry = await target.evaluate(`(() => {
       const DATA_SELECTORS = ${JSON.stringify(WIDE_DATA_SELECTORS)};
+      const NARROW_REGISTRY = ${JSON.stringify(WIDE_NARROW_ENTRIES)};
       const FROZEN = ${JSON.stringify(WIDE_SNOTE_FROZEN)};
       const round = n => Math.round(n * 100) / 100;
       const zeroBox = { count: 0, left: 0, right: 0, width: 0, height: 0, top: 0, scrollW: 0, clientW: 0, padLeft: 0, padRight: 0, maxWidth: '', overflowWrap: '' };
@@ -6687,6 +6773,44 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         const width = probe.getBoundingClientRect().width;
         probe.remove();
         return round(width);
+      };
+      /**
+       * 「保留窄阅读列」登记制的**扫描面**：页面内联 <style> 里**以 ch 为单位**的窄列声明。
+       *
+       * 规则块用扁平正则取（「选择器 { 声明 }」）——与 §22c 冻结串同一份扫描面；本仓的页面级样式
+       * 全是平的（实测：全站 303 个产物里 ch 声明只有 1 处，见 narrow-reading-columns-v1 的普查）。
+       * 返回值里带 registered 标记：登记项按「selector（逗号任一段）+ 归一声明文本」匹配。
+       * ⚠️ 归一必须与 wideNarrowDeclaration() 同口径（折叠空白 + 去行尾分号），否则会假红。
+       * ⚠️ 这段在浏览器侧模板字符串里：注释里**不许**出现反引号。
+       */
+      const narrowChDeclarations = (registered) => {
+        const found = [];
+        const styles = Array.prototype.slice.call(document.querySelectorAll('style'));
+        for (const style of styles) {
+          // ⚠️ 必须先剥掉 CSS 注释：页面级样式里规则前面常常有一整段说明注释，
+          //    扁平正则会把注释当成选择器的一部分（实测：这会让已登记的 .pdetailbody 被误判成未登记）。
+          const text = (style.textContent || '').replace(/\\/\\*[\\s\\S]*?\\*\\//g, ' ');
+          const ruleRe = /([^{}]{1,200})\{([^{}]*)\}/g;
+          let rule = ruleRe.exec(text);
+          while (rule) {
+            const selectorText = rule[1].replace(/\\s+/g, ' ').trim();
+            const selectors = selectorText.split(',').map(s => s.trim()).filter(Boolean);
+            for (const decl of rule[2].split(';')) {
+              const idx = decl.indexOf(':');
+              if (idx < 0) continue;
+              const property = decl.slice(0, idx).trim();
+              const value = decl.slice(idx + 1).trim();
+              if (!/^(max-width|inline-size|width)$/.test(property)) continue;
+              if (!/\\d+(\\.\\d+)?ch\\b/.test(value)) continue;
+              const declaration = property + ': ' + value;
+              const hit = registered.some(entry => (entry.declaration === declaration)
+                && selectors.some(sel => sel === entry.selector));
+              found.push({ selector: selectors.join(', '), declaration: declaration, registered: hit });
+            }
+            rule = ruleRe.exec(text);
+          }
+        }
+        return found;
       };
       /** 直接含非空白文本节点 ⇒ 这个元素「承载文本」 */
       const bearsText = el => {
@@ -6843,6 +6967,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         region: box(regionEl || main),
         noteCount: notes.length,
         introIndexes: introIndexes,
+        // 保留窄阅读列的现场扫描（narrow-reading-columns-v1）：逐条带 registered 标记
+        narrowCh: narrowChDeclarations(NARROW_REGISTRY),
         notes: notes.map((el, index) => {
           const noteBox = box(el);
           const cs = getComputedStyle(el);
@@ -7102,6 +7228,22 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       }
     }
 
+    // ⑥ 保留窄阅读列的**登记制**（narrow-reading-columns-v1）：产物里任何以 ch 为单位声明的窄列
+    //    都必须在 `scripts/data/narrow-reading-columns.json` 里登记。
+    //    为什么用码而不是只用散文：上一轮把页面级说明的窄柱修完之后，「故意保留的窄宽」只写在报告里 ——
+    //    谁都能再加一条 `max-width: 70ch` 而没有断言会响；反过来删掉保留的那条也没人告诉你。
+    //    这条码只回答「有没有登记」；登记的条目**是否居中 / 是否真的比容器窄**由 §19 的
+    //    `.pdetailbody` 几何断言（同一个 registry）承担 —— 两条合起来才是 S4 的完整应用面。
+    //    合成几何（判据自检）不带这个量 ⇒ 跳过（宁可漏判也不误判）。
+    if (Array.isArray(geometry.narrowCh)) {
+      const unregistered = geometry.narrowCh.filter(item => !item.registered);
+      if (unregistered.length) {
+        push('narrow-unregistered', `路由「${meta ? meta.route : '（无元信息）'}」有 ${unregistered.length} 条未登记的窄阅读列：`
+          + unregistered.map(item => `${item.selector} { ${item.declaration} }`).join(' / ')
+          + `（保留窄阅读列必须在 scripts/data/narrow-reading-columns.json 登记，并且居中、真的比容器窄）`);
+      }
+    }
+
     // ④ 页面级横向溢出（视口写在码里：同一页在不同档的结论可以不同）
     if (geometry.doc.scrollWidth > vw + WIDE_TOL) {
       push(`page-overflow@${vw}`, `documentElement.scrollWidth ${geometry.doc.scrollWidth} > 视口 ${vw}`);
@@ -7155,8 +7297,25 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     })()`);
   }
 
-  /** M9 用：把注入的选择器命中的 .snote 映射成 route#index（用来核对「只压非首个」） */
-  async function wideMatchedNoteKeys(target, selector, route) {
+  /**
+   * M16 用：往 `<head>` **追加**一条样式（DOM 注入，零写盘）。
+   *
+   * 为什么这条牙必须是 DOM 注入而不是改现有规则：要单独证明「**未登记的 ch 窄列**会被判红」，
+   * 就不能同时把页面压窄（那会先咬中 note-narrow / note-ink-narrow，分不清是谁在守）。
+   * 这里注入 `.pdetailbody { max-width: 70ch; }`（把已登记的 72ch 覆盖成 70ch）：
+   * 命中的是**行内展开**里那块正文 —— 未展开时它不参与布局 ⇒ 除 `narrow-unregistered` 外**不该出任何码**。
+   */
+  async function wideInjectStyle(target, css) {
+    return target.evaluate(`(() => {
+      const before = Array.prototype.slice.call(document.querySelectorAll('style')).length;
+      const style = document.createElement('style');
+      style.textContent = ${JSON.stringify(css)};
+      document.head.appendChild(style);
+      return { ok: true, added: true, stylesBefore: before, stylesAfter: document.querySelectorAll('style').length };
+    })()`);
+  }
+
+  /** M9 用：把注入的选择器命中的 .snote 映射成 route#index（用来核对「只压非首个」） */  async function wideMatchedNoteKeys(target, selector, route) {
     return target.evaluate(`(() => {
       const main = document.querySelector('main');
       const all = main ? Array.prototype.slice.call(main.querySelectorAll('.snote')) : [];
@@ -7470,9 +7629,12 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       // ---- ③ / ④ 两个桌面档：**逐条**判全部说明（旧口径 textWidth + 新口径逐行字迹 + 藏字）----
       for (const width of WIDE_DESKTOP_VIEWPORTS) {
         const summary = wideSummary[width];
+        // 保留窄阅读列的登记制也在这个循环里判：未登记的 ch 窄列是**页级**码（不是条级），
+        // 所以它不在 summary（条级容器）里，单独取一次、一并计入 bad。
+        const narrowUnregisteredPages = widePageHit(width, 'narrow-unregistered').map(item => item.meta.route);
         const bad = [...summary.union, ...summary.hiddenText, ...summary.unrenderedText, ...summary.axis, ...summary.clipped, ...summary.introLong];
-        check(`§22c @${width} 逐条页面级说明：旧口径（内容盒 ≥ ${WIDE_NOTE_RATIO}×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ ${WIDE_NOTE_RATIO}×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ ${WIDE_INTRO_MAX_LINES} 行`,
-          bad.length === 0,
+        check(`§22c @${width} 逐条页面级说明：旧口径（内容盒 ≥ ${WIDE_NOTE_RATIO}×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ ${WIDE_NOTE_RATIO}×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ ${WIDE_INTRO_MAX_LINES} 行 + 窄阅读列全部已登记`,
+          bad.length === 0 && narrowUnregisteredPages.length === 0,
           `全站 ${wideMeta.length} 页 / 逐条判 ${summary.rows} 条（有说明的页 ${wideNotePages.length} · 零说明的页 ${wideNoNotePages.length} 标注跳过 · 未渲染 ${summary.unrendered} 条：<noscript> ${summary.unrenderedNoscript} + note-unrendered ${summary.unrenderedText.length}）`
           + ` · note-narrow ${summary.narrow.length}（落在 ${summary.narrowRoutes.length} 页） · note-ink-narrow ${summary.inkNarrow.length}（${summary.inkNarrowRoutes.length} 页）`
           + ` · 并集 ${summary.union.length} 条 / ${summary.unionRoutes.length} 页 · 藏字 ${summary.hiddenText.length} · 不同轴 ${summary.axis.length} · 裁切 ${summary.clipped.length}`
@@ -7480,7 +7642,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
           + ` · 多行说明（有行证据）${summary.lineEvidence} 条 · 竖排 ${summary.vertical} 条`
           + `（其中列证据 ≥ 2 列、即 ② 按列判的：${summary.verticalColumnEvidence} 条）`
           + ` · textFallback 回落 ${summary.textFallback} 条`
-          + (bad.length ? ` · 命中样例：${bad.slice(0, 4).map(wideExplainRow).join('；')}` : ''));
+          + ` · 未登记的窄阅读列 ${narrowUnregisteredPages.length} 页（登记清单 ${WIDE_NARROW_ENTRIES.length} 条）`
+          + (bad.length || narrowUnregisteredPages.length ? ` · 命中：${bad.slice(0, 4).map(wideExplainRow).join('；')}`
+            + `${narrowUnregisteredPages.length ? ` · 未登记窄列页：${narrowUnregisteredPages.slice(0, 4).map(route => route || '/').join(' ')}` : ''}` : ''));
         check(`§22c @${width} 全站 ${wideRoutes.length} 页都没有横向溢出`,
           summary.overflow.length === 0,
           summary.overflow.length ? `${summary.overflow.length} 页溢出：${wideSamples(summary.overflow)}`
@@ -7713,7 +7877,16 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
           what: 'T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——'
             + '盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /'
             + '24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；'
-            + '轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）' }
+            + '轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）' },
+        // ---- narrow-reading-columns-v1 新增：保留窄阅读列的登记制（M16）----
+        //   注入的是「已登记条目的**另一个**取值」：`.pdetailbody` 从 72ch 被覆盖成 70ch ——
+        //   选择器、页面、元素全是真实存在的，唯一变化是「这条声明**不在登记清单里**」。
+        //   未展开的行内详情不参与布局 ⇒ 除 `narrow-unregistered` 之外不该出任何码（承重证明会钉住这点）。
+        { id: 'M16', route: 'plans/coding/', width: WIDE_DESKTOP, expect: 'narrow-unregistered', target: 'style',
+          expectNarrowRegistry: true,
+          css: '.pdetailbody { max-width: 70ch; }',
+          what: '保留窄阅读列的登记制：把已登记的 `.pdetailbody { max-width: 72ch }` 覆盖成 **70ch**'
+            + '（DOM 追加一条 <style>，命中真实元素但未展开 ⇒ 不影响布局）⇒ 现场扫描必须认出「未登记的 ch 窄列」' }
       );
 
       metrics.layoutMutationCodes = {};
@@ -7733,6 +7906,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
           await target.goto(new URL(mutation.route, base).href, { waitUntil: 'load' });
           if (mutation.target === 'dom') {
             guard = await wideInjectDetailMain(target);
+          } else if (mutation.target === 'style') {
+            // M16：往 <head> 追加样式（DOM 注入，零写盘）
+            guard = await wideInjectStyle(target, mutation.css);
           } else if (mutation.target === 'intro') {
             // M14：只把「行数」推上去（盒宽 / 内容盒 / 同轴 / 裁切一律不动）——
             // 见 wideInjectIntroFiller 的注释：这是新码 note-intro-long 的**隔离**变异。
@@ -7848,6 +8024,24 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
               + ` / 字形盒 ${note.glyphRects}`).join(' · ') || '（无）'}`
             + ` · 列宽 ${wideRound(column)}px · 阈值 ${wideRound(WIDE_NOTE_RATIO * column)}px`
             + ` · note-narrow ${narrowKeys.length} 条（0 = ① 也看不见）· 盒宽与注入前一致 ${boxUnchanged}`);
+        }
+        // M16：登记制的**承重证明**（narrow-reading-columns-v1）——
+        //   ① 页面里确实多出一条「未登记」的 ch 窄列，且它就是注入的那条（选择器 + 声明逐字对上）；
+        //   ② 已登记的那条（72ch）仍然在扫描结果里 ⇒ 扫描不是「见 ch 就报」，是**按清单**判；
+        //   ③ **隔离**：除 narrow-unregistered 外没有别的码（注入没有压窄任何参与布局的东西）。
+        if (mutation.expectNarrowRegistry) {
+          const narrowCh = (geometry && Array.isArray(geometry.narrowCh)) ? geometry.narrowCh : [];
+          const injectedHit = narrowCh.find(item => item.declaration === 'max-width: 70ch' && /pdetailbody/.test(item.selector));
+          const registeredKept = narrowCh.find(item => item.declaration === (WIDE_NARROW_ENTRIES[0] || {}).declaration
+            && item.selector.includes((WIDE_NARROW_ENTRIES[0] || {}).selector) && item.registered);
+          const injectedUnregistered = Boolean(injectedHit) && injectedHit.registered === false;
+          const otherCodes = codes.filter(code => code !== 'narrow-unregistered');
+          check(`§22c ${mutation.id} 承重证明：注入的那条 ch 窄列被认成**未登记**、已登记的 72ch 仍在扫描结果里、`
+            + '且除 narrow-unregistered 外没有任何别的码（注入不影响布局）',
+            Boolean(injectedHit) && injectedUnregistered && Boolean(registeredKept) && otherCodes.length === 0,
+            `现场扫描到 ${narrowCh.length} 条 ch 窄列：${narrowCh.map(item => `${item.selector}{${item.declaration}}${item.registered ? '（已登记）' : '（未登记）'}`).join(' · ') || '（无）'}`
+            + ` · 注入的那条命中 ${Boolean(injectedHit)} · 已登记条目仍在 ${Boolean(registeredKept)}`
+            + ` · 除登记码之外的码 [${otherCodes.join(', ') || '无'}]`);
         }
         // M12：藏字形态 —— 文本非空、已渲染、零字形盒；且这不是靠窄判据咬的。
         if (mutation.expectNoGlyph) {
@@ -8031,6 +8225,21 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         collect(wideProblems(Object.assign({}, g0, { doc: Object.assign({}, g0.doc, { scrollWidth: 1500 }) }), metaWide)); // page-overflow@<vw>
         collect(wideProblems(Object.assign({}, g0, { mainCount: 0, main: Object.assign({}, g0.main, { count: 0 }), noteCount: 0, notes: [] }), metaWide)); // data-region-missing
         collect(wideProblems(g0, { route: 'synthetic-unknown/', kind: null, family: null }));                             // unclassified-layout
+        // ⑥b 保留窄阅读列的登记制（narrow-reading-columns-v1）：**正反例成对** ——
+        //    · 未登记的 ch 窄列 ⇒ narrow-unregistered；
+        //    · 同一份几何把 registered 标成 true ⇒ 不报（证明它按登记清单判，不是「见 ch 就红」）。
+        const narrowUnregisteredOn = wideCodes(wideProblems(Object.assign({}, g0, {
+          narrowCh: [{ selector: '.zzz', declaration: 'max-width: 70ch', registered: false }]
+        }), metaWide));
+        const narrowUnregisteredOff = wideCodes(wideProblems(Object.assign({}, g0, {
+          narrowCh: [{ selector: '.zzz', declaration: 'max-width: 70ch', registered: true }]
+        }), metaWide));
+        collect(wideProblems(Object.assign({}, g0, {
+          narrowCh: [{ selector: '.zzz', declaration: 'max-width: 70ch', registered: false }]
+        }), metaWide));                                                                                                  // narrow-unregistered
+        check('§22c narrow-unregistered 的适用范围自检：同一个 ch 窄列，未登记 ⇒ 报、已登记 ⇒ 不报',
+          narrowUnregisteredOn.includes('narrow-unregistered') && !narrowUnregisteredOff.includes('narrow-unregistered'),
+          `未登记 ⇒ [${narrowUnregisteredOn.join(', ')}] · 已登记 ⇒ [${narrowUnregisteredOff.join(', ')}]`);
         // ⑤ 首屏说明过长（本轮新增）：行数越过上限、且这条说明落在首个数据区之前 ⇒ note-intro-long。
         //    **正反例成对**：同一个 note0（lineCount 3）在 introIndexes=[0] 时报，在 introIndexes=[] 时不报 ——
         //    后者证明新码确实按「intro 区」限定，而不是「所有说明都判」。
@@ -8178,6 +8387,13 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         hiddenTextNotes: wideSummary[WIDE_DESKTOP].hiddenText.length,
         unrenderedNotes: wideSummary[WIDE_DESKTOP].unrendered,
         verticalNotes: wideSummary[WIDE_DESKTOP].vertical,
+        // narrow-reading-columns-v1：保留窄阅读列的登记制读数
+        narrowRegistryEntries: WIDE_NARROW_ENTRIES.length,
+        narrowUnregisteredPages: wideMeta.map(meta => meta.route)
+          .filter(route => wideProblemsAt.get(`${WIDE_DESKTOP}|${route}`).some(problem => problem.code === 'narrow-unregistered')),
+        narrowChDeclarationsAt1440: wideMeta.map(meta => ({
+          route: meta.route, declarations: (wideGeometry.get(`${WIDE_DESKTOP}|${meta.route}`).narrowCh || [])
+        })).filter(item => item.declarations.length),
         // vertical-note-coverage-v1：竖排里「有列证据、② 按列判过」的条数（闭合 T31 的 P1 之后新增）
         verticalColumnEvidenceNotes: wideSummary[WIDE_DESKTOP].verticalColumnEvidence,
         verticalNotesAt1600: wideSummary[WIDE_WIDE].vertical,
@@ -8248,6 +8464,11 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
               + '与「48 条单行」不是同一批 —— 两处 48 别混用（t19/R3-2 订正）',
             inkScope: `② 的适用性 = 现场物理量：min(主数据区宽, 页面列宽) > 70ch（现场换算；1440/1600/760 判、360 不判，t19/R3-1）`
               + `；横排与竖排共用这一把尺子（换轴只换「怎么归并、量哪一对数」，不换作用域）`,
+            narrowUnregistered: `产物页面内联 <style> 里**任何以 ch 为单位声明的窄阅读列**都必须出现在 `
+              + `scripts/data/narrow-reading-columns.json 的 entries 里（selector + 归一声明文本逐字匹配）；`
+              + `登记的条目还必须：真实浏览器里**居中**（|左内边距 − 右内边距| ≤ ${WIDE_NARROW_REGISTRY.ratio.centeringTolerancePx}px，`
+              + `由 §19 的 .pdetailbody 几何断言判）且**真的比容器窄**。`
+              + `作用域说明：px/rem 的窄宽不在本清单射程内（.detail-main 的 min(1120px,100%) 由 §22b 原有断言承担）`,
             noteAxis: `border-box 与主数据区或 <main> 任一同一轴，容差 max(${WIDE_TOL}px, ${WIDE_AXIS_RATIO} * min(主数据区宽, 页面列宽))`,
             scope: '<main> 内全部 .snote，逐条 route#index；零条说明的页面才跳过；未渲染（<noscript>）单独登记'
           },

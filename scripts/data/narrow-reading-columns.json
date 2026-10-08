@@ -1,0 +1,22 @@
+{
+  "what": "机器可读的「保留窄阅读列」清单（docs/DESIGN-RULES.md 的 S4 的应用面）",
+  "rule": "产物里**任何以 ch 为单位声明的窄阅读列**都必须在 entries 里登记；登记的条目必须同时满足：在真实浏览器里**居中**（|左内边距 − 右内边距| ≤ 容差）且**真的比它所在的容器窄**（否则「窄列」这个声明已经过时，应当删掉而不是留着）。未登记的 ch 窄列 ⇒ 判据 `narrow-unregistered`。",
+  "scanScope": "产物每个页面内联 <style> 里的规则块（与 §22c 的冻结串同一份扫描面）。px / rem 的窄列不在本清单射程内：`.detail-main` 的 `width: min(1120px, 100%)` 由 §22b 原有断言（居中 + 宽度 ∈ [1080,1120]）承担，不在这里重复。",
+  "ratio": {
+    "centeringTolerancePx": 2,
+    "whyCh": "65ch / 70ch / 72ch / 80ch 正是 S4 点名的「阅读列」宽度 —— ch 是**阅读度量单位**；px/rem 的宽度多半是控件与容器，不构成阅读列声明"
+  },
+  "entries": [
+    {
+      "selector": ".pdetailbody",
+      "declaration": "max-width: 72ch",
+      "kind": "ch",
+      "routes": ["plans/coding/"],
+      "why": "套餐对比页**行内展开**详情的正文块（首次收录 / 核对日期 / 来源类型 / 官方链接 / 逐条引文）。它是长文形态的 dd 列表 + 引文，72ch 是阅读行宽；但它长在一个 1386px 宽的表格单元格里 ⇒ 按 S4 必须**居中**，否则就是「另一页的内容贴在左边」的观感",
+      "centeredBy": "margin-inline: auto",
+      "registeredAt": "2026-10-08",
+      "registeredBy": "narrow-reading-columns-v1",
+      "evidence": "research/_raw/narrow-reading-columns-v1/geometry.json"
+    }
+  ]
+}

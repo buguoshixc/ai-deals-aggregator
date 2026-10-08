@@ -1402,7 +1402,10 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
   /* hidden 必须真的不显示：作者级声明会盖掉 UA 样式表里的 [hidden]{display:none} */
   .ptable tr[hidden] { display: none; }
   .pdetail td { background: var(--bg); }
-  .pdetailbody { max-width: 72ch; }
+  /* 保留窄阅读列（登记：scripts/data/narrow-reading-columns.json）——
+     72ch 是阅读行宽，但它长在 ~1386px 宽的表格单元格里 ⇒ 必须按 DESIGN-RULES S4 居中，
+     否则就是「另一页的内容贴在左边」的观感。居中与否由 verify-site.js §19 的几何断言判。 */
+  .pdetailbody { max-width: 72ch; margin-inline: auto; }
   .pdetailbody dl { display: grid; grid-template-columns: 5.5em minmax(0, 1fr); gap: 2px 8px; margin: 0 0 var(--s2); }
   .pdetailbody dt { color: var(--mut); }
   .pdetailbody dd { margin: 0; }
