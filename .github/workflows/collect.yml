@@ -78,8 +78,20 @@ jobs:
       # continue-on-error：装不上也不能拖垮整条已经稳定运行的静态采集链路——
       # 那种情况下无头来源会各自报错并产出 0 条，报告、健康表与 Summary 里都看得见
       # （健康表会把它们判成 headless_unavailable 而不是 healthy）。
+      #
+      # ⚠️ `timeout-minutes` 是**必须**的，不是锦上添花（2026-10-07 实测踩到）：
+      #   `continue-on-error` 覆盖的是「这一步**失败**」，**不覆盖「这一步卡住」**。
+      #   当日 18:29Z 的定时采集卡在 `npx playwright install` 的下载上，把 job 级 30 分钟
+      #   预算吃光后被判 cancelled —— 第 7 步 cancelled、第 8–11 步全部 skipped：
+      #   静态采集一步都没跑，数据停了整整一天（run 37667276213）。
+      #   有了上界之后，卡住 = 这一步在 8 分钟内失败 ⇒ continue-on-error 生效 ⇒ 采集照跑，
+      #   无头来源降级为 headless_unavailable（这正是上面那段注释声明的意图）。
+      #   取 8 的依据：最近 20 轮里 15 轮成功，**整轮**只要 3.0–6.5 分钟（含这一步），
+      #   8 分钟对一次正常安装足够宽松，又把「卡死」的代价从「整轮报废」压到「少两个无头来源」。
+      #   这条上界有牙：`check:ci` 的 (20) 会比对它与 job 级预算的大小。
       - name: Install browser for JS-rendered sources
         continue-on-error: true
+        timeout-minutes: 8
         run: |
           PW_VERSION=$(node -p "require('playwright-core/package.json').version")
           echo "playwright-core 版本: $PW_VERSION"

@@ -1,0 +1,297 @@
+{
+  "what": "collect-robustness-v1 取证：事故、正常轮时长、缺失的定时轮、数据陈旧度",
+  "incident": {
+    "what": "2026-10-07T18:29Z 定时采集：卡在无头内核安装上 ⇒ 吃光 job 预算 ⇒ 整轮取消 ⇒ 采集一步没跑",
+    "runId": 37667276213,
+    "url": "https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/37667276213",
+    "createdAt": "2026-10-07T18:29:51Z",
+    "updatedAt": "2026-10-07T19:01:10Z",
+    "conclusion": "cancelled",
+    "jobWallClockMinutes": 31.3,
+    "jobTimeoutMinutes": 30,
+    "steps": [
+      {
+        "number": 1,
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "number": 2,
+        "name": "Checkout",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "number": 3,
+        "name": "Setup Node.js",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "number": 4,
+        "name": "Mint GitHub App token (robot identity)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "number": 5,
+        "name": "Install dependencies",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "number": 6,
+        "name": "Validate current data (before)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "number": 7,
+        "name": "Install browser for JS-rendered sources",
+        "status": "completed",
+        "conclusion": "cancelled"
+      },
+      {
+        "number": 8,
+        "name": "Run collectors (static + headless)",
+        "status": "completed",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 9,
+        "name": "Validate new data (strict gate)",
+        "status": "completed",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 10,
+        "name": "CI consistency (bare run — 期望项数从 verify.yml 派生)",
+        "status": "completed",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 11,
+        "name": "Gate (validate → translation → selftests → build → real browser)",
+        "status": "completed",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 12,
+        "name": "Translation status (advisory summary)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "number": 13,
+        "name": "Failed sources (advisory)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "number": 14,
+        "name": "Publish run summary",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "number": 15,
+        "name": "Commit and push if changed",
+        "status": "completed",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 29,
+        "name": "Post Setup Node.js",
+        "status": "completed",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 30,
+        "name": "Post Checkout",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "number": 31,
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "skippedBecauseOfCancel": [
+      "Run collectors (static + headless)",
+      "Validate new data (strict gate)",
+      "CI consistency (bare run — 期望项数从 verify.yml 派生)",
+      "Gate (validate → translation → selftests → build → real browser)",
+      "Commit and push if changed",
+      "Post Setup Node.js"
+    ]
+  },
+  "history": [
+    {
+      "runId": 37728501509,
+      "event": "schedule",
+      "createdAt": "2026-10-08T04:39:07Z",
+      "conclusion": "in_progress",
+      "minutes": 0.1
+    },
+    {
+      "runId": 37667276213,
+      "event": "schedule",
+      "createdAt": "2026-10-07T18:29:51Z",
+      "conclusion": "cancelled",
+      "minutes": 31.3
+    },
+    {
+      "runId": 37571575536,
+      "event": "schedule",
+      "createdAt": "2026-10-07T04:27:52Z",
+      "conclusion": "success",
+      "minutes": 6.5
+    },
+    {
+      "runId": 37507791869,
+      "event": "schedule",
+      "createdAt": "2026-10-06T17:59:19Z",
+      "conclusion": "failure",
+      "minutes": 2.4
+    },
+    {
+      "runId": 37416440614,
+      "event": "schedule",
+      "createdAt": "2026-10-06T05:00:54Z",
+      "conclusion": "success",
+      "minutes": 5
+    },
+    {
+      "runId": 37368647528,
+      "event": "schedule",
+      "createdAt": "2026-10-05T20:15:51Z",
+      "conclusion": "failure",
+      "minutes": 7.4
+    },
+    {
+      "runId": 37262505766,
+      "event": "schedule",
+      "createdAt": "2026-10-05T04:12:42Z",
+      "conclusion": "success",
+      "minutes": 4.8
+    },
+    {
+      "runId": 37217021019,
+      "event": "schedule",
+      "createdAt": "2026-10-04T16:30:32Z",
+      "conclusion": "success",
+      "minutes": 4.2
+    },
+    {
+      "runId": 37177031512,
+      "event": "schedule",
+      "createdAt": "2026-10-04T04:27:04Z",
+      "conclusion": "success",
+      "minutes": 4
+    },
+    {
+      "runId": 37173084387,
+      "event": "workflow_dispatch",
+      "createdAt": "2026-10-04T03:06:11Z",
+      "conclusion": "success",
+      "minutes": 3.8
+    },
+    {
+      "runId": 37134505706,
+      "event": "schedule",
+      "createdAt": "2026-10-03T15:47:52Z",
+      "conclusion": "failure",
+      "minutes": 1.6
+    },
+    {
+      "runId": 37094759502,
+      "event": "schedule",
+      "createdAt": "2026-10-03T03:54:44Z",
+      "conclusion": "success",
+      "minutes": 4.6
+    },
+    {
+      "runId": 37041374691,
+      "event": "schedule",
+      "createdAt": "2026-10-02T17:32:16Z",
+      "conclusion": "success",
+      "minutes": 4.8
+    },
+    {
+      "runId": 36963493018,
+      "event": "schedule",
+      "createdAt": "2026-10-02T04:12:02Z",
+      "conclusion": "success",
+      "minutes": 4.7
+    },
+    {
+      "runId": 36904310660,
+      "event": "schedule",
+      "createdAt": "2026-10-01T18:06:08Z",
+      "conclusion": "success",
+      "minutes": 5.3
+    },
+    {
+      "runId": 36814541342,
+      "event": "schedule",
+      "createdAt": "2026-10-01T04:19:04Z",
+      "conclusion": "success",
+      "minutes": 3.8
+    },
+    {
+      "runId": 36753093932,
+      "event": "schedule",
+      "createdAt": "2026-09-30T17:40:35Z",
+      "conclusion": "success",
+      "minutes": 3.7
+    },
+    {
+      "runId": 36667418195,
+      "event": "schedule",
+      "createdAt": "2026-09-30T04:06:57Z",
+      "conclusion": "success",
+      "minutes": 4.1
+    },
+    {
+      "runId": 36607050118,
+      "event": "schedule",
+      "createdAt": "2026-09-29T17:44:13Z",
+      "conclusion": "success",
+      "minutes": 3.7
+    },
+    {
+      "runId": 36521432899,
+      "event": "schedule",
+      "createdAt": "2026-09-29T04:23:45Z",
+      "conclusion": "success",
+      "minutes": 3
+    }
+  ],
+  "successfulRuns": {
+    "count": 15,
+    "minMinutes": 3,
+    "maxMinutes": 6.5
+  },
+  "scheduleDelay": {
+    "note": "事故之后那一轮（cron 00:00Z / 北京 08:00）**不是没跑，而是被 GitHub 调度推迟了** ——它在 04:39Z（北京 12:39，晚 4.65 小时）才起来，取证时仍在跑。这与上一行「没有 run」的初判相反，如实改正：仓库里没有可修的东西，但「延误 + 卡死」叠在一起就是这次数据停 24 小时的实际形状",
+    "checkedAt": "2026-10-08T04:43:17.311Z",
+    "runsCreatedOn2026_10_08": [
+      {
+        "conclusion": "",
+        "createdAt": "2026-10-08T04:39:07Z",
+        "databaseId": 37728501509,
+        "status": "in_progress",
+        "workflowName": "Collect AI Deals"
+      }
+    ],
+    "newestRunOverall": "2026-10-08T04:39:07Z"
+  },
+  "dataStaleness": {
+    "dealsUpdatedAt": "2026-10-07T12:29:57+08:00",
+    "hoursStaleAtCapture": 24.2,
+    "lastDataCommit": "2026-10-07 12:34:20 +0800 e0ca04a chore(data): 更新优惠数据、来源健康与变更记录 2026-10-07 12:34 CST [skip ci]"
+  }
+}

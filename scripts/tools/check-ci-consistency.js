@@ -47,8 +47,9 @@
  *  审计实测过：只冻结步骤**名**时，把 SEO / 真浏览器 / 各 selftest 的 `run:` 换成 `echo skipped`、
  *  给步骤加 `continue-on-error: true`、或把 `allow_degraded_run` 硬编码成 `'true'`，36/36 照样全绿
  *  —— 也就是「绿色」不等于「验过」。补齐的三处判据**折进既有断言**（沿用名字与当时的总项数 36，
- *  因为 `--expect-checks` 是被调用方钉住的口径，加断言就等于改口径；**现值 38**，
- *  唯一出处是 verify.yml 的调用行）：
+ *  因为 `--expect-checks` 是被调用方钉住的口径，加断言就等于改口径；**现值 39**：
+ *  37 = private-analytics 新增 (18)、38 = t27 新增 (19)、39 = collect-robustness-v1 新增 (20)，
+ *  而期望项数的唯一出处始终是 verify.yml 的调用行）：
  *   · (10) 追加：**步骤体指纹**（`GATE_STEP_RUN`：规范化后逐字比对，先剥注释）、
  *     步骤级 `if:` 的键值与存在性（`if: false` 这种静默跳过必须红）、
  *     以及 action 里**不许出现 `continue-on-error` 步骤键**；
@@ -612,7 +613,13 @@ const FROZEN_ASSERTION_NAMES = [
   // 自测文件已在盘上、却没有任何被门禁跑到的 script 指向它 ⇒ 它一次都不会执行，且完全静默
   // （t7 的 D5 探针实测：删掉 package.json 的 selftest 登记、action.yml 步骤不动时检查器 exit 0）。
   // 与 (0b)「未登记的新 workflow 一律硬红」是同一条原则：**登记制必须双向都有人守**。
-  '(19) 每个 scripts/tools/*selftest*.js 都有被门禁真的跑到的 script 指向（反向登记制）'
+  '(19) 每个 scripts/tools/*selftest*.js 都有被门禁真的跑到的 script 指向（反向登记制）',
+  // 2026-10-08 新增（collect-robustness-v1）：**无人值守链路里的外部安装步骤必须有界**。
+  // 上面这些断言守的都是「门禁会不会被绕过」；这一条守的是**链路会不会整轮消失** ——
+  // 2026-10-07T18:29Z 的定时采集卡在 `npx playwright install` 上，吃光 job 级 30 分钟预算被取消，
+  // 静态采集一步都没跑（run 37667276213），数据停了 24 小时；而 .gitignore 挡不住这类失效，
+  // 因为**根本没有产物**可查。`continue-on-error` 只覆盖「失败」，所以必须有一条盯着「上界」。
+  '(20) collect.yml 的无头内核安装步骤有界（step timeout < job timeout，卡住不会吃光整轮预算）'
 ];
 const WATCHDOG_NAME = '(W) 断言名单与冻结清单等值（删一条或改名都会红；本看门狗保护不了自己被删）';
 
@@ -1365,6 +1372,50 @@ check('(13) collect.yml 的门禁步骤排在提交步骤之前',
   collectProblems.length === 0,
   collectProblems.length ? collectProblems.join('；')
     : `门禁在字节 ${idxGateRef} → git push 在字节 ${idxPush}（同一 collect job 里，步骤顺序即语义）`);
+
+/* ─────────── (20) 无人值守链路里的外部安装步骤必须**有界** ─────────── */
+
+/**
+ * 为什么单列一条断言：上面 (13)/(15) 守的是「采集能不能把数据推上去」，
+ * 这一条守的是**采集这一轮会不会根本不发生**。
+ *
+ * 2026-10-07T18:29Z 的定时采集（run 37667276213）就卡在 `npx playwright install` 的下载上：
+ * job 级 `timeout-minutes: 30` 被吃光 ⇒ 整个 job cancelled ⇒ 第 8–11 步（静态采集、严格校验、
+ * 门禁、提交）全部 skipped ⇒ **数据停了 24 小时**，而站点上只表现为「数据更新」的日期不动。
+ * 那一步的注释里写的意图恰恰是「装不上也不能拖垮整条已经稳定运行的静态采集链路」——
+ * 但 `continue-on-error: true` 只覆盖「这一步**失败**」，不覆盖「这一步**卡住**」。
+ *
+ * 所以判据是两条一起：**必须声明 `timeout-minutes`**，且**必须小于 job 级预算**
+ * （否则卡住时仍然是 job 被杀，上界形同虚设）。读不到 job 级预算时**判红**（fail-closed），
+ * 不静默跳过 —— 「判不了就宁可拦住」与 `check-evidence` 同一条纪律。
+ */
+const collectInstallProblems = [];
+const installStepMatch = collectRaw.match(/- name: Install browser for JS-rendered sources\n([\s\S]*?)(?=\n      - name: )/);
+const installStep = installStepMatch ? installStepMatch[1] : '';
+const installTimeout = installStep ? (installStep.match(/timeout-minutes:\s*(\d+)/) || [])[1] : undefined;
+// job 级预算：`runs-on:` 下面紧跟的那一条（collect.yml 的既有形状）。读不到就判红。
+const collectJobTimeout = (collectRaw.match(/runs-on:\s*[\w.\-]+\s*\n\s*timeout-minutes:\s*(\d+)/) || [])[1];
+if (!installStep) {
+  collectInstallProblems.push('collect.yml 里找不到「Install browser for JS-rendered sources」步骤（改名/删除都要同步改本条断言）');
+} else {
+  if (!/continue-on-error:\s*true/.test(installStep)) {
+    collectInstallProblems.push('该步骤不再声明 continue-on-error: true —— 装不上会拖垮整条采集链');
+  }
+  if (!installTimeout) {
+    collectInstallProblems.push('该步骤没有 timeout-minutes —— 卡住会吃光 job 预算、整轮被取消（2026-10-07 实测，数据停 24 小时）');
+  } else if (!(Number(installTimeout) >= 1 && Number(installTimeout) <= 10)) {
+    collectInstallProblems.push(`timeout-minutes: ${installTimeout} 不在 1–10 的合理区间（最近 20 轮里 15 轮成功，整轮 3.0–6.5 分钟）`);
+  }
+}
+if (!collectJobTimeout) {
+  collectInstallProblems.push('读不到 collect job 的 timeout-minutes —— 上界没有可比对象（fail-closed，不静默跳过）');
+} else if (installTimeout && Number(installTimeout) >= Number(collectJobTimeout)) {
+  collectInstallProblems.push(`步骤上界 ${installTimeout} ≥ job 上界 ${collectJobTimeout} —— 卡住时仍然是整个 job 被杀，上界形同虚设`);
+}
+check('(20) collect.yml 的无头内核安装步骤有界（step timeout < job timeout，卡住不会吃光整轮预算）',
+  collectInstallProblems.length === 0,
+  collectInstallProblems.length ? collectInstallProblems.join('；')
+    : `内核安装步骤：continue-on-error + timeout-minutes ${installTimeout} < job 预算 ${collectJobTimeout}`);
 
 /* ─────────── (14) 真实 YAML 会拒绝、而缩进读取器读得过去的那种行 ─────────── */
 
