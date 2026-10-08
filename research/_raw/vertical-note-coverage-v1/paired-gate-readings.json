@@ -1,0 +1,456 @@
+{
+  "task": "vertical-note-coverage-v1",
+  "what": "配对读数：轮 6 冻结口径 vs 本轮口径，在同一份「竖排形态注入副本」的**同一批字节**上各自出的码",
+  "documents": {
+    "preChangeGateOnForm": {
+      "file": ".arch-v1/vn-pre-change-on-form.json",
+      "target": "http://127.0.0.1:57386/",
+      "total": 862,
+      "failed": 1,
+      "what": "master 改动前的判据（本轮基线）打同一批字节"
+    },
+    "oldGateOnForm": {
+      "file": ".arch-v1/vn-old-gate-on-form.json",
+      "target": "http://127.0.0.1:64010/",
+      "total": 852,
+      "failed": 10
+    },
+    "newGateOnForm": {
+      "file": ".arch-v1/vn-form.json",
+      "target": "http://127.0.0.1:56684/",
+      "total": 868,
+      "failed": 4
+    },
+    "newGateOnDist": {
+      "file": ".arch-v1/vn-after.json",
+      "target": "http://127.0.0.1:59276/",
+      "total": 868,
+      "failed": 0
+    }
+  },
+  "sweeps": {
+    "preChangeGateOnForm": {
+      "desktop1440": {
+        "ok": true,
+        "name": "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行",
+        "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）5 条 · 竖排 1 条 · textFallback 回落 1 条"
+      },
+      "desktop1600": {
+        "ok": true,
+        "name": "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行",
+        "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）5 条 · 竖排 1 条 · textFallback 回落 1 条"
+      },
+      "sample760": {
+        "ok": true,
+        "name": "§22c @760 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）",
+        "detail": "0 违规码 · 样本集：/ archive/ category/ category/agent/ changes/ deal/017bdbc04e70/ developer/ docs/data/ feeds/ free-api/ models/ models/360zhinao-pro/ need/ai-coding/ need/china-usable/ need/dev-credits/ need/edu-identity/ need/free-api/ need/free-model/ need/free-tier/ need/free-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/ · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②"
+      },
+      "sample360": {
+        "ok": false,
+        "name": "§22c @360 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）",
+        "detail": "1 条违规码 [need/free-api/#0 note-clipped]：need/free-api/#0 note-clipped：need/free-api/#0 说明自身横向溢出 50px（scrollWidth 375 > clientWidth 325） · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②"
+      }
+    },
+    "oldGateOnForm": {
+      "desktop1440": {
+        "ok": true,
+        "name": "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切",
+        "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 多行说明（有行证据）5 条 · 竖排 1 条 · textFallback 回落 1 条"
+      },
+      "desktop1600": {
+        "ok": true,
+        "name": "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（逐行字迹 ≥ 0.85×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切",
+        "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 多行说明（有行证据）5 条 · 竖排 1 条 · textFallback 回落 1 条"
+      },
+      "sample760": {
+        "ok": true,
+        "name": "§22c @760 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）",
+        "detail": "0 违规码 · 样本集：/ archive/ category/ category/agent/ changes/ deal/017bdbc04e70/ developer/ docs/data/ feeds/ free-api/ models/ models/360zhinao-pro/ need/ai-coding/ need/china-usable/ need/dev-credits/ need/edu-identity/ need/free-api/ need/free-model/ need/free-tier/ need/free-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/ · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②"
+      },
+      "sample360": {
+        "ok": false,
+        "name": "§22c @360 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）",
+        "detail": "1 条违规码 [need/free-api/#0 note-clipped]：need/free-api/#0 note-clipped：need/free-api/#0 说明自身横向溢出 50px（scrollWidth 375 > clientWidth 325） · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②"
+      }
+    },
+    "newGateOnForm": {
+      "desktop1440": {
+        "ok": false,
+        "name": "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行",
+        "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 1（1 页） · 并集 1 条 / 1 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 1 条 / 1 页 · 多行说明（有行证据）5 条 · 竖排 1 条（其中列证据 ≥ 2 列、即 ② 按列判的：1 条） · textFallback 回落 1 条 · 命中样例：need/free-api/#0 内容盒 1369px / 盒 1380px / 列 1380px · 行 1（最宽 362.64px） · **竖排** 列 18（列栈 362.64px） · 判据用列：18 / 362.64px · 字形盒 22 · 主数据区 .ctable · codes [note-ink-narrow,note-intro-long] · 「这一页是旧地址：它与 免费 AP」；need/free-api/#0 内容盒 1369px / 盒 1380px / 列 1380px · 行 1（最宽 362.64px） · **竖排** 列 18（列栈 362.64px） · 判据用列：18 / 362.64px · 字形盒 22 · 主数据区 .ctable · codes [note-ink-narrow,note-intro-long] · 「这一页是旧地址：它与 免费 AP」"
+      },
+      "desktop1600": {
+        "ok": false,
+        "name": "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行",
+        "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 1（1 页） · 并集 1 条 / 1 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 1 条 / 1 页 · 多行说明（有行证据）5 条 · 竖排 1 条（其中列证据 ≥ 2 列、即 ② 按列判的：1 条） · textFallback 回落 1 条 · 命中样例：need/free-api/#0 内容盒 1369px / 盒 1380px / 列 1380px · 行 1（最宽 362.64px） · **竖排** 列 18（列栈 362.64px） · 判据用列：18 / 362.64px · 字形盒 22 · 主数据区 .ctable · codes [note-ink-narrow,note-intro-long] · 「这一页是旧地址：它与 免费 AP」；need/free-api/#0 内容盒 1369px / 盒 1380px / 列 1380px · 行 1（最宽 362.64px） · **竖排** 列 18（列栈 362.64px） · 判据用列：18 / 362.64px · 字形盒 22 · 主数据区 .ctable · codes [note-ink-narrow,note-intro-long] · 「这一页是旧地址：它与 免费 AP」"
+      },
+      "sample760": {
+        "ok": false,
+        "name": "§22c @760 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+        "detail": "1 条违规码 [need/free-api/#0 note-ink-narrow]：need/free-api/#0 note-ink-narrow：need/free-api/#0 逐列字迹：竖列栈水平铺开 362.64px（18 列） < 0.85 × 列宽 —— 盒宽 728px · 内容盒 717px · 行 1 行（最宽一行 362.64px） · **竖排**（vertical-rl）：列 18 列（列栈水平范围 362.64px） · 字形盒 22 个 · 列宽 728px · 阈值 618.8px（主数据区 .ctable 728px / 页面列 728px） · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②"
+      },
+      "sample360": {
+        "ok": false,
+        "name": "§22c @360 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+        "detail": "1 条违规码 [need/free-api/#0 note-clipped]：need/free-api/#0 note-clipped：need/free-api/#0 说明自身横向溢出 50px（scrollWidth 375 > clientWidth 325） · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②"
+      }
+    },
+    "newGateOnDist": {
+      "desktop1440": {
+        "ok": true,
+        "name": "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行",
+        "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）6 条 · 竖排 0 条（其中列证据 ≥ 2 列、即 ② 按列判的：0 条） · textFallback 回落 1 条"
+      },
+      "desktop1600": {
+        "ok": true,
+        "name": "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行",
+        "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 0（落在 0 页） · note-ink-narrow 0（0 页） · 并集 0 条 / 0 页 · 藏字 0 · 不同轴 0 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）6 条 · 竖排 0 条（其中列证据 ≥ 2 列、即 ② 按列判的：0 条） · textFallback 回落 1 条"
+      },
+      "sample760": {
+        "ok": true,
+        "name": "§22c @760 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+        "detail": "0 违规码 · 样本集：/ archive/ category/ category/agent/ changes/ deal/017bdbc04e70/ developer/ docs/data/ feeds/ free-api/ models/ models/360zhinao-pro/ need/ai-coding/ need/china-usable/ need/dev-credits/ need/edu-identity/ need/free-api/ need/free-model/ need/free-tier/ need/free-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/ · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②"
+      },
+      "sample360": {
+        "ok": true,
+        "name": "§22c @360 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+        "detail": "0 违规码 · 样本集：/ archive/ category/ category/agent/ changes/ deal/017bdbc04e70/ developer/ docs/data/ feeds/ free-api/ models/ models/360zhinao-pro/ need/ai-coding/ need/china-usable/ need/dev-credits/ need/edu-identity/ need/free-api/ need/free-model/ need/free-tier/ need/free-tokens/ need/no-card/ need/student-only/ plans/ plans/api/ plans/coding/ status/ student/ vendor/ vendor/ai360/ · 物理作用域：@760 列 676–728px / 70ch 现场 452.81 ⇒ 判 ② · @360 列 276–328px / 70ch 现场 452.81 ⇒ 不判 ②"
+      }
+    }
+  },
+  "m15": {
+    "oldGateOnForm": [],
+    "newGateOnForm": [
+      {
+        "ok": true,
+        "name": "§22c M15 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+        "detail": "锚点出现 1 次 · T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）"
+      },
+      {
+        "ok": true,
+        "name": "§22c M15 变异后复测必须出现「note-ink-narrow」违规码（T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里））",
+        "detail": "期望 note-ink-narrow · 实测 [note-ink-narrow, note-intro-long] · 说明 1 条 · 首条 盒 1380px / 有字区域 1369px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [note-ink-narrow, note-intro-long]"
+      },
+      {
+        "ok": true,
+        "name": "§22c M15 承重证明：咬中的条是**竖排按列判**（列数 ≥ 2 · 列栈水平范围 < 0.85×列宽），且旧口径两条判据在它们身上必然静默（按行归并 ≤ 1 行 + 盒/内容盒满宽，盒宽与注入前逐条相同）",
+        "detail": "note-ink-narrow 1 条 [need/free-api/#0] · 逐条：#0 vertical-rl 列 18 / 列栈 362.64px / 行 1（最宽 362.64px） / 内容盒 1369px / 字形盒 22 · 列宽 1380px · 阈值 1173px · note-narrow 0 条（0 = ① 也看不见）· 盒宽与注入前一致 true"
+      },
+      {
+        "ok": true,
+        "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+        "detail": "need/free-api/@1440 说明 1 条（竖排 1）违规码 [note-ink-narrow,note-intro-long] ⇒ 本轮目录本身带竖排 ⇒ 严格形式由 --dir=dist 的那一次运行承担"
+      }
+    ],
+    "newGateOnDist": [
+      {
+        "ok": true,
+        "name": "§22c M15 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+        "detail": "锚点出现 1 次 · T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）"
+      },
+      {
+        "ok": true,
+        "name": "§22c M15 变异后复测必须出现「note-ink-narrow」违规码（T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里））",
+        "detail": "期望 note-ink-narrow · 实测 [note-ink-narrow, note-intro-long] · 说明 1 条 · 首条 盒 1380px / 有字区域 1369px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [note-ink-narrow, note-intro-long]"
+      },
+      {
+        "ok": true,
+        "name": "§22c M15 承重证明：咬中的条是**竖排按列判**（列数 ≥ 2 · 列栈水平范围 < 0.85×列宽），且旧口径两条判据在它们身上必然静默（按行归并 ≤ 1 行 + 盒/内容盒满宽，盒宽与注入前逐条相同）",
+        "detail": "note-ink-narrow 1 条 [need/free-api/#0] · 逐条：#0 vertical-rl 列 18 / 列栈 362.64px / 行 1（最宽 362.64px） / 内容盒 1369px / 字形盒 22 · 列宽 1380px · 阈值 1173px · note-narrow 0 条（0 = ① 也看不见）· 盒宽与注入前一致 true"
+      },
+      {
+        "ok": true,
+        "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+        "detail": "need/free-api/@1440 说明 1 条（竖排 0）违规码 [无] ⇒ 严格形式成立（未注入产物）"
+      }
+    ]
+  },
+  "controls": {
+    "newGateOnDist": [
+      {
+        "ok": true,
+        "name": "§22b M4 正对照：同样注入 200 字符超长 URL、不动 CSS ⇒ @390 不得溢出",
+        "detail": "超长 URL 注入位置 link · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [width]，390 档只看溢出）"
+      },
+      {
+        "ok": true,
+        "name": "§22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出",
+        "detail": "不可断串注入位置 note · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [无]，390 档只看溢出）"
+      },
+      {
+        "ok": true,
+        "name": "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条违规码都没有",
+        "detail": "M8 need/student-only/@1440 说明 1 条（竖排 0）违规码 [无] · M9a docs/data/@1440 说明 9 条（竖排 0）违规码 [无] · M9b changes/@1440 说明 13 条（竖排 0）违规码 [无] · M10 need/student-only/@1600 说明 1 条（竖排 0）违规码 [无]"
+      },
+      {
+        "ok": true,
+        "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+        "detail": "need/free-api/@1440 说明 1 条（竖排 0）违规码 [无] ⇒ 严格形式成立（未注入产物）"
+      }
+    ],
+    "newGateOnForm": [
+      {
+        "ok": true,
+        "name": "§22b M4 正对照：同样注入 200 字符超长 URL、不动 CSS ⇒ @390 不得溢出",
+        "detail": "超长 URL 注入位置 link · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [width]，390 档只看溢出）"
+      },
+      {
+        "ok": true,
+        "name": "§22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出",
+        "detail": "不可断串注入位置 note · scrollWidth 390（视口 390） · 溢出类违规码 [无]（全部码 [无]，390 档只看溢出）"
+      },
+      {
+        "ok": true,
+        "name": "§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条违规码都没有",
+        "detail": "M8 need/student-only/@1440 说明 1 条（竖排 0）违规码 [无] · M9a docs/data/@1440 说明 9 条（竖排 0）违规码 [无] · M9b changes/@1440 说明 13 条（竖排 0）违规码 [无] · M10 need/student-only/@1600 说明 1 条（竖排 0）违规码 [无]"
+      },
+      {
+        "ok": true,
+        "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+        "detail": "need/free-api/@1440 说明 1 条（竖排 1）违规码 [note-ink-narrow,note-intro-long] ⇒ 本轮目录本身带竖排 ⇒ 严格形式由 --dir=dist 的那一次运行承担"
+      }
+    ]
+  },
+  "scopeSelfChecks": {
+    "newGateOnDist": [
+      {
+        "ok": true,
+        "name": "§22c 竖排判据的适用范围自检（按列判）：列栈铺不开 ⇒ 报；列栈铺满列宽 ⇒ 不报；只有 1 列 ⇒ 不报",
+        "detail": "T31 形态（24 列 / 列栈 342.25px）⇒ [note-ink-narrow] · 铺满（80 列 / 列栈 1300px ≥ 1173px）⇒ [] · 单列（1 列 / 16px）⇒ []（前置条件不成立）"
+      },
+      {
+        "ok": true,
+        "name": "§22c 竖排的 note-intro-long 也按列判：同一条竖排说明（24 列 / 按行归并只有 1 行）在 intro 区里报、不在 intro 区里不报",
+        "detail": "introIndexes=[0] ⇒ [note-ink-narrow, note-intro-long] · 不在 intro 区 ⇒ [note-ink-narrow]（同一份几何，只变 intro 归属）"
+      }
+    ]
+  },
+  "redChecks": {
+    "oldGateOnForm": [
+      {
+        "ok": false,
+        "name": "§22c @360 样本集 29 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）"
+      },
+      {
+        "ok": false,
+        "name": "§22c M1–M4 的四个壳（student/ status/ changes/ feeds/）都是 wide 族且带页面级说明"
+      },
+      {
+        "ok": false,
+        "name": "§22c M1 变异后复测必须出现「note-narrow」违规码（把冻结串的 max-width 换回 70ch（student/ 这一族的页面级说明曾被压窄））"
+      },
+      {
+        "ok": false,
+        "name": "§22c M6 变异后复测必须出现「page-overflow@390」违规码（拿走 .snote 的 overflow-wrap:anywhere 并注入 200 字符不可断串）"
+      },
+      {
+        "ok": false,
+        "name": "§22c M8 变异后复测必须出现「note-narrow」违规码（F1 原型：把 .snote 的 padding-right 写成 calc(100% - 70ch) —— 盒宽一字不动、有字区域恒等于 70ch（修复前整轮 0 失败放行的那一条））"
+      },
+      {
+        "ok": false,
+        "name": "§22c M8 要害：首条说明的**盒宽没变**（旧判据看不见），只有**有字区域**被压回 70ch 级"
+      },
+      {
+        "ok": false,
+        "name": "§22c M10 变异后复测必须出现「note-narrow」违规码（F4 原型：缺陷藏在 @media (min-width:1500px) 里（1440 档物理上看不见，只有 1600 档咬得到））"
+      },
+      {
+        "ok": false,
+        "name": "§22c M12 变异后复测必须出现「note-hidden-text」违规码（t8 的 F-R2-2 原型：真实文本 font-size:0（一个字形都不画），正文交给 ::before 的 content 去画 —— 盒宽/行数一切正常，只有字形盒能看穿）"
+      },
+      {
+        "ok": false,
+        "name": "§22c M12 承重证明：真实文本**一个字形盒都没有**（盒宽/行数正常），咬中的是 note-hidden-text"
+      },
+      {
+        "ok": false,
+        "name": "§22c M6 正对照：同样注入 200 字符不可断串、CSS 一字不动 ⇒ @390 不得溢出"
+      }
+    ],
+    "newGateOnForm": [
+      {
+        "ok": false,
+        "name": "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行"
+      },
+      {
+        "ok": false,
+        "name": "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行"
+      },
+      {
+        "ok": false,
+        "name": "§22c @760 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）"
+      },
+      {
+        "ok": false,
+        "name": "§22c @360 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）"
+      }
+    ],
+    "newGateOnDist": []
+  },
+  "mutationCodes": {
+    "newGateOnDist": {
+      "M1": [
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-intro-long"
+      ],
+      "M2": [
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-intro-long",
+        "note-narrow",
+        "note-axis"
+      ],
+      "M3": [
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis"
+      ],
+      "M4": [
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-intro-long",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis"
+      ],
+      "M6": [
+        "note-clipped",
+        "page-overflow@390"
+      ],
+      "M7": [
+        "unexpected-detail-main"
+      ],
+      "M8": [
+        "note-narrow",
+        "note-ink-narrow",
+        "note-intro-long"
+      ],
+      "M9a": [
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-intro-long",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-intro-long",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis"
+      ],
+      "M9b": [
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis"
+      ],
+      "M10": [
+        "note-narrow",
+        "note-ink-narrow",
+        "note-axis",
+        "note-intro-long"
+      ],
+      "M11": [
+        "note-ink-narrow",
+        "note-ink-narrow",
+        "note-ink-narrow",
+        "note-ink-narrow",
+        "note-ink-narrow",
+        "note-ink-narrow"
+      ],
+      "M12": [
+        "note-hidden-text"
+      ],
+      "M13": [
+        "note-unrendered",
+        "note-unrendered",
+        "note-unrendered",
+        "note-unrendered",
+        "note-unrendered",
+        "note-unrendered",
+        "note-unrendered",
+        "note-unrendered",
+        "note-unrendered"
+      ],
+      "M14": [
+        "note-intro-long"
+      ],
+      "M15": [
+        "note-ink-narrow",
+        "note-intro-long"
+      ],
+      "M6-control": []
+    }
+  }
+}

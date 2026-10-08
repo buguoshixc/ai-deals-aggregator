@@ -1,0 +1,23 @@
+{
+  "task": "vertical-note-coverage-v1",
+  "what": "产物零变化证明：判据源码改动前后，从同一份源码重跑构建得到的 dist 全树逐文件 sha256 对比",
+  "before": {
+    "at": "改动后、重建前（dist 由改动前的源码构建，evidence A）",
+    "dir": "dist",
+    "files": 303,
+    "bytes": 20281717,
+    "treeDigest": "13b17d0a31cfb358af2f35ef0bb27657dbeca141c019564c5c78c73a822e8c3b",
+    "manifestSha256": "3e3108f78f589323914450d62f7d7814c8e8baa2d9f6b2b6cc8ff958127aff42"
+  },
+  "after": {
+    "at": "重建后（同一份源码 + 改动后的判据源码）",
+    "dir": "dist",
+    "files": 303,
+    "bytes": 20281717,
+    "treeDigest": "13b17d0a31cfb358af2f35ef0bb27657dbeca141c019564c5c78c73a822e8c3b",
+    "manifestSha256": "3e3108f78f589323914450d62f7d7814c8e8baa2d9f6b2b6cc8ff958127aff42"
+  },
+  "perFileDifferences": 0,
+  "identical": true,
+  "note": "判据改动只落在 scripts/tools/verify-site.js 与 docs/**；构建路径不读它们 ⇒ 产物逐字节不变（这里用重建 + 逐文件 sha256 证明，而不是靠推理）"
+}
