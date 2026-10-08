@@ -198,6 +198,17 @@ runs:
       shell: bash
       run: node scripts/tools/audience-selftest.js
 
+    # t16/t18 新增：数据文件注记 ↔ 渲染措辞的自测（零依赖、离线、秒级）。
+    # 为什么必须进门禁：`scripts/data/official_urls.json` 的 `_roles` 注里写着「② deal.sourceUrl /
+    # plan.sourceUrl = 收录渠道（渲染成「原始出处」行）」，而 deal 侧那一行的标签早在 t7 就改成了
+    # 「收录渠道」（audience.js 的 SOURCE_LABELS.origin）—— 注记是**自我声明**：写错了页面照常、
+    # 构建照常、别的步骤全绿，只有读它的人被误导（t8 复核发现、t16 校正、t18 装进这里）。
+    # 它红的时候没有别的步骤会替它红：audience-selftest 只锁「前端副本与 lib 一致」，
+    # 不锁「数据文件的注记有没有跟着改」。同一形状（注记逐字引用会变的措辞/路径）以后照此办理。
+    - name: Roles-note self-test (official_urls note vs live wording)
+      shell: bash
+      run: node scripts/tools/roles-note-selftest.js
+
     # 采集机器人身份（GitHub App token）自测：零依赖、离线、秒级。
     # 为什么进门禁：这条凭据链是**无人值守采集的命门**，写错的症状是「每天两次静默失败」
     # 或「换了不该换的身份去推送」，而本地一切正常。它盯三件事：JWT 不超过 10 分钟上限、

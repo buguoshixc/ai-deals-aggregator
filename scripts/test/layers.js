@@ -66,6 +66,7 @@ const LAYERS = {
       'migrate:audience:verify',
       'selftest:text',
       'selftest:audience',
+      'selftest:roles-note',
       'selftest:provenance',
       'selftest:history',
       'selftest:changes',

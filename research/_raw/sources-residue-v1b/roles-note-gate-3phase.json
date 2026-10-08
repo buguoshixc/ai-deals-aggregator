@@ -1,0 +1,44 @@
+{
+  "task": "roles-note-tooth-v1",
+  "date": "2026-10-08",
+  "target": "scripts/data/official_urls.json（`_roles` 注里的 sourceUrl 括注）",
+  "judgement": "scripts/tools/roles-note-selftest.js",
+  "phases": [
+    {
+      "phase": "① 干净树",
+      "expectation": "全绿 exit=0",
+      "sha256": "d2197a952a74cf964a01140056d052e34658319da038e1150b4243929ba95edc",
+      "args": "node scripts/tools/roles-note-selftest.js",
+      "exitCode": 0,
+      "tail": "=== ④ plans 侧仍然只把该字段当值用 ===\n   现场读数：注记文件 scripts/data/official_urls.json\n   · live 标签 =「收录渠道」· 注里出现 = 是 · 旧称残留 = 否\n   · 前端副本一致 = 是 · plans 侧原样透传 = 是 · api-plans 标签表 = 无\n\n✅ roles-note 自测：8 项通过，0 项失败"
+    },
+    {
+      "phase": "② 沙箱变异（括注改回旧称）",
+      "expectation": "变红 exit≠0",
+      "mutation": {
+        "args": "node research/_raw/sources-residue-v1b/note-mutation.js --bend",
+        "exitCode": 0,
+        "tail": "已变异：（页面行标签：deal 侧渲染成「收录渠道」行 … → （渲染成「原始出处」行 …（备份 sha256=d2197a952a74cf96）\n变异后文件 sha256=3327de0756ebed8a"
+      },
+      "sha256": "3327de0756ebed8a5cb950f33ee6f113c4280e866fa6303ecc61b278669138d0",
+      "args": "node scripts/tools/roles-note-selftest.js",
+      "exitCode": 1,
+      "tail": "   · live 标签 =「收录渠道」· 注里出现 = 否 · 旧称残留 = 是\n   · 前端副本一致 = 是 · plans 侧原样透传 = 是 · api-plans 标签表 = 无\n\n❌ roles-note 自测：6 项通过，2 项失败\n  ✗ 注里逐字引用今天的标签「收录渠道」（出处：audience.js 的 SOURCE_LABELS.origin） — 括注与渲染行为脱节：注里没有出现 live 值\n  ✗ 注里不再把旧称「原始出处」写成本字段的行标签 — 注里仍然残留旧称「原始出处」"
+    },
+    {
+      "phase": "③ 逐字节还原后复跑",
+      "expectation": "复绿 exit=0",
+      "restore": {
+        "args": "node research/_raw/sources-residue-v1b/note-mutation.js --restore",
+        "exitCode": 0,
+        "tail": "还原前 sha256=3327de0756ebed8a → 还原后 sha256=d2197a952a74cf96（备份=d2197a952a74cf96）\n✅ 逐字节还原成功"
+      },
+      "sha256": "d2197a952a74cf964a01140056d052e34658319da038e1150b4243929ba95edc",
+      "args": "node scripts/tools/roles-note-selftest.js",
+      "exitCode": 0,
+      "tail": "=== ④ plans 侧仍然只把该字段当值用 ===\n   现场读数：注记文件 scripts/data/official_urls.json\n   · live 标签 =「收录渠道」· 注里出现 = 是 · 旧称残留 = 否\n   · 前端副本一致 = 是 · plans 侧原样透传 = 是 · api-plans 标签表 = 无\n\n✅ roles-note 自测：8 项通过，0 项失败"
+    }
+  ],
+  "restoredByteExact": true,
+  "verdict": true
+}

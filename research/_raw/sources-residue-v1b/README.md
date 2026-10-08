@@ -13,8 +13,8 @@
 
 | 文件 | 是什么 |
 |---|---|
-| `check-roles-note.js` | **判据**：`official_urls.json` 的 `_roles` 括注 ↔ 今天的渲染行为（8 条检查，详见报告 §1.4） |
-| `roles-note-check-green.json` / `roles-note-check-red-bent.json` | 判据的两次实跑读数（绿 / 变异回旧括注后的红） |
+| `roles-note-gate-3phase.js` · `roles-note-gate-3phase.json` | **三段实跑驱动器与读数**（t18）：干净树全绿（8/8, exit 0）→ 沙箱变异（括注改回旧称）**红 exit 1**（6/8）→ 逐字节还原后复绿（sha256 前后一致） |
+| `roles-note-check-green.json` · `roles-note-check-red-bent.json` | **t16 时期**的判据读数快照（当时判据还住在 `research/_raw/…/check-roles-note.js`；t18 已把它迁到 **`scripts/tools/roles-note-selftest.js`** 并装进门禁 —— 两个 JSON 保留为历史读数，里面的检查项名是当时那一版的） |
 | `note-mutation.js` | 变异工具：把括注临时改回旧写法（`--bend`）与逐字节还原（`--restore`），并打印 sha256 |
 | `mutate-live-label.js` | 变异工具：在**内存里**把 `SOURCE_LABELS.origin` 改名再跑判据（证明「标签改名→括注脱节」会被抓；不写盘） |
 | `hash-dist.js` | 逐文件 sha256 清单 / 两份清单逐文件比对 |
@@ -51,12 +51,10 @@
 ## 3. 复跑
 
 ```bash
-# ① 括注判据（绿；变异后应红）
-node research/_raw/sources-residue-v1b/check-roles-note.js
-node research/_raw/sources-residue-v1b/note-mutation.js --bend
-node research/_raw/sources-residue-v1b/check-roles-note.js      # 期望 exit 1
-node research/_raw/sources-residue-v1b/note-mutation.js --restore
-node research/_raw/sources-residue-v1b/mutate-live-label.js     # 期望 exit 1，且磁盘 sha256 不变
+# ① 括注判据（t18 起判据本体住在门禁住址，也是门禁的一步）
+npm run selftest:roles-note                                        # 期望：8 项通过，exit 0
+node research/_raw/sources-residue-v1b/roles-note-gate-3phase.js   # 三段实跑（沙箱变异 + 逐字节还原，写 JSON）
+node research/_raw/sources-residue-v1b/mutate-live-label.js        # 期望 exit 1，且磁盘 sha256 不变
 
 # ② TokenHub 对账（读本机快照；快照不在库里，先按 §2 的 URL 重抓）
 node research/_raw/sources-residue-v1b/build-v1b-evidence.js

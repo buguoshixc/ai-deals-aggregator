@@ -198,6 +198,11 @@ const GATE_STEP_NAMES = [
   // 它原先只在本机跑，于是这几类回归在 CI 里看不见（t1 核验的 B5）。判断标准不是"多新"，
   // 而是"它红的时候有没有别的步骤会替它红"——没有，所以必须进来。
   'Audience self-test',
+  // t18 新增：数据文件注记 ↔ 渲染措辞（`official_urls.json` 的 `_roles` 括注必须逐字引用
+  // `audience.js` 的 `SOURCE_LABELS.origin`）。这条判据与 Audience self-test 相邻但**不重叠**：
+  // 后者锁「前端副本与 lib 一致」，前者锁「数据文件的注记有没有跟着改」——
+  // t8 实测过后者全绿而注记已经写着旧称（「渲染成「原始出处」行」）。
+  'Roles-note self-test (official_urls note vs live wording)',
   'App-token self-test',
   // v2.0 新增：AI 层边界自检（离线）。它红的时候没有别的步骤会替它红 ——
   // 「没有证据的断言进不来」「非法枚举进不来」「AI 挂了确定性链路不变」
@@ -342,6 +347,8 @@ const GATE_STEP_RUN = {
     "node scripts/tools/seo-selftest.js",
   "Audience self-test":
     "node scripts/tools/audience-selftest.js",
+  "Roles-note self-test (official_urls note vs live wording)":
+    "node scripts/tools/roles-note-selftest.js",
   "App-token self-test":
     "node scripts/tools/app-token-selftest.js",
   "AI layer self-test":
