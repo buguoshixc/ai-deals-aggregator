@@ -4175,13 +4175,19 @@ function assemble() {
       schemaVersion: historyStore.store.schemaVersion, updatedAt: historyStore.store.startedAt,
       count: (historyStore.store.events || []).length
     },
+    // ⚠️ 这里读的是**加载结果里的账本**（`…Load.store`），不是「不可用时 = null」的便利变量
+    // （`planHistoryStore` / `apiPlanHistoryStore`）—— 后者只为「这一页要不要渲染变化块」服务。
+    // `lib/plan-history.js` 的 `load()` 契约写明「不存在或损坏时不抛，且 `store` 总是可用」
+    // （不可用时是**如实空账本**：`startedAt: null`、0 事件、0 基线）。读便利变量就是
+    // `Cannot read properties of null` —— 那正是 t29 修的缺陷：日志不可用时构建崩在 Manifest 这一步，
+    // 「没有拿到日志」这句诚实性措辞永远上不了线。隔壁 deal-history 那一条一直是对的参照。
     'plan-history': {
-      schemaVersion: planHistoryStore.schemaVersion, updatedAt: planHistoryStore.startedAt,
-      count: (planHistoryStore.events || []).length
+      schemaVersion: planHistoryLoad.store.schemaVersion, updatedAt: planHistoryLoad.store.startedAt,
+      count: (planHistoryLoad.store.events || []).length
     },
     'api-plan-history': {
-      schemaVersion: apiPlanHistoryStore.schemaVersion, updatedAt: apiPlanHistoryStore.startedAt,
-      count: (apiPlanHistoryStore.events || []).length
+      schemaVersion: apiPlanHistoryLoad.store.schemaVersion, updatedAt: apiPlanHistoryLoad.store.startedAt,
+      count: (apiPlanHistoryLoad.store.events || []).length
     }
   });
   if (missingDatasetValues.length) {
@@ -4601,6 +4607,46 @@ function selfCheck(built) {
   let failed = 0;
   const fail = (message) => { console.log('  ✗ ' + message); failed++; };
 
+  /**
+   * 变化日志的「发布面」自检（t29）。
+   *
+   * 可用 ⇒ `dist/<日志>` 与源文件**逐字节相同**（读者能下载到的那一份必须与真值一致）。
+   * 不可用（缺失 / 解析失败）⇒ 断言产物就是**如实空账本**（`load()` 契约里的 `store`：
+   * `startedAt: null`、0 事件、0 基线），**不是**整条跳过 —— 跳过就放过了「产物里凭空冒出一个日期」
+   * 这种坏法，而那正是这一层要挡的。（口径与 deal-history 侧一致：那边由 `verifyStore` 的可用性分支守着。）
+   */
+  const checkPublishedLog = (label, publishedPath, sourcePath, load) => {
+    if (!fs.existsSync(publishedPath)) { fail(`缺少 ${label}（它进产物）`); return; }
+    const published = fs.readFileSync(publishedPath, 'utf8');
+    if (load.missing || load.broken) {
+      const expected = `${JSON.stringify(load.store, null, 2)}\n`;
+      if (published !== expected) {
+        fail(`dist/${label} 不是如实空账本（源日志不可用：${load.broken || '文件缺失'}）——`
+          + '不可用时不拿任何日期顶替，产物必须与内存里那份空账本逐字节相同');
+      } else {
+        console.log(`  ✓ ${label}: 源日志不可用（${load.broken || '文件缺失'}）⇒ 产物是**如实空账本**（无日期 / 无事件）`);
+      }
+      return;
+    }
+    if (!fs.existsSync(sourcePath)) { fail(`缺少源 ${path.relative(ROOT, sourcePath)}`); return; }
+    const source = fs.readFileSync(sourcePath, 'utf8');
+    if (source !== published) fail(`dist/${label} 与源脚本的日志不是逐字节相同`);
+    else console.log(`  ✓ ${label}: 与源日志逐字节相同（${(published.length / 1024).toFixed(1)} KB）`);
+  };
+
+  /**
+   * 两份变化日志在**自检**里的视图（t29）：与构建期那一次同一口径 ——
+   * 不可用（缺失 / 解析失败）⇒ `null`，于是各模块走它们的「没有拿到日志」分支
+   * （那条分支断言的是「页面必须说出没有拿到日志」，比计数对账更严）；可用 ⇒ 从 `dist/` 回读字节
+   * （自检要查的正是**发布出去的那一份**）。直接解析 dist 里的如实空账本会得到一个 truthy
+   * 但零事件的账本 ⇒ 模块以为日志可用，去要求一个本就不该存在的计数行 / 分栏。
+   */
+  const planLogSelf = planHistory.load();
+  const apiPlanLogSelf = apiPlanHistory.load();
+  const distLogView = (rel, load) => ((load.missing || load.broken)
+    ? null
+    : JSON.parse(fs.readFileSync(path.join(OUT, rel), 'utf8')));
+
   for (const file of [...PUBLIC_FILES, ...GENERATED_FILES]) {
     const ok = fs.existsSync(path.join(OUT, file));
     console.log(`  ${ok ? '✓' : '✗'} ${file}`);
@@ -4659,18 +4705,10 @@ function selfCheck(built) {
     }
 
     // v2.3：套餐变化日志同样**逐字节**发布（读者能下载到的那一份必须与真值一致）。
-    {
-      const publishedHistory = path.join(OUT, 'plan-history.json');
-      const sourceHistory = path.join(ROOT, 'scripts', 'data', 'plan-history.json');
-      if (!fs.existsSync(publishedHistory)) fail('缺少 plan-history.json（v2.3 起它进产物）');
-      else if (!fs.existsSync(sourceHistory)) fail('缺少源 scripts/data/plan-history.json');
-      else {
-        const a = fs.readFileSync(sourceHistory, 'utf8');
-        const b = fs.readFileSync(publishedHistory, 'utf8');
-        if (a !== b) fail('dist/plan-history.json 与源脚本的日志不是逐字节相同');
-        else console.log(`  ✓ plan-history.json: 与源日志逐字节相同（${(b.length / 1024).toFixed(1)} KB）`);
-      }
-    }
+    // 可用 / 不可用两种口径见 `selfCheck` 顶部的 `checkPublishedLog()`（t29：日志不可用时
+    // 断言「产物就是如实空账本」，而不是整条跳过）。
+    checkPublishedLog('plan-history.json', path.join(OUT, 'plan-history.json'),
+      path.join(ROOT, 'scripts', 'data', 'plan-history.json'), planHistory.load());
 
     // 套餐对比页：**从磁盘回读**再跑一遍诚实性断言。
     //
@@ -4685,21 +4723,21 @@ function selfCheck(built) {
       const diskPlans = JSON.parse(fs.readFileSync(path.join(OUT, 'plans.json'), 'utf8'));
       const diskTable = providers.load().table;
       const diskHtml = fs.readFileSync(plansPageFile, 'utf8');
+      // t29：变化日志的**自检视图**与构建期那一次同一口径（不可用 ⇒ null ⇒ 模块走它的
+      // 「没有拿到日志」分支，那条分支断言的是「页面必须说出没有拿到」——比计数对账更严）。
+      // 直接解析 dist 里的如实空账本会得到一个 truthy 但零事件的账本 ⇒ 模块以为日志可用，
+      // 去要求一个本就不该存在的计数行/分栏。
+      const diskPlanHistory = distLogView('plan-history.json', planLogSelf);
       const pageProblems = [
         ...plansPage.assertPageHonesty(diskHtml, diskPlans.plans, {
           providerTable: diskTable,
           // v2.3：从磁盘回读时同样带上变化视图与日志 —— 最近变化块与详情时间线
           // 是这一页新增的事实面，不给它们断言等于「盘上少了也看不出来」。
           planChanges: built.planRadar,
-          planHistoryStore: fs.existsSync(path.join(OUT, 'plan-history.json'))
-            ? JSON.parse(fs.readFileSync(path.join(OUT, 'plan-history.json'), 'utf8'))
-            : null
+          planHistoryStore: diskPlanHistory
         }),
         ...plansPage.assertDataHonesty(diskPlans.plans),
-        ...(fs.existsSync(path.join(OUT, 'plan-history.json'))
-          ? plansPage.assertHistoryHonesty(diskPlans.plans,
-            JSON.parse(fs.readFileSync(path.join(OUT, 'plan-history.json'), 'utf8')))
-          : [])
+        ...(diskPlanHistory === null ? [] : plansPage.assertHistoryHonesty(diskPlans.plans, diskPlanHistory))
       ];
       // 交互逻辑**逐字节**内联：页面上跑的那一份与 `lib/plans-compare.js` 必须是同一份字节。
       // 少了这一条，将来把内联改成"精简版"也不会有人发现 —— 而那时浏览器与自测就是两套语义了。
@@ -4739,25 +4777,16 @@ function selfCheck(built) {
       else console.log(`  ✓ api-plans.json: 与源文件逐字节相同（${(b.length / 1024).toFixed(1)} KB）`);
     }
 
-    const publishedApiHistory = path.join(OUT, 'api-plan-history.json');
-    const sourceApiHistory = path.join(ROOT, 'scripts', 'data', 'api-plan-history.json');
-    if (!fs.existsSync(publishedApiHistory)) fail('缺少 api-plan-history.json（v2.5 起它进产物）');
-    else if (!fs.existsSync(sourceApiHistory)) fail('缺少源 scripts/data/api-plan-history.json');
-    else {
-      const a = fs.readFileSync(sourceApiHistory, 'utf8');
-      const b = fs.readFileSync(publishedApiHistory, 'utf8');
-      if (a !== b) fail('dist/api-plan-history.json 与源脚本的日志不是逐字节相同');
-      else console.log(`  ✓ api-plan-history.json: 与源日志逐字节相同（${(b.length / 1024).toFixed(1)} KB）`);
-    }
+    // v2.5：API 计费变化日志同样逐字节发布 —— 可用/不可用两种口径与上面 `plan-history.json` 同一把尺子。
+    checkPublishedLog('api-plan-history.json', path.join(OUT, 'api-plan-history.json'),
+      path.join(ROOT, 'scripts', 'data', 'api-plan-history.json'), apiPlanHistory.load());
 
     // API 计费页：**从磁盘回读**再跑一遍诚实性断言（与套餐页同一个理由）。
     const apiPlansPageFile = path.join(OUT, apiPlansPage.API_PLANS_ROUTE, 'index.html');
     if (!fs.existsSync(apiPlansPageFile)) fail(`缺少 ${apiPlansPage.API_PLANS_ROUTE}index.html`);
     else {
       const diskApiPlans = JSON.parse(fs.readFileSync(path.join(OUT, 'api-plans.json'), 'utf8'));
-      const diskApiHistory = fs.existsSync(path.join(OUT, 'api-plan-history.json'))
-        ? JSON.parse(fs.readFileSync(path.join(OUT, 'api-plan-history.json'), 'utf8'))
-        : null;
+      const diskApiHistory = distLogView('api-plan-history.json', apiPlanLogSelf);
       const diskHtml = fs.readFileSync(apiPlansPageFile, 'utf8');
       const pageProblems = [
         ...apiPlansPage.assertPageHonesty(diskHtml, diskApiPlans.plans, { providerTable: providers.load().table }),
@@ -4809,10 +4838,8 @@ function selfCheck(built) {
       const diskHtml = fs.readFileSync(hubFile, 'utf8');
       const diskPlans = JSON.parse(fs.readFileSync(path.join(OUT, 'plans.json'), 'utf8'));
       const diskApiPlans = JSON.parse(fs.readFileSync(path.join(OUT, 'api-plans.json'), 'utf8'));
-      const diskPlanHistory = fs.existsSync(path.join(OUT, 'plan-history.json'))
-        ? JSON.parse(fs.readFileSync(path.join(OUT, 'plan-history.json'), 'utf8')) : null;
-      const diskApiPlanHistory = fs.existsSync(path.join(OUT, 'api-plan-history.json'))
-        ? JSON.parse(fs.readFileSync(path.join(OUT, 'api-plan-history.json'), 'utf8')) : null;
+      const diskPlanHistory = distLogView('plan-history.json', planLogSelf);
+      const diskApiPlanHistory = distLogView('api-plan-history.json', apiPlanLogSelf);
       const pageProblems = plansHubPage.assertPageHonesty(diskHtml, {
         plans: diskPlans.plans,
         apiPlans: diskApiPlans.plans,
@@ -4869,8 +4896,7 @@ function selfCheck(built) {
       const diskPlans = JSON.parse(fs.readFileSync(path.join(OUT, 'plans.json'), 'utf8'));
       const diskDeals = JSON.parse(fs.readFileSync(path.join(OUT, 'deals.json'), 'utf8'));
       const diskDealLinks = JSON.parse(fs.readFileSync(path.join(OUT, 'deal-plan-links.json'), 'utf8'));
-      const diskApiHistory = fs.existsSync(path.join(OUT, 'api-plan-history.json'))
-        ? JSON.parse(fs.readFileSync(path.join(OUT, 'api-plan-history.json'), 'utf8')) : null;
+      const diskApiHistory = distLogView('api-plan-history.json', apiPlanLogSelf);
       const diskCtxBase = {
         links: diskLinks,
         apiPlans: diskApiPlans.plans,
@@ -5698,7 +5724,19 @@ function selfCheck(built) {
       if (!noScript.includes(planW.PLAN_CHANGES_LABELS.sectionTitle)) problems.push('changes/ 缺少「套餐变化」分栏标题');
       const planBlock = (noScript.match(/<section class="chgsec pchanges" id="plans">[\s\S]*?<\/section>/) || [])[0] || '';
       if (!planBlock) problems.push('changes/ 缺少套餐变化块');
-      else {
+      else if (built.planRadar.availability !== 'ok') {
+        // t29：套餐变化日志**不可用**时，这一块按纪律只留那一句「没有拿到日志」——
+        // 「不可用」与「没有变化」不许混为一谈（t4/t7 的 e2 口径：不可用时整块不渲染分栏）。
+        // 所以这里判的是**相反方向**：分栏标题与变化行一个都不许出现，而那句说明必须出现。
+        if (!planBlock.includes(planW.PLAN_CHANGES_LABELS.unavailable)) {
+          problems.push('套餐变化日志不可用时没有说清「没有拿到日志」');
+        }
+        for (const key of planChanges.PLAN_CHANGES_SECTION_ORDER) {
+          const label = planW.PLAN_CHANGES_SECTION[key];
+          if (planBlock.includes(label)) problems.push(`套餐变化日志不可用，却出现了分栏「${label}」`);
+        }
+        if (/<li>/.test(planBlock)) problems.push('套餐变化日志不可用，却列出了变化行');
+      } else {
         for (const key of planChanges.PLAN_CHANGES_SECTION_ORDER) {
           const heading = planW.PLAN_CHANGES_SECTION[key] + '（' + (Number(built.planRadar.totals[key]) || 0) + '）';
           if (!planBlock.includes(heading)) problems.push(`套餐变化块缺少分栏标题「${heading}」`);
@@ -5715,9 +5753,6 @@ function selfCheck(built) {
         for (const item of planChanges.itemsOf(built.planRadar)) {
           const sentence = plansPage.escapeHtml(plansPage.planChangeTextOf(item, planSentenceOpts));
           if (!planBlock.includes(sentence)) problems.push(`套餐变化块缺少一条变化：「${sentence}」`);
-        }
-        if (built.planRadar.availability !== 'ok' && !planBlock.includes(planW.PLAN_CHANGES_LABELS.unavailable)) {
-          problems.push('套餐变化日志不可用时没有说清「没有拿到日志」');
         }
         // 深链锚点：每一条套餐变化都要能落到套餐对比页的那一行上
         const plansPageHtml = fs.readFileSync(path.join(OUT, plansPage.PLANS_ROUTE, 'index.html'), 'utf8');
@@ -5741,7 +5776,18 @@ function selfCheck(built) {
       }
       const apiBlock = (noScript.match(/<section class="chgsec apichanges" id="api-plans">[\s\S]*?<\/section>/) || [])[0] || '';
       if (!apiBlock) problems.push('changes/ 缺少 API 价格变化块');
-      else {
+      else if (built.apiPlanRadar.availability !== 'ok') {
+        // t29：与套餐那一块同一口径 —— 日志不可用 ⇒ 只留「没有拿到日志」那一句，
+        // 分栏标题与变化行一个都不许出现（不可用 ≠ 没有变化）。
+        if (!apiBlock.includes(apiW.API_PLAN_CHANGES_LABELS.unavailable)) {
+          problems.push('API 计费变化日志不可用时没有说清「没有拿到日志」');
+        }
+        for (const key of planChanges.PLAN_CHANGES_SECTION_ORDER) {
+          const label = apiW.API_PLAN_CHANGES_SECTION[key];
+          if (apiBlock.includes(label)) problems.push(`API 计费变化日志不可用，却出现了分栏「${label}」`);
+        }
+        if (/<li>/.test(apiBlock)) problems.push('API 计费变化日志不可用，却列出了变化行');
+      } else {
         for (const key of planChanges.PLAN_CHANGES_SECTION_ORDER) {
           const heading = apiW.API_PLAN_CHANGES_SECTION[key] + '（' + (Number(built.apiPlanRadar.totals[key]) || 0) + '）';
           if (!apiBlock.includes(heading)) problems.push(`API 价格变化块缺少分栏标题「${heading}」`);
@@ -5754,10 +5800,6 @@ function selfCheck(built) {
         for (const item of planChanges.itemsOf(built.apiPlanRadar)) {
           const sentence = apiPlansPage.escapeHtml(apiPlansPage.apiPlanChangeTextOf(item));
           if (sentence && !apiBlock.includes(sentence)) problems.push(`API 价格变化块缺少一条变化：「${sentence}」`);
-        }
-        if (built.apiPlanRadar.availability !== 'ok'
-          && !apiBlock.includes(apiW.API_PLAN_CHANGES_LABELS.unavailable)) {
-          problems.push('API 计费变化日志不可用时没有说清「没有拿到日志」');
         }
         // 跨页深链：每一条 API 变化都要落到 **/plans/api/** 的那一行上（不是本页锚点）
         const apiPageHtml = fs.readFileSync(path.join(OUT, apiPlansPage.API_PLANS_ROUTE, 'index.html'), 'utf8');
@@ -6604,10 +6646,8 @@ function selfCheck(built) {
     const diskPlans = JSON.parse(fs.readFileSync(path.join(OUT, 'plans.json'), 'utf8')).plans;
     const diskModels = JSON.parse(fs.readFileSync(path.join(OUT, 'models.json'), 'utf8')).models;
     const diskLinks = JSON.parse(fs.readFileSync(path.join(OUT, 'model-registry-links.json'), 'utf8')).links;
-    const diskPlanHistory = fs.existsSync(path.join(OUT, 'plan-history.json'))
-      ? JSON.parse(fs.readFileSync(path.join(OUT, 'plan-history.json'), 'utf8')) : null;
-    const diskApiHistory = fs.existsSync(path.join(OUT, 'api-plan-history.json'))
-      ? JSON.parse(fs.readFileSync(path.join(OUT, 'api-plan-history.json'), 'utf8')) : null;
+    const diskPlanHistory = distLogView('plan-history.json', planLogSelf);
+    const diskApiHistory = distLogView('api-plan-history.json', apiPlanLogSelf);
     const vendorEntries = built.directoryPages.filter(page => page.kind === 'vendor');
     for (const spec of vendorEntries) {
       const file = path.join(OUT, spec.route, 'index.html');
