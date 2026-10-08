@@ -1,0 +1,36 @@
+{
+  "what": "本报告引用的两次 CI `gate`（都不是「master 的每一次」，只是被引用的那两个）+ 中间那次被取消的 master 运行",
+  "pr62": {
+    "run": 37760907386,
+    "job": 113256788677,
+    "name": "Verify site (gate)",
+    "branch": "p2-residuals-v1",
+    "headSha": "f96f4bf",
+    "conclusion": "success",
+    "startedAt": "2026-10-08T10:03:21Z",
+    "completedAt": "2026-10-08T10:07:55Z",
+    "durationSeconds": 274,
+    "jobLevelSteps": 8,
+    "innerGroups": 51,
+    "errors": 0,
+    "url": "https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/37760907386"
+  },
+  "masterSameTree": {
+    "run": 37762919782,
+    "name": "Verify site (gate)",
+    "branch": "master",
+    "headSha": "95dfeb9",
+    "conclusion": "success",
+    "createdAt": "2026-10-08T10:21:22Z",
+    "url": "https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/37762919782"
+  },
+  "masterMergeOf62": {
+    "run": 37761851998,
+    "name": "Verify site (gate)",
+    "branch": "master",
+    "headSha": "33d2472",
+    "conclusion": "cancelled",
+    "createdAt": "2026-10-08T10:11:40Z",
+    "note": "这是 #62 合并后 master 上的那次 gate：被后续 push 的并发策略取消（同分支后一次运行取代前一次）。PR #62 自己的 gate 是 success"
+  }
+}

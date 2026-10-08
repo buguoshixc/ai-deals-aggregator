@@ -1,0 +1,28 @@
+{
+  "what": "产物变化面：跑前（手工 `node scripts/tools/build-local.js`）vs 跑后（Full Gate 第 36 步重建）",
+  "before": {
+    "files": 304,
+    "bytes": 20386654,
+    "treeDigest": "67d1d0bdcdffe29f1b2bd0185c35408da897d53d20e44c495fec385f7ec1337d",
+    "manifestSha256": "2b8fe49fa776a8789e592d79fb507c2c1e9cac233801a9425b4e9e8f55f638de"
+  },
+  "after": {
+    "files": 304,
+    "bytes": 20386654,
+    "treeDigest": "67d1d0bdcdffe29f1b2bd0185c35408da897d53d20e44c495fec385f7ec1337d",
+    "manifestSha256": "2b8fe49fa776a8789e592d79fb507c2c1e9cac233801a9425b4e9e8f55f638de"
+  },
+  "onlyBefore": [],
+  "onlyAfter": [],
+  "differing": [],
+  "verdict": "逐文件相同：304/304（全树摘要与清单摘要都相同 ⇒ Gate 不改产物）",
+  "why304Not303": {
+    "t4TreeFiles": 303,
+    "nowFiles": 304,
+    "onlyNow": [
+      "_notes.ndjson"
+    ],
+    "onlyT4": [],
+    "reading": "PR #62 之后 master 又落了 #63（notes-manifest-v1）：产物多了 `_notes.ndjson` ⇒ 304 = 303 + 1"
+  }
+}
