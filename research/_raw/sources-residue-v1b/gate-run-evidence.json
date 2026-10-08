@@ -4,7 +4,7 @@
   "source": "node scripts/test/run.js --gate（解析 .github/actions/gate/action.yml 并按顺序执行，唯一一份步骤定义）",
   "logFile": "_full-gate.log",
   "declaredSteps": "门禁步骤（读自 .github/actions/gate/action.yml）：52 个",
-  "totals": "合计 308.9s / 48 个脚本，失败 0",
+  "totals": "合计 313.9s / 48 个脚本，失败 0",
   "failureCount": 0,
   "skippedNonNodeSteps": [
     "跳过的 4 个非 node 步骤（本地无意义或需要 bash/网络）：",

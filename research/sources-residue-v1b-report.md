@@ -361,3 +361,60 @@ rebase 到最新 master（`26c6614`）**之前**还跑过一次同样全过的�
    它是 t16 的历史读数；迁址后的现状以本报告 §7 与 `research/_raw/sources-residue-v1b/README.md` 为准。
 5. **判据的语义边界**：第 7、8 条检查是「`plans-page.js` 仍原样透传 / `api-plans-page.js` 没有 `case 'sourceUrl':`」——
    如果将来 plans 侧改成在**别处**拼一个标签，这两条机械核对可能看不见。边界写在这里，不假装它覆盖一切。
+
+---
+
+## 8. 范围补正与合并后再确认（t21 / 修复轮）
+
+t18 的交付被判 `failed` 的唯一原因是**范围冲突**（不是读数或实现问题）。captain 裁定 **(A)**：把两张登记表
+正式纳入声明面，并用本任务（t21，kind=repair）在**合并后的 master** 上再确认一次。
+
+### 8.1 范围补正：两条登记表
+
+| 表 | 文件:行 | 改了什么 | 为什么必须 | diff |
+|---|---|---|---|---|
+| **冻结表** | `scripts/tools/check-ci-consistency.js:205`（`GATE_STEP_NAMES`）+ `:350`（`GATE_STEP_RUN`） | 各追加一条：步骤名 `Roles-note self-test (official_urls note vs live wording)` 与它的 run 体指纹 `node scripts/tools/roles-note-selftest.js` | 门禁步骤的**名字序列与 run 体**都冻在这张表里；(10) 会逐项比对，不登记即红 | **+7 / −0** |
+| **分层表** | `scripts/test/layers.js:69`（L2） | 追加 `selftest:roles-note` | `fitness` ④ 要求「每个 `selftest:*` 恰好属于一层」 | **+1 / −0** |
+
+**原契约下「只动 in-scope」与「`check:ci` 39/0」不可兼得** —— 实测的反证（只登记 `action.yml`、两张表不动）：
+
+```
+✗ (10) gate 复合 action 存在且步骤名序列等于冻结清单 — #19 期望「App-token self-test」实得
+      「Roles-note self-test (official_urls note vs live wording)」；#20 期望「AI layer self-test」实得「App-token self-test」…
+❌ CI 口径检查 39 项，失败 1 项            （exit 1；`fitness` ④ 同样会红）
+```
+
+两处都是**纯追加**（`git diff --numstat` = +7/−0 与 +1/−0，删除行数 0，另加注释），
+**没有删改任何既有断言**：`--expect-checks=39` 通过、(W) 仍是「实跑 38 条 = 冻结清单 38 条 + 本看门狗」。
+⇒ 这两张表**是 captain 裁定 (A) 后纳入声明面的**；t18 的 failed 记的是那次范围冲突，不是交付缺陷。
+
+### 8.2 合并后再确认（基线 `origin/master` `d19017af04051048e0565af6c3675f3faf75cb6a`，含 PR #78）
+
+| 项 | 命令 | 读数 |
+|---|---|---|
+| 判据独立复跑 | `npm run selftest:roles-note` | ✅ **8 项通过 / 0 失败 · exit 0**（现场读数：live 标签=「收录渠道」· 注里出现=是 · 旧称残留=否 · 前端副本一致=是 · plans 侧原样透传=是 · api-plans 标签表=无） |
+| CI 口径 | `node scripts/tools/check-ci-consistency.js --expect-checks=39` | ✅ **39 项 / 0 失败 · exit 0**；`✓ (10) … action.yml 共 52 步：名字序列 / run 体指纹 / 步骤级 if / 无 continue-on-error 全过`；`✓ (W) 实跑 38 条 = 冻结清单 38 条 + 本看门狗`；`✓ (E) == --expect-checks=39` |
+| 架构不变量 | `npm run fitness` | ✅ **4 条 / 0 失败 · exit 0**；`✓ ④ 分层表完整性 … 42 个 script 分在 5 层，26 个 selftest:* 全部已分层` |
+| 证据政策 | `npm run check:evidence` | ✅ 无新增 Tier-3（1283 grandfather）· 清单自证与基线 `e0ca04a` 逐项一致 |
+| **本机 Full Gate** | `npm run gate`（= `node scripts/test/run.js --gate`，解析 `action.yml` 并按顺序执行） | ✅ **52 个门禁步骤 / 48 个脚本 / 313.9s / 失败 0 / exit 0**；日志含 **`✓     0.1s  [19] Roles-note self-test (official_urls note vs live wording)`**；归档 `gate-run-evidence.json`（实跑 40 条步骤行 / 失败 0 / 本步骤 [19] ✓） |
+| PR #78 的 PR 级门禁 | `gh run view 37770554206` | `name=Verify site (gate)` · `event=pull_request` · `status=completed` · **`conclusion=success`** |
+
+**三段实跑**：按 captain 指示**不重跑**，读数仍然有效 —— 证据文件 `roles-note-gate-3phase.json`：
+① 干净树 **8/0 exit 0**（`official_urls.json` sha256 `d2197a952a74cf96…`）→ ② 沙箱把括注改回旧称 **6/2 exit 1**（sha256 `3327de0756ebed8a…`）
+→ ③ `--restore` 逐字节还原 → **8/0 exit 0**（sha256 与 ① 相同，`restoredByteExact=true`）。
+合并后的**再验证**：在 `d19017a` 上重算 `scripts/data/official_urls.json` 的 sha256 = `d2197a952a74cf96…`，与 ① / ③ 记录**逐字相同** ⇒ 三段读数与合并后的树对得上。
+
+### 8.3 供 `docs/DESIGN-RULES.md` N8 照抄的两项（captain 要的原文）
+
+- **脚本路径**：`scripts/tools/roles-note-selftest.js`
+- **npm 脚本名**：`selftest:roles-note`（`package.json:34` → `node scripts/tools/roles-note-selftest.js`）
+- **门禁步骤名**（逐字，含括号）：`Roles-note self-test (official_urls note vs live wording)`
+- **该步骤的 run 体**（逐字）：`node scripts/tools/roles-note-selftest.js`
+- 登记面：`.github/actions/gate/action.yml:208`（排在 `Audience self-test` 之后）· 冻结表 `scripts/tools/check-ci-consistency.js:205` + `:350` · 分层表 `scripts/test/layers.js:69`（L2）
+
+### 8.4 本节改了哪些已合并内容
+
+**没有改任何已合并的代码**：`scripts/tools/roles-note-selftest.js`、`scripts/tools/check-ci-consistency.js`、
+`scripts/test/layers.js`、`.github/actions/gate/action.yml`、`package.json` 在 `d19017a` 上**逐字节未动**
+（再确认只是**重跑**它们）。本任务只新增/更新三项：本节（§8）、`post-merge-reconfirm.json`、
+按合并后基线重新生成的 `gate-run-evidence.json`。
