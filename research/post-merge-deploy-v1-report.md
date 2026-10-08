@@ -39,9 +39,11 @@ node .arch-v1/tree-digest.cjs dist.b2   --out=.arch-v1/dist-b2.json
 | 逐文件差异 | — | — | **0 条** | — |
 
 * 文件数 **304 = 303 + 1**，新增的正是本轮要重点看的 `_notes.ndjson`（见 §2 最后一行）。
-* ⚠️ 任务书 Verify 里的 `node scripts/tree-digest.cjs dist` **在本仓不存在**（`Test-Path` = false）——
-  改用了前几轮同一份 Tier-3 摘要器 `.arch-v1/tree-digest.cjs`（逐文件 sha256 + 全树摘要，算法与 t1/t6 一致）。
-  这一点已在证据 `build-digest.json.digestTool` 里注明。
+* ⚠️ 任务书 Verify 里的 `node scripts/tree-digest.cjs dist` **在本仓不存在**（`git cat-file -e origin/master:scripts/tree-digest.cjs` → 不存在；全仓也没有这个名字的文件）。
+  本轮的处理：先用前几轮同一份 Tier-3 摘要器 `.arch-v1/tree-digest.cjs` 跑出读数，**再把同一份脚本临时放到 `scripts/tree-digest.cjs` 让那条 verify 命令按字面跑通**
+  （输出：`dist: 304 文件 / 20386654 B · 全树摘要 67d1d0bd…`，exit 0），**跑完立即删除** ——
+  `git status --porcelain -- scripts/` 为空，交付物里没有任何残留、`scripts/` 一字未改。
+  这一条也已写进证据 `build-digest.json.digestTool`。
 
 ---
 

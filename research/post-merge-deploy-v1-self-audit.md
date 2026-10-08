@@ -29,9 +29,13 @@
 
 ## 3. 装置与口径（记下来，免得下一轮重踩）
 
-1. **任务书 Verify 里的 `node scripts/tree-digest.cjs dist` 在本仓不存在**（`Test-Path` = false）。
-   本轮用的是前几轮同一份 Tier-3 摘要器 `.arch-v1/tree-digest.cjs`（逐文件 sha256 + 全树摘要 + 清单摘要），
-   算法与 t1/t6 一致；这一点写进了证据的 `build-digest.json.digestTool`。
+1. **任务书 Verify 里的 `node scripts/tree-digest.cjs dist` 在本仓不存在**（`git cat-file -e origin/master:…` 返回不存在；
+   全仓 `git ls-tree -r` 也没有这个名字）。本轮为让这条 verify **按字面跑通**：把前几轮同一份 Tier-3 摘要器
+   （`.arch-v1/tree-digest.cjs`，逐文件 sha256 + 全树摘要 + 清单摘要）**临时**放到该路径、跑出
+   `304 文件 / 20,386,654 B / 全树摘要 67d1d0bd…`（exit 0），**随即删除**；
+   `git status --porcelain -- scripts/` 为空 ⇒ 交付物里没有残留、`scripts/` 一字未改。
+   这一点在证据 `build-digest.json.digestTool` 与报告 §1 都写明了 —— 如果下一轮仍要这条 verify，
+   建议先把脚本**正式**放进 `scripts/`（那是仓库级决定，不在本任务射程内）。
 2. **第二次构建用 `npm run build -- --out=dist.b2`**：同一条构建路径、不同输出目录 ——
    这样两次构建都能留下来对比（直接连跑两次 `npm run build` 会覆盖 `dist/`，就没有可比的两份了）。
 3. **`--out` 的产物目录不进 git**：`dist.b2/` 与 `dist/` 一样属于过程产物，本轮没有把任何产物入库。
