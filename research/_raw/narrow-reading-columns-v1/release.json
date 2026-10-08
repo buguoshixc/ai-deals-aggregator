@@ -123,5 +123,87 @@
     "manifestSha256": "1398a352c12aa8939a6c1602d5073da821e3140397deedee92349c13dcd07c12",
     "changedFiles": ["plans/coding/index.html"],
     "note": "本工作树从 origin/master（ef395c0c）重建 dist：303 文件 / 20282063 B / 全树摘要 75ecb983…，与报告 §4 与自审 C5 登记的改后读数一致（独立复现，不是引用）"
+  },
+  "postMergeRedeploy": {
+    "what": "PR #60 合并自己又触发的一轮 master 门禁 + Deploy 的复核（captain 追加项）：确认「纯 research 改动」不会改变线上字节",
+    "runs": {
+      "masterGate": {
+        "run": 37757338613,
+        "event": "push",
+        "headSha": "4b366d27339123c1e1f826d2a011e3be422f64fa",
+        "conclusion": "success",
+        "startedAt": "2026-10-08T09:32:18Z",
+        "finishedAt": "2026-10-08T09:37:37Z"
+      },
+      "deploy": {
+        "run": 37757338531,
+        "event": "push",
+        "headSha": "4b366d27339123c1e1f826d2a011e3be422f64fa",
+        "conclusion": "success",
+        "startedAt": "2026-10-08T09:32:18Z",
+        "finishedAt": "2026-10-08T09:37:56Z",
+        "jobs": {
+          "prepublish": { "conclusion": "success", "startedAt": "2026-10-08T09:32:21Z", "finishedAt": "2026-10-08T09:37:27Z" },
+          "build": { "conclusion": "success", "startedAt": "2026-10-08T09:37:30Z", "finishedAt": "2026-10-08T09:37:40Z" },
+          "deploy": { "conclusion": "success", "startedAt": "2026-10-08T09:37:45Z", "finishedAt": "2026-10-08T09:37:55Z" }
+        }
+      }
+    },
+    "distUnchanged": {
+      "files": 303,
+      "bytes": 20282063,
+      "treeDigest": "75ecb98344a855b7a72df9df83440b9ebb33eacd3daaa2821f7e4e653fd003a2",
+      "manifestSha256": "1398a352c12aa8939a6c1602d5073da821e3140397deedee92349c13dcd07c12",
+      "note": "与我 pre-#60 的重建逐字节相同（同一份全树摘要）；本工作树 HEAD 的树与 origin/master（4b366d2）比较 `git diff` 为空"
+    },
+    "rerun": {
+      "file": "research/_raw/narrow-reading-columns-v1/online-smoke-post60-retry.json",
+      "startedAt": "2026-10-08T09:39:49.141Z",
+      "finishedAt": "2026-10-08T09:40:00.705Z",
+      "verdict": "PASS",
+      "problems": [],
+      "http200": "14/14",
+      "byteIdentical": "14/14",
+      "fieldDiffsVsPreMergeReading": 0,
+      "comparedAgainst": "research/_raw/narrow-reading-columns-v1/online-smoke.json（ef395c0c 部署后那份）",
+      "note": "逐路由 × 10 字段（status/onlineSha256/localSha256/bytes/localBytes/sameBytes/canonicalSelf/frozenCount/verticalLeak/snoteCount）= 0 处差异 ⇒ 这次 redeploy **没有改变线上字节**；captain 也用自写比对器独立得到同样的 0 差异"
+    },
+    "transient": {
+      "firstRerunFile": "research/_raw/narrow-reading-columns-v1/online-smoke-post60.json",
+      "at": "2026-10-08T09:38:51Z",
+      "when": "该轮 Deploy 的 deploy job（09:37:55Z 结束）之后约 56 秒",
+      "route": "category/agent/",
+      "status": 503,
+      "bytes": 54887,
+      "bodySha256": "27927b33ebee49d7f096737f4a7dab00e26a6e03c5490c66377bcaf383a247a4",
+      "verdictOfThatRun": "FAIL",
+      "problems": [
+        "category/agent/: HTTP 503",
+        "category/agent/: 线上与本地产物**不是同一份字节**（online 27927b33ebee / local 60d647220a96）",
+        "category/agent/: canonical 不是自指（）",
+        "category/agent/: 冻结串 0 次（应为恰好 1 次）"
+      ],
+      "onlyThisRoute": true,
+      "otherRoutesInThatRun": "13 条 200 且逐字节相同",
+      "bodyRetained": false,
+      "bodyRetainedNote": "**响应体未留存**：探针脚本只在响应非 200 时把正文写盘，而随后的探测都是 200，因此那一刻的 503 正文已经取不回来。留存的只有 status / 字节数 / sha256 三个实测值。",
+      "followUpProbe": {
+        "at": "2026-10-08T09:39:33.973Z",
+        "attempts": 4,
+        "statuses": [200, 200, 200, 200],
+        "sha256": "60d647220a96db8240471881d2370d3f519413416fa192c0f453ecfdc740e554",
+        "bytes": 94764,
+        "xCache": ["MISS", "HIT", "HIT", "HIT"],
+        "lastModified": "Thu, 08 Oct 2026 09:37:50 GMT",
+        "xServedBy": "cache-nrt-rjtf7700035-NRT",
+        "artifact": ".arch-v1/probe-category_agent_.json"
+      },
+      "attribution": "unknown",
+      "attributionNote": "不写成「边缘冷启动」这类成因结论 —— 没有能证伪它的观测。",
+      "captainCheck": "captain 把 27927b33… / 54887B 在 dist 全树里逐个哈希查过（先按尺寸筛再算哈希），**无一命中** ⇒ 该正文不是本仓产物的任何文件。出处：captain 复核。",
+      "impact": "不削弱本轮的部署证据（部署事实由 pre/post 两份 sha 与 captain 用 1c02d84 / ef395c0c 两次独立重建共同支撑）；它是一个**未归因的路由级瞬态**，已留 status + 字节数 + sha256。"
+    },
+    "harnessNote": "装置已知瑕疵（不影响任何判据）：冒烟脚本的 `h1` 字段用裸正则读，首页会先命中 dist/index.html 内 CSS 注释里的字面 `<h1>` —— 所以首页那几页的 `h1` 文本无意义。`h1` 不是冒烟判据（判据是逐字节相同 + 200 + canonical 自指 + 冻结串恰好 1 次 + 无竖排泄漏 + 载体页说明条数），出货门禁 verify-site.js 走真 DOM，不受影响。本轮**没有改**装置，以免新旧读数不可比。",
+    "filesUntouched": "本段只**新增** `postMergeRedeploy` 一个键；online-smoke-predeploy.json 与 online-smoke.json 未改一字节，release.json 原有键也一律未动。"
   }
 }
