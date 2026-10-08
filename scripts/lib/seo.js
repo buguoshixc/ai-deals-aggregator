@@ -185,8 +185,13 @@ function stripless(html) {
     .replace(/<style[\s\S]*?<\/style>/gi, ' '));
 }
 
+/**
+ * 通用属性读法。**目前 0 个调用点、也未导出**（`seo.js` 的决策路径全部走上面那些命名的读点），
+ * 所以它不是 t5 的 A1 清单里的「决定点」；本轮按同一条纪律把它也接到 `stripless()` 上 ——
+ * 免得哪天有人拿它写第四处读点，复活成一个注释伪造面。
+ */
 function attr(html, name) {
-  const match = String(html || '').match(new RegExp(`${name}="([^"]*)"`));
+  const match = stripless(html).match(new RegExp(`${name}="([^"]*)"`));
   return match ? decodeEntities(match[1]) : '';
 }
 

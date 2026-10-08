@@ -913,6 +913,38 @@ section('九、判据读的文本必须先剥注释（judge-hardening-v1b：t5 �
     links.length === 2 && links.includes('x/kept/') && links.includes('x/single/') && !links.includes('x/shadow/'),
     links.join(' · '));
 
+  /**
+   * **矩阵**（A1 的系统化版本）：对每个命名读点，把同一份标记「注释掉」与「根本不存在」两种输入
+   * 分别喂进去，断言**读数逐点相同**。比「逐点写一条」更耐改：新增读点只要漏剥注释，
+   * 这里就会以「注释版 ≠ 不存在版」的形式红出来，而不是等某个产物级判据偶然撞上。
+   */
+  const ABSENT_MATRIX = [
+    ['titleOf', TITLE],
+    ['canonicalOf', CANON],
+    ['descriptionOf', '<meta name="description" content="影子">'],
+    ['robotsOf', ROBOTS],
+    ['h1Count', H1],
+    ['rowMarkers', '<tr data-item="shadow"></tr>']
+  ];
+  const matrixRows = ABSENT_MATRIX.map(([fn, fragment]) => {
+    const commented = fn === 'rowMarkers' ? seoL[fn](`<!-- ${fragment} -->`, 'item') : seoL[fn](`<!-- ${fragment} -->`);
+    const absent = fn === 'rowMarkers' ? seoL[fn]('', 'item') : seoL[fn]('');
+    return { fn, commented: JSON.stringify(commented), absent: JSON.stringify(absent), same: JSON.stringify(commented) === JSON.stringify(absent) };
+  });
+  check('【A1 矩阵】六个命名读点：注释里的副本 == 该标记根本不存在（逐点相等；漏剥即红）',
+    matrixRows.every(row => row.same),
+    matrixRows.map(row => `${row.fn}${row.same ? '=' : '≠'}${row.commented}`).join(' · '));
+
+  check('【A1 矩阵】JSON-LD 与站内链接两个读点同理（注释版 == 不存在版）',
+    (() => {
+      const commentedBlocks = seoL.jsonLdBlocks(`<!-- ${jsonLd(ITEM)} -->`).blocks.length;
+      const absentBlocks = seoL.jsonLdBlocks('').blocks.length;
+      const commentedLinks = seoL.internalLinks('<!-- <a href="shadow/">c</a> -->', 'x/').length;
+      const absentLinks = seoL.internalLinks('', 'x/').length;
+      return commentedBlocks === absentBlocks && commentedLinks === absentLinks;
+    })(),
+    'jsonLdBlocks / internalLinks 两点逐点对账');
+
   const verifySource = fs.readFileSync(path.join(ROOT, 'scripts/tools/seo-verify.js'), 'utf8');
   check('【护栏】`seo-verify.js` 的 sitemap / strip / itemListOf 三处都经过 `seo.stripComments`（谁改回去，这条立刻红）',
     /seo\.stripComments\(sitemapXml\)/.test(verifySource)
