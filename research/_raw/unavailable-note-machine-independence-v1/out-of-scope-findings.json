@@ -1,0 +1,18 @@
+{
+  "finding": "plan-history.json / api-plan-history.json 缺失（或损坏）时，构建在「Dataset Manifest」那一步就死 —— 到不了 logUnavailableNote()，因此这两份数据集的 updatedAtNote 目前不可达",
+  "planHistoryMissing": {
+    "command": "临时移走 scripts/data/plan-history.json 后 node scripts/tools/build-local.js --out=.arch-v1/t27/dist-probe-x",
+    "exitCode": 1,
+    "error": "TypeError: Cannot read properties of null (reading 'schemaVersion')",
+    "frame": "scripts/tools/build-local.js:4216（assemble ⇒ buildManifestFromRegistry）"
+  },
+  "apiPlanHistoryMissing": {
+    "command": "临时移走 scripts/data/api-plan-history.json 后同一条命令",
+    "exitCode": 1,
+    "error": "TypeError: Cannot read properties of null (reading 'schemaVersion')",
+    "frame": "scripts/tools/build-local.js:4216/4220",
+    "log": ".arch-v1/t27/probe-api-missing.log（Tier-3，本机）"
+  },
+  "whyDealHistoryIsDifferent": "lib/history.js:257 有 `store: result.store || emptyStore()` 兜底；lib/plan-history.js / lib/api-plan-history.js 直接返回 core.load() 的结果（缺失 ⇒ store: null），build-local.js:4216/4220 直接取 .schemaVersion",
+  "scopeNote": "build-local.js 与 lib/plan-history.js 的加载器都不在 t27 的 in-scope 里（in-scope 只有三个 lib 文案文件），未改；已交 captain 排期"
+}
