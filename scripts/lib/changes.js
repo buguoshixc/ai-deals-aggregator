@@ -553,9 +553,83 @@ function summarize(radar) {
 // 这里放的是**纯函数**：构建期（`build-local.js`）与独立门禁都从这里取同一条规则；
 // `seo-selftest.js` 直接对它们开牙（空值必须显式登记、可用时不许登记、日期顶替即红）。
 
-/** 如实说明：与页面上的措辞同源（都点明「不表示没有变化」） */
+/* ------------------------------------------------------------------ */
+/* 说明的**机器无关性**（t27：`unavailable-note-machine-independence-v1`）  */
+/* ------------------------------------------------------------------ */
+//
+// 背景（t19 独立复核的观察 O1）：`logUnavailableNote()` 原先直接印加载器给的
+// `item.file`，而三个加载器的 `file` 都是 `path.join(__dirname, …)` 算出来的**绝对路径**，
+// 于是这份「如实说明」里嵌进了宿主路径，实测形如：
+//   `本次构建没有拿到 D:\…\scripts\data\deal-history.json（文件缺失）——…`
+// 两个后果：① 该形态的产物**跨机器不可逐字节复现**（同一份源码在两台机器上构建出的
+// `data/index.json` 不同）；② `/docs/data/` 与数据出口 endpoint 是**公开面**，等于把
+// 构建机的目录结构发布出去。判据只要求说明里含「没有拿到」（这条一个字不改），
+// 说明**点哪一份日志**用 basename 就够读者读懂了。
+//
+// ⚠️ 这里同时给出**判据**（`machineDependenceProblems()`）：修文案不改判据的话，下一次
+// 有人把绝对路径拼进说明仍然是静默失效。两个诚实性检查函数都会调用它（构建期 + 独立门禁）。
+
+/**
+ * 只留文件名：说明里点名的对象必须是**机器无关**的 basename。
+ *
+ * 刻意不用 `path.basename()`：它在 POSIX 上不认 `\`，而这个站的产物要在任何机器上逐字节相同 ——
+ * 两种分隔符都得切。`D:\a\b\deal-history.json` 与 `/a/b/deal-history.json` 都应得
+ * `deal-history.json`。
+ */
+function noteFileLabel(file) {
+  const value = String(file == null ? '' : file);
+  const parts = value.split(/[\\/]/).filter(Boolean);
+  return parts.length ? parts[parts.length - 1] : value;
+}
+
+/**
+ * 把一段文本里出现的**宿主绝对路径**压成 basename（盘符 / UNC / POSIX 绝对路径三种形态）。
+ *
+ * 加载器的 `broken` 字段在少数失败形态下是 `fs` 的错误文本（`EPERM: … open 'D:\…'`），
+ * 也会带出宿主路径；所以 `reason` 一并过这道。规则刻意**只认"绝对路径形状"**：
+ * 路径必须以字符串开头、空白或引号/括号起始 —— 免得把 `https://…` 这类 URL 误伤成路径。
+ *
+ * 两步走，第 ① 步是**实测教训**换来的：只做第 ② 步时，`open 'D:\…\Code\AI Page\scripts\data\deal-history.json'`
+ * 会在空格处截断，留下 `'AI Page\scripts\data\deal-history.json'` —— 判据随即把它抓红
+ * （fail-closed 是对的，但构建会因为"说明写不干净"而失败）。本仓库自己的目录就叫 `AI Page`，
+ * 所以"引号里的路径允许含空格"这一步是必须的。
+ */
+function machineIndependentText(text) {
+  const value = String(text == null ? '' : text);
+  return value
+    // ① 引号里的路径：整段（**允许含空格**）压成 basename
+    .replace(/(['"`])((?:[A-Za-z]:[\\/]|\\\\|\/)[^'"`\n]*)\1/g,
+      (match, quote, hit) => `${quote}${noteFileLabel(hit)}${quote}`)
+    // ② 没有引号的路径（保守：遇到空白就停，宁可少压一点 —— 剩下的由判据兜底变红）
+    .replace(/(^|[\s"'`（(【「])((?:[A-Za-z]:[\\/]|\\\\|\/)[^\s"'`）)】」]*)/g,
+      (match, prefix, hit) => `${prefix}${noteFileLabel(hit)}`);
+}
+
+/** 说明里**不许出现**的机器相关形状。逐条给名字，红的时候能直接说出犯的是哪一条。 */
+const MACHINE_DEPENDENT_SHAPES = [
+  ['Windows 盘符绝对路径', /(^|[^A-Za-z0-9])[A-Za-z]:[\\/]/],
+  ['UNC 路径', /\\\\[^\s]/],
+  ['反斜杠目录段', /\\[A-Za-z0-9_.-]+\\/],
+  ['POSIX 绝对路径', /(^|[\s"'`（(【「])\/(?:[^\s"'`）)】」]+\/)+[^\s"'`）)】」]*/],
+  ['家目录记号 ~', /~[\\/]/]
+];
+
+/**
+ * 判据：一段自由文本里有没有机器相关形状（返回命中的形状名列表，空数组 = 机器无关）。
+ *
+ * 它不判断"文案写得好不好"，只判断**可复现性**：同一份源码在任何机器、任何目录下构建，
+ * 这串字符都必须相同。
+ */
+function machineDependenceProblems(text) {
+  const value = String(text == null ? '' : text);
+  return MACHINE_DEPENDENT_SHAPES.filter(([, pattern]) => pattern.test(value)).map(([label]) => label);
+}
+
+/** 如实说明：与页面上的措辞同源（都点明「不表示没有变化」），且**机器无关** */
 function logUnavailableNote(item) {
-  return `本次构建没有拿到 ${item.file}（${item.reason || '缺失或损坏'}）——这份数据集的更新时间不可公布，`
+  const file = noteFileLabel(item.file);
+  const reason = machineIndependentText(item.reason || '缺失或损坏');
+  return `本次构建没有拿到 ${file}（${reason}）——这份数据集的更新时间不可公布，`
     + '这不表示「没有变化」。';
 }
 
@@ -632,6 +706,12 @@ function logDatasetHonestyProblems(manifest, availability = []) {
     if (!dataset.updatedAtNote || !dataset.updatedAtNote.includes('没有拿到')) {
       problems.push(`${dataset.id}: 必须给出「没有拿到日志」的如实说明（updatedAtNote）`);
     }
+    // 说明必须**机器无关**：产物要在任何机器、任何目录下**逐字节相同**（t27）。
+    // 这条只管形状（盘符 / UNC / POSIX 绝对路径 / `~`），不管文案好坏；失败方向是红。
+    for (const shape of machineDependenceProblems(dataset.updatedAtNote)) {
+      problems.push(`${dataset.id}: updatedAtNote 含机器相关形状「${shape}」——`
+        + '不可用说明必须跨机器可复现（日志名只写 basename，不许出现宿主绝对路径）');
+    }
   }
   return problems;
 }
@@ -679,6 +759,11 @@ function logDatasetDiskHonestyProblems(manifest, actualUpdatedAt = {}) {
       if (!dataset.updatedAtNote || !dataset.updatedAtNote.includes('没有拿到')) {
         problems.push(`${dataset.id}: 必须给出「没有拿到日志」的如实说明（updatedAtNote）`);
       }
+      // 独立门禁这一侧也钉住机器无关性：构建期漏了，`verify:seo` 仍会红（t27）。
+      for (const shape of machineDependenceProblems(dataset.updatedAtNote)) {
+        problems.push(`${dataset.id}: updatedAtNote 含机器相关形状「${shape}」——`
+          + '不可用说明必须跨机器可复现（日志名只写 basename，不许出现宿主绝对路径）');
+      }
       if (real !== null && real !== undefined) {
         problems.push(`${dataset.id}: 登记为不可用，但盘上的数据文件带着时间 ${real} —— 登记与产物不一致`);
       }
@@ -696,6 +781,9 @@ function logDatasetDiskHonestyProblems(manifest, actualUpdatedAt = {}) {
 module.exports = {
   CHANGES_WORDING,
   logUnavailableNote,
+  noteFileLabel,
+  machineIndependentText,
+  machineDependenceProblems,
   logAvailabilityOf,
   markUnavailableLogDatasets,
   logDatasetHonestyProblems,
