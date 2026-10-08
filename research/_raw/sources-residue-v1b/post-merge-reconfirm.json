@@ -1,0 +1,102 @@
+{
+  "task": "roles-note-tooth-v1 范围补正（t21）",
+  "kind": "repair",
+  "sourceTaskId": "t18",
+  "date": "2026-10-08",
+  "base": {
+    "ref": "origin/master（含 PR #78 合并提交）",
+    "commit": "d19017af04051048e0565af6c3675f3faf75cb6a",
+    "note": "t18 的交付已由 captain 合并为 #78 = d19017a；本任务 = 范围补正后的再确认，未改动任何已合并内容（除本报告新增一节与证据文件）"
+  },
+  "scopeCorrection": {
+    "captainRuling": "(A) 放宽范围：把两张登记表纳入声明面",
+    "why": "这条牙只能靠两处登记表才进得去门禁；原契约（只动 in-scope）与「check:ci 39/0」不可兼得",
+    "tables": [
+      {
+        "file": "scripts/tools/check-ci-consistency.js",
+        "what": "冻结表 GATE_STEP_NAMES（步骤名序列）与 GATE_STEP_RUN（run 体指纹）各追加一条",
+        "lines": [205, 350],
+        "diff": "+7 / -0（删除行数 0）"
+      },
+      {
+        "file": "scripts/test/layers.js",
+        "what": "分层表 L2 的 script 列表追加 selftest:roles-note",
+        "lines": [69],
+        "diff": "+1 / -0（删除行数 0）"
+      }
+    ],
+    "counterfactualRed": {
+      "state": "只登记 action.yml、两张表不动",
+      "observed": "✗ (10) gate 复合 action 存在且步骤名序列等于冻结清单 — #19 期望「App-token self-test」实得「Roles-note self-test (official_urls note vs live wording)」；#20 期望「AI layer self-test」实得「App-token self-test」…；❌ CI 口径检查 39 项，失败 1 项（exit 1）",
+      "also": "fitness ④（每个 selftest:* 必须恰好属于一层）同样会红"
+    }
+  },
+  "registrationFacts": {
+    "scriptPath": "scripts/tools/roles-note-selftest.js",
+    "npmScript": "selftest:roles-note（package.json:34 → node scripts/tools/roles-note-selftest.js）",
+    "gateStepName": "Roles-note self-test (official_urls note vs live wording)",
+    "gateStepRun": "node scripts/tools/roles-note-selftest.js",
+    "gateStepLocation": ".github/actions/gate/action.yml:208（排在 Audience self-test 之后）",
+    "frozenTables": "scripts/tools/check-ci-consistency.js:205（GATE_STEP_NAMES）+ :350（GATE_STEP_RUN）",
+    "layerTable": "scripts/test/layers.js:69（L2）"
+  },
+  "postMergeReadings": {
+    "selftest": {
+      "command": "npm run selftest:roles-note",
+      "exitCode": 0,
+      "observed": "✅ roles-note 自测：8 项通过，0 项失败",
+      "liveReadings": "live 标签=「收录渠道」· 注里出现=是 · 旧称残留=否 · 前端副本一致=是 · plans 侧原样透传=是 · api-plans 标签表=无"
+    },
+    "checkCi": {
+      "command": "node scripts/tools/check-ci-consistency.js --expect-checks=39",
+      "exitCode": 0,
+      "observed": "✅ CI 口径检查 39 项，失败 0 项",
+      "assertion10": "✓ (10) gate 复合 action 存在且步骤名序列等于冻结清单 — .github/actions/gate/action.yml 共 52 步：名字序列 / run 体指纹 / 步骤级 if / 无 continue-on-error 全过",
+      "assertionW": "✓ (W) 断言名单与冻结清单等值 — 实跑 38 条 = 冻结清单 38 条 + 本看门狗",
+      "assertionE": "✓ (E) 实跑项数 == --expect-checks=39"
+    },
+    "fitness": {
+      "command": "npm run fitness",
+      "exitCode": 0,
+      "observed": "✅ 架构 fitness 4 条，失败 0 条",
+      "assertion4": "✓ ④ 分层表完整性：无幽灵条目、每个 selftest:* 恰好属于一层 — 42 个 script 分在 5 层，26 个 selftest:* 全部已分层"
+    },
+    "checkEvidence": {
+      "command": "npm run check:evidence",
+      "exitCode": 0,
+      "observed": "✅ 没有新增的 Tier-3 文件（1283 个已跟踪的全部在清单内）· ✅ 清单自证通过：与基线 e0ca04a 的 Tier-3 交集逐项一致（1283 条）"
+    },
+    "fullGate": {
+      "command": "npm run gate（= node scripts/test/run.js --gate：解析 .github/actions/gate/action.yml 并按顺序执行）",
+      "exitCode": 0,
+      "observed": "门禁步骤（读自 .github/actions/gate/action.yml）：52 个 · 合计 313.9s / 48 个脚本，失败 0 · ✅ 本地门禁链全过（与 CI 读同一份 action.yml）",
+      "stepRanLine": "✓     0.1s  [19] Roles-note self-test (official_urls note vs live wording)",
+      "evidenceFile": "research/_raw/sources-residue-v1b/gate-run-evidence.json（实跑 40 条步骤行 / 失败 0 / 本步骤 [19] ✓ 0.1s）"
+    },
+    "prGateRun": {
+      "purpose": "PR #78 的 PR 级门禁（t18 的交付）",
+      "runId": 37770554206,
+      "name": "Verify site (gate)",
+      "event": "pull_request",
+      "headBranch": "roles-note-tooth-v1",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  },
+  "threePhaseReuse": {
+    "notRerun": true,
+    "reason": "captain 指示：三段实跑读数保持有效即可，不必重跑，但要在报告里指到它们",
+    "evidenceFile": "research/_raw/sources-residue-v1b/roles-note-gate-3phase.json",
+    "phases": [
+      { "phase": "① 干净树", "exitCode": 0, "observed": "8 项通过 / 0 失败", "sha256Prefix": "d2197a952a74cf96" },
+      { "phase": "② 沙箱变异（括注改回旧称）", "exitCode": 1, "observed": "6 项通过 / 2 项失败", "sha256Prefix": "3327de0756ebed8a" },
+      { "phase": "③ 逐字节还原后复跑", "exitCode": 0, "observed": "8 项通过 / 0 失败", "sha256Prefix": "d2197a952a74cf96" }
+    ],
+    "validityCheck": "在合并后的 d19017a 上重算 scripts/data/official_urls.json 的 sha256 = d2197a952a74cf96…，与 ① / ③ 记录**逐字相同**（restoredByteExact=true、verdict=true 仍然成立）"
+  },
+  "changedByThisTask": [
+    "research/sources-residue-v1b-report.md（新增 §8：范围补正与合并后再确认）",
+    "research/_raw/sources-residue-v1b/post-merge-reconfirm.json（本文件）",
+    "research/_raw/sources-residue-v1b/gate-run-evidence.json（按合并后的基线重跑 Full Gate 后重新生成）"
+  ]
+}
