@@ -1,0 +1,34 @@
+{
+  "what": "第 1 步 `npm ci` 的运行方式与「主工作区依赖未被波及」的证明",
+  "before": {
+    "新工作树 .worktrees/full-gate-local-v1/node_modules": "不存在（git worktree add 之后从未有过 ⇒ 不可能是 junction/symlink）",
+    "主工作区 D:\\OneDrive\\Desktop\\Code\\AI Page\\node_modules": {
+      "exists": true,
+      "linkType": "",
+      "dirs": 50,
+      "files": 1
+    }
+  },
+  "run": {
+    "where": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\full-gate-local-v1（本工作树内）",
+    "command": "npm ci",
+    "exitCode": 0,
+    "stdoutTail": "\r | found 0 vulnerabilities",
+    "note": "这是手工先跑的一次（为了先建出 dist 再对比）；Full Gate 的第 1 步 `Install dependencies` 又在**同一个工作树内**跑了一次 npm ci，同样通过（见 local-gate.json 第 1 步）"
+  },
+  "after": {
+    "新工作树 node_modules": {
+      "exists": true,
+      "linkType": "",
+      "dirs": 50
+    },
+    "主工作区 node_modules": {
+      "exists": true,
+      "linkType": "",
+      "dirs": 50,
+      "files": 1,
+      "unchanged": true
+    }
+  },
+  "junctionCheck": "用 `Get-Item <dir> -Force` 读 `LinkType`：空串 = 实体目录；Junction/SymbolicLink 会显示出来。两个工作树的 node_modules 都是实体目录。"
+}

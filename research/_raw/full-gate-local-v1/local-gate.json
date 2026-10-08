@@ -1,0 +1,478 @@
+{
+  "what": "本机 Full Gate（`.github/actions/gate/action.yml` 的全部命名步骤逐条执行）",
+  "command": "node .arch-v1/full-gate.cjs",
+  "worktree": ".worktrees/full-gate-local-v1",
+  "tree": "origin/master = 95dfeb99 035c7431597c99c10fb2cae83ddfad8f（含 PR #62 的合并 33d2472，以及其后的 #63 / #64）",
+  "runner": "scripts 从 .github/actions/gate/action.yml 现读；判定与 CI 一致（退出码非 0 ⇒ 失败）；CI 上下文步骤如实标 skip",
+  "counts": {
+    "steps": 51,
+    "executed": 48,
+    "pass": 48,
+    "fail": 0,
+    "skip": 3,
+    "exitCode": 0
+  },
+  "duration": {
+    "sumOfStepMs": 327080,
+    "seconds": 327
+  },
+  "skips": [
+    {
+      "index": 47,
+      "name": "Prepare browser for the real-browser gate",
+      "reason": "CI 上下文专用（GitHub Actions 表达式 / runner 装浏览器 / Summary 输出）"
+    },
+    {
+      "index": 48,
+      "name": "Browser availability decision (never silent)",
+      "reason": "CI 上下文专用（GitHub Actions 表达式 / runner 装浏览器 / Summary 输出）"
+    },
+    {
+      "index": 51,
+      "name": "Gate conclusion",
+      "reason": "CI 上下文专用（GitHub Actions 表达式 / runner 装浏览器 / Summary 输出）"
+    }
+  ],
+  "slowest": [
+    {
+      "index": 50,
+      "name": "Regression verify (baseline compare)",
+      "seconds": 142
+    },
+    {
+      "index": 49,
+      "name": "Real-browser acceptance (verify-site.js)",
+      "seconds": 117.4
+    },
+    {
+      "index": 9,
+      "name": "Translation self-test",
+      "seconds": 17.6
+    },
+    {
+      "index": 42,
+      "name": "Analytics self-test (bootstrap count / production guard / provider)",
+      "seconds": 15
+    },
+    {
+      "index": 43,
+      "name": "Feeds reproducibility (build twice, byte-compare)",
+      "seconds": 8.2
+    },
+    {
+      "index": 32,
+      "name": "Coverage-targets self-test (intent layer + seven derived states)",
+      "seconds": 6.7
+    }
+  ],
+  "perStep": [
+    {
+      "index": 1,
+      "name": "Install dependencies",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 1468,
+      "note": null
+    },
+    {
+      "index": 2,
+      "name": "Architecture fitness (structure invariants)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 684,
+      "note": null
+    },
+    {
+      "index": 3,
+      "name": "Evidence policy (Tier-3 interception)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 170,
+      "note": null
+    },
+    {
+      "index": 4,
+      "name": "Validate data (strict)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 242,
+      "note": null
+    },
+    {
+      "index": 5,
+      "name": "Reproducibility gate (no value without a source)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 121,
+      "note": null
+    },
+    {
+      "index": 6,
+      "name": "History verify (log consistent with deals.json)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 81,
+      "note": null
+    },
+    {
+      "index": 7,
+      "name": "Migration verifier (audience provenance backfill)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 90,
+      "note": null
+    },
+    {
+      "index": 8,
+      "name": "Translation gate (drift blocks, pending ages out)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 74,
+      "note": null
+    },
+    {
+      "index": 9,
+      "name": "Translation self-test",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 17598,
+      "note": null
+    },
+    {
+      "index": 10,
+      "name": "Expiry self-test",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 107,
+      "note": null
+    },
+    {
+      "index": 11,
+      "name": "Text / cleanText self-test",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 74,
+      "note": null
+    },
+    {
+      "index": 12,
+      "name": "Source-health self-test",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 4449,
+      "note": null
+    },
+    {
+      "index": 13,
+      "name": "Provenance self-test",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 147,
+      "note": null
+    },
+    {
+      "index": 14,
+      "name": "Deal-history self-test",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 134,
+      "note": null
+    },
+    {
+      "index": 15,
+      "name": "Change-radar self-test",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 94,
+      "note": null
+    },
+    {
+      "index": 16,
+      "name": "Feeds self-test",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 538,
+      "note": null
+    },
+    {
+      "index": 17,
+      "name": "SEO self-test",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 198,
+      "note": null
+    },
+    {
+      "index": 18,
+      "name": "Audience self-test",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 132,
+      "note": null
+    },
+    {
+      "index": 19,
+      "name": "App-token self-test",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 343,
+      "note": null
+    },
+    {
+      "index": 20,
+      "name": "AI layer self-test",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 2132,
+      "note": null
+    },
+    {
+      "index": 21,
+      "name": "Collector fixtures (offline replay)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 332,
+      "note": null
+    },
+    {
+      "index": 22,
+      "name": "Plans self-test (data + page)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 733,
+      "note": null
+    },
+    {
+      "index": 23,
+      "name": "Plan-history self-test",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 164,
+      "note": null
+    },
+    {
+      "index": 24,
+      "name": "Deal-plan-links self-test",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 144,
+      "note": null
+    },
+    {
+      "index": 25,
+      "name": "API-plans self-test (data + page)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 399,
+      "note": null
+    },
+    {
+      "index": 26,
+      "name": "API-plans reproducibility (curated → api-plans.json, byte-compare)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 88,
+      "note": null
+    },
+    {
+      "index": 27,
+      "name": "API-plan-history verify (log consistent with api-plans.json)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 81,
+      "note": null
+    },
+    {
+      "index": 28,
+      "name": "Model-registry self-test (identity + explicit mapping)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 226,
+      "note": null
+    },
+    {
+      "index": 29,
+      "name": "Models reproducibility (registry → models.json, byte-compare)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 94,
+      "note": null
+    },
+    {
+      "index": 30,
+      "name": "Model-registry links check (explicit mapping only, no similarity)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 81,
+      "note": null
+    },
+    {
+      "index": 31,
+      "name": "Coverage report (gap list consistent with data)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 341,
+      "note": null
+    },
+    {
+      "index": 32,
+      "name": "Coverage-targets self-test (intent layer + seven derived states)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 6717,
+      "note": null
+    },
+    {
+      "index": 33,
+      "name": "Model-role vocabulary self-test (registry ↔ freshness contract)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 71,
+      "note": null
+    },
+    {
+      "index": 34,
+      "name": "Freshness self-test (catalogStatus branches)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 67,
+      "note": null
+    },
+    {
+      "index": 35,
+      "name": "Freshness threshold sensitivity (±90 days, baseline invariants)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 70,
+      "note": null
+    },
+    {
+      "index": 36,
+      "name": "Assemble site (same path as deploy.yml)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 3737,
+      "note": null
+    },
+    {
+      "index": 37,
+      "name": "Models-page self-test (index + detail pages)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 535,
+      "note": null
+    },
+    {
+      "index": 38,
+      "name": "Plans-hub self-test (/plans/)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 152,
+      "note": null
+    },
+    {
+      "index": 39,
+      "name": "Vendor-pages self-test (/vendor/)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 189,
+      "note": null
+    },
+    {
+      "index": 40,
+      "name": "Archive self-test (/archive/, synthetic ended/restored fixtures)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 110,
+      "note": null
+    },
+    {
+      "index": 41,
+      "name": "Data-docs self-test (/docs/data/ + /data/index.json)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 136,
+      "note": null
+    },
+    {
+      "index": 42,
+      "name": "Analytics self-test (bootstrap count / production guard / provider)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 15049,
+      "note": null
+    },
+    {
+      "index": 43,
+      "name": "Feeds reproducibility (build twice, byte-compare)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 8240,
+      "note": null
+    },
+    {
+      "index": 44,
+      "name": "Plans reproducibility (curated → plans.json, byte-compare)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 96,
+      "note": null
+    },
+    {
+      "index": 45,
+      "name": "Plan-history verify (log consistent with plans.json)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 92,
+      "note": null
+    },
+    {
+      "index": 46,
+      "name": "SEO verification (independent, from dist/)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 917,
+      "note": null
+    },
+    {
+      "index": 47,
+      "name": "Prepare browser for the real-browser gate",
+      "status": "skip",
+      "exitCode": null,
+      "ms": 0,
+      "note": "CI 上下文专用（GitHub Actions 表达式 / runner 装浏览器 / Summary 输出）"
+    },
+    {
+      "index": 48,
+      "name": "Browser availability decision (never silent)",
+      "status": "skip",
+      "exitCode": null,
+      "ms": 0,
+      "note": "CI 上下文专用（GitHub Actions 表达式 / runner 装浏览器 / Summary 输出）"
+    },
+    {
+      "index": 49,
+      "name": "Real-browser acceptance (verify-site.js)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 117359,
+      "note": null
+    },
+    {
+      "index": 50,
+      "name": "Regression verify (baseline compare)",
+      "status": "pass",
+      "exitCode": 0,
+      "ms": 141984,
+      "note": null
+    },
+    {
+      "index": 51,
+      "name": "Gate conclusion",
+      "status": "skip",
+      "exitCode": null,
+      "ms": 0,
+      "note": "CI 上下文专用（GitHub Actions 表达式 / runner 装浏览器 / Summary 输出）"
+    }
+  ]
+}
