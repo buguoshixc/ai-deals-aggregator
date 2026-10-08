@@ -1,0 +1,336 @@
+{
+ "task": "t30 mid-viewport-tooth-v1",
+ "generatedFor": "950 档的变异实验（新档位有没有牙）",
+ "base": "origin/master = 9b72b9d（PR #93 merged）",
+ "toolchain": "Windows + msedge（playwright-core 1.63）+ 本机 node",
+ "runs": [
+  {
+   "id": "R0-baseline",
+   "json": ".arch-v1/mid-viewport-tooth-v1/verify-R0-baseline.json",
+   "exitCode": 0,
+   "wallSeconds": 205.4,
+   "total": 883,
+   "failedCount": 0,
+   "scanSeconds": {
+    "desktop1440": 16.3,
+    "desktop1600": 18.6,
+    "desktop950": 21.4,
+    "narrow390": 16.9,
+    "samples": 20.5,
+    "section": 101.2
+   },
+   "navigations": 920,
+   "inkScopeDesktopViewports": [
+    {
+     "width": 1440,
+     "minColumn": 1120,
+     "maxColumn": 1380,
+     "ch70": [
+      452.81
+     ],
+     "inkScope": true
+    },
+    {
+     "width": 1600,
+     "minColumn": 1120,
+     "maxColumn": 1380,
+     "ch70": [
+      452.81
+     ],
+     "inkScope": true
+    },
+    {
+     "width": 950,
+     "minColumn": 858,
+     "maxColumn": 910,
+     "ch70": [
+      452.81
+     ],
+     "inkScope": true
+    }
+   ],
+   "failedAssertions": []
+  },
+  {
+   "id": "R1-V1-761-1439",
+   "json": ".arch-v1/mid-viewport-tooth-v1/verify-R1-V1-761-1439.json",
+   "exitCode": 1,
+   "wallSeconds": 183.6,
+   "total": 883,
+   "failedCount": 1,
+   "scanSeconds": {
+    "desktop1440": 14,
+    "desktop1600": 15.8,
+    "desktop950": 17.8,
+    "narrow390": 18,
+    "samples": 18.5,
+    "section": 90.9
+   },
+   "navigations": 920,
+   "inkScopeDesktopViewports": [
+    {
+     "width": 1440,
+     "minColumn": 1120,
+     "maxColumn": 1380,
+     "ch70": [
+      452.81
+     ],
+     "inkScope": true
+    },
+    {
+     "width": 1600,
+     "minColumn": 1120,
+     "maxColumn": 1380,
+     "ch70": [
+      452.81
+     ],
+     "inkScope": true
+    },
+    {
+     "width": 950,
+     "minColumn": 858,
+     "maxColumn": 910,
+     "ch70": [
+      452.81
+     ],
+     "inkScope": true
+    }
+   ],
+   "failedAssertions": [
+    {
+     "name": "§22c @950 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记",
+     "detail": "全站 186 页 / 逐条判 271 条（有说明的页 63 · 零说明的页 123 标注跳过 · 未渲染 1 条：<noscript> 1 + note-unrendered 0） · note-narrow 270（落在 63 页） · note-ink-narrow 185（63 页） · 并集 270 条 / 63 页 · 藏字 0 · 不同轴 270 · 裁切 0 · 首屏说明过长 0 条 / 0 页 · 多行说明（有行证据）185 条 · 竖排 0 条（其中列证据 ≥ 2 列、即 ② 按列判的：0 条） · textFallback 回落 1 条 · 未登记的窄阅读列 0 页（登记清单 1 条） · 命中：archive/#0 内容盒 452px / 盒 452px / 列 910px · 行 3（最宽 450.81px） · 判据用行：3 / 450.81px · 字形盒 3 · 主数据区 <main> · codes [note-narrow,note-ink-narrow,note-axis] · 「本站的原则是：资料失效不等于资料」；archive/#1 内容盒 452px / 盒 452px / 列 910px · 行 1（最宽 256.36px） · 判据用行：1 / 256.36px · 字形盒 1 · 主数据区 <main> · codes [note-narrow,note-axis] · 「结束 0 条 · 恢复 0 条 」；archive/#2 内容盒 452px / 盒 452px / 列 910px · 行 1（最宽 256.36px） · 判据用行：1 / 256.36px · 字形盒 1 · 主数据区 <main> · codes [note-narrow,note-axis] · 「结束 0 条 · 恢复 0 条 」；archive/#3 内容盒 452px / 盒 452px / 列 910px · 行 1（最宽 256.36px） · 判据用行：1 / 256.36px · 字形盒 1 · 主数据区 <main> · codes [note-narrow,note-axis] · 「结束 0 条 · 恢复 0 条 」"
+    }
+   ]
+  },
+  {
+   "id": "R2-V2-761-940",
+   "json": ".arch-v1/mid-viewport-tooth-v1/verify-R2-V2-761-940.json",
+   "exitCode": 0,
+   "wallSeconds": 151.5,
+   "total": 883,
+   "failedCount": 0,
+   "scanSeconds": {
+    "desktop1440": 11.8,
+    "desktop1600": 11.9,
+    "desktop950": 11.9,
+    "narrow390": 12.9,
+    "samples": 12.6,
+    "section": 66.3
+   },
+   "navigations": 920,
+   "inkScopeDesktopViewports": [
+    {
+     "width": 1440,
+     "minColumn": 1120,
+     "maxColumn": 1380,
+     "ch70": [
+      452.81
+     ],
+     "inkScope": true
+    },
+    {
+     "width": 1600,
+     "minColumn": 1120,
+     "maxColumn": 1380,
+     "ch70": [
+      452.81
+     ],
+     "inkScope": true
+    },
+    {
+     "width": 950,
+     "minColumn": 858,
+     "maxColumn": 910,
+     "ch70": [
+      452.81
+     ],
+     "inkScope": true
+    }
+   ],
+   "failedAssertions": []
+  },
+  {
+   "id": "R3-restored",
+   "json": ".arch-v1/mid-viewport-tooth-v1/verify-R3-restored.json",
+   "exitCode": 0,
+   "wallSeconds": 146.7,
+   "total": 883,
+   "failedCount": 0,
+   "scanSeconds": {
+    "desktop1440": 11.3,
+    "desktop1600": 11,
+    "desktop950": 11.8,
+    "narrow390": 12.1,
+    "samples": 12.2,
+    "section": 63.4
+   },
+   "navigations": 920,
+   "inkScopeDesktopViewports": [
+    {
+     "width": 1440,
+     "minColumn": 1120,
+     "maxColumn": 1380,
+     "ch70": [
+      452.81
+     ],
+     "inkScope": true
+    },
+    {
+     "width": 1600,
+     "minColumn": 1120,
+     "maxColumn": 1380,
+     "ch70": [
+      452.81
+     ],
+     "inkScope": true
+    },
+    {
+     "width": 950,
+     "minColumn": 858,
+     "maxColumn": 910,
+     "ch70": [
+      452.81
+     ],
+     "inkScope": true
+    }
+   ],
+   "failedAssertions": []
+  }
+ ],
+ "digests": {
+  "productDist": "67d1d0bdcdffe29f1b2bd0185c35408da897d53d20e44c495fec385f7ec1337d",
+  "pristineCopy": "67d1d0bdcdffe29f1b2bd0185c35408da897d53d20e44c495fec385f7ec1337d",
+  "v1Mutant": "aa41a94a0fa4d217b807300921860842355adf3718a7951e1d5492e1628d97a6",
+  "v2Mutant": "6c2259810aad0f4c7aae5bd9e1b11daa64d1cb8984a3d81a78add9d7687f5bcd",
+  "afterSurgicalRestore": "67d1d0bdcdffe29f1b2bd0185c35408da897d53d20e44c495fec385f7ec1337d",
+  "files": 304,
+  "bytes": 20386654
+ },
+ "mutations": {
+  "V1": {
+   "window": "(min-width: 761px) and (max-width: 1439px)",
+   "rule": "@media (min-width: 761px) and (max-width: 1439px) { .snote { max-width: 452px; } }",
+   "injectedPages": 186
+  },
+  "V2": {
+   "window": "(min-width: 761px) and (max-width: 940px)",
+   "rule": "@media (min-width: 761px) and (max-width: 940px) { .snote { max-width: 452px; } }",
+   "injectedPages": 186
+  }
+ },
+ "probe": {
+  "noteByWidth": {
+   "pristine": [
+    "archive/   @ 760  innerWidth=760  mainW=728  docScrollW=760  .snote-5  maxWidth=none  boxW=728  contentBox=728",
+    "archive/   @ 900  innerWidth=900  mainW=860  docScrollW=900  .snote-5  maxWidth=none  boxW=860  contentBox=860",
+    "archive/   @ 940  innerWidth=940  mainW=900  docScrollW=940  .snote-5  maxWidth=none  boxW=900  contentBox=900",
+    "archive/   @ 950  innerWidth=950  mainW=910  docScrollW=950  .snote-5  maxWidth=none  boxW=910  contentBox=910",
+    "archive/   @1180  innerWidth=1180  mainW=1140  docScrollW=1180  .snote-5  maxWidth=none  boxW=1140  contentBox=1140",
+    "archive/   @1200  innerWidth=1200  mainW=1160  docScrollW=1200  .snote-5  maxWidth=none  boxW=1160  contentBox=1160",
+    "archive/   @1440  innerWidth=1440  mainW=1380  docScrollW=1440  .snote-5  maxWidth=none  boxW=1380  contentBox=1380",
+    "archive/   @1600  innerWidth=1600  mainW=1380  docScrollW=1600  .snote-5  maxWidth=none  boxW=1380  contentBox=1380",
+    "status/    @ 760  innerWidth=760  mainW=728  docScrollW=760  .snote-2  maxWidth=none  boxW=728  contentBox=728",
+    "status/    @ 900  innerWidth=900  mainW=860  docScrollW=900  .snote-2  maxWidth=none  boxW=860  contentBox=860",
+    "status/    @ 940  innerWidth=940  mainW=900  docScrollW=940  .snote-2  maxWidth=none  boxW=900  contentBox=900",
+    "status/    @ 950  innerWidth=950  mainW=910  docScrollW=950  .snote-2  maxWidth=none  boxW=910  contentBox=910",
+    "status/    @1180  innerWidth=1180  mainW=1140  docScrollW=1180  .snote-2  maxWidth=none  boxW=1140  contentBox=1140",
+    "status/    @1200  innerWidth=1200  mainW=1160  docScrollW=1200  .snote-2  maxWidth=none  boxW=1160  contentBox=1160",
+    "status/    @1440  innerWidth=1440  mainW=1380  docScrollW=1440  .snote-2  maxWidth=none  boxW=1380  contentBox=1380",
+    "status/    @1600  innerWidth=1600  mainW=1380  docScrollW=1600  .snote-2  maxWidth=none  boxW=1380  contentBox=1380",
+    "changes/   @ 760  innerWidth=760  mainW=728  docScrollW=760  .snote-13  maxWidth=none  boxW=728  contentBox=728",
+    "changes/   @ 900  innerWidth=900  mainW=860  docScrollW=900  .snote-13  maxWidth=none  boxW=860  contentBox=860",
+    "changes/   @ 940  innerWidth=940  mainW=900  docScrollW=940  .snote-13  maxWidth=none  boxW=900  contentBox=900",
+    "changes/   @ 950  innerWidth=950  mainW=910  docScrollW=950  .snote-13  maxWidth=none  boxW=910  contentBox=910",
+    "changes/   @1180  innerWidth=1180  mainW=1140  docScrollW=1180  .snote-13  maxWidth=none  boxW=1140  contentBox=1140",
+    "changes/   @1200  innerWidth=1200  mainW=1160  docScrollW=1200  .snote-13  maxWidth=none  boxW=1160  contentBox=1160",
+    "changes/   @1440  innerWidth=1440  mainW=1380  docScrollW=1440  .snote-13  maxWidth=none  boxW=1380  contentBox=1380",
+    "changes/   @1600  innerWidth=1600  mainW=1380  docScrollW=1600  .snote-13  maxWidth=none  boxW=1380  contentBox=1380",
+    "feeds/     @ 760  innerWidth=760  mainW=728  docScrollW=760  .snote-8  maxWidth=none  boxW=728  contentBox=728",
+    "feeds/     @ 900  innerWidth=900  mainW=860  docScrollW=900  .snote-8  maxWidth=none  boxW=860  contentBox=860",
+    "feeds/     @ 940  innerWidth=940  mainW=900  docScrollW=940  .snote-8  maxWidth=none  boxW=900  contentBox=900",
+    "feeds/     @ 950  innerWidth=950  mainW=910  docScrollW=950  .snote-8  maxWidth=none  boxW=910  contentBox=910",
+    "feeds/     @1180  innerWidth=1180  mainW=1140  docScrollW=1180  .snote-8  maxWidth=none  boxW=1140  contentBox=1140",
+    "feeds/     @1200  innerWidth=1200  mainW=1160  docScrollW=1200  .snote-8  maxWidth=none  boxW=1160  contentBox=1160",
+    "feeds/     @1440  innerWidth=1440  mainW=1380  docScrollW=1440  .snote-8  maxWidth=none  boxW=1380  contentBox=1380",
+    "feeds/     @1600  innerWidth=1600  mainW=1380  docScrollW=1600  .snote-8  maxWidth=none  boxW=1380  contentBox=1380"
+   ],
+   "V1": [
+    "archive/   @ 760  innerWidth=760  mainW=728  docScrollW=760  .snote-5  maxWidth=none  boxW=728  contentBox=728",
+    "archive/   @ 900  innerWidth=900  mainW=860  docScrollW=900  .snote-5  maxWidth=452px  boxW=452  contentBox=452",
+    "archive/   @ 940  innerWidth=940  mainW=900  docScrollW=940  .snote-5  maxWidth=452px  boxW=452  contentBox=452",
+    "archive/   @ 950  innerWidth=950  mainW=910  docScrollW=950  .snote-5  maxWidth=452px  boxW=452  contentBox=452",
+    "archive/   @1180  innerWidth=1180  mainW=1140  docScrollW=1180  .snote-5  maxWidth=452px  boxW=452  contentBox=452",
+    "archive/   @1200  innerWidth=1200  mainW=1160  docScrollW=1200  .snote-5  maxWidth=452px  boxW=452  contentBox=452",
+    "archive/   @1440  innerWidth=1440  mainW=1380  docScrollW=1440  .snote-5  maxWidth=none  boxW=1380  contentBox=1380",
+    "archive/   @1600  innerWidth=1600  mainW=1380  docScrollW=1600  .snote-5  maxWidth=none  boxW=1380  contentBox=1380",
+    "status/    @ 760  innerWidth=760  mainW=728  docScrollW=760  .snote-2  maxWidth=none  boxW=728  contentBox=728",
+    "status/    @ 900  innerWidth=900  mainW=860  docScrollW=900  .snote-2  maxWidth=452px  boxW=452  contentBox=452",
+    "status/    @ 940  innerWidth=940  mainW=900  docScrollW=940  .snote-2  maxWidth=452px  boxW=452  contentBox=452",
+    "status/    @ 950  innerWidth=950  mainW=910  docScrollW=950  .snote-2  maxWidth=452px  boxW=452  contentBox=452",
+    "status/    @1180  innerWidth=1180  mainW=1140  docScrollW=1180  .snote-2  maxWidth=452px  boxW=452  contentBox=452",
+    "status/    @1200  innerWidth=1200  mainW=1160  docScrollW=1200  .snote-2  maxWidth=452px  boxW=452  contentBox=452",
+    "status/    @1440  innerWidth=1440  mainW=1380  docScrollW=1440  .snote-2  maxWidth=none  boxW=1380  contentBox=1380",
+    "status/    @1600  innerWidth=1600  mainW=1380  docScrollW=1600  .snote-2  maxWidth=none  boxW=1380  contentBox=1380",
+    "changes/   @ 760  innerWidth=760  mainW=728  docScrollW=760  .snote-13  maxWidth=none  boxW=728  contentBox=728",
+    "changes/   @ 900  innerWidth=900  mainW=860  docScrollW=900  .snote-13  maxWidth=452px  boxW=452  contentBox=452",
+    "changes/   @ 940  innerWidth=940  mainW=900  docScrollW=940  .snote-13  maxWidth=452px  boxW=452  contentBox=452",
+    "changes/   @ 950  innerWidth=950  mainW=910  docScrollW=950  .snote-13  maxWidth=452px  boxW=452  contentBox=452",
+    "changes/   @1180  innerWidth=1180  mainW=1140  docScrollW=1180  .snote-13  maxWidth=452px  boxW=452  contentBox=452",
+    "changes/   @1200  innerWidth=1200  mainW=1160  docScrollW=1200  .snote-13  maxWidth=452px  boxW=452  contentBox=452",
+    "changes/   @1440  innerWidth=1440  mainW=1380  docScrollW=1440  .snote-13  maxWidth=none  boxW=1380  contentBox=1380",
+    "changes/   @1600  innerWidth=1600  mainW=1380  docScrollW=1600  .snote-13  maxWidth=none  boxW=1380  contentBox=1380",
+    "feeds/     @ 760  innerWidth=760  mainW=728  docScrollW=760  .snote-8  maxWidth=none  boxW=728  contentBox=728",
+    "feeds/     @ 900  innerWidth=900  mainW=860  docScrollW=900  .snote-8  maxWidth=452px  boxW=452  contentBox=452",
+    "feeds/     @ 940  innerWidth=940  mainW=900  docScrollW=940  .snote-8  maxWidth=452px  boxW=452  contentBox=452",
+    "feeds/     @ 950  innerWidth=950  mainW=910  docScrollW=950  .snote-8  maxWidth=452px  boxW=452  contentBox=452",
+    "feeds/     @1180  innerWidth=1180  mainW=1140  docScrollW=1180  .snote-8  maxWidth=452px  boxW=452  contentBox=452",
+    "feeds/     @1200  innerWidth=1200  mainW=1160  docScrollW=1200  .snote-8  maxWidth=452px  boxW=452  contentBox=452",
+    "feeds/     @1440  innerWidth=1440  mainW=1380  docScrollW=1440  .snote-8  maxWidth=none  boxW=1380  contentBox=1380",
+    "feeds/     @1600  innerWidth=1600  mainW=1380  docScrollW=1600  .snote-8  maxWidth=none  boxW=1380  contentBox=1380"
+   ],
+   "V2": [
+    "archive/   @ 760  innerWidth=760  mainW=728  docScrollW=760  .snote-5  maxWidth=none  boxW=728  contentBox=728",
+    "archive/   @ 900  innerWidth=900  mainW=860  docScrollW=900  .snote-5  maxWidth=452px  boxW=452  contentBox=452",
+    "archive/   @ 940  innerWidth=940  mainW=900  docScrollW=940  .snote-5  maxWidth=452px  boxW=452  contentBox=452",
+    "archive/   @ 950  innerWidth=950  mainW=910  docScrollW=950  .snote-5  maxWidth=none  boxW=910  contentBox=910",
+    "archive/   @1180  innerWidth=1180  mainW=1140  docScrollW=1180  .snote-5  maxWidth=none  boxW=1140  contentBox=1140",
+    "archive/   @1200  innerWidth=1200  mainW=1160  docScrollW=1200  .snote-5  maxWidth=none  boxW=1160  contentBox=1160",
+    "archive/   @1440  innerWidth=1440  mainW=1380  docScrollW=1440  .snote-5  maxWidth=none  boxW=1380  contentBox=1380",
+    "archive/   @1600  innerWidth=1600  mainW=1380  docScrollW=1600  .snote-5  maxWidth=none  boxW=1380  contentBox=1380",
+    "status/    @ 760  innerWidth=760  mainW=728  docScrollW=760  .snote-2  maxWidth=none  boxW=728  contentBox=728",
+    "status/    @ 900  innerWidth=900  mainW=860  docScrollW=900  .snote-2  maxWidth=452px  boxW=452  contentBox=452",
+    "status/    @ 940  innerWidth=940  mainW=900  docScrollW=940  .snote-2  maxWidth=452px  boxW=452  contentBox=452",
+    "status/    @ 950  innerWidth=950  mainW=910  docScrollW=950  .snote-2  maxWidth=none  boxW=910  contentBox=910",
+    "status/    @1180  innerWidth=1180  mainW=1140  docScrollW=1180  .snote-2  maxWidth=none  boxW=1140  contentBox=1140",
+    "status/    @1200  innerWidth=1200  mainW=1160  docScrollW=1200  .snote-2  maxWidth=none  boxW=1160  contentBox=1160",
+    "status/    @1440  innerWidth=1440  mainW=1380  docScrollW=1440  .snote-2  maxWidth=none  boxW=1380  contentBox=1380",
+    "status/    @1600  innerWidth=1600  mainW=1380  docScrollW=1600  .snote-2  maxWidth=none  boxW=1380  contentBox=1380",
+    "changes/   @ 760  innerWidth=760  mainW=728  docScrollW=760  .snote-13  maxWidth=none  boxW=728  contentBox=728",
+    "changes/   @ 900  innerWidth=900  mainW=860  docScrollW=900  .snote-13  maxWidth=452px  boxW=452  contentBox=452",
+    "changes/   @ 940  innerWidth=940  mainW=900  docScrollW=940  .snote-13  maxWidth=452px  boxW=452  contentBox=452",
+    "changes/   @ 950  innerWidth=950  mainW=910  docScrollW=950  .snote-13  maxWidth=none  boxW=910  contentBox=910",
+    "changes/   @1180  innerWidth=1180  mainW=1140  docScrollW=1180  .snote-13  maxWidth=none  boxW=1140  contentBox=1140",
+    "changes/   @1200  innerWidth=1200  mainW=1160  docScrollW=1200  .snote-13  maxWidth=none  boxW=1160  contentBox=1160",
+    "changes/   @1440  innerWidth=1440  mainW=1380  docScrollW=1440  .snote-13  maxWidth=none  boxW=1380  contentBox=1380",
+    "changes/   @1600  innerWidth=1600  mainW=1380  docScrollW=1600  .snote-13  maxWidth=none  boxW=1380  contentBox=1380",
+    "feeds/     @ 760  innerWidth=760  mainW=728  docScrollW=760  .snote-8  maxWidth=none  boxW=728  contentBox=728",
+    "feeds/     @ 900  innerWidth=900  mainW=860  docScrollW=900  .snote-8  maxWidth=452px  boxW=452  contentBox=452",
+    "feeds/     @ 940  innerWidth=940  mainW=900  docScrollW=940  .snote-8  maxWidth=452px  boxW=452  contentBox=452",
+    "feeds/     @ 950  innerWidth=950  mainW=910  docScrollW=950  .snote-8  maxWidth=none  boxW=910  contentBox=910",
+    "feeds/     @1180  innerWidth=1180  mainW=1140  docScrollW=1180  .snote-8  maxWidth=none  boxW=1140  contentBox=1140",
+    "feeds/     @1200  innerWidth=1200  mainW=1160  docScrollW=1200  .snote-8  maxWidth=none  boxW=1160  contentBox=1160",
+    "feeds/     @1440  innerWidth=1440  mainW=1380  docScrollW=1440  .snote-8  maxWidth=none  boxW=1380  contentBox=1380",
+    "feeds/     @1600  innerWidth=1600  mainW=1380  docScrollW=1600  .snote-8  maxWidth=none  boxW=1380  contentBox=1380"
+   ]
+  },
+  "gridByWidth": [
+   "@ 760  innerWidth=760  .grid columns = 728px  ·  .topin flexWrap=wrap  ·  .search maxWidth=none",
+   "@ 940  innerWidth=940  .grid columns = 444px 444px  ·  .topin flexWrap=wrap  ·  .search maxWidth=none",
+   "@ 950  innerWidth=950  .grid columns = 449px 449px  ·  .topin flexWrap=nowrap  ·  .search maxWidth=440px",
+   "@1180  innerWidth=1180  .grid columns = 564px 564px  ·  .topin flexWrap=nowrap  ·  .search maxWidth=440px",
+   "@1440  innerWidth=1440  .grid columns = 452px 452px 452px  ·  .topin flexWrap=nowrap  ·  .search maxWidth=440px",
+   "@1600  innerWidth=1600  .grid columns = 452px 452px 452px  ·  .topin flexWrap=nowrap  ·  .search maxWidth=440px"
+  ]
+ }
+}
