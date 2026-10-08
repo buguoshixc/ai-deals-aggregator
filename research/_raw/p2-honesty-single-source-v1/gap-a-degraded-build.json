@@ -1,0 +1,284 @@
+{
+ "what": "缺口 A：日志「缺失 / 损坏 / 正常」三种状态下的**源码级实跑**读数（构建 exit、措辞命中、Manifest 登记、产物文件）",
+ "how": [
+  "node .arch-v1/corrupt-fixture.cjs make   # 或把 scripts/data/deal-history.json 移走",
+  "node scripts/tools/build-local.js",
+  "node .arch-v1/scan-wording.cjs dist --out=.arch-v1/json/<state>-scan.json",
+  "node .arch-v1/corrupt-fixture.cjs restore  # 逐字节还原"
+ ],
+ "missingLog": {
+  "files": 304,
+  "unavailableWording": "本次构建没有拿到历史日志（deal-history.json 缺失或损坏），因此无法显示变化记录 —— 这不表示「没有变化」。",
+  "markupHits": [
+   {
+    "file": "changes/index.html",
+    "line": 1227,
+    "excerpt": "<h1>优惠变化雷达</h1><p class=\"snote chgwarn\">本次构建没有拿到历史日志（deal-history.json 缺失或损坏），因此无法显示变化记录 —— 这不表示「没有变化」。</p><p class=\"snote\">以上是本站采集与合并过程留下的观测记录；「不再收录」表示本站未再观测到该条目，不表示厂商已经下架或优惠已经失效。最终以厂商官方页面为准。</p>"
+   },
+   {
+    "file": "feed/changes.json",
+    "line": 6,
+    "excerpt": "\"description\": \"本站观测到的优惠变化：优惠内容、领取条件、有效期与收录状态。 本次构建没有拿到历史日志（deal-history.json 缺失或损坏），因此无法显示变化记录 —— 这不表示「没有变化」。 本订阅由本站构建期生成：没有账号、没有邮件列表、没有第三方推送服务。\","
+   },
+   {
+    "file": "feed/changes.xml",
+    "line": 6,
+    "excerpt": "<description>本站观测到的优惠变化：优惠内容、领取条件、有效期与收录状态。 本次构建没有拿到历史日志（deal-history.json 缺失或损坏），因此无法显示变化记录 —— 这不表示「没有变化」。 本订阅由本站构建期生成：没有账号、没有邮件列表、没有第三方推送服务。</description>"
+   },
+   {
+    "file": "feed/new.json",
+    "line": 6,
+    "excerpt": "\"description\": \"本站观测到的首次收录：哪些优惠是最近才被收录进来的。 本次构建没有拿到历史日志（deal-history.json 缺失或损坏），因此无法显示变化记录 —— 这不表示「没有变化」。 本订阅由本站构建期生成：没有账号、没有邮件列表、没有第三方推送服务。\","
+   },
+   {
+    "file": "feed/new.xml",
+    "line": 6,
+    "excerpt": "<description>本站观测到的首次收录：哪些优惠是最近才被收录进来的。 本次构建没有拿到历史日志（deal-history.json 缺失或损坏），因此无法显示变化记录 —— 这不表示「没有变化」。 本订阅由本站构建期生成：没有账号、没有邮件列表、没有第三方推送服务。</description>"
+   },
+   {
+    "file": "index.html",
+    "line": 1225,
+    "excerpt": "<nav class=\"radar\" aria-label=\"变化雷达\" data-radar-total=\"0\" data-radar-other=\"0\"><span class=\"rlb\">变化雷达</span><div class=\"rscroll\"><span class=\"rnone\">本次构建没有拿到历史日志（deal-history.json 缺失或损坏），因此无法显示变化记录 —— 这不表示「没有变化」。</span><"
+   }
+  ],
+  "markupHitFiles": [
+   "changes/index.html",
+   "feed/changes.json",
+   "feed/changes.xml",
+   "feed/new.json",
+   "feed/new.xml",
+   "index.html"
+  ],
+  "scriptHits": 1,
+  "manifestLogDatasets": [
+   {
+    "id": "api-plan-history",
+    "url": "api-plan-history.json",
+    "updatedAt": "2026-10-01",
+    "updatedAtShape": "date",
+    "availability": null,
+    "count": 17,
+    "updatedAtNote": null
+   },
+   {
+    "id": "deal-history",
+    "url": "deal-history.json",
+    "updatedAt": null,
+    "updatedAtShape": null,
+    "availability": "unavailable",
+    "count": 0,
+    "updatedAtNote": "本次构建没有拿到 D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\p2-honesty-single-source-v1\\scripts\\data\\deal-history.json（文件缺失）——这份数据集的更新时间不可公布，这不表示「没有变化」。"
+   },
+   {
+    "id": "plan-history",
+    "url": "plan-history.json",
+    "updatedAt": "2026-10-01",
+    "updatedAtShape": "date",
+    "availability": null,
+    "count": 35,
+    "updatedAtNote": null
+   }
+  ],
+  "publishedLogs": [
+   {
+    "file": "deal-history.json",
+    "exists": true,
+    "startedAt": null,
+    "events": 0,
+    "bytes": 298
+   },
+   {
+    "file": "plan-history.json",
+    "exists": true,
+    "startedAt": "2026-10-01",
+    "events": 35,
+    "bytes": 39608
+   },
+   {
+    "file": "api-plan-history.json",
+    "exists": true,
+    "startedAt": "2026-10-01",
+    "events": 17,
+    "bytes": 80216
+   }
+  ]
+ },
+ "corruptLog": {
+  "files": 304,
+  "unavailableWording": "本次构建没有拿到历史日志（deal-history.json 缺失或损坏），因此无法显示变化记录 —— 这不表示「没有变化」。",
+  "markupHits": [
+   {
+    "file": "changes/index.html",
+    "line": 1227,
+    "excerpt": "<h1>优惠变化雷达</h1><p class=\"snote chgwarn\">本次构建没有拿到历史日志（deal-history.json 缺失或损坏），因此无法显示变化记录 —— 这不表示「没有变化」。</p><p class=\"snote\">以上是本站采集与合并过程留下的观测记录；「不再收录」表示本站未再观测到该条目，不表示厂商已经下架或优惠已经失效。最终以厂商官方页面为准。</p>"
+   },
+   {
+    "file": "feed/changes.json",
+    "line": 6,
+    "excerpt": "\"description\": \"本站观测到的优惠变化：优惠内容、领取条件、有效期与收录状态。 本次构建没有拿到历史日志（deal-history.json 缺失或损坏），因此无法显示变化记录 —— 这不表示「没有变化」。 本订阅由本站构建期生成：没有账号、没有邮件列表、没有第三方推送服务。\","
+   },
+   {
+    "file": "feed/changes.xml",
+    "line": 6,
+    "excerpt": "<description>本站观测到的优惠变化：优惠内容、领取条件、有效期与收录状态。 本次构建没有拿到历史日志（deal-history.json 缺失或损坏），因此无法显示变化记录 —— 这不表示「没有变化」。 本订阅由本站构建期生成：没有账号、没有邮件列表、没有第三方推送服务。</description>"
+   },
+   {
+    "file": "feed/new.json",
+    "line": 6,
+    "excerpt": "\"description\": \"本站观测到的首次收录：哪些优惠是最近才被收录进来的。 本次构建没有拿到历史日志（deal-history.json 缺失或损坏），因此无法显示变化记录 —— 这不表示「没有变化」。 本订阅由本站构建期生成：没有账号、没有邮件列表、没有第三方推送服务。\","
+   },
+   {
+    "file": "feed/new.xml",
+    "line": 6,
+    "excerpt": "<description>本站观测到的首次收录：哪些优惠是最近才被收录进来的。 本次构建没有拿到历史日志（deal-history.json 缺失或损坏），因此无法显示变化记录 —— 这不表示「没有变化」。 本订阅由本站构建期生成：没有账号、没有邮件列表、没有第三方推送服务。</description>"
+   },
+   {
+    "file": "index.html",
+    "line": 1225,
+    "excerpt": "<nav class=\"radar\" aria-label=\"变化雷达\" data-radar-total=\"0\" data-radar-other=\"0\"><span class=\"rlb\">变化雷达</span><div class=\"rscroll\"><span class=\"rnone\">本次构建没有拿到历史日志（deal-history.json 缺失或损坏），因此无法显示变化记录 —— 这不表示「没有变化」。</span><"
+   }
+  ],
+  "markupHitFiles": [
+   "changes/index.html",
+   "feed/changes.json",
+   "feed/changes.xml",
+   "feed/new.json",
+   "feed/new.xml",
+   "index.html"
+  ],
+  "scriptHits": 1,
+  "manifestLogDatasets": [
+   {
+    "id": "api-plan-history",
+    "url": "api-plan-history.json",
+    "updatedAt": "2026-10-01",
+    "updatedAtShape": "date",
+    "availability": null,
+    "count": 17,
+    "updatedAtNote": null
+   },
+   {
+    "id": "deal-history",
+    "url": "deal-history.json",
+    "updatedAt": null,
+    "updatedAtShape": null,
+    "availability": "unavailable",
+    "count": 0,
+    "updatedAtNote": "本次构建没有拿到 deal-history.json（Expected property name or '}' in JSON at position 69 (line 4 column 17)）——这份数据集的更新时间不可公布，这不表示「没有变化」。"
+   },
+   {
+    "id": "plan-history",
+    "url": "plan-history.json",
+    "updatedAt": "2026-10-01",
+    "updatedAtShape": "date",
+    "availability": null,
+    "count": 35,
+    "updatedAtNote": null
+   }
+  ],
+  "publishedLogs": [
+   {
+    "file": "deal-history.json",
+    "exists": true,
+    "startedAt": null,
+    "events": 0,
+    "bytes": 298
+   },
+   {
+    "file": "plan-history.json",
+    "exists": true,
+    "startedAt": "2026-10-01",
+    "events": 35,
+    "bytes": 39608
+   },
+   {
+    "file": "api-plan-history.json",
+    "exists": true,
+    "startedAt": "2026-10-01",
+    "events": 17,
+    "bytes": 80216
+   }
+  ]
+ },
+ "normalControl": {
+  "files": 304,
+  "unavailableWording": "本次构建没有拿到历史日志（deal-history.json 缺失或损坏），因此无法显示变化记录 —— 这不表示「没有变化」。",
+  "markupHits": [],
+  "markupHitFiles": [],
+  "scriptHits": 1,
+  "manifestLogDatasets": [
+   {
+    "id": "api-plan-history",
+    "url": "api-plan-history.json",
+    "updatedAt": "2026-10-01",
+    "updatedAtShape": "date",
+    "availability": null,
+    "count": 17,
+    "updatedAtNote": null
+   },
+   {
+    "id": "deal-history",
+    "url": "deal-history.json",
+    "updatedAt": "2026-09-30",
+    "updatedAtShape": "date",
+    "availability": null,
+    "count": 19,
+    "updatedAtNote": null
+   },
+   {
+    "id": "plan-history",
+    "url": "plan-history.json",
+    "updatedAt": "2026-10-01",
+    "updatedAtShape": "date",
+    "availability": null,
+    "count": 35,
+    "updatedAtNote": null
+   }
+  ],
+  "publishedLogs": [
+   {
+    "file": "deal-history.json",
+    "exists": true,
+    "startedAt": "2026-09-30",
+    "events": 19,
+    "bytes": 96546
+   },
+   {
+    "file": "plan-history.json",
+    "exists": true,
+    "startedAt": "2026-10-01",
+    "events": 35,
+    "bytes": 39608
+   },
+   {
+    "file": "api-plan-history.json",
+    "exists": true,
+    "startedAt": "2026-10-01",
+    "events": 17,
+    "bytes": 80216
+   }
+  ]
+ },
+ "docsPageRow": {
+  "what": "降级产物 /docs/data/ 上 deal-history 那一行（时间是「未标注」而不是某个日期）",
+  "reading": "<tr data-item=\"deal-history\"> … <td><time datetime=\"\">未标注</time> <small data-time-shape=\"\">未标注</small></td> …"
+ },
+ "manifestEntryMissingLog": {
+  "id": "deal-history",
+  "url": "deal-history.json",
+  "updatedAt": null,
+  "updatedAtShape": null,
+  "availability": "unavailable",
+  "count": 0,
+  "updatedAtNote": "本次构建没有拿到 D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\p2-honesty-single-source-v1\\scripts\\data\\deal-history.json（文件缺失）——这份数据集的更新时间不可公布，这不表示「没有变化」。"
+ },
+ "manifestEntryNormal": {
+  "id": "deal-history",
+  "url": "deal-history.json",
+  "updatedAt": "2026-09-30",
+  "updatedAtShape": "date",
+  "availability": null,
+  "count": 19,
+  "updatedAtNote": null
+ }
+}

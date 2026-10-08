@@ -1,0 +1,100 @@
+{
+ "what": "本次改动的四组牙：每组都有「实跑红 → 逐字节还原（byteExact）→ 复跑绿」的读数",
+ "teeth": [
+  {
+   "id": "B1-hand-written-literal-returns",
+   "target": "scripts/lib/plans-hub-page.js",
+   "mutation": "把从措辞表取词的锚改回手写字面量（>全部变化 →</a>）",
+   "red": {
+    "command": "npm run selftest:seo",
+    "exit": 1,
+    "readings": [
+     "v1.7 SEO 门禁演练：86 项通过，2 项失败",
+     "✗ scripts/lib/ 里没有把入口文案手写成字面量（52 个文件扫描） —— plans-hub-page.js",
+     "✗ 【牙】/plans/ 入口锚随 changes.js 的措辞表变 —— 原词「全部变化 →」· 换表后「全部变化 →」· 复位后「全部变化 →」"
+    ]
+   },
+   "restore": {
+    "byteExact": true
+   },
+   "green": {
+    "command": "npm run selftest:seo",
+    "exit": 0,
+    "readings": [
+     "v1.7 SEO 门禁演练：88 项通过，0 项失败"
+    ]
+   }
+  },
+  {
+   "id": "B2-wording-table-word-changed",
+   "target": "scripts/lib/changes.js（措辞表）",
+   "mutation": "CHANGES_LABELS.all: '全部变化' → '形变词·牙'",
+   "red": {
+    "command": "npm run selftest:seo && node scripts/tools/build-local.js",
+    "exit": 1,
+    "readings": [
+     "✗ 三张措辞表里的入口词都是同一个「全部变化」 —— 形变词·牙 / 全部变化 / 全部变化",
+     "✗ 【牙】/plans/ 入口锚随 changes.js 的措辞表变 —— 原词「形变词·牙 →」· 换表后「形变词·牙 →」· 复位后「全部变化 →」",
+     "构建：✗ 变化雷达（v1.5）：CHANGES_LABELS.all：前端「全部变化」≠ 权威表「形变词·牙」⇒ ❌ 构建失败"
+    ]
+   },
+   "restore": {
+    "byteExact": true
+   },
+   "green": {
+    "command": "npm run build && npm run selftest:seo",
+    "exit": 0,
+    "readings": [
+     "✅ 构建完成（产物全树摘要回到 df43587c…）",
+     "v1.7 SEO 门禁演练：88 项通过，0 项失败"
+    ]
+   }
+  },
+  {
+   "id": "B3-product-anchor-renamed",
+   "target": "产物副本 .arch-v1/dist-b3（只改 plans/index.html 的 2 处锚文本）",
+   "mutation": ">全部变化 →</a> → >形变词·牙 →</a>",
+   "red": {
+    "command": "node scripts/tools/seo-verify.js --dir=.arch-v1/dist-b3",
+    "exit": 1,
+    "readings": [
+     "✗ 入口文案：指向 /changes/ 的箭头锚逐字都是「全部变化 →」 —— plans/：「形变词·牙 →」；plans/：「形变词·牙 →」",
+     "❌ SEO 验收 17 项，失败 1 项"
+    ]
+   },
+   "control": {
+    "command": "node scripts/tools/seo-verify.js --dir=dist",
+    "exit": 0,
+    "readings": [
+     "✅ SEO 验收 17 项，失败 0 项"
+    ]
+   },
+   "distUntouched": true
+  },
+  {
+   "id": "A2-fake-date-for-unavailable-log",
+   "target": "scripts/lib/changes.js（如实登记）",
+   "mutation": "源日志不可用时把 updatedAt 写成 '2026-10-08' + updatedAtShape 'date'（**用别的日期顶替**）",
+   "red": {
+    "command": "node scripts/tools/build-local.js（此时 deal-history.json 被移走）",
+    "exit": 1,
+    "readings": [
+     "❌ 构建失败：Dataset Manifest 形状/诚实性不合法（2 处）",
+     "  - deal-history: 源日志不可用时 updatedAt 必须是 null（不许用别的日期顶上，实得 2026-10-08）",
+     "  - deal-history: 源日志不可用时 updatedAtShape 必须是 null（实得 date）"
+    ]
+   },
+   "restore": {
+    "byteExact": true
+   },
+   "green": {
+    "command": "node scripts/tools/build-local.js（日志仍缺失）",
+    "exit": 0,
+    "readings": [
+     "✅ 构建完成（如实登记 updatedAt: null）"
+    ]
+   },
+   "note": "若把上面那条断言删掉，这份「完整的伪造」（日期 + 形状都写上）就会通过 —— 即这条断言是承重的；本组只实跑了「断言在 ⇒ 红」这一侧，删断言那一侧是推演（见报告 §5）。"
+  }
+ ]
+}

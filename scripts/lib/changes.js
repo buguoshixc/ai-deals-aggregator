@@ -539,8 +539,168 @@ function summarize(radar) {
   };
 }
 
+/* ------------------------------------------------------------------ */
+/* 变化日志的可用性 → 数据出口 Manifest 的**如实登记**                  */
+/* ------------------------------------------------------------------ */
+//
+// 背景（`p2-honesty-single-source-v1` 闭合 t4 登记的缺口 A）：
+// 三份变化日志缺失或损坏时，页面按纪律说「本次构建没有拿到…日志 —— 这不表示「没有变化」」；
+// 但构建会**在 Dataset Manifest 那一步死**——每条数据集都要求一个可识别的 `updatedAt`，
+// 而日志不可用时它该有的是「没有」。处置：**不许用别的日期顶上**（不许写构建时刻「今天」，
+// 也不许拿 deals 的数据日期冒充日志的日期），把数据集显式登记为 `availability: 'unavailable'`
+// + `updatedAt: null` + `updatedAtNote`（同一句「没有拿到」），并配三条**更严**的新断言。
+//
+// 这里放的是**纯函数**：构建期（`build-local.js`）与独立门禁都从这里取同一条规则；
+// `seo-selftest.js` 直接对它们开牙（空值必须显式登记、可用时不许登记、日期顶替即红）。
+
+/** 如实说明：与页面上的措辞同源（都点明「不表示没有变化」） */
+function logUnavailableNote(item) {
+  return `本次构建没有拿到 ${item.file}（${item.reason || '缺失或损坏'}）——这份数据集的更新时间不可公布，`
+    + '这不表示「没有变化」。';
+}
+
+/**
+ * 由「日志加载结果」算出可用性登记（`availability: 'ok' | 'unavailable'`）。
+ *
+ * ⚠️ **清单由调用方传入，本文件一个字都不写日志名**：本文件属于 deals 链路，而
+ * `plans-selftest` §⑪（"谁可以引用 plans"）静态扫描 deals 链路的 7 个文件、禁止出现
+ * `plan-history` 之类的 token。所以这里只留**判据**；id 与加载结果都由调用方给出
+ * （`build-local.js` 本来就同时持有三份日志的加载结果），文件名按约定从 id 推（`<id>.json`）。
+ *
+ * @param {Array|object} loads 两种形态都收：
+ *   · `[{ id, file?, label?, load }]`（显式清单，可覆盖文件名）
+ *   · `{ [id]: { missing, broken } }`（调用方只有"id → 加载结果"时最省事）
+ */
+function logAvailabilityOf(loads = []) {
+  const rows = Array.isArray(loads)
+    ? loads.map(item => ({ id: item.id, load: item.load || {}, file: item.file, label: item.label }))
+    : Object.entries(loads).map(([id, value]) => ({ id, load: value || {}, file: value && value.file, label: value && value.label }));
+  return rows.map(row => {
+    const unavailable = row.load.missing || row.load.broken;
+    return {
+      id: row.id,
+      // 约定：数据集 id 与它的 endpoint 同名（`<id>.json`）；需要别的映射时由调用方显式给 file
+      file: row.file || `${row.id}.json`,
+      label: row.label || row.id,
+      availability: unavailable ? 'unavailable' : 'ok',
+      reason: unavailable ? (row.load.broken || '文件缺失') : null
+    };
+  });
+}
+
+/** 把 Manifest 里对应的数据集**如实**登记为不可用（不用任何日期顶替） */
+function markUnavailableLogDatasets(manifest, availability = []) {
+  for (const item of availability) {
+    if (item.availability === 'ok') continue;
+    const entry = ((manifest && manifest.datasets) || []).find(dataset => dataset.id === item.id);
+    if (!entry) continue;
+    entry.updatedAt = null;          // 没有拿到日志 ⇒ 没有可公布的更新时间
+    entry.updatedAtShape = null;     // 没有值就没有形状
+    entry.availability = 'unavailable';
+    entry.updatedAtNote = logUnavailableNote(item);
+  }
+  return manifest;
+}
+
+/**
+ * 新增断言（比"只看形状"更严的那一半）：不可用状态必须逐字登记；可用时不许登记。
+ *
+ * @param {object} manifest   Manifest（已过 `markUnavailableLogDatasets`）
+ * @param {Array}  availability  `logAvailabilityOf()` 的结果
+ */
+function logDatasetHonestyProblems(manifest, availability = []) {
+  const problems = [];
+  for (const dataset of ((manifest && manifest.datasets) || [])) {
+    const item = availability.find(row => row.id === dataset.id);
+    const declared = dataset.availability === 'unavailable';
+    if (!item) {
+      if (declared) problems.push(`${dataset.id}: 只有本次登记的日志数据集才允许 availability: unavailable`);
+      continue;
+    }
+    if (item.availability === 'ok') {
+      if (declared) problems.push(`${dataset.id}: 源日志本次可用，不许登记为 unavailable`);
+      if (dataset.updatedAt === null) problems.push(`${dataset.id}: 源日志本次可用，updatedAt 不许留空`);
+      continue;
+    }
+    if (!declared) problems.push(`${dataset.id}: 源日志不可用（${item.reason}）时必须显式登记 availability: unavailable`);
+    if (dataset.updatedAt !== null) {
+      problems.push(`${dataset.id}: 源日志不可用时 updatedAt 必须是 null（不许用别的日期顶上，实得 ${dataset.updatedAt}）`);
+    }
+    if (dataset.updatedAtShape !== null) {
+      problems.push(`${dataset.id}: 源日志不可用时 updatedAtShape 必须是 null（实得 ${dataset.updatedAtShape}）`);
+    }
+    if (!dataset.updatedAtNote || !dataset.updatedAtNote.includes('没有拿到')) {
+      problems.push(`${dataset.id}: 必须给出「没有拿到日志」的如实说明（updatedAtNote）`);
+    }
+  }
+  return problems;
+}
+
+/**
+ * 允许放过的**两条**形状抱怨（**逐字生成**，不做模式匹配）。
+ *
+ * 生成源就是登记本身：`updatedAt: null` 在 `lib/data-docs.js` 的 `assertManifestShape()`
+ * 里必然产生「缺少 updatedAt」，在 `assertPageHonesty()` 里必然再产生一条
+ * 「页面上没有标出时间形状 null」。没有登记却想留空时这两条不会被放过 —— 失败方向是红。
+ */
+function toleratedLogComplaints(manifest) {
+  const tolerated = new Set();
+  for (const dataset of ((manifest && manifest.datasets) || [])) {
+    if (dataset.availability !== 'unavailable') continue;
+    tolerated.add(`dataset ${dataset.id}: 缺少 updatedAt`);
+    tolerated.add(`${dataset.id}: 页面上没有标出时间形状 ${dataset.updatedAtShape}`);
+  }
+  return tolerated;
+}
+
+/**
+ * 盘侧（自检 / 独立门禁）的同一条不变量：**没有时间的数据文件必须登记为不可用**，反之亦然。
+ *
+ * 与 `logDatasetHonestyProblems()` 的区别：这里不需要"源日志加载结果"，也不需要**任何 id 清单**——
+ * 只看产物 Manifest 与盘上数据文件本身（因此独立门禁与构建期用的是同一句话）。
+ * 两条合起来把"源 ⇒ Manifest ⇒ 盘"三段钉住。
+ *
+ * @param {object} manifest          产物里的 data/index.json
+ * @param {object} actualUpdatedAt   { [id]: updatedAt|null }（文件不存在时**不给键**：那条由 endpoint 存在性断言负责）
+ */
+function logDatasetDiskHonestyProblems(manifest, actualUpdatedAt = {}) {
+  const problems = [];
+  for (const dataset of ((manifest && manifest.datasets) || [])) {
+    const declared = dataset.availability === 'unavailable';
+    const hasKey = Object.prototype.hasOwnProperty.call(actualUpdatedAt, dataset.id);
+    const real = hasKey ? actualUpdatedAt[dataset.id] : undefined;
+    if (declared) {
+      if (dataset.updatedAt !== null) {
+        problems.push(`${dataset.id}: 已登记为不可用，Manifest 的 updatedAt 必须是 null（实得 ${dataset.updatedAt}）`);
+      }
+      if (dataset.updatedAtShape !== null) {
+        problems.push(`${dataset.id}: 已登记为不可用，updatedAtShape 必须是 null（实得 ${dataset.updatedAtShape}）`);
+      }
+      if (!dataset.updatedAtNote || !dataset.updatedAtNote.includes('没有拿到')) {
+        problems.push(`${dataset.id}: 必须给出「没有拿到日志」的如实说明（updatedAtNote）`);
+      }
+      if (real !== null && real !== undefined) {
+        problems.push(`${dataset.id}: 登记为不可用，但盘上的数据文件带着时间 ${real} —— 登记与产物不一致`);
+      }
+      continue;
+    }
+    // 文件在盘上、却一个时间都取不到 ⇒ 只有"如实登记为不可用"这一条路（不许拿别的日期顶上）
+    if (real === null) {
+      problems.push(`${dataset.id}: 盘上的数据文件没有可公布的更新时间（updatedAt / startedAt 都取不到）`
+        + '⇒ 必须登记为 availability: unavailable（如实登记，不许用别的日期顶上）');
+    }
+  }
+  return problems;
+}
+
 module.exports = {
   CHANGES_WORDING,
+  logUnavailableNote,
+  logAvailabilityOf,
+  markUnavailableLogDatasets,
+  logDatasetHonestyProblems,
+  logDatasetDiskHonestyProblems,
+  toleratedLogComplaints,
   WINDOWS,
   LIMITS,
   SECTION_ORDER,

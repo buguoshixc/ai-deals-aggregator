@@ -494,6 +494,46 @@ const ownVisibleText = html => unescapeHtml(
 }
 
 /* ------------------------------------------------------------------ */
+/* ③⁗ 变化日志的可用性：Manifest 的如实登记 ↔ 产物文件                 */
+/* ------------------------------------------------------------------ */
+//
+// `p2-honesty-single-source-v1` 闭合 t4 登记的缺口 A：日志缺失/损坏时产物**照常出**，
+// 页面按纪律说「没有拿到…日志」，而数据出口的 Manifest 把这份数据集登记为
+// `availability: 'unavailable'` + `updatedAt: null`（**不许用别的日期顶上**）。
+// 构建期有那三条断言；这里（独立门禁）只看**产物**，把同一条不变量再钉一遍：
+//   · 登记为不可用 ⇒ Manifest 的 updatedAt 必须是 null、产物文件也不许带时间、必须有说明；
+//   · 产物文件没有可公布的时间 ⇒ 必须登记为不可用（不许悄悄留空）；
+//   · 有时间的 ⇒ Manifest 与产物文件必须逐字相等。
+// 全部由 `lib/changes.js` 的纯函数取口径（唯一出处），这里不重写一份日志清单。
+{
+  const changesLib = require('../lib/changes');
+  const manifestFile = path.join(OUT, 'data', 'index.json');
+  const manifest = fs.existsSync(manifestFile) ? JSON.parse(fs.readFileSync(manifestFile, 'utf8')) : null;
+  const problems = [];
+  const actualUpdatedAt = {};
+  let declared = 0;
+  let datasets = 0;
+  for (const dataset of ((manifest && manifest.datasets) || [])) {
+    datasets += 1;
+    const file = path.join(OUT, dataset.url);
+    if (!fs.existsSync(file)) { problems.push(`${dataset.url} 不存在（endpoint 必须在场）`); continue; }
+    const parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
+    const real = parsed.updatedAt || parsed.startedAt || null;
+    actualUpdatedAt[dataset.id] = real;
+    const declaredUnavailable = dataset.availability === 'unavailable';
+    if (declaredUnavailable) declared += 1;
+    // 有时间的数据集：Manifest 与产物文件必须逐字相等（没时间的那种交给下面那条通用不变量）
+    if (!declaredUnavailable && real !== null && String(dataset.updatedAt) !== String(real)) {
+      problems.push(`${dataset.id}: Manifest updatedAt=${dataset.updatedAt} ≠ 产物文件里的 ${real}`);
+    }
+  }
+  // 通用不变量（不需要 id 清单）：登记为不可用 ⇒ null + 说明 + 文件也不许带时间；反之没有时间 ⇒ 必须登记为不可用。
+  problems.push(...changesLib.logDatasetDiskHonestyProblems(manifest, actualUpdatedAt));
+  check(`数据集的可用性：Manifest 的如实登记 ↔ 产物文件逐条一致（${datasets} 份，其中登记为不可用 ${declared} 份）`,
+    problems.length === 0, problems.slice(0, 3).join('；'));
+}
+
+/* ------------------------------------------------------------------ */
 /* ④ 只属于独立验收的三条：sitemap 成员、noindex、Feed 文件              */
 /* ------------------------------------------------------------------ */
 

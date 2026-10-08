@@ -749,17 +749,49 @@ section('七、入口文案契约（P2 残留 e3：「全部变化 →」而不�
   check(`渲染入口的 ${wordingSources.length} 个源文件里没有「${FORBIDDEN}」`,
     offenders.length === 0, offenders.join(', '));
 
-  // 硬编码字面量的**登记**：措辞应该只有一处出处（三张措辞表），任何页面壳自己写死一份
-  // 都是「同一个词两处定义」。当前唯一一处是 plans-hub-page.js 的 `/plans/` 枢纽块。
-  // 这条断言的作用是：新增第二处手写、或那一处被改成读措辞表（好事）—— 两种都会红，
-  // 逼人回来更新这张登记表，而不是让它悄悄变成「看起来统一、实际只有一半是真的」。
+  // 硬编码字面量：措辞**只有一处出处**（三张措辞表）。
+  //
+  // 这一条在 t4 那一版是"登记表"式的（允许 plans-hub-page.js 手写一处）；本轮
+  // （`p2-honesty-single-source-v1`）把那一处收回了措辞表，于是判据从"位置 == 登记的那一处"
+  // 升级成**零容忍**：`scripts/lib/` 里任何"指向 /changes/ 的锚 + 手写文字 + 箭头"
+  // 都是同一个词的第二处定义。判据写成**代码形状**而不是某个词：
+  //   · 从措辞表派生的写法是 `>${escapeHtml(...)} →`，`$`/`{`/`}` 让它天然不匹配；
+  //   · 手写的 `>全部变化 →` / `>查看全部 →` / 任何别的词都会匹配 ⇒ 红。
   const libDir = path.join(ROOT, 'scripts/lib');
-  const literalSites = fs.readdirSync(libDir).filter(name => name.endsWith('.js'))
-    .filter(name => fs.readFileSync(path.join(libDir, name), 'utf8').includes(`${ENTRY_WORD} →`))
-    .sort();
-  check(`scripts/lib/ 里手写「${ENTRY_WORD} →」字面量的位置 = 登记的那一处（plans-hub-page.js）`,
-    literalSites.join(',') === 'plans-hub-page.js',
-    literalSites.length ? literalSites.join(', ') : '（一处都没有 —— 若确实改成只读措辞表了，请同步更新这条登记）');
+  const libFiles = fs.readdirSync(libDir).filter(name => name.endsWith('.js')).sort();
+  const handWritten = libFiles.filter(name => {
+    const source = fs.readFileSync(path.join(libDir, name), 'utf8');
+    // 逐行看，避免跨行的模板串把选择器扩得太宽（只在同一行里找「锚 + 字面量 + 箭头」）
+    return source.split('\n').some(line => /href="[^"]*changes\/[^"]*"[^>]*>\s*[^<$*{}`]{1,16}?→/.test(line));
+  });
+  check(`scripts/lib/ 里没有把入口文案手写成字面量（${libFiles.length} 个文件扫描：措辞只从三张措辞表取）`,
+    handWritten.length === 0,
+    handWritten.length ? `${handWritten.join(', ')} —— 请改成从 changes.CHANGES_WORDING 取词` : '（0 处手写；/plans/ 枢纽块已改为渲染时取词）');
+
+  // 【牙】/plans/ 枢纽块的入口锚**必须**跟着措辞表变 ——
+  // 在内存里把表里的词换掉再渲染一次：锚文本跟着变 ⇒ 它不是独立字面量；
+  // 若哪天有人把它写死，这条牙立刻红（那是"看起来统一、实际只有一半是真的"的回潮）。
+  const hub = require('../lib/plans-hub-page');
+  const hubCtx = {
+    plans: [], apiPlans: [], providerTable: new Map(),
+    planHistoryStore: null, apiPlanHistoryStore: null, dealLinks: null, deals: [], asOf: null, prefix: '../../'
+  };
+  const anchorTextOf = html => {
+    const match = html.match(/<a[^>]*href="[^"]*changes\/"[^>]*>([\s\S]*?)<\/a>/);
+    return match ? match[1].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : null;
+  };
+  const anchorBefore = anchorTextOf(hub.renderPlansHubPage(hubCtx));
+  let anchorMutated = null;
+  try {
+    changesWording.CHANGES_LABELS.all = '形变词·牙';
+    anchorMutated = anchorTextOf(hub.renderPlansHubPage(hubCtx));
+  } finally {
+    changesWording.CHANGES_LABELS.all = ENTRY_WORD;
+  }
+  const anchorRestored = anchorTextOf(hub.renderPlansHubPage(hubCtx));
+  check('【牙】/plans/ 入口锚随 changes.js 的措辞表变（把表里的词换掉 ⇒ 渲染跟着变；逐字复位 ⇒ 回到原词）',
+    anchorBefore === `${ENTRY_WORD} →` && anchorMutated === '形变词·牙 →' && anchorRestored === anchorBefore,
+    `原词「${anchorBefore}」· 换表后「${anchorMutated}」· 复位后「${anchorRestored}」`);
 }
 
 console.log(`\n=== v1.7 SEO 门禁演练：${passed} 项通过，${failures.length} 项失败 ===`);

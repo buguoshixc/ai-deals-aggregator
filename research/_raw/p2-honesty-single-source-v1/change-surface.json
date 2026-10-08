@@ -1,0 +1,122 @@
+{
+ "what": "变化面：源码逐文件 sha256（对 origin/master）+ 产物全树摘要（证明正常态 0 变化）",
+ "baselineCommit": "4c52d47005198d446494a1fec611071f465c9713",
+ "sourceFiles": [
+  {
+   "file": "research/_raw/p2-honesty-single-source-v1/README.md",
+   "sha256Working": "335ce494636fa4418597acaea6f8222f95ef05650d7013ea9a01349db7baafaa",
+   "sha256OriginMaster": null,
+   "lines": 55
+  },
+  {
+   "file": "research/_raw/p2-honesty-single-source-v1/assertion-readings.json",
+   "sha256Working": "694d6473b0d3d48cd7210f0aeae7630c4c472aa2d787642c3c961033d6ecbb74",
+   "sha256OriginMaster": null,
+   "lines": 54
+  },
+  {
+   "file": "research/_raw/p2-honesty-single-source-v1/change-surface.json",
+   "sha256Working": "3048d2286a6c7ab622d60f97d7bdee1598aeea26aca1e459aa95871df57a2702",
+   "sha256OriginMaster": null,
+   "lines": 116
+  },
+  {
+   "file": "research/_raw/p2-honesty-single-source-v1/gap-a-degraded-build.json",
+   "sha256Working": "632974287dfb4c28d06deb3fcdb4c69fcd6e11230a140fed9334b0414f169e11",
+   "sha256OriginMaster": null,
+   "lines": 285
+  },
+  {
+   "file": "research/_raw/p2-honesty-single-source-v1/gap-b-entry-wording.json",
+   "sha256Working": "fab6ea0b762c6c065acde7079113b45f67b11d0b3c8981b4b5a0a37c0a90bfd2",
+   "sha256OriginMaster": null,
+   "lines": 35
+  },
+  {
+   "file": "research/_raw/p2-honesty-single-source-v1/patch-seo-selftest-gap-a.md",
+   "sha256Working": "3d26a863648b3513b66e04bc6de9f8486c1bcad3849c0159bf73279c790024ad",
+   "sha256OriginMaster": null,
+   "lines": 100
+  },
+  {
+   "file": "research/_raw/p2-honesty-single-source-v1/pr-body.md",
+   "sha256Working": "ae68b6fbda632f350a93f7b2642085596ecde40c022bc32a1c58c4c51cf32674",
+   "sha256OriginMaster": null,
+   "lines": 81
+  },
+  {
+   "file": "research/_raw/p2-honesty-single-source-v1/teeth.json",
+   "sha256Working": "b3dd5100daa4d021b5691846ad751a2767fe37eb7798ca99d776aa18c9396a92",
+   "sha256OriginMaster": null,
+   "lines": 101
+  },
+  {
+   "file": "research/p2-honesty-single-source-v1-report.md",
+   "sha256Working": "007ae758f05eae5364c49f89f6ddb7fb8d4e936f85596fbba24fe12880d4a979",
+   "sha256OriginMaster": null,
+   "lines": 212
+  },
+  {
+   "file": "research/p2-honesty-single-source-v1-self-audit.md",
+   "sha256Working": "01da26a86638782b9593edb88dad4f1cd69c45fcc849fd81bf03fd4bb84b0c62",
+   "sha256OriginMaster": null,
+   "lines": 129
+  },
+  {
+   "file": "scripts/lib/changes.js",
+   "sha256Working": "49e86666eae62ad2ac8a3fc53147505d81d5d7e8a6b1560903d289abce295181",
+   "sha256OriginMaster": "199f9a47c2dcb854fafa29ab2082e5d4ab9701070be9bd70cd4362a958c9f904",
+   "lines": 721
+  },
+  {
+   "file": "scripts/lib/plans-hub-page.js",
+   "sha256Working": "390bc44d925a68970f4a353aab1c8436dc2c4325af84570a22e3ca5080a2f960",
+   "sha256OriginMaster": "9425ade186e5ca1376025057eda20ca4e52dabd117aa269358cda9eb58f46d9b",
+   "lines": 575
+  },
+  {
+   "file": "scripts/tools/build-local.js",
+   "sha256Working": "1e51edac1a4324030d9b73dd296e89966dd6afeaaff672fb0de9a3e510acee31",
+   "sha256OriginMaster": "cf6870f212844fea4cdf1b45b9a7e6964da49981ea1664e0f909676812edee45",
+   "lines": 7276
+  },
+  {
+   "file": "scripts/tools/seo-selftest.js",
+   "sha256Working": "b9acf65d7c0c2a68a343cef23da81fbd798722b7bdce1ab10576be865268cc3c",
+   "sha256OriginMaster": "3d756bdd86798de7fbf66d649f99cd2bd89005b025ef4411647e70b866b237b5",
+   "lines": 800
+  },
+  {
+   "file": "scripts/tools/seo-verify.js",
+   "sha256Working": "a594806afcc6e6a8a0bc70af57e1560f725b40e3ba1f5465cc7cb934d9d5cd39",
+   "sha256OriginMaster": "714bc9dc25974c8c754bb722c28d20be65ad1a14e5f1c385f92d8a86c3525c8d",
+   "lines": 586
+  }
+ ],
+ "numstat": [
+  "54\t0\tresearch/_raw/p2-honesty-single-source-v1/README.md",
+  "53\t0\tresearch/_raw/p2-honesty-single-source-v1/assertion-readings.json",
+  "115\t0\tresearch/_raw/p2-honesty-single-source-v1/change-surface.json",
+  "284\t0\tresearch/_raw/p2-honesty-single-source-v1/gap-a-degraded-build.json",
+  "34\t0\tresearch/_raw/p2-honesty-single-source-v1/gap-b-entry-wording.json",
+  "99\t0\tresearch/_raw/p2-honesty-single-source-v1/patch-seo-selftest-gap-a.md",
+  "80\t0\tresearch/_raw/p2-honesty-single-source-v1/pr-body.md",
+  "100\t0\tresearch/_raw/p2-honesty-single-source-v1/teeth.json",
+  "211\t0\tresearch/p2-honesty-single-source-v1-report.md",
+  "128\t0\tresearch/p2-honesty-single-source-v1-self-audit.md",
+  "160\t0\tscripts/lib/changes.js",
+  "7\t1\tscripts/lib/plans-hub-page.js",
+  "102\t25\tscripts/tools/build-local.js",
+  "42\t10\tscripts/tools/seo-selftest.js",
+  "40\t0\tscripts/tools/seo-verify.js"
+ ],
+ "product": {
+  "baselineTree": "df43587cfe90a60453e29df96599b138a8dd02242130968340cba589e6979675",
+  "afterTree": "df43587cfe90a60453e29df96599b138a8dd02242130968340cba589e6979675",
+  "filesBaseline": 304,
+  "filesAfter": 304,
+  "identical": true
+ },
+ "distPerFileChanged": 0,
+ "note": "产物 304 个文件（303 + t3 的 _notes.ndjson）逐文件 sha256 全等；本文改动只影响「日志不可用」那条降级路径与一处渲染取词"
+}
