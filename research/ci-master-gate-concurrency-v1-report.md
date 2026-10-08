@@ -186,16 +186,17 @@ B = `NEXT-STEPS.md` 的流程教训），**两个提交都从含 v2 的 master �
 
 | 推送 | 合并提交 | 创建 | gate run | gate 终态 | Deploy run | Deploy 终态 |
 | --- | --- | --- | --- | --- | --- | --- |
-| **A** | `51ae75b910` | 11:36:16Z | **#186** | **completed/success**（**扛过两次更晚的推送**） | #154 | completed/success |
-| **B** | `ef176b54a0` | 11:36:47Z | **#187** | **completed/success**（扛过一次更晚的推送） | #155 | completed/**cancelled** |
-| 第三推 | `41816ac0ce` | 11:40:21Z | #189 | 读数时在跑 | #156 | 在跑 |
-| 第四推 | `d19017af04` | 11:41:18Z | #190 | 读数时在跑 | #157 | pending |
+| **A** | `51ae75b910` | 11:36:16Z | **#186** | **completed/success**（**扛过两次更晚的推送**：+31s / +214s） | #154 | completed/success |
+| **B** | `ef176b54a0` | 11:36:47Z | **#187** | **completed/success**（扛过一次更晚的推送：+214s） | #155 | completed/**cancelled** |
+| 第三推 | `41816ac0ce` | 11:40:21Z | **#189** | **completed/success**（扛过一次更晚的推送：+57s） | #156 | completed/success |
+| 第四推 | `d19017af04` | 11:41:18Z | **#190** | **completed/success**（最后一次，无更晚推送） | #157 | completed/success |
 
-* **判定：PASS**。窗口内**每一次已终态的 gate 都是 `completed/success`，`cancelled` = 0**；
-  A 的那一对 run 连续扛过两次更晚的 master 推送 —— 而在 v1/旧配置下，它正是会被干掉的那一类
+* **判定：PASS**。**四次携带 v2 的 master gate 全部 `completed/success`、`cancelled` = 0**，
+  其中 **三次处在真实重叠窗口里**（#186/#187/#189 各有一次更晚的推送落在它还没跑完的时候）——
+  而在 v1/旧配置下，它们正是会被干掉的那一类
   （对照：§5.1 的 #176 被取代、§1.3 的 #163 跑了 4m04s 被杀）。
 * 入库证据：`_raw/ci-master-gate-concurrency-v1/post-change-measurement.json`
-  （`v2.verdict = PASS`，逐 run 的 `createdAt / updatedAt / 重叠标记` 都在里面）。
+  （`v2.verdict = PASS`，逐 run 的 `createdAt / updatedAt / nextPushSecondsAfter / overlappedByNextPush` 都在里面）。
 
 #### 5.2.1 一个必须分清的口径：**gate 要「每个提交都有结论」，Deploy 只要「最新一次的产物」**
 

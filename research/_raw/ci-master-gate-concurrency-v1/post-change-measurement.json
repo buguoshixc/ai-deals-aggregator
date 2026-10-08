@@ -1,7 +1,7 @@
 {
   "task": "ci-master-gate-concurrency-v1",
   "what": "改动后的实测：v1（只关 cancel-in-progress）不够 · v2（master 每个提交一个并发组）在真实重叠窗口里 0 cancelled",
-  "at": "2026-10-08T11:42:41.038Z",
+  "at": "2026-10-08T11:47:25.777Z",
   "criterion": {
     "validWindow": "两次推送的提交都携带补丁（v2 落地之后的推送），且时间上重叠（下一次 push 的 gate 创建时刻 < 上一次 gate 的结束时刻）",
     "pass": "窗口内每一次 gate 都 completed/success，且两两之间没有 cancelled",
@@ -113,23 +113,23 @@
         "runId": 37771597353,
         "sha": "41816ac0ce4fdf51f5a8ef37326ae959986ade53",
         "createdAt": "2026-10-08T11:40:21Z",
-        "updatedAt": "2026-10-08T11:40:24Z",
-        "durationSeconds": 3,
-        "status": "in_progress",
-        "conclusion": null,
+        "updatedAt": "2026-10-08T11:45:24Z",
+        "durationSeconds": 303,
+        "status": "completed",
+        "conclusion": "success",
         "nextPushAt": "2026-10-08T11:41:18Z",
         "nextPushSecondsAfter": 57,
-        "overlappedByNextPush": false
+        "overlappedByNextPush": true
       },
       {
         "runNumber": 190,
         "runId": 37771703604,
         "sha": "d19017af04051048e0565af6c3675f3faf75cb6a",
         "createdAt": "2026-10-08T11:41:18Z",
-        "updatedAt": "2026-10-08T11:41:22Z",
-        "durationSeconds": 4,
-        "status": "in_progress",
-        "conclusion": null,
+        "updatedAt": "2026-10-08T11:45:57Z",
+        "durationSeconds": 279,
+        "status": "completed",
+        "conclusion": "success",
         "nextPushAt": null,
         "nextPushSecondsAfter": null,
         "overlappedByNextPush": false
@@ -147,6 +147,12 @@
         "sha": "ef176b54a07a",
         "conclusion": "success",
         "nextPushSecondsAfter": 214
+      },
+      {
+        "runNumber": 189,
+        "sha": "41816ac0ce4f",
+        "conclusion": "success",
+        "nextPushSecondsAfter": 57
       }
     ],
     "cancelledInWindow": [],
@@ -200,7 +206,7 @@
         "runNumber": 156,
         "sha": "41816ac0ce4f",
         "createdAt": "2026-10-08T11:40:21Z",
-        "conclusion": null
+        "conclusion": "success"
       },
       {
         "runNumber": 157,
