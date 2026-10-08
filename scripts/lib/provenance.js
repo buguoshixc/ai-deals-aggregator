@@ -219,7 +219,22 @@ function sortAndCap(items, opts = {}) {
     if (a.quote !== b.quote) return a.quote < b.quote ? -1 : 1;
     return a.capturedAt < b.capturedAt ? -1 : a.capturedAt > b.capturedAt ? 1 : 0;
   });
-  return sorted.slice(0, MAX_EVIDENCE_ITEMS);
+  return sorted.slice(0, evidenceCapOf(opts));
+}
+
+/**
+ * 引文上限：**缺省仍是 `MAX_EVIDENCE_ITEMS`（3）** —— deals 与 Coding 套餐的调用方都不传 `opts.max`，
+ * 它们的上限逐字节不变。
+ *
+ * 领域可以显式声明自己的预算：唯一的使用者是 API 计费（`lib/api-plan-schema.js` 的
+ * `API_EVIDENCE_MAX_ITEMS = 4`）。那条记录需要同时留下**价目表行见证**（input / output 都在
+ * 引文里，列序判据 B2 才有落点）与**官方变更记录**（`.change` 形态），而变更记录在字段序里排最后 ——
+ * 预算 3 时先被截掉的恰好是新增的那条。这是**加容量**，不是放宽：每一条引文仍各自受判据约束。
+ */
+function evidenceCapOf(opts = {}) {
+  const max = opts.max;
+  if (Number.isInteger(max) && max > 0) return max;
+  return MAX_EVIDENCE_ITEMS;
 }
 
 /**

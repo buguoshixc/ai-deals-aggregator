@@ -135,6 +135,13 @@
           "sourceUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
           "capturedAt": "2026-10-01",
           "lang": "en"
+        },
+        {
+          "field": "models.claude-sonnet-5.5.rates.cachedInput.change",
+          "quote": "First, starting today, we’re lowering the price of cache reads on Claude Sonnet 5.5. Cache reads now cost 50% less: $0.10 per million tokens rather than $0.20.",
+          "sourceUrl": "https://www.anthropic.com/claude-haiku-5-5",
+          "capturedAt": "2026-10-08",
+          "lang": "en"
         }
       ],
       "note": null

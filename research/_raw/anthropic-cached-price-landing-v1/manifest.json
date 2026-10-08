@@ -1,0 +1,37 @@
+{
+  "_note": "t28 进仓证据清单（sha256 为写入时的读数，2026-10-08）",
+  "task": "t28 / anthropic-cached-price-landing-v1",
+  "pr": "#97",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 1219,
+      "sha256": "45f52d069c30ab80b9cf75b65b201808cddc097e198a1aa7d79d4ab3a41252cf"
+    },
+    {
+      "path": "callers-opts-max.md",
+      "bytes": 3392,
+      "sha256": "3d01a4b2f6404e35346e8d5b0dde0a07a29babdc9b91121ab0bd5d75920b4ef3"
+    },
+    {
+      "path": "old-docs-quote.md",
+      "bytes": 1978,
+      "sha256": "1a5f3195302c6f981a105fc79fff6be07790c01f6a58dd9e7f7ad77c46f87f76"
+    },
+    {
+      "path": "readings.md",
+      "bytes": 3586,
+      "sha256": "030023c61c7808cc9b091bbddb4b4d6839163331df30076bd2e7e08365d5981d"
+    },
+    {
+      "path": "teeth.md",
+      "bytes": 4594,
+      "sha256": "9e70b058ce3945b17aea4afe2c97502f01d1c2dcef66d577a136ecd4279ef3db"
+    },
+    {
+      "path": "verify-aligned.md",
+      "bytes": 2525,
+      "sha256": "020163e5aa232954aa15e2a1d83317c65c5ecf236e3df2766d9d85df4b992d61"
+    }
+  ]
+}
