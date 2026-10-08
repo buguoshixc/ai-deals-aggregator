@@ -1,0 +1,62 @@
+{
+  "at": "2026-10-08T12:05:17.903Z",
+  "today": "2026-10-08",
+  "cases": [
+    {
+      "case": "markUnavailableLogDatasets 会把喂进来的「今天」清成 null",
+      "input": {
+        "updatedAt": "2026-10-08",
+        "updatedAtShape": "date"
+      },
+      "result": {
+        "updatedAt": null,
+        "updatedAtShape": null,
+        "availability": "unavailable",
+        "noteHas没有拿到": true
+      },
+      "ok": true
+    },
+    {
+      "case": "不可用 + updatedAt = 今天 ⇒ 源侧判据报红",
+      "problems": [
+        "deal-history: 源日志不可用时 updatedAt 必须是 null（不许用别的日期顶上，实得 2026-10-08）"
+      ],
+      "ok": true
+    },
+    {
+      "case": "不可用 + updatedAtShape = date ⇒ 源侧判据报红",
+      "problems": [
+        "deal-history: 源日志不可用时 updatedAtShape 必须是 null（实得 date）"
+      ],
+      "ok": true
+    },
+    {
+      "case": "不可用 + null/null + 说明 ⇒ 源侧判据不报（正对照）",
+      "problems": [],
+      "ok": true
+    },
+    {
+      "case": "登记为不可用，盘上文件却带时间 ⇒ 盘侧判据报红",
+      "problems": [
+        "deal-history: 登记为不可用，但盘上的数据文件带着时间 2026-09-30 —— 登记与产物不一致"
+      ],
+      "ok": true
+    },
+    {
+      "case": "盘上文件取不到时间、Manifest 却填了 2026-09-30 ⇒ 盘侧判据报红",
+      "problems": [
+        "deal-history: 盘上的数据文件没有可公布的更新时间（updatedAt / startedAt 都取不到）⇒ 必须登记为 availability: unavailable（如实登记，不许用别的日期顶上）"
+      ],
+      "ok": true
+    },
+    {
+      "case": "源可用 + updatedAt 留空 ⇒ 源侧判据报红（反方向）",
+      "problems": [
+        "deal-history: 源日志本次可用，不许登记为 unavailable",
+        "deal-history: 源日志本次可用，updatedAt 不许留空"
+      ],
+      "ok": true
+    }
+  ],
+  "allOk": true
+}

@@ -1,0 +1,97 @@
+{
+  "at": "2026-10-08T12:09:56.442Z",
+  "needle": "本次构建没有拿到历史日志",
+  "logSha256Before": "563bcfd0e00e3211995bdefe097b3096ed778a7ebed69c4e1c1614ca8187802e",
+  "paths": {
+    "missingLog": {
+      "build": {
+        "exitOk": true,
+        "tail": " | ✅ 产物自检通过 |  | ✅ 构建完成 → dist/（自检全过，已从暂存目录就位）"
+      },
+      "fileGone": true,
+      "manifestDealHistory": {
+        "updatedAt": null,
+        "updatedAtShape": null,
+        "availability": "unavailable",
+        "count": 0,
+        "updatedAtNote": "本次构建没有拿到 D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\p2-review-v1\\scripts\\data\\deal-history.json（文件缺失）——这份数据集的更新时间不可公布，这不表示「没有变化」。"
+      },
+      "hits": [
+        {
+          "file": "changes/index.html",
+          "line": 1227,
+          "isStaticWordingTable": false,
+          "excerpt": "<h1>优惠变化雷达</h1><p class=\"snote chgwarn\">本次构建没有拿到历史日志（deal-history.json 缺失或损坏），因此"
+        },
+        {
+          "file": "feed/changes.json",
+          "line": 6,
+          "isStaticWordingTable": false,
+          "excerpt": "\"description\": \"本站观测到的优惠变化：优惠内容、领取条件、有效期与收录状态。 本次构建没有拿到历史日志（deal-history.json 缺失"
+        },
+        {
+          "file": "feed/changes.xml",
+          "line": 6,
+          "isStaticWordingTable": false,
+          "excerpt": "<description>本站观测到的优惠变化：优惠内容、领取条件、有效期与收录状态。 本次构建没有拿到历史日志（deal-history.json 缺失或损坏"
+        },
+        {
+          "file": "feed/new.json",
+          "line": 6,
+          "isStaticWordingTable": false,
+          "excerpt": "\"description\": \"本站观测到的首次收录：哪些优惠是最近才被收录进来的。 本次构建没有拿到历史日志（deal-history.json 缺失或损坏）"
+        },
+        {
+          "file": "feed/new.xml",
+          "line": 6,
+          "isStaticWordingTable": false,
+          "excerpt": "<description>本站观测到的首次收录：哪些优惠是最近才被收录进来的。 本次构建没有拿到历史日志（deal-history.json 缺失或损坏），因此"
+        },
+        {
+          "file": "index.html",
+          "line": 1225,
+          "isStaticWordingTable": false,
+          "excerpt": "<nav class=\"radar\" aria-label=\"变化雷达\" data-radar-total=\"0\" data-radar-other=\"0\"><"
+        },
+        {
+          "file": "index.html",
+          "line": 1446,
+          "isStaticWordingTable": true,
+          "excerpt": "const CHANGES_WORDING = {\"CHANGES_SECTION\":{\"created\":\"今日新增\",\"changed\":\"最近 7 天变化"
+        }
+      ],
+      "hitCountNaiveGrep": 7,
+      "hitCountRendered": 6,
+      "staticWordingTableHits": 1
+    },
+    "normalLog": {
+      "build": {
+        "exitOk": true,
+        "tail": " | ✅ 产物自检通过 |  | ✅ 构建完成 → dist/（自检全过，已从暂存目录就位）"
+      },
+      "manifestDealHistory": {
+        "updatedAt": "2026-09-30",
+        "updatedAtShape": "date",
+        "availability": "<缺键>",
+        "count": 19,
+        "updatedAtNote": null
+      },
+      "logStartedAt": "2026-09-30",
+      "manifestEqualsLogStartedAt": true,
+      "manifestIsNotToday": true,
+      "hits": [
+        {
+          "file": "index.html",
+          "line": 1446,
+          "isStaticWordingTable": true,
+          "excerpt": "const CHANGES_WORDING = {\"CHANGES_SECTION\":{\"created\":\"今日新增\",\"changed\":\"最近 7 天变化"
+        }
+      ],
+      "hitCountNaiveGrep": 1,
+      "hitCountRendered": 0,
+      "staticWordingTableHits": 1
+    }
+  },
+  "logSha256AfterRestore": "563bcfd0e00e3211995bdefe097b3096ed778a7ebed69c4e1c1614ca8187802e",
+  "logByteIdenticalRestore": true
+}
