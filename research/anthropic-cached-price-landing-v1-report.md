@@ -104,7 +104,7 @@
 | `npm run check:evidence` | ✅ 无新增 Tier-3（1283 条自证通过） |
 | `npm run build` | ✅ exit 0（产物自检通过） |
 | `npm run report:digest` | 见 §5 |
-| `npm run gate` | 49/52 步绿，步骤 50 `Real-browser acceptance` 红 **1 项** —— 见 §6.1（判据缺陷，已报 captain，不在本任务 inScope） |
+| `npm run gate` | 对齐 master `898f86f` 后：**48 个脚本，失败 0**（`✅ 本地门禁链全过`，exit 0）—— 见 §6.3；对齐前为 49/52 步绿、步骤 50 红 1 项（§6.1 的既有判据缺陷） |
 
 ### 6.1 `gate` 步骤 50 的判据缺陷：`feed 条数 == 日志全部事件数` 这个不变量是假的
 
@@ -118,10 +118,21 @@
 
 ### 6.2 PR 与推送方式（本机网络限制，如实登记）
 
-- **PR #97**：<https://github.com/buguoshixc/ai-deals-aggregator/pull/97>（base `master`、head `bd444f0e`、MERGEABLE、**未合并**）。
-- 本机 **`github.com:443` 不可达**（`git push` 两次都是 `Failed to connect to github.com port 443`；`api.github.com` / `codeload.github.com` / `ssh.github.com:443` 可达，但**没有 SSH 私钥**）⇒ 改用 **Git Data API** 推送同一份内容：blob/tree/commit/ref 逐个建，PR head = `bd444f0e`，**父提交 = 远端 master `682adde`**（比本地父 `9b72b9d` 新；推送前逐条核对过「我改的 10 个文件在远端没有别的版本」，因此没有覆盖别人的改动）。
-- 本地 commit `504eced`（父 `9b72b9d`）与远端 `bd444f0e`（父 `682adde`）**这 10 个文件逐字节相同**；本机无法 `git fetch`（同一网络限制），所以本地分支与远端分支的父不同 —— 后续 rebase/推送请注意这一点。
-- PR 的 CI `gate` 会红在步骤 50（见 §6.1），**等 t32 合并后**才会绿。
+- **PR #97**：<https://github.com/buguoshixc/ai-deals-aggregator/pull/97>（base `master`、**当前 head `5c202fa3`，父 = `898f86f`**、17 个文件、MERGEABLE、**未合并**）。
+- 本机 **`github.com:443` 不可达**（`git push` / `git fetch` 都不通；`api.github.com` / `codeload.github.com` / `ssh.github.com:443` 可达，但**没有 SSH 私钥**）⇒ 全程改用 **Git Data API** 推送：blob/tree/commit/ref 逐个建。首版 head `bd444f0e`（父 = 当时 master `682adde`），补齐两件交付后 head `fd24a677`/`32674610`，对齐 t32 后 head `5c202fa3`（父 = `898f86f`，`force: true`，因这是一次 rebase-on-master）。每次推送前都逐条核对「我改的文件在上游有没有别的版本」，从未覆盖别人的改动。
+- 本地 commit `504eced`/`ef70816`/`1ffbb7f`（父链基于 `9b72b9d`）与远端分支**这些文件的内容逐字节相同**，只是父提交不同（本机无法 `git fetch` 对齐）；后续再推送请注意这一点。
+- PR 的 CI `gate` 现随对齐后的 head 重跑；本地对齐树上的读数是 **48 个脚本失败 0 · verify 885/0**（§6.3）。
+
+### 6.3 对齐 master `898f86f`（t32 已合）之后的复跑
+
+t32 合进 master 后，本任务把 #97 对齐到 `898f86f`（新 head `5c202fa3`，**父 = `898f86f`**；经 Git Data API 推送，`force: true` 因为这是一次 rebase-on-master，推送前逐条核对：上游没有改过我这 17 个文件里的任何一个），并在**本地对齐后的树**上复跑 —— 本机 `github.com:443` 不通，所以用 Git Data API 把 master 的 50 个变更文件取回工作树拼出对齐树（`.arch-v1/t28/align-local.js`；含 t32 的 `verify-site.js`，也含**我自己的 lib 改动** —— 只把数据文件搬到 master 上是复现不出来的，这正是 t32 作者点名的那件事）：
+
+- `npm run gate` → **合计 324.7s / 48 个脚本，失败 0** · `✅ 本地门禁链全过`（exit 0）
+- `npm run verify` → **✅ 验收 885 项，失败 0 项**，t32 控制组逐项与期望一致：
+  `✓ API 价格变化订阅的 guid 逐条等于日志里落在当前窗口内的派生事件身份 — JSON 12 条 / RSS 12 条 / 窗口内日志 12 条（日志全量事件 18 条 · asOf 2026-10-08 · 窗口 2026-10-02..2026-10-08，ended/restored 用 2026-09-09..）`
+  （修复前同一条：`12 / 12 / 18` ⇒ 红。）
+- `npm run check:evidence` 绿 · `validate --strict` 绿。
+- 详细读数：`research/_raw/anthropic-cached-price-landing-v1/verify-aligned.md`。
 
 ## 7. 自审：我没证明 / 没做的事
 
