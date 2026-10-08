@@ -1,0 +1,36 @@
+{
+  "task": "anthropic-cached-price-v1",
+  "date": "2026-10-08",
+  "timeline": [
+    {
+      "date": "2026-09-28",
+      "what": "官方发布 Claude Sonnet 5.5：cache reads **$0.20**/MTok",
+      "url": "https://www.anthropic.com/claude-sonnet-5-5",
+      "kind": "official"
+    },
+    {
+      "date": "2026-10-01",
+      "what": "记录采集/核验（`verifiedAt`/`capturedAt`）：Sonnet 5.5 `cachedInput = 0.2`，引文「Hits and refreshes $0.20 / MTok」",
+      "url": "scripts/data/curated_api_plans.json",
+      "kind": "record"
+    },
+    {
+      "date": "2026-10-07",
+      "what": "官方发布 Claude Haiku 5.5，同时宣布「We're halving the price of Claude Sonnet 5.5's cache reads」⇒ 同页价格表 Sonnet 5.5 cache reads **$0.10**",
+      "url": "https://www.anthropic.com/claude-haiku-5-5",
+      "kind": "official"
+    },
+    {
+      "date": "2026-10-08",
+      "what": "出账页现场：claude.com/pricing API tab Sonnet 5.5 Read **$0.10**；legacy Sonnet 5 Read $0.20",
+      "url": "https://claude.com/pricing",
+      "kind": "official"
+    },
+    {
+      "date": "2026-10-08",
+      "what": "第三方快讯（仅线索，非官方）标题即「Anthropic 将 Claude Sonnet 5.5 缓存读取价格减半至每百万 token $0.10」",
+      "url": "https://www.lumevalley.com/article-10846.html",
+      "kind": "third-party"
+    }
+  ]
+}
