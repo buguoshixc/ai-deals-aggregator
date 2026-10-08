@@ -48,21 +48,26 @@ permissions:
 
 # 同一 ref 上新的运行取代旧的：被取代的那次报的是 **cancelled**，不在 success / skipped / neutral 之列。
 #
-# ⚠️ 2026-10-08 起：**master 上不再取消**（ci-master-gate-concurrency-v1 的取证与裁定）。
-#   实测（`research/_raw/ci-master-gate-concurrency-v1/`）：
-#     · 历史 51 次 master gate：success 46 / cancelled 4 → 取消率不高，但**突发合并时是 100%**；
-#     · 一次 5 次 master 推送（5.5 分钟内）的突发：4 次 gate 变 cancelled（其中一次已经跑了 4 分 04 秒
-#       才被取消）、3 次 Deploy 因 pending 被后一次取代；
-#     · 后果是「**合并提交本身**」的 gate 结论永久缺失 —— PR 级门禁验的是 `refs/pull/N/merge`（PR head
-#       合进当时 base 的合成合并），不是最终落到 master 上的那个合并提交。突发合并恰恰是
-#       「两个绿分支合起来语义冲突」最可能发生的时候，落点却没有结论，事后无法二分定位。
-#   为什么可以排得动：仓库是 **public**（标准 runner 分钟不计费）；gate 实测耗时中位 207s、
-#   最大 696s ⇒ 突发 k 次合并时，最新提交的结论最多晚 (k-1) × 中位值（不是无限增长）。
-#   为什么 PR / 其它分支仍然取消：同一分支被 force-push 后，旧 run 验证的是一个不再存在的 head，
-#   留着只会占并发与看板 —— 那里「取消」正是想要的语义。
-#   回滚：把下面一行改回 `cancel-in-progress: true` 即可（其它文件都不用动）。
+# ⚠️ 2026-10-08 起：**master 上既不取消、也不排队 —— 每个提交一个并发组**（ci-master-gate-concurrency-v1）。
+#   这一版是**实测逼出来的第二版**（第一版见 PR #73/#74 的历史）：
+#     · v1 = `cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}`（组仍是 `verify-<ref>`）：
+#       它挡得住「杀掉正在跑的」，**挡不住排队中的被取代** —— GitHub 的语义是「新 run 进来时，
+#       同一 group 里**先前 pending 的那个**会被取消」。实测（run #175/#176/#177，2026-10-08）：
+#       #175（11:02:54 起，跑 307s）因 v1 活了下来并 success；但排在它后面的 #176（11:05:06，
+#       **就是把这行改动合进 master 的那个合并提交**）在 11:06:51 被 #177 取代 —— 它连一个 job
+#       都没创建过（`/runs/<id>/jobs` 返回空），于是那个合并提交仍然没有结论。
+#     · v2（本版）= 把 **master 的组名带上提交 SHA**：每次推送各成一个组，谁也不取代谁、全部跑完。
+#   取证（`research/_raw/ci-master-gate-concurrency-v1/`）：
+#     · 历史 51 次 master gate：success 46 / cancelled 4 / failure 0（取消率 7.8%），但**突发时 100%**；
+#     · 一次 5 次推送（5.5 分钟）的突发：4 次 gate 被取消（其中一次已跑 4 分 04 秒）、3 次 Deploy
+#       在**排队**阶段就被取代 ⇒ 突发里只有最新一次提交拿到完整结论；
+#     · 后果：PR 级门禁验的是 `refs/pull/N/merge`（合成合并），**不是**落到 master 的那个合并提交 ——
+#       合并提交本身在最需要结论的时候（突发合并）什么都没有，事后无法二分定位。
+#   为什么排得动：仓库是 **public**（标准 runner 分钟不计费）；gate 实测中位 207s。
+#   为什么 PR / 其它分支仍然取消：同一分支被 force-push 后，旧 run 验证的是一个不再存在的 head。
+#   回滚：把 `group` 改回 `verify-${{ github.ref }}`、`cancel-in-progress` 改回 `true`（单文件两行）。
 concurrency:
-  group: verify-${{ github.ref }}
+  group: verify-${{ github.ref }}-${{ github.ref == 'refs/heads/master' && github.sha || 'ref' }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
 
 jobs:
