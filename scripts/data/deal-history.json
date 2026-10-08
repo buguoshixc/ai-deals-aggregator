@@ -2774,6 +2774,261 @@
         "verified": false
       },
       "runAt": "2026-10-07T04:29:57.213Z"
+    },
+    {
+      "id": "1fff4784ec9d",
+      "at": "2026-10-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "paid",
+        "type": "tool",
+        "category": "对话模型",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-10-08T04:40:33.266Z"
+    },
+    {
+      "id": "27b4acca203a",
+      "at": "2026-10-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "paid",
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-10-08T04:40:33.266Z"
+    },
+    {
+      "id": "3fa2cec73c43",
+      "at": "2026-10-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "对话模型",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-10-08T04:40:33.266Z"
+    },
+    {
+      "id": "44a401cd8f13",
+      "at": "2026-10-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "paid",
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-10-08T04:40:33.266Z"
+    },
+    {
+      "id": "6c02d0ffe148",
+      "at": "2026-10-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "设计创意",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-10-08T04:40:33.266Z"
+    },
+    {
+      "id": "8c2a12fcf560",
+      "at": "2026-10-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "paid",
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-10-08T04:40:33.266Z"
+    },
+    {
+      "id": "8c9181f2b117",
+      "at": "2026-10-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "设计创意",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-10-08T04:40:33.266Z"
+    },
+    {
+      "id": "9b734ca08ce5",
+      "at": "2026-10-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "音频语音",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-10-08T04:40:33.266Z"
+    },
+    {
+      "id": "9e63611224ef",
+      "at": "2026-10-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "free",
+        "type": "tool",
+        "category": "对话模型",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-10-08T04:40:33.266Z"
+    },
+    {
+      "id": "a4dc88711e74",
+      "at": "2026-10-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "paid",
+        "type": "tool",
+        "category": "智能体",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-10-08T04:40:33.266Z"
+    },
+    {
+      "id": "a9053ca847fb",
+      "at": "2026-10-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "free",
+        "type": "tool",
+        "category": "对话模型",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-10-08T04:40:33.266Z"
+    },
+    {
+      "id": "cb17bb1508c4",
+      "at": "2026-10-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-10-08T04:40:33.266Z"
+    },
+    {
+      "id": "d338170e86af",
+      "at": "2026-10-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-10-08T04:40:33.266Z"
+    },
+    {
+      "id": "d6cd29e05603",
+      "at": "2026-10-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-10-08T04:40:33.266Z"
+    },
+    {
+      "id": "d7d64e1ef240",
+      "at": "2026-10-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-10-08T04:40:33.266Z"
     }
   ]
 }
