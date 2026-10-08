@@ -4461,7 +4461,29 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     //    旧写法用 `sitemapText.split('<loc>')`，把 `<!-- <url>…</url> -->` 里的 `<loc>` 也算成员
     //    ⇒ 把某厂商的整块 `<url>` 包进注释，§18 的「sitemap 成员资格」与 `/vendor/` 枢纽入口数
     //    仍然全绿，而那一页在 sitemap 里其实已经不存在了（真删对照才会红）。
-    const sitemapText = sitemapRaw.replace(/<!--[\s\S]*?-->/g, ' ');
+    // ⚠️ t33 / t11 N15：注释还要**成对**才敢拿来剥。未闭合的 `<!--` 会让后面**整份 XML** 都变成注释
+    //    （真解析器看到的成员是 0），而 `replace(/<!--[\s\S]*?-->/g,' ')` 因为找不到 `-->`
+    //    一个字都不剥 ⇒ §18 仍然说「sitemap 有」，而 `verify:seo` 侧已经红 —— 两条判据不同解。
+    //    处置：未闭合时**从那个 `<!--` 起全按注释处理**（更严，与真解析器一致）+ 单独一条配对断言。
+    const sitemapComments = (() => {
+      let text = '';
+      let index = 0;
+      let paired = true;
+      while (index < sitemapRaw.length) {
+        const open = sitemapRaw.indexOf('<!--', index);
+        if (open < 0) { text += sitemapRaw.slice(index); break; }
+        text += sitemapRaw.slice(index, open);
+        const close = sitemapRaw.indexOf('-->', open + 4);
+        if (close < 0) { paired = false; break; }
+        index = close + 3;
+      }
+      return { text: text, paired: paired };
+    })();
+    check('§18 sitemap.xml 的 XML 注释成对（`<!--` 与 `-->` 计数相等；不成对 ⇒ 未闭合处之后全按注释处理，'
+      + '与 verify:seo 的解析结论同解）',
+    sitemapComments.paired,
+    `${(sitemapRaw.match(/<!--/g) || []).length} 个 <!-- / ${(sitemapRaw.match(/-->/g) || []).length} 个 -->`);
+    const sitemapText = sitemapComments.text;
     const samples = [
       { route: 'category/api/', kind: 'category', label: '分类落地页' },
       { route: 'vendor/zhipu/', kind: 'vendor', label: '厂商落地页' },
@@ -6949,6 +6971,38 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       const FROZEN = ${JSON.stringify(WIDE_SNOTE_FROZEN)};
       const round = n => Math.round(n * 100) / 100;
       const zeroBox = { count: 0, left: 0, right: 0, width: 0, height: 0, top: 0, scrollW: 0, clientW: 0, scrollH: 0, clientH: 0, padLeft: 0, padRight: 0, maxWidth: '', overflowWrap: '' };
+      /**
+       * t33 / t11 N14：说明**自身一个裁切声明都没有**，却被一个「overflow: hidden|clip」的**祖先**
+       * 裁掉（实测形态：8px 高 + overflow:hidden 的父盒包住 20.39px 的说明 ⇒ 视觉上切掉约 60%，
+       * 而自身 scroll == client、旧口径零码）。
+       *   · 只认「hidden」/「clip」：「auto」/「scroll」是「能滚到」，不是永久切掉；
+       *   · 判「真的切到」用**盒重叠**：说明的 border-box 越出该祖先的 border-box 超过容差；
+       *   · 取**最近**的一个（最近的祖先先切，读者的损失由它决定）。
+       */
+      const clipAncestorOf = el => {
+        const rect = el.getBoundingClientRect();
+        let node = el.parentElement;
+        while (node && node !== document.body && node.tagName !== 'HTML') {
+          const css = getComputedStyle(node);
+          const cuts = [css.overflowX, css.overflowY].some(value => value === 'hidden' || value === 'clip');
+          if (cuts) {
+            const outer = node.getBoundingClientRect();
+            const over = Math.max(0, rect.bottom - outer.bottom, outer.top - rect.top,
+              rect.right - outer.right, outer.left - rect.left);
+            if (over > ${WIDE_TOL}) {
+              return {
+                selector: node.tagName.toLowerCase()
+                  + (node.id ? '#' + node.id : '')
+                  + (typeof node.className === 'string' && node.className.trim()
+                    ? '.' + node.className.trim().split(/\\s+/)[0] : ''),
+                overflow: round(over), overflowX: css.overflowX, overflowY: css.overflowY
+              };
+            }
+          }
+          node = node.parentElement;
+        }
+        return null;
+      };
       const box = el => {
         if (!el) return Object.assign({}, zeroBox);
         const cs = getComputedStyle(el);
@@ -6965,7 +7019,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
           // 竖直裁切的**前置条件**要用的两个量（t17 裁定 ②）：会不会被裁 = overflow-y 切不切 + 有没有固定高度
           overflowY: cs.overflowY, heightStyle: cs.height,
           padLeft: parseFloat(cs.paddingLeft) || 0, padRight: parseFloat(cs.paddingRight) || 0,
-          maxWidth: cs.maxWidth, overflowWrap: cs.overflowWrap
+          maxWidth: cs.maxWidth, overflowWrap: cs.overflowWrap,
+          // t33 / t11 N14：最近的裁切祖先（没有 ⇒ null）
+          clipAncestor: clipAncestorOf(el)
         };
       };
       const contentBoxOf = el => {
@@ -7032,10 +7088,19 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       })();
       const narrowChDeclarations = (registered) => {
         const found = [];
-        const styles = Array.prototype.slice.call(document.querySelectorAll('style'));
-        for (const style of styles) {
+        const styleTexts = Array.prototype.slice.call(document.querySelectorAll('style'))
+          .map(style => style.textContent || '');
+        // t33 / t11 N19：「noscript 里的 style」—— 脚本开启时它不是 DOM 节点（按规范，noscript 子的
+        // 内容被当作**文本**），而无 JS 的读者**真的会**看到那条 ch 窄列。旧扫描面
+        // （只取 querySelectorAll('style')）对它零码。这里把 noscript 子的原文里
+        // <style>…</style> 段也纳入**同一把尺子**（同一条 stripCssComments + 同一份登记表）。
+        for (const noscript of document.querySelectorAll('noscript')) {
+          const raw = noscript.textContent || '';
+          for (const match of raw.matchAll(/<style\\b[^>]*>([\\s\\S]*?)<\\/style>/gi)) styleTexts.push(match[1]);
+        }
+        for (const styleText of styleTexts) {
           // ⚠️ 必须走 stripCssComments（字符串感知）：旧的扁平正则会「content:"/*"」吞规则。
-          const text = stripCssComments(style.textContent || '');
+          const text = stripCssComments(styleText);
           const ruleRe = /([^{}]{1,200})\{([^{}]*)\}/g;
           let rule = ruleRe.exec(text);
           while (rule) {
@@ -7194,6 +7259,34 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       //    旧写法仍然数到「恰好 1 次」（字符串还在），而那条规则**已经不在**（computed 从
       //    12px/20.4px/margin-bottom 12px 变成 14px/21px/0）。剥注释后计数变 0 ⇒ 判红。
       for (const style of styles) frozenCount += stripCssComments(style.textContent || '').split(FROZEN).length - 1;
+      /**
+       * ★ t33 / t11 N8·N9：冻结串的**生效**读数。
+       *
+       * 「每页恰好 1 次」是**文本**存在性；把那条真规则包进「@media not all { … }」或
+       * 「@supports (display: bogus) { … }」之后，文本计数仍然是 1，而规则**已经不生效**
+       * （t11 实测：.snote 的 computed 从 12px / 20.4px / margin-bottom 12px 变成 14px / 21px / 0）。
+       * 这里在屏外造一个「.snote」探针，把冻结串声明对应的**计算值**量下来；
+       * 宿主侧 wideFrozenEffectProblems() 再与规则文本逐条对账 ⇒ 红时能说清是
+       * 「串不存在」（计数为 0）还是「**串在但没生效**」（计数 1、效果对不上）。
+       * ⚠️ 本段是浏览器侧模板字符串：注释里不许出现反引号。
+       */
+      const frozenProbe = (() => {
+        const probe = document.createElement('p');
+        probe.className = 'snote';
+        probe.textContent = 'arch-frozen-probe';
+        probe.style.cssText = 'position:absolute;left:-99999px;top:0;visibility:hidden;pointer-events:none;';
+        document.body.appendChild(probe);
+        const cs = getComputedStyle(probe);
+        const root = getComputedStyle(document.documentElement);
+        const vars = {};
+        for (const name of ['--fs-sm', '--s3', '--mut']) vars[name] = String(root.getPropertyValue(name) || '').trim();
+        const reading = {
+          fontSize: cs.fontSize, marginBottom: cs.marginBottom, maxWidth: cs.maxWidth,
+          overflowWrap: cs.overflowWrap, color: cs.color, vars: vars
+        };
+        probe.remove();
+        return reading;
+      })();
       const notes = main ? Array.prototype.slice.call(main.querySelectorAll('.snote')) : [];
       /**
        * ★ notes-manifest-v1：说明容器按「槽位 id × class token 集合」分组计数。
@@ -7316,6 +7409,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
           };
         }),
         frozenCount: frozenCount,
+        frozenProbe: frozenProbe,
         notesBySignature: notesBySignature
       };
     })()`);
@@ -7323,6 +7417,49 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     geometry.note = geometry.notes.length ? geometry.notes[0].box
       : { count: 0, left: 0, right: 0, width: 0, scrollW: 0, clientW: 0 };
     return geometry;
+  }
+
+  /**
+   * t33 / t11 N8·N9：冻结串「**声明的效果**」对账。
+   *
+   * 输入 = 浏览器侧屏外 `.snote` 探针的计算值（`wideMeasure` 的 `frozenProbe`）。
+   * 把冻结串规则文本里的每条声明解析出来（`var(--x)` 就地解析成根上的值），逐条与计算值比：
+   * 对不上 ⇒ 这条规则**声明了但没生效**（实测形态：被包进 `@media not all { … }` 或假 `@supports`）。
+   *
+   * 只对账四种**有判别力**的属性（font-size / margin 下边距 / max-width / overflow-wrap）：
+   * `color` / `line-height` 会引入颜色格式（hex vs rgb）与派生量的口径问题 —— 收益低、假红风险高，故意不判。
+   */
+  function wideFrozenEffectProblems(probe, where) {
+    const problems = [];
+    const vars = probe && probe.vars ? probe.vars : {};
+    const resolveValue = value => {
+      const match = /^var\(\s*(--[A-Za-z0-9_-]+)\s*\)$/.exec(String(value).trim());
+      if (!match) return String(value).trim();
+      return String(vars[match[1]] || '').trim();
+    };
+    const body = String(WIDE_SNOTE_FROZEN).replace(/^[^{]*\{/, '').replace(/\}\s*$/, '');
+    for (const declaration of body.split(';').map(part => part.trim()).filter(Boolean)) {
+      const idx = declaration.indexOf(':');
+      if (idx < 0) continue;
+      const property = declaration.slice(0, idx).trim().toLowerCase();
+      const value = declaration.slice(idx + 1).trim();
+      if (property === 'font-size' || property === 'max-width' || property === 'overflow-wrap') {
+        const expected = resolveValue(value);
+        const actual = property === 'font-size' ? probe.fontSize
+          : property === 'max-width' ? probe.maxWidth : probe.overflowWrap;
+        if (expected && String(actual).trim() !== expected) {
+          problems.push(`${where} 冻结串的 ${property}: ${value} **没有生效**（期望 ${expected} · 实测 ${actual}）`);
+        }
+      } else if (property === 'margin') {
+        const parts = value.split(/\s+/).filter(Boolean);
+        const bottomToken = parts.length >= 3 ? parts[2] : parts[0];
+        const expected = resolveValue(bottomToken);
+        if (expected && String(probe.marginBottom).trim() !== expected) {
+          problems.push(`${where} 冻结串的 margin 下边距 ${bottomToken} **没有生效**（期望 ${expected} · 实测 ${probe.marginBottom}）`);
+        }
+      }
+    }
+    return problems;
   }
 
   /**
@@ -7504,6 +7641,15 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
             + `（scrollHeight ${note.box.scrollH} > clientHeight ${note.box.clientH}`
             + `${note.vertical ? ` · 竖排 ${note.writingMode}：横向量 ${note.box.scrollW}/${note.box.clientW} 看不出问题` : ''}）`,
           note.index);
+        }
+        // 裁切的**第三种来源**（t33 / t11 N14）：说明自身一个裁切声明都没有，却被**祖先**裁掉。
+        // 实测形态：`<div style="height:8px; overflow:hidden">` 包住 20.39px 高的说明 ⇒ 视觉上切掉约 60%，
+        // 而「自身溢出」两轴全静默（scroll == client）—— 这是这条码补上的最后一类。
+        if (boxed && note.box.clipAncestor) {
+          push('note-clipped', `${where} 说明被**裁切祖先** ${note.box.clipAncestor.selector} 裁掉约 ${note.box.clipAncestor.overflow}px`
+            + `（该祖先 overflow ${note.box.clipAncestor.overflowX}/${note.box.clipAncestor.overflowY}；`
+            + `说明自身 scrollWidth/clientWidth ${note.box.scrollW}/${note.box.clientW}、`
+            + `scrollHeight/clientHeight ${note.box.scrollH}/${note.box.clientH} 都看不出问题）`, note.index);
         }
         // ⑤ 首屏说明过长（secondary-page-content-simplification）。
         //    只判 **intro 区**（首个数据区之前的说明），上限 2 行。
@@ -8209,6 +8355,24 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
           ? `${wideFrozenDrift.length} 页不符（改动前产物在这里必然全红，这正是 M0 的反证面之一）：`
             + wideFrozenDrift.slice(0, 4).map(route => `${route || '/'}=${wideGeometry.get(`${WIDE_DESKTOP}|${route}`).frozenCount} 次`).join(' ')
           : `${wideFrozenPages.length}/${wideRoutes.length} 页恰好 1 次 · 锚点「${WIDE_SNOTE_FROZEN.slice(0, 24)}…」`);
+
+      // ---- ⑧′ 冻结串的**生效**断言（t33 / t11 N8·N9）----
+      // 上面那条只管「串在不在」；这一条管「声明有没有真的作用在 .snote 上」。两条分开报，
+      // 红时的理由就不会混：「串不存在」（count = 0）vs「**串在但没生效**」（count = 1、效果对不上）。
+      {
+        const frozenEffectProblems = [];
+        for (const route of wideRoutes) {
+          const geometry = wideGeometry.get(`${WIDE_DESKTOP}|${route}`);
+          if (!geometry || !geometry.frozenProbe) continue;
+          frozenEffectProblems.push(...wideFrozenEffectProblems(geometry.frozenProbe, route || '/'));
+        }
+        check(`§22c 冻结串的**生效**断言：规则声明的每一条效果都必须真的落在 .snote 上（${wideRoutes.length} 页）`,
+          frozenEffectProblems.length === 0,
+          frozenEffectProblems.length
+            ? `${frozenEffectProblems.length} 条没生效：` + frozenEffectProblems.slice(0, 4).join(' · ')
+              + (frozenEffectProblems.length > 4 ? ` …(+${frozenEffectProblems.length - 4})` : '')
+            : '逐条对账通过（font-size / margin 下边距 / max-width / overflow-wrap；屏外 .snote 探针）');
+      }
 
       // ---- ⑨ 760 / 360：样本集（**同一份判据**；逐行字迹按物理前置条件判 —— 760 判、360 不判）----
       const wideSampleProblems = [];
