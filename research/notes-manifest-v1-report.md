@@ -60,6 +60,14 @@ dist/_notes.ndjson   104,591 B   sha256 58a7373b502dbbde…   186 页 × 3 个�
 `vendor-material-note` 22 · `official-entry` / `api-counts` / `models-count` / `changes-lanes` 各 25 ·
 `shared-overlap-note` / `shared-tristate-note` 各 40 · `hub-*-note` 各 2 · `page-note` 28 · …共 24 类。
 
+清单长这样（节选：首行 header 的全部槽位定义太长，这里只留字段名；两页分别是「纳管页」与「台账页」原样）：
+
+```jsonc
+{"kind":"header","schemaVersion":1,"generator":"scripts/tools/build-local.js","slots":[…],"totals":{"pages":186,"declaredNotes":323,"declaredBySlot":{"main-snote":14,"main-pnote":159,"main-vsnote":150},"untrackedPages":58}}
+{"kind":"page","route":"need/student-only/","pageKind":"alias","complete":true,"declared":{"main-snote":1,"main-pnote":1,"main-vsnote":0},"floors":{"main-snote":{"min":1},"main-pnote":{"min":0},"main-vsnote":{"min":0}},"untracked":null,"notes":[{"index":0,"kind":"page-note","slot":"main-pnote","signature":"pnote","declaredBy":"build-local.js:renderDirectoryPage(page-notes)","pinned":null,"pinnedReason":null},{"index":1,"kind":"alias-note","slot":"main-snote","signature":"aliasnote snote","declaredBy":"build-local.js:renderDirectoryPage(aliasnote)","pinned":null,"pinnedReason":null}]}
+{"kind":"page","route":"models/","pageKind":"models-index","complete":false,"declared":{"main-snote":0,"main-pnote":0,"main-vsnote":0},"floors":{},"untracked":{"family":"models-index","owner":"lib/models-page.js","structural":"lib/models-page.js:845（MODELS_INDEX_DESCRIPTION 口径说明，无条件输出）","minNotes":1},"notes":[]}
+```
+
 ---
 
 ## 3. 设计

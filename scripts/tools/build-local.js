@@ -7077,12 +7077,12 @@ function selfCheck(built) {
     for (const problem of problems.slice(0, 8)) fail(problem);
     if (problems.length > 8) fail(`…另有 ${problems.length - 8} 条说明对账差异（上面是前 8 条）`);
     if (!problems.length) {
-      console.log(`  ✓ 页面级说明清单: ${readings.length} 页 × ${NOTE_SLOTS.length} 个槽位逐页对账一致`
-        + `（声明 .snote ${declaredTotal('main-snote')} 条 / 产物 ${total('main-snote')} 条 ·`
-        + ` .pnote ${total('main-pnote')} 条 · .vsnote ${total('main-vsnote')} 条）`);
-      console.log(`    · 台账（构造点在范围之外的页面族）: ${untrackedPages.length} 页`
-        + `${untrackedPages.length ? `（${[...new Set(untrackedPages.map(row => row.untracked))].join(' / ')}）` : ''}`
-        + ` · 组装点 pin 登记 ${pinnedNotes} 条 · 清单文件 ${NOTES_MANIFEST_FILE}（${notesManifestText().length} 字节）`);
+      const slotLine = NOTE_SLOTS.map(slot => `${slot.id.replace('main-', '.')} 声明 ${declaredTotal(slot.id)} / 产物 ${total(slot.id)}`).join(' · ');
+      console.log(`  ✓ 页面级说明清单: ${readings.length} 页 × ${NOTE_SLOTS.length} 个槽位逐页对账一致（${slotLine}）`);
+      console.log(`    · 逐条登记 ${[...noteIntent.values()].reduce((sum, page) => sum + page.notes.length, 0)} 条`
+        + `（其中组装点 pin ${pinnedNotes} 条）· 台账（构造点在范围之外的页面族）${untrackedPages.length} 页`
+        + `${untrackedPages.length ? `：${[...new Set(untrackedPages.map(row => row.untracked))].join(' / ')}` : ''}`);
+      console.log(`    · 清单文件 ${NOTES_MANIFEST_FILE}（${Buffer.byteLength(notesManifestText(), 'utf8')} 字节，NDJSON：首行 header + 每行一页，按 route 排序 ⇒ 逐字节可重建）`);
     }
   }
 
