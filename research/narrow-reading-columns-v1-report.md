@@ -115,3 +115,73 @@ node .arch-v1/tree-digest.cjs dist --out=.arch-v1/nrc-digest.json            # �
 * **类名无关的散文普查**（「判据只认 `.snote`」那一半）：需要构建期机器可读的「这一页应有多少条说明」清单。
 * 生产环境「最近变化」非空分支的真实样本（三份日志 19 条事件全是 `fields.type = tool`，**不造数据**）。
 * `sideways-rl` / `vertical-lr` 无真实样本；竖排轴上没做 0.85 vs 0.5 的阈值 A/B 标定（上一轮登记）。
+
+## 发布链（本轮实测读数）
+
+> 装置：`.arch-v1/nrc-online-smoke.cjs`（captain 上一轮 `.arch-v1/vn-online-smoke.cjs` 的**逐字副本**，只改了三处与产物路径/轮次标签有关的地方，判据一条未动）。
+> 原始读数：[部署前](_raw/narrow-reading-columns-v1/online-smoke-predeploy.json) ·
+> [部署后](_raw/narrow-reading-columns-v1/online-smoke.json) ·
+> 汇总 [`release.json`](_raw/narrow-reading-columns-v1/release.json)（PR / CI / 合并 / Deploy 三个 job / 前后对比）。
+
+### 1. PR 与流水线
+
+| 环节 | 读数 |
+| --- | --- |
+| PR | [#59](https://github.com/buguoshixc/ai-deals-aggregator/pull/59) → **MERGED**，`mergedAt 2026-10-08T09:13:50Z`（CST 17:13:50） |
+| 合并提交 | `ef395c0c9a81afc738df341e6fdd7b48b93c139a`（`--merge`，分支未删） |
+| 基点 | `master = 8d3767c`（= PR 的 merge-base，逐字相等）；合并时 **master 未前进**，`mergeStateStatus = CLEAN` |
+| PR 门禁 | run `37753654110`（`pull_request`，head `e96afc4`）→ **success** |
+| master 门禁 | run `37755202815`（`push`，head `ef395c0c`）→ **success** |
+| Deploy | run `37755202858`（`push`，head `ef395c0c`）→ **success**；三个 job 全绿：**prepublish / build / deploy**（deploy job 09:19:37Z 结束） |
+
+### 2. 为什么这次的「逐字节相同」是**真部署证明**
+
+上一轮产物逐字节未变，同一条判据只能证明「线上没坏」；本轮 dist 相对上一轮**只改 1 个文件**
+（`plans/coding/index.html`，见 §4），于是「线上 == 本地重建的 dist」直接判死了「线上是不是本轮这一版」。
+
+| 路由 | 部署前 线上 sha256 | 部署前 逐字节相同 | 部署后 线上 sha256 | 部署后 逐字节相同 | 字节数 前→后 |
+| --- | --- | --- | --- | --- | --- |
+| `/plans/coding/` | `184bdbd3d5a5c2a6…` | **false** | `2f593e8742a2d560…` | **true** | 282081 → **282427** |
+| `/` | `a4a12094a85214af…` | true | `a4a12094a85214af…` | true | 405756 |
+| `/changes/` | `5477661c4ba72cad…` | true | `5477661c4ba72cad…` | true | 112546 |
+| `/feeds/` | `b08670fb2856e68e…` | true | `b08670fb2856e68e…` | true | 101049 |
+| `/plans/` | `dd22bf3dd48921fd…` | true | `dd22bf3dd48921fd…` | true | 98861 |
+| `/plans/api/` | `2e5a095a87515891…` | true | `2e5a095a87515891…` | true | 237113 |
+| `/docs/data/` | `28b1386b2dbccd9d…` | true | `28b1386b2dbccd9d…` | true | 103550 |
+| `/status/` | `096e1fd06e470d74…` | true | `096e1fd06e470d74…` | true | 89196 |
+| `/need/free-api/` | `62ae8f3d736691a0…` | true | `62ae8f3d736691a0…` | true | 122048 |
+| `/need/no-card/` | `4fafdbeaefcad040…` | true | `4fafdbeaefcad040…` | true | 91987 |
+| `/category/agent/` | `60d647220a96db82…` | true | `60d647220a96db82…` | true | 94764 |
+| `/student/` | `1c77fdbf6c6db785…` | true | `1c77fdbf6c6db785…` | true | 99529 |
+| `/models/deepseek-v3.2/` | `5c9458a9a968eefc…` | true | `5c9458a9a968eefc…` | true | 89482 |
+| `/vendor/ai360/` | `314a7f41068e9a42…` | true | `314a7f41068e9a42…` | true | 97155 |
+
+（部署后那一列就是线上**当前**的字节；`/plans/coding/` 的部署后 `onlineSha256` 与部署前的 `localSha256` 逐字相同
+= `2f593e8742a2d56099521e01e1f2b91b489db0f67677b975ee7dc7e186e7de27`。）
+
+**证据链**：部署前线上是 `184bdbd3…`（上一轮产物，只有这一条路由不匹配）→ 合并 `ef395c0c` + Deploy 三 job 全绿
+→ 部署后线上是 `2f593e87…`（= 本地重建的 dist）⇒ **线上真的换成了本轮产物**，「部署发生了」从推断变成实测。
+
+### 3. 部署前后两次读数
+
+| | 部署前（captain，09:01:09Z） | 部署前（本轮复跑，09:15:05Z） | 部署后（09:20:20Z） |
+| --- | --- | --- | --- |
+| verdict | FAIL | FAIL | **PASS** |
+| 逐字节相同 | 13/14 | 13/14 | **14/14** |
+| problems | 1（只有 `/plans/coding/`） | 1（同一条，**逐字相同**） | **0** |
+| HTTP 200 / canonical 自指 / 冻结串恰好 1 次 | 14 / 14 / 14 | 14 / 14 / 14 | 14 / 14 / 14 |
+| 竖排泄漏 | 0 | 0 | 0 |
+| 载体页 `need/free-api/` 页面级说明 | 1 | 1 | **1** |
+
+* 两次部署前读数**逐字段相同**（14 条路由的 `onlineSha256`/`sameBytes`/`frozenCount`/`snoteCount`/`verticalLeak`/`canonicalSelf`/`bytes` 共 **0 处差异**）
+  ⇒ 「线上当时是旧产物」不是单点偶然。
+* 部署后 `/changes/` 分栏 7 · 起算日 true · 免责句 true（与部署前一致：本轮不动这一页）。
+* 部署后重建 dist 的**全树摘要** `75ecb98344a855b7…` 与 §4 登记的改后读数一致 —— 独立复现，不是引用。
+
+### 4. 复跑命令
+
+```powershell
+git worktree add .worktrees/release-v2 -b docs/narrow-reading-columns-v1-release-readings origin/master
+cd .worktrees/release-v2; npm ci; node scripts/tools/build-local.js   # 303 文件 / 全树摘要 75ecb983…
+node .arch-v1/nrc-online-smoke.cjs https://buguoshixc.github.io/ai-deals-aggregator/ online-smoke.json
+```
