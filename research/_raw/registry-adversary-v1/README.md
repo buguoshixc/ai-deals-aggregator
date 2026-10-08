@@ -23,6 +23,7 @@
 | `sandbox-readings.json` | 两个登记表沙箱（`entries: []` / 第二条登记未居中+幽灵条目） |
 | `probe-readings.json` | 独立探针读数（几何/生效样式/字迹，9 次探针运行） |
 | `findings.json` | 结论清单：守住 / 破防 / 未覆盖 / 假红，逐条附读数与修法建议 |
+| `pr-body.md` | PR #64 正文的**逐字存档**（仓里前两轮的惯例；由 `.arch-v1/archive-pr-body.cjs` 抓取，不由 `make-evidence.cjs` 生成） |
 
 ## 复跑（在 `.worktrees/criteria-adversary-v1` 下）
 
