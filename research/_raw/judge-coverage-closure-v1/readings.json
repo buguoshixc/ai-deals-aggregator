@@ -1,0 +1,32 @@
+{
+  "what": "judge-coverage-closure-v1 读数：760/360 样本集扩容 + 补一档 950（真判据 + 真产物）",
+  "base": "origin/master = e1caef9 · 分支 judge-coverage-closure-v1 · 唯一改动文件 scripts/tools/verify-site.js",
+  "sampleSet": {
+    "before": { "pages": 29, "note: t17 实测其中只有 13 页真的有说明": true, "codesAt760": 0, "codesAt360": 0, "phaseSeconds": 4.1 },
+    "after": { "pages": 79, "how": "原样本集 ∪ 1440 档量到 ≥1 条说明的页（去重）", "codesAt760": 0, "codesAt360": 0, "phaseSeconds": 12.8 },
+    "assertionLine": "✓ §22c @760 样本集 79 页（同一份判据；字迹按物理前置条件判…） — 0 违规码"
+  },
+  "midStation": {
+    "width": 950,
+    "why": "产物里 4 条共享 @media 条件活在 761–1439（(min-width:761px) and (max-width:940px) 完全落在里面），1440/1600 都看不见",
+    "threePlaces": ["常量 WIDE_MID + WIDE_DESKTOP_VIEWPORTS", "量测循环（按该数组跑，自动带上）", "wideNoteRowsByViewport 汇总键 + 耗时行"],
+    "codes": 0,
+    "seconds": 9.1,
+    "m10": "靶位仍是 1600（缺陷藏在 @media(min-width:1500px)）；本轮 0 失败含 M10 的锚点唯一 + 复测断言"
+  },
+  "timings": {
+    "before": { "wall": 108.1, "navigations": 634, "phases": { "1440": 8.9, "1600": 8.3, "390": 8.6, "samples": 4.1 } },
+    "after": { "wall": 135.6, "navigations": 920, "phases": { "1440": 9.9, "1600": 9.5, "950": 9.1, "390": 10.1, "samples": 12.8 } },
+    "deltaWallSeconds": 27.5,
+    "note": "相位秒数只计量测循环（不含导航与其余小节），不能与 wall 相加；t17 的 +32.6s 与这里的样本相位 +8.7s 口径不同，不可混用"
+  },
+  "assertions": { "before": 880, "after": 882, "delta": 2, "note": "+1 = 950 档逐条断言，+1 = 汇总表那一档的自检" },
+  "thresholdsUnchanged": { "WIDE_NOTE_RATIO": 0.85, "WIDE_TOL": 1, "centeringTolerancePx": 2, "textFloor": "未碰（scripts/lib/seo.js 本轮未改）" },
+  "gates": { "verifySite": "882 / 0", "checkCi": "39 / 0", "checkEvidence": "绿", "build": "exit 0", "products": "0 变化（纯判据改动）" },
+  "boundsKeptForCaptain": [
+    "② 的轴只按 .snote 自身 computed writing-mode 选；后代的 writing-mode / text-orientation 不在判据里",
+    "② 的 columnSpan 读的是未裁切字迹，不区分「可见铺满」与「溢出铺满」",
+    "档位与样本面：1440/1600 全站逐条 · 760/360 仅样本集 · 390 只量 scrollWidth ⇒ 761–1439px 无档位；样本集外的页面在 760/360 未覆盖（本轮后半条已闭合）",
+    "竖排假红带的当前命中数 = 0，以及将来出现的可检测信号（t17 §2.5 的三条）"
+  ]
+}

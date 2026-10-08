@@ -6567,7 +6567,15 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   const WIDE_WIDE = 1600;                    // 桌面档二（全站逐条；只在 ≥1500px 生效的缺陷靠它）
   const WIDE_NARROW = 390;                   // 全站溢出档（只量 documentElement.scrollWidth）
   const WIDE_SAMPLE_VIEWPORTS = [760, 360];  // 只量样本集的两档
-  const WIDE_DESKTOP_VIEWPORTS = [WIDE_DESKTOP, WIDE_WIDE];
+  /**
+   * 中档 950（judge-coverage-closure-v1）：产物里有 4 条共享 `@media` 条件活在 **761–1439** 区间
+   * （`(min-width:761px) and (max-width:940px)` 完全落在里面），1440/1600 两档**都看不见它们**。
+   * t17 实测：这一档跑全站 **0 页违规码**（补上它不会凭空多出违规），成本与 1440/1600 同量级。
+   * ⚠️ 加档位必须三处一起加（这个常量 / 量测循环 / `wideNoteRowsByViewport` 汇总表），
+   * 否则会出现「量了但没进汇总」的静默缺档。
+   */
+  const WIDE_MID = 950;
+  const WIDE_DESKTOP_VIEWPORTS = [WIDE_DESKTOP, WIDE_WIDE, WIDE_MID];
   // 冻结串：T1 放进 index.html 共享 <style> 的**唯一**一条 .snote 规则，逐字一致（不许改空格）。
   // 它既是变异牙的锚点，也是「一处定义、全站生效」的机器可读证据：每页内联样式里恰好 1 次。
   const WIDE_SNOTE_FROZEN = '.snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }';
@@ -7464,8 +7472,17 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         widePhaseSeconds.narrow390 = Math.round((Date.now() - phaseStart) / 100) / 10;
       }
 
-      // ---- 760 / 360：只量样本集（同一份判据）----
-      const wideSampleRoutes = wideSampleSet(wideRoutes, wideMeta).filter(route => wideDiskSet.has(route));
+      // ---- 760 / 360：样本集 ∪ **全部有说明的页**（judge-coverage-closure-v1）----
+      // t17 实测：原样本集 29 页里**只有 13 页真的有说明** ⇒ 50 个有说明的页从没在 760/360 量过
+      // （几乎全是 `/models/<slug>/`）。这里把「1440 档量到过 ≥1 条说明的页」并进样本集：
+      // **扩的是页集，不是阈值** —— 新页集里出现违规码就红（实测 0 新增）。
+      const wideNoteRoutes = [];
+      for (const [key, geometry] of wideGeometry) {
+        if (!key.startsWith(`${WIDE_DESKTOP}|`)) continue;
+        if ((geometry.noteCount || 0) > 0) wideNoteRoutes.push(key.slice(String(WIDE_DESKTOP).length + 1));
+      }
+      const wideSampleRoutes = [...new Set([...wideSampleSet(wideRoutes, wideMeta), ...wideNoteRoutes])]
+        .filter(route => wideDiskSet.has(route)).sort();
       const wideSampleGeometry = new Map();
       {
         const phaseStart = Date.now();
@@ -7548,7 +7565,10 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       };
       const wideNoteRows1440 = wideNoteRowsAt(WIDE_DESKTOP);
       const wideNoteRows1600 = wideNoteRowsAt(WIDE_WIDE);
-      const wideNoteRowsByViewport = { [WIDE_DESKTOP]: wideNoteRows1440, [WIDE_WIDE]: wideNoteRows1600 };
+      const wideNoteRowsMid = wideNoteRowsAt(WIDE_MID);   // 950 档（judge-coverage-closure-v1）
+      const wideNoteRowsByViewport = {
+        [WIDE_DESKTOP]: wideNoteRows1440, [WIDE_WIDE]: wideNoteRows1600, [WIDE_MID]: wideNoteRowsMid
+      };
 
       // ---- 汇总（全部从上面那一次判据来，不另算一套）----
       const wideSummary = {};
@@ -8748,7 +8768,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         + ` · @${WIDE_WIDE} 窄 ${wideSummary[WIDE_WIDE].narrow.length} / 字迹窄 ${wideSummary[WIDE_WIDE].inkNarrow.length} 条 · 溢出 ${wideOverflowPages.length} 页`
         + ` · ② 作用域（物理）：${wideSampleScopeText}`
         + ` · detail-main 违规 ${wideMissingDetailMain.length + wideUnexpectedDetailMain.length} 页 · 未分类 ${wideUnclassified.length} 页`
-        + ` · 导航 ${wideNavigations} 次（1440 ${widePhaseSeconds[`desktop${WIDE_DESKTOP}`]}s / 1600 ${widePhaseSeconds[`desktop${WIDE_WIDE}`]}s / 390 ${widePhaseSeconds.narrow390}s / 样本 ${widePhaseSeconds.samples}s）`
+        + ` · 导航 ${wideNavigations} 次（1440 ${widePhaseSeconds[`desktop${WIDE_DESKTOP}`]}s / 1600 ${widePhaseSeconds[`desktop${WIDE_WIDE}`]}s / 950 ${widePhaseSeconds[`desktop${WIDE_MID}`]}s / 390 ${widePhaseSeconds.narrow390}s / 样本 ${widePhaseSeconds.samples}s）`
         + ` · 本节 JS 错误 ${wideErrors.length} 个 · 外部请求 ${wideExternal.length} 个`);
     } finally {
       await widePage.close();
