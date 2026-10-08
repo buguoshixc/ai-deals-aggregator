@@ -1,0 +1,562 @@
+{
+  "task": "sources-residue-v1",
+  "measure": "term-residue",
+  "term": "原始出处",
+  "date": "2026-10-08",
+  "root": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\sources-residue-v1",
+  "trackedFileCount": 2612,
+  "distFileCount": 278,
+  "distDirUsed": "dist",
+  "totalOccurrences": 57,
+  "totalLines": 44,
+  "byBucket": {
+    "docs": 40,
+    "source": 16,
+    "product": 1
+  },
+  "files": [
+    {
+      "file": "dist/index.html",
+      "bucket": "product",
+      "occurrences": 1,
+      "lines": [
+        "dist/index.html:1441"
+      ]
+    },
+    {
+      "file": "docs/SCHEMA-v1.3.md",
+      "bucket": "docs",
+      "occurrences": 2,
+      "lines": [
+        "docs/SCHEMA-v1.3.md:30",
+        "docs/SCHEMA-v1.3.md:88"
+      ]
+    },
+    {
+      "file": "index.html",
+      "bucket": "source",
+      "occurrences": 1,
+      "lines": [
+        "index.html:1348"
+      ]
+    },
+    {
+      "file": "mockups/v3/_tools/build.js",
+      "bucket": "docs",
+      "occurrences": 1,
+      "lines": [
+        "mockups/v3/_tools/build.js:407"
+      ]
+    },
+    {
+      "file": "mockups/v3/B-balanced/detail.html",
+      "bucket": "docs",
+      "occurrences": 1,
+      "lines": [
+        "mockups/v3/B-balanced/detail.html:68"
+      ]
+    },
+    {
+      "file": "NEXT-STEPS.md",
+      "bucket": "docs",
+      "occurrences": 1,
+      "lines": [
+        "NEXT-STEPS.md:106"
+      ]
+    },
+    {
+      "file": "README.md",
+      "bucket": "docs",
+      "occurrences": 1,
+      "lines": [
+        "README.md:818"
+      ]
+    },
+    {
+      "file": "research/_raw/coverage-depth-v1/gap-closure/domains.txt",
+      "bucket": "docs",
+      "occurrences": 1,
+      "lines": [
+        "research/_raw/coverage-depth-v1/gap-closure/domains.txt:11"
+      ]
+    },
+    {
+      "file": "research/_raw/mock-B-detail/metrics.json",
+      "bucket": "docs",
+      "occurrences": 1,
+      "lines": [
+        "research/_raw/mock-B-detail/metrics.json:480"
+      ]
+    },
+    {
+      "file": "research/_raw/mock-B-detail/tokens.json",
+      "bucket": "docs",
+      "occurrences": 1,
+      "lines": [
+        "research/_raw/mock-B-detail/tokens.json:386"
+      ]
+    },
+    {
+      "file": "research/_raw/v3.0-gate/t12-verify.json",
+      "bucket": "docs",
+      "occurrences": 4,
+      "lines": [
+        "research/_raw/v3.0-gate/t12-verify.json:696 (×2)",
+        "research/_raw/v3.0-gate/t12-verify.json:701 (×2)"
+      ]
+    },
+    {
+      "file": "research/_raw/v3.0-gate/t12-verify2.json",
+      "bucket": "docs",
+      "occurrences": 4,
+      "lines": [
+        "research/_raw/v3.0-gate/t12-verify2.json:696 (×2)",
+        "research/_raw/v3.0-gate/t12-verify2.json:701 (×2)"
+      ]
+    },
+    {
+      "file": "research/_raw/v3.0-gate/t12-verify3.json",
+      "bucket": "docs",
+      "occurrences": 4,
+      "lines": [
+        "research/_raw/v3.0-gate/t12-verify3.json:699 (×2)",
+        "research/_raw/v3.0-gate/t12-verify3.json:704 (×2)"
+      ]
+    },
+    {
+      "file": "research/_raw/v3.0-gate/t12-verify4.json",
+      "bucket": "docs",
+      "occurrences": 4,
+      "lines": [
+        "research/_raw/v3.0-gate/t12-verify4.json:702 (×2)",
+        "research/_raw/v3.0-gate/t12-verify4.json:707 (×2)"
+      ]
+    },
+    {
+      "file": "research/_raw/v3.0-gate/t12-verify5.json",
+      "bucket": "docs",
+      "occurrences": 4,
+      "lines": [
+        "research/_raw/v3.0-gate/t12-verify5.json:698 (×2)",
+        "research/_raw/v3.0-gate/t12-verify5.json:703 (×2)"
+      ]
+    },
+    {
+      "file": "research/coverage-expansion-v1-self-audit.md",
+      "bucket": "docs",
+      "occurrences": 1,
+      "lines": [
+        "research/coverage-expansion-v1-self-audit.md:350"
+      ]
+    },
+    {
+      "file": "research/quality-closure/CAPTAIN-LEDGER.md",
+      "bucket": "docs",
+      "occurrences": 3,
+      "lines": [
+        "research/quality-closure/CAPTAIN-LEDGER.md:165 (×2)",
+        "research/quality-closure/CAPTAIN-LEDGER.md:166"
+      ]
+    },
+    {
+      "file": "research/quality-closure/QUALITY_CLOSURE_REPORT.md",
+      "bucket": "docs",
+      "occurrences": 4,
+      "lines": [
+        "research/quality-closure/QUALITY_CLOSURE_REPORT.md:267 (×2)",
+        "research/quality-closure/QUALITY_CLOSURE_REPORT.md:273",
+        "research/quality-closure/QUALITY_CLOSURE_REPORT.md:702"
+      ]
+    },
+    {
+      "file": "research/quality-closure/source-revalidation.md",
+      "bucket": "docs",
+      "occurrences": 1,
+      "lines": [
+        "research/quality-closure/source-revalidation.md:85"
+      ]
+    },
+    {
+      "file": "research/v1.3-evidence-provenance-report.md",
+      "bucket": "docs",
+      "occurrences": 2,
+      "lines": [
+        "research/v1.3-evidence-provenance-report.md:23",
+        "research/v1.3-evidence-provenance-report.md:50"
+      ]
+    },
+    {
+      "file": "scripts/data/official_urls.json",
+      "bucket": "source",
+      "occurrences": 1,
+      "lines": [
+        "scripts/data/official_urls.json:3"
+      ]
+    },
+    {
+      "file": "scripts/lib/archive.js",
+      "bucket": "source",
+      "occurrences": 1,
+      "lines": [
+        "scripts/lib/archive.js:685"
+      ]
+    },
+    {
+      "file": "scripts/lib/audience.js",
+      "bucket": "source",
+      "occurrences": 2,
+      "lines": [
+        "scripts/lib/audience.js:746",
+        "scripts/lib/audience.js:747"
+      ]
+    },
+    {
+      "file": "scripts/lib/history.js",
+      "bucket": "source",
+      "occurrences": 2,
+      "lines": [
+        "scripts/lib/history.js:87",
+        "scripts/lib/history.js:192"
+      ]
+    },
+    {
+      "file": "scripts/lib/migrate-audience.js",
+      "bucket": "source",
+      "occurrences": 1,
+      "lines": [
+        "scripts/lib/migrate-audience.js:101"
+      ]
+    },
+    {
+      "file": "scripts/tools/audience-selftest.js",
+      "bucket": "source",
+      "occurrences": 7,
+      "lines": [
+        "scripts/tools/audience-selftest.js:1020 (×2)",
+        "scripts/tools/audience-selftest.js:1022",
+        "scripts/tools/audience-selftest.js:1026",
+        "scripts/tools/audience-selftest.js:1027",
+        "scripts/tools/audience-selftest.js:1030",
+        "scripts/tools/audience-selftest.js:1031"
+      ]
+    },
+    {
+      "file": "scripts/tools/provenance-selftest.js",
+      "bucket": "source",
+      "occurrences": 1,
+      "lines": [
+        "scripts/tools/provenance-selftest.js:264"
+      ]
+    }
+  ],
+  "hits": [
+    {
+      "file": "NEXT-STEPS.md",
+      "line": 106,
+      "countInLine": 1,
+      "bucket": "docs",
+      "text": "3. **术语残留（DEFERRED）**：历史层 / 信息流仍把 `sourceUrl` 叫「原始出处」，而该 URL 在生产数据里**今日不可达/语义已分角色**"
+    },
+    {
+      "file": "README.md",
+      "line": 818,
+      "countInLine": 1,
+      "bucket": "docs",
+      "text": "- **详情页有「信息来源」块（v1.3）**：官方页面 / 原始出处 / 收录来源 / 来源类型 / 采集方式 /"
+    },
+    {
+      "file": "docs/SCHEMA-v1.3.md",
+      "line": 30,
+      "countInLine": 1,
+      "bucket": "docs",
+      "text": "- `url`（官方落地页）、`sourceUrl`（原始出处/聚合站署名）、`source`（采集来源名）"
+    },
+    {
+      "file": "docs/SCHEMA-v1.3.md",
+      "line": 88,
+      "countInLine": 1,
+      "bucket": "docs",
+      "text": "官方页面 · 原始出处 · 收录来源 · 来源类型 · 采集方式 · 首次收录 · 最近发现 ·"
+    },
+    {
+      "file": "index.html",
+      "line": 1348,
+      "countInLine": 1,
+      "bucket": "source",
+      "text": "    const HISTORY_WORDING = {\"HISTORY_LABELS\":{\"sectionTitle\":\"变更记录\",\"empty\":\"暂无变更记录\",\"since\":\"变更记录自 {date} 起（此前状态没有记录）\",\"more\":\"另有 {n} 条更早的记录未在此显示\",\"from\":\"原\",\"to\":\"新\"},\"HISTORY_TYPES\":{\"created\":\"首次收录\",\"updated\":\"信息更新\",\"benefit_changed\":\"优惠内容变化\",\"eligibility_changed\":\"领取条件变化\",\"expiry_changed\":\"有效期变化\",\"ended\":\"不再收录\",\"restored\":\"重新出现\"},\"HISTORY_END_REASONS\":{\"source_no_longer_lists\":\"来源不再列出（连续多次成功 …"
+    },
+    {
+      "file": "mockups/v3/B-balanced/detail.html",
+      "line": 68,
+      "countInLine": 1,
+      "bucket": "docs",
+      "text": "    来源署名：Layer3Labs · <a href=\"https://www.layer3labs.io/ai-discounts\">原始出处</a><br>"
+    },
+    {
+      "file": "mockups/v3/_tools/build.js",
+      "line": 407,
+      "countInLine": 1,
+      "bucket": "docs",
+      "text": "    来源署名：${esc(bg.source || '人工策展')}${bg.sourceUrl ? ` · <a href=\"${esc(bg.sourceUrl)}\">原始出处</a>` : ''}<br>"
+    },
+    {
+      "file": "research/_raw/coverage-depth-v1/gap-closure/domains.txt",
+      "line": 11,
+      "countInLine": 1,
+      "bucket": "docs",
+      "text": "{\"_comment\":\"聚合站条目缺官方落地页时的官方页映射。key 为 lib/dedup.js 的 aliasKey(title)。所有 URL 都经 scripts/tools/check-links.js 实测可访问。\",\"_roles\":\"t7：四个 URL 字段的角色**不是同一个东西**，刻意不合并（审计 F-r1-identity-004 / P3-11 的处置）。① `deal.url` / `plan.officialUrl` = **官方落地页**（读者点「查看」去的页面；渲染成「官方页面」行）：必须是本登记表或 providers.json 的官方域，不得是聚合站。② `deal.sourceUrl` / `plan.sourceUrl` = **收录渠道**（渲染成「原始出处」行）：这条记录最初是从哪里被发现的，**允许**是第三方目录站（sourceType= …"
+    },
+    {
+      "file": "research/_raw/mock-B-detail/metrics.json",
+      "line": 480,
+      "countInLine": 1,
+      "bucket": "docs",
+      "text": "          \"text\": \"来源署名：Layer3Labs · 原始出处 本页 canonical：http\","
+    },
+    {
+      "file": "research/_raw/mock-B-detail/tokens.json",
+      "line": 386,
+      "countInLine": 1,
+      "bucket": "docs",
+      "text": "        \"text\": \"来源署名：Layer3Labs · 原始出处 本页 canonical：http\","
+    },
+    {
+      "file": "research/_raw/v3.0-gate/t12-verify.json",
+      "line": 696,
+      "countInLine": 2,
+      "bucket": "docs",
+      "text": "      \"detail\": \"信息来源 官方页面 https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg 原始出处 未署名原始出处 收录来源 百度千帆\""
+    },
+    {
+      "file": "research/_raw/v3.0-gate/t12-verify.json",
+      "line": 701,
+      "countInLine": 2,
+      "bucket": "docs",
+      "text": "      \"detail\": \"信息来源 官方页面 https://www.volcengine.com/docs/6359/1279663 原始出处 未署名原始出处 收录来源 Curated\""
+    },
+    {
+      "file": "research/_raw/v3.0-gate/t12-verify2.json",
+      "line": 696,
+      "countInLine": 2,
+      "bucket": "docs",
+      "text": "      \"detail\": \"信息来源 官方页面 https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg 原始出处 未署名原始出处 收录来源 百度千帆\""
+    },
+    {
+      "file": "research/_raw/v3.0-gate/t12-verify2.json",
+      "line": 701,
+      "countInLine": 2,
+      "bucket": "docs",
+      "text": "      \"detail\": \"信息来源 官方页面 https://www.volcengine.com/docs/6359/1279663 原始出处 未署名原始出处 收录来源 Curated\""
+    },
+    {
+      "file": "research/_raw/v3.0-gate/t12-verify3.json",
+      "line": 699,
+      "countInLine": 2,
+      "bucket": "docs",
+      "text": "      \"detail\": \"信息来源 官方页面 https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg 原始出处 未署名原始出处 收录来源 百度千帆\""
+    },
+    {
+      "file": "research/_raw/v3.0-gate/t12-verify3.json",
+      "line": 704,
+      "countInLine": 2,
+      "bucket": "docs",
+      "text": "      \"detail\": \"信息来源 官方页面 https://www.volcengine.com/docs/6359/1279663 原始出处 未署名原始出处 收录来源 Curated\""
+    },
+    {
+      "file": "research/_raw/v3.0-gate/t12-verify4.json",
+      "line": 702,
+      "countInLine": 2,
+      "bucket": "docs",
+      "text": "      \"detail\": \"信息来源 官方页面 https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg 原始出处 未署名原始出处 收录来源 百度千帆\""
+    },
+    {
+      "file": "research/_raw/v3.0-gate/t12-verify4.json",
+      "line": 707,
+      "countInLine": 2,
+      "bucket": "docs",
+      "text": "      \"detail\": \"信息来源 官方页面 https://www.volcengine.com/docs/6359/1279663 原始出处 未署名原始出处 收录来源 Curated\""
+    },
+    {
+      "file": "research/_raw/v3.0-gate/t12-verify5.json",
+      "line": 698,
+      "countInLine": 2,
+      "bucket": "docs",
+      "text": "      \"detail\": \"信息来源 官方页面 https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg 原始出处 未署名原始出处 收录来源 百度千帆\""
+    },
+    {
+      "file": "research/_raw/v3.0-gate/t12-verify5.json",
+      "line": 703,
+      "countInLine": 2,
+      "bucket": "docs",
+      "text": "      \"detail\": \"信息来源 官方页面 https://www.volcengine.com/docs/6359/1279663 原始出处 未署名原始出处 收录来源 Curated\""
+    },
+    {
+      "file": "research/coverage-expansion-v1-self-audit.md",
+      "line": 350,
+      "countInLine": 1,
+      "bucket": "docs",
+      "text": "| R-1 | P3 | 历史层与档案页仍把 `sourceUrl` 显示为「原始出处」而该标签在**生产今日不可达**（deal-history 事件 0、档案详情页 0） | 残余登记表 / `NEXT-STEPS.md`；**DEFERRED**（不为一条跑不到的路径改代码） |"
+    },
+    {
+      "file": "research/quality-closure/CAPTAIN-LEDGER.md",
+      "line": 165,
+      "countInLine": 2,
+      "bucket": "docs",
+      "text": "- `[成员自述]` t7 补充项（captain 授权，走 evidence_note，原判不变）：`SOURCE_LABELS.origin`「原始出处」→「**收录渠道**」+ 空态同词；source block 内「原始出处」**217 → 0**、「收录渠道」**0 → 217**；audience-selftest 187 → 191 项 0 失败；顺带核查 `url` 字段标签结论：directory 60 条里 `url` 落在目录站的 **0** 条、P1-6 那 14 条 **14/14** 在登记官方域 ⇒「官方页面」标签**没有**误称官方（唯一例外 `gptimage-2-5.com` 属已裁决情形）。"
+    },
+    {
+      "file": "research/quality-closure/CAPTAIN-LEDGER.md",
+      "line": 166,
+      "countInLine": 1,
+      "bucket": "docs",
+      "text": "- `[captain 裁定]` 四条：① **stability 不进 history 跟踪：批准**（分类而非厂商变化，绑定会造 4 条假事件；不得改 `api-plan-history.js`）；② anthropic officialUrl → 按 T13 第 13 条处置（新址无法确认为定价页则不改数据、只写处置理由，附重定向证据），**不另开任务**；③ **历史层/信息流「原始出处」措辞：DEFERRED**——captain 查证该标签在生产**今日不可达**（deal-history 事件 0、生产档案详情页 0），故只登记为文档/剩余风险待办（T21），不动 `history.js`/`feeds.js`/`archive.js`；④ **新派 T13 第 14 条**：修 `/changes/` API 价格变化块把生命周期事件渲染成「新增：—」（见下 T07）。"
+    },
+    {
+      "file": "research/quality-closure/QUALITY_CLOSURE_REPORT.md",
+      "line": 267,
+      "countInLine": 2,
+      "bucket": "docs",
+      "text": "标签同步：`SOURCE_LABELS.origin`「原始出处」→「**收录渠道**」（`scripts/lib/audience.js` 与 `index.html` 的 `SOURCE_WORDING` 两副本逐字同值；空态 `noOrigin` 同词改成「未署名收录渠道」）。回放同一批 134 条记录：详情页「原始出处」出现 **217 → 0** 次、「收录渠道」**0 → 217** 次，83 条空态计数不变。"
+    },
+    {
+      "file": "research/quality-closure/QUALITY_CLOSURE_REPORT.md",
+      "line": 273,
+      "countInLine": 1,
+      "bucket": "docs",
+      "text": "**残留（DEFERRED）**：历史层与档案页仍把同一字段显示为「原始出处」（`lib/history.js`、`HISTORY_WORDING.HISTORY_FIELD_LABELS.sourceUrl`、`lib/archive.js` 的一处字面量）。**当前不可达**（deal-history 事件 0、档案详情页 0），所以不为了「统一」去改一条跑不到的路径；已记入 `RECLASSIFIED_FINDINGS` 与 `NEXT-STEPS`。"
+    },
+    {
+      "file": "research/quality-closure/QUALITY_CLOSURE_REPORT.md",
+      "line": 702,
+      "countInLine": 1,
+      "bucket": "docs",
+      "text": "12. **术语残留（DEFERRED）**：历史层 / 档案页仍显示「原始出处」，当前不可达。"
+    },
+    {
+      "file": "research/quality-closure/source-revalidation.md",
+      "line": 85,
+      "countInLine": 1,
+      "bucket": "docs",
+      "text": "**为什么仍不定案**：① 记录没有 `sourceUrl`，无法确认其原始出处就是这页；② 「拼好模」是否为记录所指的活动，无法从记录文本证实；③ 本机抓不到记录 URL 的正文。"
+    },
+    {
+      "file": "research/v1.3-evidence-provenance-report.md",
+      "line": 23,
+      "countInLine": 1,
+      "bucket": "docs",
+      "text": "| 6 | 详情页如何展示 | RENDER-CORE 的 `sourceBlockHtml()`，弹层与静态页**同一个函数**：官方页面 / 原始出处 / 收录来源 / 来源类型 / 采集方式 / 首次收录 / 最近发现 / 最近成功采集 / 断言依据 / 官方原文片段 ＋ 固定免责句 |"
+    },
+    {
+      "file": "research/v1.3-evidence-provenance-report.md",
+      "line": 50,
+      "countInLine": 1,
+      "bucket": "docs",
+      "text": "| `sourceUrl`（原始出处署名） | 51 条 |"
+    },
+    {
+      "file": "scripts/data/official_urls.json",
+      "line": 3,
+      "countInLine": 1,
+      "bucket": "source",
+      "text": "  \"_roles\": \"t7：四个 URL 字段的角色**不是同一个东西**，刻意不合并（审计 F-r1-identity-004 / P3-11 的处置）。① `deal.url` / `plan.officialUrl` = **官方落地页**（读者点「查看」去的页面；渲染成「官方页面」行）：必须是本登记表或 providers.json 的官方域，不得是聚合站。② `deal.sourceUrl` / `plan.sourceUrl` = **收录渠道**（渲染成「原始出处」行）：这条记录最初是从哪里被发现的，**允许**是第三方目录站（sourceType=directory 的来源），它与官方落地页不同域是正常的。③ `deal.provenance.sourceUrl` = **断言依据出处**：字段值是从哪一页读来的（v1.1 的 evidence 依据链）。④ `evid …"
+    },
+    {
+      "file": "scripts/lib/archive.js",
+      "line": 685,
+      "countInLine": 1,
+      "bucket": "source",
+      "text": "    entry.source.sourceUrl ? `<a href=\"${escapeHtml(entry.source.sourceUrl)}\" rel=\"noopener\">原始出处 ↗</a>` : null,"
+    },
+    {
+      "file": "scripts/lib/audience.js",
+      "line": 746,
+      "countInLine": 1,
+      "bucket": "source",
+      "text": "    // （这条记录最初从哪里被发现，允许是第三方目录站），不是「原始出处」—— 旧词会让读者"
+    },
+    {
+      "file": "scripts/lib/audience.js",
+      "line": 747,
+      "countInLine": 1,
+      "bucket": "source",
+      "text": "    // 把它读成「官方原始出处」，与 Prompt §7.1「sourceUrl 是第三方时 UI 必须使用准确语义」相反。"
+    },
+    {
+      "file": "scripts/lib/history.js",
+      "line": 87,
+      "countInLine": 1,
+      "bucket": "source",
+      "text": "  sourceUrl: 'updated',   // 原始出处换了"
+    },
+    {
+      "file": "scripts/lib/history.js",
+      "line": 192,
+      "countInLine": 1,
+      "bucket": "source",
+      "text": "    sourceUrl: '原始出处',"
+    },
+    {
+      "file": "scripts/lib/migrate-audience.js",
+      "line": 101,
+      "countInLine": 1,
+      "bucket": "source",
+      "text": " * 而既有条目的 `sourceUrl` 是「这条优惠的原始出处」，多数为 null；照抄会产出一份"
+    },
+    {
+      "file": "scripts/tools/audience-selftest.js",
+      "line": 1020,
+      "countInLine": 2,
+      "bucket": "source",
+      "text": "  // sourceUrl 可能是第三方目录站，标成「原始出处」会被读成\"官方原始出处\"）。"
+    },
+    {
+      "file": "scripts/tools/audience-selftest.js",
+      "line": 1022,
+      "countInLine": 1,
+      "bucket": "source",
+      "text": "  check('牙⑥ 顶层 sourceUrl 的标签是「收录渠道」（不是「原始出处」）',"
+    },
+    {
+      "file": "scripts/tools/audience-selftest.js",
+      "line": 1026,
+      "countInLine": 1,
+      "bucket": "source",
+      "text": "  const bentOrigin = html.replace('\"origin\":\"收录渠道\"', '\"origin\":\"原始出处\"');"
+    },
+    {
+      "file": "scripts/tools/audience-selftest.js",
+      "line": 1027,
+      "countInLine": 1,
+      "bucket": "source",
+      "text": "  check('牙⑥ 前端把标签改回「原始出处」→ checkWordingContract 立刻红',"
+    },
+    {
+      "file": "scripts/tools/audience-selftest.js",
+      "line": 1030,
+      "countInLine": 1,
+      "bucket": "source",
+      "text": "  const bentNoOrigin = html.replace('\"noOrigin\":\"未署名收录渠道\"', '\"noOrigin\":\"未署名原始出处\"');"
+    },
+    {
+      "file": "scripts/tools/audience-selftest.js",
+      "line": 1031,
+      "countInLine": 1,
+      "bucket": "source",
+      "text": "  check('牙⑥ 前端把空态改回「未署名原始出处」→ 同一条比对立刻红',"
+    },
+    {
+      "file": "scripts/tools/provenance-selftest.js",
+      "line": 264,
+      "countInLine": 1,
+      "bucket": "source",
+      "text": "check('没有原始出处时明说', unknownBlock.includes(wording.SOURCE_NOTES.noOrigin));"
+    },
+    {
+      "file": "dist/index.html",
+      "line": 1441,
+      "countInLine": 1,
+      "bucket": "product",
+      "text": "    const HISTORY_WORDING = {\"HISTORY_LABELS\":{\"sectionTitle\":\"变更记录\",\"empty\":\"暂无变更记录\",\"since\":\"变更记录自 {date} 起（此前状态没有记录）\",\"more\":\"另有 {n} 条更早的记录未在此显示\",\"from\":\"原\",\"to\":\"新\"},\"HISTORY_TYPES\":{\"created\":\"首次收录\",\"updated\":\"信息更新\",\"benefit_changed\":\"优惠内容变化\",\"eligibility_changed\":\"领取条件变化\",\"expiry_changed\":\"有效期变化\",\"ended\":\"不再收录\",\"restored\":\"重新出现\"},\"HISTORY_END_REASONS\":{\"source_no_longer_lists\":\"来源不再列出（连续多次成功 …"
+    }
+  ]
+}
