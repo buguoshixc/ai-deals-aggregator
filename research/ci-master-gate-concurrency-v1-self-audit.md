@@ -9,11 +9,15 @@
 | --- | --- | --- | --- |
 | C1 | 历史 51 次 master gate：**46 success / 4 cancelled / 0 failure**（取消率 7.8%） | `gh api …/actions/runs?event=push&per_page=100` 的原始 JSON；按 `head_branch == 'master'` 且 `name == 'Verify site (gate)'` 过滤 | 若我把非 master 的 run 混进来，分母会变；若我按 `status` 而不是 `conclusion` 归档，在跑的那 1 次会被算错 —— 证据里两个字段都留着，可逐条复核 |
 | C2 | **突发时取消率 ≈ 100%**：今天 5 次 master 推送里 **4 次 gate + 3 次 Deploy** 被取消 | 逐次 `created_at / updated_at / conclusion`（`burst-2026-10-08.json`）：两次 +10s/+11s 的 cancelled 说明那次**还在排队**；一次跑了 **4m04s** 才被杀 | 若是人工取消，间隔与模式不会这么整齐地贴着下一次 push 的时间（+8s/+10s 后就出现新的 run）；若是别的机制，`concurrency` 组名对不上 —— 两次 cancelled 的 `head_branch` 都是 master、组都是 `verify-refs/heads/master` |
-| C3 | **Deploy 也会丢 run**（3/5），尽管它是 `cancel-in-progress: false` | 同上表：`#144/#145/#146` 的结论都是 cancelled，且都发生在**排队阶段**（+10s/+11s/+141s） | 若 Deploy 只是「没跑完」而不是被取代，它的 `updated_at` 不会紧跟下一次 push；实测三次都紧跟 |
+| C3 | **Deploy 也会丢 run**（3/5），尽管它是 `cancel-in-progress: false` | 同上表：`#144/#145/#146` 的结论都是 cancelled，且都发生在**排队阶段**（+10s/+11s/+141s） | 若 Deploy 只是「没跑完」而不是被取代，它的 `updated_at` 不会紧跟下一次 push；实测三次都紧跟。**口径注意（captain 收口时提的）**：对 Deploy 而言「旧提交的部署被取代」是**正确语义**（站点只需要最新产物），所以这一条是**需求不同**，不是缺口 —— 详见报告 §5.2.1 |
 | C4 | 发布链有**独立**的完整门禁（同一 action、更严） | `deploy.yml`：`prepublish` 用 `./.github/actions/gate` + `allow_degraded_run: 'false'`，`build` 靠 `needs: prepublish` | 若 prepublish 被 job 级 `if` 跳过，它就会报 Success —— `check-ci` 的 (6) 明确守着「prepublish 无 job 级 if + needs 关系」，本 PR 未触碰 |
 | C5 | runner 成本这一项可以放掉 | `gh api repos/… --template '{{.private}}'` → `false`（public 仓库，标准 runner 不计费） | 若仓库转私有，这条论证失效 —— 报告 §3 写明了「那时要重估」 |
 | C6 | 改动不触及任何冻结断言 | `check-ci-consistency.js` 全文没有 `concurrency` 字样（grep 0 命中）；改动后 `npm run check:ci` = **39 项 / 0 失败**；`--expect-checks=39` 未变 | 若某条断言按文件内容哈希冻结 verify.yml，改注释都会红 —— 实测没有（改前改后都是 39/0） |
-| C7 | 改动方向正确（不是「把牙磨松」） | master 上从「取消」变成「排队跑完」＝**更多**验证不是更少；PR/其它分支仍取消（force-push 后旧 head 没有价值） | 若退化成「master 上永远不跑」，那是另一个极端 —— 本改动没有动触发面（`on:` 一字未改，(9) 仍守着不许加 paths 过滤） |
+| C7 | 改动方向正确（不是「把牙磨松」） | master 上从「取消」变成「**每个提交一个组、全都跑完**」＝**更多**验证不是更少；PR/其它分支仍取消（force-push 后旧 head 没有价值） | 若退化成「master 上永远不跑」，那是另一个极端 —— 本改动没有动触发面（`on:` 一字未改，(9) 仍守着不许加 paths 过滤） |
+| C8 | **第一版（v1）不够，是实测抓出来的**：`cancel-in-progress: false` 只保住「正在跑」的，保不住「排队中的」 | run #175（在跑）success（8 步全跑）· run #176（排队，`/jobs` 返回空）cancelled · run #177 在 #175 结束后 3 秒才开跑 ⇒ 组是串行的、排队者被取代 | 若 #176 其实是「跑起来后被杀」，它的 `/runs/<id>/jobs` 不会为空（会留下 job 与步骤）；实测为空 |
+| C9 | 「v1 失败是因为两次推送里有一次带旧配置」这个流行解释**不成立** | `git show 56d1cff9:.github/workflows/verify.yml` 与 `git show 26c6614a:…` **都**是 v1 配置；而且若来的那次带 `cancel-in-progress: true`，被杀的应该是**在跑**的 #175 —— 它活到了 success | 若两个提交的配置不同，`git show` 会给出 `cancel-in-progress: true`；实测都是 v1 那行 |
+| C10 | **v2 在真实重叠窗口里成立**：`cancelled` = 0 | v2 之后的三次 master 推送（`51ae75b9` / `ef176b54` / `41816ac0`）的 gate 分别是 #186/#187/#189：**#186 扛过两次更晚的推送、#187 扛过一次**，两者都 `completed/success`；`post-change-measurement.json` 的 `v2.verdict = PASS`（含逐 run 的 created/updated 与重叠标记） | 若 v2 无效，#186 会在 B 推上来（+31s）时变 cancelled 或被取代 —— 实测没有；若样本其实没有重叠，`overlappedByNextPush` 会是 false，判定会退化成 PARTIAL（实测两条都是 true） |
+| C11 | 同一张表里 B 的 Deploy `cancelled` **不是**缺口 | `deploy.yml` 的组是单组 `pages`（本轮未改），被取代的是**旧**提交的部署；紧随其后的第三推 Deploy 随后部署最新提交 | 若「每个提交都要有部署产物」是需求，那才是缺口 —— 但站点只有一份产物，这个需求不存在（报告 §5.2.1 把两条要求分开写） |
 
 ## 2. 本轮**没有**证明的东西（与报告 §6 同源，这里只列自审新增视角）
 

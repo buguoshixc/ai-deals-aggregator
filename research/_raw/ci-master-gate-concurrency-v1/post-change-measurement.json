@@ -1,0 +1,220 @@
+{
+  "task": "ci-master-gate-concurrency-v1",
+  "what": "改动后的实测：v1（只关 cancel-in-progress）不够 · v2（master 每个提交一个并发组）在真实重叠窗口里 0 cancelled",
+  "at": "2026-10-08T11:47:25.777Z",
+  "criterion": {
+    "validWindow": "两次推送的提交都携带补丁（v2 落地之后的推送），且时间上重叠（下一次 push 的 gate 创建时刻 < 上一次 gate 的结束时刻）",
+    "pass": "窗口内每一次 gate 都 completed/success，且两两之间没有 cancelled",
+    "fail": "任一次 cancelled ⇒ 两行回滚并重新裁定"
+  },
+  "v1": {
+    "config": "group: verify-${{ github.ref }} + cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}",
+    "reading": "保住「正在跑」的（#175 未被打断、8 步全跑完）但保不住「排队中的」（#176 零 job、被 #177 取代）",
+    "runs": [
+      {
+        "runNumber": 175,
+        "runId": 37767487744,
+        "sha": "5b2d91877d00446e5d13faa5a029298361d0382e",
+        "createdAt": "2026-10-08T11:02:54Z",
+        "updatedAt": "2026-10-08T11:08:01Z",
+        "durationSeconds": 307,
+        "status": "completed",
+        "conclusion": "success",
+        "nextPushAt": "2026-10-08T11:05:06Z",
+        "nextPushSecondsAfter": 132,
+        "overlappedByNextPush": true
+      },
+      {
+        "runNumber": 176,
+        "runId": 37767729521,
+        "sha": "56d1cff9b18d0df45aeecd37046f761f7e6adf2c",
+        "createdAt": "2026-10-08T11:05:06Z",
+        "updatedAt": "2026-10-08T11:06:51Z",
+        "durationSeconds": 105,
+        "status": "completed",
+        "conclusion": "cancelled",
+        "nextPushAt": "2026-10-08T11:06:50Z",
+        "nextPushSecondsAfter": 104,
+        "overlappedByNextPush": true
+      },
+      {
+        "runNumber": 177,
+        "runId": 37767923812,
+        "sha": "26c6614a5ab72dce94a7d256304e005006f989f4",
+        "createdAt": "2026-10-08T11:06:50Z",
+        "updatedAt": "2026-10-08T11:13:15Z",
+        "durationSeconds": 385,
+        "status": "completed",
+        "conclusion": "success",
+        "nextPushAt": "2026-10-08T11:13:19Z",
+        "nextPushSecondsAfter": 389,
+        "overlappedByNextPush": false
+      },
+      {
+        "runNumber": 180,
+        "runId": 37768629799,
+        "sha": "049e48163e1fc432ebe33d8356cdc6ca3cbbd8f6",
+        "createdAt": "2026-10-08T11:13:19Z",
+        "updatedAt": "2026-10-08T11:18:21Z",
+        "durationSeconds": 302,
+        "status": "completed",
+        "conclusion": "success",
+        "nextPushAt": "2026-10-08T11:17:57Z",
+        "nextPushSecondsAfter": 278,
+        "overlappedByNextPush": true
+      },
+      {
+        "runNumber": 181,
+        "runId": 37769125597,
+        "sha": "4c52d47005198d446494a1fec611071f465c9713",
+        "createdAt": "2026-10-08T11:17:57Z",
+        "updatedAt": "2026-10-08T11:18:00Z",
+        "durationSeconds": 3,
+        "status": "in_progress",
+        "conclusion": null,
+        "nextPushAt": null,
+        "nextPushSecondsAfter": null,
+        "overlappedByNextPush": false
+      }
+    ],
+    "verdict": "INSUFFICIENT（排队替换是 GitHub 的组语义，与 cancel-in-progress 无关）"
+  },
+  "v2": {
+    "config": "group: verify-${{ github.ref }}-${{ github.ref == 'refs/heads/master' && github.sha || 'ref' }} + cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}",
+    "runs": [
+      {
+        "runNumber": 186,
+        "runId": 37771150060,
+        "sha": "51ae75b91032772dfa05da3ca441ee42e4df8c84",
+        "createdAt": "2026-10-08T11:36:16Z",
+        "updatedAt": "2026-10-08T11:40:51Z",
+        "durationSeconds": 275,
+        "status": "completed",
+        "conclusion": "success",
+        "nextPushAt": "2026-10-08T11:36:47Z",
+        "nextPushSecondsAfter": 31,
+        "overlappedByNextPush": true
+      },
+      {
+        "runNumber": 187,
+        "runId": 37771206335,
+        "sha": "ef176b54a07a68501ff7e41f5d7e28cb8d578ac8",
+        "createdAt": "2026-10-08T11:36:47Z",
+        "updatedAt": "2026-10-08T11:41:46Z",
+        "durationSeconds": 299,
+        "status": "completed",
+        "conclusion": "success",
+        "nextPushAt": "2026-10-08T11:40:21Z",
+        "nextPushSecondsAfter": 214,
+        "overlappedByNextPush": true
+      },
+      {
+        "runNumber": 189,
+        "runId": 37771597353,
+        "sha": "41816ac0ce4fdf51f5a8ef37326ae959986ade53",
+        "createdAt": "2026-10-08T11:40:21Z",
+        "updatedAt": "2026-10-08T11:45:24Z",
+        "durationSeconds": 303,
+        "status": "completed",
+        "conclusion": "success",
+        "nextPushAt": "2026-10-08T11:41:18Z",
+        "nextPushSecondsAfter": 57,
+        "overlappedByNextPush": true
+      },
+      {
+        "runNumber": 190,
+        "runId": 37771703604,
+        "sha": "d19017af04051048e0565af6c3675f3faf75cb6a",
+        "createdAt": "2026-10-08T11:41:18Z",
+        "updatedAt": "2026-10-08T11:45:57Z",
+        "durationSeconds": 279,
+        "status": "completed",
+        "conclusion": "success",
+        "nextPushAt": null,
+        "nextPushSecondsAfter": null,
+        "overlappedByNextPush": false
+      }
+    ],
+    "overlappingRuns": [
+      {
+        "runNumber": 186,
+        "sha": "51ae75b91032",
+        "conclusion": "success",
+        "nextPushSecondsAfter": 31
+      },
+      {
+        "runNumber": 187,
+        "sha": "ef176b54a07a",
+        "conclusion": "success",
+        "nextPushSecondsAfter": 214
+      },
+      {
+        "runNumber": 189,
+        "sha": "41816ac0ce4f",
+        "conclusion": "success",
+        "nextPushSecondsAfter": 57
+      }
+    ],
+    "cancelledInWindow": [],
+    "verdict": "PASS（两次以上真实重叠的推送，每一次 gate 都 completed/success，cancelled = 0）"
+  },
+  "deployComparison": {
+    "runs": [
+      {
+        "runNumber": 149,
+        "sha": "5b2d91877d00",
+        "createdAt": "2026-10-08T11:02:54Z",
+        "conclusion": "success"
+      },
+      {
+        "runNumber": 150,
+        "sha": "56d1cff9b18d",
+        "createdAt": "2026-10-08T11:05:06Z",
+        "conclusion": "cancelled"
+      },
+      {
+        "runNumber": 151,
+        "sha": "26c6614a5ab7",
+        "createdAt": "2026-10-08T11:06:50Z",
+        "conclusion": "success"
+      },
+      {
+        "runNumber": 152,
+        "sha": "049e48163e1f",
+        "createdAt": "2026-10-08T11:13:19Z",
+        "conclusion": "success"
+      },
+      {
+        "runNumber": 153,
+        "sha": "4c52d4700519",
+        "createdAt": "2026-10-08T11:17:57Z",
+        "conclusion": null
+      },
+      {
+        "runNumber": 154,
+        "sha": "51ae75b91032",
+        "createdAt": "2026-10-08T11:36:16Z",
+        "conclusion": "success"
+      },
+      {
+        "runNumber": 155,
+        "sha": "ef176b54a07a",
+        "createdAt": "2026-10-08T11:36:47Z",
+        "conclusion": "cancelled"
+      },
+      {
+        "runNumber": 156,
+        "sha": "41816ac0ce4f",
+        "createdAt": "2026-10-08T11:40:21Z",
+        "conclusion": "success"
+      },
+      {
+        "runNumber": 157,
+        "sha": "d19017af0405",
+        "createdAt": "2026-10-08T11:41:18Z",
+        "conclusion": null
+      }
+    ],
+    "note": "Deploy 用 group: pages + cancel-in-progress: false，本轮**未改**：它的「排队中被取代」是同一类组语义，不在本任务射程（报告 §1.3 / §6 已登记）"
+  }
+}
