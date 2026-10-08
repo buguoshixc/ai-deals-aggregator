@@ -43,7 +43,7 @@
 
 清单：`dist-hashes-before.json` · `dist-hashes-control2.json` · `dist-diff-control.json`（对照组）· `dist-hashes-after.json` · `dist-diff-after-note.json`（实验组，`changedFileCount: 0`）。
 
-**为什么必然是 0**（不是运气）：`official_urls.json` 全仓只被两处读——`scripts/validate.js:908`（校验入口）与 `scripts/lib/official.js:53`；后者显式**丢掉所有 `_` 开头的键**（`Object.entries(officialUrls).filter(([k]) => !k.startsWith('_'))`，`:57`），`_roles` 是纯注记，没有任何代码读它（`grep -rn "_roles" scripts/` 只命中 `audience.js:748` 的一句**注释**）。
+**为什么必然是 0**（不是运气）：`official_urls.json` 全仓只被两处读——`scripts/validate.js:908`（校验入口）与 `scripts/lib/official.js:53`；后者显式**丢掉所有 `_` 开头的键**（`Object.entries(officialUrls).filter(([k]) => !k.startsWith('_'))`，`:57`），`_roles` 是纯注记，**没有任何代码读它**（`grep -rn "_roles" scripts/` 的命中只有 `scripts/lib/audience.js:748` 的一句**注释**，以及 `official_urls.json` 自己那一行）。
 
 ### 1.3 会不会触发变化日志事件：**不会**（三份数据重建 dry-run 实测）
 
@@ -92,7 +92,7 @@ M2 回答的正是「括注为什么不会再次脱节」：**标签改名那一
 |---|---|
 | 出口 | 香港（HTTP 响应头 `CF-RAY: …-HKG`）；**腾讯云五张页面全部 200，没有区域门**（对照组：同一轮里 `platform.claude.com` 的文档页被区域门 307 拦在 `app-unavailable-in-region`） |
 | 抓取方式 | `curl -L`（不是无头浏览器）。腾讯云在不带 `--compressed` 时仍返回 `Content-Encoding: gzip`，脚本按魔数解压（否则读到的是乱码而不是空结果） |
-| 页面自报更新时间 | 模型价格 130055 → **2026-09-24 20:08:15**；计费方式 130054 → **2026-09-18 14:22:00**；模型列表 130051 → 见片段文件；新人免费体验包 130053 → **2026-09-04 10:23:30**；迁移指南 131382 → **2026-08-05 15:37:30** |
+| 页面自报更新时间 | 模型价格 130055 → **2026-09-24 20:08:15**；计费方式 130054 → **2026-09-18 14:22:00**；模型列表 130051 → **2026-09-28 11:12:30**；新人免费体验包 130053 → **2026-09-04 10:23:30**；迁移指南 131382 → **2026-08-05 15:37:30** |
 | tab 面板 | 价格页的语言模型有「广州 / 新加坡」两个 tab，两份表都在同一份 HTML 里；`tse-tabs__item is-active` 是「广州」，紧随其后的 `tse-tabs__cont is-active` 是第一张表（**含 Hy-Role-Latest**）；第二张（新加坡）**没有** Hy-Role-Latest / Hy-Role 行 |
 | 记录侧基线 | `scripts/data/curated_api_plans.json` → provider「腾讯云」/「混元生文按量计费」（`verifiedAt 2026-10-01`）：6 个模型 + `freeTier`（100 万 tokens、一次性、资源包有效期 1 年） |
 
