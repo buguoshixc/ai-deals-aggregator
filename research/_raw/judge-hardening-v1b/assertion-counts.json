@@ -1,0 +1,40 @@
+{
+  "what": "断言账（只增不减）：本任务前后的逐套件对照；每一条都来自本机实跑读数",
+  "selftestSeo": {
+    "origin/master": 88,
+    "branch": 103,
+    "delta": 15,
+    "breakdown": {
+      "§八（t7 补丁原文，5 条）": 5,
+      "§九（判据读的文本必须先剥注释，8 条）": 8,
+      "§九（A1 矩阵 2 条，本轮追加）": 2
+    },
+    "evidence": "origin/master 副本实跑『=== v1.7 SEO 门禁演练：88 项通过，0 项失败 ===』；本分支『103 项通过，0 项失败』（.arch-v1/logs/selftest-final.txt）"
+  },
+  "seoVerify": {
+    "origin/master": 18,
+    "branch": 19,
+    "delta": 1,
+    "added": "余量登记集合 == 实时余量 < 150 的页面集合（观察 2 的收口；两方向都判：少登记 / 过期登记）",
+    "evidence": "同一批伪造副本在 pre-fix 门禁下『✅ SEO 验收 18 项』、在本分支下『✅ SEO 验收 19 项，失败 0 项』"
+  },
+  "seoProblemCodes": {
+    "origin/master": 28,
+    "branch": 28,
+    "delta": 0,
+    "note": "本轮不新增/不删检查码；改动全部在读点与断言层"
+  },
+  "otherSuites": {
+    "check:ci": "39 项 / 0 失败（node scripts/tools/check-ci-consistency.js --expect-checks=39）",
+    "check:evidence": "✅ 绿（无新增 Tier-3）",
+    "build": "exit 0 · 304 文件 / 20,386,654 B",
+    "verify-site": "未单独跑；由 `npm run gate` 的全链覆盖（结果见 report §5）"
+  },
+  "gapAPatchFidelity": {
+    "source": "research/_raw/p2-honesty-single-source-v1/patch-seo-selftest-gap-a.md",
+    "target": "scripts/tools/seo-selftest.js §八（第 798 行起）",
+    "nonEmptyLines": 61,
+    "identical": true,
+    "evidence": ".arch-v1/check-gap-a-patch.cjs 的读数（非空行逐字相同，firstDiff 为空）"
+  }
+}

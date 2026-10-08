@@ -1,0 +1,384 @@
+{
+  "what": "t5 的 F2 / F3 / A1 伪造面：伪造副本、真删对照、原样三段读数（before=origin/master 三文件；after=本分支）",
+  "device": ".arch-v1/forgery.cjs（dist 整树副本 + 单文件单锚点改动；门禁 = node scripts/tools/seo-verify.js --dir=<副本>）",
+  "asIsBaseline": {
+    "verify:seo (origin/master)": "18 项 / 0 失败",
+    "verify:seo (本分支)": "19 项 / 0 失败"
+  },
+  "pairs": [
+    {
+      "label": "F2 sitemap：<url> 块被 XML 注释包住",
+      "forge": {
+        "id": "f2-forge",
+        "what": "sitemap.xml 里 vendor/zhipu/ 的整个 <url> 块包进 XML 注释（t5 F2）",
+        "file": "sitemap.xml",
+        "bytes": {
+          "before": 36504,
+          "after": 36511
+        },
+        "before": {
+          "exit": 0,
+          "tail": "✅ SEO 验收 18 项，失败 0 项",
+          "failed": []
+        },
+        "after": {
+          "exit": 1,
+          "tail": "❌ SEO 验收 19 项，失败 2 项",
+          "failed": [
+            "✗ 规则层 28 个检查码全过 —— [sitemap-policy] vendor/zhipu/ 可索引页不在 sitemap 里",
+            "✗ sitemap 成员 == 非 noindex 页面的集合（现场按 robots meta 判定） —— 漏 vendor/zhipu/ / 多",
+            "❌ SEO 验收 19 项，失败 2 项"
+          ]
+        }
+      },
+      "trueDelete": {
+        "id": "f2-del",
+        "what": "sitemap.xml 里 vendor/zhipu/ 的 <url> 块**真删**（对照）",
+        "file": "sitemap.xml",
+        "bytes": {
+          "before": 36504,
+          "after": 36311
+        },
+        "before": {
+          "exit": 1,
+          "tail": "❌ SEO 验收 18 项，失败 2 项",
+          "failed": [
+            "✗ 规则层 28 个检查码全过 —— [sitemap-policy] vendor/zhipu/ 可索引页不在 sitemap 里",
+            "✗ sitemap 成员 == 非 noindex 页面的集合（现场按 robots meta 判定） —— 漏 vendor/zhipu/ / 多",
+            "❌ SEO 验收 18 项，失败 2 项"
+          ]
+        },
+        "after": {
+          "exit": 1,
+          "tail": "❌ SEO 验收 19 项，失败 2 项",
+          "failed": [
+            "✗ 规则层 28 个检查码全过 —— [sitemap-policy] vendor/zhipu/ 可索引页不在 sitemap 里",
+            "✗ sitemap 成员 == 非 noindex 页面的集合（现场按 robots meta 判定） —— 漏 vendor/zhipu/ / 多",
+            "❌ SEO 验收 19 项，失败 2 项"
+          ]
+        }
+      },
+      "sameSolution": true
+    },
+    {
+      "label": "F3 canonical：<link rel=canonical> 被 HTML 注释包住",
+      "forge": {
+        "id": "f3-forge",
+        "what": "need/student-only/ 的 <link rel=\"canonical\"> 包进 HTML 注释（t5 F3）",
+        "file": "need/student-only/index.html",
+        "bytes": {
+          "before": 80554,
+          "after": 80563
+        },
+        "before": {
+          "exit": 0,
+          "tail": "✅ SEO 验收 18 项，失败 0 项",
+          "failed": []
+        },
+        "after": {
+          "exit": 1,
+          "tail": "❌ SEO 验收 19 项，失败 1 项",
+          "failed": [
+            "✗ 规则层 28 个检查码全过 —— [canonical-self] need/student-only/ 没有 canonical",
+            "❌ SEO 验收 19 项，失败 1 项"
+          ]
+        }
+      },
+      "trueDelete": {
+        "id": "f3-del",
+        "what": "need/student-only/ 的 canonical 链接**真删**（对照）",
+        "file": "need/student-only/index.html",
+        "bytes": {
+          "before": 80554,
+          "after": 80456
+        },
+        "before": {
+          "exit": 1,
+          "tail": "❌ SEO 验收 18 项，失败 1 项",
+          "failed": [
+            "✗ 规则层 28 个检查码全过 —— [canonical-self] need/student-only/ 没有 canonical",
+            "❌ SEO 验收 18 项，失败 1 项"
+          ]
+        },
+        "after": {
+          "exit": 1,
+          "tail": "❌ SEO 验收 19 项，失败 1 项",
+          "failed": [
+            "✗ 规则层 28 个检查码全过 —— [canonical-self] need/student-only/ 没有 canonical",
+            "❌ SEO 验收 19 项，失败 1 项"
+          ]
+        }
+      },
+      "sameSolution": true
+    },
+    {
+      "label": "A1 robots：meta 被 HTML 注释包住",
+      "forge": {
+        "id": "a1-robots",
+        "what": "别名页的 <meta name=\"robots\" content=\"noindex, follow\"> 包进 HTML 注释（robotsOf 读原始文本）",
+        "file": "need/free-api/index.html",
+        "bytes": {
+          "before": 97919,
+          "after": 97928
+        },
+        "before": {
+          "exit": 0,
+          "tail": "✅ SEO 验收 18 项，失败 0 项",
+          "failed": []
+        },
+        "after": {
+          "exit": 1,
+          "tail": "❌ SEO 验收 19 项，失败 2 项",
+          "failed": [
+            "✗ 规则层 28 个检查码全过 —— [title-unique] need/free-api/ 标题与 free-api/ 逐字相同：可以免费调用的 API · AI 优惠聚合器；[sitemap-policy] need/free-api/ 可索引页不在 sitemap 里；[duplicate-item-set] need/free-api/ 与本页条目集合逐条相同的还有 free-api/（同一主题不重复建 URL）；[alias-indexable] need/fr…",
+            "✗ sitemap 成员 == 非 noindex 页面的集合（现场按 robots meta 判定） —— 漏 need/free-api/ / 多",
+            "❌ SEO 验收 19 项，失败 2 项"
+          ]
+        }
+      },
+      "trueDelete": {
+        "id": "a1-robots-del",
+        "what": "别名页的 robots meta **真删**（a1-robots 的对照）",
+        "file": "need/free-api/index.html",
+        "bytes": {
+          "before": 97919,
+          "after": 97872
+        },
+        "before": {
+          "exit": 1,
+          "tail": "❌ SEO 验收 18 项，失败 2 项",
+          "failed": [
+            "✗ 规则层 28 个检查码全过 —— [title-unique] need/free-api/ 标题与 free-api/ 逐字相同：可以免费调用的 API · AI 优惠聚合器；[sitemap-policy] need/free-api/ 可索引页不在 sitemap 里；[duplicate-item-set] need/free-api/ 与本页条目集合逐条相同的还有 free-api/（同一主题不重复建 URL）；[alias-indexable] need/fr…",
+            "✗ sitemap 成员 == 非 noindex 页面的集合（现场按 robots meta 判定） —— 漏 need/free-api/ / 多",
+            "❌ SEO 验收 18 项，失败 2 项"
+          ]
+        },
+        "after": {
+          "exit": 1,
+          "tail": "❌ SEO 验收 19 项，失败 2 项",
+          "failed": [
+            "✗ 规则层 28 个检查码全过 —— [title-unique] need/free-api/ 标题与 free-api/ 逐字相同：可以免费调用的 API · AI 优惠聚合器；[sitemap-policy] need/free-api/ 可索引页不在 sitemap 里；[duplicate-item-set] need/free-api/ 与本页条目集合逐条相同的还有 free-api/（同一主题不重复建 URL）；[alias-indexable] need/fr…",
+            "✗ sitemap 成员 == 非 noindex 页面的集合（现场按 robots meta 判定） —— 漏 need/free-api/ / 多",
+            "❌ SEO 验收 19 项，失败 2 项"
+          ]
+        }
+      },
+      "sameSolution": true
+    },
+    {
+      "label": "A1 title：<title> 被 HTML 注释包住",
+      "forge": {
+        "id": "a1-title",
+        "what": "<title> 包进 HTML 注释（titleOf 读原始文本）",
+        "file": "feeds/index.html",
+        "bytes": {
+          "before": 80884,
+          "after": 80893
+        },
+        "before": {
+          "exit": 0,
+          "tail": "✅ SEO 验收 18 项，失败 0 项",
+          "failed": []
+        },
+        "after": {
+          "exit": 1,
+          "tail": "❌ SEO 验收 19 项，失败 1 项",
+          "failed": [
+            "✗ 规则层 28 个检查码全过 —— [title-length] feeds/ 页面没有 <title>",
+            "❌ SEO 验收 19 项，失败 1 项"
+          ]
+        }
+      },
+      "trueDelete": {
+        "id": "a1-title-del",
+        "what": "<title> **真删**（a1-title 的对照）",
+        "file": "feeds/index.html",
+        "bytes": {
+          "before": 80884,
+          "after": 80850
+        },
+        "before": {
+          "exit": 1,
+          "tail": "❌ SEO 验收 18 项，失败 1 项",
+          "failed": [
+            "✗ 规则层 28 个检查码全过 —— [title-length] feeds/ 页面没有 <title>",
+            "❌ SEO 验收 18 项，失败 1 项"
+          ]
+        },
+        "after": {
+          "exit": 1,
+          "tail": "❌ SEO 验收 19 项，失败 1 项",
+          "failed": [
+            "✗ 规则层 28 个检查码全过 —— [title-length] feeds/ 页面没有 <title>",
+            "❌ SEO 验收 19 项，失败 1 项"
+          ]
+        }
+      },
+      "sameSolution": true
+    },
+    {
+      "label": "A1 rowMarkers：data-item 被移进注释",
+      "forge": {
+        "id": "a1-rows",
+        "what": "need/no-card/ 那一行真 `data-item` 属性挪进注释（rowMarkers 读原始文本 ⇒ 计数不变）",
+        "file": "need/no-card/index.html",
+        "bytes": {
+          "before": 74116,
+          "after": 74124
+        },
+        "before": {
+          "exit": 0,
+          "tail": "✅ SEO 验收 18 项，失败 0 项",
+          "failed": []
+        },
+        "after": {
+          "exit": 1,
+          "tail": "❌ SEO 验收 19 项，失败 2 项",
+          "failed": [
+            "✗ 每个落地页的可见数据行 == 按 dist/deals.json 重新算出的条目集合 —— need/no-card/ 行 0 条 ≠ 按数据重算的 1 条",
+            "✗ 规则层 28 个检查码全过 —— [itemlist-arity] need/no-card/ ItemList 有 1 项，页面上的数据行有 0 行",
+            "❌ SEO 验收 19 项，失败 2 项"
+          ]
+        }
+      },
+      "trueDelete": {
+        "id": "a1-rows-del",
+        "what": "need/no-card/ 那一行 `data-item` 属性**真删**（a1-rows 的对照）",
+        "file": "need/no-card/index.html",
+        "bytes": {
+          "before": 74116,
+          "after": 74091
+        },
+        "before": {
+          "exit": 1,
+          "tail": "❌ SEO 验收 18 项，失败 2 项",
+          "failed": [
+            "✗ 每个落地页的可见数据行 == 按 dist/deals.json 重新算出的条目集合 —— need/no-card/ 行 0 条 ≠ 按数据重算的 1 条",
+            "✗ 规则层 28 个检查码全过 —— [itemlist-arity] need/no-card/ ItemList 有 1 项，页面上的数据行有 0 行",
+            "❌ SEO 验收 18 项，失败 2 项"
+          ]
+        },
+        "after": {
+          "exit": 1,
+          "tail": "❌ SEO 验收 19 项，失败 2 项",
+          "failed": [
+            "✗ 每个落地页的可见数据行 == 按 dist/deals.json 重新算出的条目集合 —— need/no-card/ 行 0 条 ≠ 按数据重算的 1 条",
+            "✗ 规则层 28 个检查码全过 —— [itemlist-arity] need/no-card/ ItemList 有 1 项，页面上的数据行有 0 行",
+            "❌ SEO 验收 19 项，失败 2 项"
+          ]
+        }
+      },
+      "sameSolution": true
+    },
+    {
+      "label": "A1 jsonLdBlocks：ld+json 块被 HTML 注释包住",
+      "forge": {
+        "id": "a1-jsonld",
+        "what": "status/ 的第一个 JSON-LD 块包进 HTML 注释（jsonLdBlocks 读原始文本）",
+        "file": "status/index.html",
+        "bytes": {
+          "before": 72693,
+          "after": 72702
+        },
+        "before": {
+          "exit": 0,
+          "tail": "✅ SEO 验收 18 项，失败 0 项",
+          "failed": []
+        },
+        "after": {
+          "exit": 0,
+          "tail": "✅ SEO 验收 19 项，失败 0 项",
+          "failed": []
+        }
+      },
+      "trueDelete": {
+        "id": "a1-jsonld-del",
+        "what": "status/ 的第一个 JSON-LD 块**真删**（a1-jsonld 的对照）",
+        "file": "status/index.html",
+        "bytes": {
+          "before": 72693,
+          "after": 72232
+        },
+        "before": {
+          "exit": 0,
+          "tail": "✅ SEO 验收 18 项，失败 0 项",
+          "failed": []
+        },
+        "after": {
+          "exit": 0,
+          "tail": "✅ SEO 验收 19 项，失败 0 项",
+          "failed": []
+        }
+      },
+      "sameSolution": true
+    }
+  ],
+  "extra": [
+    {
+      "id": "a1-h1",
+      "what": "在 <main> 里加一条**注释掉的** <h1>（h1Count 读原始文本 ⇒ 伪造方向是**假红**）",
+      "file": "status/index.html",
+      "bytes": {
+        "before": 72693,
+        "after": 72720
+      },
+      "before": {
+        "exit": 1,
+        "tail": "❌ SEO 验收 18 项，失败 1 项",
+        "failed": [
+          "✗ 规则层 28 个检查码全过 —— [h1-count] status/ 可索引页的 <h1> 数量是 2，应为 1",
+          "❌ SEO 验收 18 项，失败 1 项"
+        ]
+      },
+      "after": {
+        "exit": 0,
+        "tail": "✅ SEO 验收 19 项，失败 0 项",
+        "failed": []
+      }
+    },
+    {
+      "id": "a1-links",
+      "what": "在 /feeds/ 里加一条**单引号 href**的死链（internalLinks 的正则只认 `href=\"`）",
+      "file": "feeds/index.html",
+      "bytes": {
+        "before": 80884,
+        "after": 80939
+      },
+      "before": {
+        "exit": 0,
+        "tail": "✅ SEO 验收 18 项，失败 0 项",
+        "failed": []
+      },
+      "after": {
+        "exit": 1,
+        "tail": "❌ SEO 验收 19 项，失败 1 项",
+        "failed": [
+          "✗ 规则层 28 个检查码全过 —— [internal-link-exists] feeds/ 站内链接指向不存在的目标：feeds/deal/does-not-exist/",
+          "❌ SEO 验收 19 项，失败 1 项"
+        ]
+      }
+    },
+    {
+      "id": "obs2-thin-unregistered",
+      "what": "观察 2 的反向面：把 need/edu-identity/ 的可见正文裁掉 ≥150 字（仍高于它自己的下限）而**不登记**",
+      "file": "need/edu-identity/index.html",
+      "bytes": {
+        "before": 77531,
+        "after": 76255
+      },
+      "before": {
+        "exit": 0,
+        "tail": "✅ SEO 验收 18 项，失败 0 项",
+        "failed": []
+      },
+      "after": {
+        "exit": 1,
+        "tail": "❌ SEO 验收 19 项，失败 1 项",
+        "failed": [
+          "✗ 余量登记集合 == 实时余量 < 150 的页面集合（7 页；**少登记 / 过期登记都红**） —— 实时 < 150：need/no-card/(50) · need/edu-identity/(107) · category/(123) · category/audio/(123) · need/ai-coding/(136) · category/image/(139) · category/agent/(142) · **未登记**：need/edu-ident…",
+          "❌ SEO 验收 19 项，失败 1 项"
+        ]
+      }
+    }
+  ]
+}
