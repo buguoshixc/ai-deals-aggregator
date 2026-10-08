@@ -1,0 +1,52 @@
+{
+  "task": "judge-target-relocation-control-v1 (t31)",
+  "at": "2026-10-08T14:24:54.039Z",
+  "dist": {
+    "dir": "dist",
+    "before": {
+      "files": 304,
+      "bytes": 20386654,
+      "treeDigest": "67d1d0bdcdffe29f1b2bd0185c35408da897d53d20e44c495fec385f7ec1337d",
+      "manifestSha256": "2b8fe49fa776a8789e592d79fb507c2c1e9cac233801a9425b4e9e8f55f638de",
+      "source": "本轮开工前在 origin/master 9b72b9d 上实测；同一串也见 research/_raw/post-merge-deploy-v1/build-digest.json 与 research/_raw/tree-digest-tooling-v1/digest-dist.json"
+    },
+    "afterAllRuns": {
+      "dir": "dist",
+      "files": 304,
+      "bytes": 20386654,
+      "treeDigest": "67d1d0bdcdffe29f1b2bd0185c35408da897d53d20e44c495fec385f7ec1337d",
+      "manifestSha256": "2b8fe49fa776a8789e592d79fb507c2c1e9cac233801a9425b4e9e8f55f638de"
+    },
+    "unchanged": true,
+    "note": "所有注入都发生在 dist 的**副本**里（探针 --dir= 指向副本）；dist 自身只被读"
+  },
+  "distCopies": {
+    "clean": {
+      "dir": ".arch-v1/dist-copy",
+      "files": 304,
+      "byteEqualToDist": true,
+      "filesCompared": 303,
+      "bytes": 20386654,
+      "treeDigest": "67d1d0bdcdffe29f1b2bd0185c35408da897d53d20e44c495fec385f7ec1337d",
+      "manifestSha256": "2b8fe49fa776a8789e592d79fb507c2c1e9cac233801a9425b4e9e8f55f638de"
+    },
+    "inject": {
+      "dir": ".arch-v1/dist-inject-m15",
+      "fromClean": true,
+      "target": "need/free-api/index.html",
+      "frozenAnchor": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+      "rule": ".snote { writing-mode: vertical-rl; width: 100%; height: 5.6rem; overflow: hidden; }",
+      "frozenOccurrencesInTarget": 1,
+      "sha256Before": "62ae8f3d736691a08665680bec15a8dfd61925f1a2b3d03e57863b38669893bb",
+      "sha256After": "07cc3fef27367073f836907f9d97ec9561e35255be96b3368a43f1f35f3d6c9c",
+      "note": "把 M15 的变异形态落到**靶页的磁盘副本**里（其余 303 个文件与干净副本逐字节相同）"
+    }
+  },
+  "scripts": {
+    "verifySiteSha256AfterAllRuns": "bcd4ceaad71ce60b07ce31db82a6099d3dceed0d17e65cfc5fbd7da2926fa9c0",
+    "verifySiteSha256AtProbeBuild": "bcd4ceaad71ce60b07ce31db82a6099d3dceed0d17e65cfc5fbd7da2926fa9c0",
+    "unchanged": true,
+    "gitStatusPorcelainScriptsDist": "（空）",
+    "note": "探针是从 verify-site.js **复制**出来的副本；仓库里那一份一个字节都没动"
+  }
+}
