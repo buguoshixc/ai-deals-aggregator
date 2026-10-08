@@ -3890,17 +3890,25 @@
      * `/changes/` 页正文。`prefix` 由调用方按输出深度给出（首页 ''、`/changes/` 为 '../'），
      * **不写死相对路径** —— 写死的症状是页面打得开、内容全对，而所有内链 404。
      */
-    function changesPageHtml(radar, prefix) {
+    function changesPageHtml(radar, prefix, note) {
       const W = CHANGES_WORDING;
       const L = W.CHANGES_LABELS;
       const N = W.CHANGES_NOTES;
+      // 说明意图（notes-manifest-residual-v1）：本页每一条 `.snote` 都在**构造点**「先登记、后输出」。
+      // `note` 由构建期注入（`build-local.js` 的 `renderChangesPage` 传 `noteDeclarerFor('changes/')`）；
+      // 浏览器里跑这份内联副本时不传它 ⇒ 直通（页面照常输出，判据由构建期那一遍负责）。
+      const declare = typeof note === 'function' ? note : (decl, html) => html;
+      const snote = (kind, html, classes) => declare({
+        kind, slot: 'main-snote', classes: classes || 'snote',
+        declaredBy: 'index.html 的 RENDER-CORE:changesPageHtml'
+      }, html);
       const view = radar && typeof radar === 'object' ? radar : null;
       const head = '<h1>' + escapeHtml(L.pageTitle) + '</h1>';
 
       if (!view || view.availability !== 'ok') {
         return head +
-          '<p class="snote chgwarn">' + escapeHtml(N.unavailable) + '</p>' +
-          '<p class="snote">' + escapeHtml(HISTORY_WORDING.HISTORY_NOTES.disclaimer) + '</p>';
+          snote('unavailable', '<p class="snote chgwarn">' + escapeHtml(N.unavailable) + '</p>', 'snote chgwarn') +
+          snote('unavailable-disclaimer', '<p class="snote">' + escapeHtml(HISTORY_WORDING.HISTORY_NOTES.disclaimer) + '</p>');
       }
 
       const since = typeof view.startedAt === 'string' ? view.startedAt : null;
@@ -3920,18 +3928,18 @@
       const otherTotal = view.totals ? Number(view.totals.other) || 0 : otherItems.length;
       const otherBlock = '<details class="chgother">' +
         '<summary>' + escapeHtml(L.other) + '（' + escapeHtml(String(otherTotal)) + '）</summary>' +
-        '<p class="snote">' + escapeHtml(L.otherNote) + '</p>' +
+        snote('other-note', '<p class="snote">' + escapeHtml(L.otherNote) + '</p>') +
         (otherItems.length
           ? '<ul class="chglist">' + otherItems.map(item => changesRowHtml(item, prefix)).join('') + '</ul>'
           : '<p class="chgempty">' + escapeHtml(W.CHANGES_EMPTY.other) + '</p>') +
         '</details>';
 
       return head + meta +
-        '<p class="snote">' + escapeHtml(N.scope) + '</p>' +
-        '<p class="snote">' + escapeHtml(N.soonBasis) + '</p>' +
+        snote('scope', '<p class="snote">' + escapeHtml(N.scope) + '</p>') +
+        snote('soon-basis', '<p class="snote">' + escapeHtml(N.soonBasis) + '</p>') +
         sections + otherBlock +
-        '<p class="snote">' + escapeHtml(N.window) + '</p>' +
-        '<p class="snote">' + escapeHtml(HISTORY_WORDING.HISTORY_NOTES.disclaimer) + '</p>';
+        snote('window', '<p class="snote">' + escapeHtml(N.window) + '</p>') +
+        snote('disclaimer', '<p class="snote">' + escapeHtml(HISTORY_WORDING.HISTORY_NOTES.disclaimer) + '</p>');
     }
 
     /** 二级数据页底部「最近变化」块的行数上限（与首页条带 `slice(0, 3)` 同一密度） */

@@ -245,15 +245,13 @@ const { SITE_URL, SITE_NAME, SITE_DESCRIPTION, xmlEscape } = feeds;
  *
  * 意图源只能登记**它自己代码路径上**的说明构造点。全站 `<main>` 里的说明容器实测
  * （2026-10-08，`dist` 186 页）分三类：`.snote` 271 条 · `.pnote` 159 条 · `.vsnote` 150 条。
- * 其中**由本文件 / `lib/landing.js` / `lib/vendor-page.js` 构造**的由本节逐条登记；
- * 其余（`/models/`、`/plans/`、`/plans/coding/`、`/plans/api/`、`/docs/data/`、`/archive/`、
- * `/changes/` 这些页面的 `.snote`）构造点在**本轮范围之外**的模块里
- * （`lib/models-page.js` / `lib/plans-page.js` / `lib/api-plans-page.js` / `lib/plans-hub-page.js` /
- * `lib/data-docs.js` / `lib/archive.js` / `index.html` 的 RENDER-CORE 区块）。
- * 对这些页面本节用**台账（`untracked`）**如实声明：说明不属于本清单，归属哪个模块、
- * 该模块里**无条件产出**的那一条在哪一行。台账不是豁免 —— 它要求这些页面**仍然至少有
- * `minNotes` 条说明**（整族被改名 / 整族被删 ⇒ 红），且**新增一条带说明的页面族必须显式
- * 登记**（否则红）。逐条登记它们要动上面那几个模块，是下一轮的机械改动（见报告）。
+ * **这三类现在全部逐条登记**（`notes-manifest-residual-v1`，2026-10-08）：原先落在范围之外的
+ * 七个构造点已经接管 —— `lib/models-page.js` / `lib/plans-page.js` / `lib/api-plans-page.js` /
+ * `lib/plans-hub-page.js` / `lib/data-docs.js` / `lib/archive.js` / `index.html` 的 RENDER-CORE
+ * 区块（`changesPageHtml`）都按 route 收到登记入口 `ctx.note`，在**产出那一段 HTML 的同一次调用**里
+ * 登记（与 `lib/vendor-page.js` 同形）。**台账（`untracked`）因此从 58 页清到 0 页** ——
+ * `noteUntracked()` 这个机制保留（下一个「构造点确实不在本文件路径上」的页面族还得能用它如实登记），
+ * 但当前**没有任何调用点**：整份清单每一页都是 `complete`，构建期与 §22c 都按「逐字相等」判。
  *
  * 文件名常量 `NOTES_MANIFEST_FILE` 与产物清单放在一起（`GENERATED_FILES` 那一段）。
  */
@@ -367,11 +365,15 @@ function notePage(route, spec = {}) {
 }
 
 /**
- * **台账**：这一页的 `.snote` 由**本轮范围之外**的模块构造（本清单不逐条登记它们）。
+ * **台账**：这一页的 `.snote` 由**范围之外**的模块构造（本清单不逐条登记它们）。
  *
  * 台账必须写明归属模块与该模块里**无条件**产出那一条说明的位置 —— 它是「下一轮要接管
  * 哪些构造点」的可执行清单，也是 `minNotes` 这条下限的依据。台账不是豁免：构建期与
  * §22c 都要求这些页面**仍然至少有 `minNotes` 条 `.snote`**（整族改名 / 整族被删 ⇒ 红）。
+ *
+ * ⚠️ **当前 0 个调用点**（`notes-manifest-residual-v1`，2026-10-08）：原先登记的 58 页 / 8 族
+ * 全部在构造点接管（见本节开头的覆盖边界），台账已清零。机制保留 —— 下一个构造点确实不在
+ * 本文件代码路径上的页面族，仍然可以用它如实登记（而不是悄悄少登记几条）。
  */
 function noteUntracked(route, spec) {
   const page = notePageEntry(route);
@@ -1557,7 +1559,9 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
   // 没有这一步，`page-kinds.js` 对 `changes` 声明的 `checkRows/checkMembers` 就是
   // 「声明它必须对账、却没有任何标记可对」—— 上一轮审计里 9 条 `itemlist-members`
   // 与 2 条 `itemlist-arity` 正是这么来的。
-  const marked = markChangesRows(renderCore.changesPageHtml(radar, '../'), itemListRecords, changes.renderOrderOf(radar).length);
+  // 说明意图（notes-manifest-residual-v1）：正文里的 `.snote` 现在由 RENDER-CORE 的
+  // `changesPageHtml(radar, prefix, note)` 在**构造点**逐条登记（第三个参数是登记入口）。
+  const marked = markChangesRows(renderCore.changesPageHtml(radar, '../', noteDeclarerFor('changes/')), itemListRecords, changes.renderOrderOf(radar).length);
   if (marked.problems.length) {
     throw new Error(`/changes/ 的行标记与雷达不一致（判据与渲染分家了）：\n  - ${marked.problems.slice(0, 5).join('\n  - ')}`);
   }
@@ -1581,7 +1585,9 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
   // （另 一份数据、另 一份日志、另 一个起算日）。块由 `api-plans-page.js` 渲染，
   // 与 `/plans/api/` 共用同一句话（判据来自 `api-plan-history`，没有第二套变化检测）。
   const apiPlanBlock = context.apiPlanChanges
-    ? apiPlansPage.apiPlanChangesPageBlockHtml(context.apiPlanChanges, { prefix: '../', providerTable: context.providerTable || null })
+    ? apiPlansPage.apiPlanChangesPageBlockHtml(context.apiPlanChanges, {
+      prefix: '../', providerTable: context.providerTable || null, note: noteDeclarerFor('changes/')
+    })
       .split('\n').map(line => `      ${line}`).join('\n')
     : '';
   const jumpNav = `      <nav class="chgjump" aria-label="变化分区">
@@ -3755,19 +3761,11 @@ function assemble() {
   // v2.3：这一页同时列出**套餐变化**（同一份 planRadar），顶部多一行锚点导航。
   const changesDir = path.join(OUT, 'changes');
   fs.mkdirSync(changesDir, { recursive: true });
-  // 说明意图（notes-manifest-v1）：正文由 RENDER-CORE（`index.html` 的 RENDER-CORE 区块）
-  // 渲染、套餐/API 两块由 `plans-page.js` / `api-plans-page.js` 渲染 —— 构造点都不在本文件，
-  // 所以这一页进**台账**而不是逐条登记（见本节开头的覆盖边界）。
+  // 说明意图（notes-manifest-residual-v1）：这一页的 `.snote` **全部**在构造点逐条登记 ——
+  // 正文由 `index.html` 的 RENDER-CORE（`changesPageHtml(radar, prefix, note)`，由
+  // `renderChangesPage` 注入 `noteDeclarerFor('changes/')`）登记，套餐/API 两块由
+  // `lib/plans-page.js` / `lib/api-plans-page.js` 的变化块登记。台账已删除（这一页现在是 complete）。
   notePage('changes/', { kind: 'changes' });
-  // 台账（仍未接管）：正文里的 9 条 `.snote` 由 `index.html` 的 RENDER-CORE（changesPageHtml）
-  // 与 `lib/plans-page.js` / `lib/api-plans-page.js` 的变化块渲染 —— 后两者已逐条登记
-  // （notes-manifest-residual-v1 接管），RENDER-CORE 那一处**尚未接管**，所以这一页仍进台账。
-  noteUntracked('changes/', {
-    family: 'changes',
-    owner: 'index.html 的 RENDER-CORE 区块（changesPageHtml）',
-    structural: 'index.html:3930（分栏口径说明 N.scope，无条件输出）',
-    minNotes: 2
-  });
   fs.writeFileSync(path.join(changesDir, 'index.html'), renderChangesPage(radar, html, renderCore, {
     // 这一页订阅「变化」本身：声明变化 Feed 而不是全量 Feed（v1.5 报告 §九-5 的遗留项）。
     // v2.3：这一页同时列出**套餐变化**，所以那一份订阅也在这里声明（两者是两条独立的变化流）。

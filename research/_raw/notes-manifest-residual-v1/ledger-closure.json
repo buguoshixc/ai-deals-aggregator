@@ -1,0 +1,101 @@
+﻿{
+    "what":  "台账清零：删除前后逐族对照（台账不是豁免，接管了就删）",
+    "device":  ".arch-v1/scan-notes.cjs（口径与 build-local.js 的 noteSignaturesInMain 逐字同构）",
+    "before":  {
+                   "manifest":  ".arch-v1/dist-baseline/_notes.ndjson",
+                   "untrackedPages":  58,
+                   "families":  [
+                                    {
+                                        "family":  "archive-index",
+                                        "pages":  1,
+                                        "minNotes":  2,
+                                        "owner":  "lib/archive.js",
+                                        "routesSample":  [
+                                                             "archive/"
+                                                         ]
+                                    },
+                                    {
+                                        "family":  "changes",
+                                        "pages":  1,
+                                        "minNotes":  2,
+                                        "owner":  "index.html 的 RENDER-CORE 区块（changesPageHtml）+ lib/plans-page.js + lib/api-plans-page.js",
+                                        "routesSample":  [
+                                                             "changes/"
+                                                         ]
+                                    },
+                                    {
+                                        "family":  "data-docs",
+                                        "pages":  1,
+                                        "minNotes":  1,
+                                        "owner":  "lib/data-docs.js",
+                                        "routesSample":  [
+                                                             "docs/data/"
+                                                         ]
+                                    },
+                                    {
+                                        "family":  "models-index",
+                                        "pages":  1,
+                                        "minNotes":  1,
+                                        "owner":  "lib/models-page.js",
+                                        "routesSample":  [
+                                                             "models/"
+                                                         ]
+                                    },
+                                    {
+                                        "family":  "models-detail",
+                                        "pages":  51,
+                                        "minNotes":  2,
+                                        "owner":  "lib/models-page.js",
+                                        "routesSample":  [
+                                                             "models/360zhinao-pro/",
+                                                             "models/360zhinao-turbo-llm-geo/",
+                                                             "models/baichuan-m3-plus/"
+                                                         ]
+                                    },
+                                    {
+                                        "family":  "plans-hub",
+                                        "pages":  1,
+                                        "minNotes":  1,
+                                        "owner":  "lib/plans-hub-page.js",
+                                        "routesSample":  [
+                                                             "plans/"
+                                                         ]
+                                    },
+                                    {
+                                        "family":  "api-plans-index",
+                                        "pages":  1,
+                                        "minNotes":  1,
+                                        "owner":  "lib/api-plans-page.js",
+                                        "routesSample":  [
+                                                             "plans/api/"
+                                                         ]
+                                    },
+                                    {
+                                        "family":  "plans-coding",
+                                        "pages":  1,
+                                        "minNotes":  1,
+                                        "owner":  "lib/plans-page.js",
+                                        "routesSample":  [
+                                                             "plans/coding/"
+                                                         ]
+                                    }
+                                ],
+                   "declaredSnote":  14,
+                   "productSnoteOnLedgerPages":  258,
+                   "scannedPages":  58
+               },
+    "after":  {
+                  "manifest":  "dist/_notes.ndjson",
+                  "untrackedPages":  0,
+                  "completePages":  186,
+                  "declaredBySlot":  {
+                                         "mainSnote":  271,
+                                         "mainPnote":  159,
+                                         "mainVsnote":  150
+                                     },
+                  "declaredNotesTotal":  580,
+                  "pinnedNotes":  0
+              },
+    "noteUntrackedCallSites":  0,
+    "noteUntrackedNote":  "调用点 0 个（只剩函数定义）；台账机制保留，供「构造点确实不在本清单代码路径上」的页面族如实登记"
+}

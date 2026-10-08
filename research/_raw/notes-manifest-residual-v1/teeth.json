@@ -1,0 +1,57 @@
+﻿{
+    "what":  "三颗牙的实跑读数（红 → 逐字节还原 → 复跑绿）",
+    "m1":  {
+               "module":  "scripts/lib/archive.js",
+               "mutation":  "`\u003cp class=\"snote\"\u003e${ARCHIVE_DESCRIPTION}` → class=\"snote-drift\"（登记不动）",
+               "reading":  {
+                               "id":  "m1-archive",
+                               "log":  ".arch-v1/teeth/m1-archive.txt",
+                               "failuresFound":  4,
+                               "failures":  [
+                                                "✗ archive/#0 槽位 main-snote 签名 \u003csnote\u003e：清单声明 5 条、产物里数出 4 条 —— 说明没有按登记的容器渲染（换名 / 换容器 / 漏渲染）",
+                                                "✗ archive/ 整页 .snote：清单声明 5 条、产物里数出 4 条（完整对账不许有差额）"
+                                            ],
+                               "markers":  [
+
+                                           ]
+                           }
+           },
+    "m2":  {
+               "module":  "scripts/lib/models-page.js",
+               "mutation":  "`class=\"snote mcount\"` → `class=\"snote mcount-drift\"`（登记不动）",
+               "reading":  {
+                               "id":  "m2-models",
+                               "log":  ".arch-v1/teeth/m2-models.txt",
+                               "failuresFound":  4,
+                               "failures":  [
+                                                "✗ models/#1 槽位 main-snote 签名 \u003cmcount snote\u003e：清单声明 1 条、产物里数出 0 条 —— 说明没有按登记的容器渲染（换名 / 换容器 / 漏渲染）",
+                                                "✗ models/#0 槽位 main-snote 签名 \u003cmcount-drift snote\u003e：清单声明 0 条、产物里数出 1 条 —— 产物里出现了没有登记的说明容器（绕过 noteDeclare() 直接写进页面）"
+                                            ],
+                               "markers":  [
+
+                                           ]
+                           }
+           },
+    "m3":  {
+               "module":  "产物副本（dist/archive/index.html）",
+               "mutation":  "`\u003cp class=\"snote\" id=\"archive-links\"\u003e` → snote-drift，跑 verify-site --dir=副本",
+               "reading":  {
+                               "id":  "m3-prod-rename",
+                               "log":  ".arch-v1/teeth/m3-prod-rename.txt",
+                               "failuresFound":  4,
+                               "failures":  [
+                                                "✗ §22c ⑨ 逐页逐槽位对账：清单声明的「签名 × 条数」== 真浏览器 DOM 数出来的（580 条登记说明 × 3 个槽位） — 1 处不一致（route#index 可定位）：archive/#0 槽位 main-snote 签名 \u003csnote\u003e：清单声明 5 条 / DOM 实测 4 条",
+                                                "✗ §22c ⑨ 完整对账：complete 页面的整页 .snote 总数逐字相等（186 页） — 1 页有差额：archive/ 整页 .snote：清单声明 5 条 / DOM 实测 4 条",
+                                                "✗ §22c ⑨ 逐页逐槽位对账：清单声明的「签名 × 条数」== 真浏览器 DOM 数出来的（580 条登记说明 × 3 个槽位） — 1 处不一致（route#index 可定位）：archive/#0 槽位 main-snote 签名 \u003csnote\u003e：清单声明 5 条 / DOM 实测 4 条",
+                                                "✗ §22c ⑨ 完整对账：complete 页面的整页 .snote 总数逐字相等（186 页） — 1 页有差额：archive/ 整页 .snote：清单声明 5 条 / DOM 实测 4 条"
+                                            ],
+                               "markers":  [
+                                               "✗ §22c ⑨ 逐页逐槽位对账：清单声明的「签名 × 条数」== 真浏览器 DOM 数出来的（580 条登记说明 × 3 个槽位） — 1 处不一致（route#index 可定位）：archive/#0 槽位 main-snote 签名 \u003csnote\u003e：清单声明 5 条 / DOM 实测 4 条",
+                                               "✗ §22c ⑨ 完整对账：complete 页面的整页 .snote 总数逐字相等（186 页） — 1 页有差额：archive/ 整页 .snote：清单声明 5 条 / DOM 实测 4 条",
+                                               "❌ 验收 881 项，失败 2 项",
+                                               "✗ §22c ⑨ 逐页逐槽位对账：清单声明的「签名 × 条数」== 真浏览器 DOM 数出来的（580 条登记说明 × 3 个槽位） — 1 处不一致（route#index 可定位）：archive/#0 槽位 main-snote 签名 \u003csnote\u003e：清单声明 5 条 / DOM 实测 4 条",
+                                               "✗ §22c ⑨ 完整对账：complete 页面的整页 .snote 总数逐字相等（186 页） — 1 页有差额：archive/ 整页 .snote：清单声明 5 条 / DOM 实测 4 条"
+                                           ]
+                           }
+           }
+}
