@@ -122,7 +122,7 @@ jobs:
       #    也把它记为 T14-F3）。它和 (0b)「未登记的新 workflow 一律硬红」是同一条原则：
       #    登记制必须**双向**都有人守。豁免只能是逐文件 + 写明理由的白名单（当前为空）。
       - name: CI consistency (action / runner / node-version / engines drift)
-        run: node scripts/tools/check-ci-consistency.js --expect-checks=38
+        run: node scripts/tools/check-ci-consistency.js --expect-checks=39
 
       # 门禁本体：与 deploy.yml 的 prepublish、collect.yml 的提交前检查**同一个文件**。
       - name: Gate (validate → translation → selftests → build → real browser)
