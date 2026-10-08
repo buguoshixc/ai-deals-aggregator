@@ -1,0 +1,106 @@
+{
+  "review": "t13 · p2-residuals-v1 独立复核 · 牙",
+  "discipline": "全部构造只发生在 .arch-v1/ 下的**副本**里（产物副本 rev-sbx/dist、源码副本 sbx-src/）；仓库的 dist/ 与 scripts/ 一个字节都没动（复核树 git status 干净、全树摘要复核前后同为 75ecb983…）。每颗牙都是：构造 → 实跑 → 记录红 → 从源树逐字节拷回 → 复跑绿 → 核对 sha256。",
+  "runner": ".arch-v1/rev-teeth.cjs（产物级 3 颗）· .arch-v1/rev-sbx-thin.cjs（构建期）· .arch-v1/rev-tooth-literal.cjs（字面量登记）· .arch-v1/rev-sbx-tests.cjs（日志不可用）",
+  "teeth": [
+    {
+      "id": "floor-truncate-8",
+      "level": "产物级（独立门禁）",
+      "sandbox": ".arch-v1/rev-sbx/dist",
+      "mutation": "把 need/no-card/index.html 里一条 `.pnote` 说明砍掉 8 个字符（710 → 702）",
+      "expected": "thin-content-margin 点名 need/no-card/；thin-content 保持沉默",
+      "observedExit": 1,
+      "observedLines": [
+        "✗ 规则层 28 个检查码全过 —— [thin-content-margin] need/no-card/ 可见正文 702 字符，下限 660，余量 42 < 登记值 50（登记于 2026-10-08：本页 710 字 − 下限 660 = 余量 50）…",
+        "按码统计：{\"thin-content-margin\":1}",
+        "✗ 正文下限余量登记：6 页的实时余量 ≥ 登记值（独立重算，零调低下限） —— need/no-card/：余量 42 < 登记值 50（702 字 − 下限 660）"
+      ],
+      "restoredByteExact": true,
+      "greenAfterRestore": true
+    },
+    {
+      "id": "wording-rename",
+      "level": "产物级（独立门禁）",
+      "sandbox": ".arch-v1/rev-sbx/dist",
+      "mutation": "plans/index.html 的入口锚「全部变化 →」改成「查看全部 →」",
+      "expected": "§③‴ 两条都红并点名 plans/",
+      "observedExit": 1,
+      "observedLines": [
+        "✗ 入口文案：186 页里没有一处「查看全部」（逐字，含 script 模板） —— plans/",
+        "✗ 入口文案：指向 /changes/ 的箭头锚逐字都是「全部变化 →」（同一件事只有一个词） —— plans/：「查看全部 →」"
+      ],
+      "restoredByteExact": true,
+      "greenAfterRestore": true
+    },
+    {
+      "id": "topic-zero-shell",
+      "level": "产物级（独立门禁）",
+      "sandbox": ".arch-v1/rev-sbx/dist",
+      "mutation": "往 need/no-card/index.html 的 `<main>` 里注入零变化空壳模块（H14 修复前的形态，带 data-topic-total/shown=0）",
+      "expected": "§③″ 红并点名该页",
+      "observedExit": 1,
+      "observedLines": [
+        "✗ H14 条件模块：186 页逐页自洽（在场必有 ≥1 条；不在场连标记都不留） —— need/no-card/：data-topic-total=0 ⇒ 零变化却渲染了模块；need/no-card/：data-topic-shown=0 ⇒ 模块里一行都没有"
+      ],
+      "restoredByteExact": true,
+      "greenAfterRestore": true,
+      "note": "第一次注入用的是「文件里第一个 `<h1>`」—— 那个 `<h1>` 在**内联的 RENDER-CORE 脚本字符串**里，剥掉 script 后消失 ⇒ 注入落在 DOM 之外、门禁看不见（exit=0）。改成插在最后一个 `</main>` 之前后立刻变红。这条差异只说明**注入位置**要落在真 DOM 里，不是判据的问题。"
+    },
+    {
+      "id": "build-thin-content-margin",
+      "level": "构建期（源码级副本 + 改数据）",
+      "sandbox": ".arch-v1/sbx-src/（整树副本 + npm ci）",
+      "mutation": "把 /need/no-card/ 上唯一那条优惠的 title 砍掉 12 个字符（42 字 → 30 字）",
+      "expected": "**构建期**以 thin-content-margin 失败（不是只有独立门禁会响）",
+      "observedExit": 1,
+      "observedLines": [
+        "✗ SEO[thin-content-margin] need/no-card/：可见正文 698 字符，下限 660，余量 38 < 登记值 50（登记于 2026-10-08：本页 710 字 − 下限 660 = 余量 50）…",
+        "❌ 构建失败：产物自检未通过"
+      ],
+      "restoredByteExact": true,
+      "greenAfterRestore": true
+    },
+    {
+      "id": "literal-second-site",
+      "level": "源码级（配置/登记表断言）",
+      "sandbox": ".arch-v1/sbx-src/",
+      "mutation": "在 scripts/lib/models-page.js 里再加一处手写「全部变化 →」字面量",
+      "expected": "seo-selftest §七 的「字面量登记」红，并点名两处",
+      "observedExit": 1,
+      "observedLines": [
+        "✗ scripts/lib/ 里手写「全部变化 →」字面量的位置 = 登记的那一处（plans-hub-page.js） —— models-page.js, plans-hub-page.js"
+      ],
+      "restoredByteExact": true,
+      "greenAfterRestore": true
+    },
+    {
+      "id": "negative-control-unregistered-page",
+      "level": "构建期（源码级副本）· **阴性对照**",
+      "sandbox": ".arch-v1/sbx-src/",
+      "mutation": "把**不在登记表里**的一页（`userNotes` 含「免费」那一页）的说明砍掉 12 个字符",
+      "expected": "**不红** —— 因为登记表只覆盖「余量 < 150 字」的 6 页",
+      "observedExit": 0,
+      "observedLines": ["✓ SEO 安全门禁: 28 个检查码 × 186 个页面全过"],
+      "restoredByteExact": true,
+      "greenAfterRestore": true,
+      "note": "这条阴性对照不是缺陷，而是**覆盖边界的实测**：登记表之外的页只有 `thin-content`（下限本身）看着。报告 §1.2 写了登记范围、自审 §1.3 写了「超过登记值的变薄它看不见」，但「表外的页面完全没人看」这一句值得在收口文件里显式写出来（见 review §4 观察 2）。"
+    },
+    {
+      "id": "build-nolog-dataset-manifest",
+      "level": "构建期（源码级副本 + 移走历史日志）· 复核「如实偏差 ①」",
+      "sandbox": ".arch-v1/sbx-src/",
+      "mutation": "把 scripts/data/deal-history.json 移走，再构建",
+      "expected": "构建在 Dataset Manifest 那一步失败，且**产物自检整节不出现**",
+      "observedExit": 1,
+      "observedLines": [
+        "⚠️  历史日志不可用（文件缺失）——本次产物里没有变更记录，check:history 会报错",
+        "❌ 构建失败：Error: Dataset Manifest 形状不合法（1 处）：",
+        "  - dataset deal-history: 缺少 updatedAt",
+        "「=== 4) 产物自检 ===」出现 = false"
+      ],
+      "restoredByteExact": true,
+      "greenAfterRestore": true,
+      "note": "与 t4 报告 §2.2′ 的三条读数逐条一致：认出了日志不可用 → 却在更早一步中止 → 自检与 SEO 门禁都没跑到。"
+    }
+  ]
+}
