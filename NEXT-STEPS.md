@@ -78,16 +78,65 @@
      判据 `narrow-unregistered`（产物里**任何 ch 窄列**未登记即红；普查实测全站只有这 1 处）+
      §19「登记条目必须居中、且真的比容器窄」的几何断言。作用域显式排除 `min-width` 与 px/rem
      （`.detail-main` 的 `min(1120px,100%)` 由 §22b 原有断言承担）。产物变化面：**1 个文件**（`plans/coding/index.html`）。
-   * ❌ **仍然开着：判据只认 `.snote` 这个类名（换名 / 换容器即隐形）**。已覆盖面只有间接那几条（3 条别名页各恰好 1 条的 ③b 断言、
-     M1–M4 四壳必须带说明的前置守卫、M15/M16 正对照、每页冻结串恰好 1 次）。真正的修法需要构建期产出一份
-     「这一页应有多少条说明」的机器可读清单，再做**跨源对账**（构建期意图 ↔ 渲染出的 DOM），属独立一轮 ——
-     本轮**没有**做，也没有把它写成「已解决」。
+   * ✅ **「判据只认 `.snote` 类名（换名 / 换容器即隐形）」已闭合可闭合的那一半**（`notes-manifest-v1`，2026-10-08）：
+     构建期**意图清单**（`dist/_notes.ndjson`，186 页 × 3 槽位；**323 条**登记说明）+ 构建期自检 +
+     `verify-site.js` §22c ⑨ 在**真浏览器 DOM** 回读**同一把尺子**，两侧按 `route × 槽位 × 签名` 逐条相等，
+     不等即红并点名 `route#index`（两侧读数都给）。**登记与输出是同一次调用**（`noteDeclare()` 返回它收到的 HTML）
+     ⇒ 登记不出来的说明也输出不出去。读数：**880 项 / 0 失败**（master `4b366d2` 为 874 ⇒ **+6**）；
+     产物变化面**只多出 `_notes.ndjson`**（其余 303 个文件逐文件 sha256 不变）；牙三颗实跑（只改模板类名 ⇒
+     构建 exit 1 点名 `need/dev-credits/#2`；改错清单条数 ⇒ 点名 `status/#0`；只改产物副本类名 ⇒ §22c exit 1 点名 `status/#0`）。
+     合并 `8c9fb29d93c3100e43795d139173c53cd354a767`（PR #63，PR 门禁 run 37761567634 success）。
+     **残余（已排进 `notes-manifest-residual-v1`）**：`/models/*`（52 页）· `/plans/*`（3 页）· `/docs/data/` · `/archive/` ·
+     `/changes/` 这 **58 页 / 257 条** `.snote` 的构造点仍在 7 个模块里（`lib/models-page.js` / `plans-page.js` /
+     `api-plans-page.js` / `plans-hub-page.js` / `data-docs.js` / `archive.js` / `index.html` 的 RENDER-CORE 区块），
+     本轮对它们只有**台账 + 下限 + 棘轮**（整族被删/改名 ⇒ 红），**单条改名还咬不住**；下一轮是机械改动
+     （注入 `ctx.note`，与 `lib/vendor-page.js` 同形），报告 §5 有逐文件清单。
+     **清单文件名口径（captain 决定）**：落成 `dist/_notes.ndjson` 而**不是** `_notes.json` —— 产物里每个 `*.json` 都必须被某个
+     注册表认领，塞进 `PUBLIC_DATASETS` 会让它变成公开数据集（进 `/docs/data/` 索引）= 产品面变化；将来若真要 `.json`，
+     只需删一行常量 + 在 `INTERNAL_ARTIFACTS` 加一条（报告 §7 有原文）。证据：`research/notes-manifest-v1-report.md` ·
+     `…-self-audit.md` · `research/_raw/notes-manifest-v1/`（4 份小 JSON）。
    报告 `research/narrow-reading-columns-v1-report.md`；自审 `…-self-audit.md`；原始读数 `research/_raw/narrow-reading-columns-v1/`。
 4b. **环境教训（本轮实测，写给下一轮）**：隔离工作树里用 **junction** 指 `node_modules` 时，
    跑 Full Gate 的第 1 步 `npm ci` 会把 junction 换成**实体目录**、并把 junction 的**原目标（主工作区的 `node_modules`）
    清空成 0 个目录**（表现：主工作区 `Cannot find module 'playwright-core'`）。处置：在主工作区重跑 `npm ci` 复原
    （本轮已做）。要么别用 junction，要么跑 Full Gate 时用 `--from=` 跳过第 1 步。
+   **2026-10-08 复核（captain 扫了全部 14 个工作树）**：本会话团队的 4 个工作树（`notes-manifest-v1` /
+   `p2-residuals-v1` / `criteria-adversary-v1` / `sources-residue-v1`）的 `node_modules` **都不是重解析点**
+   （各自真跑 `npm ci`）✅；**仍挂着 junction 的是上一轮遗留的两处** ——
+   `secondary-page-content-simplification` 与 `secondary-page-layout-unification`。
+   谁在那两个工作树里跑 Full Gate 的第 1 步，都会再次清空**主工作区**的依赖。
+4c. **「最近变化」非空分支的生产样本 —— 已证「当前数据面下结构上不可达」（2026-10-08 复核）**：
+   线上 **186 页**（sitemap 183 + 3 条 noindex 别名）逐页抓取：条件模块 `class="chgsec chgtopic"` **0 页**、
+   `data-topic-total` **0 页**、条件模块的 `<h2>最近变化</h2>` **0 页**（对照组：任意 `chgsec` 只有 `/changes/` 1 页；
+   `#plan-changes` / `#api-changes` 是**无条件**块，不算）。原因不是「数据恰好为空」，而是**交集结构上必为空**：
+   `landing.js:283` 的页面条目池**只收 `type === 'deal'`**，而 `deal-history.json` 的 **19 条事件全部挂在
+   `fields.type = "tool"` 的记录上**（该文件 80 deal / 73 tool；19 条事件全是 `created`）；且 `build-local.js:3186`
+   对 hub / alias 页直接给 `topic = null`。另：「即将结束」也必然为 0 —— **129 条 deal 记录里 0 条写了 `expiresAt`**。
+   **captain 独立复核**：① 自写脚本**剥掉 `<script>` 后**扫 186 个产物：真渲染实例 **0**、`data-topic-total` **0**
+   （其余 `.chgtopic` 命中全是共享 CSS 类与 `dist/index.html:4085` 的**模板源码字符串** —— 这正是装置要防的坑）；
+   ② 手工核对事件 `4a4f4777ffbc` / `69a0d047e3f9` / `8f479fcbe8f9` 的 `fields.type` 均为 `tool`，且**我自己 grep 出的事件
+   日期分布（10-04×1 / 10-06×2 / 10-07×1 / 10-08×15）与审计 JSON 的 `byAt` 逐项相同**。
+   **这不是缺陷**（H14 的条件模块本就该在有事件时才有内容），但必须留一条**可证伪的翻转信号**：复跑
+   `pagesWithConditionalModule` **从 0 变 ≥ 1**（触发面：deal 型 `created` / 高价值字段变化 / `ended` / `restored`，
+   或首次出现带 `expiresAt` 且 ≤7 天的 deal）。证据：`research/_raw/narrow-reading-columns-v1/change-module-production-audit.json`
+   （PR **#61**，合并 `e455b3a69428f11d67189e304d4cc676610838b5`）。
 5. **故意不做**：`.ph2` / `.plist` / `.stop` / `.cstop` / `.ptable*` 仍是多个页面壳各自复制一份 —— 理由是不扩大回归面（详见报告 §19.5）。
+6. **P2 残留（三条）—— ✅ 已收口（`p2-residuals-v1`，2026-10-08）**：
+   ① **文本下限余量**：`/need/no-card/` 实测 **710 字 / 下限 660 / 余量 50**（全站最薄，次薄 123）。
+   **下限公式一个字未改**；处置是新增**余量登记**（6 页，`scripts/lib/seo.js` 的 `TEXT_FLOOR_RESIDUALS`
+   + JSON 转写 `research/_raw/p2-residuals-v1/text-floor-margins.json`）与检查码 **`thin-content-margin`**
+   （27 → 28，跌破登记值即红，比 `thin-content` 至多早 50 个字；沙箱砍 8 个字实跑点名变红）。
+   ② **不可用日志的处置**：与 **H14** 一致（零变化 / 日志不可用 ⇒ 整块不渲染），**无需修复**；
+   真函数三层实跑：不可用 ⇒ 0 字节、零变化 ⇒ 0 字节、正对照 478 字节；判据出处 `selftest:changes`
+   的 R2 / R2b / R2c / R2d，另补产物级独立复查（`verify:seo` §③″）。
+   ③ **入口文案**：全站 186 页里入口锚 **4 个 / 3 页**（`/` `/plans/`×2 `/plans/coding/`）逐字
+   「全部变化 →」，「查看全部」**0 处**（产物与 7 个渲染源文件都扫过）；**如实偏差**：
+   `plans-hub-page.js:251` 是硬编码字面量（已登记，补丁待下一轮）。
+   交付读数：`verify:seo` **11 → 17 项 / 0 失败**、`selftest:seo` **69 → 87 项 / 0 失败**、
+   `verify` **874 / 0**、`check:ci` **39 / 0**、产物 **303/303 逐字节未变**。合并 `33d2472258702d1628bf6c4e46c18465e183dc65`（PR #62）。
+   **补丁去向（captain 注）**：②的那一半与 ③ 已排进 `p2-honesty-single-source-v1`（日志不可用时构建在
+   Dataset Manifest 步就失败 ⇒ 诚实性措辞永远上不了线；入口文案收回措辞键）；`check-ci-consistency.js:191`
+   注释里的「27 个检查码」已在本轮收口为 28（纯注释，不影响 `check:ci`）。
 
 ---
 
