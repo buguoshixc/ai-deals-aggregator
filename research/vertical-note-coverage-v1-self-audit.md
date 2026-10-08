@@ -44,7 +44,19 @@
   **给下一轮的建议**：隔离工作树里**不要**用 junction；或跑 Full Gate 前把第 1 步单独跳过
   （本轮的 `full-gate.cjs` 已经支持 `--from=`）。
 
-## 4. 自评结论
+## 4. 发布链复核（合并后补记）
+
+* PR **#57** 合并提交 **1c02d84b07a05ce11d805ce15aab628b7ffd0d74**（2026-10-08T08:08:43Z）；PR 的 gate run 37747214242 **success**；master 的 gate run 37747903611 **success**；
+  Deploy to GitHub Pages run 37747903736 **success（prepublish / build / deploy 三个 job 全 success）**。
+* 线上冒烟 run 后实测 **PASS**：12 条路由 + /changes/ 全部 200，且**线上 HTML 与本地 dist 逐字节相同**、
+  每页冻结串恰好 1 次、**无 writing-mode 竖排泄漏**、/changes/ 分栏 7（_raw/…/online-smoke.json）。
+  ⚠️ 如实说明这条判据的**边界**：因为本轮产物逐字节未变，「线上 = 本地」在**部署前**同样成立 ——
+  它证明的是「线上确实就是这份产物」，**不能**单独证明「这次 Deploy 真的重新上传了」。
+  后者由 Deploy run 的三个 job 全 success 承担。
+* 首发推送后有 4 次网络相关的重试吗？没有：git push 与 gh pr create 都是第一次就成功，
+  只有**第二条提交**（PR 正文存档）触发了 GitHub 取消旧 run（cancelled ≠ 失败）。
+
+## 5. 自评结论
 
 * 这条 P1 的**要害**（竖排让所有「按行」的判据静默）在本轮被**机制层**讲清并修掉，
   不再是「靠 @360 的自裁切副作用接住」；三档（1440/1600/760）咬中，且判据不是形态禁令。
