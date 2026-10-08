@@ -78,10 +78,23 @@
      判据 `narrow-unregistered`（产物里**任何 ch 窄列**未登记即红；普查实测全站只有这 1 处）+
      §19「登记条目必须居中、且真的比容器窄」的几何断言。作用域显式排除 `min-width` 与 px/rem
      （`.detail-main` 的 `min(1120px,100%)` 由 §22b 原有断言承担）。产物变化面：**1 个文件**（`plans/coding/index.html`）。
-   * ❌ **仍然开着：判据只认 `.snote` 这个类名（换名 / 换容器即隐形）**。已覆盖面只有间接那几条（3 条别名页各恰好 1 条的 ③b 断言、
-     M1–M4 四壳必须带说明的前置守卫、M15/M16 正对照、每页冻结串恰好 1 次）。真正的修法需要构建期产出一份
-     「这一页应有多少条说明」的机器可读清单，再做**跨源对账**（构建期意图 ↔ 渲染出的 DOM），属独立一轮 ——
-     本轮**没有**做，也没有把它写成「已解决」。
+   * ✅ **「判据只认 `.snote` 类名（换名 / 换容器即隐形）」已闭合可闭合的那一半**（`notes-manifest-v1`，2026-10-08）：
+     构建期**意图清单**（`dist/_notes.ndjson`，186 页 × 3 槽位；**323 条**登记说明）+ 构建期自检 +
+     `verify-site.js` §22c ⑨ 在**真浏览器 DOM** 回读**同一把尺子**，两侧按 `route × 槽位 × 签名` 逐条相等，
+     不等即红并点名 `route#index`（两侧读数都给）。**登记与输出是同一次调用**（`noteDeclare()` 返回它收到的 HTML）
+     ⇒ 登记不出来的说明也输出不出去。读数：**880 项 / 0 失败**（master `4b366d2` 为 874 ⇒ **+6**）；
+     产物变化面**只多出 `_notes.ndjson`**（其余 303 个文件逐文件 sha256 不变）；牙三颗实跑（只改模板类名 ⇒
+     构建 exit 1 点名 `need/dev-credits/#2`；改错清单条数 ⇒ 点名 `status/#0`；只改产物副本类名 ⇒ §22c exit 1 点名 `status/#0`）。
+     合并 `8c9fb29d93c3100e43795d139173c53cd354a767`（PR #63，PR 门禁 run 37761567634 success）。
+     **残余（已排进 `notes-manifest-residual-v1`）**：`/models/*`（52 页）· `/plans/*`（3 页）· `/docs/data/` · `/archive/` ·
+     `/changes/` 这 **58 页 / 257 条** `.snote` 的构造点仍在 7 个模块里（`lib/models-page.js` / `plans-page.js` /
+     `api-plans-page.js` / `plans-hub-page.js` / `data-docs.js` / `archive.js` / `index.html` 的 RENDER-CORE 区块），
+     本轮对它们只有**台账 + 下限 + 棘轮**（整族被删/改名 ⇒ 红），**单条改名还咬不住**；下一轮是机械改动
+     （注入 `ctx.note`，与 `lib/vendor-page.js` 同形），报告 §5 有逐文件清单。
+     **清单文件名口径（captain 决定）**：落成 `dist/_notes.ndjson` 而**不是** `_notes.json` —— 产物里每个 `*.json` 都必须被某个
+     注册表认领，塞进 `PUBLIC_DATASETS` 会让它变成公开数据集（进 `/docs/data/` 索引）= 产品面变化；将来若真要 `.json`，
+     只需删一行常量 + 在 `INTERNAL_ARTIFACTS` 加一条（报告 §7 有原文）。证据：`research/notes-manifest-v1-report.md` ·
+     `…-self-audit.md` · `research/_raw/notes-manifest-v1/`（4 份小 JSON）。
    报告 `research/narrow-reading-columns-v1-report.md`；自审 `…-self-audit.md`；原始读数 `research/_raw/narrow-reading-columns-v1/`。
 4b. **环境教训（本轮实测，写给下一轮）**：隔离工作树里用 **junction** 指 `node_modules` 时，
    跑 Full Gate 的第 1 步 `npm ci` 会把 junction 换成**实体目录**、并把 junction 的**原目标（主工作区的 `node_modules`）
