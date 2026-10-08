@@ -69,11 +69,20 @@
    `research/_raw/secondary-page-layout-unification/verify/T31-WRITING-MODE.md`；当时的裁定是「如实披露、直接发布，
    不开修复轮 7」，本条即为那个 `requiredFix` 的落地。
    **仍然开着的**：`sideways-rl`/`vertical-lr` 无真实样本（只有合成几何自检）；横排 `column-gap` 极小的细分未参数化；竖排轴上没做 0.85 vs 0.5 的 A/B 标定（只证了命中处远离阈值 + 铺满即放行）。
-4. **P1（不阻塞）**：`.pdetailbody { max-width: 72ch }`（占单元格 **0.3377**，与缺陷同量级但**不是**页面级说明）→ 保留，未来两种处置：居中或放宽；
-   判据只认 `.snote` 这个类名（换名 / 换容器即隐形）；两处保留窄宽还没有「机器可读的保留清单」。
-   —— `vertical-note-coverage-v1`（2026-10-08）只把「改名 ⇒ 隐形」的**已覆盖面**写清楚（3 条别名页各恰好 1 条的 ③b 断言、
-   M1–M4 四壳必须带说明的前置守卫、M15 正对照、每页冻结串恰好 1 次），**没有**新增类名无关的散文普查 —— 那需要构建期产出一份
-   「这一页应有多少条说明」的机器可读清单（跨源对账），属独立一轮。
+4. **P1（不阻塞）—— 两半的现状（`narrow-reading-columns-v1`，2026-10-08 更新）**：
+   * ✅ **`.pdetailbody { max-width: 72ch }` 已按 S4 居中**（`margin-inline: auto`）：真浏览器 1440 实测
+     盒 **465.75px** / 单元格内容盒 **1357px**、左 **445.63px** / 右 **445.63px**（差 0）、自身 466/466 不裁切；
+     隔离牙（就地删掉居中规则）⇒ 左 0.5 / 右 890.75 而**盒宽一字不变**（465.75 → 465.75）⇒ 判据量的是「居中」本身。
+     选「居中」而不是「放宽」的理由：S4 写着窄阅读列**必须**居中；放宽会让引文行宽升到 1300px 级。
+   * ✅ **保留窄宽已有机器可读清单**：`scripts/data/narrow-reading-columns.json`（1 条登记）+
+     判据 `narrow-unregistered`（产物里**任何 ch 窄列**未登记即红；普查实测全站只有这 1 处）+
+     §19「登记条目必须居中、且真的比容器窄」的几何断言。作用域显式排除 `min-width` 与 px/rem
+     （`.detail-main` 的 `min(1120px,100%)` 由 §22b 原有断言承担）。产物变化面：**1 个文件**（`plans/coding/index.html`）。
+   * ❌ **仍然开着：判据只认 `.snote` 这个类名（换名 / 换容器即隐形）**。已覆盖面只有间接那几条（3 条别名页各恰好 1 条的 ③b 断言、
+     M1–M4 四壳必须带说明的前置守卫、M15/M16 正对照、每页冻结串恰好 1 次）。真正的修法需要构建期产出一份
+     「这一页应有多少条说明」的机器可读清单，再做**跨源对账**（构建期意图 ↔ 渲染出的 DOM），属独立一轮 ——
+     本轮**没有**做，也没有把它写成「已解决」。
+   报告 `research/narrow-reading-columns-v1-report.md`；自审 `…-self-audit.md`；原始读数 `research/_raw/narrow-reading-columns-v1/`。
 4b. **环境教训（本轮实测，写给下一轮）**：隔离工作树里用 **junction** 指 `node_modules` 时，
    跑 Full Gate 的第 1 步 `npm ci` 会把 junction 换成**实体目录**、并把 junction 的**原目标（主工作区的 `node_modules`）
    清空成 0 个目录**（表现：主工作区 `Cannot find module 'playwright-core'`）。处置：在主工作区重跑 `npm ci` 复原
