@@ -17,7 +17,9 @@
 | **3** | **破防（竖排单列 + 裁切 = 整页零码）** | `.snote { writing-mode: vertical-rl; width:100%; height:5.6rem; overflow:hidden; white-space:nowrap }` | ② 前置不成立（列 1）· ① 看不见（内容盒 1377px）· `note-clipped` 只看横向 ⇒ **0 码**；探针：盒 1380×89.59 而 `scrollHeight 1489` ⇒ 157 字里 **~94% 被裁掉** |
 | **4** | **答案（captain 的三问）** | `entries: []` / `@media` / 祖先 `writing-mode` | ① `entries: []` ⇒ **立刻红（874 项 / 失败 5）**，且 §19 几何靠 fallback 继续跑；② `@media` 内规则、逗号、`@supports` 混排 —— 前两者**都扫得到**，逗号是**真漏**；③ 祖先写的 `writing-mode` **轴是对的**（读的是 computed style，继承可见） |
 
-**总数**：24 + 2 副本形态 + 7 几何形态 + 3 注释伪造形态 = **36 条**；判定分布 **守住 15 · 破防 9 · 未覆盖 6 · 假红 1**（`findings.json` 逐条附读数与修法）。
+**总数**：24（`forms.json`）+ 2（`forms2.json`）+ 7（`forms3.json`）+ 3（`forms4.json`）+ 1（`mk-forge3.cjs` 的 canonical 伪造/真删对照）= **37 条形态**
+（`attack-forms.json` 里 **38 条记录**：`F1` 在伪造副本与对照副本各登记一次；其中 4 条是对照：`RA2` / `RA1b` / `F2c` / `F3` 的真删对照）。
+判定分布 **守住 15 · 破防 9 · 未覆盖 6 · 假红 1**（`findings.json` 31 条 finding，逐条附读数与修法）。
 **不是复述**：下面每一条都有「逐字形态 · 命令 · 原始读数 · 结论」四段，且读数来自**门禁自己的 JSON**（判定）与**我自己的探针**（形态有没有真的落到布局上）。
 
 ---
@@ -49,6 +51,110 @@ node .arch-v1/probe.cjs --dist=.arch-v1/dist-att --plan=.arch-v1/probe-plan-atta
   用来区分「形态没生效」与「生效了但判据看不见」—— 这是我的结论与门禁读数**成对**的前提。
 * **如实登记的装置偏差**：攻击副本 #1 有几条形态落在**内置变异牙的靶页**上（`docs/data/`、`changes/`、`plans/`、`need/student-only/`），
   使 `M6/M11/M13/M14/M8–M10 正对照` 的锚点前提被破坏 ⇒ 该轮 15 项失败里 **7 项是这类连带**（`M6 · M11 · M13×2 · M14×2 · M8/M9a/M9b/M10 正对照`），另外 8 项才是我的形态的直接效果。
+  **纪律（写给下一轮）**：形态不要落在 `M6/M8/M9a/M9b/M10/M11/M13/M14` 的靶页上（`need/student-only/`、`docs/data/`、`changes/`、`plans/` 等），
+  否则那一轮会多出 7 项连带失败；sweep 的读数不受影响（它来自 `metrics.layoutViolations` / `layoutNotes`），但「正对照」会红。
+
+### 1.1 前置产物（从零复跑需要什么）
+
+| 项 | 值 / 命令 | 备注 |
+| --- | --- | --- |
+| 运行时 | Node **v24.13.1** · npm **11.19.0** | 本机实测 |
+| 依赖 | 在**自己的工作树**里 `npm ci` | ⚠️ 不要用 junction 指主工作区的 `node_modules`（`npm ci` 会顺着 junction 清空主工作区） |
+| 浏览器 | `playwright-core` + 本机 Edge；环境变量 `DSH_EDGE` 可覆盖（默认 `C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe`） | 门禁与探针**同一内核**，读数才可比 |
+| 产物 | `node scripts/tools/build-local.js` ⇒ `dist/` **303 文件 / 1441.6 KB** | 之后所有 `--dir=` 指向的都是**副本** |
+| 耗时 | 一次全量门禁 ~120 s（3 个并发 ~145 s）；探针一次 ~10 s | 36 条形态的完整复跑 ≈ 12 次门禁 ≈ 25 min（3 路并发 ≈ 10 min） |
+
+### 1.2 装置清单（`.arch-v1/*.cjs` —— **gitignore 的 scratch，不入库**，本轮结束后**保留在原机**）
+
+| 文件 | 接口 | 职责 |
+| --- | --- | --- |
+| `tree-sha.cjs` | `<dir> <out.json>` | 逐文件 sha256 + 全树摘要（「原 dist 被写 0 个」的证据） |
+| `inject.cjs` | `--src --dst --forms --only --manifest` | 整树复制 + 逐形态注入；op = `css` / `wrap` / `spanLines` / `replace` / `replaceRe`；**锚点命中数守卫**（命中数 ≠ 期望 ⇒ 非零退出、不落盘）+ 变化面逐文件对账 |
+| `make-sandbox.cjs` | `--root --mode=empty\|two --injectRoute --injectCss` | 搭 `scripts/` + `dist/` 的沙箱副本（**唯一**能改登记清单又不碰产品树的办法） |
+| `probe.cjs` | `--dist --plan --out --label --width` | playwright-core 探针：computed（含 `fontSize/lineHeight/maxWidth/writingMode`）· 盒 · 左右内边距 · 字迹盒 —— **只量不判** |
+| `mk-forge3.cjs` | 无参 | 造 canonical 注释伪造的两份副本（伪造 / 真删对照） |
+| `make-evidence.cjs` | 无参 | 从 `.arch-v1/` 的原始读数**重新生成** `research/_raw/registry-adversary-v1/**` 全部证据文件 |
+| `slice.cjs` · `form-readings.cjs` · `summarize.cjs` · `show-probes.cjs` | 各自读门禁 JSON / 探针 JSON | 读数切片（条级量、页级码、扫描面、失败项） |
+| `count-exact.cjs` · `count-marks.cjs` · `cross-notes.cjs` · `find-disclosure.cjs` · `notes-dump.cjs` · `show.cjs` · `inspect.cjs` | 盘点小工具 | 产物结构盘点（注意：**别用 PowerShell 传带引号的字面量**，实测内层引号会被剥掉） |
+| 形态文件 | `forms.json`(24) · `forms2.json`(2) · `forms3.json`(7) · `forms4.json`(3) | 逐字注入的唯一出处；**已逐条进 `attack-forms.json`**（含 `rawDefinition`：`wrap`/`spanLines`/`replace`/`replaceRe` 的逐字锚点）⇒ 即使 scratch 丢了，也能从 PR 里的证据文件重放全部 37 条形态 |
+
+### 1.3 复跑命令 + 期望读数（照抄即可）
+
+```bash
+cd .worktrees/criteria-adversary-v1                 # 基点 ef395c0；分支 criteria-adversary-v1
+npm ci && node scripts/tools/build-local.js          # dist/ 303 文件
+mkdir -p .arch-v1 && cp -r dist .arch-v1/dist-base
+node .arch-v1/tree-sha.cjs dist .arch-v1/sha/dist.json        # tree c81765cde8e2d0e7cf612be043d3671f841126b951c04db17a0a51c7e7a1c82c
+
+# ① 基线（对照）
+node scripts/tools/verify-site.js --dir=.arch-v1/dist-base --json=.arch-v1/json/base.json        # 期望 874 / 失败 0
+# ② 攻击副本 #1（24 条形态：识别 / 竖排 / 登记 / 形状）
+node .arch-v1/inject.cjs --src=.arch-v1/dist-base --dst=.arch-v1/dist-att  --forms=.arch-v1/forms.json  --manifest=.arch-v1/att-manifest.json
+node scripts/tools/verify-site.js --dir=.arch-v1/dist-att  --json=.arch-v1/json/att.json          # 期望 874 / 失败 15（含 7 项变异牙连带）
+# ③ 攻击副本 #2（VA8b 轴 desync 全宽度 + VA5b 样本集外的 760 形态）
+node .arch-v1/inject.cjs --src=.arch-v1/dist-base --dst=.arch-v1/dist-att2 --forms=.arch-v1/forms2.json --manifest=.arch-v1/att2-manifest.json
+node scripts/tools/verify-site.js --dir=.arch-v1/dist-att2 --json=.arch-v1/json/att2.json         # 期望 874 / 失败 4
+# ④ 几何边界六副本（每条单独一份，因为都改 /plans/coding/ 的同一块）
+for pair in "g19:G19-tolerance-inside,RA1b-comma-literal-70ch" "g21:G21-tolerance-outside" "g300:G300-narrowed-by-px" \
+            "g1400:G1400-widened-by-min-width" "grtl:GRTL-ancestor-direction" "gxf:GXF-ancestor-transform"; do
+  d="${pair%%:*}"; only="${pair#*:}"
+  node .arch-v1/inject.cjs --src=.arch-v1/dist-base --dst=".arch-v1/dist-$d" --forms=.arch-v1/forms3.json --only="$only" --manifest=".arch-v1/manifest-dist-$d.json"
+  node scripts/tools/verify-site.js --dir=".arch-v1/dist-$d" --json=".arch-v1/json/$d.json"
+done
+#    期望：g19 874/0 · g21 874/2 · g300 874/0 · g1400 874/2 · grtl 874/0 · gxf 874/0
+# ⑤ 注释伪造（captain 增补线索）
+node .arch-v1/inject.cjs --src=.arch-v1/dist-base --dst=.arch-v1/dist-forge     --forms=.arch-v1/forms4.json --only=F1-frozen-declaration-only-in-comment,F2-sitemap-loc-only-in-comment --manifest=.arch-v1/forge-manifest.json
+node .arch-v1/inject.cjs --src=.arch-v1/dist-base --dst=.arch-v1/dist-forge-ctl --forms=.arch-v1/forms4.json --only=F1-frozen-declaration-only-in-comment,F2c-sitemap-url-deleted              --manifest=.arch-v1/forge-ctl-manifest.json
+node .arch-v1/mk-forge3.cjs                                   # dist-forge3（canonical 进注释）/ dist-forge3-ctl（真删）
+node scripts/tools/verify-site.js --dir=.arch-v1/dist-forge     --json=.arch-v1/json/forge.json      # 期望 874 / 失败 2（§18 sitemap 判据**绿**；2 项是 M15 副作用）
+node scripts/tools/verify-site.js --dir=.arch-v1/dist-forge-ctl --json=.arch-v1/json/forge-ctl.json  # 期望 874 / 失败 4（sitemap 判据**红**）
+node scripts/tools/verify-site.js --dir=.arch-v1/dist-forge3    --json=.arch-v1/json/forge3.json     # 期望 874 / 失败 2（DOM 判据兜住 canonical）
+node scripts/tools/seo-verify.js --dir=.arch-v1/dist-forge        # 期望 exit 0（11 项 / 0 失败）—— 被注释骗过
+node scripts/tools/seo-verify.js --dir=.arch-v1/dist-forge-ctl    # 期望 exit 1（漏 vendor/zhipu/）
+node scripts/tools/seo-verify.js --dir=.arch-v1/dist-forge3       # 期望 exit 0 —— 被注释骗过
+node scripts/tools/seo-verify.js --dir=.arch-v1/dist-forge3-ctl   # 期望 exit 1（[canonical-self] 没有 canonical）
+# ⑥ 登记表沙箱（唯一能改登记清单的办法）
+node .arch-v1/make-sandbox.cjs --root=.arch-v1/sb-empty --mode=empty
+node .arch-v1/sb-empty/scripts/tools/verify-site.js --dir=dist --json=../json/sb-empty.json      # 期望 874 / 失败 5（立刻红）
+node .arch-v1/make-sandbox.cjs --root=.arch-v1/sb-two --mode=two --injectRoute=need/ai-coding/ --injectCss=".page-notes-summary { max-width: 70ch; }"
+node .arch-v1/sb-two/scripts/tools/verify-site.js --dir=dist --json=../json/sb-two.json          # 期望 874 / 失败 0（第二条登记未居中也不报）
+# ⑦ 探针（9 次；只量布局）
+node .arch-v1/probe.cjs --dist=.arch-v1/dist-att   --plan=.arch-v1/probe-plan-attack.json   --out=.arch-v1/probe/attack.json
+node .arch-v1/probe.cjs --dist=.arch-v1/dist-base  --plan=.arch-v1/probe-plan-baseline.json --out=.arch-v1/probe/base.json
+node .arch-v1/probe.cjs --dist=.arch-v1/sb-two/dist --plan=.arch-v1/probe-plan-sbtwo.json   --out=.arch-v1/probe/sb-two.json
+node .arch-v1/probe.cjs --dist=.arch-v1/dist-att --width=760 --plan=.arch-v1/probe-plan-widths.json --out=.arch-v1/probe/att-width-760.json
+node .arch-v1/probe.cjs --dist=.arch-v1/dist-att --width=950 --plan=.arch-v1/probe-plan-widths.json --out=.arch-v1/probe/att-width-950.json
+node .arch-v1/probe.cjs --dist=.arch-v1/dist-att2 --width=760  --plan=.arch-v1/probe-plan-widths.json --out=.arch-v1/probe/att2-width-760.json
+node .arch-v1/probe.cjs --dist=.arch-v1/dist-att2 --width=1440 --plan=.arch-v1/probe-plan-widths.json --out=.arch-v1/probe/att2-width-1440.json
+node .arch-v1/probe.cjs --dist=.arch-v1/dist-forge --plan=.arch-v1/probe-plan-frozen.json --out=.arch-v1/probe/frozen-forged.json
+node .arch-v1/probe.cjs --dist=.arch-v1/dist-base  --plan=.arch-v1/probe-plan-frozen.json --out=.arch-v1/probe/frozen-base.json
+# ⑧ 证据再生 + 证据政策门禁
+node .arch-v1/make-evidence.cjs && npm run check:evidence      # 期望：7 个文件重写 + ✅ 没有新增的 Tier-3 文件
+```
+
+### 1.4 t11（再攻击）的判据：怎么算「闭合」而不是「变绿」
+
+下一轮**不许**用「把判据改松」换绿。逐条闭合判据（形态照抄 §1.3 / `attack-forms.json`，但**换一个路由或视口**再打一遍，避免修成「只对 `need/free-api/` 有效」）：
+
+| 破防 | 闭合 = 重放同一形态时必须出现 | 反例（不算闭合） |
+| --- | --- | --- |
+| `F2-sitemap-comment` | §18 的 sitemap 成员资格 **红** + `/vendor/` 枢纽入口数 **红** + `verify:seo` **红**；真删对照仍红 | 只把 sitemap 判据删掉 / 只把样本路由换成不含被删页的批次 |
+| `F3-canonical-comment` | `verify:seo` 的 `canonical-self` **红**（`stripless` 剥注释后 DOM 与文本一致） | 只保留 verify-site 的 DOM 判据、把 SEO 那条删掉 |
+| `F1-frozen-comment` | §22c 冻结串计数**自己**红（不依赖 M15 的副作用） | 靠 M15 连带红就算闭合 |
+| `R2-comma-borrow` | 逗号形态**红**（或按段逐段匹配 + `routes` 约束后红） | 只把登记条目补成「`.pnote, .pdetailbody`」放行 |
+| `R4/R5-case`（`70CH` / `MAX-WIDTH`） | 两条都**红**；且注册表加回原样后**不**误报 | 只把 `70CH` 写进登记清单 |
+| `R3-comment-eats-rule` | `content:"/*"` 之后的规则**红**；真规则也在 | 把注释剥离整个删掉（会让合法的规则前注释重新变成选择器） |
+| `V3-vertical-clip` | 竖排 `nowrap + overflow:hidden` **红**（新码或 `note-clipped` 扩展）；**同时** ① 的正常单行说明不误报 | 用「凡竖排单列必红」换绿（会打坏 `:1366` 的合法单列） |
+| `R11-second-entry` | 第二条登记未居中 ⇒ **红**；幽灵条目 ⇒ **红**；`entries: []` 仍红 | 只把 §19 的 `entries[0]` 改成硬编码别的选择器 |
+| `R5b-px-effective-width`（未覆盖） | 明确二选一：登记生效宽 ≈ 声明 ch 换算值 **或** 在 `scanScope` 里逐字写清「px 不覆盖且允许换口径」 | 既不修也不写，等于把「窄阅读列」这条承诺留在灰区 |
+| `V5b/V6-viewport-gap`（未覆盖） | 二选一：把 760 档扩到全部有说明的页（63 页）**或**在登记表里把「未量测档位 / 样本集外页面」写成已知边界 | 用「样本集选了哪 29 页」当已覆盖 |
+
+**我明确认为「不该为闭合而改松/不该假修」的几条**（如与 captain 的修复任务冲突，请在 t11 里按证据裁决，不要只看绿）：
+
+1. `R9-!important`（假红）：一行归一化（剥 `!important`）就能修；**但**如果团队决定登记制就是「声明文本逐字」，那也**可以**保留现状 —— 只是必须把这条写进登记清单的 `rule` 里（现在写的是「逐字命中」，读者会以为 `!important` 也算命中）。**别**为了它放宽到「前缀匹配」。
+2. `V10`（竖排 <366 字一律红）**不是缺陷**：它是 `0.85×列宽` 的算术结果，轮 1 已如实登记。除非产品真要做竖排标题条，否则**不要**为它加豁免（加豁免会开出一个新的免判面）。
+3. `V4`（溢出买覆盖率）**现在由 `note-clipped` 兜住**，不要为它新增 ② 的可见性判据（会把「真·铺满」也判红）；只要在登记表里记下「`columnSpan` 是未裁切字迹」。
+4. 任何一条修复都必须**整套重跑 37 条形态**：判定「9 条破防闭合」时，同时核对「守住 15 条仍然守住」与「没有新破防」；只跑修复对应的那几条不算验收。
   **我的结论一条都不依赖这些码**（每条结论都由「该页在该档的 `metrics.layoutViolations` / `layoutNotes` 原始读数」支撑）；
   后面每一批形态都换成了**不撞靶页**的独立副本（`dist-att2`、`dist-g*`、`dist-forge*`），那些副本的失败项就是形态自己的效果。
 

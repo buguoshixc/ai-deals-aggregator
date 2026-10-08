@@ -17,7 +17,7 @@
 
 | 文件 | 是什么 |
 | --- | --- |
-| `attack-forms.json` | 全部 38 条攻击形态：目标 / 被攻击的承诺 / 逐字注入 / sha256 前→后 |
+| `attack-forms.json` | 全部 38 条形态记录（37 条形态；`F1` 在伪造/对照两份副本各一条）：目标 / 被攻击的承诺 / 逐字注入（含 `rawDefinition`）/ sha256 前→后 |
 | `sha256-accounting.json` | 产物与各副本的逐文件 sha256 台账（「原 dist 被写 0 个」的证据） |
 | `gate-readings.json` | 每份副本的门禁原始读数切片（总数/失败/失败项/条级量/扫描面/样本档） |
 | `sandbox-readings.json` | 两个登记表沙箱（`entries: []` / 第二条登记未居中+幽灵条目） |
@@ -25,6 +25,10 @@
 | `findings.json` | 结论清单：守住 / 破防 / 未覆盖 / 假红，逐条附读数与修法建议 |
 
 ## 复跑（在 `.worktrees/criteria-adversary-v1` 下）
+
+> **完整的复跑手册在报告 §1.1–§1.4**：前置产物（Node/Edge/构建）、装置清单（每个 `.cjs` 的接口与职责）、
+> 11 份副本 + 2 个沙箱 + 9 次探针的**全部命令与期望读数**、以及 t11 的「闭合判据」。
+> 下面只是最短路径。
 
 ```bash
 npm ci && node scripts/tools/build-local.js                 # 产物（303 文件）
