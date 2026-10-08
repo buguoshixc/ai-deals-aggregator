@@ -1,0 +1,27 @@
+{
+  "reproducible": {
+    "build1": {
+      "files": 304,
+      "bytes": 20386654,
+      "treeDigest": "67d1d0bdcdffe29f1b2bd0185c35408da897d53d20e44c495fec385f7ec1337d"
+    },
+    "build2": {
+      "files": 304,
+      "bytes": 20386654,
+      "treeDigest": "67d1d0bdcdffe29f1b2bd0185c35408da897d53d20e44c495fec385f7ec1337d"
+    },
+    "identical": true,
+    "byteIdentical": true
+  },
+  "surface": {
+    "baseline": "origin/master 4b366d2 的干净检出（.worktrees/nm-baseline）用 --out=dist.master 构建",
+    "baselineFiles": 303,
+    "baselineTreeDigest": "75ecb98344a855b7a72df9df83440b9ebb33eacd3daaa2821f7e4e653fd003a2",
+    "addedFiles": [
+      "_notes.ndjson"
+    ],
+    "removedFiles": [],
+    "changedFiles": [],
+    "note": "预期：只多出清单文件本身，其余逐文件 sha256 相同"
+  }
+}

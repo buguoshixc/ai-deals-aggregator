@@ -1,0 +1,118 @@
+{
+  "file": "dist/_notes.ndjson",
+  "bytes": 104591,
+  "sha256": "58a7373b502dbbdeb6d9292a0ba4df95140a3f6bd70d041286b69c1f978ee27c",
+  "schemaVersion": 1,
+  "slots": [
+    {
+      "id": "main-snote",
+      "token": "snote",
+      "description": "页面级说明（§22c 逐条几何判据的对象）"
+    },
+    {
+      "id": "main-pnote",
+      "token": "pnote",
+      "description": "底部折叠说明（<details class=\"page-notes\"> 内）"
+    },
+    {
+      "id": "main-vsnote",
+      "token": "vsnote",
+      "description": "厂商资料页的区段说明"
+    }
+  ],
+  "totals": {
+    "pages": 186,
+    "declaredNotes": 323,
+    "declaredBySlot": {
+      "main-snote": 14,
+      "main-pnote": 159,
+      "main-vsnote": 150
+    },
+    "untrackedPages": 58
+  },
+  "pages": 186,
+  "completePages": 128,
+  "untrackedPages": 58,
+  "pinnedNotes": 1,
+  "declaredBySlot": {
+    "main-pnote": 159,
+    "main-snote": 14,
+    "main-vsnote": 150
+  },
+  "declaredKinds": {
+    "hub-scope-note": 2,
+    "hub-threshold-note": 2,
+    "page-note": 28,
+    "shared-overlap-note": 40,
+    "shared-tristate-note": 40,
+    "feed-group-scope": 4,
+    "feed-vendor-scope": 1,
+    "feed-how-to-subscribe": 1,
+    "feed-reading-guide": 1,
+    "feed-source-note": 1,
+    "alias-note": 3,
+    "noscript-hint": 1,
+    "status-reading-guide": 1,
+    "status-machine-readable": 1,
+    "official-entry": 25,
+    "updated-at": 22,
+    "api-counts": 25,
+    "models-count": 25,
+    "changes-lanes": 25,
+    "vendor-feed-missing": 16,
+    "scope-note": 25,
+    "vendor-material-note": 22,
+    "vendor-feed": 9,
+    "updated-at-missing": 3
+  },
+  "untrackedFamilies": {
+    "archive-index": {
+      "owner": "lib/archive.js",
+      "structural": "lib/archive.js:589 与 601（ARCHIVE_DESCRIPTION 口径说明 / 相关资料库，均无条件输出）",
+      "minNotes": 2,
+      "routes": 1
+    },
+    "changes": {
+      "owner": "index.html 的 RENDER-CORE 区块（changesPageHtml）+ lib/plans-page.js + lib/api-plans-page.js",
+      "structural": "index.html:3930（分栏口径说明 N.scope，无条件输出）",
+      "minNotes": 2,
+      "routes": 1
+    },
+    "data-docs": {
+      "owner": "lib/data-docs.js",
+      "structural": "lib/data-docs.js:794（DATA_DOCS_DESCRIPTION 口径说明，无条件输出）",
+      "minNotes": 1,
+      "routes": 1
+    },
+    "models-index": {
+      "owner": "lib/models-page.js",
+      "structural": "lib/models-page.js:845（MODELS_INDEX_DESCRIPTION 口径说明，无条件输出）",
+      "minNotes": 1,
+      "routes": 1
+    },
+    "models-detail": {
+      "owner": "lib/models-page.js",
+      "structural": "lib/models-page.js:1112 与 1123（计价条目口径 / 派生视图说明，均无条件输出）",
+      "minNotes": 2,
+      "routes": 51
+    },
+    "plans-hub": {
+      "owner": "lib/plans-hub-page.js",
+      "structural": "lib/plans-hub-page.js:313（PLANS_HUB_DESCRIPTION 口径说明，无条件输出）",
+      "minNotes": 1,
+      "routes": 1
+    },
+    "api-plans-index": {
+      "owner": "lib/api-plans-page.js",
+      "structural": "lib/api-plans-page.js:613（API_PLANS_DESCRIPTION 口径说明，无条件输出）",
+      "minNotes": 1,
+      "routes": 1
+    },
+    "plans-coding": {
+      "owner": "lib/plans-page.js",
+      "structural": "lib/plans-page.js:1010（PLANS_DESCRIPTION 口径说明，无条件输出）",
+      "minNotes": 1,
+      "routes": 1
+    }
+  }
+}

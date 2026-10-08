@@ -1,0 +1,9 @@
+{
+  "note": "变异实验后 git status 为空 ⇒ 上面四份文件与提交逐字节相同",
+  "sources": {
+    "scripts/tools/build-local.js": "0e998f74746c930ee80df827e272c7676e27f7f2d6413b10b569895b49e2e4dc",
+    "scripts/tools/verify-site.js": "87cac59b51265cf25cd1f40173b632ce6563b59aea75b9c773072270fbdc2f79",
+    "scripts/lib/landing.js": "bc31d940affd3450827e40352843c578bdd5bfb0144bdec35879e4016d2d1852",
+    "scripts/lib/vendor-page.js": "7ed775c31e9cdad5feee1d481619812823d2dd47c2fdaed8263727867253253c"
+  }
+}
