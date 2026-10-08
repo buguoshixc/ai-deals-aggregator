@@ -1,0 +1,35 @@
+{
+  "task": "post-merge-deploy-v1",
+  "what": "干净工作树（master 头 d19017af）的两次构建：文件数 / 字节数 / 全树摘要 / 清单摘要 / 逐文件差异",
+  "at": "2026-10-08T11:56:10.374Z",
+  "masterHead": "d19017af04051048e0565af6c3675f3faf75cb6a",
+  "worktree": ".worktrees/post-merge-deploy-v1（从 d19017af 切出，npm ci 装在本工作树内）",
+  "build1": {
+    "dir": "dist",
+    "files": 304,
+    "bytes": 20386654,
+    "treeDigest": "67d1d0bdcdffe29f1b2bd0185c35408da897d53d20e44c495fec385f7ec1337d",
+    "manifestSha256": "2b8fe49fa776a8789e592d79fb507c2c1e9cac233801a9425b4e9e8f55f638de"
+  },
+  "build2": {
+    "dir": "dist.b2",
+    "files": 304,
+    "bytes": 20386654,
+    "treeDigest": "67d1d0bdcdffe29f1b2bd0185c35408da897d53d20e44c495fec385f7ec1337d",
+    "manifestSha256": "2b8fe49fa776a8789e592d79fb507c2c1e9cac233801a9425b4e9e8f55f638de"
+  },
+  "identical": true,
+  "perFileDifferences": 0,
+  "expected": {
+    "files": 304,
+    "note": "旧 303 + 本轮新增的 _notes.ndjson"
+  },
+  "notesArtifact": {
+    "line": "_notes.ndjson\t58a7373b502dbbdeb6d9292a0ba4df95140a3f6bd70d041286b69c1f978ee27c",
+    "note": "_notes.ndjson 是本轮新产物面（#63）；它在 dist 根目录，不在任何页面目录下"
+  },
+  "digestTool": {
+    "file": ".arch-v1/tree-digest.cjs",
+    "note": "仓库里**没有** scripts/tree-digest.cjs（任务书 Verify 里那条命令在本仓不存在）；用的是前几轮同一份 Tier-3 摘要器（逐文件 sha256 + 全树摘要），算法与 t1/t6 一致"
+  }
+}

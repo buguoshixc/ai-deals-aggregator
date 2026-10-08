@@ -1,0 +1,93 @@
+{
+  "task": "post-merge-deploy-v1",
+  "what": "时间锚：被复核的那个提交（d19017af）的 Deploy run 终态，以及它前后的 master 推送",
+  "at": "2026-10-08T11:56:10.380Z",
+  "verified": {
+    "masterHead": "d19017af04051048e0565af6c3675f3faf75cb6a",
+    "headCommittedAt": "2026-10-08T11:41:15Z",
+    "gateRun": {
+      "runNumber": 190,
+      "conclusion": "success",
+      "createdAt": "2026-10-08T11:41:18Z",
+      "updatedAt": "2026-10-08T11:45:57Z"
+    },
+    "deployRun": {
+      "runNumber": 157,
+      "conclusion": "success",
+      "createdAt": "2026-10-08T11:41:18Z",
+      "updatedAt": "2026-10-08T11:52:55Z"
+    },
+    "readingAt": "2026-10-08T11:54:23.719Z",
+    "note": "线上读数的 last-modified = Thu, 08 Oct 2026 11:52:48 GMT，与 Deploy #157 的结束时刻（11:52:55Z）吻合 ⇒ 这次读数对应的是 **d19017af 的部署**"
+  },
+  "laterPushes": [
+    {
+      "sha": "557095875f...",
+      "at": "2026-10-08T11:53:15Z",
+      "deployRun": 158,
+      "note": "读数之后才发生的推送；Deploy #158 在读数时还在跑"
+    },
+    {
+      "sha": "4ecfb9db2b...",
+      "at": "2026-10-08T11:55:02Z",
+      "gateRun": 195,
+      "note": "当前 master 头（复核期间 master 又前进了两次）"
+    }
+  ],
+  "rawRunsSample": [
+    {
+      "name": "Verify site (gate)",
+      "runNumber": 190,
+      "sha": "d19017af0405",
+      "createdAt": "2026-10-08T11:41:18Z",
+      "status": "completed",
+      "conclusion": "success",
+      "updatedAt": "2026-10-08T11:45:57Z"
+    },
+    {
+      "name": "Deploy to GitHub Pages",
+      "runNumber": 157,
+      "sha": "d19017af0405",
+      "createdAt": "2026-10-08T11:41:18Z",
+      "status": "completed",
+      "conclusion": "success",
+      "updatedAt": "2026-10-08T11:52:55Z"
+    },
+    {
+      "name": "Verify site (gate)",
+      "runNumber": 189,
+      "sha": "41816ac0ce4f",
+      "createdAt": "2026-10-08T11:40:21Z",
+      "status": "completed",
+      "conclusion": "success",
+      "updatedAt": "2026-10-08T11:45:24Z"
+    },
+    {
+      "name": "Deploy to GitHub Pages",
+      "runNumber": 156,
+      "sha": "41816ac0ce4f",
+      "createdAt": "2026-10-08T11:40:21Z",
+      "status": "completed",
+      "conclusion": "success",
+      "updatedAt": "2026-10-08T11:47:05Z"
+    },
+    {
+      "name": "Verify site (gate)",
+      "runNumber": 187,
+      "sha": "ef176b54a07a",
+      "createdAt": "2026-10-08T11:36:47Z",
+      "status": "completed",
+      "conclusion": "success",
+      "updatedAt": "2026-10-08T11:41:46Z"
+    },
+    {
+      "name": "Deploy to GitHub Pages",
+      "runNumber": 155,
+      "sha": "ef176b54a07a",
+      "createdAt": "2026-10-08T11:36:47Z",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "updatedAt": "2026-10-08T11:40:23Z"
+    }
+  ]
+}
