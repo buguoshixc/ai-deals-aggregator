@@ -47,10 +47,23 @@ permissions:
   contents: read
 
 # 同一 ref 上新的运行取代旧的：被取代的那次报的是 **cancelled**，不在 success / skipped / neutral 之列。
-# 之所以无害：必需检查按**最新 commit SHA** 匹配，新的 run 会在新 SHA 上重新报到并给出结论。
+#
+# ⚠️ 2026-10-08 起：**master 上不再取消**（ci-master-gate-concurrency-v1 的取证与裁定）。
+#   实测（`research/_raw/ci-master-gate-concurrency-v1/`）：
+#     · 历史 51 次 master gate：success 46 / cancelled 4 → 取消率不高，但**突发合并时是 100%**；
+#     · 一次 5 次 master 推送（5.5 分钟内）的突发：4 次 gate 变 cancelled（其中一次已经跑了 4 分 04 秒
+#       才被取消）、3 次 Deploy 因 pending 被后一次取代；
+#     · 后果是「**合并提交本身**」的 gate 结论永久缺失 —— PR 级门禁验的是 `refs/pull/N/merge`（PR head
+#       合进当时 base 的合成合并），不是最终落到 master 上的那个合并提交。突发合并恰恰是
+#       「两个绿分支合起来语义冲突」最可能发生的时候，落点却没有结论，事后无法二分定位。
+#   为什么可以排得动：仓库是 **public**（标准 runner 分钟不计费）；gate 实测耗时中位 207s、
+#   最大 696s ⇒ 突发 k 次合并时，最新提交的结论最多晚 (k-1) × 中位值（不是无限增长）。
+#   为什么 PR / 其它分支仍然取消：同一分支被 force-push 后，旧 run 验证的是一个不再存在的 head，
+#   留着只会占并发与看板 —— 那里「取消」正是想要的语义。
+#   回滚：把下面一行改回 `cancel-in-progress: true` 即可（其它文件都不用动）。
 concurrency:
   group: verify-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
 
 jobs:
   gate:
