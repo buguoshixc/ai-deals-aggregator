@@ -1,0 +1,90 @@
+{
+  "task": "tree-digest-tooling-v1 (t25)",
+  "what": "仓库工具 scripts/tools/tree-digest.cjs 与历轮 scratch 版（.arch-v1/tree-digest.cjs）在同一棵 dist 上的等价性：逐字节（--out JSON 文件 sha256）+ 逐字段（键顺序与值）+ perFile 逐条 + stdout",
+  "at": "2026-10-08T12:49:50.762Z",
+  "dist": {
+    "filesOnDisk": 304,
+    "files": 304,
+    "bytes": 20386654,
+    "treeDigest": "67d1d0bdcdffe29f1b2bd0185c35408da897d53d20e44c495fec385f7ec1337d",
+    "manifestSha256": "2b8fe49fa776a8789e592d79fb507c2c1e9cac233801a9425b4e9e8f55f638de"
+  },
+  "t23Reading": {
+    "source": "research/_raw/post-merge-deploy-v1/build-digest.json",
+    "files": 304,
+    "bytes": 20386654,
+    "treeDigest": "67d1d0bdcdffe29f1b2bd0185c35408da897d53d20e44c495fec385f7ec1337d",
+    "manifestSha256": "2b8fe49fa776a8789e592d79fb507c2c1e9cac233801a9425b4e9e8f55f638de",
+    "matchesRepoRun": true
+  },
+  "tools": {
+    "scratch": {
+      "path": ".worktrees/post-merge-deploy-v1/.arch-v1/tree-digest.cjs",
+      "sha256": "1d89e46a977fb6156cd2b634b8847e37554ff2d24803ba2fcf36731377b43fa7",
+      "bytes": 1743
+    },
+    "repo": {
+      "path": "scripts/tools/tree-digest.cjs",
+      "sha256": "64e0ffcc2f7bc1678dc9928abde78479192ca6d29d71eedef3881f05ecbb382c",
+      "bytes": 5635,
+      "gitBlobSha": "0a5697799648ab5f82e1e37af68fbd593106912a"
+    }
+  },
+  "runs": {
+    "scratch": {
+      "tool": "../post-merge-deploy-v1/.arch-v1/tree-digest.cjs",
+      "exitCode": 0,
+      "stdout": [
+        "写出 .arch-v1\\digest-shared.json",
+        "dist: 304 文件 / 20386654 B · 全树摘要 67d1d0bdcdffe29f1b2bd0185c35408da897d53d20e44c495fec385f7ec1337d",
+        "清单摘要 2b8fe49fa776a8789e592d79fb507c2c1e9cac233801a9425b4e9e8f55f638de"
+      ],
+      "jsonFile": ".arch-v1/digest-scratch.json",
+      "jsonSha256": "d250a63c255e680a738a14200d7e1a0072213c29c41790b6e4fb6e7ff39e4066",
+      "jsonBytes": 30089
+    },
+    "repo-1": {
+      "tool": "scripts/tools/tree-digest.cjs",
+      "exitCode": 0,
+      "stdout": [
+        "写出 .arch-v1\\digest-shared.json",
+        "dist: 304 文件 / 20386654 B · 全树摘要 67d1d0bdcdffe29f1b2bd0185c35408da897d53d20e44c495fec385f7ec1337d",
+        "清单摘要 2b8fe49fa776a8789e592d79fb507c2c1e9cac233801a9425b4e9e8f55f638de"
+      ],
+      "jsonFile": "research/_raw/tree-digest-tooling-v1/digest-dist.json",
+      "jsonSha256": "d250a63c255e680a738a14200d7e1a0072213c29c41790b6e4fb6e7ff39e4066",
+      "jsonBytes": 30089
+    },
+    "repo-2": {
+      "tool": "scripts/tools/tree-digest.cjs",
+      "exitCode": 0,
+      "stdout": [
+        "写出 .arch-v1\\digest-shared.json",
+        "dist: 304 文件 / 20386654 B · 全树摘要 67d1d0bdcdffe29f1b2bd0185c35408da897d53d20e44c495fec385f7ec1337d",
+        "清单摘要 2b8fe49fa776a8789e592d79fb507c2c1e9cac233801a9425b4e9e8f55f638de"
+      ],
+      "jsonFile": ".arch-v1/digest-repo-2.json",
+      "jsonSha256": "d250a63c255e680a738a14200d7e1a0072213c29c41790b6e4fb6e7ff39e4066",
+      "jsonBytes": 30089
+    }
+  },
+  "equivalence": {
+    "outJsonByteIdentical": true,
+    "fieldOrderAndValuesIdentical": true,
+    "perFileEntriesIdentical": true,
+    "perFileDiff": [],
+    "perFileDiffCount": 0,
+    "stdoutIdentical": true,
+    "repoRunTwiceByteIdentical": true,
+    "keysInJsonFile": [
+      "dir",
+      "files",
+      "bytes",
+      "treeDigest",
+      "manifestSha256",
+      "perFile"
+    ],
+    "keyOrderMatchesScratch": true
+  },
+  "verdict": "PASS"
+}

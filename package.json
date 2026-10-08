@@ -72,6 +72,7 @@
     "check:ci": "node scripts/tools/check-ci-consistency.js",
     "check:evidence": "node scripts/tools/check-evidence.js",
     "report:evidence": "node scripts/tools/check-evidence.js --report",
+    "report:digest": "node scripts/tools/tree-digest.cjs dist",
     "fitness": "node scripts/test/fitness.js",
     "gate:layers": "node scripts/test/fitness.js",
     "test:layers": "node scripts/test/run.js --list",
