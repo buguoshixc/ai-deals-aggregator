@@ -1,0 +1,547 @@
+{
+  "task": "judge-control-downgrade-guard-v1 (t34)",
+  "what": "改前（冻结副本）/ 改后（仓库那一份）两支工具、同一批 dist 副本上的 7 个用例读数",
+  "at": "2026-10-08T17:25:49.813Z",
+  "base": "origin/judge-hardening-v1c-pr @ 2ad0e97（= master 2253be8 + t33 的 verify-site 改动 +169/−5）",
+  "cases": [
+    {
+      "case": "before-clean",
+      "tool": "base",
+      "what": "改前工具 × 干净副本（例：0 条豁免）",
+      "dir": ".arch-v1/dist-clean",
+      "args": [],
+      "env": null,
+      "exitCode": 0,
+      "seconds": 145.9,
+      "total": 887,
+      "failed": 0,
+      "status": "GREEN",
+      "failedNames": [],
+      "m15": [
+        {
+          "name": "§22c M15 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "ok": true,
+          "detail": "锚点出现 1 次 · T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）"
+        },
+        {
+          "name": "§22c M15 变异后复测必须出现「note-ink-narrow」违规码（T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里））",
+          "ok": true,
+          "detail": "期望 note-ink-narrow · 实测 [note-ink-narrow, note-intro-long] · 说明 1 条 · 首条 盒 1380px / 有字区域 1369px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [note-ink-narrow, note-intro-long]"
+        },
+        {
+          "name": "§22c M15 承重证明：咬中的条是**竖排按列判**（列数 ≥ 2 · 列栈水平范围 < 0.85×列宽），且旧口径两条判据在它们身上必然静默（按行归并 ≤ 1 行 + 盒/内容盒满宽，盒宽与注入前逐条相同）",
+          "ok": true,
+          "detail": "note-ink-narrow 1 条 [need/free-api/#0] · 逐条：#0 vertical-rl 列 18 / 列栈 362.64px / 行 1（最宽 362.64px） / 内容盒 1369px / 字形盒 22 · 列宽 1380px · 阈值 1173px · note-narrow 0 条（0 = ① 也看不见）· 盒宽与注入前一致 true"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "need/free-api/@1440 说明 1 条（竖排 0）违规码 [无] ⇒ 严格形式成立（未注入产物）"
+        }
+      ],
+      "controls": [
+        {
+          "name": "§22c 未渲染说明：上界断言 —— 未渲染条要么「可见文本为 0」，要么必须被 note-unrendered 咬中（两类不相交、并集完整、标记不豁免）",
+          "ok": true,
+          "detail": "@1440 未渲染 1 条 = 可见文本 0 的 1 条 [plans/coding/#1] + note-unrendered 0 条 · 交集 0 · 既没归类又没判中 0 · @1600 未渲染 1 条（文本 0 1 · note-unrendered 0 · 未归类 0） · 诊断：含 <noscript> 的未渲染条 1（不参与豁免）"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "need/free-api/@1440 说明 1 条（竖排 0）违规码 [无] ⇒ 严格形式成立（未注入产物）"
+        }
+      ],
+      "exemptionMetrics": {
+        "layoutControlExemptions": null
+      },
+      "grepLines": [],
+      "logFile": ".arch-v1/log/before-clean.log",
+      "jsonFile": ".arch-v1/json/before-clean.json"
+    },
+    {
+      "case": "before-contaminated",
+      "tool": "base",
+      "what": "改前工具 × 形态副本（复现现状：降级只藏在 detail 里）",
+      "dir": ".arch-v1/dist-contaminated",
+      "args": [],
+      "env": null,
+      "exitCode": 1,
+      "seconds": 146.2,
+      "total": 887,
+      "failed": 5,
+      "status": "RED",
+      "failedNames": [
+        "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记",
+        "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记",
+        "§22c @950 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记",
+        "§22c @760 样本集 79 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+        "§22c @360 样本集 79 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）"
+      ],
+      "m15": [
+        {
+          "name": "§22c M15 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "ok": true,
+          "detail": "锚点出现 1 次 · T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）"
+        },
+        {
+          "name": "§22c M15 变异后复测必须出现「note-ink-narrow」违规码（T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里））",
+          "ok": true,
+          "detail": "期望 note-ink-narrow · 实测 [note-ink-narrow, note-intro-long] · 说明 1 条 · 首条 盒 1380px / 有字区域 1369px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [note-ink-narrow, note-intro-long]"
+        },
+        {
+          "name": "§22c M15 承重证明：咬中的条是**竖排按列判**（列数 ≥ 2 · 列栈水平范围 < 0.85×列宽），且旧口径两条判据在它们身上必然静默（按行归并 ≤ 1 行 + 盒/内容盒满宽，盒宽与注入前逐条相同）",
+          "ok": true,
+          "detail": "note-ink-narrow 1 条 [need/free-api/#0] · 逐条：#0 vertical-rl 列 18 / 列栈 362.64px / 行 1（最宽 362.64px） / 内容盒 1369px / 字形盒 22 · 列宽 1380px · 阈值 1173px · note-narrow 0 条（0 = ① 也看不见）· 盒宽与注入前一致 true"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "need/free-api/@1440 说明 1 条（竖排 1）违规码 [note-ink-narrow,note-intro-long] ⇒ 本轮目录本身带竖排 ⇒ 严格形式由 --dir=dist 的那一次运行承担"
+        }
+      ],
+      "controls": [
+        {
+          "name": "§22c 未渲染说明：上界断言 —— 未渲染条要么「可见文本为 0」，要么必须被 note-unrendered 咬中（两类不相交、并集完整、标记不豁免）",
+          "ok": true,
+          "detail": "@1440 未渲染 1 条 = 可见文本 0 的 1 条 [plans/coding/#1] + note-unrendered 0 条 · 交集 0 · 既没归类又没判中 0 · @1600 未渲染 1 条（文本 0 1 · note-unrendered 0 · 未归类 0） · 诊断：含 <noscript> 的未渲染条 1（不参与豁免）"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "need/free-api/@1440 说明 1 条（竖排 1）违规码 [note-ink-narrow,note-intro-long] ⇒ 本轮目录本身带竖排 ⇒ 严格形式由 --dir=dist 的那一次运行承担"
+        }
+      ],
+      "exemptionMetrics": {
+        "layoutControlExemptions": null
+      },
+      "grepLines": [],
+      "logFile": ".arch-v1/log/before-contaminated.log",
+      "jsonFile": ".arch-v1/json/before-contaminated.json"
+    },
+    {
+      "case": "after-clean",
+      "tool": "repo",
+      "what": "改后工具 × 干净副本",
+      "dir": ".arch-v1/dist-clean",
+      "args": [],
+      "env": null,
+      "exitCode": 0,
+      "seconds": 143.6,
+      "total": 890,
+      "failed": 0,
+      "status": "GREEN",
+      "failedNames": [],
+      "m15": [
+        {
+          "name": "§22c M15 靶页前提：靶页必须含 ≥1 条页面级说明（否则变异没有承重面 —— 注入后一条码都不会出）",
+          "ok": true,
+          "detail": "靶页 need/free-api/@1440 · 布局族 wide · 页面级说明 1 条 · 首条盒宽 1380px"
+        },
+        {
+          "name": "§22c M15 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "ok": true,
+          "detail": "锚点出现 1 次 · T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）"
+        },
+        {
+          "name": "§22c M15 变异后复测必须出现「note-ink-narrow」违规码（T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里））",
+          "ok": true,
+          "detail": "期望 note-ink-narrow · 实测 [note-ink-narrow, note-intro-long] · 说明 1 条 · 首条 盒 1380px / 有字区域 1369px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [note-ink-narrow, note-intro-long]"
+        },
+        {
+          "name": "§22c M15 承重证明：咬中的条是**竖排按列判**（列数 ≥ 2 · 列栈水平范围 < 0.85×列宽），且旧口径两条判据在它们身上必然静默（按行归并 ≤ 1 行 + 盒/内容盒满宽，盒宽与注入前逐条相同）",
+          "ok": true,
+          "detail": "note-ink-narrow 1 条 [need/free-api/#0] · 逐条：#0 vertical-rl 列 18 / 列栈 362.64px / 行 1（最宽 362.64px） / 内容盒 1369px / 字形盒 22 · 列宽 1380px · 阈值 1173px · note-narrow 0 条（0 = ① 也看不见）· 盒宽与注入前一致 true"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "need/free-api/@1440 说明 1 条（竖排 0）违规码 [无] ⇒ 严格形式成立（未注入产物）"
+        }
+      ],
+      "controls": [
+        {
+          "name": "§22c 未渲染说明：上界断言 —— 未渲染条要么「可见文本为 0」，要么必须被 note-unrendered 咬中（两类不相交、并集完整、标记不豁免）",
+          "ok": true,
+          "detail": "@1440 未渲染 1 条 = 可见文本 0 的 1 条 [plans/coding/#1] + note-unrendered 0 条 · 交集 0 · 既没归类又没判中 0 · @1600 未渲染 1 条（文本 0 1 · note-unrendered 0 · 未归类 0） · 诊断：含 <noscript> 的未渲染条 1（不参与豁免）"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "need/free-api/@1440 说明 1 条（竖排 0）违规码 [无] ⇒ 严格形式成立（未注入产物）"
+        },
+        {
+          "name": "§22c 对照豁免必须显式声明（--allow-control-exemption）：走豁免形式 ⇒ 默认判红",
+          "ok": true,
+          "detail": "本轮 0 条豁免（所有正对照都是严格形式）"
+        },
+        {
+          "name": "§22c 对照豁免登记制：被污染的对照行必须逐条登记（可 grep 的码 + 计数），登记数 == 独立重算的污染行数",
+          "ok": true,
+          "detail": "独立重算污染行 [无] ×0 · 登记表 [无] ×0"
+        }
+      ],
+      "exemptionMetrics": {
+        "layoutControlExemptions": [],
+        "layoutControlExemptionCount": 0
+      },
+      "grepLines": [
+        "✓ §22c 对照豁免必须显式声明（--allow-control-exemption）：走豁免形式 ⇒ 默认判红 — 本轮 0 条豁免（所有正对照都是严格形式）",
+        "✓ §22c 对照豁免登记制：被污染的对照行必须逐条登记（可 grep 的码 + 计数），登记数 == 独立重算的污染行数 — 独立重算污染行 [无] ×0 · 登记表 [无] ×0",
+        "对照豁免登记（CONTROL-EXEMPTION）：0 条（本轮所有正对照都是严格形式）",
+        "对照豁免          CONTROL-EXEMPTION     0 条（只允许显式声明后出现）0 条"
+      ],
+      "logFile": ".arch-v1/log/after-clean.log",
+      "jsonFile": ".arch-v1/json/after-clean.json"
+    },
+    {
+      "case": "after-contaminated",
+      "tool": "repo",
+      "what": "改后工具 × 形态副本（未声明 ⇒ 新断言判红）",
+      "dir": ".arch-v1/dist-contaminated",
+      "args": [],
+      "env": null,
+      "exitCode": 1,
+      "seconds": 144.7,
+      "total": 890,
+      "failed": 6,
+      "status": "RED",
+      "failedNames": [
+        "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记",
+        "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记",
+        "§22c @950 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记",
+        "§22c @760 样本集 79 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+        "§22c @360 样本集 79 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+        "§22c 对照豁免必须显式声明（--allow-control-exemption）：走豁免形式 ⇒ 默认判红"
+      ],
+      "m15": [
+        {
+          "name": "§22c M15 靶页前提：靶页必须含 ≥1 条页面级说明（否则变异没有承重面 —— 注入后一条码都不会出）",
+          "ok": true,
+          "detail": "靶页 need/free-api/@1440 · 布局族 wide · 页面级说明 1 条 · 首条盒宽 1380px"
+        },
+        {
+          "name": "§22c M15 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "ok": true,
+          "detail": "锚点出现 1 次 · T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）"
+        },
+        {
+          "name": "§22c M15 变异后复测必须出现「note-ink-narrow」违规码（T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里））",
+          "ok": true,
+          "detail": "期望 note-ink-narrow · 实测 [note-ink-narrow, note-intro-long] · 说明 1 条 · 首条 盒 1380px / 有字区域 1369px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [note-ink-narrow, note-intro-long]"
+        },
+        {
+          "name": "§22c M15 承重证明：咬中的条是**竖排按列判**（列数 ≥ 2 · 列栈水平范围 < 0.85×列宽），且旧口径两条判据在它们身上必然静默（按行归并 ≤ 1 行 + 盒/内容盒满宽，盒宽与注入前逐条相同）",
+          "ok": true,
+          "detail": "note-ink-narrow 1 条 [need/free-api/#0] · 逐条：#0 vertical-rl 列 18 / 列栈 362.64px / 行 1（最宽 362.64px） / 内容盒 1369px / 字形盒 22 · 列宽 1380px · 阈值 1173px · note-narrow 0 条（0 = ① 也看不见）· 盒宽与注入前一致 true"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "need/free-api/@1440 说明 1 条（竖排 1）违规码 [note-ink-narrow,note-intro-long] ⇒ 本轮目录本身带竖排 ⇒ 严格形式由 --dir=dist 的那一次运行承担"
+        }
+      ],
+      "controls": [
+        {
+          "name": "§22c 未渲染说明：上界断言 —— 未渲染条要么「可见文本为 0」，要么必须被 note-unrendered 咬中（两类不相交、并集完整、标记不豁免）",
+          "ok": true,
+          "detail": "@1440 未渲染 1 条 = 可见文本 0 的 1 条 [plans/coding/#1] + note-unrendered 0 条 · 交集 0 · 既没归类又没判中 0 · @1600 未渲染 1 条（文本 0 1 · note-unrendered 0 · 未归类 0） · 诊断：含 <noscript> 的未渲染条 1（不参与豁免）"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "need/free-api/@1440 说明 1 条（竖排 1）违规码 [note-ink-narrow,note-intro-long] ⇒ 本轮目录本身带竖排 ⇒ 严格形式由 --dir=dist 的那一次运行承担"
+        },
+        {
+          "name": "§22c 对照豁免必须显式声明（--allow-control-exemption）：走豁免形式 ⇒ 默认判红",
+          "ok": false,
+          "detail": "M15-CONTROL-EXEMPTION ×1：need/free-api/@1440 竖排 1 条 违规码 [note-ink-narrow,note-intro-long] ⇒ 未声明 ⇒ 判红：要么这一轮的 --dir= 是形态注入副本（请显式声明 --allow-control-exemption），要么这一页真的坏了"
+        },
+        {
+          "name": "§22c 对照豁免登记制：被污染的对照行必须逐条登记（可 grep 的码 + 计数），登记数 == 独立重算的污染行数",
+          "ok": true,
+          "detail": "独立重算污染行 [M15] ×1 · 登记表 [M15-CONTROL-EXEMPTION] ×1"
+        }
+      ],
+      "exemptionMetrics": {
+        "layoutControlExemptions": [
+          {
+            "id": "M15",
+            "code": "M15-CONTROL-EXEMPTION",
+            "route": "need/free-api/",
+            "width": 1440,
+            "notes": 1,
+            "verticalNotes": 1,
+            "codes": [
+              "note-ink-narrow",
+              "note-intro-long"
+            ],
+            "declared": false
+          }
+        ],
+        "layoutControlExemptionCount": 1
+      },
+      "grepLines": [
+        "✗ §22c 对照豁免必须显式声明（--allow-control-exemption）：走豁免形式 ⇒ 默认判红 — M15-CONTROL-EXEMPTION ×1：need/free-api/@1440 竖排 1 条 违规码 [note-ink-narrow,note-intro-long] ⇒ 未声明 ⇒ 判红：要么这一轮的 --dir= 是形态注入副本（请显式声明 --allow-control-exemption），要么这一页真的坏了",
+        "✓ §22c 对照豁免登记制：被污染的对照行必须逐条登记（可 grep 的码 + 计数），登记数 == 独立重算的污染行数 — 独立重算污染行 [M15] ×1 · 登记表 [M15-CONTROL-EXEMPTION] ×1",
+        "对照豁免登记（CONTROL-EXEMPTION）：1 条 · M15-CONTROL-EXEMPTION need/free-api/@1440（竖排 1 条 · 违规码 [note-ink-narrow,note-intro-long]） · 声明 --allow-control-exemption：否（该轮已判红）",
+        "对照豁免          CONTROL-EXEMPTION     0 条（只允许显式声明后出现）1 条 M15-CONTROL-EXEMPTION need/free-api/@1440（⚠ 未声明 ⇒ 该轮已判红）",
+        "✗ §22c 对照豁免必须显式声明（--allow-control-exemption）：走豁免形式 ⇒ 默认判红 — M15-CONTROL-EXEMPTION ×1：need/free-api/@1440 竖排 1 条 违规码 [note-ink-narrow,note-intro-long] ⇒ 未声明 ⇒ 判红：要么这一轮的 --dir= 是形态注入副本（请显式声明 --allow-control-exemption），要么这一页真的坏了"
+      ],
+      "logFile": ".arch-v1/log/after-contaminated.log",
+      "jsonFile": ".arch-v1/json/after-contaminated.json"
+    },
+    {
+      "case": "after-contaminated-allow",
+      "tool": "repo",
+      "what": "改后工具 × 形态副本 + 显式声明（⇒ 登记放行，可 grep 可计数）",
+      "dir": ".arch-v1/dist-contaminated",
+      "args": [
+        "--allow-control-exemption"
+      ],
+      "env": null,
+      "exitCode": 1,
+      "seconds": 144.5,
+      "total": 890,
+      "failed": 5,
+      "status": "RED",
+      "failedNames": [
+        "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记",
+        "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记",
+        "§22c @950 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ 2 行 + 窄阅读列全部已登记",
+        "§22c @760 样本集 79 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+        "§22c @360 样本集 79 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）"
+      ],
+      "m15": [
+        {
+          "name": "§22c M15 靶页前提：靶页必须含 ≥1 条页面级说明（否则变异没有承重面 —— 注入后一条码都不会出）",
+          "ok": true,
+          "detail": "靶页 need/free-api/@1440 · 布局族 wide · 页面级说明 1 条 · 首条盒宽 1380px"
+        },
+        {
+          "name": "§22c M15 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "ok": true,
+          "detail": "锚点出现 1 次 · T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）"
+        },
+        {
+          "name": "§22c M15 变异后复测必须出现「note-ink-narrow」违规码（T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里））",
+          "ok": true,
+          "detail": "期望 note-ink-narrow · 实测 [note-ink-narrow, note-intro-long] · 说明 1 条 · 首条 盒 1380px / 有字区域 1369px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [note-ink-narrow, note-intro-long]"
+        },
+        {
+          "name": "§22c M15 承重证明：咬中的条是**竖排按列判**（列数 ≥ 2 · 列栈水平范围 < 0.85×列宽），且旧口径两条判据在它们身上必然静默（按行归并 ≤ 1 行 + 盒/内容盒满宽，盒宽与注入前逐条相同）",
+          "ok": true,
+          "detail": "note-ink-narrow 1 条 [need/free-api/#0] · 逐条：#0 vertical-rl 列 18 / 列栈 362.64px / 行 1（最宽 362.64px） / 内容盒 1369px / 字形盒 22 · 列宽 1380px · 阈值 1173px · note-narrow 0 条（0 = ① 也看不见）· 盒宽与注入前一致 true"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "need/free-api/@1440 说明 1 条（竖排 1）违规码 [note-ink-narrow,note-intro-long] ⇒ 本轮目录本身带竖排 ⇒ 严格形式由 --dir=dist 的那一次运行承担"
+        }
+      ],
+      "controls": [
+        {
+          "name": "§22c 未渲染说明：上界断言 —— 未渲染条要么「可见文本为 0」，要么必须被 note-unrendered 咬中（两类不相交、并集完整、标记不豁免）",
+          "ok": true,
+          "detail": "@1440 未渲染 1 条 = 可见文本 0 的 1 条 [plans/coding/#1] + note-unrendered 0 条 · 交集 0 · 既没归类又没判中 0 · @1600 未渲染 1 条（文本 0 1 · note-unrendered 0 · 未归类 0） · 诊断：含 <noscript> 的未渲染条 1（不参与豁免）"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "need/free-api/@1440 说明 1 条（竖排 1）违规码 [note-ink-narrow,note-intro-long] ⇒ 本轮目录本身带竖排 ⇒ 严格形式由 --dir=dist 的那一次运行承担"
+        },
+        {
+          "name": "§22c 对照豁免必须显式声明（--allow-control-exemption）：走豁免形式 ⇒ 默认判红",
+          "ok": true,
+          "detail": "M15-CONTROL-EXEMPTION ×1：need/free-api/@1440 竖排 1 条 违规码 [note-ink-narrow,note-intro-long] ⇒ 已显式声明 --allow-control-exemption ⇒ 登记放行（严格形式由 --dir=dist 的那一次运行承担）"
+        },
+        {
+          "name": "§22c 对照豁免登记制：被污染的对照行必须逐条登记（可 grep 的码 + 计数），登记数 == 独立重算的污染行数",
+          "ok": true,
+          "detail": "独立重算污染行 [M15] ×1 · 登记表 [M15-CONTROL-EXEMPTION] ×1"
+        }
+      ],
+      "exemptionMetrics": {
+        "layoutControlExemptions": [
+          {
+            "id": "M15",
+            "code": "M15-CONTROL-EXEMPTION",
+            "route": "need/free-api/",
+            "width": 1440,
+            "notes": 1,
+            "verticalNotes": 1,
+            "codes": [
+              "note-ink-narrow",
+              "note-intro-long"
+            ],
+            "declared": true
+          }
+        ],
+        "layoutControlExemptionCount": 1
+      },
+      "grepLines": [
+        "✓ §22c 对照豁免必须显式声明（--allow-control-exemption）：走豁免形式 ⇒ 默认判红 — M15-CONTROL-EXEMPTION ×1：need/free-api/@1440 竖排 1 条 违规码 [note-ink-narrow,note-intro-long] ⇒ 已显式声明 --allow-control-exemption ⇒ 登记放行（严格形式由 --dir=dist 的那一次运行承担）",
+        "✓ §22c 对照豁免登记制：被污染的对照行必须逐条登记（可 grep 的码 + 计数），登记数 == 独立重算的污染行数 — 独立重算污染行 [M15] ×1 · 登记表 [M15-CONTROL-EXEMPTION] ×1",
+        "对照豁免登记（CONTROL-EXEMPTION）：1 条 · M15-CONTROL-EXEMPTION need/free-api/@1440（竖排 1 条 · 违规码 [note-ink-narrow,note-intro-long]） · 声明 --allow-control-exemption：是",
+        "对照豁免          CONTROL-EXEMPTION     0 条（只允许显式声明后出现）1 条 M15-CONTROL-EXEMPTION need/free-api/@1440（已声明）"
+      ],
+      "logFile": ".arch-v1/log/after-contaminated-allow.log",
+      "jsonFile": ".arch-v1/json/after-contaminated-allow.json"
+    },
+    {
+      "case": "after-m15-target-nonotes",
+      "tool": "probe",
+      "what": "改后工具（探针）× 干净副本，M15 靶页换成 0 条说明的页 ⇒ 前提断言判红",
+      "dir": ".arch-v1/dist-clean",
+      "args": [],
+      "env": {
+        "PROBE_M15_ROUTE": "category/agent/"
+      },
+      "exitCode": 1,
+      "seconds": 142.8,
+      "total": 890,
+      "failed": 3,
+      "status": "RED",
+      "failedNames": [
+        "§22c M15 靶页前提：靶页必须含 ≥1 条页面级说明（否则变异没有承重面 —— 注入后一条码都不会出）",
+        "§22c M15 变异后复测必须出现「note-ink-narrow」违规码（T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里））",
+        "§22c M15 承重证明：咬中的条是**竖排按列判**（列数 ≥ 2 · 列栈水平范围 < 0.85×列宽），且旧口径两条判据在它们身上必然静默（按行归并 ≤ 1 行 + 盒/内容盒满宽，盒宽与注入前逐条相同）"
+      ],
+      "m15": [
+        {
+          "name": "§22c M15 靶页前提：靶页必须含 ≥1 条页面级说明（否则变异没有承重面 —— 注入后一条码都不会出）",
+          "ok": false,
+          "detail": "靶页 category/agent/@1440 · 布局族 wide · 页面级说明 0 条 · 首条盒宽 0px ⇒ 靶页不含页面级说明（0 条）：请换一个有说明的页当靶页，或先确认这一页的页面级说明没有被删掉 —— 把靶位留在 0 条说明的页上等于这条牙没有承重面"
+        },
+        {
+          "name": "§22c M15 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "ok": true,
+          "detail": "锚点出现 1 次 · T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）"
+        },
+        {
+          "name": "§22c M15 变异后复测必须出现「note-ink-narrow」违规码（T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里））",
+          "ok": false,
+          "detail": "期望 note-ink-narrow · 实测 [无] · 说明 0 条 · 首条 盒 0px / 有字区域 0px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [无]"
+        },
+        {
+          "name": "§22c M15 承重证明：咬中的条是**竖排按列判**（列数 ≥ 2 · 列栈水平范围 < 0.85×列宽），且旧口径两条判据在它们身上必然静默（按行归并 ≤ 1 行 + 盒/内容盒满宽，盒宽与注入前逐条相同）",
+          "ok": false,
+          "detail": "note-ink-narrow 0 条 [] · 逐条：（无） · 列宽 1380px · 阈值 1173px · note-narrow 0 条（0 = ① 也看不见）· 盒宽与注入前一致 true"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "category/agent/@1440 说明 0 条（竖排 0）违规码 [无] ⇒ 严格形式成立（未注入产物）"
+        }
+      ],
+      "controls": [
+        {
+          "name": "§22c 未渲染说明：上界断言 —— 未渲染条要么「可见文本为 0」，要么必须被 note-unrendered 咬中（两类不相交、并集完整、标记不豁免）",
+          "ok": true,
+          "detail": "@1440 未渲染 1 条 = 可见文本 0 的 1 条 [plans/coding/#1] + note-unrendered 0 条 · 交集 0 · 既没归类又没判中 0 · @1600 未渲染 1 条（文本 0 1 · note-unrendered 0 · 未归类 0） · 诊断：含 <noscript> 的未渲染条 1（不参与豁免）"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "category/agent/@1440 说明 0 条（竖排 0）违规码 [无] ⇒ 严格形式成立（未注入产物）"
+        },
+        {
+          "name": "§22c 对照豁免必须显式声明（--allow-control-exemption）：走豁免形式 ⇒ 默认判红",
+          "ok": true,
+          "detail": "本轮 0 条豁免（所有正对照都是严格形式）"
+        },
+        {
+          "name": "§22c 对照豁免登记制：被污染的对照行必须逐条登记（可 grep 的码 + 计数），登记数 == 独立重算的污染行数",
+          "ok": true,
+          "detail": "独立重算污染行 [无] ×0 · 登记表 [无] ×0"
+        }
+      ],
+      "exemptionMetrics": {
+        "layoutControlExemptions": [],
+        "layoutControlExemptionCount": 0
+      },
+      "grepLines": [
+        "✓ §22c 对照豁免必须显式声明（--allow-control-exemption）：走豁免形式 ⇒ 默认判红 — 本轮 0 条豁免（所有正对照都是严格形式）",
+        "✓ §22c 对照豁免登记制：被污染的对照行必须逐条登记（可 grep 的码 + 计数），登记数 == 独立重算的污染行数 — 独立重算污染行 [无] ×0 · 登记表 [无] ×0",
+        "对照豁免登记（CONTROL-EXEMPTION）：0 条（本轮所有正对照都是严格形式）",
+        "对照豁免          CONTROL-EXEMPTION     0 条（只允许显式声明后出现）0 条"
+      ],
+      "logFile": ".arch-v1/log/after-m15-target-nonotes.log",
+      "jsonFile": ".arch-v1/json/after-m15-target-nonotes.json"
+    },
+    {
+      "case": "after-m15-target-restore",
+      "tool": "probe",
+      "what": "还原：探针不设 env（M15 靶页回到 need/free-api/）⇒ 前提断言回绿",
+      "dir": ".arch-v1/dist-clean",
+      "args": [],
+      "env": null,
+      "exitCode": 0,
+      "seconds": 145.5,
+      "total": 890,
+      "failed": 0,
+      "status": "GREEN",
+      "failedNames": [],
+      "m15": [
+        {
+          "name": "§22c M15 靶页前提：靶页必须含 ≥1 条页面级说明（否则变异没有承重面 —— 注入后一条码都不会出）",
+          "ok": true,
+          "detail": "靶页 need/free-api/@1440 · 布局族 wide · 页面级说明 1 条 · 首条盒宽 1380px"
+        },
+        {
+          "name": "§22c M15 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
+          "ok": true,
+          "detail": "锚点出现 1 次 · T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）"
+        },
+        {
+          "name": "§22c M15 变异后复测必须出现「note-ink-narrow」违规码（T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里））",
+          "ok": true,
+          "detail": "期望 note-ink-narrow · 实测 [note-ink-narrow, note-intro-long] · 说明 1 条 · 首条 盒 1380px / 有字区域 1369px · detail-main 0 个 · scrollWidth 1440（视口 1440） · 窄条 [无] · 违规码 [note-ink-narrow, note-intro-long]"
+        },
+        {
+          "name": "§22c M15 承重证明：咬中的条是**竖排按列判**（列数 ≥ 2 · 列栈水平范围 < 0.85×列宽），且旧口径两条判据在它们身上必然静默（按行归并 ≤ 1 行 + 盒/内容盒满宽，盒宽与注入前逐条相同）",
+          "ok": true,
+          "detail": "note-ink-narrow 1 条 [need/free-api/#0] · 逐条：#0 vertical-rl 列 18 / 列栈 362.64px / 行 1（最宽 362.64px） / 内容盒 1369px / 字形盒 22 · 列宽 1380px · 阈值 1173px · note-narrow 0 条（0 = ① 也看不见）· 盒宽与注入前一致 true"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "need/free-api/@1440 说明 1 条（竖排 0）违规码 [无] ⇒ 严格形式成立（未注入产物）"
+        }
+      ],
+      "controls": [
+        {
+          "name": "§22c 未渲染说明：上界断言 —— 未渲染条要么「可见文本为 0」，要么必须被 note-unrendered 咬中（两类不相交、并集完整、标记不豁免）",
+          "ok": true,
+          "detail": "@1440 未渲染 1 条 = 可见文本 0 的 1 条 [plans/coding/#1] + note-unrendered 0 条 · 交集 0 · 既没归类又没判中 0 · @1600 未渲染 1 条（文本 0 1 · note-unrendered 0 · 未归类 0） · 诊断：含 <noscript> 的未渲染条 1（不参与豁免）"
+        },
+        {
+          "name": "§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码",
+          "ok": true,
+          "detail": "need/free-api/@1440 说明 1 条（竖排 0）违规码 [无] ⇒ 严格形式成立（未注入产物）"
+        },
+        {
+          "name": "§22c 对照豁免必须显式声明（--allow-control-exemption）：走豁免形式 ⇒ 默认判红",
+          "ok": true,
+          "detail": "本轮 0 条豁免（所有正对照都是严格形式）"
+        },
+        {
+          "name": "§22c 对照豁免登记制：被污染的对照行必须逐条登记（可 grep 的码 + 计数），登记数 == 独立重算的污染行数",
+          "ok": true,
+          "detail": "独立重算污染行 [无] ×0 · 登记表 [无] ×0"
+        }
+      ],
+      "exemptionMetrics": {
+        "layoutControlExemptions": [],
+        "layoutControlExemptionCount": 0
+      },
+      "grepLines": [
+        "✓ §22c 对照豁免必须显式声明（--allow-control-exemption）：走豁免形式 ⇒ 默认判红 — 本轮 0 条豁免（所有正对照都是严格形式）",
+        "✓ §22c 对照豁免登记制：被污染的对照行必须逐条登记（可 grep 的码 + 计数），登记数 == 独立重算的污染行数 — 独立重算污染行 [无] ×0 · 登记表 [无] ×0",
+        "对照豁免登记（CONTROL-EXEMPTION）：0 条（本轮所有正对照都是严格形式）",
+        "对照豁免          CONTROL-EXEMPTION     0 条（只允许显式声明后出现）0 条"
+      ],
+      "logFile": ".arch-v1/log/after-m15-target-restore.log",
+      "jsonFile": ".arch-v1/json/after-m15-target-restore.json"
+    }
+  ]
+}

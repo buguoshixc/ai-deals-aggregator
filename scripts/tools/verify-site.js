@@ -6796,6 +6796,19 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
    */
   const WIDE_MID = 950;
   const WIDE_DESKTOP_VIEWPORTS = [WIDE_DESKTOP, WIDE_WIDE, WIDE_MID];
+  /**
+   * judge-control-downgrade-guard-v1（t34）：正对照的**豁免形式**必须显式声明 —— 默认 fail-closed。
+   *
+   * 背景（t31 = `judge-target-relocation-control-v1` 的实测）：当被验目录**自己**就带着 M15 的竖排形态
+   * （形态注入副本，证据复跑时常见）时，M15 的正对照在那个目录上物理上不可能成立，只能**降级成豁免形式**。
+   * 修前这个降级**只写在 detail 文案里**（「严格形式由 --dir=dist 的那一次运行承担」），断言本身照样绿
+   * ⇒ **只看 ✓/✗ 的人完全看不出来**这一轮的对照已经少了半条证明（t9 / t22 都踩过这个形状）。
+   *
+   * 现在：豁免**默认即红** —— 调用方必须显式承认「我知道这一轮的 `--dir=` 是形态注入副本」；
+   * 声明之后，每一条豁免都进**显式登记表**（可 grep 的码 `M15-CONTROL-EXEMPTION` + 计数 + metrics）。
+   * 这是**只变严**：严格形式成立的那一轮，两条新断言都是绿的。
+   */
+  const ALLOW_CONTROL_EXEMPTION = process.argv.includes('--allow-control-exemption');
   // 冻结串：T1 放进 index.html 共享 <style> 的**唯一**一条 .snote 规则，逐字一致（不许改空格）。
   // 它既是变异牙的锚点，也是「一处定义、全站生效」的机器可读证据：每页内联样式里恰好 1 次。
   const WIDE_SNOTE_FROZEN = '.snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }';
@@ -8514,6 +8527,29 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
             + '（DOM 追加一条 <style>，命中真实元素但未展开 ⇒ 不影响布局）⇒ 现场扫描必须认出「未登记的 ch 窄列」' }
       );
 
+      // ---- M15 靶页前提：靶页必须含 ≥1 条页面级说明（judge-control-downgrade-guard-v1 / t34）--------
+      // 这个前提在此之前只是**注释里的隐含假设**（见上面 M15 定义处的「为什么必须是这条牙」）。
+      // t31 实测：M15 的承重正是靠它 —— 靶页有 ≥1 条说明，注入后才有条可咬。靶页 0 条说明时，
+      // 注入后 noteCount 0、一条码都不出，「锚点唯一 + 复测」会以「期望码没出现」的形式报红 ——
+      // 读红的人会先去怀疑牙坏了，而不是「靶页选错了」（T31 的原靶页 `category/agent/` 正是这样：
+      // 自 `secondary-page-intro-changes-v1` 起首屏说明整层删除）。现在把它写成显式断言。
+      {
+        const m15Def = wideMutations.find(mutation => mutation.id === 'M15');
+        const m15Meta = m15Def ? wideMeta.find(item => item.route === m15Def.route) : null;
+        const m15Geometry = m15Def ? wideGeometry.get(`${m15Def.width}|${m15Def.route}`) : null;
+        const m15Notes = m15Geometry ? m15Geometry.noteCount : 0;
+        const m15BoxWidth = m15Geometry && m15Geometry.notes.length ? wideRound(m15Geometry.notes[0].box.width) : 0;
+        const m15HasSurface = Boolean(m15Def && m15Geometry) && m15Notes >= 1 && m15BoxWidth > 0;
+        check('§22c M15 靶页前提：靶页必须含 ≥1 条页面级说明（否则变异没有承重面 —— 注入后一条码都不会出）',
+          m15HasSurface,
+          m15Def
+            ? `靶页 ${m15Def.route || '/'}@${m15Def.width} · 布局族 ${m15Meta ? m15Meta.family : '（产物里没有这一页）'}`
+              + ` · 页面级说明 ${m15Notes} 条 · 首条盒宽 ${m15BoxWidth}px`
+              + (m15HasSurface ? '' : ` ⇒ 靶页不含页面级说明（${m15Notes} 条）：请换一个有说明的页当靶页，`
+                + '或先确认这一页的页面级说明没有被删掉 —— 把靶位留在 0 条说明的页上等于这条牙没有承重面')
+            : 'M15 未登记');
+      }
+
       metrics.layoutMutationCodes = {};
       const wideMutationHits = new Map();
       const wideMutationExtra = new Map();
@@ -8725,6 +8761,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       }
 
       // ---- M8/M9a/M9b/M10/M15 的正对照：**不注入**时，五个靶页在对应档位没有任何违规码 ----
+      // 豁免登记表（judge-control-downgrade-guard-v1 / t34）：走豁免形式的对照在这里**逐条登记** ——
+      // 它是「降级不再只藏在 detail 文案里」的载体：码可 grep、条数可数、并写进 metrics。
+      const wideControlExemptions = [];
       const wideNoInjectionControls = [
         { id: 'M8', route: 'need/student-only/', width: WIDE_DESKTOP },
         { id: 'M9a', route: 'docs/data/', width: WIDE_DESKTOP },
@@ -8765,6 +8804,13 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
           && m15Control.inkNarrow === 0 && m15Control.codes.length === 0;
         const m15Contaminated = Boolean(m15Control) && m15Control.verticalNotes > 0;
         const m15Explained = m15Contaminated && m15Control.codes.every(code => m15Expected.includes(code));
+        // 走豁免形式 ⇒ **立刻登记**（不登记的话，下面第二条新断言会红）
+        if (m15Contaminated && m15Explained) {
+          wideControlExemptions.push({
+            id: 'M15', code: 'M15-CONTROL-EXEMPTION', route: m15Control.route, width: m15Control.width,
+            notes: m15Control.notes, verticalNotes: m15Control.verticalNotes, codes: m15Control.codes
+          });
+        }
         check('§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；'
           + '若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码',
           m15Strict || m15Explained,
@@ -8773,6 +8819,26 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
               + `违规码 [${m15Control.codes.join(',') || '无'}] ⇒ ${m15Strict ? '严格形式成立（未注入产物）'
                 : (m15Explained ? '本轮目录本身带竖排 ⇒ 严格形式由 --dir=dist 的那一次运行承担' : '既不严格也不可解释')}`
             : '对照未登记');
+        // ---- 新断言 ①：豁免**默认即红**（judge-control-downgrade-guard-v1 / t34）------------------
+        // 修前：降级只写在上面那条的 detail 里，✓ 照样是 ✓ ⇒ 只看 ✓/✗ 完全看不出来。现在降级本身
+        // 就是一条**独立命名**的断言：不显式声明 --allow-control-exemption 就判红（fail-closed）。
+        check('§22c 对照豁免必须显式声明（--allow-control-exemption）：走豁免形式 ⇒ 默认判红',
+          wideControlExemptions.length === 0 || ALLOW_CONTROL_EXEMPTION,
+          wideControlExemptions.length
+            ? `${wideControlExemptions.map(entry => entry.code).join('、')} ×${wideControlExemptions.length}：`
+              + wideControlExemptions.map(entry => `${entry.route || '/'}@${entry.width} 竖排 ${entry.verticalNotes} 条 违规码 [${entry.codes.join(',')}]`).join(' · ')
+              + ` ⇒ ${ALLOW_CONTROL_EXEMPTION
+                ? '已显式声明 --allow-control-exemption ⇒ 登记放行（严格形式由 --dir=dist 的那一次运行承担）'
+                : '未声明 ⇒ 判红：要么这一轮的 --dir= 是形态注入副本（请显式声明 --allow-control-exemption），要么这一页真的坏了'}`
+            : '本轮 0 条豁免（所有正对照都是严格形式）');
+        // ---- 新断言 ②：豁免登记制的**独立对账**（登记数 == 独立重算的被污染对照行数）--------------
+        // 将来若有别的代码路径走了豁免却没登记（或反过来），这条会红 —— 不让豁免绕开登记表。
+        const wideContaminatedControlRows = wideNoInjectionControls.filter(row => row.verticalNotes > 0);
+        check('§22c 对照豁免登记制：被污染的对照行必须逐条登记（可 grep 的码 + 计数），登记数 == 独立重算的污染行数',
+          wideContaminatedControlRows.length === wideControlExemptions.length
+            && wideControlExemptions.every(entry => entry.code === 'M15-CONTROL-EXEMPTION' && entry.notes > 0 && entry.codes.length > 0),
+          `独立重算污染行 [${wideContaminatedControlRows.map(row => row.id).join(', ') || '无'}] ×${wideContaminatedControlRows.length}`
+            + ` · 登记表 [${wideControlExemptions.map(entry => entry.code).join(', ') || '无'}] ×${wideControlExemptions.length}`);
       }
 
       // ---- 反空洞守卫自身的负例自检 ----
@@ -9046,6 +9112,15 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         jsErrors: wideErrors.length,
         externalRequests: wideExternal.length
       };
+      // judge-control-downgrade-guard-v1（t34）：对照豁免的**机器可读登记**（可 grep · 可计数）。
+      // 0 条时也是显式 0 —— 「这一轮的对照都是严格形式」与「这一轮降级了 1 条」在机器读的那一侧分得开。
+      metrics.layoutControlExemptions = wideControlExemptions.map(entry => ({
+        id: entry.id, code: entry.code, route: entry.route, width: entry.width,
+        notes: entry.notes, verticalNotes: entry.verticalNotes, codes: entry.codes,
+        declared: ALLOW_CONTROL_EXEMPTION
+      }));
+      metrics.layoutControlExemptionCount = wideControlExemptions.length;
+      metrics.layoutControlExemptionDeclared = ALLOW_CONTROL_EXEMPTION;
       metrics.layoutViolations = widePageCodesAt(WIDE_DESKTOP)
         .filter(item => item.problems.length > 0)
         .map(item => {
@@ -9162,6 +9237,12 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
           + ` · 同轴锚（条）主数据区 ${wideAnchorStats.region} / 主容器 ${wideAnchorStats.main} / 两者都 ${wideAnchorStats.both} / 都不 ${wideAnchorStats.neither}`);
         console.log(`     主数据区：${Object.entries(wideRegionCounts).map(([sel, n]) => `${sel}=${n} 页`).join(' · ')}`);
         console.log(`     冻结串：${wideFrozenPages.length}/${wideRoutes.length} 页内联样式里恰好 1 次（M0 的改动前产物在这里是 0/${wideRoutes.length}）`);
+        // judge-control-downgrade-guard-v1（t34）：**固定键名 + 计数**的一行 —— 可 grep「对照豁免登记」或码本身。
+        console.log(`     对照豁免登记（CONTROL-EXEMPTION）：${wideControlExemptions.length} 条`
+          + (wideControlExemptions.length
+            ? ` · ${wideControlExemptions.map(entry => `${entry.code} ${entry.route || '/'}@${entry.width}（竖排 ${entry.verticalNotes} 条 · 违规码 [${entry.codes.join(',')}]）`).join(' · ')}`
+              + ` · 声明 --allow-control-exemption：${ALLOW_CONTROL_EXEMPTION ? '是' : '否（该轮已判红）'}`
+            : '（本轮所有正对照都是严格形式）'));
         const wideControlRowText = id => {
           const row = wideNoInjectionControls.find(item => item.id === id);
           return row ? `${row.route || '/'} 说明 ${row.notes} 条（竖排 ${row.verticalNotes}）⇒ [${row.codes.join(',') || '无'}]` : '（未登记）';
@@ -9178,6 +9259,12 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
           ['M8/M9/M10 正对照', '四个靶页不注入', '不得出现任何违规码',
             ['M8', 'M9a', 'M9b', 'M10'].map(id => `${id}[${(wideNoInjectionControls.find(row => row.id === id) || {}).codes ? (wideNoInjectionControls.find(row => row.id === id).codes.join(',') || '无') : '?'}]`).join(' ')],
           ['M15 正对照', `不注入（${WIDE_DESKTOP}）`, '干净；注入副本轮如实标注', wideControlRowText('M15')],
+          // judge-control-downgrade-guard-v1（t34）：豁免**必须在读数表里占一行**（不再只藏在 detail 里）
+          ['对照豁免', 'CONTROL-EXEMPTION', '0 条（只允许显式声明后出现）',
+            `${wideControlExemptions.length} 条` + (wideControlExemptions.length
+              ? ` ${wideControlExemptions.map(entry => `${entry.code} ${entry.route}@${entry.width}`).join(' · ')}`
+                + (ALLOW_CONTROL_EXEMPTION ? '（已声明）' : '（⚠ 未声明 ⇒ 该轮已判红）')
+              : '')],
           ['M5（复用）', '§22b 的 M1–M5', '既有牙全绿', `${results.filter(item => item.name.startsWith('§22b')).length} 项断言`]
         ];
         const wideMutHeaders = ['牙', '页面@视口', '期望', '实测'];
