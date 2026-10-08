@@ -344,6 +344,156 @@ if (verdict.problems.length) {
 }
 
 /* ------------------------------------------------------------------ */
+/* ③′ 正文下限**余量**登记复核（P2 残留 e1：/need/no-card/ 只剩 50 字）    */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 本工具自己的「可见正文」计数器。
+ *
+ * 刻意与 `seo.js` 的 `visibleText()` **分开写**：登记表里的字数是**一个数**，
+ * 而它被「怎么数字数」这件事定义。两个实现同时对同一页计数、且都对登记值负责，
+ * 才算这句话有两个来源 —— 下面有一条断言专门比这两个数。
+ */
+const ownVisibleText = html => unescapeHtml(
+  strip(html).replace(/<!--[\s\S]*?-->/g, ' ').replace(/<[^>]+>/g, ' ')
+).replace(/\s+/g, ' ').trim();
+
+{
+  const byRoute = new Map(descriptors.map(page => [page.route, page]));
+  const printMode = process.argv.includes('--print-floor-margins');
+  const registeredAt = ((process.argv.find(a => a.startsWith('--registered-at=')) || '').slice(16)) || '<YYYY-MM-DD>';
+  const readings = [];
+  const registryProblems = [];
+  const counterProblems = [];
+
+  for (const entry of seo.TEXT_FLOOR_RESIDUALS) {
+    const page = byRoute.get(entry.route);
+    if (!page) { registryProblems.push(`${entry.route}：登记了，但产物里没有这一页（登记过期）`); continue; }
+    const own = ownVisibleText(page.html).length;
+    const rule = seo.visibleText(page.html).length;
+    if (own !== rule) counterProblems.push(`${entry.route}：本工具 ${own} ≠ 规则层 ${rule}`);
+    const floor = pageKinds.textFloor(page.kind, page.count);
+    const margin = own - floor;
+    readings.push({ route: entry.route, kind: page.kind, count: page.count, chars: own, floor, margin, registered: entry.margin });
+    // 登记的两个入参也一起判：kind / 条数变了，这条登记的「底线」就不再是这一页的底线。
+    if (page.kind !== entry.kind) registryProblems.push(`${entry.route}：kind 现在是 ${page.kind}，登记时是 ${entry.kind}`);
+    if (Number(page.count) !== entry.count) registryProblems.push(`${entry.route}：条数现在是 ${page.count}，登记时是 ${entry.count}`);
+    if (margin < entry.margin) registryProblems.push(`${entry.route}：余量 ${margin} < 登记值 ${entry.margin}（${own} 字 − 下限 ${floor}）`);
+  }
+
+  // 重新登记的入口：把**现在的读数**打印成可以直接贴回 `lib/seo.js` 的一块。
+  // （登记日期用 `--registered-at=YYYY-MM-DD` 给；不给就留一个显式占位符，不猜今天。）
+  if (printMode) {
+    console.log('\n=== 重新登记：把下面这块贴回 scripts/lib/seo.js 的 TEXT_FLOOR_RESIDUALS ===');
+    console.log(`    （登记日期：${registeredAt}）`);
+    for (const row of readings) {
+      console.log(`  { route: '${row.route}', kind: '${row.kind}', count: ${row.count}, chars: ${row.chars}, floor: ${row.floor}, margin: ${row.margin}, registeredAt: '${registeredAt}' },`);
+    }
+    console.log('\n    再让 JSON 转写与声明逐字节一致（seo-selftest 会比这两份）：');
+    console.log("    node -e \"const fs=require('fs'),seo=require('./scripts/lib/seo');"
+      + "fs.writeFileSync('research/_raw/p2-residuals-v1/text-floor-margins.json',"
+      + " JSON.stringify(seo.TEXT_FLOOR_RESIDUALS,null,2)+'\\n')\"");
+    process.exit(0);
+  }
+
+  console.log('\n=== 正文下限余量登记（P2 残留 e1）· 从 dist 重新数一遍 ===');
+  for (const row of readings) {
+    console.log(`  ${row.route.padEnd(20)} ${String(row.chars).padStart(5)} 字 − 下限 ${String(row.floor).padStart(4)}`
+      + ` = 余量 ${String(row.margin).padStart(4)}（登记值 ${row.registered}）· kind=${row.kind} count=${row.count}`);
+  }
+
+  check(`正文下限余量登记：${seo.TEXT_FLOOR_RESIDUALS.length} 页的实时余量 ≥ 登记值（独立重算，零调低下限）`,
+    registryProblems.length === 0, registryProblems.join('；'));
+  check('登记页的字数：本工具自己的计数器与规则层计数器逐字相同（两个实现互证）',
+    counterProblems.length === 0, counterProblems.join('；'));
+  check('登记表里的每一页都真的产出了（登记过期 = 这一页没人看着了）',
+    readings.length === seo.TEXT_FLOOR_RESIDUALS.length,
+    `${readings.length}/${seo.TEXT_FLOOR_RESIDUALS.length}`);
+}
+
+/* ------------------------------------------------------------------ */
+/* ③″ H14：「最近变化」是条件模块（零变化 / 日志不可用 ⇒ **整块不渲染**）  */
+/* ------------------------------------------------------------------ */
+
+{
+  const MODULE = 'class="chgsec chgtopic"';
+  const withModule = [];
+  const moduleProblems = [];
+
+  for (const route of routes) {
+    const rel = route === '' ? 'index.html' : `${route}/index.html`;
+    // 扫**剥掉 script/style 的 DOM**：首页把 RENDER-CORE 的模板串内联在 `<script>` 里，
+    // 那些串里也有 `class="chgsec chgtopic"` 的字样 —— 扫原始文件会把首页误报成「有模块」。
+    const html = strip(fs.readFileSync(path.join(OUT, rel), 'utf8'));
+    const blocks = html.split(MODULE).length - 1;
+    const totals = [...html.matchAll(/data-topic-total="(\d+)"/g)].map(m => Number(m[1]));
+    const shown = [...html.matchAll(/data-topic-shown="(\d+)"/g)].map(m => Number(m[1]));
+
+    if (blocks === 0) {
+      // 没有模块 ⇒ 连它的标记都不许留（零变化 / 日志不可用 ⇒ 逐字空串）
+      if (totals.length || shown.length) moduleProblems.push(`${route}：没有模块却留着 data-topic-* 标记`);
+      continue;
+    }
+    withModule.push(route);
+    if (blocks !== 1) { moduleProblems.push(`${route}：同一页出现 ${blocks} 个模块`); continue; }
+    if (totals.length !== 1 || shown.length !== 1) {
+      moduleProblems.push(`${route}：模块在场但 data-topic-total/shown 是 ${totals.length}/${shown.length} 个`
+        + ' —— 零变化就该整块不渲染，不该留一个空壳');
+      continue;
+    }
+    if (!(totals[0] >= 1)) moduleProblems.push(`${route}：data-topic-total=${totals[0]} ⇒ 零变化却渲染了模块`);
+    if (!(shown[0] >= 1)) moduleProblems.push(`${route}：data-topic-shown=${shown[0]} ⇒ 模块里一行都没有`);
+    if (shown[0] > totals[0]) moduleProblems.push(`${route}：shown ${shown[0]} > total ${totals[0]}（截断不撒谎）`);
+    if (!html.includes('<h2>最近变化</h2>')) moduleProblems.push(`${route}：模块标题不是逐字的「最近变化」`);
+  }
+
+  // ⚠️ 不断言「现在必须是 0 页」：某一天 /need/x/ 真的收到一条相关变化时模块**应该**出现。
+  // 断言的是**自洽**：模块在场 ⟺ 页面自报 ≥1 条；不在场 ⇒ 一个标记都不留。
+  // 「日志不可用 ⇒ 空串」这一支在产物里照不到（生产现在有日志），由 `selftest:changes` R2c
+  // 与一次性探针 `research/_raw/p2-residuals-v1/e2-unavailable-log.json` 的实跑读数承担。
+  check(`H14 条件模块：${routes.length} 页逐页自洽（在场必有 ≥1 条；不在场连标记都不留）`,
+    moduleProblems.length === 0, moduleProblems.slice(0, 4).join('；'));
+  console.log(`\n=== H14 读数 · 渲染了「最近变化」模块的页面 ${withModule.length} 页`
+    + `${withModule.length ? `：${withModule.join(' ')}` : '（当前生产数据下 0 页：没有任何目录页收到相关变化）'}`);
+}
+
+/* ------------------------------------------------------------------ */
+/* ③‴ 入口文案（P2 残留 e3：「全部变化 →」而不是「查看全部 →」）          */
+/* ------------------------------------------------------------------ */
+
+{
+  const FORBIDDEN = '查看全部';
+  const ENTRY = '全部变化 →';
+  const forbiddenPages = [];
+  const entryPages = [];
+  const oddArrows = [];
+
+  for (const route of routes) {
+    const rel = route === '' ? 'index.html' : `${route}/index.html`;
+    const html = fs.readFileSync(path.join(OUT, rel), 'utf8');
+    // 逐字扫**原始文件**（含 script 里的模板串）：改名的风险恰恰在模板里藏着
+    if (html.includes(FORBIDDEN)) forbiddenPages.push(route);
+    let entries = 0;
+    for (const m of strip(html).matchAll(/<a\b[^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/g)) {
+      const href = m[1].replace(/[?#].*$/, '');
+      if (!/(^|\/)changes\/$/.test(href)) continue;
+      const text = m[2].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+      if (!text.includes('→')) continue;   // 导航「变化雷达」/ 标题「最近变化」不带箭头
+      if (text === ENTRY) entries++;
+      else oddArrows.push(`${route}：「${text}」`);
+    }
+    if (entries) entryPages.push(`${route}(${entries})`);
+  }
+
+  check(`入口文案：${routes.length} 页里没有一处「${FORBIDDEN}」（逐字，含 script 模板）`,
+    forbiddenPages.length === 0, forbiddenPages.slice(0, 4).join(', '));
+  check(`入口文案：指向 /changes/ 的箭头锚逐字都是「${ENTRY}」（同一件事只有一个词）`,
+    oddArrows.length === 0, oddArrows.slice(0, 4).join('；'));
+  console.log(`\n=== 入口文案读数 · 「${ENTRY}」出现在 ${entryPages.length} 页`
+    + `${entryPages.length ? `：${entryPages.join(' · ')}` : '（0 页）'}`);
+}
+
+/* ------------------------------------------------------------------ */
 /* ④ 只属于独立验收的三条：sitemap 成员、noindex、Feed 文件              */
 /* ------------------------------------------------------------------ */
 

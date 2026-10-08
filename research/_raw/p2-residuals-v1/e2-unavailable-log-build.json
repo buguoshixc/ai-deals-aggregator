@@ -1,0 +1,40 @@
+{
+  "what": "「历史日志不可用」在**构建路径**上的实际处置（源码级副本，两种不可用各跑一次）",
+  "why": "e2 的渲染口径（H14）在产物里照不到，所以额外做了一次「把日志弄坏再构建」的实跑，看它到底走到哪一步",
+  "cases": [
+    {
+      "case": "日志文件缺失",
+      "setup": "沙箱的 scripts/data/deal-history.json 被移走（→ .bak）",
+      "command": "node .arch-v1/sandbox-src/scripts/tools/build-local.js",
+      "exitCode": 1,
+      "detected": [
+        "变化雷达: 不可用（无历史日志） · 基准日 2026-10-08 · 今日新增 0 · 最近 7 天变化 0 · 即将结束 0 · 已结束 0 · 重新出现 0 · 其他（不上首页）0 · 首页条带 0 项"
+      ],
+      "diedAt": [
+        "❌ 构建失败：Error: Dataset Manifest 形状不合法（1 处）："
+      ],
+      "detail": [
+        "- dataset deal-history: 缺少 updatedAt"
+      ],
+      "selfChecksReached": false
+    },
+    {
+      "case": "日志文件损坏（不是合法 JSON）",
+      "setup": "沙箱的 scripts/data/deal-history.json 被写成截断的 JSON",
+      "command": "node .arch-v1/sandbox-src/scripts/tools/build-local.js",
+      "exitCode": 1,
+      "detected": [
+        "node :     ⚠️  历史日志不可用（Unexpected token '﻿', \"﻿{\"schemaV\"... is not valid JSON）——本次产物里没有变更记录，check:history 会报错"
+      ],
+      "diedAt": [
+        "❌ 构建失败：Error: Dataset Manifest 形状不合法（1 处）："
+      ],
+      "detail": [
+        "- dataset deal-history: 缺少 updatedAt"
+      ],
+      "selfChecksReached": false
+    }
+  ],
+  "reading": "两种不可用都在**更早的一步**死掉：Dataset Manifest 取 `historyStore.store.startedAt` 当 `updatedAt`（build-local.js 的 buildManifestFromRegistry 调用），拿不到 ⇒ data-docs.assertManifestShape 抛「缺少 updatedAt」。构建在写页面之后就中止，**「产物自检」（含日志不可用的诚实性自检）与 SEO 门禁都没跑到** —— 所以今天不可能有一份「日志不可用」的产物上线，H14 的这一半是防御性分支（演练它的是 selftest:changes R2c 与构建期合成雷达）。",
+  "coarseFix": "build-local.js 的 buildManifestFromRegistry：把 deal-history 的 `updatedAt` 从「日志的 startedAt」改成「有日志用 startedAt、没日志用数据基准日（或显式 unavailable 状态）」—— 那一步不在本轮写作用域，交 captain 排下一轮"
+}

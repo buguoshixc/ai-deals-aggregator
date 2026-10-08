@@ -1,0 +1,125 @@
+{
+  "what": "「牙」的实跑读数：把产物拷成沙箱副本、改坏、复跑、看它红在哪里",
+  "note": "全部改动只发生在 .arch-v1/ 的副本上；dist/ 与源码树一个字节都没动（见 product-digest.json）",
+  "cases": [
+    {
+      "sandbox": ".arch-v1/mut-dist-floor",
+      "mutation": {
+        "file": ".arch-v1/mut-dist-floor/need/no-card/index.html",
+        "mode": "floor-8",
+        "before": {
+          "sha256": "4fafdbeaefcad040f909eeac4ef986401b51eadb6e81ae3da1739e99046313ef",
+          "chars": 710
+        },
+        "cut": {
+          "text": "息欢迎提交修正。",
+          "at": 70804,
+          "run": "优惠信息来自各厂商官方页面与公开折扣页，最终以官方页面为准。发现过期信息欢迎提交修正。"
+        },
+        "after": {
+          "sha256": "e664a047024ae5f8aceafafab12952435b94f705fadd8a1d59ba0920a8b03f60",
+          "chars": 702
+        },
+        "visibleDelta": -8
+      },
+      "command": "node scripts/tools/seo-verify.js --dir=.arch-v1/mut-dist-floor",
+      "exitCode": 1,
+      "reds": [
+        "✗ 规则层 28 个检查码全过 —— [thin-content-margin] need/no-card/ 可见正文 702 字符，下限 660，余量 42 < 登记值 50（登记于 2026-10-08：本页 710 字 − 下限 660 = 余量 50）；余量已跌破登记底线（还没到 thin-content 的红线，但这一页是全站最薄的几页之一）——补回内容，或显式重新登记：node scripts/tools/seo-verify.js --print-floor-margins",
+        "✗ 正文下限余量登记：6 页的实时余量 ≥ 登记值（独立重算，零调低下限） —— need/no-card/：余量 42 < 登记值 50（702 字 − 下限 660）"
+      ],
+      "verdictTail": [
+        "❌ SEO 验收 17 项，失败 2 项"
+      ],
+      "expectation": "正文砍掉 8 个字符 ⇒ 余量 42 < 登记值 50，但仍在 thin-content 红线之上 ⇒ 只该由新牙抓到",
+      "restored": {
+        "command": "Copy-Item dist/need/no-card/index.html .arch-v1/mut-dist-floor/need/no-card/index.html -Force",
+        "treeDigest": "75ecb98344a855b7a72df9df83440b9ebb33eacd3daaa2821f7e4e653fd003a2",
+        "verdictTail": [
+          "✅ SEO 验收 17 项，失败 0 项"
+        ],
+        "exitCode": 0
+      }
+    },
+    {
+      "sandbox": ".arch-v1/mut-dist-topic",
+      "mutation": {
+        "file": ".arch-v1/mut-dist-topic/need/no-card/index.html",
+        "mode": "topic-zero",
+        "before": {
+          "sha256": "4fafdbeaefcad040f909eeac4ef986401b51eadb6e81ae3da1739e99046313ef",
+          "chars": 710
+        },
+        "injected": "零变化空壳模块（无 data-topic-*）",
+        "after": {
+          "sha256": "95cd9a9c1ca2af08dea81f4da783e73e60e42459d4aa9297dbdea2c1fb67ad95",
+          "chars": 715
+        },
+        "visibleDelta": 5
+      },
+      "command": "node scripts/tools/seo-verify.js --dir=.arch-v1/mut-dist-topic",
+      "exitCode": 1,
+      "reds": [
+        "✗ H14 条件模块：186 页逐页自洽（在场必有 ≥1 条；不在场连标记都不留） —— need/no-card/：模块在场但 data-topic-total/shown 是 0/0 个 —— 零变化就该整块不渲染，不该留一个空壳"
+      ],
+      "verdictTail": [
+        "❌ SEO 验收 17 项，失败 1 项"
+      ],
+      "expectation": "往 need/no-card/ 注入「零变化却渲染」的空壳模块（H14 修复前的形态）⇒ 独立复查必须点名"
+    },
+    {
+      "sandbox": ".arch-v1/mut-dist-wording",
+      "mutation": {
+        "file": ".arch-v1/mut-dist-wording/plans/index.html",
+        "mode": "wording",
+        "before": {
+          "sha256": "dd22bf3dd48921fdc2702f0cd88a76359e84dba9e51ab5cb3f3fa36d4da9e73f",
+          "chars": 3362
+        },
+        "renamed": {
+          "at": 68590
+        },
+        "after": {
+          "sha256": "6ba91b2dbc368f304b08e0130849a7dc8f84e122fd350e044d31de31a2e24b80",
+          "chars": 3362
+        },
+        "visibleDelta": 0
+      },
+      "command": "node scripts/tools/seo-verify.js --dir=.arch-v1/mut-dist-wording",
+      "exitCode": 1,
+      "reds": [
+        "✗ 入口文案：186 页里没有一处「查看全部」（逐字，含 script 模板） —— plans/",
+        "✗ 入口文案：指向 /changes/ 的箭头锚逐字都是「全部变化 →」（同一件事只有一个词） —— plans/：「查看全部 →」"
+      ],
+      "verdictTail": [
+        "❌ SEO 验收 17 项，失败 2 项"
+      ],
+      "expectation": "把 plans/ 的一处入口改名成「查看全部 →」⇒ 两条独立断言都要点名 plans/"
+    },
+    {
+      "sandbox": ".arch-v1/sandbox-src（源码级副本：index.html + 根 JSON + assets + scripts + package.json）",
+      "mutation": {
+        "what": "改**数据**：把 no-card 那条优惠的 title 从「…学生免费 100 美元额度」改成「…学生免费」（−9 字符）",
+        "file": ".arch-v1/sandbox-src/deals.json"
+      },
+      "command": "node .arch-v1/sandbox-src/scripts/tools/build-local.js",
+      "exitCode": 1,
+      "reds": [
+        "✗ SEO[thin-content-margin] need/no-card/：可见正文 701 字符，下限 660，余量 41 < 登记值 50（登记于 2026-10-08：本页 710 字 − 下限 660 = 余量 50）；余量已跌破登记底线（还没到 thin-content 的红线，但这一页是全站最薄的几页之一）——补回内容，或显式重新登记：node scripts/tools/seo-verify.js --print-floor-margins"
+      ],
+      "verdictTail": [
+        "❌ 构建失败：产物自检未通过"
+      ],
+      "expectation": "**构建期路径**：seo.validate() 拿的是刚从磁盘回读的页面 ⇒ 应该在这里就红（不是只在独立门禁里红）",
+      "restored": {
+        "command": "Copy-Item deals.json .arch-v1/sandbox-src/deals.json -Force 后重新构建",
+        "treeDigest": null,
+        "verdictTail": [
+          "✓ SEO 安全门禁: 28 个检查码 × 186 个页面全过（可索引 183 · 别名 3 · 详情页 80 · 落地页 106 · 厂商页 25 · 分类页 5 · sitemap 183 · 孤儿 0 · 重复 canonical 0 · 无效内链 0）",
+          "✅ 构建完成 → dist/（自检全过，已从暂存目录就位）"
+        ],
+        "exitCode": 0
+      }
+    }
+  ]
+}

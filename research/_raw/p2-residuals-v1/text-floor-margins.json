@@ -1,0 +1,56 @@
+[
+  {
+    "route": "need/no-card/",
+    "kind": "need",
+    "count": 1,
+    "chars": 710,
+    "floor": 660,
+    "margin": 50,
+    "registeredAt": "2026-10-08"
+  },
+  {
+    "route": "category/",
+    "kind": "hub",
+    "count": 5,
+    "chars": 923,
+    "floor": 800,
+    "margin": 123,
+    "registeredAt": "2026-10-08"
+  },
+  {
+    "route": "category/audio/",
+    "kind": "category",
+    "count": 6,
+    "chars": 1083,
+    "floor": 960,
+    "margin": 123,
+    "registeredAt": "2026-10-08"
+  },
+  {
+    "route": "need/ai-coding/",
+    "kind": "need",
+    "count": 4,
+    "chars": 976,
+    "floor": 840,
+    "margin": 136,
+    "registeredAt": "2026-10-08"
+  },
+  {
+    "route": "category/image/",
+    "kind": "category",
+    "count": 5,
+    "chars": 1039,
+    "floor": 900,
+    "margin": 139,
+    "registeredAt": "2026-10-08"
+  },
+  {
+    "route": "category/agent/",
+    "kind": "category",
+    "count": 4,
+    "chars": 982,
+    "floor": 840,
+    "margin": 142,
+    "registeredAt": "2026-10-08"
+  }
+]

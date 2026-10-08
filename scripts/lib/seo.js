@@ -28,9 +28,63 @@ const PROBLEM_CODES = [
   'canonical-self', 'canonical-unique', 'h1-count', 'robots-policy',
   'itemlist-arity', 'itemlist-members',
   'breadcrumb-target-exists', 'sitemap-target-exists', 'sitemap-policy',
-  'orphan', 'internal-link-exists', 'thin-content', 'duplicate-item-set',
+  'orphan', 'internal-link-exists', 'thin-content', 'thin-content-margin',
+  'duplicate-item-set',
   'summary-source', 'feed-declared'
 ];
+
+/**
+ * 正文下限**余量**登记（P2 残留 e1）—— 「这些页离红线多远」的唯一出处。
+ *
+ * ## 它解决什么
+ *
+ * `thin-content` 只在**跌破下限**时响：`/need/no-card/` 实测 710 字 / 下限 660（`600 + 60×1`）
+ * ⇒ 它要再掉 **51** 个字才第一次变红。而这一页正是全站最薄的一页（次薄 123 字），
+ * 也是唯一在文档里被点名「余量只剩 50 字」的那一条残留 —— 「还没红」不等于「没事」。
+ *
+ * 下限公式**不许调低**（`page-kinds.js` 的口径 + `v3.0-antigaming` 的下限单调性规则），
+ * 所以真正的风险只有一个方向：**正文继续变薄**。这张表把「当前余量」登记成一条底线，
+ * 跌破它就在**还没到红线之前**变红，并点名是哪一页、掉了多少。
+ *
+ * ## 语义（三个数字要分清）
+ *
+ *   · `chars` / `floor` / `margin` —— **登记当天**的读数（`margin = chars − floor`）。
+ *     它是登记的依据，不是判据；判据只有下面一条。
+ *   · `kind` / `count`            —— 登记时这一页的 kind 与「条数」（下限公式的两个入参）。
+ *     自测逐条重算 `textFloor(kind, count) === floor`，公式改了这里立刻红。
+ *   · 判据：**实时 `margin ≥ 登记值 margin`**（相等算过）。两个来源都会跑这条：
+ *     构建期把刚写下的页面交给 `validate()`，独立门禁 `seo-verify.js` 从 dist 重新解析。
+ *
+ * 余量会变小有两条路，两条都该被人看见：① 正文变少（内容被删/被折叠）；② 条数变多
+ * （`count` 涨 ⇒ 下限涨得比正文快）。所以跌破登记值时的处置**只有一条**：
+ * 要么补回内容，要么**显式重新登记**（`node scripts/tools/seo-verify.js --print-floor-margins`
+ * 会打印一张可以逐字贴回来的登记块）—— 重新登记是一次可见、可评审的动作，这就是它存在的意义。
+ *
+ * ## 为什么写在代码里，而不是读 `research/_raw/` 的 JSON
+ *
+ * `seo.js` 的纪律是「纯函数、不读盘」（见文件头）。登记表因此是**这份声明**；
+ * 机器可读的 JSON 转写放在 `research/_raw/p2-residuals-v1/text-floor-margins.json`，
+ * 由 `seo-selftest.js` 与声明**逐字节对账**（两条不许漂移）。改登记只能改这里。
+ *
+ * 登记范围：全站余量 < 150 字的全部页面（下一档是 409 字）。机器可读的**全站普查**
+ * 见 `research/_raw/p2-residuals-v1/floor-census.json`。
+ */
+const TEXT_FLOOR_RESIDUALS = [
+  { route: 'need/no-card/', kind: 'need', count: 1, chars: 710, floor: 660, margin: 50, registeredAt: '2026-10-08' },
+  { route: 'category/', kind: 'hub', count: 5, chars: 923, floor: 800, margin: 123, registeredAt: '2026-10-08' },
+  { route: 'category/audio/', kind: 'category', count: 6, chars: 1083, floor: 960, margin: 123, registeredAt: '2026-10-08' },
+  { route: 'need/ai-coding/', kind: 'need', count: 4, chars: 976, floor: 840, margin: 136, registeredAt: '2026-10-08' },
+  { route: 'category/image/', kind: 'category', count: 5, chars: 1039, floor: 900, margin: 139, registeredAt: '2026-10-08' },
+  { route: 'category/agent/', kind: 'category', count: 4, chars: 982, floor: 840, margin: 142, registeredAt: '2026-10-08' }
+];
+
+/** 路由 → 登记项（登记表很小，线性查；重复登记由 `seo-selftest` 断言） */
+function floorResidualOf(route) {
+  for (const row of TEXT_FLOOR_RESIDUALS) {
+    if (row.route === route) return row;
+  }
+  return null;
+}
 
 /**
  * 每个页面类型的正文长度下限。
@@ -286,6 +340,26 @@ function validate(pages, opts = {}) {
 
     if (text.length < textFloor(page.kind, page.count)) {
       fail('thin-content', route, `可见正文 ${text.length} 字符 < 下限 ${textFloor(page.kind, page.count)}（kind=${page.kind} count=${page.count}）`);
+    }
+
+    // ---- 正文下限**余量**（P2 残留 e1）--------------------------------
+    // 只对已登记的路由判：这些页的余量已经收窄（`/need/no-card/` 只剩 50 字），
+    // 而下限公式不许调低 ⇒ 风险全在「正文继续变薄」这一侧。
+    // ⚠️ 登记表里**没有**的路由这里一行都不判（`validate()` 不该因为某页没登记就多说话）；
+    // 「登记的路由还在不在产物里」由 `seo-verify.js` 对着 dist 查（那边才知道全站有哪些页）。
+    const residual = floorResidualOf(route);
+    if (residual) {
+      const floor = textFloor(page.kind, page.count);
+      const margin = text.length - floor;
+      if (margin < residual.margin) {
+        const kindNote = page.kind === residual.kind && Number(page.count) === residual.count
+          ? `（登记于 ${residual.registeredAt}：本页 ${residual.chars} 字 − 下限 ${residual.floor} = 余量 ${residual.margin}）`
+          : `（登记于 ${residual.registeredAt} 的基准是 kind=${residual.kind} count=${residual.count}，本页是 kind=${page.kind} count=${page.count}）`;
+        fail('thin-content-margin', route,
+          `可见正文 ${text.length} 字符，下限 ${floor}，余量 ${margin} < 登记值 ${residual.margin}${kindNote}；`
+          + '余量已跌破登记底线（还没到 thin-content 的红线，但这一页是全站最薄的几页之一）——'
+          + '补回内容，或显式重新登记：node scripts/tools/seo-verify.js --print-floor-margins');
+      }
     }
 
     // ---- JSON-LD / ItemList / 面包屑 ----
@@ -556,6 +630,9 @@ function summarize(result) {
 module.exports = {
   PROBLEM_CODES,
   textFloor,
+  // 正文下限**余量**登记（P2 残留 e1）：构建期、独立门禁、自测三处读同一份声明
+  TEXT_FLOOR_RESIDUALS,
+  floorResidualOf,
   validate,
   recomputeSummary,
   summarize,

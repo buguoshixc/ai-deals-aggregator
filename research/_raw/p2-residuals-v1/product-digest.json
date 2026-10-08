@@ -1,0 +1,20 @@
+{
+  "what": "产物变化面：同一棵树在「原样判据」与「本轮判据 + 登记」两次构建下的逐文件对账（rebase 到 4b366d2 之后重做）",
+  "command": "node .arch-v1/tree-digest.cjs dist --out=...",
+  "pristine": {
+    "files": 303,
+    "bytes": 20282063,
+    "treeDigest": "75ecb98344a855b7a72df9df83440b9ebb33eacd3daaa2821f7e4e653fd003a2",
+    "manifestSha256": "1398a352c12aa8939a6c1602d5073da821e3140397deedee92349c13dcd07c12"
+  },
+  "changed": {
+    "files": 303,
+    "bytes": 20282063,
+    "treeDigest": "75ecb98344a855b7a72df9df83440b9ebb33eacd3daaa2821f7e4e653fd003a2",
+    "manifestSha256": "1398a352c12aa8939a6c1602d5073da821e3140397deedee92349c13dcd07c12"
+  },
+  "onlyPristine": [],
+  "onlyChanged": [],
+  "differing": [],
+  "verdict": "逐文件相同：303/303（全树摘要相同 ⇒ 产物变化面 = 0）"
+}

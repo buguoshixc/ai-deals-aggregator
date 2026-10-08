@@ -166,6 +166,45 @@ const BASE_OPTS = {
 const run = (pages, opts = {}) => seo.validate(clone(pages), Object.assign({}, BASE_OPTS, opts));
 const codesOf = result => new Set(result.problems.map(problem => problem.code));
 
+/**
+ * P2 残留 e1 的夹具：一页**已登记**的路由（`need/no-card/`，kind=need count=1 ⇒ 下限 660），
+ * 正文长度按目标余量 `gap` 反推。
+ *
+ * 两遍定位（先量、再补差）而不是手写字符数：改夹具的标题/链接文案不会让数字悄悄飘。
+ * 除正文长度外一切照「干净夹具」的形状来 —— 它进 sitemap、有入链、条目集合与别的
+ * 集合页不同，所以这一页**只**该被 `thin-content-margin` 咬到。
+ *
+ * @returns `[pages, opts]`，可直接 `run(...)`。
+ */
+function registeredPageFixture(gap) {
+  const entry = seo.TEXT_FLOOR_RESIDUALS.find(row => row.route === 'need/no-card/');
+  const target = seo.textFloor(entry.kind, entry.count) + gap;
+  const build = fillerChars => {
+    const pages = cleanPages();
+    // 入链：这一页是孤儿的话会被 orphan 咬到 —— 那是噪声，不是本夹具要证明的事
+    pages[1].html = pages[1].html.replace('</body>', '<p><a href="../../need/no-card/">need/no-card/</a></p></body>');
+    pages.push(Object.assign(clone(pages[1]), {
+      route: 'need/no-card/', slug: 'no-card', kind: 'need', count: 1,
+      itemIds: ['aaa'], summary: [], pinned: true, feedMatch: [],
+      html: pageHtml({
+        route: 'need/no-card/', title: '需求页标题', canonical: `${SITE}need/no-card/`, desc: '需求页描述',
+        rows: ['aaa'], listUrls: [`${SITE}deal/aaa/`], links: ['category/api/', 'vendor/acme/', ''],
+        text: '字'.repeat(fillerChars)
+      })
+    }));
+    return pages;
+  };
+  let filler = 0;
+  let pages = null;
+  for (let pass = 0; pass < 3; pass++) {
+    pages = build(filler);
+    const length = seo.visibleText(pages[pages.length - 1].html).length;
+    if (length === target) break;
+    filler = Math.max(0, filler + (target - length));
+  }
+  return [pages, { sitemap: [...BASE_OPTS.sitemap, `${SITE}need/no-card/`] }];
+}
+
 /* ------------------------------------------------------------------ */
 section('一、干净夹具必须静默（验证器不能是永远红的噪声）');
 
@@ -309,6 +348,12 @@ section('二、每一条检查码都必须真的会响（逐个定向篡改）')
     const pages = cleanPages();
     pages[2].html = pages[2].html.replace(/<p>[^<]*<\/p>/, '<p>短</p>');
     return run(pages);
+  }]);
+  fixtures.push(['thin-content-margin', () => {
+    // P2 残留 e1：只对**已登记**的路由判（`lib/seo.js` 的 TEXT_FLOOR_RESIDUALS）。
+    // 要证明的是它比 thin-content **更早**响：正文还在下限之上，但余量已跌破登记值。
+    const gap = seo.TEXT_FLOOR_RESIDUALS[0].margin - 1;
+    return run(...registeredPageFixture(gap));
   }]);
   fixtures.push(['duplicate-item-set', () => {
     const pages = cleanPages();
@@ -554,6 +599,167 @@ section('五、零依赖与无时钟（这两个文件必须能在门禁链里�
     ];
     for (const [label, re] of banned) check(`${rel} 里没有 ${label}`, !re.test(source));
   }
+}
+
+/* ------------------------------------------------------------------ */
+section('六、正文下限**余量**登记（P2 残留 e1：/need/no-card/ 只剩 50 字）');
+
+{
+  // 这一节守的是「离红线多远」这件事本身：下限公式不许调低（page-kinds 的口径 +
+  // v3.0-antigaming 的单调性规则），所以真正的风险全在**正文继续变薄**。
+  // 登记表在 `lib/seo.js`（唯一出处），判据是「实时余量 ≥ 登记值」，
+  // 构建期（刚写下的页面）与独立门禁（从 dist 重新解析）两侧都会跑。
+  const rows = seo.TEXT_FLOOR_RESIDUALS;
+  const REGISTRY_JSON = path.join(ROOT, 'research/_raw/p2-residuals-v1/text-floor-margins.json');
+
+  check('登记表非空且字段齐全（页路由 / 当前字数 / 下限 / 余量 / 登记日期）',
+    rows.length > 0 && rows.every(row =>
+      typeof row.route === 'string' && /^(?:[a-z0-9-]+\/)+$/.test(row.route)
+      && typeof row.kind === 'string' && Number.isInteger(row.count) && row.count >= 0
+      && Number.isInteger(row.chars) && Number.isInteger(row.floor) && Number.isInteger(row.margin)
+      && /^\d{4}-\d{2}-\d{2}$/.test(row.registeredAt)),
+    JSON.stringify(rows.map(row => row.route)));
+
+  check('登记表的算术自洽：chars − textFloor(kind, count) === margin（不许只改一个数）',
+    rows.every(row => seo.textFloor(row.kind, row.count) === row.floor && row.chars - row.floor === row.margin),
+    rows.filter(row => !(seo.textFloor(row.kind, row.count) === row.floor && row.chars - row.floor === row.margin))
+      .map(row => `${row.route}: ${row.chars}−${row.floor}≠${row.margin}`).join('；'));
+
+  check('同一个路由只登记一条（登记表里没有互相打架的两条）',
+    new Set(rows.map(row => row.route)).size === rows.length);
+
+  // 被点名的那条残留：它可以从登记表里「毕业」（补内容补到余量够厚就删掉），
+  // 但不许**悄悄消失** —— 消失意味着这一页没人看着了。
+  check('被点名的 /need/no-card/ 在登记表里（P2 残留 e1 的对象不许静默下架）',
+    rows.some(row => row.route === 'need/no-card/'));
+
+  // 登记过期即红：路由没了、kind 变了、条数变了，登记表就不再是「这一页的底线」。
+  // 条数按**构建期同一条判据**重算（`needsOf` / `collectionsOf` 是派生字段的唯一来源，
+  // 根目录的 deals.json 里还没有它们 —— 那是构建期补的）。
+  const payload = JSON.parse(fs.readFileSync(path.join(ROOT, 'deals.json'), 'utf8'));
+  const renderCore = require('../lib/render-core').load(path.join(ROOT, 'index.html'));
+  const vendorKeyOf = deal => renderCore.vendorOf(deal).name;
+  const dealsWithDerived = payload.deals.map(deal => Object.assign({}, deal, {
+    needs: audience.needsOf(deal), collections: audience.collectionsOf(deal)
+  }));
+  const plan = landing.planLandingPages({
+    deals: dealsWithDerived, vendorKeyOf, vendorSlugs: feeds.VENDOR_SLUGS,
+    vendorThresholds: feeds.VENDOR_THRESHOLDS, eventCountOf: () => 0
+  });
+  const staleRows = rows.filter(row => {
+    const spec = plan.pages.find(page => page.route === row.route);
+    if (!spec) return true;
+    const count = spec.kind === 'hub'
+      ? (spec.children || []).length
+      : landing.itemsOf(spec, dealsWithDerived, { vendorKeyOf }).length;
+    return spec.kind !== row.kind || count !== row.count;
+  });
+  check('登记的每一页都还在计划里，且 kind / 条数与登记时一致（登记过期即红）',
+    staleRows.length === 0,
+    staleRows.map(row => `${row.route}（登记 kind=${row.kind} count=${row.count}）`).join('；'));
+
+  // 机器可读的 JSON 转写（`research/_raw/p2-residuals-v1/text-floor-margins.json`）与声明
+  // **逐字节对账**：两份不许漂移。要让 JSON 重新等于声明，用
+  // `node scripts/tools/seo-verify.js --print-floor-margins`（唯一出处仍是 lib/seo.js）。
+  const transcript = fs.existsSync(REGISTRY_JSON) ? fs.readFileSync(REGISTRY_JSON, 'utf8') : null;
+  check('登记的 JSON 转写与声明逐字节相同（research/_raw/p2-residuals-v1/text-floor-margins.json）',
+    transcript === JSON.stringify(rows, null, 2) + '\n',
+    transcript === null ? '文件不存在' : `文件 ${transcript.length} 字节 ≠ 声明 ${JSON.stringify(rows, null, 2).length + 1} 字节`);
+
+  // ---- 边界与牙：判的必须是**登记值**，不是别的什么数 ----
+  const registered = rows.find(row => row.route === 'need/no-card/');
+  const atBoundary = run(...registeredPageFixture(registered.margin));
+  check('【对照组】余量正好等于登记值 ⇒ 不响（边界是「≥」，不是「>」）',
+    !codesOf(atBoundary).has('thin-content-margin'),
+    atBoundary.problems.map(problem => `[${problem.code}] ${problem.route}`).join('；'));
+
+  const belowBoundary = run(...registeredPageFixture(registered.margin - 1));
+  const belowCodes = belowBoundary.problems.filter(problem => problem.code === 'thin-content-margin');
+  check('【牙】余量掉到登记值 − 1 ⇒ 变红并点名 /need/no-card/（此时 thin-content 还没到红线）',
+    belowCodes.length === 1 && belowCodes[0].route === 'need/no-card/'
+    && !codesOf(belowBoundary).has('thin-content'),
+    belowBoundary.problems.map(problem => `[${problem.code}] ${problem.route} ${problem.detail}`).join('；') || '（一个问题都没有）');
+  check('【牙】那一条红写清了三个数与出处（实测字数 / 下限 / 登记值 + 登记日期 + 重新登记的入口）',
+    belowCodes.length === 1
+    && belowCodes[0].detail.includes(String(registered.chars))
+    && belowCodes[0].detail.includes(String(registered.floor))
+    && belowCodes[0].detail.includes(String(registered.margin))
+    && belowCodes[0].detail.includes(registered.registeredAt)
+    && belowCodes[0].detail.includes('--print-floor-margins'),
+    belowCodes.length === 1 ? belowCodes[0].detail : '没有那条红');
+
+  // 反证：把登记值改一格，判据必须跟着动（否则登记的这 50 是装饰品）。
+  const savedMargin = registered.margin;
+  let raisedVerdict = null;
+  let loweredVerdict = null;
+  try {
+    registered.margin = savedMargin + 1;
+    raisedVerdict = codesOf(run(...registeredPageFixture(savedMargin)));
+    registered.margin = savedMargin - 1;
+    loweredVerdict = codesOf(run(...registeredPageFixture(savedMargin - 1)));
+  } finally {
+    registered.margin = savedMargin;
+  }
+  check('【牙】登记值 +1 ⇒ 边界那一页跟着变红（比的是登记值，不是硬编码的 50）',
+    raisedVerdict.has('thin-content-margin'));
+  check('【牙】登记值 −1 ⇒ 原本跌破的那一页变绿（同一方向的反证）',
+    !loweredVerdict.has('thin-content-margin'));
+  check('复位后回到绿（两次牙都没有改到真实登记表）',
+    registered.margin === savedMargin
+    && !codesOf(run(...registeredPageFixture(savedMargin))).has('thin-content-margin'));
+}
+
+/* ------------------------------------------------------------------ */
+section('七、入口文案契约（P2 残留 e3：「全部变化 →」而不是「查看全部 →」）');
+
+{
+  const ENTRY_WORD = '全部变化';
+  const FORBIDDEN = '查看全部';
+  const changesWording = require('../lib/changes').CHANGES_WORDING;
+  const planWording = require('../lib/plan-changes');
+
+  check(`三张措辞表里的入口词都是同一个「${ENTRY_WORD}」`,
+    changesWording.CHANGES_LABELS.all === ENTRY_WORD
+    && planWording.PLAN_CHANGES_WORDING.PLAN_CHANGES_LABELS.allChanges === ENTRY_WORD
+    && planWording.API_PLAN_CHANGES_WORDING.API_PLAN_CHANGES_LABELS.allChanges === ENTRY_WORD,
+    [changesWording.CHANGES_LABELS.all,
+      planWording.PLAN_CHANGES_WORDING.PLAN_CHANGES_LABELS.allChanges,
+      planWording.API_PLAN_CHANGES_WORDING.API_PLAN_CHANGES_LABELS.allChanges].join(' / '));
+
+  // 前端的受控副本（首页条带与无 JS 首屏都读它）：`validate.js --strict` 的
+  // checkWordingContract() 会把它与 changes.js 逐项比对，这里再从入口文案这一侧钉一次。
+  const indexHtml = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  const wordingMatch = indexHtml.match(/const CHANGES_WORDING = (\{[^\n]*?\});/);
+  let frontCopy = null;
+  try { frontCopy = wordingMatch ? JSON.parse(wordingMatch[1]) : null; } catch (error) { frontCopy = null; }
+  check('首页 RENDER-CORE 的受控副本里，入口词同样是「全部变化」（与 changes.js 同词）',
+    Boolean(frontCopy && frontCopy.CHANGES_LABELS && frontCopy.CHANGES_LABELS.all === ENTRY_WORD),
+    frontCopy && frontCopy.CHANGES_LABELS ? String(frontCopy.CHANGES_LABELS.all) : '解析不到 CHANGES_WORDING');
+  check("首页条带的入口是从措辞键拼出来的（escapeHtml(L.all) + 箭头），不是写死的字面量",
+    /escapeHtml\(L\.all\)\s*\+\s*' →/.test(indexHtml));
+
+  // 会渲染这条入口的源文件（页面壳 + 措辞表）：一个「查看全部」都不许有。
+  // 改名的正确做法是改措辞表，而不是在某处手写一个新词。
+  const wordingSources = [
+    'index.html',
+    'scripts/lib/changes.js', 'scripts/lib/plan-changes.js', 'scripts/lib/feeds.js',
+    'scripts/lib/plans-hub-page.js', 'scripts/lib/plans-page.js', 'scripts/lib/api-plans-page.js'
+  ];
+  const offenders = wordingSources.filter(rel => fs.readFileSync(path.join(ROOT, rel), 'utf8').includes(FORBIDDEN));
+  check(`渲染入口的 ${wordingSources.length} 个源文件里没有「${FORBIDDEN}」`,
+    offenders.length === 0, offenders.join(', '));
+
+  // 硬编码字面量的**登记**：措辞应该只有一处出处（三张措辞表），任何页面壳自己写死一份
+  // 都是「同一个词两处定义」。当前唯一一处是 plans-hub-page.js 的 `/plans/` 枢纽块。
+  // 这条断言的作用是：新增第二处手写、或那一处被改成读措辞表（好事）—— 两种都会红，
+  // 逼人回来更新这张登记表，而不是让它悄悄变成「看起来统一、实际只有一半是真的」。
+  const libDir = path.join(ROOT, 'scripts/lib');
+  const literalSites = fs.readdirSync(libDir).filter(name => name.endsWith('.js'))
+    .filter(name => fs.readFileSync(path.join(libDir, name), 'utf8').includes(`${ENTRY_WORD} →`))
+    .sort();
+  check(`scripts/lib/ 里手写「${ENTRY_WORD} →」字面量的位置 = 登记的那一处（plans-hub-page.js）`,
+    literalSites.join(',') === 'plans-hub-page.js',
+    literalSites.length ? literalSites.join(', ') : '（一处都没有 —— 若确实改成只读措辞表了，请同步更新这条登记）');
 }
 
 console.log(`\n=== v1.7 SEO 门禁演练：${passed} 项通过，${failures.length} 项失败 ===`);

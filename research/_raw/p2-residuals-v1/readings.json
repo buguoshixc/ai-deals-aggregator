@@ -1,0 +1,1937 @@
+{
+  "task": "t4 p2-residuals-v1",
+  "date": "2026-10-08",
+  "base": "origin/master = 4b366d2（rebase 到 narrow-reading-columns-v1 合并之后）",
+  "e1": {
+    "page": "need/no-card/",
+    "kind": "need",
+    "count": 1,
+    "formula": "textFloor(need, 1) = 600 + 60 × 1 = 660（page-kinds.js 的 DEFAULT_FLOOR）",
+    "chars": 710,
+    "floor": 660,
+    "margin": 50,
+    "nextThinnest": [
+      {
+        "route": "category/audio/",
+        "kind": "category",
+        "count": 6,
+        "chars": 1083,
+        "floor": 960,
+        "margin": 123
+      },
+      {
+        "route": "need/ai-coding/",
+        "kind": "need",
+        "count": 4,
+        "chars": 976,
+        "floor": 840,
+        "margin": 136
+      },
+      {
+        "route": "category/image/",
+        "kind": "category",
+        "count": 5,
+        "chars": 1039,
+        "floor": 900,
+        "margin": 139
+      },
+      {
+        "route": "category/agent/",
+        "kind": "category",
+        "count": 4,
+        "chars": 982,
+        "floor": 840,
+        "margin": 142
+      }
+    ],
+    "registry": [
+      {
+        "route": "need/no-card/",
+        "kind": "need",
+        "count": 1,
+        "chars": 710,
+        "floor": 660,
+        "margin": 50,
+        "registeredAt": "2026-10-08"
+      },
+      {
+        "route": "category/",
+        "kind": "hub",
+        "count": 5,
+        "chars": 923,
+        "floor": 800,
+        "margin": 123,
+        "registeredAt": "2026-10-08"
+      },
+      {
+        "route": "category/audio/",
+        "kind": "category",
+        "count": 6,
+        "chars": 1083,
+        "floor": 960,
+        "margin": 123,
+        "registeredAt": "2026-10-08"
+      },
+      {
+        "route": "need/ai-coding/",
+        "kind": "need",
+        "count": 4,
+        "chars": 976,
+        "floor": 840,
+        "margin": 136,
+        "registeredAt": "2026-10-08"
+      },
+      {
+        "route": "category/image/",
+        "kind": "category",
+        "count": 5,
+        "chars": 1039,
+        "floor": 900,
+        "margin": 139,
+        "registeredAt": "2026-10-08"
+      },
+      {
+        "route": "category/agent/",
+        "kind": "category",
+        "count": 4,
+        "chars": 982,
+        "floor": 840,
+        "margin": 142,
+        "registeredAt": "2026-10-08"
+      }
+    ],
+    "registryFile": "research/_raw/p2-residuals-v1/text-floor-margins.json",
+    "reRegister": "node scripts/tools/seo-verify.js --print-floor-margins --registered-at=YYYY-MM-DD"
+  },
+  "e2": {
+    "asOf": "2026-10-08",
+    "store": {
+      "startedAt": "2026-09-30",
+      "events": 19
+    },
+    "radarAvailability": {
+      "unavailable": "unavailable",
+      "ok": "ok"
+    },
+    "topicIdsWithEvents": [
+      "1fff4784ec9d",
+      "27b4acca203a",
+      "3fa2cec73c43",
+      "44a401cd8f13",
+      "6c02d0ffe148",
+      "8c2a12fcf560"
+    ],
+    "quietDealId": "2eae0e246de2",
+    "readings": {
+      "A_unavailable": {
+        "totals": 0,
+        "sections": 0,
+        "htmlLength": 0,
+        "html": ""
+      },
+      "B_zeroChanges": {
+        "totals": 0,
+        "sections": 0,
+        "htmlLength": 0,
+        "html": ""
+      },
+      "C_positiveControl": {
+        "totals": 1,
+        "sections": 1,
+        "htmlLength": 478,
+        "hasModule": true,
+        "hasTitle": true,
+        "hasEntry": true,
+        "head": "<section class=\"chgsec chgtopic\" data-topic-total=\"1\" data-topic-shown=\"1\"><div class=\"chgtopic-head\"><h2>最近变化</h2><a class=\"chgtopic-all\" href=\"../../changes/\""
+      }
+    }
+  },
+  "e3": {
+    "pages": 186,
+    "entryTextGroups": [
+      {
+        "text": "全部变化 →",
+        "anchors": 4,
+        "pages": 3
+      },
+      {
+        "text": "变化雷达",
+        "anchors": 186,
+        "pages": 186
+      },
+      {
+        "text": "最近变化",
+        "anchors": 4,
+        "pages": 4
+      },
+      {
+        "text": "看这一页",
+        "anchors": 2,
+        "pages": 1
+      }
+    ],
+    "pagesWithPhraseStatic": [
+      "",
+      "plans/",
+      "plans/coding/"
+    ],
+    "forbidden": {
+      "staticDom": [],
+      "raw": []
+    },
+    "entryPages": [
+      {
+        "route": "archive/",
+        "anchors": [
+          {
+            "href": "../changes/",
+            "text": "最近变化"
+          },
+          {
+            "href": "../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "category/",
+        "anchors": [
+          {
+            "href": "../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "category/agent/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "category/api/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "category/audio/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "category/chat/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "category/image/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "changes/",
+        "anchors": [
+          {
+            "href": "../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/017bdbc04e70/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/0273d8b23412/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/0c30d79a5016/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/1688614d6669/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/176234a80147/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/1888ab62bd67/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/1c057c22422c/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/219f6fca7f31/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/2db62eb1a8a0/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/2eae0e246de2/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/3c8a9a6a9ee9/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/407572a1e046/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/42c65c0d8d9d/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/45ead69d60cc/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/47a4c57f3a15/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/4987c183fc1a/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/4a875a435019/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/4bda0ebbb091/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/4c7952115477/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/4caf88e30671/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/4d4bcb5b6829/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/4e659666cbb2/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/514a84a1064a/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/5253b5ed77b1/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/57847fbcc1ed/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/5c38e515a3ae/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/5dedb9455508/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/6013b80f266f/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/62e3166acec0/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/65f0bdd295ac/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/6644f3b43bdb/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/6798f78de5ce/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/6869e7866510/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/7691c150c8e5/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/78384299b660/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/7f8c32f6a327/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/833a9889bfb7/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/8814355d59e1/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/8b2e8d64f11f/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/8b609cb05116/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/8dada3205ed8/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/8e7b0fd03e73/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/913211f6d165/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/9180073deef1/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/97d21ff73d3e/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/9c12f13df3ba/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/9c553dd82d2d/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/a1255b2fbae2/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/aacd5856bba2/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/ad1d0c83909d/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/adcb6471a512/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/b4d87c02f4d9/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/b56f33b3d4f3/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/b75b42583ad8/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/b8f11a235591/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/bcba406ed9ff/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/bf156583e97c/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/c05dc74bfd78/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/c25b0ed788e3/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/c433fee91818/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/c4ab5c5d8101/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/c59299cdc88e/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/c694e7c5f125/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/c971e33a9cd0/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/d6aaee8c7379/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/d8d0ba522315/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/df1210f69a39/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/df8ec56faa17/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/e237cab7c007/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/e384895f5935/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/e4bd8003b3d6/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/e4f7271cf7dc/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/e63402b5cc83/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/e65f54470862/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/e7e8f538456c/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/e91f65960877/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/ead998e58cd9/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/ebd47f6d2522/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/f22e3cd094ad/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "deal/f578493037d4/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "developer/",
+        "anchors": [
+          {
+            "href": "../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "docs/data/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "最近变化"
+          },
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "feeds/",
+        "anchors": [
+          {
+            "href": "../changes/",
+            "text": "看这一页"
+          },
+          {
+            "href": "../changes/",
+            "text": "看这一页"
+          },
+          {
+            "href": "../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "free-api/",
+        "anchors": [
+          {
+            "href": "../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/",
+        "anchors": [
+          {
+            "href": "../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/360zhinao-pro/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/360zhinao-turbo-llm-geo/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/baichuan-m3-plus/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/baichuan-m3/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/claude-fable-5.1/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/claude-haiku-4.5/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/claude-opus-5.5/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/claude-sonnet-5.5/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/deepseek-flash/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/deepseek-v3.2/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/deepseek-v4-pro/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/doubao-seed-2.1-pro/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/doubao-seed-2.1-turbo/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/doubao-seed-character/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/doubao-seed-evolving/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/ernie-4.5-turbo-128k/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/ernie-5.1/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/gemini-3.5-flash/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/gemini-3.6-flash/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/gemini-3.7-flash/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/gemini-3.8-flash/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/glm-4.5v/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/glm-4.6v-flash/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/glm-4.6v-flashx/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/glm-4.6v/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/glm-4.7-flash/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/glm-5.3-flash/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/glm-5.3/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/glm-5v-turbo/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/gpt-6-astra/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/gpt-6-luna/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/gpt-6.1-sol/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/gpt-live-1/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/hunyuan-a13b/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/hunyuan-embedding/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/hunyuan-role-latest/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/hunyuan-translation-lite/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/hunyuan-translation/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/kimi-k2.7-code/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/kimi-k3/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/minimax-m2.5/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/minimax-m2.7-highspeed/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/minimax-m2.7/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/minimax-m3/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/qwen-max/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/qwen3-max/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/qwen3.8-27b/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/qwen3.8-max/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/spark-x2.5/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/step-3.5-flash/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "models/tencent-hy-vision-1.5-instruct/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "need/ai-coding/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "need/china-usable/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "need/dev-credits/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "need/edu-identity/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "need/free-api/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "need/free-model/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "need/free-tier/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "need/free-tokens/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "need/no-card/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "need/student-only/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "plans/",
+        "anchors": [
+          {
+            "href": "../changes/#plans",
+            "text": "全部变化 →"
+          },
+          {
+            "href": "../changes/",
+            "text": "全部变化 →"
+          },
+          {
+            "href": "../changes/",
+            "text": "最近变化"
+          },
+          {
+            "href": "../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "plans/api/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "最近变化"
+          },
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "plans/coding/",
+        "anchors": [
+          {
+            "href": "../../changes/#plans",
+            "text": "全部变化 →"
+          },
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "status/",
+        "anchors": [
+          {
+            "href": "../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "student/",
+        "anchors": [
+          {
+            "href": "../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "vendor/",
+        "anchors": [
+          {
+            "href": "../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "vendor/ai360/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "vendor/aliyun/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "vendor/anthropic/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "vendor/aws/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "vendor/baichuan/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "vendor/baidu-ai-cloud/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "vendor/coze/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "vendor/cursor/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "vendor/deepseek/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "vendor/github/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "vendor/google/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "vendor/iflytek/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "vendor/microsoft/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "vendor/minimax/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "vendor/moonshot/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "vendor/notion/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "vendor/openai/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "vendor/replit/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "vendor/sensetime/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "vendor/siliconflow/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "vendor/stepfun/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "vendor/tencent-cloud/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "vendor/volcengine/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "vendor/windsurf/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      },
+      {
+        "route": "vendor/zhipu/",
+        "anchors": [
+          {
+            "href": "../../changes/",
+            "text": "变化雷达"
+          }
+        ]
+      }
+    ],
+    "renderCoreLines": [
+      "'<a class=\"rmore\" href=\"changes/\">' + escapeHtml(L.all) + ' →</a>' +",
+      "escapeHtml(L.all) + ' →</a></div>' +"
+    ],
+    "declarations": [
+      {
+        "file": "scripts/lib/changes.js",
+        "key": "CHANGES_WORDING.CHANGES_LABELS.all",
+        "value": "全部变化",
+        "guardedBy": "validate.js --strict 的 checkWordingContract()（与 index.html 的受控副本逐项比对）"
+      },
+      {
+        "file": "scripts/lib/plan-changes.js",
+        "key": "PLAN_CHANGES_WORDING.PLAN_CHANGES_LABELS.allChanges",
+        "value": "全部变化",
+        "guardedBy": "seo-selftest 七（三张措辞表同词）"
+      },
+      {
+        "file": "scripts/lib/plan-changes.js",
+        "key": "API_PLAN_CHANGES_WORDING.API_PLAN_CHANGES_LABELS.allChanges",
+        "value": "全部变化",
+        "guardedBy": "seo-selftest 七"
+      },
+      {
+        "file": "scripts/lib/plans-hub-page.js",
+        "key": "（字面量，无措辞键）",
+        "value": "全部变化 →",
+        "guardedBy": "seo-selftest 七 的「字面量登记」一条"
+      }
+    ]
+  },
+  "counts": {
+    "selftest:seo": {
+      "before": 69,
+      "after": 87,
+      "failed": 0
+    },
+    "verify:seo": {
+      "before": 11,
+      "after": 17,
+      "failed": 0
+    },
+    "seoCheckCodes": {
+      "before": 27,
+      "after": 28
+    },
+    "selftest:changes": {
+      "before": 119,
+      "after": 119,
+      "failed": 0
+    }
+  }
+}
