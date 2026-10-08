@@ -1,0 +1,252 @@
+{
+  "task": "vertical-note-coverage-v1",
+  "what": "从探针读数（未经改动的 T31 writing-mode-probe.cjs）独立复算两套口径的码，用于配对证据",
+  "probeInstruments": {
+    "dist": "dist-carrier",
+    "form": null,
+    "route": "need/free-api/",
+    "noteIndex": 0
+  },
+  "ratio": 0.85,
+  "carrier": "need/free-api/#0",
+  "rows": [
+    {
+      "viewport": 1440,
+      "dist": {
+        "writingMode": "horizontal-tb",
+        "vertical": false,
+        "boxWidth": 1380,
+        "contentBox": 1369,
+        "textWidthProxy": 1369,
+        "glyphRects": 8,
+        "lineCount": 2,
+        "widestLine": 1351.73,
+        "columnCount": 1,
+        "selfClip": 0,
+        "pageOverflow": 0,
+        "codes": []
+      },
+      "form": {
+        "writingMode": "vertical-rl",
+        "vertical": true,
+        "boxWidth": 1380,
+        "contentBox": 1369,
+        "textWidthProxy": 1369,
+        "glyphRects": 26,
+        "lineCount": 1,
+        "widestLine": 362.64,
+        "columnCount": 18,
+        "widestColumn": 84.03,
+        "inkUnionWidth": 362.64,
+        "inkUnionHeight": 84.03,
+        "selfClip": 0,
+        "pageOverflow": 0,
+        "column": 1380,
+        "ch70": 452.81,
+        "threshold": 1173,
+        "probeCodes": [],
+        "oldVerdict": [],
+        "newVerdict": [
+          "note-ink-narrow"
+        ],
+        "newBasis": {
+          "unitCount": 18,
+          "unitSpan": 362.64,
+          "inkScope": true
+        }
+      }
+    },
+    {
+      "viewport": 1600,
+      "dist": {
+        "writingMode": "horizontal-tb",
+        "vertical": false,
+        "boxWidth": 1380,
+        "contentBox": 1369,
+        "textWidthProxy": 1369,
+        "glyphRects": 8,
+        "lineCount": 2,
+        "widestLine": 1351.73,
+        "columnCount": 1,
+        "selfClip": 0,
+        "pageOverflow": 0,
+        "codes": []
+      },
+      "form": {
+        "writingMode": "vertical-rl",
+        "vertical": true,
+        "boxWidth": 1380,
+        "contentBox": 1369,
+        "textWidthProxy": 1369,
+        "glyphRects": 26,
+        "lineCount": 1,
+        "widestLine": 362.64,
+        "columnCount": 18,
+        "widestColumn": 84.03,
+        "inkUnionWidth": 362.64,
+        "inkUnionHeight": 84.03,
+        "selfClip": 0,
+        "pageOverflow": 0,
+        "column": 1380,
+        "ch70": 452.81,
+        "threshold": 1173,
+        "probeCodes": [],
+        "oldVerdict": [],
+        "newVerdict": [
+          "note-ink-narrow"
+        ],
+        "newBasis": {
+          "unitCount": 18,
+          "unitSpan": 362.64,
+          "inkScope": true
+        }
+      }
+    },
+    {
+      "viewport": 760,
+      "dist": {
+        "writingMode": "horizontal-tb",
+        "vertical": false,
+        "boxWidth": 728,
+        "contentBox": 717,
+        "textWidthProxy": 717,
+        "glyphRects": 8,
+        "lineCount": 2,
+        "widestLine": 711.55,
+        "columnCount": 1,
+        "selfClip": 0,
+        "pageOverflow": 0,
+        "codes": []
+      },
+      "form": {
+        "writingMode": "vertical-rl",
+        "vertical": true,
+        "boxWidth": 728,
+        "contentBox": 717,
+        "textWidthProxy": 717,
+        "glyphRects": 26,
+        "lineCount": 1,
+        "widestLine": 362.64,
+        "columnCount": 18,
+        "widestColumn": 84.03,
+        "inkUnionWidth": 362.64,
+        "inkUnionHeight": 84.03,
+        "selfClip": 0,
+        "pageOverflow": 0,
+        "column": 728,
+        "ch70": 452.81,
+        "threshold": 618.8,
+        "probeCodes": [],
+        "oldVerdict": [],
+        "newVerdict": [
+          "note-ink-narrow"
+        ],
+        "newBasis": {
+          "unitCount": 18,
+          "unitSpan": 362.64,
+          "inkScope": true
+        }
+      }
+    },
+    {
+      "viewport": 390,
+      "dist": {
+        "writingMode": "horizontal-tb",
+        "vertical": false,
+        "boxWidth": 358,
+        "contentBox": 347,
+        "textWidthProxy": 347,
+        "glyphRects": 11,
+        "lineCount": 5,
+        "widestLine": 345.28,
+        "columnCount": 1,
+        "selfClip": 0,
+        "pageOverflow": 0,
+        "codes": []
+      },
+      "form": {
+        "writingMode": "vertical-rl",
+        "vertical": true,
+        "boxWidth": 358,
+        "contentBox": 347,
+        "textWidthProxy": 347,
+        "glyphRects": 26,
+        "lineCount": 1,
+        "widestLine": 362.64,
+        "columnCount": 18,
+        "widestColumn": 84.03,
+        "inkUnionWidth": 362.64,
+        "inkUnionHeight": 84.03,
+        "selfClip": 20,
+        "pageOverflow": 0,
+        "column": 358,
+        "ch70": 452.81,
+        "threshold": 304.3,
+        "probeCodes": [
+          "note-clipped"
+        ],
+        "oldVerdict": [
+          "note-clipped"
+        ],
+        "newVerdict": [
+          "note-clipped"
+        ],
+        "newBasis": {
+          "unitCount": 18,
+          "unitSpan": 362.64,
+          "inkScope": false
+        }
+      }
+    },
+    {
+      "viewport": 360,
+      "dist": {
+        "writingMode": "horizontal-tb",
+        "vertical": false,
+        "boxWidth": 328,
+        "contentBox": 317,
+        "textWidthProxy": 317,
+        "glyphRects": 11,
+        "lineCount": 5,
+        "widestLine": 315.64,
+        "columnCount": 1,
+        "selfClip": 0,
+        "pageOverflow": 0,
+        "codes": []
+      },
+      "form": {
+        "writingMode": "vertical-rl",
+        "vertical": true,
+        "boxWidth": 328,
+        "contentBox": 317,
+        "textWidthProxy": 317,
+        "glyphRects": 26,
+        "lineCount": 1,
+        "widestLine": 362.64,
+        "columnCount": 18,
+        "widestColumn": 84.03,
+        "inkUnionWidth": 362.64,
+        "inkUnionHeight": 84.03,
+        "selfClip": 50,
+        "pageOverflow": 0,
+        "column": 328,
+        "ch70": 452.81,
+        "threshold": 278.8,
+        "probeCodes": [
+          "note-clipped"
+        ],
+        "oldVerdict": [
+          "note-clipped"
+        ],
+        "newVerdict": [
+          "note-clipped"
+        ],
+        "newBasis": {
+          "unitCount": 18,
+          "unitSpan": 362.64,
+          "inkScope": false
+        }
+      }
+    }
+  ]
+}

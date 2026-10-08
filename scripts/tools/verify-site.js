@@ -6382,10 +6382,15 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   //                可见的字形盒（width > 0 && height > 0）
   //   lines      = 这些 rect 按**垂直重叠**（重叠 > 两者较矮高度的 50%）归并成的行
   //   lineCount  = 行数 · widestLine = 最宽一行的字迹宽 · lines[] = 逐行 {width,left,right}
+  //   columns    = **竖排专用**：这些 rect 按**水平重叠**（重叠 > 两者较窄宽度的 50%）归并成的竖列
+  //   columnCount= 竖列数 · columnSpan = 竖列栈覆盖的**水平**范围 · columns[] = 逐列 {width,left,right}
+  //   inkCount / inkSpan / inkUnit = wideInkOf(note) 从上面两组量里**按 writing-mode 选出的那一组**
+  //                （② 与 ⑤ 都只读它；选轴的实现只有 wideInkOf 一处，量测侧把两组原始量都给出来）
   //
   // 判据是**并集**（不是替换）：旧口径一字不改，新口径叠上去。
   //   ① `note-narrow`      ：textWidth（内容盒代理量）< 0.85 × min(主数据区宽, 页面列宽) —— t7 起就有，**未改**；
-  //   ② `note-ink-narrow`  ：lineCount >= 2 且 widestLine < 0.85 × min(主数据区宽, 页面列宽) —— 本轮新增。
+  //   ② `note-ink-narrow`  ：inkCount >= 2 且 inkSpan < 0.85 × min(主数据区宽, 页面列宽) —— t14 立，
+  //                          **vertical-note-coverage-v1 起按 writing-mode 参数化**（横排按行、竖排按列；见下）。
   //
   // ⚠️ 为什么必须是并集（两份独立标定互证，读数见 teeth/_scratch/lines-*.json）：
   //   · ① 覆盖 **156 条**（`--dir=dist.baseline` 实测：156 条的盒宽全是 452.81 ⇒ ① 看得见全部；
@@ -6404,7 +6409,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   //   · 并集实测：dist.baseline = 156 条 / 48 页（漏判 0、误报 0）· dist = 0 条 · dist.synth-fixed = 0 条。
   //
   // ② 的三条不许动的细节（都经过独立标定）：
-  //   · 前置条件 `lineCount >= 2` **不许松**：去掉它，dist 上 **319 条**单行说明会被误报
+  //   · 前置条件 `inkCount >= 2` **不许松**：去掉它，dist 上 **319 条**单行说明会被误报
   //     （t19 / R3-2 复算：`rendered && !vertical && lineCount === 1 && widestLine < 0.85 × 列宽`
   //     在 @1440 与 @1600 都是 319 条；例「全部变化 →」字迹 61.64px < 0.85×1380 —— 短文本不是缺陷）；
   //   · 也**不许**加码到 `>= 3`：multicol 形态只有 2 行，提到 3 命中数直接掉到 0；
@@ -6416,8 +6421,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   //   不是单列宽 447px —— 因为多列里不同列的文字片段共享同一垂直带，按垂直覆盖归并时被并成「一行」。
   //   这正是想要的语义：3 列只用了 2 列、右侧 1/3 空白（缺陷原型）⇒ 912.63 < 1173 ⇒ 咬中；
   //   若字迹铺满整盒（很多细列排满全宽、没有大片空白）⇒ 放行 —— 那种形态**没有**「右边半截空白」的观感。
-  //   归并容差目前实现为「垂直覆盖 > 两者较矮高度的 50%」；极小 `column-gap` 或竖排时需要按连续字迹段
-  //   细分（竖排已显式不判 ②，见下）。
+  //   归并容差实现为「轴上的覆盖 > 两者较矮/较窄的 50%」；轴按 writing-mode 选（见下一段）。
   //   适用性（t19 / R3-1 起）：**物理前置条件** —— min(主数据区宽, 页面列宽) > 现场换算的 70ch
   //   （1440/1600/760 判、360 不判）。不再有「只在桌面档（1440/1600）」的视口白名单：
   //   760 列 676–728px > 452.81px，70ch 窄柱在 760 物理上完全可以发生（R3-1 的 blocker）。
@@ -6430,10 +6434,25 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   //   **本来就不渲染**（整块高度 0）。所以规则写成「**已渲染**（border-box 有宽有高）且文本非空
   //   且零可见字形盒」—— 未渲染的说明单独登记为 unrendered，既不算窄柱也不算藏字。
   //
-  // 竖排（writing-mode: vertical-* / sideways-*）：竖排的「行」是**竖列**，横排意义的行宽在这里
-  //   没有对应量 ⇒ ② **显式不判**（metrics 里标 vertical=true），由 ① 的内容盒量兜住。
-  //   实测两个形态都判对：`writing-mode: vertical-rl; height: 5.6rem`（盒宽被内容反推成 ~347px）
-  //   ⇒ note-narrow；`… width: 100%; height: 5.6rem`（盒宽锁满宽、正文竖成一根细条）⇒ 不判。
+  // 竖排（writing-mode: vertical-* / sideways-*）——**vertical-note-coverage-v1 起按列判**（闭合 T31 的 P1）：
+  //   · T31 的实测（`research/_raw/secondary-page-layout-unification/verify/T31-WRITING-MODE.md`、
+  //     `verify/t31/probe-form.json`）：形态 `.snote { writing-mode: vertical-rl; width: 100%;
+  //     height: 5.6rem; overflow: hidden; }` 下，**Range 取到的是列片段**（24 个 16px 宽、87.3px 高的
+  //     竖列），盒与内容盒恒满宽（1380px），字迹并集 342.25 × 87.3 ⇒ **占列宽的 24.8%**。
+  //   · 为什么旧口径必然静默（两条独立原因，缺一不可）：
+  //     ① 量的是内容盒代理量 ⇒ 盒满宽，看不见（那些条 textWidth = 1380）；
+  //     ② 按**垂直**重叠归并时，24 个竖列共享同一条垂直带 ⇒ 被并成「1 行」（实测 lineCount = 1）⇒
+  //        `lineCount >= 2` 前置条件不成立。**即使删掉「竖排不判」这个显式豁免，② 照样不出码**
+  //        —— 这就是为什么修法不能只是删豁免，必须**换轴**。
+  //   · 现在：竖排按**水平**重叠归并成竖列（`columns`），判的量换成「竖列栈覆盖的水平范围」
+  //     （`columnSpan`，实测 342.25px），前置条件换成「竖列数 ≥ 2」（实测 17–24 列）。同一形态在
+  //     @1440/@1600/@760 全部咬中（342.25 < 1173 / 618.8）；@360 列宽 328 < 70ch ⇒ 物理前置条件
+  //     不成立、② 照旧不判（那一档由既有的 `note-clipped` 咬住 19px 自裁切）。
+  //   · **这不是把竖排一律判红**：判据仍然是量出来的。一个真有 ≥73 列（≈366 字，现场换算 1173px ÷
+  //     16px）的竖排说明铺满了列宽 ⇒ 放行；只有 1 列（无排版证据，等价于横排里的单行）⇒ 放行。
+  //     两条都在判据自检里成对钉住（见「竖排判据的适用范围自检」）。
+  //   · 另一个历史形态 `writing-mode: vertical-rl; height: 5.6rem`（盒宽被内容反推成 ~347px）
+  //     仍然由 ① `note-narrow` 咬住；现在 ② 也会同时出码（同一条说明的两条独立证据）。
   //
   // ===== 本版**不**承诺的边界（写在这里，免得下一轮再当 blocker 提）=====
   // · 绘制类遮盖**不在本版承诺内**：`clip-path`、`mask*`、不透明覆盖层（`::after` 盖住右侧 70%）。
@@ -6530,6 +6549,29 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
 
   const wideRound = n => Math.round(n * 100) / 100;
   const wideCodes = problems => problems.map(problem => problem.code);
+  /**
+   * ★ §22c 判据量的**唯一**取用点（vertical-note-coverage-v1 起按 writing-mode 参数化）。
+   *
+   * ② `note-ink-narrow` 与 ⑤ `note-intro-long` 都只读这里选出来的**一对**量：
+   *   · 横排（horizontal-tb）：轴 = 行 —— count = lineCount · span = widestLine（最宽一行的字迹宽）
+   *   · 竖排（vertical-* / sideways-*）：轴 = 列 —— count = columnCount · span = columnSpan（列栈水平范围）
+   * 两个轴判的是**同一件事**：字迹在**水平轴**上铺到哪里（不是「单列有多宽」——
+   * 竖排单列恒 ≈ 一个字宽 16px，拿它当判据会把任何竖排都判红）。
+   *
+   * 为什么必须换轴：竖排下 Range.getClientRects() 取到的是**列片段**，24 个竖列共享同一垂直带
+   * ⇒ 按行归并只会得到 1 行（T31 实测 lineCount = 1）⇒ 「行数 ≥ 2」永远不成立 ⇒ 判据静默。
+   * 实测形态与逐档读数：`research/_raw/secondary-page-layout-unification/verify/T31-WRITING-MODE.md`。
+   *
+   * fail-closed：「量不到尺子」按 0 处理（合成几何、外部注入的 geometry 都可能缺这两个键）——
+   * 与 `ch70` 的前置条件同一种口径：宁可多判，也不让「量不到」变成静默跳过。
+   */
+  const wideInkOf = note => {
+    const vertical = Boolean(note.vertical);
+    const raw = vertical
+      ? { unit: 'column', name: '列', count: note.columnCount, span: note.columnSpan }
+      : { unit: 'line', name: '行', count: note.lineCount, span: note.widestLine };
+    return { vertical, unit: raw.unit, name: raw.name, count: Number(raw.count) || 0, span: Number(raw.span) || 0 };
+  };
   /** 条级定位：route#index（index = <main> 内文档序，与 geometry/truth-401.json 同一口径）。 */
   const wideNoteKey = (route, index) => `${route}#${index}`;
   /** 表头对齐用：CJK 记 2 列，免得版式上的「看起来齐」变成读数上的错觉。 */
@@ -6711,29 +6753,50 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         return out.replace(/\\s+/g, ' ').trim();
       };
       /**
-       * 逐行归并：rect 按 top 排序，落进「垂直重叠 > 两者较矮高度 50%」的已有行，否则新开一行。
-       * 行 = 一条排版行（横排时），逐行字迹宽就是这个元素**实际排版出来的**结果。
+       * 归并成排版单元 —— **轴按 writing-mode 选**（vertical-note-coverage-v1 参数化）：
+       *   · 横排（vertical=false）：按 top 排序，落进「垂直重叠 > 两者较矮高度 50%」的已有**行**；
+       *   · 竖排（vertical=true ）：按 left 排序，落进「水平重叠 > 两者较窄宽度 50%」的已有**列**。
+       * 两轴逐字同构（排序键、重叠量、基准、扩张方式一一对应），所以横行那一路的读数与参数化之前
+       * **逐位相同**（标定不变：dist 319 条单行说明仍然只有 1 行）。
+       *
+       * ⚠️ 竖排**必须换轴**，不能只是「照样按行归并」：Range 在竖排下取到的是列片段，
+       *    24 个竖列共享同一垂直带 ⇒ 按行归并只会得到 1 行（T31 实测 lineCount = 1），
+       *    「前置条件 ≥ 2」永远不成立 ⇒ 判据静默。现场读数见 T31-WRITING-MODE.md §3.1。
+       *
+       * 返回 [{left,right,width}]：width = 该单元覆盖的**水平**范围（横排 = 这一行有多宽；
+       * 竖排 = 这一列占多宽，恒等于单列宽 ≈ 一个字宽）。竖排的判据量不是单列宽，而是**列栈的水平范围**
+       * （见下方 columnSpan）—— 那才是「字迹在横向铺到哪里」在竖排下的对应量。
        */
-      const mergeLines = rects => {
-        const sorted = rects.slice().sort((a, b) => a.top - b.top || a.left - b.left);
-        const lines = [];
+      const mergeAxis = (rects, vertical) => {
+        const sorted = rects.slice().sort(vertical
+          ? (a, b) => a.left - b.left || a.top - b.top
+          : (a, b) => a.top - b.top || a.left - b.left);
+        const units = [];
         for (const rect of sorted) {
           let hit = null;
-          for (const line of lines) {
-            const overlap = Math.min(line.bottom, rect.bottom) - Math.max(line.top, rect.top);
-            if (overlap > 0.5 * Math.min(line.height, rect.height)) { hit = line; break; }
+          for (const unit of units) {
+            const overlap = vertical
+              ? Math.min(unit.right, rect.right) - Math.max(unit.left, rect.left)
+              : Math.min(unit.bottom, rect.bottom) - Math.max(unit.top, rect.top);
+            const basis = vertical ? Math.min(unit.width, rect.width) : Math.min(unit.height, rect.height);
+            if (overlap > 0.5 * basis) { hit = unit; break; }
           }
           if (hit) {
             hit.left = Math.min(hit.left, rect.left); hit.right = Math.max(hit.right, rect.right);
             hit.top = Math.min(hit.top, rect.top); hit.bottom = Math.max(hit.bottom, rect.bottom);
-            hit.height = Math.max(hit.height, rect.height);
+            hit.width = Math.max(hit.width, rect.width); hit.height = Math.max(hit.height, rect.height);
           } else {
-            lines.push({ left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, height: rect.height });
+            units.push({ left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom,
+              width: rect.width, height: rect.height });
           }
         }
-        lines.sort((a, b) => a.top - b.top || a.left - b.left);
-        return lines.map(line => ({ left: round(line.left), right: round(line.right), width: round(line.right - line.left) }));
+        units.sort(vertical
+          ? (a, b) => a.left - b.left || a.top - b.top
+          : (a, b) => a.top - b.top || a.left - b.left);
+        return units.map(unit => ({ left: round(unit.left), right: round(unit.right), width: round(unit.right - unit.left) }));
       };
+      const mergeLines = rects => mergeAxis(rects, false);
+      const mergeColumns = rects => mergeAxis(rects, true);
       /** Range 并集：包住元素下全部文本节点，取 getClientRects() 的并集（诊断量，不再作判据） */
       const inkOf = el => {
         const rects = glyphRectsOf(el);
@@ -6799,13 +6862,23 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
           const textWidth = widths.length
             ? Math.min.apply(null, widths)
             : (contentBox > 0 ? contentBox : noteBox.width);
-          // 判据量：逐行字迹
+          // 判据量：逐行字迹（横排）/ 逐列字迹（竖排）—— 两轴同构，见 mergeAxis 的注释
           const glyphRects = glyphRectsOf(el);
           const lines = mergeLines(glyphRects);
           const visibleText = visibleTextOf(el);
           // t24 / T22-F1：原始文本（不排除 <noscript>）用来判定「文字是不是全在 <noscript> 里」
           const rawText = rawTextOf(el);
           const writingMode = cs.writingMode || 'horizontal-tb';
+          const vertical = /vertical|sideways/.test(writingMode);
+          // 竖排只有一条路会用到 columns（横排不算这一组：省掉一次纯冗余的归并，读数里 columns 为 []）
+          const columns = vertical ? mergeColumns(glyphRects) : [];
+          // ★ 竖排的判据量 = **列栈覆盖的水平范围**（columnSpan）：竖排下「字迹在横向铺到哪里」的
+          //   对应量。单列宽 ≈ 一个字宽（T31 实测恒 16px）不能当判据 —— 拿它判会把任何竖排都判红。
+          //   ⚠️ 轴的**选取**只在 wideInkOf() 一处（横排读 lineCount/widestLine、竖排读 columnCount/columnSpan）。
+          const columnSpan = columns.length
+            ? round(columns.reduce((max, column) => Math.max(max, column.right), 0)
+              - columns.reduce((min, column) => Math.min(min, column.left), Infinity))
+            : 0;
           return {
             index: index,
             depth: (() => { let d = 0, p = el; while (p && p !== main) { p = p.parentElement; d++; } return d; })(),
@@ -6821,11 +6894,15 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
             // 已渲染 = border-box 有宽有高。【noscript】说明整块高度为 0 ⇒ 未渲染，不判窄柱/藏字。
             rendered: noteBox.width > 0 && noteBox.height > 0,
             writingMode: writingMode,
-            vertical: /vertical|sideways/.test(writingMode),
+            vertical: vertical,
             glyphRects: glyphRects.length,
             lineCount: lines.length,
             widestLine: lines.length ? lines.reduce((max, line) => Math.max(max, line.width), 0) : 0,
             lines: lines,
+            // 竖排专用（横排为 [] / 0）：逐列归并的列数与列栈水平范围
+            columns: columns,
+            columnCount: columns.length,
+            columnSpan: vertical ? columnSpan : 0,
             contentBox: round(contentBox),
             // 现场换算的 70ch（物理前置条件的尺子；见 ch70Of 与 wideProblems 的 ②）
             ch70: ch70,
@@ -6918,8 +6995,13 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       const introSet = Array.isArray(geometry.introIndexes) ? geometry.introIndexes : [];
       for (const note of geometry.notes) {
         const where = wideNoteKey(meta.route, note.index);
+        // 判据量的轴（横排 = 行 / 竖排 = 列）—— 唯一取用点是 wideInkOf，② 与 ⑤ 共用同一对读数。
+        const ink = wideInkOf(note);
         const facts = `盒宽 ${wideRound(note.box.width)}px · 内容盒 ${wideRound(note.contentBox)}px · 行 ${note.lineCount} 行`
-          + `（最宽一行 ${wideRound(note.widestLine)}px${note.vertical ? ' · 竖排' : ''}）`
+          + `（最宽一行 ${wideRound(note.widestLine)}px）`
+          + (note.vertical
+            ? ` · **竖排**（${note.writingMode}）：列 ${note.columnCount} 列（列栈水平范围 ${wideRound(note.columnSpan)}px）`
+            : '')
           + ` · 字形盒 ${note.glyphRects} 个 · 列宽 ${wideRound(column)}px · 阈值 ${wideRound(threshold)}px`
           + `（主数据区 ${geometry.regionSel || '<main>'} ${wideRound(region.width)}px / 页面列 ${wideRound(main.width)}px）`;
         if (!note.rendered) note.unrendered = true;
@@ -6937,10 +7019,13 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
           push('note-narrow', `${where} 有字区域宽（内容盒代理量）${wideRound(note.textWidth)}px < ${WIDE_NOTE_RATIO} × 列宽`
             + `（承载文本块 ${note.bearingCount} 个${note.textFallback ? ' · textFallback 回落' : ''}）—— ${facts}`, note.index, 'text-width');
         }
-        // ② 新口径（t14；作用域 t19 起改为物理前置条件）：**逐行字迹**。盒子/内容盒可能都是满宽的
-        //    （grid / multicol / float / flex / 匿名盒…），但排版出来的行铺不开 ⇒ 这里咬。
-        //    前置条件 lineCount ≥ 2 不许松（去掉它 dist 上会误报 319 条单行说明）；也不许提到 ≥3
-        //    （multicol 只有 2 行）。竖排：竖排的「行」是竖列 ⇒ 显式不判（由 ① 的内容盒量兜住）。
+        // ② 新口径（t14 立；作用域 t19 起改为物理前置条件；**轴** vertical-note-coverage-v1 起参数化）：
+        //    「字迹在**水平轴**上铺到哪里」—— 盒子/内容盒可能都是满宽的（grid / multicol / float /
+        //    flex / 匿名盒…，以及竖排），但排版结果铺不开 ⇒ 这里咬。
+        //    前置条件 `ink.count ≥ 2` 不许松（去掉它 dist 上会误报 319 条单行说明）；也不许提到 ≥3
+        //    （multicol 只有 2 行）。
+        //    **竖排按列**：count = 列数、span = 列栈水平范围（T31 的 P1 就是在这里闭合的；
+        //    旧口径「竖排显式不判」即使删掉豁免也救不了 —— 按行归并时竖排恒为 1 行，前置条件不成立）。
         //    ⚠️ 作用域 = 物理前置条件（R3-1）：`column > note.ch70`（现场换算的 70ch，见上方注释），
         //    不再有「只判 1440/1600」的视口白名单 —— 760 档列 676–728 > 452.81 ⇒ 判
         //    （这正是 R3-1 的复现形状：把 grid 规则包进 @media (max-width:760px) 以前整轮 EXIT=0），
@@ -6949,10 +7034,14 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         //    否则「无盒 ⇒ 整类免判」会变成新的放行面。
         const ch70 = Number(note.ch70) > 0 ? Number(note.ch70) : 0;
         const inkScope = column > ch70 + WIDE_TOL;
-        if ((note.rendered || note.glyphRects > 0) && !note.vertical && inkScope
-          && note.lineCount >= 2 && note.widestLine < threshold - 0.01) {
-          push('note-ink-narrow', `${where} 逐行字迹：最宽一行 ${wideRound(note.widestLine)}px < ${WIDE_NOTE_RATIO} × 列宽`
-            + ` —— ${facts}`, note.index, 'line');
+        if ((note.rendered || note.glyphRects > 0) && inkScope
+          && ink.count >= 2 && ink.span < threshold - 0.01) {
+          push('note-ink-narrow', `${where} 逐${ink.name}字迹：`
+            + (ink.vertical
+              ? `竖列栈水平铺开 ${wideRound(ink.span)}px（${ink.count} 列）`
+              : `最宽一行 ${wideRound(ink.span)}px`)
+            + ` < ${WIDE_NOTE_RATIO} × 列宽`
+            + ` —— ${facts}`, note.index, ink.unit);
         }
         // ③ 藏字：文本非空、**已渲染**，却一个可见字形盒都没有（正文被交给 ::before / font-size:0 去画的形状）。
         //    未渲染的说明（<noscript> 提示：整块高度 0）不判 —— 它既不是窄柱也不是藏字。
@@ -6992,18 +7081,22 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         }
         // ⑤ 首屏说明过长（secondary-page-content-simplification）。
         //    只判 **intro 区**（首个数据区之前的说明），上限 2 行。
-        //    前置条件 `lineCount >= 2` 是**有意的**：单行说明恒 ≤ 上限，
+        //    前置条件 `ink.count >= 2` 是**有意的**：单行说明恒 ≤ 上限，
         //    拿它去判只会让 detail 里多一堆噪声；而「1 行变 3 行」必然经过 2 行。
+        //    **轴同样按 writing-mode 参数化**（vertical-note-coverage-v1）：竖排下「行」= 竖列，
+        //    横排的行数在这里恒为 1（见 wideInkOf）⇒ 一条 139 字的竖排说明会被当成「1 行」而漏判；
+        //    改成读 ink.count 之后，那条是 24 列 ⇒ 在 intro 区里会与 ② 一起咬中。
         //    未渲染的说明不判（它会先被 ④ 咬住，两条码不该对同一件事重复报）。
         //    ⚠️ 作用域 = **阅读列宽达到桌面档**（物理前置条件，见 WIDE_INTRO_MIN_COLUMN）。
         //    第一版漏了这条，于是 @360 上 17 个**本轮没改过**的页面被判红 ——
         //    窄屏折行是响应式排版的正常行为，不是缺陷。
         if (boxed && column >= WIDE_INTRO_MIN_COLUMN && introSet.includes(note.index)
-          && note.lineCount > WIDE_INTRO_MAX_LINES) {
-          push('note-intro-long', `${where} 首屏说明 ${note.lineCount} 行 > 上限 ${WIDE_INTRO_MAX_LINES} 行`
+          && ink.count > WIDE_INTRO_MAX_LINES) {
+          push('note-intro-long', `${where} 首屏说明 ${ink.count} ${ink.name} > 上限 ${WIDE_INTRO_MAX_LINES} ${ink.name}`
             + `（${note.textLength} 字 · 首个数据区之前的说明属于「首屏」；`
             + `分类判据与字段模型应进维护文档，见 docs/DESIGN-RULES.md 的口径归档）`
             + ` —— 盒宽 ${wideRound(note.box.width)}px · 最宽一行 ${wideRound(note.widestLine)}px`
+            + (note.vertical ? ` · **竖排**：列 ${note.columnCount} 列 / 列栈水平范围 ${wideRound(note.columnSpan)}px` : '')
             + ` · 列宽 ${wideRound(column)}px（前置条件 ≥ ${WIDE_INTRO_MIN_COLUMN}px）`, note.index, 'intro-lines');
         }
       }
@@ -7210,6 +7303,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
             byIndex.get(problem.index).push(problem.code);
           }
           geometry.notes.forEach((note, index) => {
+            // 这一条说明**实际被判的那一对量**（横排 = 行 / 竖排 = 列），与 wideProblems 同一处取用。
+            const ink = wideInkOf(note);
             rows.push({
               route: meta.route,
               index: index,
@@ -7232,6 +7327,16 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
               lineCount: note.lineCount,
               widestLine: note.widestLine,
               lines: note.lines,
+              // vertical-note-coverage-v1：竖排的判据量（列数 / 列栈水平范围）也逐条进容器 ——
+              // 否则外部只看得到「lineCount 1 / widestLine 342.25」这种按行归并的读数，
+              // 没法独立复核「竖排为什么被判窄」。
+              columnCount: note.columnCount,
+              columnSpan: note.columnSpan,
+              columns: note.columns,
+              // 轴已选好的那一对量（横排 = 行 / 竖排 = 列）—— 选轴只在 wideInkOf 一处实现。
+              inkUnit: ink.unit,
+              inkCount: ink.count,
+              inkSpan: ink.span,
               glyphRects: note.glyphRects,
               textLength: note.textLength,
               // t24 / T22-F1：条级容器里也要带上这两个量，否则「<noscript> 之外的未渲染说明必须为 0」
@@ -7294,6 +7399,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
           textFallback: rows.filter(row => row.textFallback).length,
           unrendered: rows.filter(row => row.unrendered).length,
           vertical: rows.filter(row => row.vertical).length,
+          // vertical-note-coverage-v1：竖排里「有列证据」（列数 ≥ 2、② 真的按列判过）的条数 ——
+          // 与 vertical 分开报，免得把「竖排 0 条」与「竖排若干条但都只有 1 列」混成一句话。
+          verticalColumnEvidence: rows.filter(row => row.vertical && row.columnCount >= 2).length,
           lineEvidence: rows.filter(row => row.lineCount >= 2).length,
           overflow: wideMeta.map(meta => meta.route)
             .filter(route => wideProblemsAt.get(`${width}|${route}`).some(problem => problem.code === `page-overflow@${width}`))
@@ -7332,7 +7440,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         }
       }
       const wideExplainRow = row => `${wideNoteKey(row.route, row.index)} 内容盒 ${row.textWidth}px / 盒 ${row.width}px / 列 ${row.column}px`
-        + ` · 行 ${row.lineCount}（最宽 ${row.widestLine}px${row.vertical ? ' · 竖排' : ''}）· 字形盒 ${row.glyphRects}`
+        + ` · 行 ${row.lineCount}（最宽 ${row.widestLine}px）`
+        + (row.vertical ? ` · **竖排** 列 ${row.columnCount}（列栈 ${row.columnSpan}px）` : '')
+        + ` · 判据用${row.inkUnit === 'column' ? '列' : '行'}：${row.inkCount} / ${row.inkSpan}px · 字形盒 ${row.glyphRects}`
         + ` · 主数据区 ${row.regionSel || '<main>'} · codes [${row.codes.join(',')}]${row.text ? ` · 「${row.text.slice(0, 16)}」` : ''}`;
       const wideSamples = (list, limit = 5) => list.slice(0, limit).join(' ')
         + (list.length > limit ? ` …（还有 ${list.length - limit}）` : '');
@@ -7361,13 +7471,15 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       for (const width of WIDE_DESKTOP_VIEWPORTS) {
         const summary = wideSummary[width];
         const bad = [...summary.union, ...summary.hiddenText, ...summary.unrenderedText, ...summary.axis, ...summary.clipped, ...summary.introLong];
-        check(`§22c @${width} 逐条页面级说明：旧口径（内容盒 ≥ ${WIDE_NOTE_RATIO}×列宽）+ 新口径（逐行字迹 ≥ ${WIDE_NOTE_RATIO}×列宽，行数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ ${WIDE_INTRO_MAX_LINES} 行`,
+        check(`§22c @${width} 逐条页面级说明：旧口径（内容盒 ≥ ${WIDE_NOTE_RATIO}×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ ${WIDE_NOTE_RATIO}×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + 首屏说明 ≤ ${WIDE_INTRO_MAX_LINES} 行`,
           bad.length === 0,
           `全站 ${wideMeta.length} 页 / 逐条判 ${summary.rows} 条（有说明的页 ${wideNotePages.length} · 零说明的页 ${wideNoNotePages.length} 标注跳过 · 未渲染 ${summary.unrendered} 条：<noscript> ${summary.unrenderedNoscript} + note-unrendered ${summary.unrenderedText.length}）`
           + ` · note-narrow ${summary.narrow.length}（落在 ${summary.narrowRoutes.length} 页） · note-ink-narrow ${summary.inkNarrow.length}（${summary.inkNarrowRoutes.length} 页）`
           + ` · 并集 ${summary.union.length} 条 / ${summary.unionRoutes.length} 页 · 藏字 ${summary.hiddenText.length} · 不同轴 ${summary.axis.length} · 裁切 ${summary.clipped.length}`
           + ` · 首屏说明过长 ${summary.introLong.length} 条 / ${summary.introLongRoutes.length} 页`
-          + ` · 多行说明（有行证据）${summary.lineEvidence} 条 · 竖排 ${summary.vertical} 条 · textFallback 回落 ${summary.textFallback} 条`
+          + ` · 多行说明（有行证据）${summary.lineEvidence} 条 · 竖排 ${summary.vertical} 条`
+          + `（其中列证据 ≥ 2 列、即 ② 按列判的：${summary.verticalColumnEvidence} 条）`
+          + ` · textFallback 回落 ${summary.textFallback} 条`
           + (bad.length ? ` · 命中样例：${bad.slice(0, 4).map(wideExplainRow).join('；')}` : ''));
         check(`§22c @${width} 全站 ${wideRoutes.length} 页都没有横向溢出`,
           summary.overflow.length === 0,
@@ -7511,7 +7623,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         + ` / 70ch 现场 ${scope.ch70.length ? scope.ch70.join('/') : '（无量）'} ⇒ ${scope.inkScope ? '判' : '不判'} ②`).join(' · ');
       for (const width of WIDE_SAMPLE_VIEWPORTS) {
         const hits = wideSampleProblems.filter(problem => problem.width === width);
-        check(`§22c @${width} 样本集 ${wideSampleRoutes.length} 页（同一份判据；逐行字迹按**物理前置条件**判：现场列宽 > 70ch 时判）`,
+        check(`§22c @${width} 样本集 ${wideSampleRoutes.length} 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）`,
           hits.length === 0,
           (hits.length
             ? `${hits.length} 条违规码 [${hits.map(problem => `${wideNoteKey(problem.route, problem.index === undefined ? '?' : problem.index)} ${problem.code}`).join(', ')}]：`
@@ -7584,7 +7696,24 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         { id: 'M14', route: 'need/student-only/', width: WIDE_DESKTOP, expect: 'note-intro-long', target: 'intro',
           filler: '（M14 注入的填充正文，用来把首屏说明撑成更多行，其余量一律不动。）'.repeat(6),
           what: '首屏说明被写长（DOM 注入填充正文）：盒宽 / 内容盒 / 同轴 / 裁切全都不动，'
-            + '只有「行数」越过上限 ⇒ 必须由 note-intro-long 咬住（本轮之前的产物在 1440 档就有多页命中）' }
+            + '只有「行数」越过上限 ⇒ 必须由 note-intro-long 咬住（本轮之前的产物在 1440 档就有多页命中）' },
+        // ---- vertical-note-coverage-v1 新增：把「竖排」这条覆盖不对称钉成常驻牙（闭合 T31 的 P1）----
+        //   形态逐字取 T31 现场用的那一份（`verify/t31/mk-form-scratch.cjs` 的 FORM_CSS，
+        //   与 adversary 的 `coverage-asymmetry-writing-mode.json` form.injection 同字节）。
+        //   为什么必须是这条牙：它是**唯一**能让「盒/内容盒满宽 + 按行归并只有 1 行」同时成立的形态，
+        //   也就是旧口径两条判据（① 内容盒、② 逐行字迹）同时静默的那一类。
+        //   ⚠️ 靶页换过一次（如实记）：T31 的原靶页 `category/agent/` 自
+        //   `secondary-page-intro-changes-v1` 起**一条 .snote 都没有**了（目录页首屏说明整层删除）——
+        //   拿它当靶页等于「变异没有承重面」（实测：注入后 noteCount 0、一条码都不出）。
+        //   现在的靶页 `need/free-api/` 是别名页：它的那 1 条导航更正说明由 ③b 断言「恰好 1 条」，
+        //   所以靶页的承重面是**结构性**的（不随数据漂移），盒宽 1380px 与 T31 原靶页逐位相同。
+        { id: 'M15', route: 'need/free-api/', width: WIDE_DESKTOP, expect: 'note-ink-narrow', target: 'extend',
+          expectVertical: true,
+          rule: '.snote { writing-mode: vertical-rl; width: 100%; height: 5.6rem; overflow: hidden; }',
+          what: 'T31 的 P1 原型：writing-mode: vertical-rl + width:100% + height:5.6rem + overflow:hidden ——'
+            + '盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /'
+            + '24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；'
+            + '轮 6 口径下 1440/1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）' }
       );
 
       metrics.layoutMutationCodes = {};
@@ -7687,6 +7816,39 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
             `note-narrow ${narrowKeys.length} 条（0 = 盒子/内容盒满宽，旧口径确实看不见）· note-ink-narrow ${inkKeys.length} 条 [${inkKeys.join(', ')}]`
             + ` · 这些条的行证据：${rowsOfInk.map(note => `#${note.index} ${note.lineCount} 行 / 最宽 ${wideRound(note.widestLine)}px / 内容盒 ${wideRound(note.textWidth)}px`).join(' · ') || '（无）'}`);
         }
+        // M15：竖排的**承重证明**（vertical-note-coverage-v1）——
+        //   被咬的条必须真的是竖排、且判据用的是**列**（列数 ≥ 2 / 列栈水平范围 < 阈值）；
+        //   同时把「旧口径为什么必然静默」也钉住：这些条**按行归并只有 1 行**（前置条件不成立），
+        //   盒宽与内容盒都还是满宽的（① 也看不见）。三条同时成立才证明换轴是承重的，而不是换了个说法。
+        if (mutation.expectVertical) {
+          const inkKeys = (wideMutationExtra.get(mutation.id) || {}).inkNarrowKeys || [];
+          const rowsOfInk = geometry ? geometry.notes.filter(note => inkKeys.includes(wideNoteKey(mutation.route, note.index))) : [];
+          const column = geometry ? Math.min(geometry.region.width, geometry.main.width) : 0;
+          const before = wideGeometry.get(`${mutation.width}|${mutation.route}`);
+          const allVertical = rowsOfInk.length > 0 && rowsOfInk.every(note => note.vertical);
+          const columnEvidence = rowsOfInk.length > 0 && rowsOfInk.every(note => note.columnCount >= 2
+            && note.columnSpan > 0 && note.columnSpan < WIDE_NOTE_RATIO * column - 0.01);
+          // 旧口径静默的两条独立原因（都必须是「成立」才算承重）：
+          const lineEvidenceMissing = rowsOfInk.length > 0 && rowsOfInk.every(note => note.lineCount <= 1);
+          const boxesStayedWide = rowsOfInk.length > 0
+            && rowsOfInk.every(note => note.textWidth >= WIDE_NOTE_RATIO * column - 0.01)
+            && narrowKeys.length === 0;
+          const boxUnchanged = Boolean(before && before.notes.length === geometry.notes.length)
+            && rowsOfInk.every(note => {
+              const prior = before.notes[note.index];
+              return prior && Math.abs(prior.box.width - note.box.width) <= WIDE_TOL
+                && Math.abs(prior.box.left - note.box.left) <= WIDE_TOL;
+            });
+          check(`§22c ${mutation.id} 承重证明：咬中的条是**竖排按列判**（列数 ≥ 2 · 列栈水平范围 < ${WIDE_NOTE_RATIO}×列宽），`
+            + `且旧口径两条判据在它们身上必然静默（按行归并 ≤ 1 行 + 盒/内容盒满宽，盒宽与注入前逐条相同）`,
+            inkKeys.length > 0 && allVertical && columnEvidence && lineEvidenceMissing && boxesStayedWide && boxUnchanged,
+            `note-ink-narrow ${inkKeys.length} 条 [${inkKeys.join(', ')}]`
+            + ` · 逐条：${rowsOfInk.map(note => `#${note.index} ${note.writingMode} 列 ${note.columnCount} / 列栈 ${wideRound(note.columnSpan)}px`
+              + ` / 行 ${note.lineCount}（最宽 ${wideRound(note.widestLine)}px） / 内容盒 ${wideRound(note.textWidth)}px`
+              + ` / 字形盒 ${note.glyphRects}`).join(' · ') || '（无）'}`
+            + ` · 列宽 ${wideRound(column)}px · 阈值 ${wideRound(WIDE_NOTE_RATIO * column)}px`
+            + ` · note-narrow ${narrowKeys.length} 条（0 = ① 也看不见）· 盒宽与注入前一致 ${boxUnchanged}`);
+        }
         // M12：藏字形态 —— 文本非空、已渲染、零字形盒；且这不是靠窄判据咬的。
         if (mutation.expectNoGlyph) {
           const first = geometry && geometry.notes.length ? geometry.notes[0] : null;
@@ -7743,19 +7905,56 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
             : '页面没打开');
       }
 
-      // ---- M8/M9a/M9b/M10 的正对照：**不注入**时，四个靶页在对应档位没有任何 note-narrow ----
+      // ---- M8/M9a/M9b/M10/M15 的正对照：**不注入**时，五个靶页在对应档位没有任何违规码 ----
       const wideNoInjectionControls = [
         { id: 'M8', route: 'need/student-only/', width: WIDE_DESKTOP },
         { id: 'M9a', route: 'docs/data/', width: WIDE_DESKTOP },
         { id: 'M9b', route: 'changes/', width: WIDE_DESKTOP },
-        { id: 'M10', route: 'need/student-only/', width: WIDE_WIDE }
+        { id: 'M10', route: 'need/student-only/', width: WIDE_WIDE },
+        // M15 的正对照（vertical-note-coverage-v1）：同一页不注入竖排 ⇒ 直接量它自己的读数 ——
+        // 「该页说明一条都不是竖排 + 0 违规码」同时证明新判据不是「凡是说明就判窄」。
+        { id: 'M15', route: 'need/free-api/', width: WIDE_DESKTOP }
       ].map(control => {
         const problems = wideProblemsAt.get(`${control.width}|${control.route}`);
-        return { ...control, codes: wideCodes(problems), narrow: problems.filter(problem => problem.code === 'note-narrow').length };
+        const geometry = wideGeometry.get(`${control.width}|${control.route}`);
+        return { ...control, codes: wideCodes(problems), narrow: problems.filter(problem => problem.code === 'note-narrow').length,
+          inkNarrow: problems.filter(problem => problem.code === 'note-ink-narrow').length,
+          verticalNotes: geometry ? geometry.notes.filter(note => note.vertical).length : 0,
+          notes: geometry ? geometry.noteCount : 0 };
       });
-      check('§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条 note-narrow 都没有',
-        wideNoInjectionControls.every(row => row.narrow === 0 && row.codes.length === 0),
-        wideNoInjectionControls.map(row => `${row.id} ${row.route || '/'}@${row.width} 违规码 [${row.codes.join(', ') || '无'}]`).join(' · '));
+      check('§22c M8/M9a/M9b/M10 的正对照：同样不注入时，四个靶页在对应档位一条违规码都没有',
+        wideNoInjectionControls.filter(row => row.id !== 'M15')
+          .every(row => row.narrow === 0 && row.inkNarrow === 0 && row.codes.length === 0),
+        wideNoInjectionControls.filter(row => row.id !== 'M15')
+          .map(row => `${row.id} ${row.route || '/'}@${row.width} 说明 ${row.notes} 条（竖排 ${row.verticalNotes}）违规码 [${row.codes.join(',') || '无'}]`).join(' · '));
+      // ---- M15 的正对照（vertical-note-coverage-v1）----------------------------------------
+      // 它要说的是「**未注入**的产物上这一页是干净的」，所以作用域与上一条不同：
+      //   · 在 `--dir=dist`（交付物原样）这一轮：必须是**严格形式** —— 0 违规码、且这一页
+      //     一条竖排说明都没有（等于直接证明「新判据不是凡是说明就判窄」）；
+      //   · 当 `--dir=` 指的就是**形态注入副本**（本轮的证据复跑）时，靶页**本身**带竖排 ⇒
+      //     这条对照在那一轮里物理上不成立（不是判据出错）。这种情况**如实标注、不算失败**，
+      //     但必须同时满足两条硬条件，否则照旧判红：
+      //       (a) 这一页**确实被认成竖排**（verticalNotes > 0）—— 不许静默放过；
+      //       (b) 它出的码**只含竖排应出的那两个**（note-ink-narrow / note-intro-long）——
+      //           出现任何别的码就说明另有缺陷。
+      //     严格形式**不会**因此失守：一份真把竖排带上线的产物，在 @1440/@1600/@760/@360 四条
+      //     扫描断言上必然先红（本轮形态副本实测红 4 处）。
+      {
+        const m15Control = wideNoInjectionControls.find(row => row.id === 'M15');
+        const m15Expected = ['note-ink-narrow', 'note-intro-long'];
+        const m15Strict = Boolean(m15Control) && m15Control.verticalNotes === 0 && m15Control.narrow === 0
+          && m15Control.inkNarrow === 0 && m15Control.codes.length === 0;
+        const m15Contaminated = Boolean(m15Control) && m15Control.verticalNotes > 0;
+        const m15Explained = m15Contaminated && m15Control.codes.every(code => m15Expected.includes(code));
+        check('§22c M15 的正对照：不注入时这一页必须干净（该页说明一条都不是竖排、0 违规码）；'
+          + '若本轮 --dir= 本身就是形态注入副本（该页已被认成竖排），如实标注并只允许出竖排那两个码',
+          m15Strict || m15Explained,
+          m15Control
+            ? `${m15Control.route || '/'}@${m15Control.width} 说明 ${m15Control.notes} 条（竖排 ${m15Control.verticalNotes}）`
+              + `违规码 [${m15Control.codes.join(',') || '无'}] ⇒ ${m15Strict ? '严格形式成立（未注入产物）'
+                : (m15Explained ? '本轮目录本身带竖排 ⇒ 严格形式由 --dir=dist 的那一次运行承担' : '既不严格也不可解释')}`
+            : '对照未登记');
+      }
 
       // ---- 反空洞守卫自身的负例自检 ----
       {
@@ -7841,6 +8040,37 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         check('§22c note-intro-long 的适用范围自检：同一段 3 行的说明，在 intro 区里报、不在 intro 区里不报',
           introLongOn.includes('note-intro-long') && !introLongOff.includes('note-intro-long'),
           `introIndexes=[0] ⇒ [${introLongOn.join(', ')}] · introIndexes=[] ⇒ [${introLongOff.join(', ')}]`);
+        // ⑥ 竖排按列判（vertical-note-coverage-v1，闭合 T31 的 P1）：**三个方向成对钉住** ——
+        //    · 列栈铺不开（T31 实测形态：24 个 16px 竖列、水平只铺开 342.25px < 1173）⇒ 报；
+        //    · 列栈铺满列宽（≥ 0.85×1380 = 1173px，现场换算需 ≥73 列 ≈ 366 字）⇒ 不报
+        //      —— 这条反例证明新判据不是「凡是竖排就判红」，阈值仍然在量；
+        //    · 只有 1 列（没有排版证据，等价于横排里的单行）⇒ 不报（前置条件与横排同构）。
+        //    三个用同一个合成盒，唯一变化的量是**列证据**本身。
+        const verticalNote = Object.assign({}, note0, {
+          vertical: true, writingMode: 'vertical-rl',
+          // 竖排下按行归并的读数：24 个竖列共享同一垂直带 ⇒ 恒 1 行（T31 实测）
+          lineCount: 1, widestLine: 342.25, lines: [{ width: 342.25, left: 0, right: 342.25 }],
+          columnCount: 24, columnSpan: 342.25,
+          columns: [{ left: 0, right: 342.25, width: 16 }]
+        });
+        const verticalCodes = note => wideCodes(wideProblems(Object.assign({}, g0, { notes: [note, note1] }), metaWide));
+        const verticalIntroCodes = note => wideCodes(wideProblems(Object.assign({}, g0, { introIndexes: [0], notes: [note, note1] }), metaWide));
+        const verticalNarrow = verticalCodes(verticalNote);
+        const verticalFull = verticalCodes(Object.assign({}, verticalNote, { columnCount: 80, columnSpan: 1300 }));
+        const verticalSingleColumn = verticalCodes(Object.assign({}, verticalNote, { columnCount: 1, columnSpan: 16 }));
+        const verticalIntro = verticalIntroCodes(verticalNote);
+        collect(wideProblems(Object.assign({}, g0, { notes: [verticalNote, note1] }), metaWide));                        // note-ink-narrow（竖排按列）
+        collect(wideProblems(Object.assign({}, g0, { introIndexes: [0], notes: [verticalNote, note1] }), metaWide));     // note-intro-long（竖排按列）
+        check('§22c 竖排判据的适用范围自检（按列判）：列栈铺不开 ⇒ 报；列栈铺满列宽 ⇒ 不报；只有 1 列 ⇒ 不报',
+          verticalNarrow.includes('note-ink-narrow') && !verticalFull.includes('note-ink-narrow')
+          && !verticalSingleColumn.includes('note-ink-narrow'),
+          `T31 形态（24 列 / 列栈 342.25px）⇒ [${verticalNarrow.join(', ')}]`
+          + ` · 铺满（80 列 / 列栈 1300px ≥ 1173px）⇒ [${verticalFull.join(', ')}]`
+          + ` · 单列（1 列 / 16px）⇒ [${verticalSingleColumn.join(', ')}]（前置条件不成立）`);
+        check('§22c 竖排的 note-intro-long 也按列判：同一条竖排说明（24 列 / 按行归并只有 1 行）在 intro 区里报、不在 intro 区里不报',
+          verticalIntro.includes('note-intro-long') && !verticalNarrow.includes('note-intro-long'),
+          `introIndexes=[0] ⇒ [${verticalIntro.join(', ')}]`
+          + ` · 不在 intro 区 ⇒ [${verticalNarrow.join(', ')}]（同一份几何，只变 intro 归属）`);
         const missingCodes = WIDE_CODE_VOCABULARY.filter(code => !reachable.has(code));
         const extraCodes = [...reachable].filter(code => !WIDE_CODE_VOCABULARY.includes(code));
         check(`§22c 违规码自检：${WIDE_CODE_VOCABULARY.length} 个码全部由 wideProblems() 一处产出、且都可达（不多不少）`,
@@ -7948,6 +8178,10 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         hiddenTextNotes: wideSummary[WIDE_DESKTOP].hiddenText.length,
         unrenderedNotes: wideSummary[WIDE_DESKTOP].unrendered,
         verticalNotes: wideSummary[WIDE_DESKTOP].vertical,
+        // vertical-note-coverage-v1：竖排里「有列证据、② 按列判过」的条数（闭合 T31 的 P1 之后新增）
+        verticalColumnEvidenceNotes: wideSummary[WIDE_DESKTOP].verticalColumnEvidence,
+        verticalNotesAt1600: wideSummary[WIDE_WIDE].vertical,
+        verticalColumnEvidenceNotesAt1600: wideSummary[WIDE_WIDE].verticalColumnEvidence,
         overflowPages: wideOverflowPages.length,
         unexpectedDetailMain: wideUnexpectedDetailMain.length,
         missingDetailMain: wideMissingDetailMain.length,
@@ -7998,7 +8232,13 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
           frozenAnchor: WIDE_SNOTE_FROZEN,
           criteria: {
             noteNarrow: `textWidth >= ${WIDE_NOTE_RATIO} * min(主数据区宽, 页面列宽)（旧口径，t7 的 textWidth = 承载文本的块级元素里最窄的 content box；一字未改）`,
-            noteInkNarrow: `lineCount >= 2 且 widestLine >= ${WIDE_NOTE_RATIO} * min(主数据区宽, 页面列宽)（新口径，t14：逐行字迹按垂直重叠归并；竖排不判。t19/R3-1 起适用性 = **物理前置条件**：min(主数据区宽, 页面列宽) > 现场换算的 70ch ⇒ 1440/1600/760 判、360 不判）`,
+            noteInkNarrow: `inkCount >= 2 且 inkSpan >= ${WIDE_NOTE_RATIO} * min(主数据区宽, 页面列宽)`
+              + `（新口径，t14 立；**轴按 writing-mode 参数化 = vertical-note-coverage-v1**：`
+              + `横排轴 = 行（inkCount = lineCount · inkSpan = widestLine，逐行字迹按垂直重叠归并）；`
+              + `竖排轴 = 列（inkCount = columnCount · inkSpan = columnSpan = 竖列栈覆盖的水平范围，逐列按水平重叠归并）。`
+              + `换轴的理由：竖排下 Range.getClientRects 取到的是列片段、24 个竖列共享同一垂直带 ⇒ 按行归并恒为 1 行、`
+              + `「行数 ≥ 2」永不成立 ⇒ 旧口径必然静默（T31-WRITING-MODE.md §3.1 逐档读数）。`
+              + `t19/R3-1 起适用性 = **物理前置条件**：min(主数据区宽, 页面列宽) > 现场换算的 70ch ⇒ 1440/1600/760 判、360 不判）`,
             noteHiddenText: '文本非空且已渲染（border-box 有宽有高）但零可见字形盒（Range.getClientRects 为空）',
             noteUnrendered: '未渲染（border-box 宽或高为 0）但**可见文本非空**、零可见字形盒'
               + '（t24 立 / t28 收紧：豁免只看「可见文本长度为 0」，不含任何标记级豁免键 —— '
@@ -8006,7 +8246,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
             coverage: '并集 = ① 156 条（盒宽全 452.81；其中 48 条单行、只有 ① 看得见）∪ ② 108 条多行（② ⊆ ①）= 156 条。'
               + '⚠️ truth-401 的 caughtByOldCriteria(48) 是 make-truth-401.cjs:56 的 `index === 0` 按序切分（实测全为多行），'
               + '与「48 条单行」不是同一批 —— 两处 48 别混用（t19/R3-2 订正）',
-            inkScope: `② 的适用性 = 现场物理量：min(主数据区宽, 页面列宽) > 70ch（现场换算；1440/1600/760 判、360 不判，t19/R3-1）`,
+            inkScope: `② 的适用性 = 现场物理量：min(主数据区宽, 页面列宽) > 70ch（现场换算；1440/1600/760 判、360 不判，t19/R3-1）`
+              + `；横排与竖排共用这一把尺子（换轴只换「怎么归并、量哪一对数」，不换作用域）`,
             noteAxis: `border-box 与主数据区或 <main> 任一同一轴，容差 max(${WIDE_TOL}px, ${WIDE_AXIS_RATIO} * min(主数据区宽, 页面列宽))`,
             scope: '<main> 内全部 .snote，逐条 route#index；零条说明的页面才跳过；未渲染（<noscript>）单独登记'
           },
@@ -8070,10 +8311,15 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         console.log(`     视口：${WIDE_DESKTOP_VIEWPORTS.join('/')} 全站逐条几何 + 溢出 · ${WIDE_NARROW} 全站 scrollWidth · ${WIDE_SAMPLE_VIEWPORTS.join('/')} 样本集 ${wideSampleRoutes.length} 页`);
         console.log(`     逐条读数：@${WIDE_DESKTOP} 窄 ${wideSummary[WIDE_DESKTOP].narrow.length} 条 / ${wideSummary[WIDE_DESKTOP].narrowRoutes.length} 页`
           + ` · @${WIDE_WIDE} 窄 ${wideSummary[WIDE_WIDE].narrow.length} 条 / ${wideSummary[WIDE_WIDE].narrowRoutes.length} 页`
+          + ` · 竖排 ${wideSummary[WIDE_DESKTOP].vertical} 条（有列证据 ${wideSummary[WIDE_DESKTOP].verticalColumnEvidence} 条 · 按列判）`
           + ` · textFallback 回落 ${wideSummary[WIDE_DESKTOP].textFallback} 条`
           + ` · 同轴锚（条）主数据区 ${wideAnchorStats.region} / 主容器 ${wideAnchorStats.main} / 两者都 ${wideAnchorStats.both} / 都不 ${wideAnchorStats.neither}`);
         console.log(`     主数据区：${Object.entries(wideRegionCounts).map(([sel, n]) => `${sel}=${n} 页`).join(' · ')}`);
         console.log(`     冻结串：${wideFrozenPages.length}/${wideRoutes.length} 页内联样式里恰好 1 次（M0 的改动前产物在这里是 0/${wideRoutes.length}）`);
+        const wideControlRowText = id => {
+          const row = wideNoInjectionControls.find(item => item.id === id);
+          return row ? `${row.route || '/'} 说明 ${row.notes} 条（竖排 ${row.verticalNotes}）⇒ [${row.codes.join(',') || '无'}]` : '（未登记）';
+        };
         const wideMutationRows = [
           ['M0（反证）', '--dir=dist.baseline', 'note-narrow ×156', '另跑一次同一条命令：改动前产物必须红'],
           ...wideMutations.map(mutation => {
@@ -8083,7 +8329,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
               `[${codes.join(', ') || '（未执行）'}]${codes.includes(mutation.expect) ? '' : ' ←未咬到'}${extra.narrowKeys && extra.narrowKeys.length ? ` 窄条 ${extra.narrowKeys.join(' ')}` : ''}`];
           }),
           ['M6 正对照', `student/@${WIDE_NARROW}`, '不得出现 page-overflow', `[${(metrics.layoutMutationCodes['M6-control'] || []).join(', ') || '无'}]`],
-          ['M8/M9/M10 正对照', '四个靶页不注入', '不得出现 note-narrow', wideNoInjectionControls.map(row => `${row.id}[${row.codes.join(',') || '无'}]`).join(' ')],
+          ['M8/M9/M10 正对照', '四个靶页不注入', '不得出现任何违规码',
+            ['M8', 'M9a', 'M9b', 'M10'].map(id => `${id}[${(wideNoInjectionControls.find(row => row.id === id) || {}).codes ? (wideNoInjectionControls.find(row => row.id === id).codes.join(',') || '无') : '?'}]`).join(' ')],
+          ['M15 正对照', `不注入（${WIDE_DESKTOP}）`, '干净；注入副本轮如实标注', wideControlRowText('M15')],
           ['M5（复用）', '§22b 的 M1–M5', '既有牙全绿', `${results.filter(item => item.name.startsWith('§22b')).length} 项断言`]
         ];
         const wideMutHeaders = ['牙', '页面@视口', '期望', '实测'];
@@ -8096,6 +8344,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       console.log(`     读数：逐条判 ${wideNoteRows1440.length} 条说明 · note-narrow ${wideSummary[WIDE_DESKTOP].narrow.length} 条 / ${wideSummary[WIDE_DESKTOP].narrowRoutes.length} 页`
         + ` · note-ink-narrow ${wideSummary[WIDE_DESKTOP].inkNarrow.length} 条 / ${wideSummary[WIDE_DESKTOP].inkNarrowRoutes.length} 页`
         + ` · 并集 ${wideSummary[WIDE_DESKTOP].union.length} 条 / ${wideSummary[WIDE_DESKTOP].unionRoutes.length} 页 · 藏字 ${wideSummary[WIDE_DESKTOP].hiddenText.length} 条`
+        + ` · 轴：横排按行 / 竖排按列（竖排 ${wideSummary[WIDE_DESKTOP].vertical} 条，其中有列证据 ${wideSummary[WIDE_DESKTOP].verticalColumnEvidence} 条）`
         + ` · @${WIDE_WIDE} 窄 ${wideSummary[WIDE_WIDE].narrow.length} / 字迹窄 ${wideSummary[WIDE_WIDE].inkNarrow.length} 条 · 溢出 ${wideOverflowPages.length} 页`
         + ` · ② 作用域（物理）：${wideSampleScopeText}`
         + ` · detail-main 违规 ${wideMissingDetailMain.length + wideUnexpectedDetailMain.length} 页 · 未分类 ${wideUnclassified.length} 页`

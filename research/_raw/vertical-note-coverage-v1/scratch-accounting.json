@@ -1,0 +1,26 @@
+{
+  "task": "vertical-note-coverage-v1",
+  "what": "竖排形态注入副本（供旧/新判据在同一份字节上出码）· 形态逐字取 T31 的 FORM_CSS",
+  "createdAt": "2026-10-08T07:33:52.191Z",
+  "src": "dist",
+  "dst": ".arch-v1/scratch-vertical",
+  "route": "need/free-api/",
+  "targetFile": "need/free-api/index.html",
+  "form": ".snote { writing-mode: vertical-rl; width: 100%; height: 5.6rem; overflow: hidden; }",
+  "injectionSite": "冻结串规则之后（原串逐字保留，新增一行）",
+  "noteClassElementsInTargetFile": 1,
+  "frozenCountBefore": 1,
+  "frozenCountAfter": 1,
+  "bytesAdded": 85,
+  "sha256Before": "62ae8f3d736691a08665680bec15a8dfd61925f1a2b3d03e57863b38669893bb",
+  "sha256After": "aeae09542244772abc01e1a9f6dea54c1c03b08cd07f17556a755cf4cbd1c877",
+  "srcFiles": 303,
+  "scratchFiles": 303,
+  "changedInSrc": [],
+  "filesDifferingFromSrc": [
+    "need/free-api/index.html"
+  ],
+  "onlyTargetChanged": true,
+  "distUntouched": true,
+  "identicalAsideFromTarget": 302
+}
