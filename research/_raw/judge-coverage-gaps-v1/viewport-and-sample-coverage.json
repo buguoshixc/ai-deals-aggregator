@@ -1,0 +1,80 @@
+{
+  "untestedBand": {
+    "definition": "门禁真正跑过的宽度：1440 / 1600（全站逐条）、760 / 360（**仅 29 页样本集**）、390（全站只量 scrollWidth）⇒ 761–1439px 没有任何一档覆盖",
+    "sharedMediaConditionsIntersectingBand": [
+      {
+        "condition": "(prefers-color-scheme: dark)",
+        "kind": "intersects-band",
+        "body": ":root:not([data-theme=\"light\"]):not([data-theme=\"dark\"]) { color-scheme: dark; --bg: #0b0d10; --card: #14171c; --ink: #e8ecf2; --ink2: #b6bec9; --mut: #8d97a5; --mut-deco: #6b7280; --line: #242a33; --line2: #1c2129; --ri",
+        "pages": 186
+      },
+      {
+        "condition": "(prefers-reduced-motion: reduce)",
+        "kind": "intersects-band",
+        "body": "*, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }",
+        "pages": 186
+      },
+      {
+        "condition": "(min-width: 1100px)",
+        "kind": "covers-band",
+        "body": ".plansnav-api { display: inline-block; }",
+        "pages": 186
+      },
+      {
+        "condition": "(max-width: 900px)",
+        "kind": "intersects-band",
+        "body": "/* 窄屏保留「档位 + logo + 标题/厂商 + CTA」，其余列隐去——触控目标仍 ≥44px */ .r { grid-template-columns: 20px 24px minmax(0, 1fr) 64px; height: auto; min-height: 46px; padding: var(--s2) var(--s3); } .r .ro, .r .rf, .r .rm { display: none; }",
+        "pages": 186
+      },
+      {
+        "condition": "(min-width: 761px) and (max-width: 940px)",
+        "kind": "covers-band",
+        "body": ".topin { gap: 12px; height: auto; padding: 10px 20px; flex-wrap: wrap; } .search { max-width: none; order: 3; min-width: 100%; } .topstat { order: 2; }",
+        "pages": 186
+      },
+      {
+        "condition": "(max-width: 1180px)",
+        "kind": "intersects-band",
+        "body": ".grid { grid-template-columns: repeat(2, 1fr); } /* 专题导航卡：5 列在 1180px 以下每张只剩 218px 出头，说明行会被截到读不出内容 */ .need-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }",
+        "pages": 186
+      }
+    ],
+    "pageSpecificConditions": 0,
+    "pagesCarryingThem": "共享 <style> 出现在全部 186 页上 ⇒ 这几条条件在每一页都活着（不是「某些页落在区间里」）"
+  },
+  "liveSweepAt950": {
+    "how": "拷贝里把桌面第二档 1600 换成 950（`WIDE_WIDE = 950`），其余一字不动",
+    "result": "880 项 / 失败 1 —— 唯一的失败是 M10 变异牙（它的缺陷藏在 `@media (min-width:1500px)` 里，只在 1600 档才咬得到）",
+    "pagesWithViolations": 0,
+    "interpretation": "真实产物在 950 档 0 码 ⇒ 补这一档的假阳性风险今天是 0；代价见 probe-runs.json 的 w950addCrash"
+  },
+  "sampleSet": {
+    "base": {
+      "samplePages": 29,
+      "notePages": 63,
+      "notePagesInSample": 13,
+      "notePagesNeverSampled": 50
+    },
+    "expandedTo63": {
+      "samplePages": 63,
+      "seconds": 170,
+      "failed": 0,
+      "newCodes": 0
+    },
+    "expansionCostSeconds": 32.6,
+    "neverSampledExamples": [
+      "models/360zhinao-turbo-llm-geo/",
+      "models/baichuan-m3-plus/",
+      "models/baichuan-m3/",
+      "models/claude-fable-5.1/",
+      "models/claude-haiku-4.5/",
+      "models/claude-opus-5.5/",
+      "models/claude-sonnet-5.5/",
+      "models/deepseek-flash/",
+      "models/deepseek-v3.2/",
+      "models/deepseek-v4-pro/",
+      "models/doubao-seed-2.1-pro/",
+      "models/doubao-seed-2.1-turbo/"
+    ]
+  }
+}

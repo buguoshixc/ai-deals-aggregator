@@ -1,0 +1,21 @@
+{
+  "verticalFalseRedBand": {
+    "pagesScanned": 186,
+    "elementsWithNonHorizontalWritingMode": 0,
+    "pagesWithNoteContainers": 105,
+    "verticalNoteContainers": 0,
+    "conclusion": "当前产物里**没有任何**竖排元素 ⇒ 「<366 字的竖排说明被判红」这条假红带今天命中 0 页；将来出现的可检测信号 = 本探针同款扫描（computed writing-mode ≠ horizontal-tb 的元素数 > 0）"
+  },
+  "scanScope": {
+    "declarationFile": "scripts/data/narrow-reading-columns.json",
+    "scanScope": "产物每个页面内联 <style> 里的规则块（与 §22c 的冻结串同一份扫描面）。px / rem 的窄列不在本清单射程内：`.detail-main` 的 `width: min(1120px, 100%)` 由 §22b 原有断言（居中 + 宽度 ∈ [1080,1120]）承担，不在这里重复。",
+    "reading": "px / rem 被**逐字**声明为射程外；行内 `style=` 没有被单独点名，但扫描面写成「产物每个页面内联 <style> 里的规则块」⇒ 行内样式属性按字面在射程外（**隐含**而非显式）"
+  },
+  "inlineStyleScanFace": {
+    "inlineStyleAttributes": 61,
+    "layoutish": 52,
+    "containingCh": 0,
+    "pages": 6,
+    "conclusion": "把行内 style= 纳入 ch 扫描：今天要处理的只有 61 个属性（52 个布局类，全在 index.html 的 SVG 尺寸上），**含 ch 的 0 个** ⇒ 假阳性面 ≈ 0，成本 = 一个小 `style=\"…\"` 解析器 + 把它加进扫描面"
+  }
+}
