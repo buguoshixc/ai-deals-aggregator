@@ -1,0 +1,288 @@
+{
+  "task": "ci-master-gate-concurrency-v1",
+  "what": "2026-10-08 的两次密集推送窗口：gate / Deploy 逐次终态与耗时（改动前的现场）",
+  "at": "2026-10-08T10:48:11.317Z",
+  "gateDurationSeconds": {
+    "samples": 46,
+    "min": 150,
+    "median": 207,
+    "max": 696
+  },
+  "observations": {
+    "deployCanceledInWindow": 2,
+    "gateCanceledInWindow": 4
+  },
+  "recentRuns": [
+    {
+      "name": "Verify site (gate)",
+      "run": 141,
+      "sha": "8d3767c04b",
+      "created": "2026-10-08T08:29:52Z",
+      "started": "2026-10-08T08:29:52Z",
+      "updated": "2026-10-08T08:34:49Z",
+      "status": "completed",
+      "conclusion": "success",
+      "secondsToUpdated": 297
+    },
+    {
+      "name": "Deploy to GitHub Pages",
+      "run": 136,
+      "sha": "8d3767c04b",
+      "created": "2026-10-08T08:29:52Z",
+      "started": "2026-10-08T08:29:52Z",
+      "updated": "2026-10-08T08:36:33Z",
+      "status": "completed",
+      "conclusion": "success",
+      "secondsToUpdated": 401
+    },
+    {
+      "name": "Verify site (gate)",
+      "run": 143,
+      "sha": "ef395c0c9a",
+      "created": "2026-10-08T09:13:52Z",
+      "started": "2026-10-08T09:13:52Z",
+      "updated": "2026-10-08T09:18:51Z",
+      "status": "completed",
+      "conclusion": "success",
+      "secondsToUpdated": 299
+    },
+    {
+      "name": "Deploy to GitHub Pages",
+      "run": 137,
+      "sha": "ef395c0c9a",
+      "created": "2026-10-08T09:13:52Z",
+      "started": "2026-10-08T09:13:52Z",
+      "updated": "2026-10-08T09:19:38Z",
+      "status": "completed",
+      "conclusion": "success",
+      "secondsToUpdated": 346
+    },
+    {
+      "name": "Verify site (gate)",
+      "run": 145,
+      "sha": "4b366d2733",
+      "created": "2026-10-08T09:32:18Z",
+      "started": "2026-10-08T09:32:18Z",
+      "updated": "2026-10-08T09:37:37Z",
+      "status": "completed",
+      "conclusion": "success",
+      "secondsToUpdated": 319
+    },
+    {
+      "name": "Deploy to GitHub Pages",
+      "run": 138,
+      "sha": "4b366d2733",
+      "created": "2026-10-08T09:32:18Z",
+      "started": "2026-10-08T09:32:18Z",
+      "updated": "2026-10-08T09:37:56Z",
+      "status": "completed",
+      "conclusion": "success",
+      "secondsToUpdated": 338
+    },
+    {
+      "name": "Deploy to GitHub Pages",
+      "run": 139,
+      "sha": "e455b3a694",
+      "created": "2026-10-08T09:59:47Z",
+      "started": "2026-10-08T09:59:47Z",
+      "updated": "2026-10-08T10:05:06Z",
+      "status": "completed",
+      "conclusion": "success",
+      "secondsToUpdated": 319
+    },
+    {
+      "name": "Verify site (gate)",
+      "run": 147,
+      "sha": "e455b3a694",
+      "created": "2026-10-08T09:59:47Z",
+      "started": "2026-10-08T09:59:47Z",
+      "updated": "2026-10-08T10:05:37Z",
+      "status": "completed",
+      "conclusion": "success",
+      "secondsToUpdated": 350
+    },
+    {
+      "name": "Deploy to GitHub Pages",
+      "run": 140,
+      "sha": "33d2472258",
+      "created": "2026-10-08T10:11:40Z",
+      "started": "2026-10-08T10:11:40Z",
+      "updated": "2026-10-08T10:17:17Z",
+      "status": "completed",
+      "conclusion": "success",
+      "secondsToUpdated": 337
+    },
+    {
+      "name": "Verify site (gate)",
+      "run": 151,
+      "sha": "33d2472258",
+      "created": "2026-10-08T10:11:40Z",
+      "started": "2026-10-08T10:11:40Z",
+      "updated": "2026-10-08T10:16:59Z",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "secondsToUpdated": 319
+    },
+    {
+      "name": "Deploy to GitHub Pages",
+      "run": 141,
+      "sha": "8c9fb29d93",
+      "created": "2026-10-08T10:16:42Z",
+      "started": "2026-10-08T10:16:42Z",
+      "updated": "2026-10-08T10:21:51Z",
+      "status": "completed",
+      "conclusion": "success",
+      "secondsToUpdated": 309
+    },
+    {
+      "name": "Verify site (gate)",
+      "run": 154,
+      "sha": "8c9fb29d93",
+      "created": "2026-10-08T10:16:42Z",
+      "started": "2026-10-08T10:16:42Z",
+      "updated": "2026-10-08T10:22:18Z",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "secondsToUpdated": 336
+    },
+    {
+      "name": "Verify site (gate)",
+      "run": 156,
+      "sha": "95dfeb9903",
+      "created": "2026-10-08T10:21:22Z",
+      "started": "2026-10-08T10:21:22Z",
+      "updated": "2026-10-08T10:26:35Z",
+      "status": "completed",
+      "conclusion": "success",
+      "secondsToUpdated": 313
+    },
+    {
+      "name": "Deploy to GitHub Pages",
+      "run": 142,
+      "sha": "95dfeb9903",
+      "created": "2026-10-08T10:21:22Z",
+      "started": "2026-10-08T10:21:22Z",
+      "updated": "2026-10-08T10:30:47Z",
+      "status": "completed",
+      "conclusion": "success",
+      "secondsToUpdated": 565
+    },
+    {
+      "name": "Verify site (gate)",
+      "run": 163,
+      "sha": "0493885463",
+      "created": "2026-10-08T10:41:02Z",
+      "started": "2026-10-08T10:41:02Z",
+      "updated": "2026-10-08T10:41:05Z",
+      "status": "in_progress",
+      "conclusion": null,
+      "secondsToUpdated": 3
+    },
+    {
+      "name": "Deploy to GitHub Pages",
+      "run": 143,
+      "sha": "0493885463",
+      "created": "2026-10-08T10:41:02Z",
+      "started": "2026-10-08T10:41:02Z",
+      "updated": "2026-10-08T10:41:05Z",
+      "status": "in_progress",
+      "conclusion": null,
+      "secondsToUpdated": 3
+    },
+    {
+      "name": "Verify site (gate)",
+      "run": 164,
+      "sha": "24ce23bc30",
+      "created": "2026-10-08T10:43:48Z",
+      "started": "2026-10-08T10:43:48Z",
+      "updated": "2026-10-08T10:43:49Z",
+      "status": "pending",
+      "conclusion": null,
+      "secondsToUpdated": 1
+    },
+    {
+      "name": "Deploy to GitHub Pages",
+      "run": 144,
+      "sha": "24ce23bc30",
+      "created": "2026-10-08T10:43:48Z",
+      "started": "2026-10-08T10:43:48Z",
+      "updated": "2026-10-08T10:43:49Z",
+      "status": "pending",
+      "conclusion": null,
+      "secondsToUpdated": 1
+    },
+    {
+      "name": "Verify site (gate)",
+      "run": 165,
+      "sha": "724e7131f1",
+      "created": "2026-10-08T10:46:08Z",
+      "started": "2026-10-08T10:46:08Z",
+      "updated": "2026-10-08T10:46:18Z",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "secondsToUpdated": 10
+    },
+    {
+      "name": "Deploy to GitHub Pages",
+      "run": 145,
+      "sha": "724e7131f1",
+      "created": "2026-10-08T10:46:08Z",
+      "started": "2026-10-08T10:46:08Z",
+      "updated": "2026-10-08T10:46:18Z",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "secondsToUpdated": 10
+    },
+    {
+      "name": "Verify site (gate)",
+      "run": 166,
+      "sha": "7fd577594c",
+      "created": "2026-10-08T10:46:16Z",
+      "started": "2026-10-08T10:46:16Z",
+      "updated": "2026-10-08T10:46:27Z",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "secondsToUpdated": 11
+    },
+    {
+      "name": "Deploy to GitHub Pages",
+      "run": 146,
+      "sha": "7fd577594c",
+      "created": "2026-10-08T10:46:16Z",
+      "started": "2026-10-08T10:46:16Z",
+      "updated": "2026-10-08T10:46:27Z",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "secondsToUpdated": 11
+    },
+    {
+      "name": "Deploy to GitHub Pages",
+      "run": 147,
+      "sha": "17dcfb75bf",
+      "created": "2026-10-08T10:46:26Z",
+      "started": "2026-10-08T10:46:26Z",
+      "updated": "2026-10-08T10:46:35Z",
+      "status": "in_progress",
+      "conclusion": null,
+      "secondsToUpdated": 9
+    },
+    {
+      "name": "Verify site (gate)",
+      "run": 167,
+      "sha": "17dcfb75bf",
+      "created": "2026-10-08T10:46:26Z",
+      "started": "2026-10-08T10:46:26Z",
+      "updated": "2026-10-08T10:46:40Z",
+      "status": "in_progress",
+      "conclusion": null,
+      "secondsToUpdated": 14
+    }
+  ],
+  "reading": {
+    "window": "10:41:02Z–10:46:26Z 共 5 次 master push（间隔 2m46s / 2m20s / 8s / 10s）",
+    "gateCancelled": "4 / 5（#163/#164/#165/#166；其中 #163 已经跑了 4 分 04 秒才被取消）",
+    "deployCancelled": "3 / 5（#144/#145/#146）—— Deploy 的组是 pages、cancel-in-progress: false，但**排队中的 run 会被后一次取代**（观测：+10s / +11s 即 cancelled）",
+    "deploySucceededOnCancelledGateSha": "push #1（04938854）的 gate 被取消，但同一 SHA 的 Deploy #143 success（它已经跑起来了，没被杀）",
+    "newest": "#167（17dcfb75）的 gate 与 #147 的 Deploy 在跑"
+  }
+}
