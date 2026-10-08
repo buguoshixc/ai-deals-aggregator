@@ -4161,6 +4161,24 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   // v3.0 Stage H2：API 价格变化订阅源本身（RSS + JSON Feed）必须能取到，
   // 且 guid **逐条等于**产物那份 `api-plan-history.json` 的派生事件身份 ——
   // 「不能每次 build 重新生成」这条承诺只有在这里能被独立复核。
+  //
+  // ⚠️ t32（feed-guid-window-judge-fix-v1）修掉的一处**只在巧合下成立**的判据：
+  //    旧版在这里比的是「feed 条数 == 日志**全部**事件数」，而订阅源的分栏口径是**窗口**
+  //    （唯一实现 `scripts/lib/plan-changes.js` 的 `PLAN_CHANGES_WINDOWS`）：
+  //      · `created` / `changed`：`at >= asOf - (recentDays-1)` ← 7 天窗口，`asOf-6` 在内；
+  //      · `ended` / `restored`：`at >= asOf - (endedDays-1)` ← 30 天窗口（**不是同一个窗口**）；
+  //      · `asOf` = `api-plans.json.updatedAt` 的**前 10 位**（build-local.js 的 `radarAsOf`），
+  //        取的是**数据时间**而不是构建时刻；
+  //      · `type === 'updated'`（记录级元信息）不进订阅（feeds.js `changeItemsFor`）；
+  //      · 每个分栏最多 30 条（`PLAN_CHANGES_LIMITS.itemsPerSection`）。
+  //    实测巧合：master 的日志 17 条`at` 全落在 2026-09-29..2026-10-05（asOf=2026-10-05）⇒ 17/17 ✓。
+  //    任何一次如实的数据更新都会把它弄红：t28 把 anthropic 的 `lastSeen` 推到 2026-10-08
+  //    ⇒ 窗口变成 2026-10-02..10-08 ⇒ 日志里 6 条 2026-10-01 的 `created` 掉出窗口 ⇒ 12/18 ✗。
+  //    **那不是数据错，是判据错**：feed 本来就不该包含窗口外的事件。
+  //
+  // 现在按**设计口径**比，而且窗口在这里**独立重算**（不 require `plan-changes.js` 的窗口逻辑）——
+  // 否则这条判据就退化成「用产品自己的实现证明产品自己」，产品口径写错时它一样绿。
+  // 代价是一条**登记在案的边界**：镜像常量必须与产品声明同步（下面那颗「漂移即红」的守卫盯着它）。
   {
     const historyFile = path.join(DIR, 'api-plan-history.json');
     const historyEvents = fs.existsSync(historyFile)
@@ -4168,6 +4186,56 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       : [];
     const eventIds = new Set(historyEvents.map(event => event.eventId).filter(Boolean));
     const feedPaths = ['feed/plans/api/changes.xml', 'feed/plans/api/changes.json'];
+
+    // ---- 窗口的**独立重算**（镜像口径，每条都注明产品出处）--------------------------------
+    // 与 `check-ci-consistency.js` 读 `action.yml` 同一手法：这里只**自己算**，不调用产品实现。
+    const API_FEED_WINDOW_MIRROR = {
+      recentDays: 7,                 // plan-changes.js: `PLAN_CHANGES_WINDOWS.recentDays`
+      endedDays: 30,                 // plan-changes.js: `PLAN_CHANGES_WINDOWS.endedDays`
+      metaFieldTypes: ['updated'],   // plan-changes.js: `API_PLAN_META_FIELD_TYPES`（feeds.js 同一条过滤）
+      sectionCap: 30                 // plan-changes.js: `PLAN_CHANGES_LIMITS.itemsPerSection`
+    };
+    const API_FEED_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+    /** 基准日加减天数（与 `changes.addDays` 同口径：按 UTC 日的纯日期算术，不碰本地时区） */
+    const apiFeedAddDays = (date, delta) => (API_FEED_DATE_RE.test(String(date || ''))
+      ? new Date(Date.parse(`${date}T00:00:00Z`) + delta * 86400000).toISOString().slice(0, 10)
+      : null);
+    /** 日期差（later - earlier，单位天）；任一非法返回 null（与 `changes.daysBetween` 同口径） */
+    const apiFeedDaysBetween = (later, earlier) => {
+      if (!API_FEED_DATE_RE.test(String(later || '')) || !API_FEED_DATE_RE.test(String(earlier || ''))) return null;
+      const a = Date.parse(`${later}T00:00:00Z`);
+      const b = Date.parse(`${earlier}T00:00:00Z`);
+      if (!Number.isFinite(a) || !Number.isFinite(b)) return null;
+      return Math.round((a - b) / 86400000);
+    };
+    const apiPlansFile = path.join(DIR, 'api-plans.json');
+    const apiPlansDoc = fs.existsSync(apiPlansFile)
+      ? JSON.parse(fs.readFileSync(apiPlansFile, 'utf8'))
+      : null;
+    // asOf 是**数据时间**：`api-plans.json.updatedAt` 的前 10 位（build-local.js: `radarAsOf`）
+    const apiFeedAsOf = String((apiPlansDoc && apiPlansDoc.updatedAt) || '').slice(0, 10);
+    const apiFeedAsOfOk = API_FEED_DATE_RE.test(apiFeedAsOf);
+    const apiFeedRecentFrom = apiFeedAsOfOk
+      ? apiFeedAddDays(apiFeedAsOf, -(API_FEED_WINDOW_MIRROR.recentDays - 1)) : null;
+    const apiFeedEndedFrom = apiFeedAsOfOk
+      ? apiFeedAddDays(apiFeedAsOf, -(API_FEED_WINDOW_MIRROR.endedDays - 1)) : null;
+    /** 这条事件用哪个窗口：ended / restored 走 30 天，其余走 7 天（plan-changes.js 的分栏循环） */
+    const apiFeedFromOf = event => ((event.type === 'ended' || event.type === 'restored')
+      ? apiFeedEndedFrom : apiFeedRecentFrom);
+    // 期望集 = 日志里**落在窗口内**的事件（脏事件 / 未来日期 / 元信息 / 非 12 位 hex 身份全部排除）
+    const apiFeedWindowEvents = apiFeedAsOfOk ? historyEvents.filter(event => {
+      if (!event || typeof event !== 'object') return false;
+      if (typeof event.at !== 'string' || !API_FEED_DATE_RE.test(event.at)) return false;   // 脏事件不渲染
+      const diff = apiFeedDaysBetween(event.at, apiFeedAsOf);
+      if (diff === null || diff > 0) return false;                                          // 未来日期不渲染
+      return event.at >= apiFeedFromOf(event);
+    }) : [];
+    const apiFeedExpectedIds = apiFeedWindowEvents
+      .filter(event => !API_FEED_WINDOW_MIRROR.metaFieldTypes.includes(event.type))
+      .filter(event => typeof event.eventId === 'string' && /^[0-9a-f]{12}$/.test(event.eventId))
+      .map(event => event.eventId);
+    // 分栏上限：总数 ≤ 每栏上限 ⇒ **任一栏都不可能被截断**（保守前提，宁严不宽）
+    const apiFeedCapBites = apiFeedExpectedIds.length > API_FEED_WINDOW_MIRROR.sectionCap;
     // ⚠️ 必须取到**当前被验收那一份站点**的根，而不是 `location.origin + '/'`。
     //
     // 这一条曾经写错、并在**线上冒烟时**才暴露：本站是 GitHub 项目页，线上地址带一级子路径
@@ -4214,11 +4282,64 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     check('API 价格变化订阅源可取（RSS + JSON Feed 各一份，HTTP 200）',
       probe[feedPaths[0]].ok && probe[feedPaths[1]].ok,
       `HTTP ${probe[feedPaths[0]].status} / ${probe[feedPaths[1]].status}`);
-    check('API 价格变化订阅的 guid 逐条等于日志里的派生事件身份（不是每次 build 重新生成）',
-      Array.isArray(jsonGuids) && jsonGuids.length === eventIds.size && jsonGuids.length > 0
-      && jsonGuids.every(id => eventIds.has(id))
-      && JSON.stringify(xmlGuids) === JSON.stringify(jsonGuids),
-      `JSON ${Array.isArray(jsonGuids) ? jsonGuids.length : 'n/a'} 条 / RSS ${xmlGuids.length} 条 / 日志 ${eventIds.size} 条`);
+    // ---- 边界守卫（t32）：镜像常量 ↔ 产品声明的**漂移即红** --------------------------------
+    // 「独立重算」的代价是镜像可能与产品声明分叉。把它做成机器可读 —— 只解析**声明文本**，
+    // 不 require 产品模块（判据的**计算**仍然独立），与 `check-ci-consistency.js` 读 `action.yml`
+    // 同一条纪律：口径改了而这里没跟，必须**红**，不许静默失守。
+    const apiFeedPlanChangesSrc = fs.readFileSync(path.join(ROOT, 'scripts/lib/plan-changes.js'), 'utf8');
+    const apiFeedBlockOf = name => {
+      const m = apiFeedPlanChangesSrc.match(new RegExp(`${name}\\s*=\\s*\\{([\\s\\S]*?)\\n\\}`));
+      return m ? m[1] : '';
+    };
+    const apiFeedDeclaredNumber = (block, key) => {
+      const m = block.match(new RegExp(`${key}\\s*:\\s*(\\d+)`));
+      return m ? Number(m[1]) : null;
+    };
+    const apiFeedDeclaredMeta = (() => {
+      const m = apiFeedPlanChangesSrc.match(/API_PLAN_META_FIELD_TYPES\s*=\s*(\[[^\]]*\])/);
+      if (!m) return null;
+      try { return JSON.parse(m[1].replace(/'/g, '"')); } catch (error) { return null; }
+    })();
+    const apiFeedDeclaredRecent = apiFeedDeclaredNumber(apiFeedBlockOf('PLAN_CHANGES_WINDOWS'), 'recentDays');
+    const apiFeedDeclaredEnded = apiFeedDeclaredNumber(apiFeedBlockOf('PLAN_CHANGES_WINDOWS'), 'endedDays');
+    const apiFeedDeclaredCap = apiFeedDeclaredNumber(apiFeedBlockOf('PLAN_CHANGES_LIMITS'), 'itemsPerSection');
+
+    // 期望集与 feed 的比较放在这里（`jsonGuids` 已就绪；上面那段只做**纯数据**的窗口重算）
+    const apiFeedMissing = Array.isArray(jsonGuids)
+      ? apiFeedExpectedIds.filter(id => !jsonGuids.includes(id))
+      : apiFeedExpectedIds;
+    check('API 价格变化订阅的 guid 逐条等于日志里**落在当前窗口内**的派生事件身份（不是每次 build 重新生成）',
+      Array.isArray(jsonGuids) && apiFeedAsOfOk && !apiFeedCapBites && apiFeedExpectedIds.length > 0
+      && jsonGuids.length === apiFeedExpectedIds.length          // ① 条数 == **窗口内**事件数（旧版比的是全量 ⇒ 只在巧合下成立）
+      && jsonGuids.every(id => eventIds.has(id))                 // ② 每条 guid ∈ 日志全量身份空间（既有牙齿，保留）
+      && JSON.stringify(xmlGuids) === JSON.stringify(jsonGuids),  // ③ RSS 与 JSON 逐条相同（既有牙齿，保留）
+      `JSON ${Array.isArray(jsonGuids) ? jsonGuids.length : 'n/a'} 条 / RSS ${xmlGuids.length} 条`
+      + ` / 窗口内日志 ${apiFeedExpectedIds.length} 条（日志全量事件 ${eventIds.size} 条 · asOf ${apiFeedAsOf || '—'}`
+      + ` · 窗口 ${apiFeedRecentFrom || '—'}..${apiFeedAsOf || '—'}，ended/restored 用 ${apiFeedEndedFrom || '—'}..）`
+      + (apiFeedCapBites
+        ? ` · ⚠️ 窗口内 ${apiFeedExpectedIds.length} 条 > 分栏上限 ${API_FEED_WINDOW_MIRROR.sectionCap}：`
+          + '条数等式不再成立，判据需要按分栏镜像截断（这是**如实报出的边界**，不是数据错）' : ''));
+    // 新牙（t32）：上面那颗只能证明「**条数**对」。它挡不住「少一条窗口内、多一条窗口外」这类**集合**错 ——
+    // 那时条数仍相等、每条 guid 也仍 ∈ 日志（窗口外那条本来就是真事件）⇒ 上面三条全过。
+    // 这里逐条点名：日志里**窗口内的每一条**事件都必须出现在 feed 里。
+    check('API 价格变化订阅：日志里**窗口内的每一条**事件都出现在 feed 里（只比条数挡不住「换掉一条」）',
+      Array.isArray(jsonGuids) && apiFeedAsOfOk && !apiFeedCapBites && apiFeedMissing.length === 0,
+      apiFeedMissing.length
+        ? `窗口内 ${apiFeedExpectedIds.length} 条里有 ${apiFeedMissing.length} 条没进 feed：${apiFeedMissing.join(', ')}`
+        : `窗口内 ${apiFeedExpectedIds.length} 条逐条命中（feed ${Array.isArray(jsonGuids) ? jsonGuids.length : 'n/a'} 条`
+          + ` · 日志全量 ${eventIds.size} 条，其中 ${eventIds.size - apiFeedExpectedIds.length} 条在窗口外 —— **窗口外缺席不算错**）`);
+    check('API 变化订阅的窗口镜像常量与产品声明一致（漂移即红：改 recentDays / endedDays / 元信息类型 / 分栏上限都必须同步这条判据）',
+      apiFeedDeclaredRecent === API_FEED_WINDOW_MIRROR.recentDays
+      && apiFeedDeclaredEnded === API_FEED_WINDOW_MIRROR.endedDays
+      && apiFeedDeclaredCap === API_FEED_WINDOW_MIRROR.sectionCap
+      && Array.isArray(apiFeedDeclaredMeta)
+      && JSON.stringify(apiFeedDeclaredMeta) === JSON.stringify(API_FEED_WINDOW_MIRROR.metaFieldTypes),
+      `产品声明（scripts/lib/plan-changes.js）recentDays ${apiFeedDeclaredRecent} / endedDays ${apiFeedDeclaredEnded}`
+      + ` / 分栏上限 ${apiFeedDeclaredCap} / 元信息 ${JSON.stringify(apiFeedDeclaredMeta)}`
+      + ` ↔ 判据镜像 ${JSON.stringify(API_FEED_WINDOW_MIRROR)}`
+      + (apiFeedDeclaredRecent === null || apiFeedDeclaredEnded === null
+        || apiFeedDeclaredCap === null || !Array.isArray(apiFeedDeclaredMeta)
+        ? ' · ⚠️ 产品声明没解析出来（改名 / 改格式？）：这**不算通过**，请人工确认镜像是否仍然成立' : ''));
     check('API 价格变化订阅的链接全部指向 /plans/api/#plan-<id>（跨页深链，不是本页锚点）',
       xmlGuids.length > 0 && feedsLib.parseRssItems(xml)
         .every(item => /\/plans\/api\/#plan-[0-9a-f]{12}$/.test(String(item.link || ''))),
