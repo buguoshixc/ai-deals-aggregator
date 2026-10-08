@@ -1,0 +1,686 @@
+{
+  "what": "两份变化日志（+ deal-history 对照）分别/同时缺失或损坏时的构建行为：修复前 vs 修复后",
+  "device": ".arch-v1/fixtures/run-fixtures.cjs（锚点命中守卫 + 前置守卫「源文件必须与 git HEAD 一致」+ 退出时无条件还原；每次还原后核对 sha256）",
+  "wording": {
+    "plan": "本次构建没有拿到套餐变更日志（plan-history.json 缺失或损坏）——这不表示「没有变化」。",
+    "api": "本次构建没有拿到 API 计费变化日志（api-plan-history.json 缺失或损坏）——这不表示「没有变化」。",
+    "deal": "本次构建没有拿到历史日志（deal-history.json 缺失或损坏），因此无法显示变化记录 —— 这不表示「没有变化」。"
+  },
+  "originalSha256": {
+    "plan": "8c0003aa37521c8688b875852392d826dc18de58b4bdbf00fa1e12cc670c9c74",
+    "api": "d5ffdcaf8f935351bec275e3b132084bbadb762a82b1adb0ae234bd6ad3b2251",
+    "deal": "563bcfd0e00e3211995bdefe097b3096ed778a7ebed69c4e1c1614ca8187802e"
+  },
+  "restoreCheckLastRun": [
+    {
+      "key": "plan",
+      "ok": true,
+      "sha256": "8c0003aa37521c8688b875852392d826dc18de58b4bdbf00fa1e12cc670c9c74"
+    },
+    {
+      "key": "api",
+      "ok": true,
+      "sha256": "d5ffdcaf8f935351bec275e3b132084bbadb762a82b1adb0ae234bd6ad3b2251"
+    },
+    {
+      "key": "deal",
+      "ok": true,
+      "sha256": "563bcfd0e00e3211995bdefe097b3096ed778a7ebed69c4e1c1614ca8187802e"
+    }
+  ],
+  "fixtures": [
+    {
+      "id": "plan-missing",
+      "what": "plan-history.json 缺失",
+      "before": {
+        "exit": 1,
+        "blocking": "❌ 构建失败：TypeError: Cannot read properties of null (reading 'schemaVersion')",
+        "validateErrors": null,
+        "wordingFiles": null,
+        "wordingHits": null,
+        "datasets": null
+      },
+      "after": {
+        "exit": 0,
+        "blocking": null,
+        "validateErrors": null,
+        "wordingFiles": 6,
+        "wordingHits": [
+          {
+            "file": "changes/index.html",
+            "plan": 1,
+            "api": 0,
+            "deal": 0
+          },
+          {
+            "file": "feed/plans/coding/changes.json",
+            "plan": 1,
+            "api": 0,
+            "deal": 0
+          },
+          {
+            "file": "feed/plans/coding/changes.xml",
+            "plan": 1,
+            "api": 0,
+            "deal": 0
+          },
+          {
+            "file": "index.html",
+            "plan": 0,
+            "api": 0,
+            "deal": 1
+          },
+          {
+            "file": "plans/coding/index.html",
+            "plan": 45,
+            "api": 0,
+            "deal": 0
+          },
+          {
+            "file": "plans/index.html",
+            "plan": 1,
+            "api": 0,
+            "deal": 0
+          }
+        ],
+        "datasets": [
+          {
+            "id": "api-plan-history",
+            "updatedAt": "2026-10-01",
+            "updatedAtShape": "date",
+            "note": null,
+            "count": 17
+          },
+          {
+            "id": "plan-history",
+            "updatedAt": null,
+            "updatedAtShape": null,
+            "availability": "unavailable",
+            "note": "本次构建没有拿到 plan-history.json（文件缺失）——这份数据集的更新时间不可公布，这不表示「没有变化」。",
+            "count": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "api-missing",
+      "what": "api-plan-history.json 缺失",
+      "before": {
+        "exit": 1,
+        "blocking": "❌ 构建失败：TypeError: Cannot read properties of null (reading 'schemaVersion')",
+        "validateErrors": null,
+        "wordingFiles": null,
+        "wordingHits": null,
+        "datasets": null
+      },
+      "after": {
+        "exit": 0,
+        "blocking": null,
+        "validateErrors": null,
+        "wordingFiles": 6,
+        "wordingHits": [
+          {
+            "file": "changes/index.html",
+            "plan": 0,
+            "api": 1,
+            "deal": 0
+          },
+          {
+            "file": "feed/plans/api/changes.json",
+            "plan": 0,
+            "api": 1,
+            "deal": 0
+          },
+          {
+            "file": "feed/plans/api/changes.xml",
+            "plan": 0,
+            "api": 1,
+            "deal": 0
+          },
+          {
+            "file": "index.html",
+            "plan": 0,
+            "api": 0,
+            "deal": 1
+          },
+          {
+            "file": "plans/api/index.html",
+            "plan": 0,
+            "api": 1,
+            "deal": 0
+          },
+          {
+            "file": "plans/index.html",
+            "plan": 0,
+            "api": 1,
+            "deal": 0
+          }
+        ],
+        "datasets": [
+          {
+            "id": "api-plan-history",
+            "updatedAt": null,
+            "updatedAtShape": null,
+            "availability": "unavailable",
+            "note": "本次构建没有拿到 api-plan-history.json（文件缺失）——这份数据集的更新时间不可公布，这不表示「没有变化」。",
+            "count": 0
+          },
+          {
+            "id": "plan-history",
+            "updatedAt": "2026-10-01",
+            "updatedAtShape": "date",
+            "note": null,
+            "count": 35
+          }
+        ]
+      }
+    },
+    {
+      "id": "both-missing",
+      "what": "两份都缺失",
+      "before": {
+        "exit": 1,
+        "blocking": "❌ 构建失败：TypeError: Cannot read properties of null (reading 'schemaVersion')",
+        "validateErrors": null,
+        "wordingFiles": null,
+        "wordingHits": null,
+        "datasets": null
+      },
+      "after": {
+        "exit": 0,
+        "blocking": null,
+        "validateErrors": null,
+        "wordingFiles": 9,
+        "wordingHits": [
+          {
+            "file": "changes/index.html",
+            "plan": 1,
+            "api": 1,
+            "deal": 0
+          },
+          {
+            "file": "feed/plans/api/changes.json",
+            "plan": 0,
+            "api": 1,
+            "deal": 0
+          },
+          {
+            "file": "feed/plans/api/changes.xml",
+            "plan": 0,
+            "api": 1,
+            "deal": 0
+          },
+          {
+            "file": "feed/plans/coding/changes.json",
+            "plan": 1,
+            "api": 0,
+            "deal": 0
+          },
+          {
+            "file": "feed/plans/coding/changes.xml",
+            "plan": 1,
+            "api": 0,
+            "deal": 0
+          },
+          {
+            "file": "index.html",
+            "plan": 0,
+            "api": 0,
+            "deal": 1
+          },
+          {
+            "file": "plans/api/index.html",
+            "plan": 0,
+            "api": 1,
+            "deal": 0
+          },
+          {
+            "file": "plans/coding/index.html",
+            "plan": 45,
+            "api": 0,
+            "deal": 0
+          },
+          {
+            "file": "plans/index.html",
+            "plan": 1,
+            "api": 1,
+            "deal": 0
+          }
+        ],
+        "datasets": [
+          {
+            "id": "api-plan-history",
+            "updatedAt": null,
+            "updatedAtShape": null,
+            "availability": "unavailable",
+            "note": "本次构建没有拿到 api-plan-history.json（文件缺失）——这份数据集的更新时间不可公布，这不表示「没有变化」。",
+            "count": 0
+          },
+          {
+            "id": "plan-history",
+            "updatedAt": null,
+            "updatedAtShape": null,
+            "availability": "unavailable",
+            "note": "本次构建没有拿到 plan-history.json（文件缺失）——这份数据集的更新时间不可公布，这不表示「没有变化」。",
+            "count": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "plan-broken",
+      "what": "plan-history.json 非法 JSON",
+      "before": {
+        "exit": 1,
+        "blocking": "❌ 构建失败：TypeError: Cannot read properties of null (reading 'schemaVersion')",
+        "validateErrors": null,
+        "wordingFiles": null,
+        "wordingHits": null,
+        "datasets": null
+      },
+      "after": {
+        "exit": 0,
+        "blocking": null,
+        "validateErrors": null,
+        "wordingFiles": 6,
+        "wordingHits": [
+          {
+            "file": "changes/index.html",
+            "plan": 1,
+            "api": 0,
+            "deal": 0
+          },
+          {
+            "file": "feed/plans/coding/changes.json",
+            "plan": 1,
+            "api": 0,
+            "deal": 0
+          },
+          {
+            "file": "feed/plans/coding/changes.xml",
+            "plan": 1,
+            "api": 0,
+            "deal": 0
+          },
+          {
+            "file": "index.html",
+            "plan": 0,
+            "api": 0,
+            "deal": 1
+          },
+          {
+            "file": "plans/coding/index.html",
+            "plan": 45,
+            "api": 0,
+            "deal": 0
+          },
+          {
+            "file": "plans/index.html",
+            "plan": 1,
+            "api": 0,
+            "deal": 0
+          }
+        ],
+        "datasets": [
+          {
+            "id": "api-plan-history",
+            "updatedAt": "2026-10-01",
+            "updatedAtShape": "date",
+            "note": null,
+            "count": 17
+          },
+          {
+            "id": "plan-history",
+            "updatedAt": null,
+            "updatedAtShape": null,
+            "availability": "unavailable",
+            "note": "本次构建没有拿到 plan-history.json（Expected property name or '}' in JSON at position 2 (line 1 column 3)）——这份数据集的更新时间不可公布，这不表示「没有变化」。",
+            "count": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "api-broken",
+      "what": "api-plan-history.json 非法 JSON",
+      "before": {
+        "exit": 1,
+        "blocking": "❌ 构建失败：Error: Command failed: D:\\nodejs\\node.exe D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\unavailable-dataset-build-crash-v1\\scripts\\validate.js",
+        "validateErrors": [
+          "❌ 校验失败，共 1 项：",
+          "- api-plan-history.json 解析失败：Expected property name or '}' in JSON at position 2 (line 1 column 3)"
+        ],
+        "wordingFiles": null,
+        "wordingHits": null,
+        "datasets": null
+      },
+      "after": {
+        "exit": 1,
+        "blocking": "❌ 构建失败：Error: Command failed: D:\\nodejs\\node.exe D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\unavailable-dataset-build-crash-v1\\scripts\\validate.js",
+        "validateErrors": [
+          "❌ 校验失败，共 1 项：",
+          "- api-plan-history.json 解析失败：Expected property name or '}' in JSON at position 2 (line 1 column 3)"
+        ],
+        "wordingFiles": null,
+        "wordingHits": null,
+        "datasets": null
+      }
+    },
+    {
+      "id": "both-broken",
+      "what": "两份都非法 JSON",
+      "before": {
+        "exit": 1,
+        "blocking": "❌ 构建失败：Error: Command failed: D:\\nodejs\\node.exe D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\unavailable-dataset-build-crash-v1\\scripts\\validate.js",
+        "validateErrors": [
+          "❌ 校验失败，共 1 项：",
+          "- api-plan-history.json 解析失败：Expected property name or '}' in JSON at position 2 (line 1 column 3)"
+        ],
+        "wordingFiles": null,
+        "wordingHits": null,
+        "datasets": null
+      },
+      "after": {
+        "exit": 1,
+        "blocking": "❌ 构建失败：Error: Command failed: D:\\nodejs\\node.exe D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\unavailable-dataset-build-crash-v1\\scripts\\validate.js",
+        "validateErrors": [
+          "❌ 校验失败，共 1 项：",
+          "- api-plan-history.json 解析失败：Expected property name or '}' in JSON at position 2 (line 1 column 3)"
+        ],
+        "wordingFiles": null,
+        "wordingHits": null,
+        "datasets": null
+      }
+    },
+    {
+      "id": "deal-broken",
+      "what": "deal-history.json 非法 JSON（对照）",
+      "before": {
+        "exit": 0,
+        "blocking": null,
+        "validateErrors": null,
+        "wordingFiles": 6,
+        "wordingHits": [
+          {
+            "file": "changes/index.html",
+            "plan": 0,
+            "api": 0,
+            "deal": 1
+          },
+          {
+            "file": "feed/changes.json",
+            "plan": 0,
+            "api": 0,
+            "deal": 1
+          },
+          {
+            "file": "feed/changes.xml",
+            "plan": 0,
+            "api": 0,
+            "deal": 1
+          },
+          {
+            "file": "feed/new.json",
+            "plan": 0,
+            "api": 0,
+            "deal": 1
+          },
+          {
+            "file": "feed/new.xml",
+            "plan": 0,
+            "api": 0,
+            "deal": 1
+          },
+          {
+            "file": "index.html",
+            "plan": 0,
+            "api": 0,
+            "deal": 2
+          }
+        ],
+        "datasets": [
+          {
+            "id": "api-plan-history",
+            "updatedAt": "2026-10-01",
+            "updatedAtShape": "date",
+            "note": null,
+            "count": 17
+          },
+          {
+            "id": "deal-history",
+            "updatedAt": null,
+            "updatedAtShape": null,
+            "availability": "unavailable",
+            "note": "本次构建没有拿到 deal-history.json（Expected property name or '}' in JSON at position 2 (line 1 column 3)）——这份数据集的更新时间不可公布，这不表示「没有变化」。",
+            "count": 0
+          },
+          {
+            "id": "plan-history",
+            "updatedAt": "2026-10-01",
+            "updatedAtShape": "date",
+            "note": null,
+            "count": 35
+          }
+        ]
+      },
+      "after": {
+        "exit": 0,
+        "blocking": null,
+        "validateErrors": null,
+        "wordingFiles": 6,
+        "wordingHits": [
+          {
+            "file": "changes/index.html",
+            "plan": 0,
+            "api": 0,
+            "deal": 1
+          },
+          {
+            "file": "feed/changes.json",
+            "plan": 0,
+            "api": 0,
+            "deal": 1
+          },
+          {
+            "file": "feed/changes.xml",
+            "plan": 0,
+            "api": 0,
+            "deal": 1
+          },
+          {
+            "file": "feed/new.json",
+            "plan": 0,
+            "api": 0,
+            "deal": 1
+          },
+          {
+            "file": "feed/new.xml",
+            "plan": 0,
+            "api": 0,
+            "deal": 1
+          },
+          {
+            "file": "index.html",
+            "plan": 0,
+            "api": 0,
+            "deal": 2
+          }
+        ],
+        "datasets": [
+          {
+            "id": "api-plan-history",
+            "updatedAt": "2026-10-01",
+            "updatedAtShape": "date",
+            "note": null,
+            "count": 17
+          },
+          {
+            "id": "plan-history",
+            "updatedAt": "2026-10-01",
+            "updatedAtShape": "date",
+            "note": null,
+            "count": 35
+          }
+        ]
+      }
+    },
+    {
+      "id": "deal-missing",
+      "what": "deal-history.json 缺失（对照）",
+      "before": {
+        "exit": 0,
+        "blocking": null,
+        "validateErrors": null,
+        "wordingFiles": 6,
+        "wordingHits": [
+          {
+            "file": "changes/index.html",
+            "plan": 0,
+            "api": 0,
+            "deal": 1
+          },
+          {
+            "file": "feed/changes.json",
+            "plan": 0,
+            "api": 0,
+            "deal": 1
+          },
+          {
+            "file": "feed/changes.xml",
+            "plan": 0,
+            "api": 0,
+            "deal": 1
+          },
+          {
+            "file": "feed/new.json",
+            "plan": 0,
+            "api": 0,
+            "deal": 1
+          },
+          {
+            "file": "feed/new.xml",
+            "plan": 0,
+            "api": 0,
+            "deal": 1
+          },
+          {
+            "file": "index.html",
+            "plan": 0,
+            "api": 0,
+            "deal": 2
+          }
+        ],
+        "datasets": [
+          {
+            "id": "api-plan-history",
+            "updatedAt": "2026-10-01",
+            "updatedAtShape": "date",
+            "note": null,
+            "count": 17
+          },
+          {
+            "id": "deal-history",
+            "updatedAt": null,
+            "updatedAtShape": null,
+            "availability": "unavailable",
+            "note": "本次构建没有拿到 deal-history.json（文件缺失）——这份数据集的更新时间不可公布，这不表示「没有变化」。",
+            "count": 0
+          },
+          {
+            "id": "plan-history",
+            "updatedAt": "2026-10-01",
+            "updatedAtShape": "date",
+            "note": null,
+            "count": 35
+          }
+        ]
+      },
+      "after": {
+        "exit": 0,
+        "blocking": null,
+        "validateErrors": null,
+        "wordingFiles": 6,
+        "wordingHits": [
+          {
+            "file": "changes/index.html",
+            "plan": 0,
+            "api": 0,
+            "deal": 1
+          },
+          {
+            "file": "feed/changes.json",
+            "plan": 0,
+            "api": 0,
+            "deal": 1
+          },
+          {
+            "file": "feed/changes.xml",
+            "plan": 0,
+            "api": 0,
+            "deal": 1
+          },
+          {
+            "file": "feed/new.json",
+            "plan": 0,
+            "api": 0,
+            "deal": 1
+          },
+          {
+            "file": "feed/new.xml",
+            "plan": 0,
+            "api": 0,
+            "deal": 1
+          },
+          {
+            "file": "index.html",
+            "plan": 0,
+            "api": 0,
+            "deal": 2
+          }
+        ],
+        "datasets": [
+          {
+            "id": "api-plan-history",
+            "updatedAt": "2026-10-01",
+            "updatedAtShape": "date",
+            "note": null,
+            "count": 17
+          },
+          {
+            "id": "plan-history",
+            "updatedAt": "2026-10-01",
+            "updatedAtShape": "date",
+            "note": null,
+            "count": 35
+          }
+        ]
+      }
+    },
+    {
+      "id": "all-broken",
+      "what": "三份都非法 JSON",
+      "before": {
+        "exit": 1,
+        "blocking": "❌ 构建失败：Error: Command failed: D:\\nodejs\\node.exe D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\unavailable-dataset-build-crash-v1\\scripts\\validate.js",
+        "validateErrors": [
+          "❌ 校验失败，共 1 项：",
+          "- api-plan-history.json 解析失败：Expected property name or '}' in JSON at position 2 (line 1 column 3)"
+        ],
+        "wordingFiles": null,
+        "wordingHits": null,
+        "datasets": null
+      },
+      "after": {
+        "exit": 1,
+        "blocking": "❌ 构建失败：Error: Command failed: D:\\nodejs\\node.exe D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\unavailable-dataset-build-crash-v1\\scripts\\validate.js",
+        "validateErrors": [
+          "❌ 校验失败，共 1 项：",
+          "- api-plan-history.json 解析失败：Expected property name or '}' in JSON at position 2 (line 1 column 3)"
+        ],
+        "wordingFiles": null,
+        "wordingHits": null,
+        "datasets": null
+      }
+    }
+  ]
+}
