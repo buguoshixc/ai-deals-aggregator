@@ -10,15 +10,15 @@
   },
   {
    "file": "research/_raw/p2-honesty-single-source-v1/assertion-readings.json",
-   "sha256Working": "a099d3c71c153d9a572a25958c2bb5c8f707a2d23bccb2859e5ebc0228db5129",
+   "sha256Working": "694d6473b0d3d48cd7210f0aeae7630c4c472aa2d787642c3c961033d6ecbb74",
    "sha256OriginMaster": null,
-   "lines": 32
+   "lines": 54
   },
   {
    "file": "research/_raw/p2-honesty-single-source-v1/change-surface.json",
-   "sha256Working": "9e7e724d824946e6def5984fc0ea7aa9ee2bb7026c8f1e6bcfb2c99b785efb5c",
+   "sha256Working": "3048d2286a6c7ab622d60f97d7bdee1598aeea26aca1e459aa95871df57a2702",
    "sha256OriginMaster": null,
-   "lines": 53
+   "lines": 116
   },
   {
    "file": "research/_raw/p2-honesty-single-source-v1/gap-a-degraded-build.json",
@@ -31,6 +31,12 @@
    "sha256Working": "fab6ea0b762c6c065acde7079113b45f67b11d0b3c8981b4b5a0a37c0a90bfd2",
    "sha256OriginMaster": null,
    "lines": 35
+  },
+  {
+   "file": "research/_raw/p2-honesty-single-source-v1/patch-seo-selftest-gap-a.md",
+   "sha256Working": "3d26a863648b3513b66e04bc6de9f8486c1bcad3849c0159bf73279c790024ad",
+   "sha256OriginMaster": null,
+   "lines": 100
   },
   {
    "file": "research/_raw/p2-honesty-single-source-v1/pr-body.md",
@@ -89,10 +95,11 @@
  ],
  "numstat": [
   "54\t0\tresearch/_raw/p2-honesty-single-source-v1/README.md",
-  "31\t0\tresearch/_raw/p2-honesty-single-source-v1/assertion-readings.json",
-  "52\t0\tresearch/_raw/p2-honesty-single-source-v1/change-surface.json",
+  "53\t0\tresearch/_raw/p2-honesty-single-source-v1/assertion-readings.json",
+  "115\t0\tresearch/_raw/p2-honesty-single-source-v1/change-surface.json",
   "284\t0\tresearch/_raw/p2-honesty-single-source-v1/gap-a-degraded-build.json",
   "34\t0\tresearch/_raw/p2-honesty-single-source-v1/gap-b-entry-wording.json",
+  "99\t0\tresearch/_raw/p2-honesty-single-source-v1/patch-seo-selftest-gap-a.md",
   "80\t0\tresearch/_raw/p2-honesty-single-source-v1/pr-body.md",
   "100\t0\tresearch/_raw/p2-honesty-single-source-v1/teeth.json",
   "211\t0\tresearch/p2-honesty-single-source-v1-report.md",

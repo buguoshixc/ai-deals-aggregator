@@ -34,8 +34,8 @@
   "note": "构建期自检新增三条「如实不可用」不变量 + /changes/ 的可用性分支断言（不计入上面四条口径）"
  },
  "fullGate": {
-  "what": "本机 Full Gate（与 CI 第 5 步等价的链）",
-  "reading": "合计 378.6s / 47 个脚本，失败 0 · ✅ 本地门禁链全过（与 CI 读同一份 action.yml）",
+  "what": "本机 Full Gate（与 CI 第 5 步等价的链）——在**推送后的最终树**上实跑",
+  "reading": "合计 293.4s / 47 个脚本，失败 0 · ✅ 本地门禁链全过（与 CI 读同一份 action.yml）",
   "cannotRunLocally": [
    "Install dependencies",
    "Prepare browser for the real-browser gate",
@@ -43,6 +43,19 @@
    "Gate conclusion"
   ],
   "note": "另有 CI 侧的 concurrency / cancel 行为本地复现不了"
+ },
+ "ciRuns": {
+  "redOnT7": {
+   "run": "37767125542",
+   "head": "d7c228fed00f365522e31a4bdf332dce948aabb9",
+   "conclusion": "failure",
+   "failing": "plans-selftest §⑪：deals 链路完全不引用 plans —— scripts/lib/changes.js 提到了 plan-history（263 项通过 / 1 项失败）"
+  },
+  "greenAfterT20": {
+   "run": "37771348182",
+   "head": "60805101ef8eea4792414d8da5b0583a671ed880",
+   "conclusion": "success"
+  }
  },
  "neighbouringSuites": {
   "selftest:data-docs": "58 项 / 0 失败",
