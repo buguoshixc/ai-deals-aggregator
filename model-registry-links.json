@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-10-05T00:00:00+08:00",
+  "updatedAt": "2026-10-08T00:00:00+08:00",
   "count": 92,
   "links": [
     {
@@ -142,6 +142,13 @@
           "quote": "Claude Sonnet 5.5 | Base tokens: Input $2 / MTok, Output $10 / MTok | Prompt caching: 5m writes $2.50 / MTok, 1h writes $4 / MTok, Hits and refreshes $0.20 / MTok",
           "sourceUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
           "capturedAt": "2026-10-01",
+          "lang": "en"
+        },
+        {
+          "field": "models.claude-sonnet-5.5.rates.cachedInput.change",
+          "quote": "First, starting today, we’re lowering the price of cache reads on Claude Sonnet 5.5. Cache reads now cost 50% less: $0.10 per million tokens rather than $0.20.",
+          "sourceUrl": "https://www.anthropic.com/claude-haiku-5-5",
+          "capturedAt": "2026-10-08",
           "lang": "en"
         }
       ],

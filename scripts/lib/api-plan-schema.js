@@ -242,6 +242,22 @@ const API_EVIDENCE_FIELDS = [
 ];
 
 /**
+ * API 计费记录的**引文预算：4 条**（t28）。
+ *
+ * 为什么比 deals 的 `provenance.MAX_EVIDENCE_ITEMS`（3）多一条：一条 API 记录里同一个模型
+ * 可能同时需要两种证据，而它们缺一不可 ——
+ *   · **前三条**（原有字段序：基础字段 → `models.<key>` → 变体 → 逐维度 → 记录级维度）
+ *     是**价目表行见证**：官方表格那一行的原文，`input` / `output` 都写在里面，
+ *     所以「输入价先于输出价」那条列序判据（B2）有落点；
+ *   · **第 4 条**是官方**变更记录**引文（`.change` 形态）：散文公告里的新值 + 旧值。
+ * 若预算仍是 3：`.change` 字段排序在最后，**先被丢掉的恰好是变更记录**（实测），
+ * 于是「新增见证反而先被截掉」；删掉价目表行又会让 B2 在这条记录上失去落点。
+ * 4 是加容量，不是放宽判据 —— 每一条仍受各自判据约束（见 `evidenceBindingProblems`）。
+ * 调用方只有本文件：`makeApiPlan` 归一引文时传 `max: API_EVIDENCE_MAX_ITEMS`。
+ */
+const API_EVIDENCE_MAX_ITEMS = 4;
+
+/**
  * 口径文案的唯一出处（**刻意不写进数据**：每条记录重复同一句话只会让文件变噪）。
  */
 const API_WORDING = {
@@ -835,6 +851,14 @@ function normalizeCredits(value, problems) {
  *   · `models.<modelKey>`                             —— 旧形态：这条原文属于哪个模型
  *   · `models.<modelKey>.<variant>`                   —— 精确到变体（标准档 / 长上下文是两个价）
  *   · `models.<modelKey>[.<variant>].rates.<dim>`     —— 精确到**维度**（input / output / cachedInput / …）
+ *   · `models.<modelKey>[.<variant>].rates.<dim>.change` —— **变更记录**：官方变更公告里的散文原文
+ *     （t28 新增形态，唯一新增的绑定语义）。它必须**显式**写出来才生效：普通维度绑定照旧走
+ *     「输入价先于输出价」的列序判据（B2），一个字都不放宽；`.change` 只用于**散文式变更记录** ——
+ *     那类原文根本没有价格表的列序可言（官方写的是「Cache reads now cost 50% less: $0.10 per
+ *     million tokens rather than $0.20.」：新值与旧值写在同一句里），拿列序去判它只会得到假红。
+ *     换来的不是放宽，而是这一形态自己的两条判据（见 `evidenceBindingProblems`）：
+ *     当前值必须在引文里（空转的变更绑定 = 没证）、引文里必须还有一个与当前值不同的数值
+ *     （否则它根本不是「变更记录」）。
  *   · `rates.<dim>`                                   —— 记录级维度见证（价格表整列）
  *   · `mediaRates.<unit>`                             —— 非 token 计费项（第 7 列）的单位见证
  *
@@ -868,6 +892,18 @@ function apiEvidenceFieldsOf(plan) {
   // 记录级维度见证：整张价格表的「输入价 / 输出价」列（例：表头引文 + 表体引文成对使用）
   for (const dim of TOKEN_RATE_KEYS) fields.push(`rates.${dim}`);
   for (const unit of MEDIA_RATE_UNITS) fields.push(`mediaRates.${unit}`);
+  // 变更记录形态（t28）**追加在最后**：上面每一段的次序都不动 —— 这份清单同时是引文排序键，
+  // 中间插一段会让存量引文的顺序漂移。
+  for (const entry of models) {
+    if (!entry || !entry.modelKey) continue;
+    const key = entry.modelKey;
+    for (const dim of TOKEN_RATE_KEYS) {
+      if (entry.rates && entry.rates[dim] !== null && entry.rates[dim] !== undefined) {
+        fields.push(`models.${key}.rates.${dim}.change`);
+        if (entry.variant) fields.push(`models.${key}.${entry.variant}.rates.${dim}.change`);
+      }
+    }
+  }
   return [...new Set(fields)];
 }
 
@@ -909,6 +945,18 @@ function quoteIndexOfNumber(quote, value) {
     if (at >= 0 && (best < 0 || at < best)) best = at;
   }
   return best;
+}
+
+/**
+ * 引文里出现过的**数值集合**（供变更记录判据 C2 用）。
+ *
+ * 取的只是"原文里写出来的数字词"本身：`$0.10` → `0.1`、`50% less` → `50`。
+ * **不做单位换算、不看数字大小**（与 `quoteIndexOfNumber` 同一尺度）：这里要回答的只有
+ * "这段原文除了当前值之外，还写没写出第二个数"——没有任何关于价格高低的经验规则。
+ */
+function numericTokensOf(text) {
+  const found = String(text === null || text === undefined ? '' : text).match(/\d+(?:\.\d+)?/g) || [];
+  return [...new Set(found.map(Number))];
 }
 
 /** 单位词两条：百万 / 千。**只看引文里写出来的单位，不看数字大小**（那是被禁止的经验规则） */
@@ -971,7 +1019,13 @@ function unitClassOf(unit) {
 function parseEvidenceBinding(field, variants) {
   const text = String(field || '');
   const dims = TOKEN_RATE_KEYS.join('|');
-  let match = new RegExp(`^models\\.(.+)\\.(${variants.join('|')})\\.rates\\.(${dims})$`).exec(text);
+  // 变更记录形态（t28）：**必须显式带 `.change` 后缀**才走这一条 —— 普通维度绑定照旧走 `kind:'rate'`，
+  // 因此「输入价先于输出价」那条列序判据对老形态一个字都没放宽。
+  let match = new RegExp(`^models\\.(.+)\\.(${variants.join('|')})\\.rates\\.(${dims})\\.change$`).exec(text);
+  if (match) return { kind: 'change', modelKey: match[1], variant: match[2], dim: match[3] };
+  match = new RegExp(`^models\\.(.+)\\.rates\\.(${dims})\\.change$`).exec(text);
+  if (match) return { kind: 'change', modelKey: match[1], variant: null, dim: match[2] };
+  match = new RegExp(`^models\\.(.+)\\.(${variants.join('|')})\\.rates\\.(${dims})$`).exec(text);
   if (match) return { kind: 'rate', modelKey: match[1], variant: match[2], dim: match[3] };
   match = new RegExp(`^models\\.(.+)\\.rates\\.(${dims})$`).exec(text);
   if (match) return { kind: 'rate', modelKey: match[1], variant: null, dim: match[2] };
@@ -1041,6 +1095,36 @@ function evidenceBindingProblems(record) {
 
     // B1 / B2：与数字对账（只对能定位到模型的绑定做）
     if (binding.kind === 'media') continue;
+
+    // ── 变更记录形态（t28）：**显式**声明才走这条路 ────────────────────────────
+    // 与 B2 的关系必须说清：这里**不做**列序判据，但这不是放宽 —— 散文式变更记录没有价格表的
+    // 列序前提（官方把新值与旧值写在同一句里），而这一形态带来的是它自己的两条判据：
+    //   C1 当前值必须在引文里（空转的变更绑定 = 没证，与 B1 同一条纪律）；
+    //   C2 引文里必须还有一个与当前值**不同**的数值 —— 只有一个数的原文根本不是「变更记录」，
+    //      想用 `.change` 绕开列序的条目会在这一条上被挡回来。
+    // 普通维度绑定（不带 `.change`）一个字都没放宽：对照读数见
+    // `research/anthropic-cached-price-landing-v1-report.md`（把后缀摘掉后同一条引文照样红）。
+    if (binding.kind === 'change') {
+      const candidates = targeted.filter(model => model.rates && model.rates[binding.dim] !== null && model.rates[binding.dim] !== undefined);
+      if (!candidates.length) {
+        problems.push(`evidence「${item.field}」声明为变更记录，但绑定的维度（${binding.dim}）**没有值**`
+          + ' —— 绑定指向不存在的证据（写了却没生效）');
+        continue;
+      }
+      if (!candidates.some(model => quoteIndexOfNumber(quote, model.rates[binding.dim]) >= 0)) {
+        problems.push(`evidence「${item.field}」声明为变更记录，但引文里找不到该维度的当前值`
+          + `（${candidates.map(model => model.rates[binding.dim]).join(' / ')}）—— 空转的变更绑定等于没证`);
+        continue;
+      }
+      const current = new Set(candidates.map(model => model.rates[binding.dim]));
+      if (!numericTokensOf(quote).some(value => !current.has(value))) {
+        problems.push(`evidence「${item.field}」声明为变更记录，但引文里只有当前值`
+          + `（${[...current].join(' / ')}）—— 变更记录必须同时写出一个**不同**的数值`
+          + '（旧值 / 折扣比例），否则它不是变更证据；这类引文请改用维度绑定（那会走输入/输出列序判据）');
+      }
+      continue;
+    }
+
     if (binding.kind === 'rate') {
       const candidates = targeted.filter(model => model.rates && model.rates[binding.dim] !== null && model.rates[binding.dim] !== undefined);
       if (!candidates.length) {
@@ -1181,7 +1265,7 @@ function makeApiPlan(raw = {}, opts = {}) {
 
   // 引文：字段白名单要等模型归一完才能展开
   const evidenceFields = apiEvidenceFieldsOf({ models });
-  const evidence = provenance.normalizeEvidence(raw.evidence, { today, fields: evidenceFields });
+  const evidence = provenance.normalizeEvidence(raw.evidence, { today, fields: evidenceFields, max: API_EVIDENCE_MAX_ITEMS });
   if (!evidence) {
     problems.push(`evidence 缺失：每条 API 计费记录至少要有一条来自官方页的原文引文`
       + `（字段只能取 ${evidenceFields.join(' / ')}）`);
@@ -1491,6 +1575,7 @@ module.exports = {
   API_UNIT_LABEL,
   API_WORDING,
   API_EVIDENCE_FIELDS,
+  API_EVIDENCE_MAX_ITEMS,
   TOKEN_RATE_KEYS,
   TOKEN_RATE_LABEL,
   MEDIA_RATE_KINDS,

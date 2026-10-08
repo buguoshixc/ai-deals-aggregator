@@ -2534,6 +2534,51 @@
       },
       "runAt": "2026-10-05T03:55:30.418Z",
       "eventId": "b71423a7e1e0"
+    },
+    {
+      "planId": "4f8bae91f9f8",
+      "at": "2026-10-08",
+      "type": "price_decreased",
+      "field": "models",
+      "from": {
+        "name": "Claude Sonnet 5.5",
+        "modelKey": "claude-sonnet-5.5",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 2,
+          "output": 10,
+          "cachedInput": 0.2,
+          "cacheWrite": 2.5,
+          "cacheWriteLong": 4,
+          "reasoning": null,
+          "batchInput": null,
+          "batchOutput": null
+        },
+        "mediaRates": null,
+        "note": null
+      },
+      "to": {
+        "name": "Claude Sonnet 5.5",
+        "modelKey": "claude-sonnet-5.5",
+        "variant": "standard",
+        "aliases": null,
+        "rates": {
+          "input": 2,
+          "output": 10,
+          "cachedInput": 0.1,
+          "cacheWrite": 2.5,
+          "cacheWriteLong": 4,
+          "reasoning": null,
+          "batchInput": null,
+          "batchOutput": null
+        },
+        "mediaRates": null,
+        "note": "缓存读取价按官方变更记录修正：官方 2026-10-07 生效，本站 2026-10-08 复核。缓存写入（5m / 1h）官方未说明变化，保持原值。"
+      },
+      "origin": "observed",
+      "runAt": "2026-10-08T14:18:16.686Z",
+      "eventId": "8a300f4262de"
     }
   ]
 }
