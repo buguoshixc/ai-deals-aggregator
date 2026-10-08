@@ -26,6 +26,20 @@
 
 'use strict';
 
+/**
+ * 说明登记（notes-manifest-residual-v1）：`.snote` 构造点不再直接写进页面 —— 每个构造点在
+ * 产出那一段 HTML 的**同一次调用**里登记（`ctx.note` 由 `build-local.js` 按 route 注入）。
+ * 与 `lib/vendor-page.js` 同形：参数可以是 ctx 对象（含 `.note`），也可以是 note 函数本身；
+ * 都没有时是恒等函数（断言 / selftest 路径不产出页面）。
+ */
+const NOTES_DECLARED_BY = 'lib/archive.js';
+const noteIn = source => {
+  if (typeof source === 'function') return source;
+  if (source && typeof source.note === 'function') return source.note;
+  return (decl, html) => html;
+};
+
+
 const plansPage = require('./plans-page');
 
 const ARCHIVE_INDEX_ROUTE = 'archive/';
@@ -566,8 +580,8 @@ function renderArchiveIndex(archives, ctx = {}) {
       : `        <li class="anone">${rich(archiveEmptyText(archive.kind, archive))}</li>`;
     return `      <section class="asec" id="archive-${escapeHtml(archive.kind)}">
         <h2 class="ph2">${escapeHtml(ARCHIVE_KIND_LABEL[archive.kind] || archive.kind)}（${rows.length} 条）</h2>
-        <p class="snote">结束 ${archive.counts.ended} 条 · 恢复 ${archive.counts.restored} 条
-          · 变更记录自 ${escapeHtml(archive.baselineAt || UNKNOWN_TEXT)} 起</p>
+        ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">结束 ${archive.counts.ended} 条 · 恢复 ${archive.counts.restored} 条
+          · 变更记录自 ${escapeHtml(archive.baselineAt || UNKNOWN_TEXT)} 起</p>`)}
         <ul class="alist">
 ${body}
         </ul>
@@ -575,8 +589,8 @@ ${body}
   }).join('\n\n');
 
   const suspectNote = suspectCount
-    ? `      <p class="snote awarn">${rich(`有 ${suspectCount} 条结束记录被标为**疑似来源故障**：同一天结束的数量超过了阈值。`
-      + '它们仍然列在这里（资料不删除），但不应当被当成"厂商已经下架"的证据。')}</p>\n`
+    ? `      ${noteIn(ctx)({ kind: 'page-note-warn', slot: 'main-snote', classes: 'snote awarn', declaredBy: NOTES_DECLARED_BY }, `<p class="snote awarn">${rich(`有 ${suspectCount} 条结束记录被标为**疑似来源故障**：同一天结束的数量超过了阈值。`
+      + '它们仍然列在这里（资料不删除），但不应当被当成"厂商已经下架"的证据。')}</p>`)}\n`
     : '';
 
   return `      <nav class="crumb" aria-label="面包屑"><a href="${escapeHtml(prefix)}">首页</a> › <span>${escapeHtml(ARCHIVE_HEADING)}</span></nav>
@@ -586,7 +600,7 @@ ${body}
         <span class="meta">${all.length} 条已结束 / 已恢复资料 · 覆盖 ${list.length} 个领域</span>
       </div>
 
-      <p class="snote">${escapeHtml(ARCHIVE_DESCRIPTION)}</p>
+      ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">${escapeHtml(ARCHIVE_DESCRIPTION)}</p>`)}
 
       <h2 class="ph2" id="archive-notes">怎么读这一页</h2>
       <ul class="plist">
@@ -598,13 +612,13 @@ ${body}
 ${suspectNote}
 ${sections}
 
-      <p class="snote" id="archive-links">相关页面：
+      ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote" id="archive-links">相关页面：
         <a href="${escapeHtml(`${prefix}changes/`)}">最近变化</a> ·
         <a href="${escapeHtml(`${prefix}plans/`)}">套餐与 API 计费资料库</a> ·
         <a href="${escapeHtml(`${prefix}models/`)}">模型资料索引</a> ·
         <a href="${escapeHtml(`${prefix}vendor/`)}">按厂商浏览</a> ·
         <a href="${escapeHtml(`${prefix}docs/data/`)}">数据文档</a>
-      </p>
+      </p>`)}
 `;
 }
 
@@ -687,8 +701,8 @@ function renderArchiveEntry(entry, ctx = {}) {
   ].filter(Boolean).join(' · ') || UNKNOWN_TEXT;
 
   const suspectBlock = entry.suspect
-    ? `      <p class="snote awarn">${rich(`这条结束记录被标为**疑似来源故障**：${entry.suspectReason || ''}。`
-      + '它仍然是本站的观测记录，但不应当被当成"厂商已经下架"的证据。')}</p>\n`
+    ? `      ${noteIn(ctx)({ kind: 'page-note-warn', slot: 'main-snote', classes: 'snote awarn', declaredBy: NOTES_DECLARED_BY }, `<p class="snote awarn">${rich(`这条结束记录被标为**疑似来源故障**：${entry.suspectReason || ''}。`
+      + '它仍然是本站的观测记录，但不应当被当成"厂商已经下架"的证据。')}</p>`)}\n`
     : '';
 
   return `      <nav class="crumb" aria-label="面包屑"><a href="${escapeHtml(prefix)}">首页</a> ›
@@ -712,7 +726,7 @@ ${suspectBlock}
       </dl>
 
       <h2 class="ph2" id="archive-known">最后已知内容</h2>
-      <p class="snote">${rich('这是**结束那一刻**的字段值（按基线 + 事件重放得到），不是当前值。')}</p>
+      ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">${rich('这是**结束那一刻**的字段值（按基线 + 事件重放得到），不是当前值。')}</p>`)}
       <dl class="aknown">
 ${knownRows || `        <dt>${escapeHtml(UNKNOWN_TEXT)}</dt><dd>${escapeHtml('结束时没有可重建的字段值')}</dd>`}
       </dl>

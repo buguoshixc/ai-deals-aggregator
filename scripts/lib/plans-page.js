@@ -33,6 +33,20 @@ const plansCompare = require('./plans-compare');
  * 必须是同一句，所以句子只能有一处实现（`planChangeText()`）。
  */
 const planHistory = require('./plan-history');
+
+/**
+ * 说明登记（notes-manifest-residual-v1）：`.snote` 构造点不再直接写进页面 —— 每个构造点在
+ * 产出那一段 HTML 的**同一次调用**里登记（`ctx.note` 由 `build-local.js` 按 route 注入）。
+ * 与 `lib/vendor-page.js` 同形：参数可以是 ctx 对象（含 `.note`），也可以是 note 函数本身；
+ * 都没有时是恒等函数（断言 / selftest 路径不产出页面）。
+ */
+const NOTES_DECLARED_BY = 'lib/plans-page.js';
+const noteIn = source => {
+  if (typeof source === 'function') return source;
+  if (source && typeof source.note === 'function') return source.note;
+  return (decl, html) => html;
+};
+
 const planChanges = require('./plan-changes');
 
 const PLANS_ROUTE = 'plans/coding/';
@@ -691,7 +705,7 @@ function planChangesPageBlockHtml(radar, opts = {}) {
   if (!radar || radar.availability !== 'ok') {
     return `<section class="chgsec pchanges" id="plans">
         <h2>${escapeHtml(W.sectionTitle)}</h2>
-        <p class="snote chgwarn">${escapeHtml(W.unavailable)}</p>
+        ${noteIn(opts)({ kind: 'page-note-warn', slot: 'main-snote', classes: 'snote chgwarn', declaredBy: NOTES_DECLARED_BY }, `<p class="snote chgwarn">${escapeHtml(W.unavailable)}</p>`)}
       </section>
 `;
   }
@@ -709,9 +723,9 @@ function planChangesPageBlockHtml(radar, opts = {}) {
       ? `<ul class="chglist">
 ${items.map(item => `          <li>${planChangeItemHtml(item, itemOpts)}</li>`).join('\n')}
         </ul>`
-      : `<p class="snote">${escapeHtml(W.emptySection[key])}</p>`;
+      : `${noteIn(opts)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">${escapeHtml(W.emptySection[key])}</p>`)}`;
     const truncated = section.truncated > 0
-      ? `\n        <p class="snote">${escapeHtml(W.more.replace('{n}', String(section.truncated)))}</p>` : '';
+      ? `\n        ${noteIn(opts)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">${escapeHtml(W.more.replace('{n}', String(section.truncated)))}</p>`)}` : '';
     return `      <div class="chgsub">
         <h3>${escapeHtml(S[key])}（${radar.totals[key]}）</h3>
 ${list}${truncated}
@@ -719,15 +733,15 @@ ${list}${truncated}
   }).join('\n');
 
   const metaNote = radar.totals.meta > 0
-    ? `      <p class="snote">另有 ${radar.totals.meta} 条只影响记录元信息的变化（官方定价页 / 来源类型 / 来源地址），`
-      + `不计入上面的分栏；它们仍出现在各条套餐的变更记录里。</p>\n`
+    ? `      ${noteIn(opts)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">另有 ${radar.totals.meta} 条只影响记录元信息的变化（官方定价页 / 来源类型 / 来源地址），`
+      + `不计入上面的分栏；它们仍出现在各条套餐的变更记录里。</p>`)}\n`
     : '';
 
   return `<section class="chgsec pchanges" id="plans">
       <h2>${escapeHtml(W.sectionTitle)}</h2>
-      <p class="snote">${escapeHtml(W.plansSource.replace('{date}', radar.startedAt || '未知'))}</p>
+      ${noteIn(opts)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">${escapeHtml(W.plansSource.replace('{date}', radar.startedAt || '未知'))}</p>`)}
 ${sections}
-${metaNote}      <p class="snote">${escapeHtml(W.disclaimer)}</p>
+${metaNote}      ${noteIn(opts)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">${escapeHtml(W.disclaimer)}</p>`)}
     </section>
 `;
 }
@@ -876,7 +890,7 @@ function planDealsBlockHtml(view, opts = {}) {
     ` · 历史关联 ${history} 条 · 数据基准日 ${view.asOf || UNKNOWN_TEXT}`;
   return `      <section class="pplandeals" id="plan-deals">
         <h2 class="ph2">${escapeHtml(opts.heading || PLAN_DEALS_WORDING.heading)}</h2>
-        <p class="snote">${note}</p>
+        ${noteIn(opts)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">${note}</p>`)}
         <ul class="pdlist">
 ${body}
         </ul>
@@ -992,12 +1006,12 @@ function plansPageBody(plans, opts = {}) {
   const unitSortable = payload.dimensions.sort.some(item => item.key === 'unit');
   // v2.3：最近变化块。**放在 #plans-compare 之外**（那个容器的 innerHTML 会被 JS 整块替换）。
   const planChangesBlock = opts.planChanges
-    ? planChangesBlockHtml(opts.planChanges, { prefix: opts.prefix || '', providerTable, plansById: new Map(plans.map(p => [p.id, p])) })
+    ? planChangesBlockHtml(opts.planChanges, { prefix: opts.prefix || '', providerTable, plansById: new Map(plans.map(p => [p.id, p])), note: opts.note })
     : '';
   // v2.4：优惠 ↔ 套餐。同样在 #plans-compare 之外、纯静态（无 JS 时也读得到）。
   // 视图由 `lib/deal-plan-links.js` 算好传进来（判据只有一处），这里只排版。
   const dealLinks = opts.dealLinks || null;
-  const dealLinksBlock = dealLinks ? `\n${planDealsBlockHtml(dealLinks, { prefix: opts.prefix || '', home })}` : '';
+  const dealLinksBlock = dealLinks ? `\n${planDealsBlockHtml(dealLinks, { prefix: opts.prefix || '', home, note: opts.note })}` : '';
   const dealLinksMeta = dealLinks ? ` · 当前有优惠 ${dealLinks.counts.withCurrent} 条` : '';
 
   return `      <nav class="crumb" aria-label="面包屑"><a href="${home}">首页</a> › <span>${escapeHtml(PLANS_HEADING)}</span></nav>
@@ -1007,10 +1021,10 @@ function plansPageBody(plans, opts = {}) {
         <span class="meta">共 ${rows.length} 条套餐 · ${providerCount} 个平台 · 国内 ${rows.filter(r => r.regionText === '国内').length} 条${dealLinksMeta}</span>
       </div>
 
-      <p class="snote">${escapeHtml(PLANS_DESCRIPTION)}</p>
+      ${noteIn(opts)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">${escapeHtml(PLANS_DESCRIPTION)}</p>`)}
 
 ${planChangesBlock}
-      <p class="snote pnoscript"><noscript>筛选、搜索与排序需要 JavaScript；未启用时，下面这张表就是全部 ${rows.length} 条套餐。</noscript></p>
+      ${noteIn(opts)({ kind: 'noscript-hint', slot: 'main-snote', classes: 'snote pnoscript', declaredBy: NOTES_DECLARED_BY }, `<p class="snote pnoscript"><noscript>筛选、搜索与排序需要 JavaScript；未启用时，下面这张表就是全部 ${rows.length} 条套餐。</noscript></p>`)}
 
       <!--
         控件容器：**静态 HTML 里是空的**。整块由 scripts/lib/plans-compare.js 建出来，
@@ -1018,7 +1032,7 @@ ${planChangesBlock}
         数据载荷与逐行详情模板都在表格下面，同样只在有 JS 时才被读走。
       -->
       <div class="pctl" id="plans-compare" role="group" aria-label="筛选与排序"></div>
-${unitSortable ? '' : `      <p class="snote">${escapeHtml(NO_UNIT_SORT_NOTE)}</p>\n`}
+${unitSortable ? '' : `      ${noteIn(opts)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">${escapeHtml(NO_UNIT_SORT_NOTE)}</p>`)}\n`}
       <div class="ptable-wrap">
       <table class="ptable">
         <caption>共 ${rows.length} 条套餐 · 有活动价 ${withPromo} 条 · 名义 Token 单价可计算 ${computable} 条
@@ -1045,11 +1059,11 @@ ${planDetailTemplatesHtml(plans, { providerTable, planHistoryStore: opts.planHis
         ${PLANS_NOTES.map(note => `<li>${renderNote(note)}</li>`).join('\n        ')}
       </ul>
 
-      <p class="snote" style="margin-top: var(--s3)">
+      ${noteIn(opts)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote" style="margin-top: var(--s3)">
         名义 Token 单价的口径：${escapeHtml(planSchema.PLAN_WORDING.nominalUnitPriceNote)}
         数据集与判据：<a href="${home}plans.json">plans.json</a>（每条套餐的原始字段，含官方原文引文）。
         这一页只做收录与整理，价格、额度与条款以各平台官方页面为准。
-      </p>`;
+      </p>`)}`;
 }
 
 /**

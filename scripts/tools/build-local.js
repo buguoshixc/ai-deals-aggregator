@@ -1571,7 +1571,8 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
       providerTable: context.providerTable || null,
       // 与 `/plans/coding/` 的那一块传**同一份上下文**：币种 / 额度单位 / 平台显示名
       // 都从套餐记录里取，同一件事在两页上才是同一句话（见 context.plansById 的注释）。
-      plansById: context.plansById || null
+      plansById: context.plansById || null,
+      note: noteDeclarerFor('changes/')
     })
       .split('\n').map(line => `      ${line}`).join('\n')
     : '';
@@ -1768,6 +1769,7 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
 </script>`).join('\n');
 
   const body = plansPage.plansPageBody(plans, {
+    note: noteDeclarerFor(plansPage.PLANS_ROUTE),
     providerTable,
     planChanges: context.planChanges || null,
     planHistoryStore: context.planHistoryStore || null,
@@ -1933,6 +1935,9 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
 </script>`).join('\n');
 
   const body = apiPlansPage.apiPlansPageBody(plans, {
+    // 说明登记（notes-manifest-residual-v1）：这一页的每条 `.snote` 都在模块的构造点登记，
+    // 入口在这里注入（与 lib/vendor-page.js 的 ctx.note 同形）。
+    note: context.note || null,
     providerTable,
     historyStore: context.apiPlanHistoryStore || null,
     dealLinks: context.dealLinks || null,
@@ -3754,9 +3759,12 @@ function assemble() {
   // 渲染、套餐/API 两块由 `plans-page.js` / `api-plans-page.js` 渲染 —— 构造点都不在本文件，
   // 所以这一页进**台账**而不是逐条登记（见本节开头的覆盖边界）。
   notePage('changes/', { kind: 'changes' });
+  // 台账（仍未接管）：正文里的 9 条 `.snote` 由 `index.html` 的 RENDER-CORE（changesPageHtml）
+  // 与 `lib/plans-page.js` / `lib/api-plans-page.js` 的变化块渲染 —— 后两者已逐条登记
+  // （notes-manifest-residual-v1 接管），RENDER-CORE 那一处**尚未接管**，所以这一页仍进台账。
   noteUntracked('changes/', {
     family: 'changes',
-    owner: 'index.html 的 RENDER-CORE 区块（changesPageHtml）+ lib/plans-page.js + lib/api-plans-page.js',
+    owner: 'index.html 的 RENDER-CORE 区块（changesPageHtml）',
     structural: 'index.html:3930（分栏口径说明 N.scope，无条件输出）',
     minNotes: 2
   });
@@ -3796,21 +3804,7 @@ function assemble() {
   // 一条页面级说明，它由 `lib/plans-page.js` 输出（该模块不在本轮 in-scope 路径里），
   // 所以在这一页的**组装点**按容器签名做一次「pin」登记：应当恰好 1 条 no-JS 提示。
   // 改名 / 换容器 / 不再输出，三种都会让渲染侧与它差一条。
-  notePinned('plans/coding/', {
-    kind: 'noscript-hint', slot: 'main-snote', classes: 'snote pnoscript',
-    declaredBy: 'build-local.js:renderPlansPage（组装点登记）'
-  }, {
-    source: 'lib/plans-page.js:1013',
-    reason: '无 JS 可读性是这一页的产品口径（筛选/搜索/排序全由内联脚本建控件），'
-      + '而构造点在范围之外的模块里 —— 先按容器签名钉住，下一轮接管构造点时改成 noteDeclare()'
-  });
   notePage('plans/coding/', { kind: 'plans' });
-  noteUntracked('plans/coding/', {
-    family: 'plans-coding',
-    owner: 'lib/plans-page.js',
-    structural: 'lib/plans-page.js:1010（PLANS_DESCRIPTION 口径说明，无条件输出）',
-    minNotes: 1
-  });
   fs.writeFileSync(path.join(plansDir, 'index.html'), plansHtml, 'utf8');
   {
     const pageProblems = plansPage.assertPageHonesty(plansHtml, plansStore.plans, {
@@ -3840,6 +3834,7 @@ function assemble() {
   const apiPlansDir = path.join(OUT, 'plans', 'api');
   fs.mkdirSync(apiPlansDir, { recursive: true });
   const apiPlansHtml = renderApiPlansPage(apiPlansStore, html, {
+    note: noteDeclarerFor(apiPlansPage.API_PLANS_ROUTE),
     providerTable,
     apiPlanHistoryStore,
     dealLinks: dealLinksView,
@@ -3847,12 +3842,6 @@ function assemble() {
     allFeeds: feedBundle.feeds
   });
   notePage(apiPlansPage.API_PLANS_ROUTE, { kind: 'api-plans' });
-  noteUntracked(apiPlansPage.API_PLANS_ROUTE, {
-    family: 'api-plans-index',
-    owner: 'lib/api-plans-page.js',
-    structural: 'lib/api-plans-page.js:613（API_PLANS_DESCRIPTION 口径说明，无条件输出）',
-    minNotes: 1
-  });
   fs.writeFileSync(path.join(apiPlansDir, 'index.html'), apiPlansHtml, 'utf8');
   {
     const pageProblems = apiPlansPage.assertPageHonesty(apiPlansHtml, apiPlansStore.plans, { providerTable });
@@ -3871,6 +3860,7 @@ function assemble() {
   //
   // 它**始终生成**：路由消失比一页说明更糟（与 /plans/coding/ /plans/api/ 同一条纪律）。
   const plansHubHtml = renderPlansHubShell(html, {
+    note: noteDeclarerFor(plansHubPage.PLANS_HUB_ROUTE),
     plans: plansStore.plans,
     apiPlans: apiPlansStore.plans,
     providerTable,
@@ -3883,12 +3873,6 @@ function assemble() {
     dataDocs: true
   });
   notePage(plansHubPage.PLANS_HUB_ROUTE, { kind: 'plans-hub' });
-  noteUntracked(plansHubPage.PLANS_HUB_ROUTE, {
-    family: 'plans-hub',
-    owner: 'lib/plans-hub-page.js',
-    structural: 'lib/plans-hub-page.js:313（PLANS_HUB_DESCRIPTION 口径说明，无条件输出）',
-    minNotes: 1
-  });
   fs.writeFileSync(path.join(OUT, plansHubPage.PLANS_HUB_ROUTE, 'index.html'), plansHubHtml, 'utf8');
   {
     const pageProblems = plansHubPage.assertPageHonesty(plansHubHtml, {
@@ -3949,7 +3933,10 @@ function assemble() {
   }
   fs.mkdirSync(path.join(OUT, 'models'), { recursive: true });
   {
-    const modelsIndexCtx = { ...modelsCtx, prefix: '../', __refCache: new Map() };
+    const modelsIndexCtx = {
+      ...modelsCtx, prefix: '../', __refCache: new Map(),
+      note: noteDeclarerFor(modelsPage.MODELS_INDEX_ROUTE)
+    };
     // ⚠️ 传的是**派生产物**（`publishedModels.models`，带 `catalogStatus` / `catalogReason`），
     // 不是来源层 `modelsTable`：目录状态是派生字段，来源层里根本没有它 —— 传错的那一版
     // 会让索引页每一行都渲染成「发布时间未知」且丢掉 `data-catalog-status`
@@ -3965,12 +3952,6 @@ function assemble() {
       prefix: '../'
     }, html);
     notePage(modelsPage.MODELS_INDEX_ROUTE, { kind: 'models-index' });
-    noteUntracked(modelsPage.MODELS_INDEX_ROUTE, {
-      family: 'models-index',
-      owner: 'lib/models-page.js',
-      structural: 'lib/models-page.js:845（MODELS_INDEX_DESCRIPTION 口径说明，无条件输出）',
-      minNotes: 1
-    });
     fs.writeFileSync(path.join(OUT, modelsPage.MODELS_INDEX_ROUTE, 'index.html'), indexHtml, 'utf8');
     const indexProblems = modelsPage.assertPageHonesty(indexHtml, {
       // 断言必须与**页面**读同一份数据：索引页是用派生记录（`modelRecords`）渲染的，
@@ -3989,7 +3970,7 @@ function assemble() {
     let written = 0;
     for (const model of gatedModels) {
       const prefix = '../../';
-      const detailCtx = { ...modelsCtx, prefix, __refCache: new Map() };
+      const detailCtx = { ...modelsCtx, prefix, __refCache: new Map(), note: noteDeclarerFor(modelsPage.modelHrefOf(model)) };
       const route = modelsPage.modelHrefOf(model);
       fs.mkdirSync(path.join(OUT, modelsPage.MODEL_ROUTE_PREFIX, model.slug), { recursive: true });
       const detailHtml = renderStaticPage({
@@ -4007,12 +3988,6 @@ function assemble() {
       // 说明意图：模型详情页的 `.snote` 全部由 `lib/models-page.js` 渲染（范围之外）。
       // 台账写的是**无条件**的那两条（计价条目口径 + 变化记录是派生视图）。
       notePage(route, { kind: 'model' });
-      noteUntracked(route, {
-        family: 'models-detail',
-        owner: 'lib/models-page.js',
-        structural: 'lib/models-page.js:1112 与 1123（计价条目口径 / 派生视图说明，均无条件输出）',
-        minNotes: 2
-      });
       fs.writeFileSync(path.join(OUT, route, 'index.html'), detailHtml, 'utf8');
       const problems = modelsPage.assertPageHonesty(detailHtml, {
         kind: 'model', model, ctx: { ...detailCtx, siteUrl: SITE_URL }
@@ -4067,7 +4042,9 @@ function assemble() {
   {
     const archiveDir = path.join(OUT, 'archive');
     fs.mkdirSync(archiveDir, { recursive: true });
-    const indexBody = archiveLib.renderArchiveIndex(archives, { prefix: '../', siteUrl: SITE_URL });
+    const indexBody = archiveLib.renderArchiveIndex(archives, {
+      prefix: '../', siteUrl: SITE_URL, note: noteDeclarerFor(archiveLib.ARCHIVE_INDEX_ROUTE)
+    });
     const indexHtml = renderStaticPage({
       kind: 'archive-index',
       // 通用静态页套壳（模型页与档案页共用：head / 主题脚本 / 页头 / 页脚 / JSON-LD）
@@ -4080,12 +4057,6 @@ function assemble() {
       extraCss: ARCHIVE_PAGE_CSS
     }, html);
     notePage(archiveLib.ARCHIVE_INDEX_ROUTE, { kind: 'archive-index' });
-    noteUntracked(archiveLib.ARCHIVE_INDEX_ROUTE, {
-      family: 'archive-index',
-      owner: 'lib/archive.js',
-      structural: 'lib/archive.js:589 与 601（ARCHIVE_DESCRIPTION 口径说明 / 相关资料库，均无条件输出）',
-      minNotes: 2
-    });
     fs.writeFileSync(path.join(archiveDir, 'index.html'), indexHtml, 'utf8');
     const problems = archiveLib.assertPageHonesty(indexHtml, { kind: 'archive-index', archives });
     if (problems.length) {
@@ -4115,16 +4086,10 @@ function assemble() {
         // 今天生产 0 个实例，`assertPageHonesty()`（下面那次调用）从整页上反查这条约束。
         mainClass: archiveLib.ARCHIVE_ENTRY_MAIN_CLASS
       }, html);
-      // 说明意图：档案详情页的 `.snote` 由 `lib/archive.js` 的 renderArchiveEntry 渲染。
-      // 目前**一条 ended/restored 都没有**（这个循环不跑）；一旦跑起来，下面两行会随之上场 ——
-      // 台账要求它至少还有那一条「结束那一刻的字段值」说明。
+      // 说明意图：档案详情页的 `.snote` 已由 `lib/archive.js` 的 renderArchiveEntry **逐条登记**
+      // （notes-manifest-residual-v1 接管了构造点）。目前**一条 ended/restored 都没有**（这个循环不跑），
+      // 一旦跑起来，登记会随渲染一起上场（漏登记即红）。
       notePage(route, { kind: 'archive-entry' });
-      noteUntracked(route, {
-        family: 'archive-detail',
-        owner: 'lib/archive.js',
-        structural: 'lib/archive.js:715（「结束那一刻的字段值」说明，无条件输出）',
-        minNotes: 1
-      });
       fs.writeFileSync(path.join(OUT, route, 'index.html'), entryHtml, 'utf8');
       const entryProblems = archiveLib.assertPageHonesty(entryHtml, { kind: 'archive-entry', entry });
       if (entryProblems.length) {
@@ -4246,6 +4211,7 @@ function assemble() {
   }
   const dataLicense = ['LICENSE', 'LICENSE.md', 'COPYING'].find(file => fs.existsSync(path.join(ROOT, file)));
   const dataDocsCtx = {
+    note: noteDeclarerFor(dataDocs.DATA_DOCS_ROUTE),
     manifest: dataManifest,
     // 许可证状态**从仓库现状读**，不写死：没有就说没有，并列为"需项目所有者决定"。
     license: dataLicense ? { status: 'present', file: dataLicense } : { status: 'absent' },
@@ -4272,12 +4238,6 @@ function assemble() {
       extraCss: DATA_DOCS_PAGE_CSS
     }, html);
     notePage(dataDocs.DATA_DOCS_ROUTE, { kind: 'data-docs' });
-    noteUntracked(dataDocs.DATA_DOCS_ROUTE, {
-      family: 'data-docs',
-      owner: 'lib/data-docs.js',
-      structural: 'lib/data-docs.js:794（DATA_DOCS_DESCRIPTION 口径说明，无条件输出）',
-      minNotes: 1
-    });
     fs.writeFileSync(path.join(docsDir, 'index.html'), docsHtml, 'utf8');
     const pageHonestyProblems = dataDocs.assertPageHonesty(docsHtml, dataDocsCtx)
       .filter(problem => !toleratedLogComplaints(dataManifest).has(problem));
