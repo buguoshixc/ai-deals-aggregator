@@ -1,0 +1,39 @@
+{
+  "task": "t19",
+  "what": "断言数只增不减：同一命令在 PR 合并前（4ecfb9db~1 = 5570958）与合并后（4ecfb9db）各跑一遍",
+  "at": "2026-10-08T12:10:19.014Z",
+  "verified": {
+    "mergeCommit": "4ecfb9db2b018bf59a4102987fa5ad277762ac03",
+    "parent": "5570958b1f66c0b0ba6a7d5de5e0e34dc0a2e2a0"
+  },
+  "counts": {
+    "selftest:seo": {
+      "before": 87,
+      "after": 88,
+      "delta": "+1",
+      "failures": 0
+    },
+    "selftest:plans": {
+      "before": 264,
+      "after": 264,
+      "delta": "0",
+      "failures": 0
+    },
+    "check:ci": {
+      "before": 39,
+      "after": 39,
+      "delta": "0",
+      "failures": 0
+    },
+    "verify-site": {
+      "after": 880,
+      "afterFailures": 0,
+      "before": "见同目录 evidence（pre 侧读数随本轮补记）"
+    },
+    "verify:seo": {
+      "after": 18,
+      "failures": 0
+    }
+  },
+  "note": "t7 报告里写 selftest:plans「263→264」：实测父提交已经是 264（未下降，但也不是本 PR 加的那一条），此处按实测记录"
+}
