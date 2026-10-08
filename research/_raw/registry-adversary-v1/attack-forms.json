@@ -1,0 +1,1042 @@
+{
+ "what": "criteria-adversary-v1 的全部攻击形态（逐条：目标 / 承诺 / 逐字注入 / sha256 对账）",
+ "discipline": "产品源码与 dist 只读：所有形态都注入 .arch-v1/ 下的**副本**；每条形态只改 1 个文件；逐文件 sha256 对账（见 sha256-accounting.json）",
+ "formCount": 38,
+ "forms": [
+  {
+   "id": "VA1-sideways-rl",
+   "round": 1,
+   "target": "need/free-api/",
+   "copy": "att",
+   "promise": "竖排（含 sideways-*）下「字迹在水平轴铺开 < 0.85×列宽」必须判红",
+   "expectFromPromise": "note-ink-narrow",
+   "css": ".snote { writing-mode: sideways-rl; width: 100%; height: 5.6rem; overflow: hidden; }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 135
+    }
+   ],
+   "rawDefinition": {
+    "id": "VA1-sideways-rl",
+    "round": 1,
+    "route": "need/free-api/",
+    "promise": "竖排（含 sideways-*）下「字迹在水平轴铺开 < 0.85×列宽」必须判红",
+    "css": ".snote { writing-mode: sideways-rl; width: 100%; height: 5.6rem; overflow: hidden; }",
+    "expect": "note-ink-narrow"
+   },
+   "sha256Before": "62ae8f3d736691a08665680bec15a8dfd61925f1a2b3d03e57863b38669893bb",
+   "sha256After": "402efa2527d7ac2459c493544a9c439f1c50bda1e4bc7611e08b3ca9342fbad2",
+   "bytesDelta": 135
+  },
+  {
+   "id": "VA2-vertical-lr",
+   "round": 1,
+   "target": "need/student-only/",
+   "copy": "att",
+   "promise": "同上（vertical-lr 轴）",
+   "expectFromPromise": "note-ink-narrow",
+   "css": ".snote { writing-mode: vertical-lr; width: 100%; height: 5.6rem; overflow: hidden; }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 135
+    }
+   ],
+   "rawDefinition": {
+    "id": "VA2-vertical-lr",
+    "round": 1,
+    "route": "need/student-only/",
+    "promise": "同上（vertical-lr 轴）",
+    "css": ".snote { writing-mode: vertical-lr; width: 100%; height: 5.6rem; overflow: hidden; }",
+    "expect": "note-ink-narrow"
+   },
+   "sha256Before": "1e66f93f84d5803d0fc6e8fd6f65244a5703d634de3a9feb374591cbe7cec046",
+   "sha256After": "9f9098f4b05f09d4052bc8514442142b80087fca5b7b6c5101cdcc803e57cc89",
+   "bytesDelta": 135
+  },
+  {
+   "id": "VA3-single-column-clipped",
+   "round": 1,
+   "target": "need/dev-credits/",
+   "copy": "att",
+   "promise": "前置条件 inkCount≥2：单列（等价横排单行）不判 —— 但单列 + 裁切会不会静默？",
+   "expectFromPromise": "no-code",
+   "css": ".snote { writing-mode: vertical-rl; width: 100%; height: 5.6rem; overflow: hidden; white-space: nowrap; }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 166
+    }
+   ],
+   "rawDefinition": {
+    "id": "VA3-single-column-clipped",
+    "round": 1,
+    "route": "need/dev-credits/",
+    "promise": "前置条件 inkCount≥2：单列（等价横排单行）不判 —— 但单列 + 裁切会不会静默？",
+    "css": ".snote { writing-mode: vertical-rl; width: 100%; height: 5.6rem; overflow: hidden; white-space: nowrap; }",
+    "expect": "no-code"
+   },
+   "sha256Before": "32f5482ee790cb039bedb062d4847b05538908d1668ed192a4aaa876c6a3142a",
+   "sha256After": "b3e80d2a92001a5af2a02e62af7f4d48c0cc032e8dbf629b3a4b01ef22e1db96",
+   "bytesDelta": 166
+  },
+  {
+   "id": "VA4-full-span-spill",
+   "round": 1,
+   "target": "docs/data/",
+   "copy": "att",
+   "promise": "列栈铺满列宽 ⇒ 放行（真·铺满）",
+   "expectFromPromise": "no-code",
+   "css": ".snote { writing-mode: vertical-rl; width: 100%; height: 1rem; overflow: hidden; }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 137
+    }
+   ],
+   "rawDefinition": {
+    "id": "VA4-full-span-spill",
+    "round": 1,
+    "route": "docs/data/",
+    "promise": "列栈铺满列宽 ⇒ 放行（真·铺满）",
+    "css": ".snote { writing-mode: vertical-rl; width: 100%; height: 1rem; overflow: hidden; }",
+    "expect": "no-code"
+   },
+   "sha256Before": "28b1386b2dbccd9d9ddf6d6db1342e771ba8d1fa0cbc9a05c66e1f4de76d779b",
+   "sha256After": "0bec20efc775b25b03cf8f376d61128cdce8bcd0553caf74c6323f787fd3c1de",
+   "bytesDelta": 137
+  },
+  {
+   "id": "VA5-media-760",
+   "round": 1,
+   "target": "status/",
+   "copy": "att",
+   "promise": "只在 @media 内生效的竖排（760 在样本集里）⇒ 样本档必须咬住",
+   "expectFromPromise": "note-ink-narrow@760",
+   "css": "@media (min-width: 700px) and (max-width: 800px) { .snote { writing-mode: vertical-rl; width: 100%; height: 5.6rem; overflow: hidden; } }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 186
+    }
+   ],
+   "rawDefinition": {
+    "id": "VA5-media-760",
+    "round": 1,
+    "route": "status/",
+    "promise": "只在 @media 内生效的竖排（760 在样本集里）⇒ 样本档必须咬住",
+    "css": "@media (min-width: 700px) and (max-width: 800px) { .snote { writing-mode: vertical-rl; width: 100%; height: 5.6rem; overflow: hidden; } }",
+    "expect": "note-ink-narrow@760"
+   },
+   "sha256Before": "096e1fd06e470d74d4942cdc6bdb55a5c68373d767b6e1c7c1849b7e14fcd1f2",
+   "sha256After": "2d07a6a222f605b0046019621a5ee0a0582ed125cb33a878ab06f4634b02525b",
+   "bytesDelta": 186
+  },
+  {
+   "id": "VA6-media-unmeasured-gap",
+   "round": 1,
+   "target": "feeds/",
+   "copy": "att",
+   "promise": "同一份判据在两个桌面档 + 两个样本档生效 ⇒ 可在未量测档位（900–1000px）藏形态吗",
+   "expectFromPromise": "no-code",
+   "css": "@media (min-width: 900px) and (max-width: 1000px) { .snote { writing-mode: vertical-rl; width: 100%; height: 5.6rem; overflow: hidden; } }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 198
+    }
+   ],
+   "rawDefinition": {
+    "id": "VA6-media-unmeasured-gap",
+    "round": 1,
+    "route": "feeds/",
+    "promise": "同一份判据在两个桌面档 + 两个样本档生效 ⇒ 可在未量测档位（900–1000px）藏形态吗",
+    "css": "@media (min-width: 900px) and (max-width: 1000px) { .snote { writing-mode: vertical-rl; width: 100%; height: 5.6rem; overflow: hidden; } }",
+    "expect": "no-code"
+   },
+   "sha256Before": "b08670fb2856e68efd1acbd6ab210f0f3db8d5f3b380aa29373da5a19756654a",
+   "sha256After": "617ae7e8d8f9ae701f6576069f8eb6a0824c18d0e65f9881d975b92f5bd044f0",
+   "bytesDelta": 198
+  },
+  {
+   "id": "VA7-ancestor-writing-mode",
+   "round": 1,
+   "target": "plans/api/",
+   "copy": "att",
+   "promise": "轴选择读 .snote 自身 computed writingMode —— 祖先继承时轴还对吗",
+   "expectFromPromise": "note-ink-narrow",
+   "css": ".arch-anc { writing-mode: vertical-rl; } .arch-anc > .snote { width: 100%; height: 5.6rem; overflow: hidden; }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 171
+    },
+    {
+     "op": "wrap",
+     "hits": 5
+    }
+   ],
+   "rawDefinition": {
+    "id": "VA7-ancestor-writing-mode",
+    "round": 1,
+    "route": "plans/api/",
+    "promise": "轴选择读 .snote 自身 computed writingMode —— 祖先继承时轴还对吗",
+    "wrap": {
+     "match": "<p class=\"snote\"[^>]*>([\\s\\S]*?)</p>",
+     "wrapper": "<div class=\"arch-anc\">$&</div>",
+     "expect": 5
+    },
+    "css": ".arch-anc { writing-mode: vertical-rl; } .arch-anc > .snote { width: 100%; height: 5.6rem; overflow: hidden; }",
+    "expect": "note-ink-narrow"
+   },
+   "sha256Before": "2e5a095a87515891e51f61389394d6a0988b681f09e4c5165faf1185142d9846",
+   "sha256After": "eb91158dd2eddcd5cd0aed1bda16f0ccf29f5a69d9a86d58e9e99ca0b2eb1395",
+   "bytesDelta": 311
+  },
+  {
+   "id": "VA8-axis-desync",
+   "round": 1,
+   "target": "archive/",
+   "copy": "att",
+   "promise": "轴按 .snote 自身 writing-mode 选 —— 若字迹由后代按另一轴排版，判据量还对吗",
+   "expectFromPromise": "no-code",
+   "css": ".snote { writing-mode: vertical-rl; width: 100%; } .snote .arch-h { writing-mode: horizontal-tb; }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 149
+    },
+    {
+     "op": "spanLines",
+     "hits": 4,
+     "longestChunk": 16
+    }
+   ],
+   "rawDefinition": {
+    "id": "VA8-axis-desync",
+    "round": 1,
+    "route": "archive/",
+    "promise": "轴按 .snote 自身 writing-mode 选 —— 若字迹由后代按另一轴排版，判据量还对吗",
+    "spanLines": {
+     "match": "<p class=\"snote\"[^>]*>((?:(?!<[a-z])[\\s\\S])*?)</p>",
+     "chars": 16,
+     "spanClass": "arch-h",
+     "expect": 4
+    },
+    "css": ".snote { writing-mode: vertical-rl; width: 100%; } .snote .arch-h { writing-mode: horizontal-tb; }",
+    "expect": "no-code"
+   },
+   "sha256Before": "71689ea9e2c58270d9136e816e04a86a7fe125a1192a9da649f2325c52fb31fe",
+   "sha256After": "f007ab4e184039364031450e10dd7be52595f5cc7c679e6577fc5b7301222fc3",
+   "bytesDelta": 309
+  },
+  {
+   "id": "VA9-scaleX-horizontal",
+   "round": 1,
+   "target": "models/",
+   "copy": "att",
+   "promise": "transform: scaleX() 这类绘制期缩放会一并影响 getClientRects ⇒ 逐行判据量得到",
+   "expectFromPromise": "note-ink-narrow",
+   "css": ".snote { transform: scaleX(0.35); }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 92
+    }
+   ],
+   "rawDefinition": {
+    "id": "VA9-scaleX-horizontal",
+    "round": 1,
+    "route": "models/",
+    "promise": "transform: scaleX() 这类绘制期缩放会一并影响 getClientRects ⇒ 逐行判据量得到",
+    "css": ".snote { transform: scaleX(0.35); }",
+    "expect": "note-ink-narrow"
+   },
+   "sha256Before": "8a50d5d46e94f060fcd6c7b9a12b423ab004ee6e4f6dc01790a72ab7f9d2ef54",
+   "sha256After": "57e1da966b1c94bb7ad6c28ec59903cca0e446662453c57b06325ead24d2a3c2",
+   "bytesDelta": 92
+  },
+  {
+   "id": "VA10-scaleX-vertical-narrow",
+   "round": 1,
+   "target": "plans/",
+   "copy": "att",
+   "promise": "竖排 + scaleX 叠加：轴按列 + 字迹被缩放 ⇒ 仍要咬住",
+   "expectFromPromise": "note-ink-narrow",
+   "css": ".snote { writing-mode: vertical-rl; width: 100%; height: 5.6rem; overflow: hidden; transform: scaleX(0.2); }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 171
+    }
+   ],
+   "rawDefinition": {
+    "id": "VA10-scaleX-vertical-narrow",
+    "round": 1,
+    "route": "plans/",
+    "promise": "竖排 + scaleX 叠加：轴按列 + 字迹被缩放 ⇒ 仍要咬住",
+    "css": ".snote { writing-mode: vertical-rl; width: 100%; height: 5.6rem; overflow: hidden; transform: scaleX(0.2); }",
+    "expect": "note-ink-narrow"
+   },
+   "sha256Before": "dd22bf3dd48921fdc2702f0cd88a76359e84dba9e51ab5cb3f3fa36d4da9e73f",
+   "sha256After": "370f378278d01b54f82f2c01edc8c5e03d28947e0a0245ec378f41074814144a",
+   "bytesDelta": 171
+  },
+  {
+   "id": "VA11-scaleX-vertical-wide",
+   "round": 1,
+   "target": "changes/",
+   "copy": "att",
+   "promise": "竖排 + scaleX(5)：把列栈「放大」到铺满 ⇒ 判据会不会被放大买通（溢出由谁接住）",
+   "expectFromPromise": "page-overflow@1440",
+   "css": ".snote { writing-mode: vertical-rl; width: 100%; height: 5.6rem; overflow: hidden; transform: scaleX(5); transform-origin: left center; }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 198
+    }
+   ],
+   "rawDefinition": {
+    "id": "VA11-scaleX-vertical-wide",
+    "round": 1,
+    "route": "changes/",
+    "promise": "竖排 + scaleX(5)：把列栈「放大」到铺满 ⇒ 判据会不会被放大买通（溢出由谁接住）",
+    "css": ".snote { writing-mode: vertical-rl; width: 100%; height: 5.6rem; overflow: hidden; transform: scaleX(5); transform-origin: left center; }",
+    "expect": "page-overflow@1440"
+   },
+   "sha256Before": "5477661c4ba72cad676dc1b6b19a93ab8c2b0b71fbf690a573a26f6393b71ef4",
+   "sha256After": "410acce115d87825f9fdd13e4882b98a0946345d67386a80838541141e149bd4",
+   "bytesDelta": 198
+  },
+  {
+   "id": "RA1-comma-borrowed-registration",
+   "round": 2,
+   "target": "need/ai-coding/",
+   "copy": "att",
+   "promise": "产物里任何 ch 窄列都必须登记（逗号多选择器：任一段命中即算已登记）",
+   "expectFromPromise": "narrow-unregistered",
+   "css": ".pnote, .pdetailbody { max-width: 72ch; }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 108
+    }
+   ],
+   "rawDefinition": {
+    "id": "RA1-comma-borrowed-registration",
+    "round": 2,
+    "route": "need/ai-coding/",
+    "promise": "产物里任何 ch 窄列都必须登记（逗号多选择器：任一段命中即算已登记）",
+    "css": ".pnote, .pdetailbody { max-width: 72ch; }",
+    "expect": "narrow-unregistered"
+   },
+   "sha256Before": "d36585f4b0d938dc1001e5747e5af08071748bf4b3fb29e3d1f1a05ce9439c7d",
+   "sha256After": "f6e25227b02198e08e06696ba3636fa83a9778b917f4a62bff0b6c279cc5c817",
+   "bytesDelta": 108
+  },
+  {
+   "id": "RA2-comma-control",
+   "round": 2,
+   "target": "need/free-model/",
+   "copy": "att",
+   "promise": "同一形态去掉逗号段 ⇒ 必须判 red（对照）",
+   "expectFromPromise": "narrow-unregistered",
+   "css": ".pnote { max-width: 72ch; }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 80
+    }
+   ],
+   "rawDefinition": {
+    "id": "RA2-comma-control",
+    "round": 2,
+    "route": "need/free-model/",
+    "promise": "同一形态去掉逗号段 ⇒ 必须判 red（对照）",
+    "css": ".pnote { max-width: 72ch; }",
+    "expect": "narrow-unregistered"
+   },
+   "sha256Before": "cecacf959ac832bff3bce20bc59461fdd9c5c12d4a60f8d89e1349829f93a1f4",
+   "sha256After": "9e9a7727e282677f27e1fbc23a0eba449a3d48d284ba4e3921d34cf89026c49d",
+   "bytesDelta": 80
+  },
+  {
+   "id": "RA3-media-nested",
+   "round": 2,
+   "target": "need/china-usable/",
+   "copy": "att",
+   "promise": "@media 内的规则是否在扁平正则的扫描面里",
+   "expectFromPromise": "narrow-unregistered",
+   "css": "@media (min-width: 1px) { .pnote { max-width: 70ch; } }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 107
+    }
+   ],
+   "rawDefinition": {
+    "id": "RA3-media-nested",
+    "round": 2,
+    "route": "need/china-usable/",
+    "promise": "@media 内的规则是否在扁平正则的扫描面里",
+    "css": "@media (min-width: 1px) { .pnote { max-width: 70ch; } }",
+    "expect": "narrow-unregistered"
+   },
+   "sha256Before": "c6b71d23d824dc0dc199bafd183522a7fdc82f87d6ecf0dee058bdaa70a94b0c",
+   "sha256After": "f39b00c71fd3c0668dbf882e0b892819354361fdce87b132bbdabe88ce7045d5",
+   "bytesDelta": 107
+  },
+  {
+   "id": "RA4-supports-and-comment",
+   "round": 2,
+   "target": "need/edu-identity/",
+   "copy": "att",
+   "promise": "注释 + @supports 混排是否漏扫",
+   "expectFromPromise": "narrow-unregistered",
+   "css": "/* 形态说明：@supports 包一层，规则前还有一段注释 */\n@supports (display: grid) { .pnote { max-width: 70ch; } }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 152
+    }
+   ],
+   "rawDefinition": {
+    "id": "RA4-supports-and-comment",
+    "round": 2,
+    "route": "need/edu-identity/",
+    "promise": "注释 + @supports 混排是否漏扫",
+    "css": "/* 形态说明：@supports 包一层，规则前还有一段注释 */\n@supports (display: grid) { .pnote { max-width: 70ch; } }",
+    "expect": "narrow-unregistered"
+   },
+   "sha256Before": "edbbc70a3f06ce98669c4dae44a4c4bcb8e50d4fc344f732ef6264c186869987",
+   "sha256After": "ba234320f1d20d2436b4e624b7c8d2a5142594f8881da452b86925e853956168",
+   "bytesDelta": 188
+  },
+  {
+   "id": "RA5-unit-case-CH",
+   "round": 2,
+   "target": "need/free-tier/",
+   "copy": "att",
+   "promise": "ch 扫描面（正则 /\\d+(\\.\\d+)?ch\\b/ 大小写敏感）",
+   "expectFromPromise": "narrow-unregistered",
+   "css": ".pnote { max-width: 70CH; }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 79
+    }
+   ],
+   "rawDefinition": {
+    "id": "RA5-unit-case-CH",
+    "round": 2,
+    "route": "need/free-tier/",
+    "promise": "ch 扫描面（正则 /\\d+(\\.\\d+)?ch\\b/ 大小写敏感）",
+    "css": ".pnote { max-width: 70CH; }",
+    "expect": "narrow-unregistered"
+   },
+   "sha256Before": "49faf34a069408e9fb363187f3f313a47f7bd98966ba05fa28459c56eb6e71a8",
+   "sha256After": "9f2a92bf5c4a2c26604e651cfd2d9a3d39ff6bc5d1628d779b2b4564945bec34",
+   "bytesDelta": 79
+  },
+  {
+   "id": "RA6-property-case-MAX-WIDTH",
+   "round": 2,
+   "target": "need/free-tokens/",
+   "copy": "att",
+   "promise": "属性名扫描面（正则 ^(max-width|inline-size|width)$ 大小写敏感）",
+   "expectFromPromise": "narrow-unregistered",
+   "css": ".pnote { MAX-WIDTH: 70ch; }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 90
+    }
+   ],
+   "rawDefinition": {
+    "id": "RA6-property-case-MAX-WIDTH",
+    "round": 2,
+    "route": "need/free-tokens/",
+    "promise": "属性名扫描面（正则 ^(max-width|inline-size|width)$ 大小写敏感）",
+    "css": ".pnote { MAX-WIDTH: 70ch; }",
+    "expect": "narrow-unregistered"
+   },
+   "sha256Before": "68283f99b674b83c3e4e0dcdecf1d3281fc695bfa4a20a02bfc2ccd708d70fde",
+   "sha256After": "a436a5c1eb14f0a55492ae199875f5ed345832b2ba18164751cfd44b732ee1ec",
+   "bytesDelta": 90
+  },
+  {
+   "id": "RA7-px-out-of-scope",
+   "round": 2,
+   "target": "need/no-card/",
+   "copy": "att",
+   "promise": "px / rem 明确不在射程（登记清单 scanScope 逐字声明）",
+   "expectFromPromise": "no-code",
+   "css": ".pnote { max-width: 465px; }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 83
+    }
+   ],
+   "rawDefinition": {
+    "id": "RA7-px-out-of-scope",
+    "round": 2,
+    "route": "need/no-card/",
+    "promise": "px / rem 明确不在射程（登记清单 scanScope 逐字声明）",
+    "css": ".pnote { max-width: 465px; }",
+    "expect": "no-code"
+   },
+   "sha256Before": "4fafdbeaefcad040f909eeac4ef986401b51eadb6e81ae3da1739e99046313ef",
+   "sha256After": "699dc1841458d2e472713c3fc28643a77317ca6d91352e1e8d740ad46b1c5c99",
+   "bytesDelta": 83
+  },
+  {
+   "id": "RA8-min-width-out-of-scope",
+   "round": 2,
+   "target": "developer/",
+   "copy": "att",
+   "promise": "min-width 不在射程（且不构成窄列）",
+   "expectFromPromise": "no-code",
+   "css": ".pnote { min-width: 70ch; }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 89
+    }
+   ],
+   "rawDefinition": {
+    "id": "RA8-min-width-out-of-scope",
+    "round": 2,
+    "route": "developer/",
+    "promise": "min-width 不在射程（且不构成窄列）",
+    "css": ".pnote { min-width: 70ch; }",
+    "expect": "no-code"
+   },
+   "sha256Before": "2bd977e625992d4080e53e6bd8cd6fc9d49f1742b9a932aa20b4ed505bc2bfe8",
+   "sha256After": "d40d30d7038ef8900d7bfec7d2e464679dcc2c85000babeefc75d318be4b5aa9",
+   "bytesDelta": 89
+  },
+  {
+   "id": "RA9-important-unregistered",
+   "round": 2,
+   "target": "free-api/",
+   "copy": "att",
+   "promise": "!important 的未登记 ch 窄列仍要判红",
+   "expectFromPromise": "narrow-unregistered",
+   "css": ".pnote { max-width: 70ch !important; }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 100
+    }
+   ],
+   "rawDefinition": {
+    "id": "RA9-important-unregistered",
+    "round": 2,
+    "route": "free-api/",
+    "promise": "!important 的未登记 ch 窄列仍要判红",
+    "css": ".pnote { max-width: 70ch !important; }",
+    "expect": "narrow-unregistered"
+   },
+   "sha256Before": "426562738425b8d78d3c635c950635c100b85db7d4b94997166c15b2204a8b6f",
+   "sha256After": "777a6b05281ca323b0c2af9ef1a069e4635561f8d5ff83723b606f36545a3784",
+   "bytesDelta": 100
+  },
+  {
+   "id": "RA10-important-registered-declaration",
+   "round": 2,
+   "target": "plans/coding/",
+   "copy": "att",
+   "promise": "登记条目按「selector + 归一声明文本」逐字匹配 —— 已登记声明加 !important 是否假红",
+   "expectFromPromise": "narrow-unregistered-false-red",
+   "css": ".pdetailbody { max-width: 72ch !important; }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 117
+    }
+   ],
+   "rawDefinition": {
+    "id": "RA10-important-registered-declaration",
+    "round": 2,
+    "route": "plans/coding/",
+    "promise": "登记条目按「selector + 归一声明文本」逐字匹配 —— 已登记声明加 !important 是否假红",
+    "css": ".pdetailbody { max-width: 72ch !important; }",
+    "expect": "narrow-unregistered-false-red"
+   },
+   "sha256Before": "2f593e8742a2d56099521e01e1f2b91b489db0f67677b975ee7dc7e186e7de27",
+   "sha256After": "df60509a5807bf9f6900ff05f6726a3aa05c9475577836a1a66e297f948b8793",
+   "bytesDelta": 117
+  },
+  {
+   "id": "RA11-comment-string-eats-rule",
+   "round": 2,
+   "target": "student/",
+   "copy": "att",
+   "promise": "注释先剥离再扫描：字符串里的 /* 会不会把真规则一起吃进注释",
+   "expectFromPromise": "narrow-unregistered",
+   "css": ".arch-decoy::before { content: \"/*\"; }\n.pnote { max-width: 70ch; }\n/* arch-end */",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 146
+    }
+   ],
+   "rawDefinition": {
+    "id": "RA11-comment-string-eats-rule",
+    "round": 2,
+    "route": "student/",
+    "promise": "注释先剥离再扫描：字符串里的 /* 会不会把真规则一起吃进注释",
+    "css": ".arch-decoy::before { content: \"/*\"; }\n.pnote { max-width: 70ch; }\n/* arch-end */",
+    "expect": "narrow-unregistered"
+   },
+   "sha256Before": "1c77fdbf6c6db78505b130d1ea149a1c64354d8351cbe6615b15ffa017590d98",
+   "sha256After": "08fd07d07df2a4b61d2d6e11f738a82312b4a3826db95387dfcb0bd32f11b8f3",
+   "bytesDelta": 146
+  },
+  {
+   "id": "RA12-inline-style-attribute",
+   "round": 2,
+   "target": "category/chat/",
+   "copy": "att",
+   "promise": "行内 style= 属性是否在扫描面内（登记清单 scanScope 只写了内联 <style> 规则块）",
+   "expectFromPromise": "narrow-unregistered",
+   "css": null,
+   "steps": [
+    {
+     "op": "replace",
+     "hits": 2
+    }
+   ],
+   "rawDefinition": {
+    "id": "RA12-inline-style-attribute",
+    "round": 2,
+    "route": "category/chat/",
+    "promise": "行内 style= 属性是否在扫描面内（登记清单 scanScope 只写了内联 <style> 规则块）",
+    "replace": {
+     "match": "<p class=\"pnote\">",
+     "replacement": "<p class=\"pnote\" style=\"max-width: 70ch;\">",
+     "expect": 2
+    },
+    "expect": "narrow-unregistered"
+   },
+   "sha256Before": "824f7e51384985940c31f5bdf79f028ad3eed0c3544c4d32c94b27cf5b13d1df",
+   "sha256After": "6e52d23af57b11c08c09ce66a400cef74b26c52515a9654f6322c53ccafd8240",
+   "bytesDelta": 50
+  },
+  {
+   "id": "RA14-visible-unit-case-CH",
+   "round": 2,
+   "target": "vendor/openai/",
+   "copy": "att",
+   "promise": "RA5 的可见版：把同一个大小写绕过打到可见元素上（证明不是「反正没渲染」）",
+   "expectFromPromise": "narrow-unregistered",
+   "css": ".page-notes-summary { max-width: 70CH; }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 101
+    }
+   ],
+   "rawDefinition": {
+    "id": "RA14-visible-unit-case-CH",
+    "round": 2,
+    "route": "vendor/openai/",
+    "promise": "RA5 的可见版：把同一个大小写绕过打到可见元素上（证明不是「反正没渲染」）",
+    "css": ".page-notes-summary { max-width: 70CH; }",
+    "expect": "narrow-unregistered"
+   },
+   "sha256Before": "60b8054cf081eeff4c041bc9176b9c7bce8b57e40b2f08a631235439ea17f228",
+   "sha256After": "d0675c529b4298e6ba9248c89b237de623e0105d1649d2ab53b68a31f102b3f3",
+   "bytesDelta": 101
+  },
+  {
+   "id": "VA8b-axis-desync-fullwidth",
+   "round": 1,
+   "target": "archive/",
+   "copy": "att2",
+   "promise": "轴按 .snote 自身 writing-mode 选；但字迹的轴由后代决定 ⇒ 后代写成横排、盒宽保持满宽时，① 与 ② 是否同时静默",
+   "expectFromPromise": "note-ink-narrow",
+   "css": ".snote { writing-mode: vertical-rl; width: 100%; height: 5.6rem; overflow: hidden; } .snote .arch-h { writing-mode: horizontal-tb; }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 194
+    },
+    {
+     "op": "spanLines",
+     "hits": 4,
+     "longestChunk": 16
+    }
+   ],
+   "rawDefinition": {
+    "id": "VA8b-axis-desync-fullwidth",
+    "round": 1,
+    "route": "archive/",
+    "promise": "轴按 .snote 自身 writing-mode 选；但字迹的轴由后代决定 ⇒ 后代写成横排、盒宽保持满宽时，① 与 ② 是否同时静默",
+    "spanLines": {
+     "match": "<p class=\"snote\"[^>]*>((?:(?!<[a-z])[\\s\\S])*?)</p>",
+     "chars": 16,
+     "spanClass": "arch-h",
+     "expect": 4
+    },
+    "css": ".snote { writing-mode: vertical-rl; width: 100%; height: 5.6rem; overflow: hidden; } .snote .arch-h { writing-mode: horizontal-tb; }",
+    "expect": "note-ink-narrow"
+   },
+   "sha256Before": "71689ea9e2c58270d9136e816e04a86a7fe125a1192a9da649f2325c52fb31fe",
+   "sha256After": "b5eca013beece4e25fd46f527d2cffb68d0c52d19580137ac23b31493ab2e1df",
+   "bytesDelta": 354
+  },
+  {
+   "id": "VA5b-media-760-unsampled",
+   "round": 1,
+   "target": "models/deepseek-v3.2/",
+   "copy": "att2",
+   "promise": "只在 700–800px 生效的竖排形态：落在样本集里 ⇒ 咬住（VA5）；落在样本集外 ⇒ 门禁逐档量不到",
+   "expectFromPromise": "note-ink-narrow@760",
+   "css": "@media (min-width: 700px) and (max-width: 800px) { .snote { writing-mode: vertical-rl; width: 100%; height: 5.6rem; overflow: hidden; } }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 197
+    }
+   ],
+   "rawDefinition": {
+    "id": "VA5b-media-760-unsampled",
+    "round": 1,
+    "route": "models/deepseek-v3.2/",
+    "promise": "只在 700–800px 生效的竖排形态：落在样本集里 ⇒ 咬住（VA5）；落在样本集外 ⇒ 门禁逐档量不到",
+    "css": "@media (min-width: 700px) and (max-width: 800px) { .snote { writing-mode: vertical-rl; width: 100%; height: 5.6rem; overflow: hidden; } }",
+    "expect": "note-ink-narrow@760"
+   },
+   "sha256Before": "5c9458a9a968eefc4d8576644c9a1cdb7f5b782b70785715e11722cf5dc7842f",
+   "sha256After": "a2ada2163916bf0faca08b1a79ab833cc4c6c14c2ed5bf4137d4a79c3e486ccb",
+   "bytesDelta": 197
+  },
+  {
+   "id": "G19-tolerance-inside",
+   "round": 2,
+   "target": "plans/coding/",
+   "copy": "g19",
+   "promise": "左右内边距差 ≤ 2px（容差内不得误判）",
+   "expectFromPromise": "no-code",
+   "css": ".pdetailbody { position: relative; left: 0.95px; }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 106
+    }
+   ],
+   "rawDefinition": {
+    "id": "G19-tolerance-inside",
+    "round": 2,
+    "route": "plans/coding/",
+    "promise": "左右内边距差 ≤ 2px（容差内不得误判）",
+    "css": ".pdetailbody { position: relative; left: 0.95px; }",
+    "expect": "no-code"
+   },
+   "sha256Before": "2f593e8742a2d56099521e01e1f2b91b489db0f67677b975ee7dc7e186e7de27",
+   "sha256After": "f3c3c1b86fdcf71d73bc68abf62da00871ecad6f4a94e705149a714a3f353de8",
+   "bytesDelta": 106
+  },
+  {
+   "id": "RA1b-comma-literal-70ch",
+   "round": 2,
+   "target": "need/ai-coding/",
+   "copy": "g19",
+   "promise": "逗号多选择器的**字面**例子：`.a, .pdetailbody { max-width: 70ch }`（声明文本与登记条目不同）",
+   "expectFromPromise": "narrow-unregistered",
+   "css": ".arch-a, .pdetailbody { max-width: 70ch; }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 101
+    }
+   ],
+   "rawDefinition": {
+    "id": "RA1b-comma-literal-70ch",
+    "round": 2,
+    "route": "need/ai-coding/",
+    "promise": "逗号多选择器的**字面**例子：`.a, .pdetailbody { max-width: 70ch }`（声明文本与登记条目不同）",
+    "css": ".arch-a, .pdetailbody { max-width: 70ch; }",
+    "expect": "narrow-unregistered"
+   },
+   "sha256Before": "d36585f4b0d938dc1001e5747e5af08071748bf4b3fb29e3d1f1a05ce9439c7d",
+   "sha256After": "35f9fd224f7efaf66f8ab32d692ae1bb7a0be0312a6200d0a75aecb0849a6da3",
+   "bytesDelta": 101
+  },
+  {
+   "id": "G21-tolerance-outside",
+   "round": 2,
+   "target": "plans/coding/",
+   "copy": "g21",
+   "promise": "左右内边距差 > 2px ⇒ 必须判红（容差外必须咬）",
+   "expectFromPromise": "§19-red",
+   "css": ".pdetailbody { position: relative; left: 1.05px; }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 107
+    }
+   ],
+   "rawDefinition": {
+    "id": "G21-tolerance-outside",
+    "round": 2,
+    "route": "plans/coding/",
+    "promise": "左右内边距差 > 2px ⇒ 必须判红（容差外必须咬）",
+    "css": ".pdetailbody { position: relative; left: 1.05px; }",
+    "expect": "§19-red"
+   },
+   "sha256Before": "2f593e8742a2d56099521e01e1f2b91b489db0f67677b975ee7dc7e186e7de27",
+   "sha256After": "e1939311b8c7ea04ed3b8679b92c4f737352c36c562ff8283794eb90e326ae2a",
+   "bytesDelta": 107
+  },
+  {
+   "id": "G300-narrowed-by-px",
+   "round": 2,
+   "target": "plans/coding/",
+   "copy": "g300",
+   "promise": "登记的窄列「真的比容器窄 ≥ 40px」—— 生效值被换成未登记口径（px）时谁看得见",
+   "expectFromPromise": "no-code",
+   "css": ".pdetailbody { width: 300px; }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 85
+    }
+   ],
+   "rawDefinition": {
+    "id": "G300-narrowed-by-px",
+    "round": 2,
+    "route": "plans/coding/",
+    "promise": "登记的窄列「真的比容器窄 ≥ 40px」—— 生效值被换成未登记口径（px）时谁看得见",
+    "css": ".pdetailbody { width: 300px; }",
+    "expect": "no-code"
+   },
+   "sha256Before": "2f593e8742a2d56099521e01e1f2b91b489db0f67677b975ee7dc7e186e7de27",
+   "sha256After": "b139291bff9c0d5e88dd57247074c157e040960575091864b594c7fb8f88cb2e",
+   "bytesDelta": 85
+  },
+  {
+   "id": "G1400-widened-by-min-width",
+   "round": 2,
+   "target": "plans/coding/",
+   "copy": "g1400",
+   "promise": "登记的窄列「真的比容器窄 ≥ 40px」—— 被 min-width 撑到接近满宽时必须判红",
+   "expectFromPromise": "§19-red",
+   "css": ".pdetailbody { min-width: 1400px; }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 97
+    }
+   ],
+   "rawDefinition": {
+    "id": "G1400-widened-by-min-width",
+    "round": 2,
+    "route": "plans/coding/",
+    "promise": "登记的窄列「真的比容器窄 ≥ 40px」—— 被 min-width 撑到接近满宽时必须判红",
+    "css": ".pdetailbody { min-width: 1400px; }",
+    "expect": "§19-red"
+   },
+   "sha256Before": "2f593e8742a2d56099521e01e1f2b91b489db0f67677b975ee7dc7e186e7de27",
+   "sha256After": "d132d36235f2f39c8bf2d748bf869a615ebf5f54cb7a807ae233756f3c0649b3",
+   "bytesDelta": 97
+  },
+  {
+   "id": "GRTL-ancestor-direction",
+   "round": 2,
+   "target": "plans/coding/",
+   "copy": "grtl",
+   "promise": "父级 direction: rtl 时居中几何是否仍然成立（margin-inline: auto 与方向无关）",
+   "expectFromPromise": "no-code",
+   "css": "tr.pdetail td { direction: rtl; }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 92
+    }
+   ],
+   "rawDefinition": {
+    "id": "GRTL-ancestor-direction",
+    "round": 2,
+    "route": "plans/coding/",
+    "promise": "父级 direction: rtl 时居中几何是否仍然成立（margin-inline: auto 与方向无关）",
+    "css": "tr.pdetail td { direction: rtl; }",
+    "expect": "no-code"
+   },
+   "sha256Before": "2f593e8742a2d56099521e01e1f2b91b489db0f67677b975ee7dc7e186e7de27",
+   "sha256After": "1298b7f9debed9def16eabc82940c0910f59e3bf22bce0b75b08a16ec615e5b0",
+   "bytesDelta": 92
+  },
+  {
+   "id": "GXF-ancestor-transform",
+   "round": 2,
+   "target": "plans/coding/",
+   "copy": "gxf",
+   "promise": "祖先 transform（刚性缩放）下居中几何是否仍然成立",
+   "expectFromPromise": "no-code",
+   "css": "tr.pdetail { transform: scaleX(0.9); }",
+   "steps": [
+    {
+     "op": "style",
+     "bytes": 96
+    }
+   ],
+   "rawDefinition": {
+    "id": "GXF-ancestor-transform",
+    "round": 2,
+    "route": "plans/coding/",
+    "promise": "祖先 transform（刚性缩放）下居中几何是否仍然成立",
+    "css": "tr.pdetail { transform: scaleX(0.9); }",
+    "expect": "no-code"
+   },
+   "sha256Before": "2f593e8742a2d56099521e01e1f2b91b489db0f67677b975ee7dc7e186e7de27",
+   "sha256After": "02ed2af7d9968716e5342a91afcdc246156256875ea2acf368f19795736b084c",
+   "bytesDelta": 96
+  },
+  {
+   "id": "F1-frozen-declaration-only-in-comment",
+   "round": 2,
+   "target": "need/free-api/",
+   "copy": "forge",
+   "promise": "§22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（wideFrozenDrift 判据）",
+   "expectFromPromise": "§22c-red（冻结串应当判红）",
+   "css": null,
+   "steps": [
+    {
+     "op": "replace",
+     "hits": 1
+    }
+   ],
+   "rawDefinition": {
+    "id": "F1-frozen-declaration-only-in-comment",
+    "round": 2,
+    "route": "need/free-api/",
+    "promise": "§22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（wideFrozenDrift 判据）",
+    "replace": {
+     "match": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+     "replacement": "/* 本页 .snote 基础样式（真规则已删除，只剩注释里的字面量） .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; } */",
+     "expect": 1
+    },
+    "expect": "§22c-red（冻结串应当判红）"
+   },
+   "sha256Before": "62ae8f3d736691a08665680bec15a8dfd61925f1a2b3d03e57863b38669893bb",
+   "sha256After": "fb4fbbad69e75c2bc89dd93fa3b32219cac45603ad624402c9f1f3d8712fbf17",
+   "bytesDelta": 87
+  },
+  {
+   "id": "F2-sitemap-loc-only-in-comment",
+   "round": 2,
+   "target": "sitemap.xml",
+   "copy": "forge",
+   "promise": "§18 sitemap 成员资格（verify-site 原始文本；样本含 vendor/zhipu/）+ verify:seo 的「sitemap == 非 noindex 页面集合」（原始正则）",
+   "expectFromPromise": "red（sitemap 真的缺了这一页）",
+   "css": null,
+   "steps": [
+    {
+     "op": "replaceRe",
+     "hits": 1
+    }
+   ],
+   "rawDefinition": {
+    "id": "F2-sitemap-loc-only-in-comment",
+    "round": 2,
+    "path": "sitemap.xml",
+    "promise": "§18 sitemap 成员资格（verify-site 原始文本；样本含 vendor/zhipu/）+ verify:seo 的「sitemap == 非 noindex 页面集合」（原始正则）",
+    "replaceRe": {
+     "match": "\\n  <url>\\n    <loc>https://buguoshixc\\.github\\.io/ai-deals-aggregator/vendor/zhipu/</loc>[\\s\\S]*?</url>",
+     "replacement": "\n  <!-- $& -->",
+     "expect": 1
+    },
+    "expect": "red（sitemap 真的缺了这一页）"
+   },
+   "sha256Before": "18c7c9d3b5a5cf29ca0ffb01999c8a91993854654effe1f1365f58cbeaac6181",
+   "sha256After": "1e9e7d56e700b989dc842eb18249c62b31e274a2f2b37c38a397a85f259ac368",
+   "bytesDelta": 12
+  },
+  {
+   "id": "F1-frozen-declaration-only-in-comment",
+   "round": 2,
+   "target": "need/free-api/",
+   "copy": "forge-ctl",
+   "promise": "§22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（wideFrozenDrift 判据）",
+   "expectFromPromise": "§22c-red（冻结串应当判红）",
+   "css": null,
+   "steps": [
+    {
+     "op": "replace",
+     "hits": 1
+    }
+   ],
+   "rawDefinition": {
+    "id": "F1-frozen-declaration-only-in-comment",
+    "round": 2,
+    "route": "need/free-api/",
+    "promise": "§22c 冻结串「一处定义、全站生效」：每页内联样式里恰好 1 次（wideFrozenDrift 判据）",
+    "replace": {
+     "match": ".snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; }",
+     "replacement": "/* 本页 .snote 基础样式（真规则已删除，只剩注释里的字面量） .snote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s3); max-width: none; overflow-wrap: anywhere; } */",
+     "expect": 1
+    },
+    "expect": "§22c-red（冻结串应当判红）"
+   },
+   "sha256Before": "62ae8f3d736691a08665680bec15a8dfd61925f1a2b3d03e57863b38669893bb",
+   "sha256After": "fb4fbbad69e75c2bc89dd93fa3b32219cac45603ad624402c9f1f3d8712fbf17",
+   "bytesDelta": 87
+  },
+  {
+   "id": "F2c-sitemap-url-deleted",
+   "round": 2,
+   "target": "sitemap.xml",
+   "copy": "forge-ctl",
+   "promise": "同一处、但**真删**（不留注释）⇒ 两条判据都必须红（证明对照成立）",
+   "expectFromPromise": "red（真删时应当红）",
+   "css": null,
+   "steps": [
+    {
+     "op": "replaceRe",
+     "hits": 1
+    }
+   ],
+   "rawDefinition": {
+    "id": "F2c-sitemap-url-deleted",
+    "round": 2,
+    "path": "sitemap.xml",
+    "promise": "同一处、但**真删**（不留注释）⇒ 两条判据都必须红（证明对照成立）",
+    "replaceRe": {
+     "match": "\\n  <url>\\n    <loc>https://buguoshixc\\.github\\.io/ai-deals-aggregator/vendor/zhipu/</loc>[\\s\\S]*?</url>",
+     "replacement": "",
+     "expect": 1
+    },
+    "expect": "red（真删时应当红）"
+   },
+   "sha256Before": "18c7c9d3b5a5cf29ca0ffb01999c8a91993854654effe1f1365f58cbeaac6181",
+   "sha256After": "477881c79b47337dcd430bd58a20c3bec581951f85ddeb693b732f6cbd38d37d",
+   "bytesDelta": -194
+  },
+  {
+   "id": "F3-canonical-only-in-comment",
+   "round": 2,
+   "target": "need/student-only/index.html",
+   "copy": "forge3 / forge3-ctl",
+   "promise": "canonical 自指（verify:seo 的 canonical-self + canonical-unique；lib/seo.js canonicalOf 读原始文本）",
+   "expectFromPromise": "red（DOM 里没有 canonical）",
+   "css": null,
+   "steps": [
+    {
+     "op": "comment-out",
+     "link": "<link rel=\"canonical\" href=\"https://buguoshixc.github.io/ai-deals-aggregator/need/student-only/\">"
+    },
+    {
+     "op": "control: delete",
+     "link": "<link rel=\"canonical\" href=\"https://buguoshixc.github.io/ai-deals-aggregator/need/student-only/\">"
+    }
+   ],
+   "sha256Before": "1e66f93f84d5803d0fc6e8fd6f65244a5703d634de3a9feb374591cbe7cec046",
+   "sha256After": "f940231367e48c9992db663d87c4418950bbd89df747d081acc5dc89de37fe26",
+   "bytesDelta": null
+  }
+ ]
+}

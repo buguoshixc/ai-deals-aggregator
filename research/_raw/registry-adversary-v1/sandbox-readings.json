@@ -1,0 +1,47 @@
+{
+ "what": "登记清单层面的实验（只能在 scripts/ 副本里改 JSON；产品树只读）",
+ "how": "node .arch-v1/make-sandbox.cjs --root=.arch-v1/sb-empty --mode=empty · … --mode=two；再跑该副本自带的 verify-site.js",
+ "S1_emptyEntries": {
+  "registryEntries": 0,
+  "unregisteredPages": [
+   "plans/coding/"
+  ],
+  "total": 874,
+  "failed": 5,
+  "failedChecks": [
+   "§22c @1440 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + ",
+   "§22c @1600 逐条页面级说明：旧口径（内容盒 ≥ 0.85×列宽）+ 新口径（横排按行 / 竖排按列：字迹铺开 ≥ 0.85×列宽，单元数 ≥ 2）+ 无藏字 + border-box 同轴 + 自身不裁切 + ",
+   "§22c @760 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+   "§22c @360 样本集 29 页（同一份判据；字迹按**物理前置条件**判：现场列宽 > 70ch 时判；横排按行 / 竖排按列）",
+   "§22c M16 承重证明：注入的那条 ch 窄列被认成**未登记**、已登记的 72ch 仍在扫描结果里、且除 narrow-unregistered 外没有任何别的码（注入不影响布局）"
+  ]
+ },
+ "S2_secondEntryUncentered": {
+  "registryEntries": 3,
+  "unregisteredPages": [],
+  "scanAt1440": [
+   {
+    "route": "need/ai-coding/",
+    "declarations": [
+     {
+      "selector": ".page-notes-summary",
+      "declaration": "max-width: 70ch",
+      "registered": true
+     }
+    ]
+   },
+   {
+    "route": "plans/coding/",
+    "declarations": [
+     {
+      "selector": ".pdetailbody",
+      "declaration": "max-width: 72ch",
+      "registered": true
+     }
+    ]
+   }
+  ],
+  "total": 874,
+  "failed": 0
+ }
+}

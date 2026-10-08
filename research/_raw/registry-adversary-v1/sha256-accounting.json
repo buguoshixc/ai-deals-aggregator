@@ -1,0 +1,151 @@
+{
+ "what": "产物与各副本的逐文件 sha256 台账（「原 dist 被写 0 个」由这里证明）",
+ "distDigest": {
+  "count": 303,
+  "tree": "c81765cde8e2d0e7cf612be043d3671f841126b951c04db17a0a51c7e7a1c82c"
+ },
+ "baseCopyDigest": {
+  "count": 303,
+  "tree": "c81765cde8e2d0e7cf612be043d3671f841126b951c04db17a0a51c7e7a1c82c"
+ },
+ "copies": [
+  {
+   "copy": "dist-att",
+   "from": "dist-base",
+   "files": 303,
+   "copyByteIdentical": true,
+   "changedFiles": [
+    "archive/index.html",
+    "category/chat/index.html",
+    "changes/index.html",
+    "developer/index.html",
+    "docs/data/index.html",
+    "feeds/index.html",
+    "free-api/index.html",
+    "models/index.html",
+    "need/ai-coding/index.html",
+    "need/china-usable/index.html",
+    "need/dev-credits/index.html",
+    "need/edu-identity/index.html",
+    "need/free-api/index.html",
+    "need/free-model/index.html",
+    "need/free-tier/index.html",
+    "need/free-tokens/index.html",
+    "need/no-card/index.html",
+    "need/student-only/index.html",
+    "plans/api/index.html",
+    "plans/coding/index.html",
+    "plans/index.html",
+    "status/index.html",
+    "student/index.html",
+    "vendor/openai/index.html"
+   ],
+   "unexpectedChangedFiles": [],
+   "missingFiles": []
+  },
+  {
+   "copy": "dist-att2",
+   "from": "dist-base",
+   "files": 303,
+   "copyByteIdentical": true,
+   "changedFiles": [
+    "archive/index.html",
+    "models/deepseek-v3.2/index.html"
+   ],
+   "unexpectedChangedFiles": [],
+   "missingFiles": []
+  },
+  {
+   "copy": "dist-g19",
+   "from": "dist-base",
+   "files": 303,
+   "copyByteIdentical": true,
+   "changedFiles": [
+    "need/ai-coding/index.html",
+    "plans/coding/index.html"
+   ],
+   "unexpectedChangedFiles": [],
+   "missingFiles": []
+  },
+  {
+   "copy": "dist-g21",
+   "from": "dist-base",
+   "files": 303,
+   "copyByteIdentical": true,
+   "changedFiles": [
+    "plans/coding/index.html"
+   ],
+   "unexpectedChangedFiles": [],
+   "missingFiles": []
+  },
+  {
+   "copy": "dist-g300",
+   "from": "dist-base",
+   "files": 303,
+   "copyByteIdentical": true,
+   "changedFiles": [
+    "plans/coding/index.html"
+   ],
+   "unexpectedChangedFiles": [],
+   "missingFiles": []
+  },
+  {
+   "copy": "dist-g1400",
+   "from": "dist-base",
+   "files": 303,
+   "copyByteIdentical": true,
+   "changedFiles": [
+    "plans/coding/index.html"
+   ],
+   "unexpectedChangedFiles": [],
+   "missingFiles": []
+  },
+  {
+   "copy": "dist-grtl",
+   "from": "dist-base",
+   "files": 303,
+   "copyByteIdentical": true,
+   "changedFiles": [
+    "plans/coding/index.html"
+   ],
+   "unexpectedChangedFiles": [],
+   "missingFiles": []
+  },
+  {
+   "copy": "dist-gxf",
+   "from": "dist-base",
+   "files": 303,
+   "copyByteIdentical": true,
+   "changedFiles": [
+    "plans/coding/index.html"
+   ],
+   "unexpectedChangedFiles": [],
+   "missingFiles": []
+  },
+  {
+   "copy": "dist-forge",
+   "from": "dist-base",
+   "files": 303,
+   "copyByteIdentical": true,
+   "changedFiles": [
+    "need/free-api/index.html",
+    "sitemap.xml"
+   ],
+   "unexpectedChangedFiles": [],
+   "missingFiles": []
+  },
+  {
+   "copy": "dist-forge-ctl",
+   "from": "dist-base",
+   "files": 303,
+   "copyByteIdentical": true,
+   "changedFiles": [
+    "need/free-api/index.html",
+    "sitemap.xml"
+   ],
+   "unexpectedChangedFiles": [],
+   "missingFiles": []
+  }
+ ],
+ "note": "tree = 对「相对路径→sha256」映射做 sha256（本工具自己的口径，见 .arch-v1/tree-sha.cjs；与仓库里别的 tree-digest 口径不同，不要跨工具比）"
+}
