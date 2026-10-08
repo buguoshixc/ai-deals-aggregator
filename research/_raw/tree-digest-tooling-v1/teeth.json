@@ -1,0 +1,128 @@
+{
+  "task": "tree-digest-tooling-v1 (t25)",
+  "what": "摘要器的牙齿实跑：三处变异各咬一次 → 逐字节还原 → 回绿；两条「不许静默成功」的负例",
+  "at": "2026-10-08T12:47:48.917Z",
+  "tool": "scripts/tools/tree-digest.cjs",
+  "toolSha256Pristine": "64e0ffcc2f7bc1678dc9928abde78479192ca6d29d71eedef3881f05ecbb382c",
+  "toolSha256AfterRestores": "64e0ffcc2f7bc1678dc9928abde78479192ca6d29d71eedef3881f05ecbb382c",
+  "restoredByteForByte": true,
+  "expect": {
+    "files": 304,
+    "bytes": 20386654,
+    "treeDigest": "67d1d0bdcdffe29f1b2bd0185c35408da897d53d20e44c495fec385f7ec1337d",
+    "manifestSha256": "2b8fe49fa776a8789e592d79fb507c2c1e9cac233801a9425b4e9e8f55f638de"
+  },
+  "teeth": [
+    {
+      "tag": "baseline",
+      "verdict": "GREEN",
+      "why": "files / bytes / treeDigest / manifestSha256 四个量全等期望",
+      "observed": {
+        "files": 304,
+        "bytes": 20386654,
+        "treeDigest": "67d1d0bdcdffe29f1b2bd0185c35408da897d53d20e44c495fec385f7ec1337d",
+        "manifestSha256": "2b8fe49fa776a8789e592d79fb507c2c1e9cac233801a9425b4e9e8f55f638de",
+        "perFileEntries": 304
+      },
+      "toolSha256": "64e0ffcc2f7bc1678dc9928abde78479192ca6d29d71eedef3881f05ecbb382c"
+    },
+    {
+      "tag": "M1",
+      "verdict": "RED",
+      "why": "files=21（期望 304） · bytes=1580817（期望 20386654） · treeDigest=e93cad679a8294cff7e9e0ee27472fc9e7b91ae3ed0fd632f2bdf8361f6c4448（期望 67d1d0bdcdffe29f1b2bd0185c35408da897d53d20e44c495fec385f7ec1337d） · manifestSha256=141388f91b7fac4c606fb00d5188fccc1d86727b4eb8b238ef640faed51ade6b（期望 2b8fe49fa776a8789e592d79fb507c2c1e9cac233801a9425b4e9e8f55f638de）",
+      "observed": {
+        "files": 21,
+        "bytes": 1580817,
+        "treeDigest": "e93cad679a8294cff7e9e0ee27472fc9e7b91ae3ed0fd632f2bdf8361f6c4448",
+        "manifestSha256": "141388f91b7fac4c606fb00d5188fccc1d86727b4eb8b238ef640faed51ade6b",
+        "perFileEntries": 21
+      },
+      "toolSha256": "b0471b4a0cdffe10675eb3291948e5a61ca3fff2d4921188c49120a2d8e516fc"
+    },
+    {
+      "tag": "restore1",
+      "verdict": "GREEN",
+      "why": "files / bytes / treeDigest / manifestSha256 四个量全等期望",
+      "observed": {
+        "files": 304,
+        "bytes": 20386654,
+        "treeDigest": "67d1d0bdcdffe29f1b2bd0185c35408da897d53d20e44c495fec385f7ec1337d",
+        "manifestSha256": "2b8fe49fa776a8789e592d79fb507c2c1e9cac233801a9425b4e9e8f55f638de",
+        "perFileEntries": 304
+      },
+      "toolSha256": "64e0ffcc2f7bc1678dc9928abde78479192ca6d29d71eedef3881f05ecbb382c"
+    },
+    {
+      "tag": "M2",
+      "verdict": "RED",
+      "why": "treeDigest=6efd1cccfaf3f2590aa3c901735640152b7f422c23c33df06dbf764126d17b17（期望 67d1d0bdcdffe29f1b2bd0185c35408da897d53d20e44c495fec385f7ec1337d） · manifestSha256=af9826c977a1d734a0b26e570f0d4a3dc474650fe0681778fab7a0cb91bccac6（期望 2b8fe49fa776a8789e592d79fb507c2c1e9cac233801a9425b4e9e8f55f638de）",
+      "observed": {
+        "files": 304,
+        "bytes": 20386654,
+        "treeDigest": "6efd1cccfaf3f2590aa3c901735640152b7f422c23c33df06dbf764126d17b17",
+        "manifestSha256": "af9826c977a1d734a0b26e570f0d4a3dc474650fe0681778fab7a0cb91bccac6",
+        "perFileEntries": 304
+      },
+      "toolSha256": "098a25bd0aef01ba01725981640dd0579540f05ad27978dbf38987af86ba2f81"
+    },
+    {
+      "tag": "restore2",
+      "verdict": "GREEN",
+      "why": "files / bytes / treeDigest / manifestSha256 四个量全等期望",
+      "observed": {
+        "files": 304,
+        "bytes": 20386654,
+        "treeDigest": "67d1d0bdcdffe29f1b2bd0185c35408da897d53d20e44c495fec385f7ec1337d",
+        "manifestSha256": "2b8fe49fa776a8789e592d79fb507c2c1e9cac233801a9425b4e9e8f55f638de",
+        "perFileEntries": 304
+      },
+      "toolSha256": "64e0ffcc2f7bc1678dc9928abde78479192ca6d29d71eedef3881f05ecbb382c"
+    },
+    {
+      "tag": "M3",
+      "verdict": "RED",
+      "why": "treeDigest=b64e03e69229e6b76c49f5979996604a11d2f42d0ff11919ba3e5ce008c0d9aa（期望 67d1d0bdcdffe29f1b2bd0185c35408da897d53d20e44c495fec385f7ec1337d）",
+      "observed": {
+        "files": 304,
+        "bytes": 20386654,
+        "treeDigest": "b64e03e69229e6b76c49f5979996604a11d2f42d0ff11919ba3e5ce008c0d9aa",
+        "manifestSha256": "2b8fe49fa776a8789e592d79fb507c2c1e9cac233801a9425b4e9e8f55f638de",
+        "perFileEntries": 304
+      },
+      "toolSha256": "fe24ef8af3d107118de043a9787777963cb1a1bd58c7af3cd4d4e5b7f7f1ebef"
+    },
+    {
+      "tag": "restore3",
+      "verdict": "GREEN",
+      "why": "files / bytes / treeDigest / manifestSha256 四个量全等期望",
+      "observed": {
+        "files": 304,
+        "bytes": 20386654,
+        "treeDigest": "67d1d0bdcdffe29f1b2bd0185c35408da897d53d20e44c495fec385f7ec1337d",
+        "manifestSha256": "2b8fe49fa776a8789e592d79fb507c2c1e9cac233801a9425b4e9e8f55f638de",
+        "perFileEntries": 304
+      },
+      "toolSha256": "64e0ffcc2f7bc1678dc9928abde78479192ca6d29d71eedef3881f05ecbb382c"
+    },
+    {
+      "tag": "missing-dir（dist.nope）",
+      "verdict": "RED-响亮失败（期望）",
+      "why": "exit=2（期望非零）",
+      "toolSha256": "64e0ffcc2f7bc1678dc9928abde78479192ca6d29d71eedef3881f05ecbb382c"
+    },
+    {
+      "tag": "legacy-path（scripts/tree-digest.cjs，契约里写错的字面路径）",
+      "verdict": "RED-响亮失败（期望）",
+      "why": "exit=1（期望非零）",
+      "toolSha256": "64e0ffcc2f7bc1678dc9928abde78479192ca6d29d71eedef3881f05ecbb382c"
+    }
+  ],
+  "checks": {
+    "baselineGreen": true,
+    "threeTeethRed": true,
+    "threeRestoresGreen": true,
+    "negativesLoud": true,
+    "restoredByteForByte": true
+  },
+  "verdict": "PASS"
+}
