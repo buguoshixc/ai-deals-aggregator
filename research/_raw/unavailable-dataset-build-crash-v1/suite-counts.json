@@ -1,0 +1,30 @@
+{
+  "what": "断言数只增不减：同一工作树上 pre-fix build-local.js vs 修复后",
+  "note": "两个基线（70d7463 与 2416283）之间的套件项数差异来自别人已合并的 PR，不是本任务；这里只列**同树对照**。",
+  "buildSelfCheckItems": {
+    "before": 73,
+    "after": 73
+  },
+  "selftestPlans": {
+    "before": 264,
+    "after": 264
+  },
+  "selftestFeeds": {
+    "before": 145,
+    "after": 145
+  },
+  "selftestChanges": {
+    "before": 119,
+    "after": 119
+  },
+  "verifySeo": {
+    "before": 19,
+    "after": 19
+  },
+  "verifySite": {
+    "before": 883,
+    "after": 883,
+    "beforeIsInference": true,
+    "note": "改前一栏是推断（产物逐字节相同 + verify-site.js 未改）；改后 883 为实跑"
+  }
+}

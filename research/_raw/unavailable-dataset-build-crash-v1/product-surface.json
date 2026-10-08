@@ -1,0 +1,9 @@
+{
+  "what": "正常形态（日志可用）下的产物面：修复前 vs 修复后必须**零变化**",
+  "device": "同机两次构建：基线 = 本分支起点 2416283 的 build-local.js；逐文件 sha256 + 全树摘要",
+  "baselineTreeDigest": "f964d6ba19421219b5e3ad41b8d5cd443a81a8ca15c3903dd3a7a6d97449f606",
+  "fixedTreeDigest": "f964d6ba19421219b5e3ad41b8d5cd443a81a8ca15c3903dd3a7a6d97449f606",
+  "files": 304,
+  "changedFiles": [],
+  "changedCount": 0
+}
