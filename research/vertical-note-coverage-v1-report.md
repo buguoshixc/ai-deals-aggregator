@@ -107,7 +107,21 @@ T31 的探针（**一字未改**，`columnsV 18 / ink.unionWidth 362.64 / linesH
   `analytics-selftest` 31/0 · `check:feeds:reproducible`（两次构建逐字节一致）。
 * **构建确定性**：重建 `dist` 与改动前**逐文件 sha256 全等**（§3）。
 
-## 7. 如实记录的两条偏差（都不是「已解决」）
+## 7. 发布链（本轮实测读数）
+
+| 环节 | 读数 |
+| --- | --- |
+| 分支 / 基点 | `vertical-note-coverage-v1`（`5cc1454` 修复 + `bc1f4fc` PR 正文存档）· 基点 `master = 7ba8102` |
+| PR | **#57** · `mergedAt 2026-10-08T08:08:43Z` · 合并提交 **`1c02d84b07a05ce11d805ce15aab628b7ffd0d74`**（merge commit） |
+| PR 的 `gate` | run **37747214242** → **success**（08:02:26Z → 08:08:24Z）；前一次 run 37747156878 因第二次推送被 GitHub **cancelled**（不是失败） |
+| master 的 `gate` | run **37747903611** → **success**（08:08:46Z → 08:13:59Z） |
+| `Deploy to GitHub Pages` | run **37747903736** → **success**：`prepublish` / `build` / `deploy` 三个 job 全部 success（08:08:46Z → 08:14:45Z） |
+| 线上冒烟 | **PASS**：12 条路由 + `/changes/` 全部 **HTTP 200**，且**线上 HTML 与本地 `dist` 逐字节相同**（sha256 相等）· 每页冻结串恰好 1 次 · 产物里**没有** `writing-mode` 竖排泄漏 · `/changes/` 分栏 7 · 问题 0（`_raw/…/online-smoke.json`，`finishedAt 2026-10-08T08:15:45Z`） |
+
+> 冒烟判据为什么是「逐字节相同」：本轮**只动判据与文档**，产物逐字节未变（§3），
+> 所以「线上 = 本地 dist」是这一版能提的**最强**判据；它同时也证明了这次 Deploy 上传的就是同一份产物。
+
+## 8. 如实记录的两条偏差（都不是「已解决」）
 
 1. **T31 的原靶页已经没有承重面**：`category/agent/` 自 `secondary-page-intro-changes-v1` 起
    `<main>` 里**一条 `.snote` 都没有**（目录页首屏说明整层删除）。本轮第一次把 M15 挂在它上面时，
@@ -118,7 +132,7 @@ T31 的探针（**一字未改**，`columnsV 18 / ink.unionWidth 362.64 / linesH
    不是口径差别。两轮的**页面级**溢出都仍是 0（`overflow: hidden` 把溢出留在盒内），
    所以窄档能接住它的仍然只有 `note-clipped`。
 
-## 8. 还没做的（不在本版承诺内）
+## 9. 还没做的（不在本版承诺内）
 
 * **生产环境「最近变化」非空分支的线上证据**（上一轮 DEFERRED）：今天的三份历史日志 **19 条事件全是
   `fields.type = tool`**，deals 侧 deal 型事件 **0 条** ⇒ 仍然没有可采的真实样本。**不造数据**。

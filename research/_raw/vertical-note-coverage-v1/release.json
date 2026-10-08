@@ -1,0 +1,109 @@
+{
+  "task": "vertical-note-coverage-v1",
+  "what": "发布读数：PR / CI / 合并 / Deploy / 线上冒烟（回填，供下一轮引用）",
+  "branch": "vertical-note-coverage-v1",
+  "commits": {
+    "fix": "5cc1454",
+    "prBodyArchive": "bc1f4fc"
+  },
+  "base": {
+    "master": "7ba8102",
+    "note": "PR #56 合并后的 master；本分支基点即它，合并时 master 未前进"
+  },
+  "pr": {
+    "number": 57,
+    "url": "https://github.com/buguoshixc/ai-deals-aggregator/pull/57",
+    "title": "fix(vertical-note-coverage-v1): §22c 的 ② 判据按 writing-mode 参数化（闭合 T31 的 P1）",
+    "mergedAt": "2026-10-08T08:08:43Z",
+    "mergedAtCST": "2026-10-08 16:08:43 +08:00",
+    "mergeCommit": "1c02d84b07a05ce11d805ce15aab628b7ffd0d74",
+    "mergeMethod": "merge",
+    "branchDeleted": false
+  },
+  "ci": {
+    "pullRequestGate": {
+      "run": 37747214242,
+      "event": "pull_request",
+      "conclusion": "success",
+      "startedAt": "2026-10-08T08:02:26Z",
+      "finishedAt": "2026-10-08T08:08:24Z"
+    },
+    "supersededRun": {
+      "run": 37747156878,
+      "conclusion": "cancelled",
+      "why": "第二次推送（PR 正文存档）后 GitHub 取消了旧 run —— 不是失败"
+    }
+  },
+  "master": {
+    "gate": {
+      "run": 37747903611,
+      "event": "push",
+      "conclusion": "success",
+      "startedAt": "2026-10-08T08:08:46Z",
+      "finishedAt": "2026-10-08T08:13:59Z"
+    },
+    "deploy": {
+      "run": 37747903736,
+      "event": "workflow_run",
+      "conclusion": "success",
+      "startedAt": "2026-10-08T08:08:46Z",
+      "finishedAt": "2026-10-08T08:14:45Z",
+      "jobs": {
+        "prepublish": "success",
+        "build": "success",
+        "deploy": "success"
+      }
+    }
+  },
+  "onlineSmoke": {
+    "verdict": "PASS",
+    "base": "https://buguoshixc.github.io/ai-deals-aggregator/",
+    "routes": 12,
+    "plusChangesPage": true,
+    "criterion": "线上 HTML 必须与本地 dist 的同一个文件**逐字节相同**（sha256 相等）—— 本轮只动判据与文档，产物逐字节未变，所以这是能提的最强判据",
+    "readings": {
+      "allRoutesHttp200": true,
+      "allRoutesByteIdentical": true,
+      "frozenCountPerPage": 1,
+      "verticalLeak": false,
+      "changesSections": 7,
+      "problems": 0
+    },
+    "note": "本机直连 Pages 今天有通路（未用代理）；冒烟脚本与逐页读数见 .arch-v1/vn-online-smoke.cjs 与同目录 online-smoke.json",
+    "at": "2026-10-08T08:15:45.856Z",
+    "startedAt": "2026-10-08T08:15:39.392Z"
+  },
+  "product": {
+    "distFiles": 303,
+    "treeDigest": "13b17d0a31cfb358af2f35ef0bb27657dbeca141c019564c5c78c73a822e8c3b",
+    "identicalToPreChangeBuild": true,
+    "note": "判据改动前后重建 dist：逐文件 sha256 全等（_raw/…/dist-unchanged.json）"
+  },
+  "gates": {
+    "fullGate": {
+      "steps": 51,
+      "executed": 48,
+      "passed": 48,
+      "failed": 0,
+      "skippedCiOnly": 3,
+      "exitCode": 0,
+      "seconds": 249
+    },
+    "verifySite": {
+      "dir": "dist",
+      "assertions": 868,
+      "failed": 0
+    },
+    "verifySiteCompare": {
+      "assertions": 874,
+      "failed": 0
+    },
+    "checkCi": {
+      "assertions": 39,
+      "failed": 0
+    },
+    "checkEvidence": {
+      "newTier3Files": 0
+    }
+  }
+}
