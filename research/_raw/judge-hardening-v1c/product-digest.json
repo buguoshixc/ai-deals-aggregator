@@ -1,0 +1,197 @@
+{
+ "what": "产品零改动证明（t33）：判据改动前后**同一次会话内**的 dist 全树摘要逐字节相同；另附 t11 期的摘要（作为「产物在这两轮之间已因其它任务变化过」的对照）",
+ "distTreeBefore_t33": "82729a9222fc783a04fb5e295ff5c91eb2b09ac33287f0b290015c85c5fa1681",
+ "distTreeAfter_t33": "82729a9222fc783a04fb5e295ff5c91eb2b09ac33287f0b290015c85c5fa1681",
+ "distFiles_t33": 304,
+ "identicalWithinSession": true,
+ "distTreeAtT11": "df43587cfe90a60453e29df96599b138a8dd02242130968340cba589e6979675",
+ "note": "t11 的副本是 t9+t10 树上的产物（df43587c…），本轮回归全部按当前树重建（82729a92…）—— 两组读数因此可以分开看",
+ "perCopyManifests": [
+  {
+   "label": "att",
+   "files": 304,
+   "changedFiles": [
+    "archive/index.html",
+    "category/chat/index.html",
+    "changes/index.html",
+    "developer/index.html",
+    "docs/data/index.html",
+    "feeds/index.html",
+    "free-api/index.html",
+    "models/index.html",
+    "need/ai-coding/index.html",
+    "need/china-usable/index.html",
+    "need/dev-credits/index.html",
+    "need/edu-identity/index.html",
+    "need/free-api/index.html",
+    "need/free-model/index.html",
+    "need/free-tier/index.html",
+    "need/free-tokens/index.html",
+    "need/no-card/index.html",
+    "need/student-only/index.html",
+    "plans/api/index.html",
+    "plans/coding/index.html",
+    "plans/index.html",
+    "status/index.html",
+    "student/index.html",
+    "vendor/openai/index.html"
+   ],
+   "unexpectedChanged": 0
+  },
+  {
+   "label": "att2",
+   "files": 304,
+   "changedFiles": [
+    "archive/index.html",
+    "models/deepseek-v3.2/index.html"
+   ],
+   "unexpectedChanged": 0
+  },
+  {
+   "label": "g19",
+   "files": 304,
+   "changedFiles": [
+    "need/ai-coding/index.html",
+    "plans/coding/index.html"
+   ],
+   "unexpectedChanged": 0
+  },
+  {
+   "label": "g21",
+   "files": 304,
+   "changedFiles": [
+    "plans/coding/index.html"
+   ],
+   "unexpectedChanged": 0
+  },
+  {
+   "label": "g300",
+   "files": 304,
+   "changedFiles": [
+    "plans/coding/index.html"
+   ],
+   "unexpectedChanged": 0
+  },
+  {
+   "label": "g1400",
+   "files": 304,
+   "changedFiles": [
+    "plans/coding/index.html"
+   ],
+   "unexpectedChanged": 0
+  },
+  {
+   "label": "grtl",
+   "files": 304,
+   "changedFiles": [
+    "plans/coding/index.html"
+   ],
+   "unexpectedChanged": 0
+  },
+  {
+   "label": "gxf",
+   "files": 304,
+   "changedFiles": [
+    "plans/coding/index.html"
+   ],
+   "unexpectedChanged": 0
+  },
+  {
+   "label": "forge",
+   "files": 304,
+   "changedFiles": [
+    "need/free-api/index.html",
+    "sitemap.xml"
+   ],
+   "unexpectedChanged": 0
+  },
+  {
+   "label": "forge-ctl",
+   "files": 304,
+   "changedFiles": [
+    "need/free-api/index.html",
+    "sitemap.xml"
+   ],
+   "unexpectedChanged": 0
+  },
+  {
+   "label": "forge3",
+   "unexpectedChanged": 0
+  },
+  {
+   "label": "newa",
+   "files": 304,
+   "changedFiles": [
+    "category/chat/index.html",
+    "need/china-usable/index.html",
+    "need/edu-identity/index.html",
+    "need/free-model/index.html",
+    "need/free-tier/index.html",
+    "plans/api/index.html",
+    "student/index.html"
+   ],
+   "unexpectedChanged": 0
+  },
+  {
+   "label": "newb",
+   "files": 304,
+   "changedFiles": [
+    "need/free-api/index.html",
+    "need/student-only/index.html"
+   ],
+   "unexpectedChanged": 0
+  },
+  {
+   "label": "newc",
+   "files": 304,
+   "changedFiles": [
+    "plans/coding/index.html"
+   ],
+   "unexpectedChanged": 0
+  },
+  {
+   "label": "newd",
+   "files": 304,
+   "changedFiles": [
+    "feeds/index.html",
+    "status/index.html"
+   ],
+   "unexpectedChanged": 0
+  },
+  {
+   "label": "newd2",
+   "files": 304,
+   "changedFiles": [
+    "plans/api/index.html"
+   ],
+   "unexpectedChanged": 0
+  },
+  {
+   "label": "newe",
+   "files": 304,
+   "changedFiles": [
+    "need/student-only/index.html",
+    "sitemap.xml"
+   ],
+   "unexpectedChanged": 0
+  },
+  {
+   "label": "newf",
+   "files": 304,
+   "changedFiles": [
+    "plans/coding/index.html"
+   ],
+   "unexpectedChanged": 0
+  },
+  {
+   "label": "newg",
+   "files": 304,
+   "changedFiles": [
+    "developer/index.html",
+    "feeds/index.html",
+    "status/index.html"
+   ],
+   "unexpectedChanged": 0
+  }
+ ]
+}
