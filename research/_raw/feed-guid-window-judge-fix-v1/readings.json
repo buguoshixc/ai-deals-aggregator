@@ -1,0 +1,291 @@
+{
+ "task": "t32 feed-guid-window-judge-fix-v1",
+ "base": "origin/master = 682adde（含 PR #95）",
+ "goal": "把「feed 条数 == 日志全部事件数」改成「== 日志里落在窗口内的事件数」，并新增「窗口内每条事件都必须出现在 feed 里」",
+ "fixture": {
+  "inWindowEventId": "3edb0ae3da4c",
+  "inWindowAt": "2026-10-04",
+  "outWindowEventId": "721e0657c80d",
+  "outWindowAt": "2026-10-01"
+ },
+ "dists": {
+  "master": {
+   "updatedAt": "2026-10-05T00:00:00+08:00",
+   "logEvents": 17,
+   "feedItems": 17,
+   "eventAtHistogram": {
+    "2026-10-01": 6,
+    "2026-10-04": 4,
+    "2026-10-05": 7
+   }
+  },
+  "t28": {
+   "updatedAt": "2026-10-08T00:00:00+08:00",
+   "logEvents": 18,
+   "feedItems": 12,
+   "eventAtHistogram": {
+    "2026-10-01": 6,
+    "2026-10-04": 4,
+    "2026-10-05": 7,
+    "2026-10-08": 1
+   }
+  }
+ },
+ "runs": [
+  {
+   "id": "A0-master-original",
+   "dist": "dist（master 产物）",
+   "script": "原始判据",
+   "json": ".arch-v1/feed-guid-window-judge-fix-v1/verify-A0-master-original.json",
+   "total": 883,
+   "failedCount": 0,
+   "failedAssertions": [],
+   "apiFeedChecks": [
+    {
+     "name": "API 价格变化订阅源可取（RSS + JSON Feed 各一份，HTTP 200）",
+     "ok": true,
+     "detail": "HTTP 200 / 200"
+    },
+    {
+     "name": "API 价格变化订阅的 guid 逐条等于日志里的派生事件身份（不是每次 build 重新生成）",
+     "ok": true,
+     "detail": "JSON 17 条 / RSS 17 条 / 日志 17 条"
+    },
+    {
+     "name": "API 价格变化订阅的链接全部指向 /plans/api/#plan-<id>（跨页深链，不是本页锚点）",
+     "ok": true,
+     "detail": "17 条"
+    },
+    {
+     "name": "API 价格变化订阅里没有混入 Coding 套餐事件（两份日志的身份空间不相交）",
+     "ok": true,
+     "detail": "c537574c49c9,774f46a2852f,89aab95ef541,8c7b0144494e,99e72b0be2ef,efe6182bbfff,b71423a7e1e0,3edb0ae3da4c,7fb4ead58527,29ee79880204,a348c0b20353,721e0657c80d,422949164f14,ac2f68ab9fc3,d67c4c1a37dc,989143bdd068,bbacdbbbeb44"
+    }
+   ]
+  },
+  {
+   "id": "A1-master-fixed",
+   "dist": "dist（master 产物）",
+   "script": "修后判据",
+   "json": ".arch-v1/feed-guid-window-judge-fix-v1/verify-A1-master-fixed.json",
+   "total": 885,
+   "failedCount": 0,
+   "failedAssertions": [],
+   "apiFeedChecks": [
+    {
+     "name": "API 价格变化订阅源可取（RSS + JSON Feed 各一份，HTTP 200）",
+     "ok": true,
+     "detail": "HTTP 200 / 200"
+    },
+    {
+     "name": "API 价格变化订阅的 guid 逐条等于日志里**落在当前窗口内**的派生事件身份（不是每次 build 重新生成）",
+     "ok": true,
+     "detail": "JSON 17 条 / RSS 17 条 / 窗口内日志 17 条（日志全量事件 17 条 · asOf 2026-10-05 · 窗口 2026-09-29..2026-10-05，ended/restored 用 2026-09-06..）"
+    },
+    {
+     "name": "API 价格变化订阅：日志里**窗口内的每一条**事件都出现在 feed 里（只比条数挡不住「换掉一条」）",
+     "ok": true,
+     "detail": "窗口内 17 条逐条命中（feed 17 条 · 日志全量 17 条，其中 0 条在窗口外 —— **窗口外缺席不算错**）"
+    },
+    {
+     "name": "API 变化订阅的窗口镜像常量与产品声明一致（漂移即红：改 recentDays / endedDays / 元信息类型 / 分栏上限都必须同步这条判据）",
+     "ok": true,
+     "detail": "产品声明（scripts/lib/plan-changes.js）recentDays 7 / endedDays 30 / 分栏上限 30 / 元信息 [\"updated\"] ↔ 判据镜像 {\"recentDays\":7,\"endedDays\":30,\"metaFieldTypes\":[\"updated\"],\"sectionCap\":30}"
+    },
+    {
+     "name": "API 价格变化订阅的链接全部指向 /plans/api/#plan-<id>（跨页深链，不是本页锚点）",
+     "ok": true,
+     "detail": "17 条"
+    },
+    {
+     "name": "API 价格变化订阅里没有混入 Coding 套餐事件（两份日志的身份空间不相交）",
+     "ok": true,
+     "detail": "c537574c49c9,774f46a2852f,89aab95ef541,8c7b0144494e,99e72b0be2ef,efe6182bbfff,b71423a7e1e0,3edb0ae3da4c,7fb4ead58527,29ee79880204,a348c0b20353,721e0657c80d,422949164f14,ac2f68ab9fc3,d67c4c1a37dc,989143bdd068,bbacdbbbeb44"
+    }
+   ]
+  },
+  {
+   "id": "B0-t28-original",
+   "dist": "dist.t28（t28 分支真产物）",
+   "script": "原始判据",
+   "json": ".arch-v1/feed-guid-window-judge-fix-v1/verify-B0-t28-original.json",
+   "total": 883,
+   "failedCount": 1,
+   "failedAssertions": [
+    {
+     "name": "API 价格变化订阅的 guid 逐条等于日志里的派生事件身份（不是每次 build 重新生成）",
+     "detail": "JSON 12 条 / RSS 12 条 / 日志 18 条"
+    }
+   ],
+   "apiFeedChecks": [
+    {
+     "name": "API 价格变化订阅源可取（RSS + JSON Feed 各一份，HTTP 200）",
+     "ok": true,
+     "detail": "HTTP 200 / 200"
+    },
+    {
+     "name": "API 价格变化订阅的 guid 逐条等于日志里的派生事件身份（不是每次 build 重新生成）",
+     "ok": false,
+     "detail": "JSON 12 条 / RSS 12 条 / 日志 18 条"
+    },
+    {
+     "name": "API 价格变化订阅的链接全部指向 /plans/api/#plan-<id>（跨页深链，不是本页锚点）",
+     "ok": true,
+     "detail": "12 条"
+    },
+    {
+     "name": "API 价格变化订阅里没有混入 Coding 套餐事件（两份日志的身份空间不相交）",
+     "ok": true,
+     "detail": "8a300f4262de,c537574c49c9,774f46a2852f,89aab95ef541,8c7b0144494e,99e72b0be2ef,efe6182bbfff,b71423a7e1e0,3edb0ae3da4c,7fb4ead58527,29ee79880204,a348c0b20353"
+    }
+   ]
+  },
+  {
+   "id": "B1-t28-fixed",
+   "dist": "dist.t28（t28 分支真产物）",
+   "script": "修后判据",
+   "json": ".arch-v1/feed-guid-window-judge-fix-v1/verify-B1-t28-fixed.json",
+   "total": 885,
+   "failedCount": 0,
+   "failedAssertions": [],
+   "apiFeedChecks": [
+    {
+     "name": "API 价格变化订阅源可取（RSS + JSON Feed 各一份，HTTP 200）",
+     "ok": true,
+     "detail": "HTTP 200 / 200"
+    },
+    {
+     "name": "API 价格变化订阅的 guid 逐条等于日志里**落在当前窗口内**的派生事件身份（不是每次 build 重新生成）",
+     "ok": true,
+     "detail": "JSON 12 条 / RSS 12 条 / 窗口内日志 12 条（日志全量事件 18 条 · asOf 2026-10-08 · 窗口 2026-10-02..2026-10-08，ended/restored 用 2026-09-09..）"
+    },
+    {
+     "name": "API 价格变化订阅：日志里**窗口内的每一条**事件都出现在 feed 里（只比条数挡不住「换掉一条」）",
+     "ok": true,
+     "detail": "窗口内 12 条逐条命中（feed 12 条 · 日志全量 18 条，其中 6 条在窗口外 —— **窗口外缺席不算错**）"
+    },
+    {
+     "name": "API 变化订阅的窗口镜像常量与产品声明一致（漂移即红：改 recentDays / endedDays / 元信息类型 / 分栏上限都必须同步这条判据）",
+     "ok": true,
+     "detail": "产品声明（scripts/lib/plan-changes.js）recentDays 7 / endedDays 30 / 分栏上限 30 / 元信息 [\"updated\"] ↔ 判据镜像 {\"recentDays\":7,\"endedDays\":30,\"metaFieldTypes\":[\"updated\"],\"sectionCap\":30}"
+    },
+    {
+     "name": "API 价格变化订阅的链接全部指向 /plans/api/#plan-<id>（跨页深链，不是本页锚点）",
+     "ok": true,
+     "detail": "12 条"
+    },
+    {
+     "name": "API 价格变化订阅里没有混入 Coding 套餐事件（两份日志的身份空间不相交）",
+     "ok": true,
+     "detail": "8a300f4262de,c537574c49c9,774f46a2852f,89aab95ef541,8c7b0144494e,99e72b0be2ef,efe6182bbfff,b71423a7e1e0,3edb0ae3da4c,7fb4ead58527,29ee79880204,a348c0b20353"
+    }
+   ]
+  },
+  {
+   "id": "C1-dropin-fixed",
+   "dist": "dist.c1（删 1 条窗口内事件）",
+   "script": "修后判据",
+   "json": ".arch-v1/feed-guid-window-judge-fix-v1/verify-C1-dropin.json",
+   "total": 885,
+   "failedCount": 2,
+   "failedAssertions": [
+    {
+     "name": "API 价格变化订阅的 guid 逐条等于日志里**落在当前窗口内**的派生事件身份（不是每次 build 重新生成）",
+     "detail": "JSON 11 条 / RSS 11 条 / 窗口内日志 12 条（日志全量事件 18 条 · asOf 2026-10-08 · 窗口 2026-10-02..2026-10-08，ended/restored 用 2026-09-09..）"
+    },
+    {
+     "name": "API 价格变化订阅：日志里**窗口内的每一条**事件都出现在 feed 里（只比条数挡不住「换掉一条」）",
+     "detail": "窗口内 12 条里有 1 条没进 feed：3edb0ae3da4c"
+    }
+   ],
+   "apiFeedChecks": [
+    {
+     "name": "API 价格变化订阅源可取（RSS + JSON Feed 各一份，HTTP 200）",
+     "ok": true,
+     "detail": "HTTP 200 / 200"
+    },
+    {
+     "name": "API 价格变化订阅的 guid 逐条等于日志里**落在当前窗口内**的派生事件身份（不是每次 build 重新生成）",
+     "ok": false,
+     "detail": "JSON 11 条 / RSS 11 条 / 窗口内日志 12 条（日志全量事件 18 条 · asOf 2026-10-08 · 窗口 2026-10-02..2026-10-08，ended/restored 用 2026-09-09..）"
+    },
+    {
+     "name": "API 价格变化订阅：日志里**窗口内的每一条**事件都出现在 feed 里（只比条数挡不住「换掉一条」）",
+     "ok": false,
+     "detail": "窗口内 12 条里有 1 条没进 feed：3edb0ae3da4c"
+    },
+    {
+     "name": "API 变化订阅的窗口镜像常量与产品声明一致（漂移即红：改 recentDays / endedDays / 元信息类型 / 分栏上限都必须同步这条判据）",
+     "ok": true,
+     "detail": "产品声明（scripts/lib/plan-changes.js）recentDays 7 / endedDays 30 / 分栏上限 30 / 元信息 [\"updated\"] ↔ 判据镜像 {\"recentDays\":7,\"endedDays\":30,\"metaFieldTypes\":[\"updated\"],\"sectionCap\":30}"
+    },
+    {
+     "name": "API 价格变化订阅的链接全部指向 /plans/api/#plan-<id>（跨页深链，不是本页锚点）",
+     "ok": true,
+     "detail": "11 条"
+    },
+    {
+     "name": "API 价格变化订阅里没有混入 Coding 套餐事件（两份日志的身份空间不相交）",
+     "ok": true,
+     "detail": "8a300f4262de,c537574c49c9,774f46a2852f,89aab95ef541,8c7b0144494e,99e72b0be2ef,efe6182bbfff,b71423a7e1e0,7fb4ead58527,29ee79880204,a348c0b20353"
+    }
+   ]
+  },
+  {
+   "id": "C2-swap-fixed",
+   "dist": "dist.c2（删 1 条窗口内 + 换进 1 条窗口外）",
+   "script": "修后判据",
+   "json": ".arch-v1/feed-guid-window-judge-fix-v1/verify-C2-swap.json",
+   "total": 885,
+   "failedCount": 1,
+   "failedAssertions": [
+    {
+     "name": "API 价格变化订阅：日志里**窗口内的每一条**事件都出现在 feed 里（只比条数挡不住「换掉一条」）",
+     "detail": "窗口内 12 条里有 1 条没进 feed：3edb0ae3da4c"
+    }
+   ],
+   "apiFeedChecks": [
+    {
+     "name": "API 价格变化订阅源可取（RSS + JSON Feed 各一份，HTTP 200）",
+     "ok": true,
+     "detail": "HTTP 200 / 200"
+    },
+    {
+     "name": "API 价格变化订阅的 guid 逐条等于日志里**落在当前窗口内**的派生事件身份（不是每次 build 重新生成）",
+     "ok": true,
+     "detail": "JSON 12 条 / RSS 12 条 / 窗口内日志 12 条（日志全量事件 18 条 · asOf 2026-10-08 · 窗口 2026-10-02..2026-10-08，ended/restored 用 2026-09-09..）"
+    },
+    {
+     "name": "API 价格变化订阅：日志里**窗口内的每一条**事件都出现在 feed 里（只比条数挡不住「换掉一条」）",
+     "ok": false,
+     "detail": "窗口内 12 条里有 1 条没进 feed：3edb0ae3da4c"
+    },
+    {
+     "name": "API 变化订阅的窗口镜像常量与产品声明一致（漂移即红：改 recentDays / endedDays / 元信息类型 / 分栏上限都必须同步这条判据）",
+     "ok": true,
+     "detail": "产品声明（scripts/lib/plan-changes.js）recentDays 7 / endedDays 30 / 分栏上限 30 / 元信息 [\"updated\"] ↔ 判据镜像 {\"recentDays\":7,\"endedDays\":30,\"metaFieldTypes\":[\"updated\"],\"sectionCap\":30}"
+    },
+    {
+     "name": "API 价格变化订阅的链接全部指向 /plans/api/#plan-<id>（跨页深链，不是本页锚点）",
+     "ok": true,
+     "detail": "12 条"
+    },
+    {
+     "name": "API 价格变化订阅里没有混入 Coding 套餐事件（两份日志的身份空间不相交）",
+     "ok": true,
+     "detail": "8a300f4262de,c537574c49c9,774f46a2852f,89aab95ef541,8c7b0144494e,99e72b0be2ef,efe6182bbfff,b71423a7e1e0,7fb4ead58527,29ee79880204,a348c0b20353,721e0657c80d"
+    }
+   ]
+  }
+ ],
+ "gate": {
+  "log": ".arch-v1/feed-guid-window-judge-fix-v1/gate.log",
+  "stepsOk": 48,
+  "stepsFailed": 0,
+  "total": "合计 315.8s / 48 个脚本，失败 0",
+  "conclusion": "✅ 本地门禁链全过（与 CI 读同一份 action.yml）",
+  "exit": "EXIT=0 ELAPSED_S=316.1",
+  "verifySiteStep": "✓   134.4s  [50] Real-browser acceptance (verify-site.js)",
+  "regressionStep": "✓   133.8s  [51] Regression verify (baseline compare)"
+ }
+}
