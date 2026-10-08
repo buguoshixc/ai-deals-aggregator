@@ -1,0 +1,31 @@
+{
+ "what": "四条断言口径的前后读数（只增不减）",
+ "verifySite": {
+  "before": 880,
+  "after": 880,
+  "note": "同 t3 合并后的 master；本次没有动 verify-site.js（写作用域留给 t9）"
+ },
+ "selftestSeo": {
+  "before": 87,
+  "after": 88,
+  "note": "§七 由「登记一处手写」升级成「零容忍」+ 新增入口锚变异牙"
+ },
+ "verifySeo": {
+  "before": 17,
+  "after": 18,
+  "note": "新增 §③⁗「变化日志的可用性：Manifest ↔ 产物文件」"
+ },
+ "checkCi": {
+  "before": 39,
+  "after": 39,
+  "note": "冻结清单 38 + 看门狗；未新增门禁步骤"
+ },
+ "buildSelfCheck": {
+  "note": "构建期自检新增三条「如实不可用」不变量 + /changes/ 的可用性分支断言（不计入上面四条口径）"
+ },
+ "neighbouringSuites": {
+  "selftest:data-docs": "58 项 / 0 失败",
+  "selftest:planshub": "32 项 / 0 失败",
+  "selftest:changes": "119 项 / 0 失败"
+ }
+}

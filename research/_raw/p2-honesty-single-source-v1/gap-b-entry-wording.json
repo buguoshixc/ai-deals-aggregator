@@ -1,0 +1,34 @@
+{
+ "what": "缺口 B：「全部变化 →」的出处（措辞表 vs 手写字面量）与入口锚的取词方式",
+ "how": [
+  "node .arch-v1/teeth.cjs b1-make | b1-restore    # 手写字面量回潮",
+  "node .arch-v1/teeth.cjs b2-make | b2-restore    # 措辞表换词",
+  "node .arch-v1/b3-product-tooth.cjs make | verify # 产物级改名",
+  "npm run selftest:seo / npm run verify:seo"
+ ],
+ "entryWord": "全部变化",
+ "wordingTableSites": [
+  {
+   "file": "scripts/lib/changes.js",
+   "line": 68,
+   "text": "all: '全部变化',"
+  },
+  {
+   "file": "scripts/lib/plan-changes.js",
+   "line": 92,
+   "text": "allChanges: '全部变化',"
+  },
+  {
+   "file": "scripts/lib/plan-changes.js",
+   "line": 155,
+   "text": "allChanges: '全部变化',"
+  }
+ ],
+ "handWrittenLiteralSites": [],
+ "scannedLibFiles": 52,
+ "hubAnchorSource": {
+  "file": "scripts/lib/plans-hub-page.js",
+  "how": "渲染时从 changes.CHANGES_WORDING.CHANGES_LABELS.all 取词（不再有独立字面量）",
+  "requires": "const changes = require('./changes');"
+ }
+}

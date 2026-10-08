@@ -1,0 +1,52 @@
+{
+ "what": "变化面：源码逐文件 sha256（对 origin/master）+ 产物全树摘要（证明正常态 0 变化）",
+ "baselineCommit": "95dfeb99035c7431597c99c10fb2cae83ddfad8f",
+ "sourceFiles": [
+  {
+   "file": "scripts/lib/changes.js",
+   "sha256Working": "696eb862ef5b8cd0228fc4ea97cc0c0d6a45eae07db82b4ae5b9a9e5c029761e",
+   "sha256OriginMaster": "199f9a47c2dcb854fafa29ab2082e5d4ab9701070be9bd70cd4362a958c9f904",
+   "lines": 719
+  },
+  {
+   "file": "scripts/lib/plans-hub-page.js",
+   "sha256Working": "390bc44d925a68970f4a353aab1c8436dc2c4325af84570a22e3ca5080a2f960",
+   "sha256OriginMaster": "9425ade186e5ca1376025057eda20ca4e52dabd117aa269358cda9eb58f46d9b",
+   "lines": 575
+  },
+  {
+   "file": "scripts/tools/build-local.js",
+   "sha256Working": "1e51edac1a4324030d9b73dd296e89966dd6afeaaff672fb0de9a3e510acee31",
+   "sha256OriginMaster": "cf6870f212844fea4cdf1b45b9a7e6964da49981ea1664e0f909676812edee45",
+   "lines": 7276
+  },
+  {
+   "file": "scripts/tools/seo-selftest.js",
+   "sha256Working": "b9acf65d7c0c2a68a343cef23da81fbd798722b7bdce1ab10576be865268cc3c",
+   "sha256OriginMaster": "3d756bdd86798de7fbf66d649f99cd2bd89005b025ef4411647e70b866b237b5",
+   "lines": 800
+  },
+  {
+   "file": "scripts/tools/seo-verify.js",
+   "sha256Working": "54f064868d1135213ca9a9f1b8595d62fbcfd180cac9ae72454c531f3895f32b",
+   "sha256OriginMaster": "714bc9dc25974c8c754bb722c28d20be65ad1a14e5f1c385f92d8a86c3525c8d",
+   "lines": 591
+  }
+ ],
+ "numstat": [
+  "158\t0\tscripts/lib/changes.js",
+  "7\t1\tscripts/lib/plans-hub-page.js",
+  "102\t25\tscripts/tools/build-local.js",
+  "42\t10\tscripts/tools/seo-selftest.js",
+  "45\t0\tscripts/tools/seo-verify.js"
+ ],
+ "product": {
+  "baselineTree": "df43587cfe90a60453e29df96599b138a8dd02242130968340cba589e6979675",
+  "afterTree": "df43587cfe90a60453e29df96599b138a8dd02242130968340cba589e6979675",
+  "filesBaseline": 304,
+  "filesAfter": 304,
+  "identical": true
+ },
+ "distPerFileChanged": 0,
+ "note": "产物 304 个文件（303 + t3 的 _notes.ndjson）逐文件 sha256 全等；本文改动只影响「日志不可用」那条降级路径与一处渲染取词"
+}
