@@ -494,6 +494,51 @@ const ownVisibleText = html => unescapeHtml(
 }
 
 /* ------------------------------------------------------------------ */
+/* ③⁗ 变化日志的可用性：Manifest 的如实登记 ↔ 产物文件                 */
+/* ------------------------------------------------------------------ */
+//
+// `p2-honesty-single-source-v1` 闭合 t4 登记的缺口 A：日志缺失/损坏时产物**照常出**，
+// 页面按纪律说「没有拿到…日志」，而数据出口的 Manifest 把这份数据集登记为
+// `availability: 'unavailable'` + `updatedAt: null`（**不许用别的日期顶上**）。
+// 构建期有那三条断言；这里（独立门禁）只看**产物**，把同一条不变量再钉一遍：
+//   · 登记为不可用 ⇒ Manifest 的 updatedAt 必须是 null、产物文件也不许带时间、必须有说明；
+//   · 产物文件没有可公布的时间 ⇒ 必须登记为不可用（不许悄悄留空）；
+//   · 有时间的 ⇒ Manifest 与产物文件必须逐字相等。
+// 全部由 `lib/changes.js` 的纯函数取口径（唯一出处），这里不重写一份日志清单。
+{
+  const changesLib = require('../lib/changes');
+  const manifestFile = path.join(OUT, 'data', 'index.json');
+  const manifest = fs.existsSync(manifestFile) ? JSON.parse(fs.readFileSync(manifestFile, 'utf8')) : null;
+  const problems = [];
+  let declared = 0;
+  for (const item of changesLib.LOG_DATASETS) {
+    const entry = manifest ? (manifest.datasets || []).find(dataset => dataset.id === item.id) : null;
+    if (!entry) { problems.push(`Manifest 里没有 ${item.id}`); continue; }
+    const file = path.join(OUT, item.file);
+    if (!fs.existsSync(file)) { problems.push(`${item.file} 不存在（endpoint 必须在场）`); continue; }
+    const parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
+    const real = parsed.updatedAt || parsed.startedAt || null;
+    if (entry.availability === 'unavailable') {
+      declared += 1;
+      if (entry.updatedAt !== null) {
+        problems.push(`${item.id}: 登记为不可用，Manifest 的 updatedAt 必须是 null（实得 ${entry.updatedAt}）`);
+      }
+      if (real !== null) problems.push(`${item.id}: 登记为不可用，但 ${item.file} 带着时间 ${real} —— 登记与产物不一致`);
+      if (!entry.updatedAtNote || !entry.updatedAtNote.includes('没有拿到')) {
+        problems.push(`${item.id}: 登记为不可用时必须给出「没有拿到日志」的说明`);
+      }
+    } else if (real === null) {
+      problems.push(`${item.id}: ${item.file} 没有可公布的更新时间（updatedAt / startedAt 都取不到）`
+        + '⇒ 必须登记为 availability: unavailable（如实登记，不许用别的日期顶上）');
+    } else if (String(entry.updatedAt) !== String(real)) {
+      problems.push(`${item.id}: Manifest updatedAt=${entry.updatedAt} ≠ 产物文件里的 ${real}`);
+    }
+  }
+  check(`变化日志的可用性：Manifest 的如实登记 ↔ 产物文件逐条一致（${changesLib.LOG_DATASETS.length} 份，本次登记为不可用 ${declared} 份）`,
+    problems.length === 0, problems.slice(0, 3).join('；'));
+}
+
+/* ------------------------------------------------------------------ */
 /* ④ 只属于独立验收的三条：sitemap 成员、noindex、Feed 文件              */
 /* ------------------------------------------------------------------ */
 

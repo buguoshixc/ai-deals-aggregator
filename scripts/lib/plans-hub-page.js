@@ -38,6 +38,12 @@ const apiPlansPage = require('./api-plans-page');
 const planChanges = require('./plan-changes');
 const dealPlanLinks = require('./deal-plan-links');
 const pageKinds = require('./page-kinds');
+// 指向 `/changes/` 的那一枚入口锚：文案**只有一个出处** —— `changes.js` 的措辞表。
+// 这一页以前自己写了一份字面量（P2 残留 e3 登记的那一处），于是「同一件事只有一个词」
+// 只对一半的页面成立 —— 改措辞表不会改到这一页。现在在**渲染时**从表里取词
+// （`p2-honesty-single-source-v1`），并由 `seo-selftest §七` 的变异牙钉住：
+// 把表里的词换掉 ⇒ 这一页渲染出来的锚文本跟着变；手写字面量 ⇒ 判据变红。
+const changes = require('./changes');
 
 const PLANS_HUB_ROUTE = 'plans/';
 /** 回到站根的相对前缀：由路由深度推导，不写死（这一页是一层） */
@@ -248,7 +254,7 @@ function changesSectionHtml(view, prefix) {
           这里只搬运，不另立一套判据；「不再收录」表示人工来源层不再列出它，不表示厂商已经下架。</p>
 ${coding}
 ${api}
-        <p class="snote"><a href="${escapeHtml(`${prefix}changes/`)}">全部变化 →</a> ·
+        <p class="snote"><a href="${escapeHtml(`${prefix}changes/`)}">${escapeHtml(changes.CHANGES_WORDING.CHANGES_LABELS.all)} →</a> ·
           <a href="${escapeHtml(`${prefix}feeds/`)}">订阅变化（RSS / JSON Feed） →</a></p>
       </section>`;
 }

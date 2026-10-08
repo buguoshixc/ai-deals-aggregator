@@ -3179,7 +3179,15 @@ function assemble() {
   const historyStore = history.load();
   let historyStats = null;
   if (historyStore.missing || historyStore.broken) {
-    console.warn(`    ⚠️  历史日志不可用（${historyStore.broken || '文件缺失'}）——本次产物里没有变更记录，check:history 会报错`);
+    // 日志不可用：页面按纪律说「没有拿到历史日志」，而**数据出口仍要自洽** ——
+    // 发布一份**如实的空账本**（`startedAt: null`、零事件、零基线），让 `deal-history.json`
+    // 这个 endpoint 真的存在，Manifest 与页面读到的都是同一件事。
+    // ⚠️ 空账本**不声称任何日期**（既不写构建时刻「今天」，也不拿 deals 的数据日期顶替）——
+    // 它不是「没有变化」，只是「这一份账本里没有可公布的历史」。
+    // 规则本体见 `lib/changes.js` 的「变化日志的可用性 → 数据出口 Manifest 的如实登记」。
+    fs.writeFileSync(path.join(OUT, 'deal-history.json'), `${JSON.stringify(historyStore.store, null, 2)}\n`, 'utf8');
+    console.warn(`    ⚠️  历史日志不可用（${historyStore.broken || '文件缺失'}）——本次产物里没有变更记录，`
+      + 'check:history 会报错；dist/deal-history.json 是**如实空账本**（无日期 / 无事件）');
   } else {
     historyStats = history.summarize(historyStore.store, payload.deals);
     payload.deals = history.attachToDeals(payload.deals, historyStore.store);
@@ -3259,7 +3267,10 @@ function assemble() {
   const planHistoryLoad = planHistory.load();
   const planHistoryAvailability = planHistoryLoad.missing || planHistoryLoad.broken ? 'unavailable' : 'ok';
   if (planHistoryAvailability !== 'ok') {
-    console.warn(`    ⚠️  套餐变化日志不可用（${planHistoryLoad.broken || '文件缺失'}）——本次产物里没有套餐变更记录，check:plan-history 会报错`);
+    // 与 `deal-history.json` 同一处置：发布**如实空账本**，让数据出口的 endpoint 自洽（无日期、无事件）。
+    fs.writeFileSync(path.join(OUT, 'plan-history.json'), `${JSON.stringify(planHistoryLoad.store, null, 2)}\n`, 'utf8');
+    console.warn(`    ⚠️  套餐变化日志不可用（${planHistoryLoad.broken || '文件缺失'}）——本次产物里没有套餐变更记录，`
+      + 'check:plan-history 会报错；dist/plan-history.json 是**如实空账本**（无日期 / 无事件）');
   } else {
     fs.writeFileSync(path.join(OUT, 'plan-history.json'), `${JSON.stringify(planHistoryLoad.store, null, 2)}\n`, 'utf8');
   }
@@ -3291,7 +3302,10 @@ function assemble() {
   const apiPlanHistoryLoad = apiPlanHistory.load();
   const apiPlanHistoryAvailability = apiPlanHistoryLoad.missing || apiPlanHistoryLoad.broken ? 'unavailable' : 'ok';
   if (apiPlanHistoryAvailability !== 'ok') {
-    console.warn(`    ⚠️  API 计费变化日志不可用（${apiPlanHistoryLoad.broken || '文件缺失'}）——本次产物里没有 API 价格变更记录，check:api-plan-history 会报错`);
+    // 同上：如实空账本，无日期 / 无事件。
+    fs.writeFileSync(path.join(OUT, 'api-plan-history.json'), `${JSON.stringify(apiPlanHistoryLoad.store, null, 2)}\n`, 'utf8');
+    console.warn(`    ⚠️  API 计费变化日志不可用（${apiPlanHistoryLoad.broken || '文件缺失'}）——本次产物里没有 API 价格变更记录，`
+      + 'check:api-plan-history 会报错；dist/api-plan-history.json 是**如实空账本**（无日期 / 无事件）');
   } else {
     fs.writeFileSync(path.join(OUT, 'api-plan-history.json'), `${JSON.stringify(apiPlanHistoryLoad.store, null, 2)}\n`, 'utf8');
   }
@@ -4137,6 +4151,34 @@ function assemble() {
   // 名称、类别、发布地址、countNote 全在注册表里；Manifest、构建拷贝、`/docs/data/`
   // 与产物扫描都从那一份派生。新增一份公开数据集 = 注册表加一行 + 这里给出它的取值；
   // 只加了一边（注册表有、取值没有）会在这里硬失败，而不是悄悄少一份。
+  //
+  // ---- 变化日志不可用时：**如实登记**（p2-honesty-single-source-v1，闭合 t4 登记的缺口 A）----
+  //
+  // 缺口（t4 亲口登记、本轮源码级实测复现）：三份变化日志（`deal-history.json` /
+  // `plan-history.json` / `api-plan-history.json`）缺失或损坏时，页面按纪律必须说
+  // 「本次构建没有拿到…日志 —— 这不表示「没有变化」」；但构建**在 Dataset Manifest 那一步就死了**：
+  // manifest 的每条数据集都要求一个可识别的 `updatedAt`，而日志不可用时它该有的是「没有」——
+  // 于是那句诚实性措辞永远上不了线，不可用分支是**够不着的**。
+  //
+  // 处置：**不许用别的日期顶上**（既不许写构建时刻「今天」，也不许拿 deals 的数据日期冒充日志的日期），
+  // 而是把这条数据集显式登记成 `availability: 'unavailable'` + `updatedAt: null` + `updatedAtNote`
+  //（同一句「没有拿到日志」）。配套的是**三条新增断言**（比原来的"只看形状"更严）：
+  //   · 源不可用 ⇒ updatedAt 必须为 null（拿任何日期顶上即红）；
+  //   · 源不可用 ⇒ 必须显式登记 availability + 如实说明；
+  //   · 源可用   ⇒ 不许登记为 unavailable、不许留空 updatedAt。
+  // 只放过的两条"形状"抱怨由 `toleratedLogComplaints()` **从登记本身逐字生成**（不做模式匹配）：
+  // 忘了登记 ⇒ 抱怨照旧 ⇒ 红。失败方向始终是红。
+  //
+  // ⚠️ 规则本体在 `lib/changes.js`（纯函数，可被 `seo-selftest.js` 直接开牙），
+  // 因为 `lib/data-docs.js` 的 `assertManifestShape()` 不在本任务的写作用域里；
+  // 报告 §7 给了"把这段上移进 schema"的逐行补丁。
+  const logAvailability = changes.logAvailabilityOf({
+    'deal-history': historyStore,
+    'plan-history': planHistoryLoad,
+    'api-plan-history': apiPlanHistoryLoad
+  });
+  const unavailableLogIds = new Set(logAvailability.filter(item => item.availability !== 'ok').map(item => item.id));
+  const { markUnavailableLogDatasets, logDatasetHonestyProblems, toleratedLogComplaints } = changes;
   const datasetRegistryProblems = dataDocs.assertDatasetRegistryShape();
   if (datasetRegistryProblems.length) {
     throw new Error(`公开数据集注册表（PUBLIC_DATASETS）不合法（${datasetRegistryProblems.length} 处）：\n  - ` +
@@ -4187,10 +4229,19 @@ function assemble() {
   {
     const dir = path.join(OUT, 'data');
     fs.mkdirSync(dir, { recursive: true });
+    // ★ 如实登记必须在**写盘之前**：标记要落进 data/index.json（页面与独立门禁都读它）。
+    markUnavailableLogDatasets(dataManifest, logAvailability);
     fs.writeFileSync(path.join(dir, 'index.json'), `${JSON.stringify(dataManifest, null, 2)}\n`, 'utf8');
-    const shapeProblems = dataDocs.assertManifestShape(dataManifest);
-    if (shapeProblems.length) {
-      throw new Error(`Dataset Manifest 形状不合法（${shapeProblems.length} 处）：\n  - ${shapeProblems.slice(0, 5).join('\n  - ')}`);
+    const tolerated = toleratedLogComplaints(dataManifest);
+    const shapeProblems = dataDocs.assertManifestShape(dataManifest).filter(problem => !tolerated.has(problem));
+    const honestyProblems = logDatasetHonestyProblems(dataManifest, logAvailability);
+    const manifestProblems = [...shapeProblems, ...honestyProblems];
+    if (manifestProblems.length) {
+      throw new Error(`Dataset Manifest 形状/诚实性不合法（${manifestProblems.length} 处）：\n  - ${manifestProblems.slice(0, 5).join('\n  - ')}`);
+    }
+    if (unavailableLogIds.size) {
+      console.log(`  ⚠️  变化日志不可用（${[...unavailableLogIds].join('、')}）——Manifest 按「如实不可用」登记`
+        + `（updatedAt: null + availability: unavailable + 说明），页面按纪律说「没有拿到日志」，不用别的日期顶替`);
     }
   }
   const dataLicense = ['LICENSE', 'LICENSE.md', 'COPYING'].find(file => fs.existsSync(path.join(ROOT, file)));
@@ -4228,9 +4279,10 @@ function assemble() {
       minNotes: 1
     });
     fs.writeFileSync(path.join(docsDir, 'index.html'), docsHtml, 'utf8');
-    const problems = dataDocs.assertPageHonesty(docsHtml, dataDocsCtx);
-    if (problems.length) {
-      throw new Error(`数据文档页的诚实性断言未通过（${problems.length} 处）：\n  - ${problems.slice(0, 5).join('\n  - ')}`);
+    const pageHonestyProblems = dataDocs.assertPageHonesty(docsHtml, dataDocsCtx)
+      .filter(problem => !toleratedLogComplaints(dataManifest).has(problem));
+    if (pageHonestyProblems.length) {
+      throw new Error(`数据文档页的诚实性断言未通过（${pageHonestyProblems.length} 处）：\n  - ${pageHonestyProblems.slice(0, 5).join('\n  - ')}`);
     }
     console.log(`  数据出口: /docs/data/（${dataManifest.count} 份数据集 · Manifest /data/index.json` +
       ` · 时间形状 真实时刻 ${dataManifest.datasets.filter(d => d.updatedAtShape === 'timestamp').length} /` +
@@ -4531,6 +4583,9 @@ ${dataDocsUrl}
     // v3.0 Stage G：数据出口的 Manifest（页面与自检读同一份）
     dataManifest,
     dataLicense: dataLicense || null,
+    // 变化日志的**可用性登记**（自检据此区分「分栏齐」与「如实说没有拿到日志」两支；
+    // 规则本体在 lib/changes.js，见 p2-honesty-single-source-v1）。
+    logAvailability,
     // 构建期真实生成的全部站内路由（含首页 '' 与刚才新增的 feeds/）——
     // Feed 里每一条站内链接都要能在这里找到，否则就是一条死链。
     pageRoutes: new Set([
@@ -5021,6 +5076,7 @@ function selfCheck(built) {
           updatedAt: parsed.updatedAt || parsed.startedAt || null
         };
       }
+      const diskTolerated = changes.toleratedLogComplaints(diskManifest);
       const problems = [
         ...dataDocs.assertManifestShape(diskManifest),
         ...dataDocs.assertEndpointsExist(diskManifest, url => fs.existsSync(path.join(OUT, url))),
@@ -5040,7 +5096,10 @@ function selfCheck(built) {
           actualCounts: Object.fromEntries(Object.entries(actual).map(([id, row]) => [id, row.count])),
           actualUpdatedAt: Object.fromEntries(Object.entries(actual).map(([id, row]) => [id, row.updatedAt]))
         })
-      ];
+      ].filter(problem => !diskTolerated.has(problem));
+      // ★ 盘侧同一条不变量（不需要源加载结果）：没有时间的日志数据文件必须登记为不可用，反之亦然。
+      problems.push(...changes.logDatasetDiskHonestyProblems(diskManifest,
+        Object.fromEntries(Object.entries(actual).map(([id, row]) => [id, row.updatedAt]))));
       // 发布的数据集数必须 == Manifest 条数（"多了一份没人知道的数据"同样要红）。
       // 判据来自**唯一注册表**（`PUBLIC_DATASETS`），不是这里再抄一份 9 文件清单 ——
       // 抄一份清单的后果正是 P2-25：新加一份公开 JSON 时没有任何东西会红。
@@ -5559,21 +5618,39 @@ function selfCheck(built) {
       if (JSON.stringify(ldTypes.slice().sort()) !== JSON.stringify(expectedLd)) {
         problems.push(`changes/ JSON-LD 集合不是恰好 [${expectedLd.join(', ')}]，实得 [${ldTypes.slice().sort().join(', ')}]`);
       }
-      // 分栏标题与总数必须来自权威表（标题在 CHANGES_SECTION，条数在 totals）
-      for (const key of SECTION_KEYS) {
-        const heading = W.CHANGES_SECTION[key] + '（' + (Number(radar.totals[key]) || 0) + '）';
-        if (!noScript.includes(heading)) problems.push(`changes/ 缺少分栏标题「${heading}」`);
-      }
-      if (!noScript.includes(W.CHANGES_LABELS.other)) problems.push('changes/ 缺少「不计入高价值的其他变化」块');
-      if (!noScript.includes(changes.CHANGES_WORDING.CHANGES_NOTES.soonBasis)) problems.push('changes/ 缺少「即将结束」的判据说明');
-      if (!noScript.includes(history.HISTORY_WORDING.HISTORY_NOTES.disclaimer)) problems.push('changes/ 缺少固定免责句');
-      // 空态必须按原因分开说：数据里一条截止日期都没有 ≠ 有但都不在窗口内
-      const emptySoon = radar.coverage.dealsWithExpiresAt === 0
-        ? W.CHANGES_EMPTY.endingSoonNone
-        : W.CHANGES_EMPTY.endingSoonLater.replace('{n}', String(radar.coverage.dealsWithExpiresAt))
-          .replace('{days}', String(radar.windows.soonDays));
-      if (!radar.sections.endingSoon.items.length && !noScript.includes(emptySoon)) {
-        problems.push('changes/ 的「即将结束」空态没有说清是哪种空（数据缺口 vs 窗口内没有）');
+      // 分栏标题与总数必须来自权威表（标题在 CHANGES_SECTION，条数在 totals）。
+      // ⚠️ 历史日志**不可用**时页面按纪律不渲染分栏、改说「没有拿到历史日志」——
+      //    那种情况下这一组断言换成对「不可用文案」的断言（那一句本身在 ⑥ 里另有渲染器级的牙）。
+      const historyLogUnavailable = Boolean((built.logAvailability || [])
+        .find(item => item.id === 'deal-history' && item.availability !== 'ok'));
+      if (historyLogUnavailable) {
+        if (!noScript.includes(W.CHANGES_NOTES.unavailable)) {
+          problems.push('changes/ 在历史日志不可用时没有明说「没有拿到历史日志」');
+        }
+        // ⚠️ 只查**优惠雷达自己的分栏**（`<section class="chgsec" id="<key>">`）：
+        //    套餐 / API 那两块有各自的日志，它们的「今日新增（n）」子标题与这一条无关。
+        const ownSections = SECTION_KEYS
+          .filter(key => new RegExp(`<section class="chgsec" id="${key}"`).test(noScript));
+        if (ownSections.length) {
+          problems.push(`changes/ 在历史日志不可用时仍渲染了优惠雷达的分栏（${ownSections.join(', ')}）——`
+            + '会把「没有拿到日志」伪装成「没有变化」');
+        }
+      } else {
+        for (const key of SECTION_KEYS) {
+          const heading = W.CHANGES_SECTION[key] + '（' + (Number(radar.totals[key]) || 0) + '）';
+          if (!noScript.includes(heading)) problems.push(`changes/ 缺少分栏标题「${heading}」`);
+        }
+        if (!noScript.includes(W.CHANGES_LABELS.other)) problems.push('changes/ 缺少「不计入高价值的其他变化」块');
+        if (!noScript.includes(changes.CHANGES_WORDING.CHANGES_NOTES.soonBasis)) problems.push('changes/ 缺少「即将结束」的判据说明');
+        if (!noScript.includes(history.HISTORY_WORDING.HISTORY_NOTES.disclaimer)) problems.push('changes/ 缺少固定免责句');
+        // 空态必须按原因分开说：数据里一条截止日期都没有 ≠ 有但都不在窗口内
+        const emptySoon = radar.coverage.dealsWithExpiresAt === 0
+          ? W.CHANGES_EMPTY.endingSoonNone
+          : W.CHANGES_EMPTY.endingSoonLater.replace('{n}', String(radar.coverage.dealsWithExpiresAt))
+            .replace('{days}', String(radar.windows.soonDays));
+        if (!radar.sections.endingSoon.items.length && !noScript.includes(emptySoon)) {
+          problems.push('changes/ 的「即将结束」空态没有说清是哪种空（数据缺口 vs 窗口内没有）');
+        }
       }
       // 行 ↔ 数据双向对账：页面上的详情页链接集合 == 可链接条目集合。
       // ⚠️ 折叠块（其他变化）里的行**也会**链到详情页 —— 只数五个分栏会误报「多了几条」。
