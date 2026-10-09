@@ -418,6 +418,23 @@ runs:
       shell: bash
       run: node scripts/tools/check-feeds-reproducible.js --dir=dist
 
+    # secondary-page-residue-v2 新增：**「删掉不许回流 + 扫描面不许收缩」的产物级复核**。
+    #
+    # 判据本体只有一份（`build-local.js` 的 `scanResidue()`），这一步通过 `check-residue.js`
+    # `require` **同一个函数**，不复制逻辑 —— 复制的判据会在两处漂移，而漂移掉的那一侧
+    # 永远是没人看的那一侧。
+    #
+    # 为什么构建期已经跑过还要单列一步：构建期那一遍是**主守卫**（每次构建都跑，含
+    # `RESIDUE_MIN_ENTRIES` 的缩表检查），撞上它最快；但它**只能在构建那一刻判**，
+    # 而「产物在那之后有没有被人手改、有没有被塞回一段已删文案」只有对着**已就绪的产物**
+    # 再判一次才发现得了。此外这一步给出的 `--dir=<沙箱>` 是「不动真产物就能做变异演练」
+    # 的唯一入口（adversary 靠它做对抗复核，见
+    # research/_raw/secondary-page-residue-v2/mutation/README.md）；
+    # 把它拿掉，判据还在，但**没人能在不重建的前提下证伪它**。
+    - name: Residue guard (deleted copy must not return; container floors)
+      shell: bash
+      run: node scripts/tools/check-residue.js --dir=dist
+
     # v2.1 新增：plans.json 可重建性 —— 盘上那份必须等于人工来源层产出的那一份（逐字节）。
     # 与上一条红的含义不同：Feeds 那条问的是「构建产物里有没有被塞进时钟」，
     # 这一条问的是「有没有人手改了派生产物 / 改了来源层却忘了重建」。

@@ -1,0 +1,217 @@
+{
+  "at": "2026-10-09T08:27:45.961Z",
+  "what": "t10 修复的反向复现：对抗复核 F1 / F3 / F5 / F6 逐条反过来跑（真构建 + 产物副本两个面）",
+  "distUntouched": true,
+  "distTreeDigestBefore": "59db0aa5aaef0ac01589c4203dc9dfeda2c7ddbe3883c2a0774f24451607d04a",
+  "distTreeDigestAfter": "59db0aa5aaef0ac01589c4203dc9dfeda2c7ddbe3883c2a0774f24451607d04a",
+  "tool": "scripts/tools/build-local.js 的 scanResidue()（构建期那一段）与 scripts/tools/check-residue.js（同一份实现）",
+  "mutations": [
+    {
+      "surface": "真构建（源码副本树）",
+      "id": "T1a-shared-footer-exempt-bypass",
+      "finding": "F1（high）",
+      "what": "把「价格与条款最终以厂商官方页面为准。」写回 index.html 的 **SHARED 页脚元素**（t6 实测过的旁路：修前 exit 0、产物 186 次）",
+      "expect": "red（exit 1）· 点名该字面 + 共享页脚正面断言",
+      "command": "node scripts/tools/build-local.js --out=dist（cwd=tree/）",
+      "exitCode": 1,
+      "seconds": 4,
+      "toothMessageSeen": true,
+      "verdict": "red-as-expected",
+      "hits": [
+        "  ✗ 删掉的字面又回到了产物里（186 个文件 · 原样 186 处 · 登记 c2-01/visible、c1-05/literal）：「最终以厂商官方页面为准。」 ⇒ archive/index.html（原样字面）×1；category/agent/index.html（原样字面）×1 …（另有 184 个文件） · 现场：…。</p> <p>价格与条款最终以厂商官方页面为准。</p> </footer> …",
+        "  ✗ 删掉的字面又回到了产物里（186 个文件 · 原样 186 处 · 登记 v2-plans-hub-description-tail/literal）：「价格与条款最终以厂商官方页面为准。」 ⇒ archive/index.html（原样字面）×1；category/agent/index.html（原样字面）×1 …（另有 184 个文件） · 现场：…作标识用途。</p> <p>价格与条款最终以厂商官方页面为准。</p> </footer> …",
+        "  ✗ 删掉的字面以**等价写法**回到了产物里（归一化后 186 处 · 186 个文件 · 登记 c2-01/visible、c1-05/literal）：归一化针「最终以厂商官方页面为准.」 ⇒ archive/index.html、category/agent/index.html …（另有 184 个文件） · 现场（归一化后）：…ogo版权归各厂商所有,仅作标识用途.价格与条款最终以厂商官方页面为准.…"
+      ]
+    },
+    {
+      "surface": "真构建（源码副本树）",
+      "id": "T3a-entity-encoded-render",
+      "finding": "F3（medium）",
+      "what": "把同一句以**数字实体**形式重新渲染出来（`lib/plans-page.js` 的清单条目，源里就是 &#NNNN; 写法）",
+      "expect": "red（exit 1）· 归一化那一遍命中（原样那一遍不该命中）",
+      "command": "node scripts/tools/build-local.js --out=dist（cwd=tree/）",
+      "exitCode": 1,
+      "seconds": 3,
+      "toothMessageSeen": true,
+      "verdict": "red-as-expected",
+      "hits": [
+        "  ✗ 删掉的字面以**等价写法**回到了产物里（归一化后 1 处 · 1 个文件 · 登记 c2-01/visible、c1-05/literal）：归一化针「最终以厂商官方页面为准.」 ⇒ plans/coding/index.html · 现场（归一化后）：…显示\"-\",不填0,也不参与任何排序.价格与条款最终以厂商官方页面为准.表中每条都链到该平台的官方定价页,本站只做收录与…",
+        "  ✗ 删掉的字面以**等价写法**回到了产物里（归一化后 1 处 · 1 个文件 · 登记 v2-plans-hub-description-tail/literal）：归一化针「价格与条款最终以厂商官方页面为准.」 ⇒ plans/coding/index.html · 现场（归一化后）：…不出的一律显示\"-\",不填0,也不参与任何排序.价格与条款最终以厂商官方页面为准.表中每条都链到该平台的官方定价页,本站只做收录与…",
+        "❌ 产物自检失败（2 项）"
+      ]
+    },
+    {
+      "surface": "真构建（源码副本树）",
+      "id": "T5a-dead-literals",
+      "finding": "F5（medium）",
+      "what": "清空 26/32 条的 `literal` 字段（条目数仍 32；t6 实测修前 exit 0、活字面 44→6）",
+      "expect": "red（exit 1）· 逐条点名 id + 活字面下限",
+      "command": "node scripts/tools/build-local.js --out=dist（cwd=tree/）",
+      "exitCode": 1,
+      "seconds": 3,
+      "toothMessageSeen": true,
+      "verdict": "red-as-expected",
+      "hits": [
+        "  ✗ 登记表里有 26 条不是「活字面」：c2-01（literal 缺失 / 空串 / 纯空白）、c2-02（literal 缺失 / 空串 / 纯空白）、c2-03（literal 缺失 / 空串 / 纯空白）、c2-04（literal 缺失 / 空串 / 纯空白）、c1-05（literal 缺失 / 空串 / 纯空白）、c1-06（literal 缺失 / 空串 / 纯空白） … —— 清空 / 重复 literal 等于把这条判据关掉（条目数不变，只数数组长度的反空洞骗得过去；t6 F5 实测 44→6 而构建仍绿）",
+        "  ✗ 活字面只有 19 条 < 下限 40（去重后的非空字面数；建表时实测 44）—— 登记面被整块清空 / 大批置空时必须红，要减字面请显式改 build-local.js 的 RESIDUE_MIN_LIVE_LITERALS",
+        "❌ 产物自检失败（2 项）"
+      ]
+    },
+    {
+      "surface": "真构建（源码副本树）",
+      "id": "T6a-floor-lowered",
+      "finding": "F6（low）",
+      "what": "把 `.dsrc-note` 的 floor 从 123 改成 1（t6 实测修前 exit 0）",
+      "expect": "red（exit 1）· 下限自守（floor < measured × floorRatio）",
+      "command": "node scripts/tools/build-local.js --out=dist（cwd=tree/）",
+      "exitCode": 1,
+      "seconds": 3,
+      "toothMessageSeen": true,
+      "verdict": "red-as-expected",
+      "hits": [
+        "  ✗ .dsrc-note 的下限 1 < 实测 165 × 0.5 = 82.5 —— 下限被改小的方向必须红（「下限自守」，t6 F6）",
+        "❌ 产物自检失败（1 项）",
+        "❌ 构建失败：产物自检未通过"
+      ]
+    },
+    {
+      "surface": "产物副本（与构建期同一实现）",
+      "id": "P0-baseline-untouched",
+      "finding": "基线",
+      "what": "未改动的一份 dist 副本（证明后面那些红不是「归一化引入误报」的代价）",
+      "expect": "green（exit 0）",
+      "command": "node scripts/tools/check-residue.js --dir=research/_raw/secondary-page-residue-v2/mutation/sandbox/T10-P0-baseline-untouched",
+      "exitCode": 0,
+      "toothMessageSeen": true,
+      "verdict": "green-as-expected",
+      "hits": [
+        "✅ 产物复核通过：44 条被删文案三遍 0 命中（无豁免名单） · 8 类容器均不低于下限且关系式成立"
+      ]
+    },
+    {
+      "surface": "产物副本（与构建期同一实现）",
+      "id": "P1-per-page-footer-only",
+      "finding": "F1 对照",
+      "what": "把同一句塞进**每一页的 <footer>**、**不动 index.html 的 SHARED 区间**（t6 的对照：修前 RED 370 处）",
+      "expect": "red（exit 1）",
+      "command": "node scripts/tools/check-residue.js --dir=research/_raw/secondary-page-residue-v2/mutation/sandbox/T10-P1-per-page-footer-only",
+      "exitCode": 1,
+      "toothMessageSeen": true,
+      "verdict": "red-as-expected",
+      "hits": [
+        "  ✗ 删掉的字面又回到了产物里（185 个文件 · 原样 185 处 · 登记 c2-01/visible、c1-05/literal）：「最终以厂商官方页面为准。」 ⇒ archive/index.html（原样字面）×1；category/agent/index.html（原样字面）×1 …（另有 183 个文件） · 现场：…仅作标识用途。</p> <p>价格与条款最终以厂商官方页面为准。</p> </footer> …",
+        "  ✗ 删掉的字面又回到了产物里（185 个文件 · 原样 185 处 · 登记 v2-plans-hub-description-tail/literal）：「价格与条款最终以厂商官方页面为准。」 ⇒ archive/index.html（原样字面）×1；category/agent/index.html（原样字面）×1 …（另有 183 个文件） · 现场：…厂商所有，仅作标识用途。</p> <p>价格与条款最终以厂商官方页面为准。</p> </footer> …",
+        "  ✗ 删掉的字面以**等价写法**回到了产物里（归一化后 185 处 · 185 个文件 · 登记 c2-01/visible、c1-05/literal）：归一化针「最终以厂商官方页面为准.」 ⇒ archive/index.html、category/agent/index.html …（另有 183 个文件） · 现场（归一化后）：…ogo版权归各厂商所有,仅作标识用途.价格与条款最终以厂商官方页面为准.…"
+      ]
+    },
+    {
+      "surface": "产物副本（与构建期同一实现）",
+      "id": "P2-zero-width",
+      "finding": "F3 变体",
+      "what": "零宽字符：`价\\u200B格与条款最终以厂商官方页面为准。`",
+      "expect": "red（exit 1）· 归一化那一遍命中",
+      "command": "node scripts/tools/check-residue.js --dir=research/_raw/secondary-page-residue-v2/mutation/sandbox/T10-P2-zero-width",
+      "exitCode": 1,
+      "toothMessageSeen": true,
+      "verdict": "red-as-expected",
+      "hits": [
+        "  ✗ 删掉的字面又回到了产物里（1 个文件 · 原样 1 处 · 登记 c2-01/visible、c1-05/literal）：「最终以厂商官方页面为准。」 ⇒ index.html（原样字面）×1 · 现场：…ss=\"wrap\"> <p>价​格与条款最终以厂商官方页面为准。</p> <main id=\"main\"> …",
+        "  ✗ 删掉的字面以**等价写法**回到了产物里（归一化后 1 处 · 1 个文件 · 登记 c2-01/visible、c1-05/literal）：归一化针「最终以厂商官方页面为准.」 ⇒ index.html · 现场（归一化后）：…dits67云平台赠金与创业扶持额度→价格与条款最终以厂商官方页面为准.显示50条卡片·国内30·国外20·覆盖4个力度…",
+        "  ✗ 删掉的字面以**等价写法**回到了产物里（归一化后 1 处 · 1 个文件 · 登记 v2-plans-hub-description-tail/literal）：归一化针「价格与条款最终以厂商官方页面为准.」 ⇒ index.html · 现场（归一化后）：…发者credits67云平台赠金与创业扶持额度→价格与条款最终以厂商官方页面为准.显示50条卡片·国内30·国外20·覆盖4个力度…"
+      ]
+    },
+    {
+      "surface": "产物副本（与构建期同一实现）",
+      "id": "P3-span-split",
+      "finding": "F3 变体",
+      "what": "`<span>` 拆字：`<span>价格</span>与条款最终以厂商官方页面为准。`",
+      "expect": "red（exit 1）· 归一化那一遍命中",
+      "command": "node scripts/tools/check-residue.js --dir=research/_raw/secondary-page-residue-v2/mutation/sandbox/T10-P3-span-split",
+      "exitCode": 1,
+      "toothMessageSeen": true,
+      "verdict": "red-as-expected",
+      "hits": [
+        "  ✗ 删掉的字面又回到了产物里（1 个文件 · 原样 1 处 · 登记 c2-01/visible、c1-05/literal）：「最终以厂商官方页面为准。」 ⇒ index.html（原样字面）×1 · 现场：… <p><span>价格</span>与条款最终以厂商官方页面为准。</p> <main id=\"main\"> …",
+        "  ✗ 删掉的字面以**等价写法**回到了产物里（归一化后 1 处 · 1 个文件 · 登记 c2-01/visible、c1-05/literal）：归一化针「最终以厂商官方页面为准.」 ⇒ index.html · 现场（归一化后）：…dits67云平台赠金与创业扶持额度→价格与条款最终以厂商官方页面为准.显示50条卡片·国内30·国外20·覆盖4个力度…",
+        "  ✗ 删掉的字面以**等价写法**回到了产物里（归一化后 1 处 · 1 个文件 · 登记 v2-plans-hub-description-tail/literal）：归一化针「价格与条款最终以厂商官方页面为准.」 ⇒ index.html · 现场（归一化后）：…发者credits67云平台赠金与创业扶持额度→价格与条款最终以厂商官方页面为准.显示50条卡片·国内30·国外20·覆盖4个力度…"
+      ]
+    },
+    {
+      "surface": "产物副本（与构建期同一实现）",
+      "id": "P4-inter-tag-linebreak",
+      "finding": "F3 变体",
+      "what": "标签间折行：`价格与条款\\n<span></span>最终以厂商官方页面为准。`",
+      "expect": "red（exit 1）· 归一化那一遍命中",
+      "command": "node scripts/tools/check-residue.js --dir=research/_raw/secondary-page-residue-v2/mutation/sandbox/T10-P4-inter-tag-linebreak",
+      "exitCode": 1,
+      "toothMessageSeen": true,
+      "verdict": "red-as-expected",
+      "hits": [
+        "  ✗ 删掉的字面又回到了产物里（1 个文件 · 原样 1 处 · 登记 c2-01/visible、c1-05/literal）：「最终以厂商官方页面为准。」 ⇒ index.html（原样字面）×1 · 现场：… <p>价格与条款 <span></span>最终以厂商官方页面为准。</p> <main id=\"main\"> …",
+        "  ✗ 删掉的字面以**等价写法**回到了产物里（归一化后 1 处 · 1 个文件 · 登记 c2-01/visible、c1-05/literal）：归一化针「最终以厂商官方页面为准.」 ⇒ index.html · 现场（归一化后）：…dits67云平台赠金与创业扶持额度→价格与条款最终以厂商官方页面为准.显示50条卡片·国内30·国外20·覆盖4个力度…",
+        "  ✗ 删掉的字面以**等价写法**回到了产物里（归一化后 1 处 · 1 个文件 · 登记 v2-plans-hub-description-tail/literal）：归一化针「价格与条款最终以厂商官方页面为准.」 ⇒ index.html · 现场（归一化后）：…发者credits67云平台赠金与创业扶持额度→价格与条款最终以厂商官方页面为准.显示50条卡片·国内30·国外20·覆盖4个力度…"
+      ]
+    },
+    {
+      "surface": "产物副本（与构建期同一实现）",
+      "id": "P5-nbsp-inside",
+      "finding": "F3 变体",
+      "what": "`&nbsp;`：`价&nbsp;格与条款最终以厂商官方页面为准。`",
+      "expect": "red（exit 1）· 归一化那一遍命中",
+      "command": "node scripts/tools/check-residue.js --dir=research/_raw/secondary-page-residue-v2/mutation/sandbox/T10-P5-nbsp-inside",
+      "exitCode": 1,
+      "toothMessageSeen": true,
+      "verdict": "red-as-expected",
+      "hits": [
+        "  ✗ 删掉的字面又回到了产物里（1 个文件 · 原样 1 处 · 登记 c2-01/visible、c1-05/literal）：「最终以厂商官方页面为准。」 ⇒ index.html（原样字面）×1 · 现场：…rap\"> <p>价&nbsp;格与条款最终以厂商官方页面为准。</p> <main id=\"main\"> …",
+        "  ✗ 删掉的字面以**等价写法**回到了产物里（归一化后 1 处 · 1 个文件 · 登记 c2-01/visible、c1-05/literal）：归一化针「最终以厂商官方页面为准.」 ⇒ index.html · 现场（归一化后）：…dits67云平台赠金与创业扶持额度→价格与条款最终以厂商官方页面为准.显示50条卡片·国内30·国外20·覆盖4个力度…",
+        "  ✗ 删掉的字面以**等价写法**回到了产物里（归一化后 1 处 · 1 个文件 · 登记 v2-plans-hub-description-tail/literal）：归一化针「价格与条款最终以厂商官方页面为准.」 ⇒ index.html · 现场（归一化后）：…发者credits67云平台赠金与创业扶持额度→价格与条款最终以厂商官方页面为准.显示50条卡片·国内30·国外20·覆盖4个力度…"
+      ]
+    },
+    {
+      "surface": "产物副本（与构建期同一实现）",
+      "id": "P6-fullwidth-stop",
+      "finding": "F3 变体",
+      "what": "全角句号：`价格与条款最终以厂商官方页面为准．`（U+FF0E）",
+      "expect": "red（exit 1）· 归一化那一遍命中",
+      "command": "node scripts/tools/check-residue.js --dir=research/_raw/secondary-page-residue-v2/mutation/sandbox/T10-P6-fullwidth-stop",
+      "exitCode": 1,
+      "toothMessageSeen": true,
+      "verdict": "red-as-expected",
+      "hits": [
+        "  ✗ 删掉的字面以**等价写法**回到了产物里（归一化后 1 处 · 1 个文件 · 登记 c2-01/visible、c1-05/literal）：归一化针「最终以厂商官方页面为准.」 ⇒ index.html · 现场（归一化后）：…dits67云平台赠金与创业扶持额度→价格与条款最终以厂商官方页面为准.显示50条卡片·国内30·国外20·覆盖4个力度…",
+        "  ✗ 删掉的字面以**等价写法**回到了产物里（归一化后 1 处 · 1 个文件 · 登记 v2-plans-hub-description-tail/literal）：归一化针「价格与条款最终以厂商官方页面为准.」 ⇒ index.html · 现场（归一化后）：…发者credits67云平台赠金与创业扶持额度→价格与条款最终以厂商官方页面为准.显示50条卡片·国内30·国外20·覆盖4个力度…"
+      ]
+    },
+    {
+      "surface": "产物副本（与构建期同一实现）",
+      "id": "P7-json-unicode-escape",
+      "finding": "F3 变体",
+      "what": "JSON \\uXXXX 转义（**单转义**，文件里真的写着 \\u4ef7\\u683c\\u4e0e\\u6761…）：把同一句以转义串追加进 dist/deals.json",
+      "expect": "red（exit 1）· JSON 那一遍命中（原样与归一化都不该命中）",
+      "command": "node scripts/tools/check-residue.js --dir=research/_raw/secondary-page-residue-v2/mutation/sandbox/T10-P7-json-unicode-escape",
+      "exitCode": 1,
+      "toothMessageSeen": true,
+      "verdict": "red-as-expected",
+      "hits": [
+        "  ✗ 删掉的字面在**产物 JSON 里被 \\uXXXX 转义**后回流（1 处 · 1 个文件 · 登记 c2-01/visible、c1-05/literal）：归一化针「最终以厂商官方页面为准.」 ⇒ deals.json",
+        "  ✗ 删掉的字面在**产物 JSON 里被 \\uXXXX 转义**后回流（1 处 · 1 个文件 · 登记 v2-plans-hub-description-tail/literal）：归一化针「价格与条款最终以厂商官方页面为准.」 ⇒ deals.json"
+      ]
+    },
+    {
+      "surface": "产物副本（与构建期同一实现）",
+      "id": "P8-json-double-escaped",
+      "finding": "F3 变体",
+      "what": "JSON \\uXXXX 转义（**双转义**，文件里写着 \\\\u4ef7…：即值本身是一个反斜杠-u 串）",
+      "expect": "red（exit 1）· JSON 那一遍解到不动点后命中",
+      "command": "node scripts/tools/check-residue.js --dir=research/_raw/secondary-page-residue-v2/mutation/sandbox/T10-P8-json-double-escaped",
+      "exitCode": 1,
+      "toothMessageSeen": true,
+      "verdict": "red-as-expected",
+      "hits": [
+        "  ✗ 删掉的字面在**产物 JSON 里被 \\uXXXX 转义**后回流（1 处 · 1 个文件 · 登记 c2-01/visible、c1-05/literal）：归一化针「最终以厂商官方页面为准.」 ⇒ deals.json",
+        "  ✗ 删掉的字面在**产物 JSON 里被 \\uXXXX 转义**后回流（1 处 · 1 个文件 · 登记 v2-plans-hub-description-tail/literal）：归一化针「价格与条款最终以厂商官方页面为准.」 ⇒ deals.json"
+      ]
+    }
+  ]
+}

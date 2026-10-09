@@ -1,0 +1,81 @@
+{
+  "at": "2026-10-09T08:30:02.081Z",
+  "what": "变异演练（产品副本）：被删文案注回 dist 副本，看构建期那套判据会不会红",
+  "distUntouched": true,
+  "distDigestBefore": {
+    "files": 304,
+    "digest": "59db0aa5aaef0ac01589c4203dc9dfeda2c7ddbe3883c2a0774f24451607d04a",
+    "tool": "scripts/tools/tree-digest.cjs"
+  },
+  "distDigestAfter": {
+    "files": 304,
+    "digest": "59db0aa5aaef0ac01589c4203dc9dfeda2c7ddbe3883c2a0774f24451607d04a",
+    "tool": "scripts/tools/tree-digest.cjs"
+  },
+  "tool": "scripts/tools/check-residue.js（与构建期 scanResidue() 同一份实现）",
+  "mutations": [
+    {
+      "id": "M1-outside-footer",
+      "what": "把被删文案注回**页脚之外**（/feeds/ 的 <main> 开头 + 一张详情页 </main> 之前）",
+      "injected": [
+        "；最终以厂商官方页面为准。",
+        "价格与额度以官方页面为准："
+      ],
+      "injectedInto": [
+        "feeds/index.html（<main> 后）",
+        "deal/017bdbc04e70/index.html（</main> 前）"
+      ],
+      "command": "node scripts/tools/check-residue.js --dir=research/_raw/secondary-page-residue-v2/mutation/sandbox/M1-outside-footer",
+      "exitCode": 1,
+      "expect": "red（exit 1）",
+      "verdict": "red-as-expected",
+      "hits": [
+        "  ✗ 删掉的字面又回到了产物里（1 个文件 · 原样 1 处 · 登记 c2-01/literal）：「；最终以厂商官方页面为准。」 ⇒ feeds/index.html（原样字面）×1 · 现场：… data-mutation=\"M1\"> <p>；最终以厂商官方页面为准。</p> id=\"main\"> <…",
+        "  ✗ 删掉的字面又回到了产物里（1 个文件 · 原样 1 处 · 登记 c2-01/visible、c1-05/literal）：「最终以厂商官方页面为准。」 ⇒ feeds/index.html（原样字面）×1 · 现场：…data-mutation=\"M1\"> <p>；最终以厂商官方页面为准。</p> id=\"main\"> <…",
+        "  ✗ 删掉的字面又回到了产物里（1 个文件 · 原样 1 处 · 登记 v2-plans-api-note-head/literal）：「价格与额度以官方页面为准：」 ⇒ deal/017bdbc04e70/index.html（原样字面）×1 · 现场：…由不出售。 </p> <p>价格与额度以官方页面为准：</p> </main> <footer…",
+        "  ✗ 删掉的字面以**等价写法**回到了产物里（归一化后 1 处 · 1 个文件 · 登记 c2-01/visible、c1-05/literal）：归一化针「最终以厂商官方页面为准.」 ⇒ feeds/index.html · 现场（归一化后）：…ai优惠聚合器真实优惠·每日更新←返回全部优惠;最终以厂商官方页面为准.id=\"main\">首页›订阅ai优惠订阅ai优…"
+      ]
+    },
+    {
+      "id": "M2c-shared-footer-injection",
+      "what": "同一段被删文案写进**共享页脚**：每一页 </footer> 之前 + index.html 的 SHARED 区间内的 <footer> 里（= t6 找到的旁路现场；t4 时绿、t10/F1 之后必须红）",
+      "injected": [
+        "；最终以厂商官方页面为准。"
+      ],
+      "injectedInto": [
+        "全部 186 页的 <footer> 内",
+        "index.html 的 SHARED 区间里的 <footer> 内"
+      ],
+      "command": "node scripts/tools/check-residue.js --dir=research/_raw/secondary-page-residue-v2/mutation/sandbox/M2c-exempt-in-footer",
+      "exitCode": 1,
+      "expect": "red（exit 1）—— 豁免机制已移除，页脚不是被删文案的合法落点（t10/F1）",
+      "verdict": "red-as-expected",
+      "hits": [
+        "  ✗ 删掉的字面又回到了产物里（186 个文件 · 原样 187 处 · 登记 c2-01/literal）：「；最终以厂商官方页面为准。」 ⇒ archive/index.html（原样字面）×1；category/agent/index.html（原样字面）×1 …（另有 184 个文件） · 现场：…厂商所有，仅作标识用途。</p> <p>；最终以厂商官方页面为准。</p> </footer> …",
+        "  ✗ 删掉的字面又回到了产物里（186 个文件 · 原样 187 处 · 登记 c2-01/visible、c1-05/literal）：「最终以厂商官方页面为准。」 ⇒ archive/index.html（原样字面）×1；category/agent/index.html（原样字面）×1 …（另有 184 个文件） · 现场：…商所有，仅作标识用途。</p> <p>；最终以厂商官方页面为准。</p> </footer> …",
+        "  ✗ 删掉的字面以**等价写法**回到了产物里（归一化后 187 处 · 186 个文件 · 登记 c2-01/visible、c1-05/literal）：归一化针「最终以厂商官方页面为准.」 ⇒ archive/index.html、category/agent/index.html …（另有 184 个文件） · 现场（归一化后）：….厂商logo版权归各厂商所有,仅作标识用途.;最终以厂商官方页面为准.…",
+        "  ✗ 共享页脚正面断言：SHARED 页脚元素里出现登记字面「；最终以厂商官方页面为准。」（登记 c2-01/literal）—— 页脚不是被删文案的合法落点"
+      ]
+    },
+    {
+      "id": "M2c-exempt-outside-footer",
+      "what": "在上一份沙箱上再把同一段字面放到**首页 <main> 里**（页脚之外）—— t4 的对照，t10 之后两条都必红",
+      "injected": [
+        "；最终以厂商官方页面为准。"
+      ],
+      "injectedInto": [
+        "index.html 的 </main> 之前"
+      ],
+      "command": "node scripts/tools/check-residue.js --dir=research/_raw/secondary-page-residue-v2/mutation/sandbox/M2c-exempt-outside-footer",
+      "exitCode": 1,
+      "expect": "red（exit 1）",
+      "verdict": "red-as-expected",
+      "hits": [
+        "  ✗ 删掉的字面又回到了产物里（186 个文件 · 原样 188 处 · 登记 c2-01/literal）：「；最终以厂商官方页面为准。」 ⇒ archive/index.html（原样字面）×1；category/agent/index.html（原样字面）×1 …（另有 184 个文件） · 现场：…厂商所有，仅作标识用途。</p> <p>；最终以厂商官方页面为准。</p> </footer> …",
+        "  ✗ 删掉的字面又回到了产物里（186 个文件 · 原样 188 处 · 登记 c2-01/visible、c1-05/literal）：「最终以厂商官方页面为准。」 ⇒ archive/index.html（原样字面）×1；category/agent/index.html（原样字面）×1 …（另有 184 个文件） · 现场：…商所有，仅作标识用途。</p> <p>；最终以厂商官方页面为准。</p> </footer> …",
+        "  ✗ 删掉的字面以**等价写法**回到了产物里（归一化后 188 处 · 186 个文件 · 登记 c2-01/visible、c1-05/literal）：归一化针「最终以厂商官方页面为准.」 ⇒ archive/index.html、category/agent/index.html …（另有 184 个文件） · 现场（归一化后）：….厂商logo版权归各厂商所有,仅作标识用途.;最终以厂商官方页面为准.…",
+        "  ✗ 共享页脚正面断言：SHARED 页脚元素里出现登记字面「；最终以厂商官方页面为准。」（登记 c2-01/literal）—— 页脚不是被删文案的合法落点"
+      ]
+    }
+  ]
+}

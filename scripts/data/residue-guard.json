@@ -1,0 +1,313 @@
+{
+  "_what": "构建期「删掉不许回流」+「扫描面不许收缩」的登记表（residue-v2）。判据实现在 scripts/tools/build-local.js 的 scanResidue()。",
+  "_why": [
+    "① deletedCopy：本轮与上一轮**被删掉的每一段文案**。判据 = 整篇产物剥离 script/style/HTML 注释后，",
+    "   每个字面的出现次数必须为 0。三遍并行比对（t10/F3）：原样字面 · 归一化后（实体解码到不动点 /",
+    "   剥标签 / 零宽 / 全角→半角 / 大小写 / **同类**标点归一（不跨类，去全部标点会误报 80 页）/ 空白全去）·",
+    "   以及**只对 .json / .ndjson 产物**额外做一遍 \\uXXXX 解码后比对（解到不动点，单/双转义都算）。",
+    "   ⚠️ 归一化那一遍**不覆盖运行期**：整段剥离 <script> 意味着 JS 渲染出来的",
+    "   文案不在射程内（t6 F2）；那一面由真浏览器四面读数覆盖（mutations/browser-*.json）。",
+    "   ⚠️ 另两条已知边界：UTF-16LE + BOM 的产物页按 UTF-8 读不出内容 ⇒ 扫不到（t6 F4）；",
+    "   下限阈值是**数据量静态快照**（t6 F8 实测连跑 10 次 0 误报，但数据大幅收缩时会红，那时改门槛是一次显式动作）。",
+    "   ⚠️ 射程边界（t6 F9）：keep 面那些**没有登记字面**的正文没有牙 —— 「删掉不许回流」对数据驱动正文的覆盖，",
+    "   只在字面被登记时成立。这是射程，不是缺陷。",
+    "② containerFloors：8 类「扫描面之外」的小字容器在产物里的**存在性下限**（阈值型）。",
+    "   它们挡的是「把承重容器整族删掉/改名 ⇒ 断言静默失效」这条路径（容器没了，逐条扫描自然也不再命中）。",
+    "   t10/F6 起下限**自守**：每条 floor ≥ measured × floorRatio，且 floorRatio 自身不得低于判据里的硬下限 0.5。",
+    "③ 关系式（t10/F7，与阈值型下限**并存**）：.ddesc ≥ 1 × 详情页数、.dsrc-note ≥ 2 × 详情页数。",
+    "   基准量从产物现算（deal/*/index.html 的个数）⇒ 数据收缩时跟着走。t6 实测阈值型下限的 25% 余量",
+    "   允许「静默消失」：.dsrc-note 42 处仍 123/123 绿、.ddesc 20 处仍 60/60 绿、.hint 14 处仍 40/40 绿、",
+    "   甚至 class=\"ddes&#99;\"（浏览器仍认 ddesc）20 处仍绿 ⇒ 关系式把那部分余量收成 0（不动任何下限）。",
+    "   其余 6 类仍是阈值型下限（它们不与某个可现算的量成简单比例），25% 余量如实保留。",
+    "④ 每一条都带出处（src）与理由（why）：A/B/C/D 裁定见 research/secondary-page-residue-v2-census.md。",
+    "⑤ 两件**不需要修**的事（t6 F5 实测后登记）：44 条字面之间有 21 对包含关系（同一句在两种上下文里的",
+    "   合法重叠，例如「最终以厂商官方页面为准。」包含于「；最终以厂商官方页面为准。」），16 条 visible 为空",
+    "   （= 可见面与该条 literal 相同，不是缺失）。判据不因此变松：去重后逐条都仍然要求 0 命中。"
+  ],
+  "_measuredOn": {
+    "dist": "dist",
+    "files": 304,
+    "treeDigest": "59db0aa5aaef0ac01589c4203dc9dfeda2c7ddbe3883c2a0774f24451607d04a",
+    "asOf": "2026-10-09",
+    "tool": "scripts/tools/tree-digest.cjs（同口径：逐文件 sha256 + NUL 分隔 + LF）"
+  },
+  "_floorRule": "floor = max(ceil(measured × 0.5), measured − max(3, ceil(measured × 0.25)))；自守：floor >= measured × 0.5（低于即红）",
+  "_floorSelfGuard": "floor >= measured × floorRatio，且 floorRatio >= 0.5（硬下限写在 build-local.js 的 RESIDUE_MIN_FLOOR_RATIO_HARD）；活字面数下限 40（build-local.js 的 RESIDUE_MIN_LIVE_LITERALS，建表实测 44）。",
+  "floorRatio": 0.5,
+  "deletedCopy": [
+    {
+      "id": "c2-01",
+      "literal": "；最终以厂商官方页面为准。",
+      "visible": "最终以厂商官方页面为准。",
+      "src": "census2",
+      "why": "删的是 .dsrc-note 的尾半句；可见面就是它自己（去掉前导分号）。"
+    },
+    {
+      "id": "c2-02",
+      "literal": "'来源：火山方舟产品页「免费额度」表（无头浏览器渲染后提取）。'",
+      "visible": "（无头浏览器渲染后提取）",
+      "src": "census2",
+      "why": "A 类：删的是括号（采集方式），整句 `来源：…` 保留 ⇒ 可见核 = 括号本身。"
+    },
+    {
+      "id": "c2-03",
+      "literal": "'来源：智谱开放平台官方价格页营销位与活动说明（无头浏览器渲染后提取）。'",
+      "visible": "（无头浏览器渲染后提取）",
+      "src": "census2",
+      "why": "同上（智谱那条）。"
+    },
+    {
+      "id": "c2-04",
+      "literal": "'来源：火山方舟产品页「最新活动」区（无头浏览器渲染后提取）。'",
+      "visible": "（无头浏览器渲染后提取）",
+      "src": "census2",
+      "why": "同上（最新活动那条）。"
+    },
+    {
+      "id": "c1-05",
+      "literal": "最终以厂商官方页面为准。",
+      "visible": "",
+      "src": "census-v1",
+      "why": "本身已是纯可见文案，没有额外的可见核。"
+    },
+    {
+      "id": "c1-06",
+      "literal": "plansSource: '套餐变化来自本站重建套餐数据时的观测记录；变更记录自 {date} 起。',",
+      "visible": "套餐变化来自本站重建套餐数据时的观测记录；",
+      "src": "census-v1",
+      "why": "kind=half：只删前半句（生成方式），保留 `变更记录自 …起。`。"
+    },
+    {
+      "id": "c1-07",
+      "literal": "      + '不表示厂商已经下架或套餐已经停售。价格、额度与条款最终以厂商官方页面为准。'",
+      "visible": "价格、额度与条款最终以厂商官方页面为准。",
+      "src": "census-v1",
+      "why": "kind=half：只删尾句（与共享页脚同义），保留前半句。"
+    },
+    {
+      "id": "c1-08",
+      "literal": "plansSource: 'API 价格变化来自本站重建 API 计费数据时的观测记录；变更记录自 {date} 起。',",
+      "visible": "API 价格变化来自本站重建 API 计费数据时的观测记录；",
+      "src": "census-v1",
+      "why": "同上（API 计费那一支）。"
+    },
+    {
+      "id": "c1-09",
+      "literal": "      + '不表示厂商已经下架或停止提供。价格、免费额度与条款最终以厂商官方页面为准。'",
+      "visible": "价格、免费额度与条款最终以厂商官方页面为准。",
+      "src": "census-v1",
+      "why": "kind=half：只删尾句。"
+    },
+    {
+      "id": "c1-10",
+      "literal": "<p class=\"snote\">示例只用到上面列出的真实 endpoint；它们不是\"伪代码\"，是可以直接复制运行的取数方式。</p>",
+      "visible": "示例只用到上面列出的真实 endpoint；",
+      "src": "census-v1",
+      "why": "kind=whole：整条 .snote 删；可见核取前半句（后半句含引号包裹的「伪代码」，逐字不稳）。"
+    },
+    {
+      "id": "c1-11",
+      "literal": "<p class=\"snote\">用到的 endpoint：${endpoints}</p>",
+      "visible": "用到的 endpoint：",
+      "src": "census-v1",
+      "why": "kind=whole：整条删；可见核只能取 `${endpoints}` 之前的静态前缀（endpoint 是动态内容）。"
+    },
+    {
+      "id": "c1-12",
+      "literal": "note: '按「我是谁」和「能不能在大陆用上」切；判据与 /student/、/need/china-usable/ 两页<b>同一份</b>。'",
+      "visible": "判据与 /student/、/need/china-usable/ 两页",
+      "src": "census-v1",
+      "why": "kind=whole：note 整条删；可见核取不含 `<b>` 的那一段。"
+    },
+    {
+      "id": "c1-13",
+      "literal": "note: '按福利类型与用途切；与目录页、按需求页共用同一套判据，所以订阅里的条数与页面上的行数不可能分头变化。'",
+      "visible": "按福利类型与用途切；与目录页、按需求页共用同一套判据，所以订阅里的条数与页面上的行数不可能分头变化。",
+      "src": "census-v1",
+      "why": "kind=whole：note 整条删；可见核 = 引号内全文（无标签、无模板）。"
+    },
+    {
+      "id": "c1-14",
+      "literal": "note: '按站点的分类落地页切（/category/api/ 等五页）；判据与那五页<b>同一份</b>，'",
+      "visible": "按站点的分类落地页切（/category/api/ 等五页）",
+      "src": "census-v1",
+      "why": "kind=whole：note 两行整段删；可见核取 `<b>` 之前那一段。"
+    },
+    {
+      "id": "c1-15",
+      "literal": "}, `<p class=\"snote\">厂商订阅只给「当前收录的优惠 ≥ ${feeds.VENDOR_THRESHOLDS.minDeals} 条」或「历史变更事件 ≥ ${feeds.VENDOR_THRESHOLDS.minEvents} 条」的厂商生成：`",
+      "visible": "",
+      "src": "census-v1",
+      "why": "无可靠逐字可见核：句子中间嵌了两个 `${…} 条」计数（随门槛常量与数据变）⇒ 只能断言源码写法，不写可见核（写一个半截句子会变成误报源）。"
+    },
+    {
+      "id": "c1-16",
+      "literal": "全部来自本站 <a href=\"${escapeHtml(`${prefix}plans/api/`)}\">API / Token 计费对比</a> 的同一份数据；",
+      "visible": "",
+      "src": "census-v1",
+      "why": "无可靠逐字可见核：渲染结果是「全部来自本站 API / Token 计费对比 的同一份数据；」，其中链接文本与空格由模板决定 ⇒ 写死会误报。"
+    },
+    {
+      "id": "c1-17",
+      "literal": " —— 本站不按套餐里的模型名猜关系（supportedModels 是自由文本，没有模型键）。",
+      "visible": "",
+      "src": "census-v1",
+      "why": "本身已是纯可见文案（前缀「 —— 」也是渲染面的一部分）。"
+    },
+    {
+      "id": "c1-18",
+      "literal": " —— 本站不用标题关键词猜关系。",
+      "visible": "",
+      "src": "census-v1",
+      "why": "同上。"
+    },
+    {
+      "id": "c1-19",
+      "literal": "这一节是**派生视图**：直接把 API 计费日志里与该模型有关的记录事件排出来，不新建第四套历史真值。",
+      "visible": "：直接把 API 计费日志里与该模型有关的记录事件排出来，不新建第四套历史真值。",
+      "src": "census-v1",
+      "why": "exactSubstring 带 Markdown 强调记号（渲染成 `<b>`），逐字断言挡不住重新渲染 ⇒ 另加无标记的可见核。"
+    },
+    {
+      "id": "c1-20",
+      "literal": "<p class=\"snote\">以下是本站重建 API 计费数据时留下的观测记录（最多 ${limit} 条）。`",
+      "visible": "以下是本站重建 API 计费数据时留下的观测记录",
+      "src": "census-v1",
+      "why": "kind=half：删前一半句；可见核取不含动态条数上限的静态段。"
+    },
+    {
+      "id": "c1-21",
+      "literal": "note: '关联是显式确认的：只有人工在 deal-plan-links.json 写明、且能在官方页找到出处的关联才会计入；相似度匹配只产出候选报告，不会自动写进这一页。',",
+      "visible": "关联是显式确认的：只有人工在 deal-plan-links.json 写明、且能在官方页找到出处的关联才会计入；相似度匹配只产出候选报告，不会自动写进这一页。",
+      "src": "census-v1",
+      "why": "kind=whole：note 整条删；可见核 = 引号内全文。"
+    },
+    {
+      "id": "c1-22",
+      "literal": "（取自本站收录的官方页面地址；本站不推断厂商主页）",
+      "visible": "",
+      "src": "census-v1",
+      "why": "本身已是纯可见文案。"
+    },
+    {
+      "id": "c1-23",
+      "literal": "<span class=\"vsrc\">全部来自 <a href=\"${escapeHtml(`${prefix}plans/api/`)}\">API / Token 计费对比</a> 的同一份数据</span>",
+      "visible": "",
+      "src": "census-v1",
+      "why": "无可靠逐字可见核：同 16（动态链接文本）。"
+    },
+    {
+      "id": "c1-24",
+      "literal": "<span class=\"vsrc\">（developer/owner 逐字相等，或关系层显式映射到这一家的计费记录；不按名称相似度归并）</span>",
+      "visible": "",
+      "src": "census-v1",
+      "why": "本身已是纯可见文案（`<span class=\"vsrc\">` 是外层标签，逐字断言已覆盖可见文本）。"
+    },
+    {
+      "id": "c1-25",
+      "literal": "（同一份事件、同一套措辞，这一层只搬运）",
+      "visible": "",
+      "src": "census-v1",
+      "why": "本身已是纯可见文案。"
+    },
+    {
+      "id": "c1-26",
+      "literal": "（订阅源按「当前有效优惠 ≥ 门槛」生成）",
+      "visible": "",
+      "src": "census-v1",
+      "why": "本身已是纯可见文案。"
+    },
+    {
+      "id": "c1-27",
+      "literal": "全部来自既有数据关系的显式匹配。",
+      "visible": "",
+      "src": "census-v1",
+      "why": "本身已是纯可见文案。"
+    },
+    {
+      "id": "v2-plans-hub-description-tail",
+      "literal": "价格与条款最终以厂商官方页面为准。",
+      "visible": "",
+      "src": "residue-v2",
+      "why": "本轮 t3：/plans/ 导语尾句（同时是 meta description 与 JSON-LD description）。"
+    },
+    {
+      "id": "v2-plans-hub-notes-clause",
+      "literal": "价格、额度与条款最终以厂商官方页面为准；",
+      "visible": "",
+      "src": "residue-v2",
+      "why": "本轮 t3（队长裁定后执行）：/plans/「口径与说明」第 4 条的句首分句。"
+    },
+    {
+      "id": "v2-plans-api-note-head",
+      "literal": "价格与额度以官方页面为准：",
+      "visible": "",
+      "src": "residue-v2",
+      "why": "本轮 t3：/plans/coding/ 与 /plans/api/ 两条清单条目的句首（两页共用同一形状）。"
+    },
+    {
+      "id": "v2-models-caption-tail",
+      "literal": "「目录状态」是派生分类，「模型角色」来自 registry。",
+      "visible": "",
+      "src": "residue-v2",
+      "why": "本轮 t3：/models/ 题注末句（`registry` 是内部机制名 + 与下方「口径与说明」重复）。"
+    },
+    {
+      "id": "v2-headless-capture-paren",
+      "literal": "（无头浏览器渲染后提取）",
+      "visible": "",
+      "src": "residue-v2",
+      "why": "本轮的共同被删子串：census2 三条 A 类 `.ddesc` 的**同一个**括号，落地在数据面（deals.json）+ 采集器 headless.js。"
+    }
+  ],
+  "containerFloors": [
+    {
+      "class": "dsrc-note",
+      "measured": 165,
+      "floor": 123,
+      "why": "来源块的说明行：每张详情页 2 条（`deal/*`，80 页 × 2 = 160）+ 5 处页族说明 ⇒ 与详情页数成正比。25% 余量覆盖「数据收缩 / 合并若干条来源行」的正常波动；它挡的是**整族被删或改名**（改名后这里会掉到 0）。"
+    },
+    {
+      "class": "ddesc",
+      "measured": 80,
+      "floor": 60,
+      "why": "详情页的来源行：1 条/页（80 页）⇒ 与详情页数一一对应（详情页数本身另有断言）。余量 25% 留给数据面收缩；整族消失（0）时红。"
+    },
+    {
+      "class": "fdesc",
+      "measured": 25,
+      "floor": 18,
+      "why": "订阅中心每份 Feed 一行说明（25 份 Feed = 1 变化 + 1 今日新增 + 23 厂商订阅）。厂商订阅按门槛生成 ⇒ 条数随数据走，余量取 25%；整族消失时红。"
+    },
+    {
+      "class": "chgnote",
+      "measured": 19,
+      "floor": 14,
+      "why": "变化雷达页的生命周期事件行（19 行，唯一正文容器）⇒ 随事件数走。余量 25%。"
+    },
+    {
+      "class": "pchnote",
+      "measured": 4,
+      "floor": 2,
+      "why": "套餐页/入口页的固定结构位（/plans/coding/ ×2、/plans/ ×2）⇒ 小样本，绝对余量 3 ⇒ 下限 = 存在性 ≥1。"
+    },
+    {
+      "class": "pftdesc",
+      "measured": 4,
+      "floor": 2,
+      "why": "/plans/api/ 的固定结构位（4 处）⇒ 小样本，绝对余量 3 ⇒ 下限 = 存在性 ≥1。"
+    },
+    {
+      "class": "chgmeta",
+      "measured": 1,
+      "floor": 1,
+      "why": "/changes/ 的固定结构位（1 处，事件行的时间口径行）⇒ 下限 = 存在性 ≥1。"
+    },
+    {
+      "class": "hint",
+      "measured": 54,
+      "floor": 40,
+      "why": "首屏档位头说明（5 档）+ 每张卡片「详情」提示（49 张）⇒ 与预渲染卡片数绑定（卡片数另有 45 的下限）。余量 25%；整族被改名/删除时红。"
+    }
+  ]
+}

@@ -1,0 +1,794 @@
+{
+  "at": "2026-10-09T07:56:56.087Z",
+  "what": "t5 产物层 8 类容器 token 全量重数（独立实现：class 属性精确分词，剥 script/style/注释）",
+  "after": {
+    "dir": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\secondary-page-residue-v2\\dist",
+    "files": 304,
+    "digest": {
+      "dir": "dist",
+      "files": 304,
+      "bytes": 20337838,
+      "treeDigest": "59db0aa5aaef0ac01589c4203dc9dfeda2c7ddbe3883c2a0774f24451607d04a",
+      "manifestSha256": "c27410e61933ae3d0a8ceb5eb276376cbfc0ab6700be0ad532e2029337ed4fda"
+    }
+  },
+  "before": {
+    "dir": "D:\\OneDrive\\Desktop\\Code\\AI Page\\dist",
+    "files": 304,
+    "digest": {
+      "dir": "dist",
+      "files": 304,
+      "bytes": 20361169,
+      "treeDigest": "141af6139516922f925cc9605ee45efd6c4b65c499b2ad2cda689984612d2f34",
+      "manifestSha256": "585df968ed77284451f0ca07e396c6374b5894b2ffd7b777e8cf4c773a4d7ec9"
+    },
+    "note": "主检出 dist/（141af613…）= t1 普查锚定产物，充当删前副本"
+  },
+  "perClass": [
+    {
+      "class": "dsrc-note",
+      "beforeCount": 165,
+      "afterCount": 165,
+      "gateMeasured": 165,
+      "floor": 123,
+      "matchesGate": true,
+      "unchanged": true,
+      "clearsFloor": true
+    },
+    {
+      "class": "ddesc",
+      "beforeCount": 80,
+      "afterCount": 80,
+      "gateMeasured": 80,
+      "floor": 60,
+      "matchesGate": true,
+      "unchanged": true,
+      "clearsFloor": true
+    },
+    {
+      "class": "fdesc",
+      "beforeCount": 25,
+      "afterCount": 25,
+      "gateMeasured": 25,
+      "floor": 18,
+      "matchesGate": true,
+      "unchanged": true,
+      "clearsFloor": true
+    },
+    {
+      "class": "chgnote",
+      "beforeCount": 19,
+      "afterCount": 19,
+      "gateMeasured": 19,
+      "floor": 14,
+      "matchesGate": true,
+      "unchanged": true,
+      "clearsFloor": true
+    },
+    {
+      "class": "pchnote",
+      "beforeCount": 4,
+      "afterCount": 4,
+      "gateMeasured": 4,
+      "floor": 1,
+      "matchesGate": true,
+      "unchanged": true,
+      "clearsFloor": true
+    },
+    {
+      "class": "pftdesc",
+      "beforeCount": 4,
+      "afterCount": 4,
+      "gateMeasured": 4,
+      "floor": 1,
+      "matchesGate": true,
+      "unchanged": true,
+      "clearsFloor": true
+    },
+    {
+      "class": "chgmeta",
+      "beforeCount": 1,
+      "afterCount": 1,
+      "gateMeasured": 1,
+      "floor": 1,
+      "matchesGate": true,
+      "unchanged": true,
+      "clearsFloor": true
+    },
+    {
+      "class": "hint",
+      "beforeCount": 54,
+      "afterCount": 54,
+      "gateMeasured": 54,
+      "floor": 40,
+      "matchesGate": true,
+      "unchanged": true,
+      "clearsFloor": true
+    }
+  ],
+  "allMatchGate": true,
+  "allUnchanged": true,
+  "allClearFloor": true,
+  "beforePerFile": {
+    "changes/index.html": {
+      "chgnote": 19,
+      "chgmeta": 1
+    },
+    "deal/017bdbc04e70/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/0273d8b23412/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/0c30d79a5016/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/1688614d6669/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/176234a80147/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/1888ab62bd67/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/1c057c22422c/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/219f6fca7f31/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/2db62eb1a8a0/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/2eae0e246de2/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/3c8a9a6a9ee9/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/407572a1e046/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/42c65c0d8d9d/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/45ead69d60cc/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/47a4c57f3a15/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/4987c183fc1a/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/4a875a435019/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/4bda0ebbb091/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/4c7952115477/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/4caf88e30671/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/4d4bcb5b6829/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/4e659666cbb2/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/514a84a1064a/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/5253b5ed77b1/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/57847fbcc1ed/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/5c38e515a3ae/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/5dedb9455508/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/6013b80f266f/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/62e3166acec0/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/65f0bdd295ac/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/6644f3b43bdb/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/6798f78de5ce/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/6869e7866510/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/7691c150c8e5/index.html": {
+      "dsrc-note": 3,
+      "ddesc": 1
+    },
+    "deal/78384299b660/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/7f8c32f6a327/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/833a9889bfb7/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/8814355d59e1/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/8b2e8d64f11f/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/8b609cb05116/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/8dada3205ed8/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/8e7b0fd03e73/index.html": {
+      "dsrc-note": 3,
+      "ddesc": 1
+    },
+    "deal/913211f6d165/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/9180073deef1/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/97d21ff73d3e/index.html": {
+      "dsrc-note": 3,
+      "ddesc": 1
+    },
+    "deal/9c12f13df3ba/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/9c553dd82d2d/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/a1255b2fbae2/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/aacd5856bba2/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/ad1d0c83909d/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/adcb6471a512/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/b4d87c02f4d9/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/b56f33b3d4f3/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/b75b42583ad8/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/b8f11a235591/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/bcba406ed9ff/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/bf156583e97c/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/c05dc74bfd78/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/c25b0ed788e3/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/c433fee91818/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/c4ab5c5d8101/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/c59299cdc88e/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/c694e7c5f125/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/c971e33a9cd0/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/d6aaee8c7379/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/d8d0ba522315/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/df1210f69a39/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/df8ec56faa17/index.html": {
+      "dsrc-note": 3,
+      "ddesc": 1
+    },
+    "deal/e237cab7c007/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/e384895f5935/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/e4bd8003b3d6/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/e4f7271cf7dc/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/e63402b5cc83/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/e65f54470862/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/e7e8f538456c/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/e91f65960877/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/ead998e58cd9/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/ebd47f6d2522/index.html": {
+      "dsrc-note": 3,
+      "ddesc": 1
+    },
+    "deal/f22e3cd094ad/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/f578493037d4/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "feeds/index.html": {
+      "fdesc": 25
+    },
+    "index.html": {
+      "hint": 54
+    },
+    "plans/api/index.html": {
+      "pftdesc": 4
+    },
+    "plans/coding/index.html": {
+      "pchnote": 2
+    },
+    "plans/index.html": {
+      "pchnote": 2
+    }
+  },
+  "afterPerFile": {
+    "changes/index.html": {
+      "chgnote": 19,
+      "chgmeta": 1
+    },
+    "deal/017bdbc04e70/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/0273d8b23412/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/0c30d79a5016/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/1688614d6669/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/176234a80147/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/1888ab62bd67/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/1c057c22422c/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/219f6fca7f31/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/2db62eb1a8a0/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/2eae0e246de2/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/3c8a9a6a9ee9/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/407572a1e046/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/42c65c0d8d9d/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/45ead69d60cc/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/47a4c57f3a15/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/4987c183fc1a/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/4a875a435019/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/4bda0ebbb091/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/4c7952115477/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/4caf88e30671/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/4d4bcb5b6829/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/4e659666cbb2/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/514a84a1064a/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/5253b5ed77b1/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/57847fbcc1ed/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/5c38e515a3ae/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/5dedb9455508/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/6013b80f266f/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/62e3166acec0/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/65f0bdd295ac/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/6644f3b43bdb/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/6798f78de5ce/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/6869e7866510/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/7691c150c8e5/index.html": {
+      "dsrc-note": 3,
+      "ddesc": 1
+    },
+    "deal/78384299b660/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/7f8c32f6a327/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/833a9889bfb7/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/8814355d59e1/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/8b2e8d64f11f/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/8b609cb05116/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/8dada3205ed8/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/8e7b0fd03e73/index.html": {
+      "dsrc-note": 3,
+      "ddesc": 1
+    },
+    "deal/913211f6d165/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/9180073deef1/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/97d21ff73d3e/index.html": {
+      "dsrc-note": 3,
+      "ddesc": 1
+    },
+    "deal/9c12f13df3ba/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/9c553dd82d2d/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/a1255b2fbae2/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/aacd5856bba2/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/ad1d0c83909d/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/adcb6471a512/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/b4d87c02f4d9/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/b56f33b3d4f3/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/b75b42583ad8/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/b8f11a235591/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/bcba406ed9ff/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/bf156583e97c/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/c05dc74bfd78/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/c25b0ed788e3/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/c433fee91818/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/c4ab5c5d8101/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/c59299cdc88e/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/c694e7c5f125/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/c971e33a9cd0/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/d6aaee8c7379/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/d8d0ba522315/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/df1210f69a39/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/df8ec56faa17/index.html": {
+      "dsrc-note": 3,
+      "ddesc": 1
+    },
+    "deal/e237cab7c007/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/e384895f5935/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/e4bd8003b3d6/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/e4f7271cf7dc/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/e63402b5cc83/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/e65f54470862/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/e7e8f538456c/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/e91f65960877/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/ead998e58cd9/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/ebd47f6d2522/index.html": {
+      "dsrc-note": 3,
+      "ddesc": 1
+    },
+    "deal/f22e3cd094ad/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "deal/f578493037d4/index.html": {
+      "dsrc-note": 2,
+      "ddesc": 1
+    },
+    "feeds/index.html": {
+      "fdesc": 25
+    },
+    "index.html": {
+      "hint": 54
+    },
+    "plans/api/index.html": {
+      "pftdesc": 4
+    },
+    "plans/coding/index.html": {
+      "pchnote": 2
+    },
+    "plans/index.html": {
+      "pchnote": 2
+    }
+  }
+}

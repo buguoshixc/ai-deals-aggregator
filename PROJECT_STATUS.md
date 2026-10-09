@@ -1,6 +1,34 @@
 # AI 优惠聚合器 — 项目状态
 
-**最后更新**：2026-10-09（最新一节 **secondary-page-residue-v1：二级页残留小字清除（别名页那条例外退役）**，分支 `docs/closures-v4`，**未提交 / 未发布**）
+**最后更新**：2026-10-09（最新一节 **secondary-page-residue-v2：扫描面外 8 类小字容器 + 上一轮 47 行「待确认」收口**，分支 `secondary-page-residue-v2`，**未提交 / 未发布**）
+
+---
+
+## 0.5 secondary-page-residue-v2 状态（2026-10-09）
+
+> **一句话现状**：上一轮报告 §8 那 7 组「待用户确认」与**扫描面之外**的 8 类小字容器
+> （86 组 / 352 次出现 / 186 页）**全部处置完毕：实删 5 组、保留 87 组、挂起 0**。
+> 实删 **11 个源码编辑点 + 17 条数据面 `description` 行**（共 28 处、1164 字可见正文），
+> 落成两条构建期机器牙：「删掉不许回流」（三遍 0 命中）与「扫描面不许收缩」（8 类下限 + 2 条关系式）。
+> **没有调低任何下限、没有删任何断言、Feed 50 个文件逐字节 0 变化**；
+> 数据面**唯一**被授权的改动是 `deals.json` 的 17 条 `description`（删「（无头浏览器渲染后提取）」整括号）。
+
+| 维度 | 实测 |
+|---|---|
+| 基线 / 分支 | `.worktrees/secondary-page-residue-v2` @ `f091ac4` · 分支 `secondary-page-residue-v2` · **未提交 / 未发布** |
+| 处置面 | 86 组（8 类容器）+ §8 七组；去重后 **92 个独立裁定对象** ⇒ **实删 5 · 保留 87 · 挂起 0** |
+| 删除面 | ① `.dsrc-note` 尾半句 ×80 页（49 → 37 字）② `.ddesc`「（无头浏览器渲染后提取）」×17 页（**改真源**：`headless.js` 3 处 + `deals.json` 17 条）③ 页族导语/口径的重复半句 4 处 ④ `plan-history.js` 上一轮漏删的尾句 ⑤ `/models/` 题注末句（−30 字） |
+| 保留面 | 由**承重机制**决定，不按口味：既有断言钉住 **2 组 / 82 次** · 数据面依赖 **29 组 / 29 次**（含 `.fdesc` 25 条 = Feed description 槽位）· C 类数据语义 **45 组 / 71 次** · D 类交互/结构槽位 **6 组 / 73 次**（合计 82 组 / 255 次）；§8 的 6 组由页面族下限（`main-snote ≥ 2` / `≥ 4`）与题注牙 + 表格 a11y 名钉住 |
+| 牙 ①（构建期） | `build-local.js` 的 `scanResidue()`：整篇产物 304 文件、**44 条断言字面三遍 0 命中**（原样 · 归一化 · JSON 转义）；正面断言页脚保留句**186/186 页**仍在、共享页脚**不含**任何登记字面 |
+| 牙 ②（构建期） | 8 类容器存在性下限 `.dsrc-note 165/123 · .ddesc 80/60 · .fdesc 25/18 · .chgnote 19/14 · .pchnote 4/2 · .pftdesc 4/2 · .chgmeta 1/1 · .hint 54/40` + 关系式 `.ddesc ≥ 1×详情页数(80)` · `.dsrc-note ≥ 2×详情页数(80)` + 反空洞（条目 ≥ 30 / **活字面** ≥ 40 / `floor ≥ measured × 0.5`） |
+| 判据来源（唯一实现） | `build-local.js` 的 `scanResidue()`（接进 `selfCheck()`）· 登记表 `scripts/data/residue-guard.json` · 复核入口 `scripts/tools/check-residue.js`（`require` **同一个函数**）· CI 步骤 `Residue guard (deleted copy must not return; container floors)`（必须带 `--dir=dist`） |
+| 变异证明 | 真构建：恢复被删句首 ⇒ exit 1 并点名登记 id 与落点；`.fdesc` 唯一构造点改名 ⇒ `✗ .fdesc 在产物里只有 0 次 < 下限 18`；登记表砍到 29 条 ⇒ 红；删掉登记表 ⇒ **抛错**；产物副本：页脚**外**注入 ⇒ 红、**共享页脚内**注入 ⇒ 修后也**红**（豁免机制已移除） |
+| 对抗复核 | t6：**发现 9 条**（最高 **high** = 共享页脚豁免**自证** ⇒ 186 页回流而整条门禁链全绿）+ 射程边界 15 条；t10 已逐条收紧（豁免移除 / 归一化那一遍 / 活字面数 / 下限自守 / 关系式）；**仍未修**的 4 条射程边界如实登记在报告 §9（不许当「全都验过了」） |
+| 几何 | 3 个 `/deal/*` 删前 → 删后：桌面 **Δ0**、移动 **−22px**（`.ddesc` 44 → 22px，少一行）；`.dsrc` 块高不变；无一处被顶高/裁切；横向溢出全 0 |
+| 正文下限 | 186 页重算**低于下限 0 页**；deal 最小余量 **639**；6 个登记残留页逐字复现（50/123/123/136/139/142）；**没有一次重新登记、下限一处未调** |
+| 门禁读数 | `npm run build` ✅（含两行新牙）· `check:residue` **0 命中 / exit 0** · `verify:seo` **19/0** · `verify-site.js --dir=dist` **892 项 / 失败 0**（真浏览器，156s）· `selftest:feeds` 145/0 · `planshub` 32/0 · `models` 120/0 · `plans` 264/0 · `api-plans` 176/0 · `plan-history` 132/0 · `audience` 206/0 · `provenance` 132/0 · `check:ci` **39/0** · `check:feeds:reproducible` ✅ |
+| 数据面 / Feed | `deals.json` 的 17 条 `description` = **唯一**授权改动；`dist/feed.json` + `dist/feed/**` 48 + `dist/feed.xml` = **50/50 逐字节相同**；其余数据文件逐字节不变；`dist/_notes.ndjson` 与 baseline 构建**同 sha**（`8964efe4…`） |
+| **没跑**（如实） | `npm run gate`（全量 52 步）· `verify-site --compare=ours-baseline` · publish/deploy 与线上冒烟 |
 
 ---
 

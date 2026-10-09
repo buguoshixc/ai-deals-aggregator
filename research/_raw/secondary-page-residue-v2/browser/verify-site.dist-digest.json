@@ -1,0 +1,22 @@
+{
+  "_what": "verify-site.json 是对哪一棵产物树跑的 —— verify-site.js 自己的 --json 报告里不带树摘要，这份边车把它补上（本目录所有读数的共同锚）",
+  "at": "2026-10-09T15:46:24+08:00",
+  "command": "node scripts/tools/verify-site.js --dir=dist --json=research/_raw/secondary-page-residue-v2/browser/verify-site.json",
+  "exitCode": 0,
+  "elapsedSeconds": 156,
+  "target": "http://127.0.0.1:54733/（服务 dist/）",
+  "verifySite": {
+    "total": 892,
+    "failed": 0,
+    "generatedAt": "2026-10-09T07:46:24.043Z",
+    "log": "verify-site.log（原始输出，151 KB）"
+  },
+  "dist": {
+    "dir": "dist（工作树 .worktrees/secondary-page-residue-v2）",
+    "files": 304,
+    "bytes": 20337838,
+    "treeDigest": "59db0aa5aaef0ac01589c4203dc9dfeda2c7ddbe3883c2a0774f24451607d04a",
+    "manifestSha256": "c27410e61933ae3d0a8ceb5eb276376cbfc0ab6700be0ad532e2029337ed4fda",
+    "digestSource": "dist-post-build.digest.json（npm run build 之后现算）/ 运行前后两次现算相同"
+  }
+}

@@ -828,6 +828,18 @@ function modelsIndexRowHtml(row, prefix) {
  * @param {object|object[]} registry `models.json`（`{models:[...]}` 或数组）
  * @param {object} ctx 见 `modelReferencesOf()`
  */
+// [T5-models-871-caption-tail]
+// T5 删除（census B 重复 + A 内部标识符 · 半句）：删题注末句「；「目录状态」是派生分类，「模型角色」
+// 来自 registry。」→ 连同分号换成句号（`的本站数据。`）。为什么删：
+//   · `registry` 是**内部数据文件名/机制名**（A 类内部标识符）；
+//   · 「目录状态是派生的中性分类、不是质量评分」这件事在同一页下方的「口径与说明」里已经**完整讲过
+//     一遍**（`MODELS_INDEX_NOTES`，比题注更细、面向读者）⇒ 题注末句是 B 类重复。
+//   题注前两句（一行 = 一个模型 / 计数只统计已显式映射的数据）是**表图例**，保留。
+// ⚠️ 牙齿核对（实测，不是推断）：构建期题注牙的扫描面是 `built.directoryPages`（`build-local.js:6208-6209`），
+// 它只含 collection / need / alias / vendor / category / hub；`/models/` 是 `models-index`，**不在射程内**
+// （`build-local.js:6280-6283` 写明「非目录页的题注一条都不进 captionProblems」）⇒ 改这一句不碰题注牙。
+// ⚠️ 删后题注仍非空 ⇒ 不会触发「有主表却没有 <caption>」，a11y 名照旧存在（只是短了 29 字）。
+// ⚠️ 全仓没有任何断言引用这句话（`grep 「目录状态」是派生分类` 只命中这一行本身）。
 function renderModelsIndex(registry, ctx = {}) {
   const prefix = ctx.prefix === undefined ? '' : ctx.prefix;
   const models = modelsOf(registry);
@@ -869,7 +881,7 @@ ${emptyState}      <div id="models-filter" class="mfilter" aria-label="筛选模
       <div class="ptable-wrap">
       <table class="ptable" id="models-table">
         <caption>一行 = registry 里的一个模型：<b>全部</b> ${rows.length} 个模型都在这一张表里（默认不隐藏任何一行）。
-          价格与平台数只统计 <b>已显式映射</b> 的本站数据；「目录状态」是派生分类，「模型角色」来自 registry。</caption>
+          价格与平台数只统计 <b>已显式映射</b> 的本站数据。</caption>
         <thead>
           <tr><th scope="col">模型</th><th scope="col">开发者</th><th scope="col">模型族</th><th scope="col">别名</th>
             <th scope="col">状态</th><th scope="col">目录状态</th><th scope="col">模型角色</th>

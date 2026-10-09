@@ -148,6 +148,34 @@ const FEEDS_WORDING = {
     /** 正文尾部的口径说明 */
     scope: '本订阅由本站构建期生成：没有账号、没有邮件列表、没有第三方推送服务。',
     provider: '厂商订阅收的是该厂商当前收录的优惠；想看「它最近变了什么」，订最近变化。',
+    // [T5-feeds-151-officialNote-keep]
+    // 本轮裁定 = **keep（保留）**，理由不是「它不难看」，而是**页族结构下限**（实测，两个数据态都跑过）：
+    //   · 渲染点：`build-local.js:2499-2507` 的 `feed-source-note`（`/feeds/` 说明段的 .snote）。
+    //   · `/feeds/` 的页面族下限是 `main-snote ≥ 4`（`build-local.js:2359`）。
+    //   · `/feeds/` 的 .snote 集合 = 3 条**无条件**（`feed-how-to-subscribe` / `feed-reading-guide` /
+    //     本条 `feed-source-note`）+ 1 条**注册表型**（`feed-group-scope`，`FEED_LIST_GROUPS` 的 plans 组）
+    //     + 条件型（`feed-empty-changes`：某个 `kind:'changes'` 的 Feed 为空时才渲染；`new` Feed 空就是这种情况）。
+    //   · 实测两个真实产物态（**两个都真的跑过构建**，不是纸面推演；做法：把 `build-local.js`
+    //     复制一份（不改仓库里的原件）用 `--out=<临时目录>` 构建，只改副本里的这两处，跑完即删）：
+    //       ① 本工作树现构（asOf=2026-10-09，`dist/feed/new.json` items=0）⇒ `/feeds/` **5 条**。
+    //          实测：把本条整支删掉 → 构建**仍绿**、`/feeds/` 恰好 **4 == 下限**（零余量），
+    //          临时产物的 `_notes.ndjson` 里 feeds/ 是 4 条：feed-group-scope / feed-empty-changes /
+    //          feed-how-to-subscribe / feed-reading-guide（全站 .snote 声明 208 → 207）。
+    //       ② 上一轮普查锚定的 dist（treeDigest `141af613…`，主工作区的**真实构建产物**，
+    //          asOf=2026-10-08，`dist/feed/new.json` items=15 ⇒ 条件型那条不渲染）⇒ `/feeds/` **4 条**
+    //          （它的 `_notes.ndjson` 逐条可查：feed-group-scope / feed-how-to-subscribe /
+    //          feed-reading-guide / feed-source-note）。实测：在同一份构建器副本上把条件型那一条也
+    //          压掉（**模拟**这个数据态）+ 删掉本条 → 构建**当场红**，原话是
+    //          「feeds/ 槽位 main-snote：页面族的**结构下限**是 4 条，产物里只有 3 条 —— 这一族的说明
+    //           被整条删掉或改成了别的容器（登记与模板一起消失时，只有下限能挡住它）」
+    //          +「❌ 产物自检失败（1 项）」，且目标产物原封不动（暂存目录被清掉）。
+    //   ②不是假想：`asOf` 取 `deals.json` 的 `updatedAt` 日期，而「今日新增」= 当天首次收录的条目
+    //   （`deal-history.json` 里 19 条 created 全在这一形态上，10-08 那天就有 15 条）⇒ **每次采集到
+    //   新条目之后的构建都会落到 ②**。删掉它就等于把「下限恰好压线 + 一个随数据漂移的减项」写进构建。
+    //   ⇒ 结论：**保留**（要消掉这句与页脚的重复，正确做法是把这一条 note 改写或并进别的落点说明，
+    //     而不是删掉一条正在承重的说明 —— 那是另一轮的范围；本轮下限不许下调）。
+    // 它与共享页脚（`index.html` 的 `<!--SHARED:footer-->`：「优惠信息来自各厂商官方页面与公开折扣页，
+    // 最终以官方页面为准。」）确实同义 —— 这一点如实记下来，不假装它不是 B 类形状。
     officialNote: '信息来自厂商官方页面，最终以官方页面为准。',
     /** description 里被截断时的说明（复用 changes 的既有措辞槽位） */
     truncated: '另有 {n} 条未显示（本 Feed 每栏最多 {cap} 条）。'
