@@ -6593,7 +6593,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   //         靶页本身必须干净，否则牙的读数分不清是谁出的码）；
   //       · 它与 `plans-hub` / `status` / `changes` 分属不同页面族，四壳的家族多样性仍为 4。
   //     换靶后四壳 = `plans-hub`(`plans/`) / `status` / `changes` / `models/`，**四页**。
-  //     ⚠️ M15 那条竖排牙原先也用 `feeds/` 当靶页，它**另换一页**（`status/`，见 M15 定义处的记录）。
+  //     ⚠️ M15 那条竖排牙原先也用 `feeds/` 当靶页，它**另换一页**：`feeds/` → `status/`
+  //     （t5）→ `plans/coding/`（CI 修复轮：靶页必须逐条都是单文本节点，见 M15 定义处的四次沿革）。
+  //     它与四壳**不共用**页面，所以换靶不影响这里的家族多样性。
   const WIDE_MUTATION_TARGETS = ['plans/', 'status/', 'changes/', 'models/'];
 
   /**
@@ -6935,6 +6937,30 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         walk(el);
         return rects;
       };
+      /**
+       * 非空白**文本节点**的个数（与 glyphRectsOf 同一套遍历口径：排除 <noscript> 子树）。
+       *
+       * 为什么必须显式量出来（vertical-note-coverage-v1 修复轮 · M15 承重证明的结构性前提）：
+       * glyphRectsOf 是**逐文本节点**建 Range 的，所以「列片段」的边界与文本节点边界重合。
+       * 恰好 1 个文本节点时，每个片段都是从**列顶**开始的一段连续文本 ⇒ mergeLines（按行归并）
+       * **必然**只得到 1 个单元 —— 可证：所有片段顶边相同，逐个并入时与已并单元的垂直重叠量
+       * 恒等于较矮者的全高（> 0.5 × 较矮者）。
+       * 文本节点 > 1 时，中间那段（例如 <b> 包起来的一小段）会落在列的**中段**，行归并的结果
+       * 就变成**字体度量的函数**：CI（ubuntu + playwright chromium）实测同一形态按行归并出 3 行
+       * ⇒ 「旧口径按行必然静默」这条前提在那种字体下不成立。量出这个数，前提才能被断言成
+       * 结构性的（而不是靠本机字体碰巧成立）。
+       */
+      const textRunCountOf = el => {
+        let count = 0;
+        const walk = node => {
+          for (const child of node.childNodes) {
+            if (child.nodeType === 3) { if (child.textContent.trim()) count += 1; }
+            else if (child.nodeType === 1 && child.tagName !== 'NOSCRIPT') walk(child);
+          }
+        };
+        walk(el);
+        return count;
+      };
       /** 与文本节点的「非空」口径一致：同样是排除了 <noscript> 之后的文本 */
       const visibleTextOf = el => {
         let out = '';
@@ -7132,6 +7158,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
             : (contentBox > 0 ? contentBox : noteBox.width);
           // 判据量：逐行字迹（横排）/ 逐列字迹（竖排）—— 两轴同构，见 mergeAxis 的注释
           const glyphRects = glyphRectsOf(el);
+          // M15 承重证明的**结构性前提**：这条说明由几个文本节点组成（恰 1 个 ⇒ 行归并必然只有 1 行）
+          const textRuns = textRunCountOf(el);
           const lines = mergeLines(glyphRects);
           const visibleText = visibleTextOf(el);
           // t24 / T22-F1：原始文本（不排除 <noscript>）用来判定「文字是不是全在 <noscript> 里」
@@ -7164,6 +7192,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
             writingMode: writingMode,
             vertical: vertical,
             glyphRects: glyphRects.length,
+            // 文本节点个数（非空白 · 排除 <noscript>）：M15 承重证明的结构性前提，见 textRunCountOf
+            textRuns: textRuns,
             lineCount: lines.length,
             widestLine: lines.length ? lines.reduce((max, line) => Math.max(max, line.width), 0) : 0,
             lines: lines,
@@ -8357,9 +8387,12 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         // ---- vertical-note-coverage-v1 新增：把「竖排」这条覆盖不对称钉成常驻牙（闭合 T31 的 P1）----
         //   形态逐字取 T31 现场用的那一份（`verify/t31/mk-form-scratch.cjs` 的 FORM_CSS，
         //   与 adversary 的 `coverage-asymmetry-writing-mode.json` form.injection 同字节）。
-        //   为什么必须是这条牙：它是**唯一**能让「盒/内容盒满宽 + 按行归并只有 1 行」同时成立的形态，
-        //   也就是旧口径两条判据（① 内容盒、② 逐行字迹）同时静默的那一类。
-        //   ⚠️ 靶页换过**三次**（如实记）：
+        //   为什么必须是这条牙：它给「盒/内容盒满宽，但字迹在水平轴上铺不开」这一类形态留下
+        //   常驻承重面 —— 也就是旧口径两条判据（① 内容盒、② 逐行字迹）同时静默的那一类。
+        //   ⚠️ 这里原先写的是「它是**唯一**能让『盒/内容盒满宽 + 按行归并只有 1 行』同时成立的
+        //   形态」—— **那句话是错的**（本轮修，实测见 ④）：注入形态只决定「盒子满宽」这一半；
+        //   「按行归并只剩 1 行」还取决于**说明的文本节点结构**与所在环境的字体度量。
+        //   ⚠️ 靶页换过**四次**（如实记）：
         //   ① T31 的原靶页 `category/agent/` 自 `secondary-page-intro-changes-v1` 起
         //   **一条 .snote 都没有**了（目录页首屏说明整层删除）—— 拿它当靶页等于「变异没有承重面」
         //   （实测：注入后 noteCount 0、一条码都不出），于是换成别名页 `need/free-api/`
@@ -8376,7 +8409,44 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         //   未注入状态下 0 违规码且 0 条竖排说明 —— 与 M15 正对照要的那两条性质逐条对上。
         //   它与 M7（DOM 注入 detail-main）、M1–M4 的壳共用这一页：那三条的注入形态各不相同
         //   （`target: 'dom'` / 冻结串替换 / 这里在冻结串之后追加），互不干扰。
-        { id: 'M15', route: 'status/', width: WIDE_DESKTOP, expect: 'note-ink-narrow', target: 'extend',
+        //   ④ 本轮（CI 修复轮 · PR #110 的那条红）：`status/` 只满足「页面级说明 ≥ 1 条」，
+        //   不满足承重证明真正需要的那条**结构性**前提。它那 1 条说明由 **9 个文本节点**组成
+        //   （4 个 <b> 片段各 4 字：最近一次 / ❌ 失败 / ⚠️ 异常 / ✅ 正常），而 glyphRectsOf
+        //   是**逐文本节点**建 Range 的 ⇒ 列片段的边界与文本节点边界重合。当字体步进较小时
+        //   （CI = ubuntu + playwright chromium，字体与本机不同），那 4 个短片段会落在**列的中段**，
+        //   按行归并得到 3 个单元 ⇒ 承重证明里的 `lineEvidenceMissing`（按行归并 ≤ 1 行）不成立。
+        //   CI 原始读数：列 3 / 列栈 54.78px / 行 3（最宽 54.78px）/ 字形盒 9。
+        //   本机可复现同一条（不必换浏览器）：给同一形态再叠一条 `.snote { letter-spacing: -9.5px }`
+        //   —— 只改**行内步进**，字号/行高/列宽/盒宽一字不动 ⇒ 本机同样读出 列 3 / 行 3。
+        //   结论：坏的不是牙，而是前提被写成了一条**与字体度量有关的读数**。
+        //   换成 `plans/coding/`：产物里只有它与 `changes/` 满足「**所有可能被咬的** .snote 都是
+        //   **单文本节点**」（判据要的是**全部被咬的条**都单文本节点 —— 只要有一条是多文本节点，
+        //   前提就又退回字体度量；「可能被咬」而不是「全部」是必须说清的：见下面那条真 DOM 复核，
+        //   该页 5 条里有 2 条**根本进不了被咬集合**，那 2 条谈不上单/多文本节点）。
+        //   取前者的理由：被咬的条要**够长**才有承重面 —— ② 要求「字迹在水平轴上至少铺开 2 列」，
+        //   即 字数 × 字符步进 > 5.6rem（89.6px）。`changes/` 最长只有 62 字，
+        //   在退化字体下（步进约 1.4px/字，量级由 CI 那条读数反推：128 字 ⇒ 3 列）只有约 87px
+        //   < 89.6px ⇒ 可能一条都咬不到；`plans/coding/` 的 #0 是 84 字（约 118px）⇒ 留出余量。
+        //   真 DOM 逐条复核（2026-10-10，口径同 `textRunCountOf`：非空白文本节点、排除 <noscript>）：
+        //   `#0` 84 字 / 1 节点（被咬）· `#2` 41 字 / 1 节点（被咬）· `#4` 67 字 / 1 节点（被咬）·
+        //   `#1` 可见文本 **0**（这段说明的文字**全在 <noscript> 里**，脚本开启时不渲染 —— 就是
+        //   wideProblems 里「真·合法未渲染」那条）· `#3` 可见文本 **0**（构建期就是空占位
+        //   `<p class="snote"></p>`）。后两条**不可能**进入被咬集合 ⇒ 它们不参与「单文本节点」前提。
+        //   这也是「判据只要被咬的条单文本节点」而不是「页面内全部单文本节点」的原因。
+        //   ⚠️ **残留的环境依赖（如实写清失效方式）**：若某个字体的步进小到连最长的 84 字说明都
+        //   铺不满一列（约 < 1.07px/字，整条说明塌成一个墨点），那就一条也咬不到 —— M15 会以
+        //   「期望码没出现」判红。要说清的是：**那种字体下这条形态本身已经不再是「窄条」缺陷**
+        //   （字迹根本没有铺开的地方）⇒ 红的是「靶页在这个环境下没有承重面」，不是判据退化；
+        //   处置是换一条更长的**单文本节点**靶页，**不是**放宽判据。
+        //   CI 现场反推的步进约 1.4px/字（128 字 ⇒ 3 列）⇒ 对 84 字留约 1.3× 余量。
+        //   单文本节点时「按行归并只有 1 行」是**可证**的（全部列片段顶边相同，逐个并入时重叠量
+        //   恒等于较矮者的全高），不再依赖字体；这条结构前提现在由承重证明**显式断言**
+        //   （`note.textRuns === 1`，见 textRunCountOf 的注释），所以将来谁把靶页换回多文本节点的
+        //   说明，**本机就会确定性判红**，而不是等到 CI 上以「字体不同」的形式红。
+        //   ⚠️ 该页同时是 M9a（冻结串替换成 `.snote ~ .snote { max-width: 70ch }`）与 M16
+        //   （DOM 追加 <style>）的靶页：三条牙的注入形态各不相同、各自跑在**独立的页面加载**上，
+        //   互不干扰（与 M8/M10/M12/M1–M4 共用 `plans/` 是同一种安排）。
+        { id: 'M15', route: 'plans/coding/', width: WIDE_DESKTOP, expect: 'note-ink-narrow', target: 'extend',
           expectVertical: true,
           // ⚠️ 允许集**照抄**脚本自己的正对照口径（下面 `m15Expected`），**不许**加第三个数。
           //    `note-intro-long` 是竖排形态的固有伴随码：首屏区是**注入后的现场几何**，
@@ -8390,7 +8460,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
             + '盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /'
             + '24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；'
             + '轮 6 口径下 @1440/@1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）'
-            + '（靶页本轮由 need/free-api/ 换到 status/，见上面那段三次换靶记录）' },
+            + '（靶页本轮由 status/ 换到 plans/coding/：前者那条说明由 9 个文本节点组成，CI 的字体度量下'
+            + '按行归并出 3 个单元 ⇒ 承重证明的前提不成立；见上面那段四次换靶记录）' },
         // ---- narrow-reading-columns-v1 新增：保留窄阅读列的登记制（M16）----
         //   注入的是「已登记条目的**另一个**取值」：`.pdetailbody` 从 72ch 被覆盖成 70ch ——
         //   选择器、页面、元素全是真实存在的，唯一变化是「这条声明**不在登记清单里**」。
@@ -8532,6 +8603,12 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         //   被咬的条必须真的是竖排、且判据用的是**列**（列数 ≥ 2 / 列栈水平范围 < 阈值）；
         //   同时把「旧口径为什么必然静默」也钉住：这些条**按行归并只有 1 行**（前置条件不成立），
         //   盒宽与内容盒都还是满宽的（① 也看不见）。三条同时成立才证明换轴是承重的，而不是换了个说法。
+        //   ★ 本轮（CI 修复轮 · PR #110）补上**结构性前提** `singleRunEvidence`：
+        //   「按行归并只有 1 行」在**单文本节点**的说明上是可证的（见 textRunCountOf），而在多文本
+        //   节点的说明上它是**字体度量的函数** —— CI（字体不同）实测同一条说明按行归并出 3 行，
+        //   这条承重证明因此红。只留 `lineEvidenceMissing`（读数）的话，同一份代码在不同字体下
+        //   会给不同结论；补上结构前提之后，前提要么**可证成立**，要么**确定性地红**（与字体无关）。
+        //   口径：`textRuns` 量不到（老几何/合成几何）按不成立处理 —— 与 ch70 那条前置同一纪律。
         if (mutation.expectVertical) {
           const inkKeys = (wideMutationExtra.get(mutation.id) || {}).inkNarrowKeys || [];
           const rowsOfInk = geometry ? geometry.notes.filter(note => inkKeys.includes(wideNoteKey(mutation.route, note.index))) : [];
@@ -8542,6 +8619,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
             && note.columnSpan > 0 && note.columnSpan < WIDE_NOTE_RATIO * column - 0.01);
           // 旧口径静默的两条独立原因（都必须是「成立」才算承重）：
           const lineEvidenceMissing = rowsOfInk.length > 0 && rowsOfInk.every(note => note.lineCount <= 1);
+          // 上面那条「按行归并 ≤ 1 行」的**结构性来源**：被咬的条必须由**恰好 1 个文本节点**组成。
+          const singleRunEvidence = rowsOfInk.length > 0 && rowsOfInk.every(note => note.textRuns === 1);
           const boxesStayedWide = rowsOfInk.length > 0
             && rowsOfInk.every(note => note.textWidth >= WIDE_NOTE_RATIO * column - 0.01)
             && narrowKeys.length === 0;
@@ -8552,14 +8631,18 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
                 && Math.abs(prior.box.left - note.box.left) <= WIDE_TOL;
             });
           check(`§22c ${mutation.id} 承重证明：咬中的条是**竖排按列判**（列数 ≥ 2 · 列栈水平范围 < ${WIDE_NOTE_RATIO}×列宽），`
-            + `且旧口径两条判据在它们身上必然静默（按行归并 ≤ 1 行 + 盒/内容盒满宽，盒宽与注入前逐条相同）`,
-            inkKeys.length > 0 && allVertical && columnEvidence && lineEvidenceMissing && boxesStayedWide && boxUnchanged,
+            + `且旧口径两条判据在它们身上必然静默（按行归并 ≤ 1 行 + 盒/内容盒满宽，盒宽与注入前逐条相同）`
+            + `—— 「按行归并 ≤ 1 行」还必须是**结构性的**（被咬的条各由恰好 1 个文本节点组成：那时全部列片段`
+            + `顶边相同，行归并只有 1 个单元是可证的；多文本节点时它只是字体度量的偶然结果）`,
+            inkKeys.length > 0 && allVertical && columnEvidence && lineEvidenceMissing && singleRunEvidence
+            && boxesStayedWide && boxUnchanged,
             `note-ink-narrow ${inkKeys.length} 条 [${inkKeys.join(', ')}]`
             + ` · 逐条：${rowsOfInk.map(note => `#${note.index} ${note.writingMode} 列 ${note.columnCount} / 列栈 ${wideRound(note.columnSpan)}px`
               + ` / 行 ${note.lineCount}（最宽 ${wideRound(note.widestLine)}px） / 内容盒 ${wideRound(note.textWidth)}px`
-              + ` / 字形盒 ${note.glyphRects}`).join(' · ') || '（无）'}`
+              + ` / 字形盒 ${note.glyphRects} / 文本节点 ${note.textRuns}`).join(' · ') || '（无）'}`
             + ` · 列宽 ${wideRound(column)}px · 阈值 ${wideRound(WIDE_NOTE_RATIO * column)}px`
-            + ` · note-narrow ${narrowKeys.length} 条（0 = ① 也看不见）· 盒宽与注入前一致 ${boxUnchanged}`);
+            + ` · note-narrow ${narrowKeys.length} 条（0 = ① 也看不见）· 盒宽与注入前一致 ${boxUnchanged}`
+            + ` · 结构前提（逐条单文本节点）${singleRunEvidence}`);
         }
         // **隔离性**（对抗复核 F4，`secondary-page-residue-v1`）：
         //   上面那条通用判据只查 `codes.includes(expect)` —— 多出**伴随码**也照样绿。
@@ -8665,9 +8748,12 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         { id: 'M10', route: 'plans/', width: WIDE_WIDE },
         // M15 的正对照（vertical-note-coverage-v1）：同一页不注入竖排 ⇒ 直接量它自己的读数 ——
         // 「该页说明一条都不是竖排 + 0 违规码」同时证明新判据不是「凡是说明就判窄」。
-        // t5：靶页与 M15 同步换到 `status/`（前两任靶页：`need/free-api/` 删掉别名说明后 0 条 `.snote`、
-        // `feeds/` 整页下架 —— 两次都是「靶页没有承重面/不存在」而不是判据本身出问题）。
-        { id: 'M15', route: 'status/', width: WIDE_DESKTOP }
+        // ⚠️ 这里必须与 M15 的 `route` **同一个页面**，否则「不注入 ⇒ 干净」证明的可能只是
+        // 「另拿了一个没有说明的页」（换靶记录见 M15 定义处那段四次沿革）。
+        // ④ 本轮（CI 修复轮）与 M15 同步由 `status/` 换到 `plans/coding/`（理由同上：靶页必须
+        // 逐条都是单文本节点，承重证明的结构前提才可证）。该页同时是 M9a 的对照行 —— 同一页
+        // 出现两行是**故意的**：两行各自回答「这一页在**那条牙**对应的档位上是否干净」。
+        { id: 'M15', route: 'plans/coding/', width: WIDE_DESKTOP }
       ].map(control => {
         const problems = wideProblemsAt.get(`${control.width}|${control.route}`);
         const geometry = wideGeometry.get(`${control.width}|${control.route}`);
