@@ -129,7 +129,7 @@ async function collectZhipuPricing() {
       url,
       vendor: '智谱AI',
       category: 'API服务',
-      description: '来源：智谱开放平台官方价格页营销位与活动说明（无头浏览器渲染后提取）。'
+      description: '来源：智谱开放平台官方价格页营销位与活动说明。'
     });
   }
   if (!items.length) {
@@ -295,7 +295,7 @@ async function collectVolcArk() {
       vendor: '火山引擎',
       category: modalityCategory(row.modality),
       discountInfo: `火山方舟免费额度（${row.modality}）：${row.quota}。`,
-      description: '来源：火山方舟产品页「免费额度」表（无头浏览器渲染后提取）。',
+      description: '来源：火山方舟产品页「免费额度」表。',
       pricingModel: 'free'
     });
   }
@@ -310,7 +310,7 @@ async function collectVolcArk() {
       url,
       vendor: '火山引擎',
       category: built.category || 'API服务',
-      description: '来源：火山方舟产品页「最新活动」区（无头浏览器渲染后提取）。'
+      description: '来源：火山方舟产品页「最新活动」区。'
     });
   }
 

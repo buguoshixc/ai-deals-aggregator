@@ -1,0 +1,5 @@
+# 变异演练的沙箱与临时构建树：只留**读数**（*.json / *.log 摘要）
+sandbox/
+tree/
+tree-*/
+*.building/

@@ -1,6 +1,6 @@
 {
-  "target": "http://127.0.0.1:49934/",
-  "generatedAt": "2026-10-09T12:19:05.900Z",
+  "target": "http://127.0.0.1:56314/",
+  "generatedAt": "2026-10-09T15:09:20.008Z",
   "total": 842,
   "failed": 0,
   "metrics": {
@@ -8455,12 +8455,12 @@
         "vertical": false,
         "writingMode": "horizontal-tb",
         "lineCount": 1,
-        "widestLine": 1365.09,
+        "widestLine": 1161.09,
         "lines": [
           {
             "left": 30,
-            "right": 1395.09,
-            "width": 1365.09
+            "right": 1191.09,
+            "width": 1161.09
           }
         ],
         "columnCount": 0,
@@ -8468,16 +8468,16 @@
         "columns": [],
         "inkUnit": "line",
         "inkCount": 1,
-        "inkSpan": 1365.09,
+        "inkSpan": 1161.09,
         "glyphRects": 1,
-        "textLength": 121,
-        "rawTextLength": 121,
+        "textLength": 104,
+        "rawTextLength": 104,
         "noscriptSubtree": false,
-        "inkWidth": 1365.09,
+        "inkWidth": 1161.09,
         "inkRects": 1,
-        "inkLongestLine": 1365.09,
+        "inkLongestLine": 1161.09,
         "ratioTextWidth": 1.04,
-        "ratioWidestLine": 1.03,
+        "ratioWidestLine": 0.87,
         "boxLeft": 30,
         "boxRight": 1410,
         "parent": "main",
@@ -17609,12 +17609,12 @@
         "vertical": false,
         "writingMode": "horizontal-tb",
         "lineCount": 1,
-        "widestLine": 1365.09,
+        "widestLine": 1161.09,
         "lines": [
           {
             "left": 110,
-            "right": 1475.09,
-            "width": 1365.09
+            "right": 1271.09,
+            "width": 1161.09
           }
         ],
         "columnCount": 0,
@@ -17622,16 +17622,16 @@
         "columns": [],
         "inkUnit": "line",
         "inkCount": 1,
-        "inkSpan": 1365.09,
+        "inkSpan": 1161.09,
         "glyphRects": 1,
-        "textLength": 121,
-        "rawTextLength": 121,
+        "textLength": 104,
+        "rawTextLength": 104,
         "noscriptSubtree": false,
-        "inkWidth": 1365.09,
+        "inkWidth": 1161.09,
         "inkRects": 1,
-        "inkLongestLine": 1365.09,
+        "inkLongestLine": 1161.09,
         "ratioTextWidth": 1.04,
-        "ratioWidestLine": 1.03,
+        "ratioWidestLine": 0.87,
         "boxLeft": 110,
         "boxRight": 1490,
         "parent": "main",
@@ -18831,12 +18831,12 @@
         360
       ],
       "seconds": {
-        "desktop1440": 9.1,
-        "desktop1600": 9.2,
-        "desktop950": 9.4,
-        "narrow390": 9.6,
-        "samples": 10.5,
-        "section": 52.6
+        "desktop1440": 7.7,
+        "desktop1600": 8.2,
+        "desktop950": 8.3,
+        "narrow390": 8.3,
+        "samples": 8.4,
+        "section": 44.8
       },
       "jsErrors": 0,
       "externalRequests": 0
@@ -18851,8 +18851,8 @@
     "jsErrors": 0,
     "jsErrorSamples": [],
     "httpNotFound": [],
-    "target": "http://127.0.0.1:49934/",
-    "generatedAt": "2026-10-09T12:19:05.900Z"
+    "target": "http://127.0.0.1:56314/",
+    "generatedAt": "2026-10-09T15:09:20.008Z"
   },
   "checks": [
     {
@@ -19366,7 +19366,7 @@
     {
       "name": "详情页有标题与面包屑",
       "ok": true,
-      "detail": "百川智能 海纳百川计划 免费使用 M3Plus AP · 面包屑 3 段 · 正文 685 字符"
+      "detail": "百川智能 海纳百川计划 免费使用 M3Plus AP · 面包屑 3 段 · 正文 673 字符"
     },
     {
       "name": "详情页恰好一个 h1（独立文档必须有且只有一个一级标题）",
@@ -19401,7 +19401,7 @@
     {
       "name": "详情页不执行 JS 也能读到内容",
       "ok": true,
-      "detail": "正文 1142 字符 · 标题「百川智能 海纳百川计划 免费使用 M3Plu」· 官方链接 5 个"
+      "detail": "正文 1130 字符 · 标题「百川智能 海纳百川计划 免费使用 M3Plu」· 官方链接 5 个"
     },
     {
       "name": "详情页出现「适用人群」结构化行，且取值不是空的",
@@ -19426,7 +19426,7 @@
     {
       "name": "信息来源块带免责句（不构成对有效性的判断）",
       "ok": true,
-      "detail": " 未收录官方原文片段 以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断；最终以厂商官方页面为准。"
+      "detail": "方页面明写 官方原文片段 未收录官方原文片段 以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断。"
     },
     {
       "name": "信息来源块里有官方页面链接",
@@ -19451,12 +19451,12 @@
     {
       "name": "采集侧条目：渲染出真实的「最近成功采集」时间（known 不得被降级成「未知」）",
       "ok": true,
-      "detail": "time=2026-10-08T18:31:14.346Z · 段「 2026-10-09 02:31（北京时间） · 最近一次采集正常 断言依据 」"
+      "detail": "time=2026-10-09T04:43:29.057Z · 段「 2026-10-09 12:43（北京时间） · 最近一次采集正常 断言依据 」"
     },
     {
       "name": "有官方引文的条目：引文渲染出来，并带出处链接与采集日期",
       "ok": true,
-      "detail": "ps://ai.360.com/open/zh/terms 以下片段摘自厂商官方页面，仅用于核对本页信息；完整内容与最终条款以官方页面为准。 以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断；最终以厂商官方页面为准。"
+      "detail": "-09-22 · https://ai.360.com/open/zh/terms 以下片段摘自厂商官方页面，仅用于核对本页信息；完整内容与最终条款以官方页面为准。 以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断。"
     },
     {
       "name": "引文块带「仅用于核对本页信息」的说明",
@@ -19660,17 +19660,17 @@
     {
       "name": "首页专题导航卡：真点第 1 张卡「学生专享」→ /need/student-only/（HTTP 200 · h1 与注册项一致）",
       "ok": true,
-      "detail": "点到卡 1 张 · HTTP 200 · 落地 http://127.0.0.1:49934/need/student-only/ · h1「面向学生的 AI 优惠」/ 注册项「面向学生的 AI 优惠」· JS 错误 0 个"
+      "detail": "点到卡 1 张 · HTTP 200 · 落地 http://127.0.0.1:56314/need/student-only/ · h1「面向学生的 AI 优惠」/ 注册项「面向学生的 AI 优惠」· JS 错误 0 个"
     },
     {
       "name": "首页专题导航卡：真点第 6 张卡「免费 API」→ /need/free-api/（HTTP 200 · h1 与注册项一致）",
       "ok": true,
-      "detail": "点到卡 1 张 · HTTP 200 · 落地 http://127.0.0.1:49934/need/free-api/ · h1「可以免费调用的 API」/ 注册项「可以免费调用的 API」· JS 错误 0 个"
+      "detail": "点到卡 1 张 · HTTP 200 · 落地 http://127.0.0.1:56314/need/free-api/ · h1「可以免费调用的 API」/ 注册项「可以免费调用的 API」· JS 错误 0 个"
     },
     {
       "name": "首页专题导航卡：真点第 10 张卡「开发者 Credits」→ /need/dev-credits/（HTTP 200 · h1 与注册项一致）",
       "ok": true,
-      "detail": "点到卡 1 张 · HTTP 200 · 落地 http://127.0.0.1:49934/need/dev-credits/ · h1「面向开发者的赠送额度」/ 注册项「面向开发者的赠送额度」· JS 错误 0 个"
+      "detail": "点到卡 1 张 · HTTP 200 · 落地 http://127.0.0.1:56314/need/dev-credits/ · h1「面向开发者的赠送额度」/ 注册项「面向开发者的赠送额度」· JS 错误 0 个"
     },
     {
       "name": "/need/china-usable/ 条目集合与 deals.json 的 needs 逐 id 相等",
@@ -19695,7 +19695,7 @@
     {
       "name": "/need/china-usable/ 的详情页内链真的能打开（两层深前缀没写错）",
       "ok": true,
-      "detail": "HTTP 200 · 落地 deal/2eae0e246de2 · canonical deal/2eae0e246de2 · 正文 1251 字"
+      "detail": "HTTP 200 · 落地 deal/2eae0e246de2 · canonical deal/2eae0e246de2 · 正文 1239 字"
     },
     {
       "name": "/need/free-tier/ 条目集合与 deals.json 的 needs 逐 id 相等",
@@ -19720,7 +19720,7 @@
     {
       "name": "/need/free-tier/ 的详情页内链真的能打开（两层深前缀没写错）",
       "ok": true,
-      "detail": "HTTP 200 · 落地 deal/2eae0e246de2 · canonical deal/2eae0e246de2 · 正文 1251 字"
+      "detail": "HTTP 200 · 落地 deal/2eae0e246de2 · canonical deal/2eae0e246de2 · 正文 1239 字"
     },
     {
       "name": "/need/free-api/ 条目集合与 deals.json 的 needs 逐 id 相等",
@@ -19745,7 +19745,7 @@
     {
       "name": "/need/free-api/ 的详情页内链真的能打开（两层深前缀没写错）",
       "ok": true,
-      "detail": "HTTP 200 · 落地 deal/2eae0e246de2 · canonical deal/2eae0e246de2 · 正文 1251 字"
+      "detail": "HTTP 200 · 落地 deal/2eae0e246de2 · canonical deal/2eae0e246de2 · 正文 1239 字"
     },
     {
       "name": "/need/free-tokens/ 条目集合与 deals.json 的 needs 逐 id 相等",
@@ -19770,7 +19770,7 @@
     {
       "name": "/need/free-tokens/ 的详情页内链真的能打开（两层深前缀没写错）",
       "ok": true,
-      "detail": "HTTP 200 · 落地 deal/2eae0e246de2 · canonical deal/2eae0e246de2 · 正文 1251 字"
+      "detail": "HTTP 200 · 落地 deal/2eae0e246de2 · canonical deal/2eae0e246de2 · 正文 1239 字"
     },
     {
       "name": "/need/dev-credits/ 条目集合与 deals.json 的 needs 逐 id 相等",
@@ -19795,7 +19795,7 @@
     {
       "name": "/need/dev-credits/ 的详情页内链真的能打开（两层深前缀没写错）",
       "ok": true,
-      "detail": "HTTP 200 · 落地 deal/2eae0e246de2 · canonical deal/2eae0e246de2 · 正文 1251 字"
+      "detail": "HTTP 200 · 落地 deal/2eae0e246de2 · canonical deal/2eae0e246de2 · 正文 1239 字"
     },
     {
       "name": "/need/free-model/ 条目集合与 deals.json 的 needs 逐 id 相等",
@@ -19820,7 +19820,7 @@
     {
       "name": "/need/free-model/ 的详情页内链真的能打开（两层深前缀没写错）",
       "ok": true,
-      "detail": "HTTP 200 · 落地 deal/ebd47f6d2522 · canonical deal/ebd47f6d2522 · 正文 1590 字"
+      "detail": "HTTP 200 · 落地 deal/ebd47f6d2522 · canonical deal/ebd47f6d2522 · 正文 1578 字"
     },
     {
       "name": "/need/student-only/ 条目集合与 deals.json 的 needs 逐 id 相等",
@@ -19845,7 +19845,7 @@
     {
       "name": "/need/student-only/ 的详情页内链真的能打开（两层深前缀没写错）",
       "ok": true,
-      "detail": "HTTP 200 · 落地 deal/c05dc74bfd78 · canonical deal/c05dc74bfd78 · 正文 1647 字"
+      "detail": "HTTP 200 · 落地 deal/c05dc74bfd78 · canonical deal/c05dc74bfd78 · 正文 1635 字"
     },
     {
       "name": "/need/edu-identity/ 条目集合与 deals.json 的 needs 逐 id 相等",
@@ -19870,7 +19870,7 @@
     {
       "name": "/need/edu-identity/ 的详情页内链真的能打开（两层深前缀没写错）",
       "ok": true,
-      "detail": "HTTP 200 · 落地 deal/c05dc74bfd78 · canonical deal/c05dc74bfd78 · 正文 1647 字"
+      "detail": "HTTP 200 · 落地 deal/c05dc74bfd78 · canonical deal/c05dc74bfd78 · 正文 1635 字"
     },
     {
       "name": "/need/ai-coding/ 条目集合与 deals.json 的 needs 逐 id 相等",
@@ -19895,7 +19895,7 @@
     {
       "name": "/need/ai-coding/ 的详情页内链真的能打开（两层深前缀没写错）",
       "ok": true,
-      "detail": "HTTP 200 · 落地 deal/df8ec56faa17 · canonical deal/df8ec56faa17 · 正文 1691 字"
+      "detail": "HTTP 200 · 落地 deal/df8ec56faa17 · canonical deal/df8ec56faa17 · 正文 1679 字"
     },
     {
       "name": "/need/no-card/ 条目集合与 deals.json 的 needs 逐 id 相等",
@@ -19920,7 +19920,7 @@
     {
       "name": "/need/no-card/ 的详情页内链真的能打开（两层深前缀没写错）",
       "ok": true,
-      "detail": "HTTP 200 · 落地 deal/6644f3b43bdb · canonical deal/6644f3b43bdb · 正文 1311 字"
+      "detail": "HTTP 200 · 落地 deal/6644f3b43bdb · canonical deal/6644f3b43bdb · 正文 1299 字"
     },
     {
       "name": "专题导航卡 1600px：每张卡都在视口内、无重叠、页面零横向溢出（逐张量矩形）",
@@ -20075,7 +20075,7 @@
     {
       "name": "/status/ 能打开且标题非空",
       "ok": true,
-      "detail": "「数据源状态」· 表格 9 行 · 正文 1047 字"
+      "detail": "「数据源状态」· 表格 9 行 · 正文 1048 字"
     },
     {
       "name": "/status/ canonical 自指",
@@ -20674,7 +20674,7 @@
     {
       "name": "/plans/coding/ 能打开且恰好一个 h1",
       "ok": true,
-      "detail": "h1 1 个 · 正文 16225 字 · 「AI Coding 套餐对比」"
+      "detail": "h1 1 个 · 正文 16212 字 · 「AI Coding 套餐对比」"
     },
     {
       "name": "/plans/coding/ 的 h1 与首页顶栏入口的名字逐字一致（入口名不是另抄一份）",
@@ -20794,7 +20794,7 @@
     {
       "name": "/plans/coding/ 筛选与搜索都不改地址（不为筛选组合生成 URL）",
       "ok": true,
-      "detail": "http://127.0.0.1:49934/plans/coding/"
+      "detail": "http://127.0.0.1:56314/plans/coding/"
     },
     {
       "name": "/plans/coding/ 正常月费排序：不可比较（原价未标注）恒在末尾，同币种内升序",
@@ -20937,7 +20937,7 @@
     {
       "name": "/plans/coding/ 无 JS 时仍有完整静态内容（行数 / 官方链接 / h1 / 正文）",
       "ok": true,
-      "detail": "44 行 · 44 个官方链接 · 正文 15295 字"
+      "detail": "44 行 · 44 个官方链接 · 正文 15282 字"
     },
     {
       "name": "/plans/coding/ 无 JS 时页面上零个交互控件（不给\"点了没反应\"的暗示）",
@@ -21009,7 +21009,7 @@
     {
       "name": "/plans/api/ 能打开且恰好一个 h1",
       "ok": true,
-      "detail": "h1 1 个 · 正文 20283 字 · 「API / Token 计费对比」"
+      "detail": "h1 1 个 · 正文 20270 字 · 「API / Token 计费对比」"
     },
     {
       "name": "/plans/api/ canonical 自指",
@@ -21076,7 +21076,7 @@
     {
       "name": "/plans/api/ 平台列的 logo 真的画出来了（引用了 logos.css，不是空方块）",
       "ok": true,
-      "detail": "{\"present\":true,\"key\":\"ai360\",\"w\":16,\"h\":16,\"bg\":\"url(\\\"http://127.0.0.1:49934/logos/ai360.png\\\")\"}"
+      "detail": "{\"present\":true,\"key\":\"ai360\",\"w\":16,\"h\":16,\"bg\":\"url(\\\"http://127.0.0.1:56314/logos/ai360.png\\\")\"}"
     },
     {
       "name": "/plans/api/ 390px 不产生页面级横向溢出（11 列宽表应在容器内横滚）",
@@ -21158,7 +21158,7 @@
     {
       "name": "/plans/ 无 JS 时正文完整（≥700 字）",
       "ok": true,
-      "detail": "3116 字"
+      "detail": "3079 字"
     },
     {
       "name": "/plans/ 无 JS 时一个控件都没有（预渲染里不许有点不动的控件）",
@@ -21247,7 +21247,7 @@
     {
       "name": "/models/ 无 JS 时正文完整（≥600 字）",
       "ok": true,
-      "detail": "5653 字"
+      "detail": "5623 字"
     },
     {
       "name": "/models/ 无 JS 时一个控件都没有（预渲染里不许有点不动的控件）",
@@ -22101,7 +22101,7 @@
     {
       "name": "§22b 变异牙零磁盘污染：dist 里两个产物文件的 sha256 变异前后相等（byte-exact）",
       "ok": true,
-      "detail": "deal/8e7b0fd03e73/index.html 461c97526e06… · models/360zhinao-pro/index.html 7fa3f878d949…（前 461c9752/461c9752 · 7fa3f878/7fa3f878）"
+      "detail": "deal/8e7b0fd03e73/index.html 6241a6427fe6… · models/360zhinao-pro/index.html 7fa3f878d949…（前 6241a642/6241a642 · 7fa3f878/7fa3f878）"
     },
     {
       "name": "§22c 全站每一页的布局族都能解析（page-kinds.kindOfRoute + layoutOf，数据驱动的静态路由由 kindByRoute 补齐）",
@@ -22371,7 +22371,7 @@
     {
       "name": "§22c M12 承重证明：真实文本**一个字形盒都没有**（盒宽/行数正常），咬中的是 note-hidden-text",
       "ok": true,
-      "detail": "首条：文本 121 字 · 字形盒 0 个 · 盒宽 1380px（rendered=true） · 行 0 行 · note-hidden-text 命中 [plans/#0, plans/#1, plans/#2, plans/#3, plans/#4, plans/#5, plans/#6, plans/#7, plans/#8, plans/#9, plans/#10] · note-ink-narrow 无"
+      "detail": "首条：文本 104 字 · 字形盒 0 个 · 盒宽 1380px（rendered=true） · 行 0 行 · note-hidden-text 命中 [plans/#0, plans/#1, plans/#2, plans/#3, plans/#4, plans/#5, plans/#6, plans/#7, plans/#8, plans/#9, plans/#10] · note-ink-narrow 无"
     },
     {
       "name": "§22c M13 变异锚点唯一（逐字替换前必须恰好出现 1 次）",
@@ -22501,7 +22501,7 @@
     {
       "name": "§22c 变异牙零磁盘污染：被改产物的 sha256 变异前后相等（byte-exact）",
       "ok": true,
-      "detail": "plans/ e2da8e0d23… · status/ 0012884c06… · changes/ 5e15330496… · models/ 3b4baff7a6…（前 e2da8e/001288/5e1533/3b4baf · 后 e2da8e/001288/5e1533/3b4baf）"
+      "detail": "plans/ 445299681d… · status/ ddf13dd7d3… · changes/ 5e15330496… · models/ a51c59ca31…（前 445299/ddf13d/5e1533/a51c59 · 后 445299/ddf13d/5e1533/a51c59）"
     },
     {
       "name": "§22c 条级容器：metrics.layoutNotes 覆盖全部说明条（route#index 可逐条核对）",
@@ -22962,7 +22962,7 @@
     {
       "name": "抽样页面正文都有内容（分析注入没有把正文吃掉）",
       "ok": true,
-      "detail": "/:12245 · plans/api/:20283 · plans/coding/:16225 · models/:5923 · models/360zhinao-pro/:1194 · vendor/ai360/:1163 · changes/:4180"
+      "detail": "/:12245 · plans/api/:20270 · plans/coding/:16212 · models/:5893 · models/360zhinao-pro/:1194 · vendor/ai360/:1163 · changes/:4180"
     },
     {
       "name": "本地：真实资源计时里 0 次 Cloudflare 请求（不是「没看到」，是浏览器确实没去取）",

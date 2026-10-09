@@ -1,0 +1,236 @@
+{
+  "task": "t6 [adversary] 对抗复核：独立沙盒实测新牙射程、误伤与回流路径",
+  "attempt_id": "06054c69-5ba9-475b-9c3c-d8612d21660a",
+  "team": "secondary-page-residue-v2",
+  "worktree": "D:/OneDrive/Desktop/Code/AI Page/.worktrees/secondary-page-residue-v2",
+  "sandbox": "research/_raw/secondary-page-residue-v2/adversary/sandbox/",
+  "deliverables": [
+    "research/_raw/secondary-page-residue-v2/adversary/report.md",
+    "research/_raw/secondary-page-residue-v2/adversary/report.json"
+  ],
+  "anchors": {
+    "note": "本次复核读的就是这一份字节；复核期间同队 gate-teeth 改了 CI 接线（action.yml / BUILD.md / check-ci-consistency.js），判据三件套未变",
+    "buildLocalJsSha256": "72dde078371cba97dac91478f80ec1f0aff3e67740d16399d78bedc19bda4de6",
+    "residueGuardJsonSha256": "a37db3fd3c61c83d5269490b358efac1944c244629f236583ae9217b4171a4a7",
+    "checkResidueJsSha256": "b50819a12acea6e6239c519a561623649c83088757829cd8c82e9a3d8bcec4e5",
+    "distTreeDigest": "59db0aa5aaef0ac01589c4203dc9dfeda2c7ddbe3883c2a0774f24451607d04a",
+    "distFiles": 304,
+    "baselineCheckResidueExit": 0,
+    "baselineEntries": 32,
+    "baselineLiterals": 44,
+    "baselineExempt": 0,
+    "baselineCommentOnly": 0,
+    "baselineFloors": ".dsrc-note 165/123 · .ddesc 80/60 · .fdesc 25/18 · .chgnote 19/14 · .pchnote 4/1 · .pftdesc 4/1 · .chgmeta 1/1 · .hint 54/40"
+  },
+  "method": {
+    "sameImplementation": "所有探针 require build-local.js 的 scanResidue()；登记表篡改用 scripts/ 等价副本(regcopy)跑 check-residue.js 本体（与 CI 那一步同一条命令）",
+    "sourceReadOnly": true,
+    "productUntouched": "dist treeDigest 复核前后逐字符相同；t6 期间无我改动的跟踪文件",
+    "mutationSites": "全部变异在 adversary/sandbox/{product-*,scratch-*,exempt-*,regcopy,repo,mini*} 副本内；每例结束后按原始字节还原（builds.cjs / class-cases.cjs / tamper.cjs / shrink.cjs / kept-copy.cjs 都打印还原一致性）",
+    "browser": "playwright-core + 本机 Edge（与仓库 verify-site.js 同一条启动路径）"
+  },
+  "summary": {
+    "findings": 9,
+    "highestSeverity": "high",
+    "rangeBoundaries": 15,
+    "runs": {
+      "rangeCases": 32,
+      "rangeUnexpected": 0,
+      "classCases": 11,
+      "exemptCases": 7,
+      "tamperCases": 10,
+      "realBuildCalls": 26,
+      "realBuildsReachedSelfCheck": 9,
+      "realBuildsBlockedByDataFace": 17,
+      "gateRuns": 18,
+      "edgeCases": 3,
+      "browserVariants": 7,
+      "falseAlarmRuns": 10
+    }
+  },
+  "findings": [
+    {
+      "id": "F1",
+      "severity": "high",
+      "title": "共享页脚豁免自证：被删文案放回共享页脚 ⇒ 186 页回流，构建与 9 条产物门禁全绿",
+      "problem": "豁免名单从产物自己的 index.html SHARED 页脚元素现算，豁免作用域是每一页的 <footer> 区间；名单面与作用域面是同一块东西 ⇒ 白名单自证。把登记字面写回共享页脚后，读者在全部 186 页都能看到，而判据读到 0 命中。",
+      "evidence": [
+        "真构建 sandbox/repo + 共享页脚写回 v2-plans-hub-description-tail 文案 ⇒ exit 0（构建期含新牙两行读数）",
+        "产物侧：该句出现 186 次 · 页脚区间内 186 次 · 含它的 HTML 页 186 个",
+        "check-residue.js --dir=out-footer ⇒ exit 0；构建读数：44 条被删文案 … 剥离后命中 0 次",
+        "对照 E3（同一句只进每页 <footer>、不动 SHARED 锚点）⇒ RED，总命中 370 全部算违规",
+        "对照 E4（SHARED 区间内但在 </footer> 之后）⇒ RED；E5（页脚内+页脚外）⇒ RED；X3（第二个 <footer>）⇒ RED（锚点 2 个）",
+        "现状：基线豁免集 0 条；页脚保留句是「最终以官方页面为准。」（无「厂商」），与登记字面「最终以厂商官方页面为准。」不同串 ⇒ 机制当前无受益者"
+      ],
+      "requiredFix": "把白名单从「产物现算」改成源码面受控：① 构建期断言源码 index.html 的 SHARED 页脚元素里不含任何登记字面；或 ② 页脚保留文案走一份签入的白名单文件（名单与作用域仍分离）；或 ③ 豁免集当前为 0 ⇒ 直接删掉豁免机制，需要时再以 ①/② 形态引入。",
+      "exploitability": "一行改动（共享页脚）；全站可见；整条门禁链绿"
+    },
+    {
+      "id": "F2",
+      "severity": "medium",
+      "title": "<script>/<style> 整段剥离 ⇒ 运行期渲染的文案不在射程（产物已有 script 注入中文文案的先例）",
+      "problem": "residueStrip 把 <script>/<style> 体替换成空格，于是脚本注入与 CSS content 里的同一句话既不可见也不判；而这两者都能到读者眼前。",
+      "evidence": [
+        "A2 脚本 textContent 注入 ⇒ GREEN（0 命中）；Edge 实测该节点 innerText 含该句且 visible=true",
+        "A3 CSS ::before content ⇒ GREEN（0 命中）；Edge getComputedStyle 读回 content=\"价格与条款最终以厂商官方页面为准。\"，visible=true",
+        "产物调查：186/186 页带渲染核心；innerHTML= 含中文文案 1 页（index.html '已选 <b>N</b> / 40 条进入对比'）；textContent= 4 页；createElement 186 页",
+        "residueStrip 行为：<script>/<style>/注释 → \"\"；<SCRIPT> 大写同样剥；<script type=application/json> 也剥；未闭合 <script> 不剥（过严方向）"
+      ],
+      "requiredFix": "给 script 体与 style 体各加一条只判不剥的规则（或把「script/style 内命中数」从只报不判升级为判据，并对台账注释/正则显式登记例外）；CSS 侧至少断言 content: 值不含登记字面。"
+    },
+    {
+      "id": "F3",
+      "severity": "medium",
+      "title": "字面级匹配的等价变体旁路：实体 / 零宽 / 标签拆分 / 折行，浏览器渲染出同一句话",
+      "problem": "判据是字节级 indexOf（大小写敏感、不解实体、不归一化、跨标签即断），而读者看到的是渲染后的文本。",
+      "evidence": [
+        "整句数字实体 A6 ⇒ GREEN，Edge innerText 逐字等于该句；句号实体 A5 ⇒ GREEN",
+        "&nbsp; A7 ⇒ GREEN；U+200B A8 / U+200D A9 ⇒ GREEN，Edge 去零宽后等于该句",
+        "span 拆字 A10 / <b> 重排 A11 ⇒ GREEN，Edge innerText 等于该句",
+        "文本节点内折行 A12/A13 ⇒ GREEN，Edge 渲染为「价格与条款最终以厂商官方 页面为准。」（折叠成 1 空格）",
+        "全角句号 A14 / ASCII 大小写 A15 / 繁简 A16 ⇒ GREEN",
+        "JSON 里 \\uXXXX 转义 A24b ⇒ GREEN（解析即原句，功能等价回流）"
+      ],
+      "requiredFix": "加 normalizeForMatch()：剥标签取文本 + 解数字/命名实体 + 去零宽/BOM，可选再做空白折叠后比较；注明会新增误报面，需与登记字面一同回归。"
+    },
+    {
+      "id": "F4",
+      "severity": "low",
+      "title": "非 UTF-8 编码的产物页旁路（UTF-16LE + BOM 实测）",
+      "problem": "扫描用 readFileSync(path,'utf8')，非 UTF-8 字节解出乱码 ⇒ 0 命中；浏览器按 BOM 嗅探正常渲染。",
+      "evidence": [
+        "X1：UTF-16LE+BOM 的探针页（自带 meta charset=utf-16）⇒ 扫描 0 命中、回流 0 条；Edge innerTextHasLiteral=true"
+      ],
+      "requiredFix": "无强制修复；若要在意这条，扫前做 BOM/编码探测（按 BOM 解码）或对非 UTF-8 字节的产物文件直接判红（fail-closed）。",
+      "unmeasured": "源码→产物 的 UTF-16/GBK 路径未实测（写入侧全是 UTF-8）"
+    },
+    {
+      "id": "F5",
+      "severity": "medium",
+      "title": "登记表反空洞只数数组长度 ⇒ 判据可被静默缩表",
+      "problem": "RESIDUE_MIN_ENTRIES 比的是 deletedCopy.length；条目内容被清空或替换后，长度不变、判据却已空转。",
+      "evidence": [
+        "C1：清空 26/32 条的 literal+visible（条目数仍 32）⇒ check-residue exit 0，断言字面 44 → 6",
+        "C8：把 c1-05 的 literal 换成永不出现的串（条目数不变）⇒ exit 0",
+        "C6：MIN_ENTRIES 30→3 + 只留 3 条 ⇒ exit 0",
+        "结构佐证：16/32 条 visible 为空（单面登记）；44 个字面间 21 对包含关系（如「最终以厂商官方页面为准。」⊂ 4 个更长字面），「44」不是 44 个独立探测器，而阈值数的是条目"
+      ],
+      "requiredFix": "反空洞改数「非空字面」并要求每条登记至少 1 个非空面；可选再加「最小字面数」（不被任何其它字面包含）下限。"
+    },
+    {
+      "id": "F6",
+      "severity": "low",
+      "title": "下限数值本身没有自守：数据文件里一行就能调低",
+      "problem": "只有「类名集合一致」被交叉校验；floor 的值可以任意改小，且两处协同即可静默删掉一整类扫描面。",
+      "evidence": [
+        "C2：8 类 floor 全改 1 ⇒ exit 0",
+        "C7：只把 .dsrc-note 的 123 → 1 ⇒ exit 0",
+        "C5：代码里的扫描面声明与下限表同批去掉 hint ⇒ exit 0（协同编辑绕开一致性检查）",
+        "C4：只删下限表的 hint 一行 ⇒ exit 1（一致性检查有效）；C3：删登记表文件 ⇒ exit 1（fail-closed）；C9：伪造 _measuredOn ⇒ exit 0（无判据读它）"
+      ],
+      "requiredFix": "把 8 类下限（或其下界）写进代码常量并与数据文件交叉校验（与类名集合同一种做法），或要求 floor ≥ ceil(measured × 0.75)。"
+    },
+    {
+      "id": "F7",
+      "severity": "medium",
+      "title": "齿②的静默损失空间：25% 余量允许一整族的一大部分安静消失",
+      "problem": "下限只挡「整族消失」，不挡部分删除；实测各族可静默损失 dsrc-note 42 / ddesc 20 / fdesc 7 / chgnote 5 / hint 14。",
+      "evidence": [
+        "S3：42 处 .dsrc-note 改单引号 ⇒ 123/123 GREEN（余量 0）；S4：43 处 ⇒ 122/123 RED（边界精确）",
+        "S6：20 处 .ddesc 改名 ⇒ 60/60 GREEN；S7：14 处 .hint 改名 ⇒ 40/40 GREEN",
+        "S9：30 处 .dsrc-note 的 class 属性整段删掉（元素失去承重类名）⇒ GREEN",
+        "S10：20 处 .ddesc 写成 class=\"ddes&#99;\"（浏览器/CSS 解码后仍是 ddesc、功能完好）⇒ 60/60 GREEN",
+        "S1/S5：整族消失 ⇒ 0 < 下限 RED（这条方向有效）",
+        "S8：186 页各插含 class=\"dsrc-note\" 的 <script> 字符串 ⇒ 计数不动（剥 script ⇒ 运行期容器不在扫描面）"
+      ],
+      "requiredFix": "对结构上可推导的类改用关系式：.ddesc = 1 × 详情页数、.dsrc-note = 2 × 详情页数 + 5（详情页数已在 build-local.js:6713 与 type=deal 条数对账）；小样本类保持存在性 ≥1。不降低任何下限、且对数据量波动免疫。"
+    },
+    {
+      "id": "F8",
+      "severity": "low",
+      "title": "阈值是数据量的静态快照；数据面收缩时先红的是数据面（3 次尝试都没走到牙）",
+      "problem": "下限以 2026-10-09 的产物快照取值，而分母随数据走；本仓没有 deal 详情页数量下限，余量算下来丢 20 页仍绿、丢 21 页才红。",
+      "evidence": [
+        "误报方向：真构建 5/5 exit 0；冻结产物 check:residue 5/5 exit 0 ⇒ 10 次运行 0 红，下限读数无抖动",
+        "本仓常量与断言：只有 build-local.js:6713 的等值断言「详情页 N 个 ≠ type=deal M 条」；grep MIN_* 仅 MIN_PRERENDERED_CARDS=45 / RESIDUE_MIN_ENTRIES=30 / CATEGORY_MIN_DEALS=4（生成阈值，非总量下限）",
+        "收缩尝试 N=21（含被引用 deal）⇒ runValidate 失败：links[4] ebd47f6d2522 dealId 不存在（需移进 retired[] 并补快照）",
+        "排除被引用 deal 后 N=21/25/40 ⇒ runValidate 失败：疑似同一优惠未合并（aliases.json 登记）等；牙根本没跑到"
+      ],
+      "requiredFix": "无强制修复（未观测到误报）；若要让下限对数据漂移免疫，见 F7 的关系式改法；另可记录锚点状态的更新策略，避免「第一反应是调低下限」。",
+      "honestNote": "「合法收缩到 40 个详情页以下会不会只有牙红」在本次尝试里不可达 ⇒ 按边界记录，不按缺陷记录"
+    },
+    {
+      "id": "F9",
+      "severity": "low",
+      "title": "keep 面没有牙：没被登记的字面，扫描根本不知道（射程边界本身）",
+      "problem": "deletedCopy 只登记「本轮与上一轮被删的文案」；census 的 82 组/255 次 keep 文案零登记 ⇒ keep 面被删/被改写时只有容器下限挡着。",
+      "evidence": [
+        "B6 真构建：把 feeds.js:946 模板生成的 10/25 条 .fdesc（保留面）文案改短 ⇒ build exit 0 · check-residue exit 0 · selftest:feeds 145 项通过 0 失败",
+        "对照 B3：把「（无头浏览器渲染后提取）」写回一条 deals.json.description ⇒ 真构建 exit 1，牙点名 deal/<id>/index.html 与 deals.json 两处并给出登记 id（数据驱动 .ddesc 在「字面被登记」时是覆盖的）",
+        "登记表审计：32 条 / 44 个字面全部来自被删文案；依赖读数 census 82 组 255 次为 keep"
+      ],
+      "requiredFix": "若要让 keep 面也有牙，用「形状断言」（按容器形状判，如题注牙），不要把 keep 文案塞进 deletedCopy（会把「保留」与「禁止出现」混成一张表）。本条定位为边界告知。"
+    }
+  ],
+  "rangeBoundaries": [
+    { "id": "B-01", "boundary": "页脚区间内（豁免自证：名单取自产物自己）", "measured": true, "reading": "E1/E2/E3/E4/E5/X3 + 真构建 B1（186 页回流、exit 0）→ F1" },
+    { "id": "B-02", "boundary": "<script> 体与 <style> 体（运行期 DOM 注入、CSS content:）", "measured": true, "reading": "A2/A3 GREEN + Edge 渲染为真；产物已有 innerHTML 中文文案先例 → F2" },
+    { "id": "B-03", "boundary": "HTML 注释内容", "measured": true, "reading": "A1/A25 GREEN；只进 commentOnly（基线 0 次），不判" },
+    { "id": "B-04", "boundary": "实体 / 零宽 / 标签拆分 / 折行 / 大小写 / 全半角 / 繁简", "measured": true, "reading": "A5–A16 GREEN（Edge 渲染同一句）→ F3" },
+    { "id": "B-05", "boundary": "非 UTF-8 字节（UTF-16LE+BOM）", "measured": true, "reading": "X1：扫描 0 命中、Edge 正常渲染 → F4" },
+    { "id": "B-06", "boundary": "JSON 里 \\uXXXX 转义（解析即原句）", "measured": true, "reading": "A24b/A24c GREEN；直写则 RED（A24/A29）" },
+    { "id": "B-07", "boundary": "源码面：只写在源码/注释里、不进产物的字面", "measured": true, "reading": "B4 真构建 exit 0 且产物 0 次（判据面是产物，不是源码）" },
+    { "id": "B-08", "boundary": "未登记的字面（keep 面 82 组/255 次 + 任何新文案）", "measured": true, "reading": "B6 真构建 exit 0 / CLI exit 0 / selftest:feeds 145-0 → F9" },
+    { "id": "B-09", "boundary": "部分删除：各族 25% 余量内静默通过（42/20/7/5/14）", "measured": true, "reading": "S2/S3/S6/S7/S9/S10 GREEN，S4 一步之遥即 RED → F7" },
+    { "id": "B-10", "boundary": "登记表自身可静默缩表（清空字面/换字面/调低下限/伪造锚点/协同删类）", "measured": true, "reading": "C1/C2/C5/C6/C7/C8/C9 exit 0；C3/C4 exit 1 → F5/F6" },
+    { "id": "B-11", "boundary": "计数口径只认 class=\"…\"（双引号/HTML 静态字节/大小写与实体敏感）；script 里的 class 不计", "measured": true, "reading": "S1 0 计数整族 RED；S2/S9/S10 部分损失 GREEN；S8 计数不动" },
+    { "id": "B-12", "boundary": "同义改写（语义等价不可判定）", "measured": false, "reading": "不可判；结构读数：登记 44 个字面 vs census 352 次出现/86 组 —— 覆盖面是一份清单，不是规则" },
+    { "id": "B-13", "boundary": "非 HTML 文件原样判（Feed/公开数据/.txt/无扩展名）", "measured": true, "reading": "A24/A29 RED（正方向覆盖）" },
+    { "id": "B-14", "boundary": "产物里的 junction/符号链接子目录", "measured": true, "reading": "X2：扫描抛 EISDIR ⇒ fail-closed（不是静默漏判）" },
+    { "id": "B-15", "boundary": "commentOnly 只报不判", "measured": true, "reading": "基线 0 次；A1/A25 会 +1 而不判" }
+  ],
+  "triedChecklist": {
+    "rangeMatrix32": "A0 逐字 · A1 注释 · A2 script 注入 · A3 CSS content · A4 行内 style 属性 · A5/A6 实体 · A7 &nbsp; · A8/A9 零宽 · A10/A11 标签拆分 · A12/A13 折行 · A14 全角 · A15 大小写 · A16 繁简 · A17 template · A18 noscript · A19 data-* · A20 aria-label · A21 placeholder · A22 textarea · A23 title · A24 JSON 直写 · A24b \\u 转义 · A24c JSON 里实体 · A25 注释+脚本 · A26 表格单元格 · A27 aria-hidden · A28 display:none · A29 .txt/无扩展名（32 例，0 例与预期不符）",
+    "classThreshold11": "S0 对照 · S1 全族单引号 · S2 30 处 · S3 42 处 · S4 43 处 · S5 全族实体化 · S6 ddesc 20 处 · S7 hint 14 处 · S8 script 里的 class · S9 删 class 属性 · S10 实体化 class 名",
+    "exemption7": "E0 对照 · E1 只塞 SHARED 元素 · E2 SHARED+185 页页脚 · E3 只塞页脚不动锚点 · E4 SHARED 区间但页脚外 · E5 页脚内+页脚外 · E6 短核单塞",
+    "registryTamper10": "C0 对照 · C1 清空 26 条字面 · C2 下限全改 1 · C3 删登记表 · C4 删一类下限行 · C5 协同删类 · C6 下限+条目同批下调 · C7 单类下限调 1 · C8 换字面 · C9 伪造 _measuredOn",
+    "realBuilds26": "26 次调用（9 次走到产物自检：B0 对照 ×5、B1 页脚回流、B3 数据面 .ddesc 回流、B4 源码注释、B6 keep 面 .fdesc 改写；17 次在数据校验阶段被数据面挡住：B2 数据收缩 ×10、B2' ×3、legal-shrink ×3、手工复跑 ×1）· 另有 B5：冻结产物上跑 check-residue ×5（不是构建）",
+    "gates18": "control 9 条全绿（verify-site 真浏览器 150.8s）；inject 9 条：check:residue RED（3 项、点名登记 id）、check-feeds-reproducible RED（feed/new.json）、其余 7 条 GREEN（seo-verify/planshub/models/archive/data-docs/analytics/verify-site）",
+    "edge3": "X1 UTF-16LE+BOM · X2 junction 子目录 · X3 第二个 <footer>",
+    "browser8": "逐字 / 实体 / 零宽 / span 拆分 / CSS content / 脚本注入 / 折行（innerText + ::before 计算样式）",
+    "misc": "residueStrip 行为 9 项 · 产物 script 注入文案调查（304 文件）· 登记表可判面审计 · 真仓 git status + dist treeDigest 前后一致",
+    "notDone": [
+      "源码→产物 的 UTF-16/GBK 路径（只在产物面证明扫描器看不见）",
+      "真 CI（GitHub Actions）上跑 Residue guard 步骤（本地跑的是同一条命令）",
+      "census(t1) 352 条/86 组的逐条重数（引用的是依赖读数）",
+      "把 3 段回流全部注入源码再走真构建（B3 覆盖了数据面那一条，其余两条打在产物副本上）",
+      "语义级同义改写的任何形式化尝试（不可判定）"
+    ]
+  },
+  "reproductionCommands": [
+    "npm run check:residue  (workdir = 工作树)",
+    "node <sandbox>/harness/range-cases.cjs",
+    "node <sandbox>/harness/browser-render.cjs",
+    "node <sandbox>/harness/exempt-cases.cjs",
+    "node <sandbox>/harness/class-cases.cjs",
+    "node <sandbox>/harness/tamper.cjs",
+    "node <sandbox>/harness/builds.cjs",
+    "node <sandbox>/harness/builds2.cjs",
+    "node <sandbox>/harness/shrink.cjs",
+    "node <sandbox>/harness/kept-copy.cjs",
+    "node <sandbox>/harness/edge-cases.cjs",
+    "node <sandbox>/harness/inject.cjs",
+    "node <sandbox>/harness/gates.cjs --dir=<sandbox>/product-base --tag=control2",
+    "node <sandbox>/harness/gates.cjs --dir=<sandbox>/product-inject --tag=inject2",
+    "node <sandbox>/harness/summary.cjs"
+  ],
+  "rawReadings": [
+    "sandbox/summary.json", "sandbox/range-results.json", "sandbox/class-results.json",
+    "sandbox/exempt-results.json", "sandbox/tamper-results.json", "sandbox/build-results.json",
+    "sandbox/build-results2.json", "sandbox/shrink-results.json", "sandbox/kept-copy-results.json",
+    "sandbox/edge-results.json", "sandbox/browser-render.json", "sandbox/inject-report.json",
+    "sandbox/gates-control2.json", "sandbox/gates-inject2.json", "sandbox/registry-audit.json",
+    "sandbox/fdesc-locate.json", "sandbox/script-injection-survey.json", "sandbox/shrink-*-build.txt"
+  ],
+  "return": { "findings": 9, "highestSeverity": "high", "rangeBoundaries": 15 }
+}

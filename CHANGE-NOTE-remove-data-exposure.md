@@ -234,7 +234,7 @@ t13 改 9 处 · t15 改 2 处 · t16 改 5 处（核实后不改 1 处）· t17
 
 **`git` 侧的网络**：系统代理**已开**（用户级 `ProxyEnable=1`、`ProxyServer=127.0.0.1:7890`），但 **`git` 的 `http.proxy` / `https.proxy` 未设** ⇒ `git fetch`/`push` **直连失败**（实测两次 21 s 超时；`Test-NetConnection` 显示 TCP 能连上，但 TLS/HTTP 走不通）。修法一行：`git config http.proxy http://127.0.0.1:7890`。
 
-⇒ **上线不是「提交 + 推送」一行的距离，而是「合并 + 冲突解决 + 在合并后的树上重跑门禁」**。本轮的**全部验收结论只对本地那棵树成立**（§9 的「产物未变」证明链就是为此而留），合并后必须重跑：至少 `npm run gate:build` + `gate:browser` + §8 十条 + 对方新增的 `check-residue.js`。
+**已执行 —— 见 §16**：合并完成、冲突已解决，并在**合并后的树**上重跑了全套门禁（L1–L4 + 验收 + 对方守卫 + 冻结锚复核），**全绿**。**仍未推送、未部署。**
 
 ### 四、其余局限
 
@@ -263,3 +263,46 @@ t13 改 9 处 · t15 改 2 处 · t16 改 5 处（核实后不改 1 处）· t17
 | `scripts/tools/verify-site.js` 里的同类注释残留 | 该文件**已冻结**（sha256 `6B9EFF64…D9865`）；动一行就要让牙齿测试的四轮实跑整轮重跑（≈40 分钟） | 与**下一次**改该文件的改动合并成一笔，并重跑 M0–M3 牙齿测试（含阳性对照） |
 | 「页面正文不许出现裸标记文本」这条**覆盖缺口**（§8 第 1 条那个缺陷没有任何门禁拦住） | 本轮已修复缺陷，但**没有为它新增断言**（避免与本目标无关的改动面） | 新增断言时须给出「把改动破坏掉会红」的**实跑**证据（本仓惯例），并说明它挂在哪一层 |
 | **基线新鲜度**（历史问题：`verify.json` 自 2026-09-29 起未重建，导致 ~652 条检查项从未被 `verify:regress` 守住） | 属既有仓库卫生问题，超出本目标范围 | 每轮改动落地后即重建基线；否则 `verify:regress` 只守住它收录的那一小部分 —— 这条是本轮**最值得带走**的流程教训 |
+
+---
+
+## 16. 合并 `origin/master`（4 个提交）与冲突处置
+
+**背景**：本分支基于 `0b84091`，而 `origin/master` 领先 4 个提交 —— 另一个会话的 `#108 feat(residue)`、`#109 docs(residue)`，以及一笔数据更新 `89b8d03 chore(data) … [skip ci]`。本轮改动与它们**交集 14 个文件**。
+
+**结果：只冲突 3 个文件**，其余（含 `index.html`、`package.json`、`build-local.js`、四份页面 lib、`PROJECT_STATUS.md`、docs）**自动合并成功**：
+
+| 冲突 | 类型 | 处置 |
+|---|---|---|
+| `scripts/lib/feeds.js` | modify/delete | **判删**（本轮立场）。核实过：对方那笔对它的改动是 **+28 / −0 且 28 行全部是注释**（一条「保留 `/feeds/` 某条 `.snote`」的裁定）—— 而该裁定的**前提是 `/feeds/` 页族存在**，本轮已把整族下架 ⇒ 裁定随之失效、注释随文件消失，**无功能损失** |
+| `.github/actions/gate/action.yml` | content | **取并集**：保留对方新增的 `Residue guard` 步骤，丢弃本轮已删的 `Feeds reproducibility`（原地写明合并说明） |
+| `scripts/tools/check-ci-consistency.js` | content（3 处） | 同上；改完**实跑**它自证 **`39 项 0 失败`** 且 `(E) 实跑项数 == --expect-checks=39` —— 三处登记在合并后仍自洽 |
+
+### 一处必须「动对方机制」的实质性调和（记在最显眼处）
+
+对方 `#108` 新增的**构建期自检**里有一张「容器存在性下限表」，其中 `.fdesc` 的地板是 **18**，`why` 写着「订阅中心每份 Feed 一行说明（25 份 Feed…）」—— **这个容器只存在于 `/feeds/`，而那一族已被本轮整体下架** ⇒ 合并后 `.fdesc` 实测 **0** ⇒ **构建被永久卡死**。
+
+他们的实现是**刻意防篡改**的（三条规则：① 表的类集合必须与代码声明**逐类一致**；② 每行 `measured`/`floor` 必须是**正数**；③ `floorRatio` 有硬下限 `RESIDUE_MIN_FLOOR_RATIO_HARD`），所以**不能**「把地板改成 0」—— 那正是他们 `_floorSelfGuard` 要挡的动作。处置 = **有记录地退役这一类**：
+
+* `scripts/data/residue-guard.json`：`containerFloors` 去掉 `fdesc` 行，新增 **`_retiredFloors`** 记录（含原 `measured: 25` / `floor: 18`、退役时间、退役者，以及「为什么必须退役而不是改成 0」）；
+* `scripts/tools/build-local.js`：`RESIDUE_CONTAINER_CLASSES` 同步去掉 `fdesc`（**两处必须同步**，否则 `tabulated !== declared` 一致性检查会红），并在类声明上方写清退役缘由；
+* 顺带修掉 **7 处**已过时的「8 类容器」措辞 —— 其中 `check-residue.js` 的两处是**运行时消息**（与本轮 §8-1 的 F1 同类），改为**从数组现算**（`readings.floors.length`），不会再漂移。
+
+### 合并后的重新验收（全部实跑）
+
+| 项 | 读数 |
+|---|---|
+| 构建 | `build-local.js` **exit 0** · **240 文件 = 184 页面 + 56 非页面** · 数据资源 1 份 · 无未登记文件 / 无 `*.ndjson` / 无订阅产物 |
+| 对方守卫 | `check-residue --dir=dist` **exit 0**：44 条被删文案三遍 0 命中 · **7 类**容器均不低于下限且关系式成立 |
+| 我方判据 | 暴露词原始扫描（含注释与 `<script>`）**0 个文件命中** · 可下载数据文件**恰 2 个**（`assets/data/offers.json` + `sitemap.xml`） |
+| 便宜门禁 | `npm test` ✅ · fitness **4/0** · `check-ci-consistency` **39/0** |
+| L1–L3 | `npm run gate:build` **36 脚本 / 0 失败 / exit 0**（40.8 s） |
+| L4 | `npm run gate:browser` **38 脚本 / 0 失败 / exit 0**（267.2 s） |
+| 验收 | `verify:baseline` **842 项 / 0 失败** → `verify:regress` **848 项 / 0 失败** |
+| 冻结锚 | `verify:prefold`（**只读**）**848 项 / 失败 1** = 唯一设计性「卡片数 62 → 50」；`verify-pre-fold.json` 的 **`--numstat` 0 行 = 一字未动** |
+
+### 一条会误导人的环境事实（复跑必须照用）
+
+根 `node_modules/` 是**空目录**（本工作区与其它会话共享；**不要跑 `npm ci`**），所以需要浏览器的步骤**必须带 `NODE_PATH`**：`NODE_PATH=.worktrees\nm-baseline\node_modules`（`playwright-core` **1.63.0**）+ 系统 Edge。
+
+**不带它时的失败具有误导性**：`selftest:health` 会以 **69 通过 / 3 失败**收场（H1「端到端采集 exit=1」），`gate:build` 随之在 L2 fail-fast；**带上它就是 72 / 0**、`gate:build` 全绿。这一条实测过两次，写在这里免得下一个人把它当成回归。

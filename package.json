@@ -68,6 +68,7 @@
     "report:deal-plan-links": "node scripts/tools/deal-plan-link-candidates.js",
     "check:ci": "node scripts/tools/check-ci-consistency.js",
     "check:evidence": "node scripts/tools/check-evidence.js",
+    "check:residue": "node scripts/tools/check-residue.js",
     "report:evidence": "node scripts/tools/check-evidence.js --report",
     "report:digest": "node scripts/tools/tree-digest.cjs dist",
     "fitness": "node scripts/test/fitness.js",

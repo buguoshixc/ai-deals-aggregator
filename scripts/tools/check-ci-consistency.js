@@ -271,6 +271,15 @@ const GATE_STEP_NAMES = [
   // 它同样依赖产物（读 dist/ 现场推导路由与 bootstrap 数），所以也排在 Assemble site 之后，
   // 并在下面的 GATE_ARTIFACT_STEPS 里被逐项钉住「显式 --dir=dist」。
   'Analytics self-test (bootstrap count / production guard / provider)',
+  // secondary-page-residue-v2 新增：**「删掉不许回流 + 扫描面不许收缩」的产物级复核**。
+  // 判据本体只有一份（`build-local.js` 的 `scanResidue()`），这一步 `require` 同一个函数，
+  // 不复制逻辑。它与紧邻那条红的含义不同：下面那条问「派生产物有没有被人手改」，
+  // 这一条问「**已经删掉的文案有没有回到产物里**，以及承重容器有没有整族消失让断言静默失效」。
+  // ⚠️ 它**必须**带 `--dir=dist`：不带的话工具会自己找产物，「找错了产物仍然绿」是本仓库
+  // 反复踩过的坑（§10.9 那一族）。谁把这一步挪到 Assemble site 之前或去掉 `--dir`，(10)/(17) 立刻红。
+  // （合并说明：本条之前原有 `Feeds reproducibility` 一支，随「去数据暴露」整体下架删除；
+  //  原注释里「上面那条问构建产物有没有被塞进时钟」的对照句也一并删，免得指向不存在的步骤。）
+  'Residue guard (deleted copy must not return; container floors)',
   // v2.1 新增：plans.json 可重建性 —— 盘上那份必须等于人工来源层产出的那一份（逐字节）。
   // 它问「有没有人手改了派生产物 / 改了来源层却忘了重建」。
   // （原先这里还写着「与上一条红的含义不同：Feeds 那条问…」——那条 `Feeds reproducibility`
@@ -389,6 +398,8 @@ const GATE_STEP_RUN = {
     "node scripts/tools/archive-selftest.js --dir=dist",
   "Analytics self-test (bootstrap count / production guard / provider)":
     "node scripts/tools/analytics-selftest.js --dir=dist",
+  "Residue guard (deleted copy must not return; container floors)":
+    "node scripts/tools/check-residue.js --dir=dist",
   "Plans reproducibility (curated → plans.json, byte-compare)":
     "node scripts/tools/check-plans-reproducible.js",
   "Plan-history verify (log consistent with plans.json)":
@@ -514,7 +525,12 @@ const GATE_ARTIFACT_STEPS = [
   ['Archive self-test (/archive/, synthetic ended/restored fixtures)', 'archive-selftest.js'],
   // private-analytics-v1 新增：分析门禁同样是产物依赖步骤 —— 它读 dist/ 现场推导路由与
   // bootstrap 数，因此必须显式 `--dir=dist` 且排在「Assemble site」之后。
-  ['Analytics self-test (bootstrap count / production guard / provider)', 'analytics-selftest.js']
+  ['Analytics self-test (bootstrap count / production guard / provider)', 'analytics-selftest.js'],
+  // secondary-page-residue-v2 新增：同样读 `dist/` 现场（**240 个产物文件 —— 184 个 HTML**
+  // 剥离 script/style/注释后判，非 HTML 原样判），因此也必须显式 `--dir=dist` 且排在构建之后。
+  // （原注释里的「304 个产物文件 / 186 个 HTML」是「去数据暴露」那一轮之前的读数：该轮删掉了
+  //  `/feeds/` 与 `/docs/data/` 两族页面与 63 份数据 / 订阅产物，计数随之变化。）
+  ['Residue guard (deleted copy must not return; container floors)', 'check-residue.js']
 ];
 /** 它们的前置：这一步必须先出现 */
 const GATE_BUILD_STEP = 'Assemble site (same path as deploy.yml)';

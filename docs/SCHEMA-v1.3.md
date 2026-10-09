@@ -99,7 +99,20 @@ C 之所以必须留在构建期：`lastSuccessAt` 是**来源**的属性，不�
 | `unavailable` | **不可用** —— 本次构建没有可用的来源心跳数据 | 构建期没有心跳文件 |
 
 块尾固定免责句：「以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的
-判断；最终以厂商官方页面为准。」
+判断。」
+
+> **本轮删掉的尾半句（`secondary-page-residue-v2`，2026-10-09）**：这里原先还写着「…是否适用于
+> 你的判断**；最终以厂商官方页面为准。**」。尾半句与全站共享页脚（每页都有「优惠信息来自各厂商
+> 官方页面与公开折扣页，最终以官方页面为准。」）**同义**，属 B 类「同一句话的第二个容器」⇒ 本轮
+> **只删尾半句**（49 → 37 字/页 × 80 页），前半句「不构成对优惠是否有效、是否适用于你的判断」
+> **一字未动**（`verify-site.js:1926` 的既有断言 `/不构成对优惠是否有效/` 仍 80/80 命中）。
+> 两个编辑点必须同批：`scripts/lib/audience.js` 的 `WORDING_CONTRACT.SOURCE_NOTES.disclaimer`
+> （权威常量）与 `index.html` 的 `AUDIENCE:START/END` 受控副本 `SOURCE_WORDING.SOURCE_NOTES.disclaimer`
+> —— §2.3 的 `checkWordingContract` 逐字比对机制一个字未改，只改一边 `validate --strict` 当场红。
+> 判据：「；最终以厂商官方页面为准。」在**全部产物**里必须 **0 次**（登记 id `c2-01`，构建期
+> `scanResidue()` 与 `npm run check:residue` 同一份实现）。
+> 只删括号的同类改动（`.ddesc` 的「（无头浏览器渲染后提取）」，17 页）在数据面侧，
+> 见 `research/secondary-page-residue-v2-report.md` §2。
 
 ---
 
