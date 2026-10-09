@@ -37,7 +37,7 @@
 | 数据面 | **`deals.json` 的 17 条 `description` 是唯一授权改动**；**Feed 50 个文件逐字节 0 变化** |
 | 变异证明 | 真构建 **4/4 红**（注回被删文案 / 容器整族改名 / 缩登记表 / 删登记表）+ 产物副本 **3/3 红**（含 **F1 修前绿、修后红** 的一对）+ 对抗方独立注入 18 次门禁对照 |
 | 对抗复核 | t6 **发现 9 条（最高 high）+ 射程边界 15 条**；t10 修 5 条（F1/F3/F5/F6/F7），**4 条如实登记为射程**（F2/F4/F8/F9） |
-| **没跑**（如实） | `npm run gate`（全量 52 步）· `verify-site --compare=ours-baseline` · publish/deploy 与线上冒烟 |
+| **队长终验**（t8 阶段，报告定稿后追加记录） | `npm run gate`（全量 **53 步**）⇒ **348.8s / 49 个脚本 / 失败 0 / exit 0**（`[45] Residue guard` 在链上，`[51]/[52]` 真浏览器 144.8s/146.1s）；`verify-site --compare` 见链上 `[52]`；PR [#108](https://github.com/buguoshixc/ai-deals-aggregator/pull/108) CI gate **pass 4m31s** ⇒ squash 合并 `2b1f0aa` ⇒ master push gate **pass 4m29s** + Deploy to Pages **success 7m48s** ⇒ 线上冒烟（8 条路由、剥标签归一化后）被删文案 **0 命中**、保留面 **7/7 仍在** |
 | 产物锚定 | 交付读数全部锚定 `dist` = **`59db0aa5aaef0ac01589c4203dc9dfeda2c7ddbe3883c2a0774f24451607d04a`**（304 文件 / 20,337,838 B）；普查与「删前」读数锚定 `141af613…` |
 
 ---
@@ -303,7 +303,7 @@ $ node scripts/tools/check-residue.js --dir=dist      # exit 0（下面为摘录
 | `npm run check:feeds:reproducible` | ✅（2 次构建逐字节一致） | t3 · t9 |
 | `npm run check:evidence` | ✅ 0 个新进 Tier-3 文件 | t4 |
 | `npm run selftest:seo` | 103 项 / 0 失败 | t4 |
-| `npm run gate`（全量 52 步） | **没跑**（见 §8） | — |
+| `npm run gate`（全量 **53 步**） | **跑了**：348.8s / 49 个脚本 / 失败 0 / exit 0（见 §8 与 §0 表末行） | — |
 
 ### 4.4 产物同一性（读数不交错）
 
@@ -505,9 +505,9 @@ C（把改动还原后再构建）与 A 的清单 sha256 **完全相同**（`01a
 
 | 项 | 状态 |
 |---|---|
-| `npm run gate`（全量本地门禁，52 步） | **没跑**。本轮只跑了它的**单项**与 `check:ci`（39 项 0 失败）。全链读数见 §4.3 |
-| `verify-site --compare=ours-baseline`（回归比对） | **没跑** |
-| publish / deploy 链、线上冒烟 | **没跑**（不在本轮范围；`npm run build` 与 deploy 同一条路径，但没走部署） |
+| `npm run gate`（全量本地门禁，**53 步**） | **跑了**（队长终验阶段，报告定稿后）：**348.8s / 49 个脚本 / 失败 0 / exit 0**，4 个非 node 步骤按设计跳过。§4.3 记的是**单项**读数，这里是全链 |
+| `verify-site --compare=ours-baseline`（回归比对） | **跑了** —— 它就是门禁链的第 `[52]` 步（`146.1s`）。本轮**没有**单独调用它 |
+| publish / deploy 链、线上冒烟 | **跑了**（队长终验阶段）：CI gate pass ⇒ 合并 ⇒ master gate pass ⇒ Deploy to GitHub Pages success ⇒ 线上冒烟全过（见 §0 表末行） |
 | 数据面任何**未被授权**的改动 | **没做**（§7 逐条证明） |
 | Feed 产物任何字节改动 | **没做**（50/50 逐字节相同） |
 | 调低任何正文下限 / 页面族下限 | **没做**（6 个登记残留页逐字复现登记值；`main-snote ≥ 2/4` 一处未动） |
@@ -576,7 +576,9 @@ t6 的定位是「找出这套判据证不了什么」，它跑了 26 次真构�
 1. `/feeds/` 133 字那条 A 形状的**改写**（不能删，改写不改条数 ⇒ 不碰下限）—— 见 §8。
 2. `.fdesc` 里 2 条 A 类形状的删除（需另开一轮并接受 Feed 字节变化）。
 3. keep 面的**形状断言**（F9 的方向），把「保留的文案被静默改写」也变成会红的事。
-4. `npm run gate` 全量本地门禁 + `verify-site --compare=ours-baseline` 回归比对（本轮没跑）。
+4. `npm run gate` 全量本地门禁 + `verify-site --compare=ours-baseline` 回归比对 —— **队长终验阶段已跑**：
+   全量 **53 步 / 348.8s / 49 个脚本 / 失败 0 / exit 0**（回归比对就是链上 `[52]`）。
+   另有 CI gate（pass 4m31s）· master gate（pass 4m29s）· Deploy to Pages（success 7m48s）· 线上冒烟全过。
 5. `.fdesc` / `.chgnote` / `.hint` 等 6 类下限**余量 25% 的收敛**（要么给它们也找一条可现算的关系式，要么显式接受这条余量）。
 
 ---
