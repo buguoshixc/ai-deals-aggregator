@@ -204,6 +204,9 @@ t13 改 9 处 · t15 改 2 处 · t16 改 5 处（核实后不改 1 处）· t17
 
 ## 13. 线上状态与局限（**2026-10-09 22:30 实测**；不许被写成「线上也验过了」）
 
+> ⚠️ **本节是 2026-10-09 22:30 的快照**（那一刻线上**仍是改前形态**、本分支也**还没合并**）。
+> **2026-10-10 01:0x 已经合并并上线**，上线后的实测读数在 **§18**；本节按当时读数保留，不回改。
+
 ### 一、本机出站网络（原「无网络」的判断已过时）
 
 `buguoshixc.github.io`（Pages CDN）· `github.com` · `raw.githubusercontent.com` · `codeload.github.com` 均**可达**（HEAD 200）；`api.github.com` 403（可达但拒绝无认证请求）；对照 `example.com` / `baidu.com` 均 200。
@@ -382,3 +385,47 @@ M15 需要**至少一条**被 ② 咬中的条 ⇒ 要求 `字数 × 字符步�
 ### 七、这一步的最终裁判是 CI 本身
 
 本机（Windows + Edge）无法造出 CI 那台的字形步进环境，所以**本轮的结论只到「本机 + 结构证明 + 字体扰动」为止**。上线前必须由 CI（ubuntu + playwright chromium）给出：`✅ 验收 842 项，失败 0 项`，重点看 `§22c M15 承重证明` / `M15 隔离性` / `M15 正对照` 三条。若 CI 上 `plans/coding/#0` 也咬出 `note-ink-narrow`（期望 `列 ≈ 2–12 / 行 1 / 文本节点 1`），则「按行归并 = 字体度量的函数」这条根因同时被**证实**。
+
+---
+
+## 18. 合并 → 部署 → 线上实测（2026-10-10 01:1x）
+
+### 一、CI 复验：修法在 **CI 的字体环境**下成立（这是本轮唯一的真裁判）
+
+* run **`37962743203`**（head `4bf4b3d`，`gate`，**success / 5m1s**）：`✅ 验收 842 项，失败 0 项` + `✅ 验收 848 项，失败 0 项`（`verify` / `verify:regress`）· `✅ CI 口径检查 39 项，失败 0 项`。
+* M15 三条断言在 CI 上全 ✓（原话读数）：
+  * 承重证明：`note-ink-narrow 3 条 [plans/coding/#0, plans/coding/#2, plans/coding/#4]` · `#0 列 3 / 列栈 54.78px / 行 1 / 内容盒 1380px / 字形盒 3 / 文本节点 1` · `#2 列 2 / 34.39px / 行 1 / 节点 1` · `#4 列 2 / 34.39px / 行 1 / 节点 1` · **结构前提（逐条单文本节点）true**
+  * 正对照：`plans/coding/@1440 说明 5 条（竖排 0）违规码 [无] ⇒ 严格形式成立`
+  * 隔离性：`允许 [note-ink-narrow, note-intro-long] · 实测恰为这两个 · 无伴随码`
+* **§17 二那条字体推断被 CI 证实**：同一条 84 字说明在 CI 上只铺开 **3 列 / 54.78px**（本机 **12 列 / 240.3px**）⇒「按行归并 = 字体度量的函数」成立；而它**仍然咬得到**（54.78px ≪ 1173px 阈值、列数 ≥ 2）。
+* **如实追加的一条新读数**：CI 上 `#2` / `#4` 的列数正好是 **2** = `columnCount >= 2` 的下限 ⇒ 这两条的余量是 **0**。若将来某个 runner 的步进更小，它们可能塌成 1 列，届时这条断言会**判红**（可见失败，不是假绿）—— 与 §17 五同属「靶页在某环境下失去承重面 ⇒ 换一条更长的单文本节点靶页」，**不是**放宽判据。
+
+### 二、合并与部署
+
+* PR #110 的合并提交 = **`c015314`**（merge commit，与仓库既有风格一致）。
+* 同一次推送上的两个 master 运行都成功：`Verify site (gate)` **`37963513349` ✓** · `Deploy to GitHub Pages` **`37963513363` ✓**（prepublish 5m34s · build 13s · deploy 11s）。
+
+### 三、线上实测（脚本 `.scratch/live-verify.js`，只读；读数由我本机发请求量得）
+
+* **部署与产物同源（逐字节）**：线上 `/` = **406520 B**、sha256 `0271311be6a7fc91…`，与本机 `dist/index.html` **完全相同**（`.scratch/live-context.js`）。⇒ 线上跑的就是通过门禁的那份产物，不是「另一次构建的近似物」。
+* **① 必须 404：21/21 全对** —— `deals.json` · `plans.json` · `api-plans.json` · `models.json` · `model-registry-links.json` · `deal-history.json` · `plan-history.json` · `api-plan-history.json` · `deal-plan-links.json` · `source-health.json` · `feed.xml` · `feed.json` · `icon.png` · `data/index.json` · `feeds/` · `docs/data/` · `docs/data/index.json` · `feeds/deals.xml` · `feeds/deals.json` · `feeds/all.xml` · `feeds/all.json` ⇒ **线上已经没有任何一份数据文件 / 订阅产物可以按 URL 下载**（`feeds/` 族另抽查了 4 个代表 URL，全 404）。
+* **② 必须 200：12/12 全对** —— `/` · `/status/` · `/changes/` · `/archive/` · `/models/` · `/plans/` · `/plans/coding/` · `/plans/api/` · `sitemap.xml` · `robots.txt` · `favicon.svg` · **`assets/data/offers.json`（286581 B —— 首页自己那份数据的新路径，可读）**。
+* **③ 暴露词：9/9 页面全 0 命中**（首页 + 七个保留页 + `sitemap.xml`）。订阅声明按**两端**判定：**无 `hreflang` 的 `rel="alternate"` 共 0 条**；首页那 2 条 `rel="alternate"` **都带 `hreflang`**（`zh-CN` / `x-default`，`type` 为空）⇒ 是**语言备用页**声明，不是订阅源；`application/rss+xml` / `application/feed+json` / `application/atom+xml` 全站 **0 次**。
+* **④ `sitemap.xml`：0 命中** —— 不再登记 `feeds/` 与 `docs/data/` 两族。
+* **读者可见层单独量了一次**（`.scratch/live-visible-check.js`，真浏览器读 `document.body.innerText`）：12 个词（**含下面那两处豁免的文件名**）在**可见文字里命中 [无]**；线上字节剥掉 `<script>` / `<style>` / 注释后的文本层命中也 **[无]**；`head` 里订阅类 `type` 声明 **0 条**。（线上首页与产物逐字节相同，故在产物上量等价。）
+
+### 四、如实写清：线上首页仍有的两处文件名 —— **上一轮已裁定豁免**，不是新暴露
+
+两处**都只在内嵌 `<script>` 里**、各出现 **1 次**，**不在读者可见文字里、也不是链接**（对应文件本身 404）：
+
+| 出现处 | 线上原话（节选） | 为什么不算暴露 |
+|---|---|---|
+| `deal-history.json` | `"unavailable":"本次构建没有拿到历史日志（deal-history.json 缺失或损坏），因此无法显示变化记录 —— 这不表示「没有变化」。"` | 退化路径文案里指名的**构建期输入**；不提供下载、也不构成入口 |
+| `deal-plan-links.json` | `…构建期由 scripts/lib/deal-plan-links.js 从人工关系表 scripts/data/deal-plan-links.json 算出来并注入…` | 指名的是**仓库侧路径**（`scripts/data/…`），站点上不存在这个文件 |
+
+验收脚本对这两条**不是「不查」而是划了边界**：一旦它们出现在 `<script>` 之外（= 读者可见文字或可点链接）就判红（`.scratch/live-verify.js` 的 `EXEMPT_IN_SCRIPT_ONLY`）。**若读者要求连退化路径文案也不许提文件名，那是另一条口径变更**（要改的是 `unavailable` 那条文案本身，不在本轮锁定的 D1–D6 之内）。
+
+### 五、收口
+
+* 线上验收 **43 项全绿**（`node .scratch/live-verify.js` ⇒ `✅ 上线验收全部通过`，exit 0）。
+* 主目标达成：**读者面零数据文件名、零订阅声明、零数据出口；线上没有任何数据文件可按 URL 下载**（首页自己那份数据 `assets/data/offers.json` 例外，且不在任何读者入口里）。
