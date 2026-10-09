@@ -36,7 +36,9 @@
  * `scripts/data/source-health.json` 的 `sources`），所以自测可以零依赖地驱动全部对账分支，
  * 不必造假的采集器、也不必碰盘上的心跳文件。
  *
- * ⚠️ 本文件是**内部维护层**：不发布。它不进 `PUBLIC_DATASETS` / Dataset Manifest / Sitemap / Feed，
+ * ⚠️ 本文件是**内部维护层**：不发布。这里当年写的是「不进 `PUBLIC_DATASETS` / Dataset Manifest /
+ *    Sitemap / Feed」—— 其中 `PUBLIC_DATASETS`、Manifest 与 Feed **都已随「去数据暴露」下架**
+ *    （`lib/data-docs.js` / `lib/feeds.js` 也已删除），只剩「不是页面、不进 Sitemap」这条仍然成立。
  *    与 `scripts/data/coverage-targets.json`、`models.json`、`providers.json` 同一类。
  */
 

@@ -26,7 +26,10 @@
  *      在整篇产物里出现次数必须为 0（HTML 剥离 script / style / 注释后）。
  *   ② 豁免**只**从 index.html 的 `<!--SHARED:footer:START/END-->` 区间现算，
  *      且只在每一页的 `<footer>…</footer>` 区间内成立 —— 页脚以外出现即红。
- *   ③ 8 类容器的存在性下限（`containerFloors`）：低于下限即红（防整族被删 ⇒ 判据静默失效）。
+ *   ③ 7 类容器的存在性下限（`containerFloors`）：低于下限即红（防整族被删 ⇒ 判据静默失效）。
+ *      （原 8 类：`.fdesc` 随 `/feeds/` 页族在「去数据暴露」那一轮整体下架而**有记录地退役** ——
+ *       它只存在于订阅中心、容器不可能再出现，地板永远无法满足；退役记录见
+ *       `residue-guard.json` 的 `_retiredFloors` 与 `build-local.js` 里 `RESIDUE_CONTAINER_CLASSES` 上方的说明。）
  *
  * 退出码：0 全过 / 1 有问题（与其它 `check:*` / `verify:*` 工具一致）。
  */
@@ -71,7 +74,7 @@ console.log('  已知边界（如实登记）: UTF-16LE+BOM 的产物页按 UTF-
 console.log(`  不适用归一化的登记（只有原样那一遍在判它）: ${readings.normSkipped.length} 条`
   + `${readings.normSkipped.length ? ` —— ${readings.normSkipped.slice(0, 3).join('、')}${readings.normSkipped.length > 3 ? ' …' : ''}` : ''}`);
 console.log(`  只在 script / style / 注释里的命中（只报不判）: ${readings.commentOnly} 次`);
-console.log(`  8 类容器（实测/下限）: ${readings.floors.join(' · ')}`);
+console.log(`  ${readings.floors.length} 类容器（实测/下限）: ${readings.floors.join(' · ')}`);
 console.log(`  关系式（详情页数 ${readings.dealPages}，从产物现算）: ${readings.relations.join(' · ')}`);
 console.log(`  用时 ${elapsed} ms`);
 
@@ -81,7 +84,7 @@ if (problems.length) {
   console.log(`\n❌ 产物复核失败（${problems.length} 项）`);
 } else if (!quiet) {
   console.log(`\n✅ 产物复核通过：${readings.literals} 条被删文案三遍 0 命中（无豁免名单）`
-    + ` · 8 类容器均不低于下限且关系式成立`);
+    + ` · ${readings.floors.length} 类容器均不低于下限且关系式成立`);
 }
 
 if (JSON_OUT) {

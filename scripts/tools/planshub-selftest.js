@@ -126,14 +126,19 @@ check(`API 统计与数据一致（${view.api.records} 条记录 / ${view.api.mo
 const page = fullPage();
 check('真实数据上页面诚实性断言零问题（断言不是恒红）',
   hub.assertPageHonesty(page, ctx).length === 0, hub.assertPageHonesty(page, ctx).slice(0, 2).join('；'));
-check('页面结构：h1 + 面包屑 + 两个入口 + 变化块 + 数据出口',
+check('页面结构：h1 + 面包屑 + 两个入口 + 变化块',
   /<h1>/.test(page) && page.includes('class="crumb"')
   && page.includes('href="../plans/coding/"') && page.includes('href="../plans/api/"')
-  && page.includes('id="plans-hub-changes"') && page.includes('href="../api-plans.json"'));
-check('未生成 /docs/data/ 时不给指向它的死链（站内链接存在性是硬门禁）',
-  !page.includes('href="../docs/data/"'));
-check('生成 /docs/data/ 之后（dataDocs: true）才链接数据文档',
-  fullPage({ ctx: { ...ctx, dataDocs: true } }).includes('href="../docs/data/"'));
+  && page.includes('id="plans-hub-changes"'));
+// t6 改写（三条断言 → 一条更强的反向断言）：原来这里是
+//   ① 结构断言里的 `page.includes('href="../api-plans.json"')`（页面必须链到数据出口）；
+//   ② 「未生成 /docs/data/ 时不给指向它的死链」；
+//   ③ 「dataDocs: true 之后才链接数据文档」。
+// 数据出口整族下架后 ①②③ 的被测对象全部消失（`dataDocs` 参数也已从 `lib/plans-hub-page.js` 删除），
+// 而**新契约**是「/plans/ 一个数据文件/文档页都不许链接」。所以正向断言换成反向断言 ——
+// 它比原来三条加起来更严：对「哪天有人再挂一条 *.json 或 /docs/data/ 的链」直接敏感。
+check('页面不链接任何数据文件或数据出口页（读者面零暴露：无 /docs/data/、无 *.json 链接）',
+  !/href="[^"]*(?:docs\/data\/|\.json)/.test(page));
 check('两个子页各有一个 data-child 行（ItemList 靠它对账）',
   (page.match(/data-child="/g) || []).length === 2);
 check('ItemList 声明数 == 元素数 == data-child 行数',
@@ -228,25 +233,28 @@ check('目录页家族可由调用方补交 kind（不靠 startsWith 绕过声�
 
 {
   // 既有 kind 的下限**一个都没改**（反作弊检查第 2 条：下限只增不减）。
+  // t6：`feeds` 一项随订阅层整族下架删除 —— 那个 kind 已从 `page-kinds.js` 移除，
+  // 而它在旧列表里之所以还能"通过"，靠的只是**缺省值恰好等于 600**（`600 + 60×0`）——
+  // 一条对不存在 kind 的断言按缺省值蒙对，正是本仓最忌讳的假绿。
   const legacy = [
     ['hub', 3, 500 + 60 * 3], ['deal', 0, 500], ['status', 0, 600], ['changes', 0, 600],
-    ['feeds', 0, 600], ['plans', 9, 600 + 60 * 9], ['home', 0, 3000], ['collection', 2, 600 + 60 * 2]
+    ['plans', 9, 600 + 60 * 9], ['home', 0, 3000], ['collection', 2, 600 + 60 * 2]
   ];
   const wrong = legacy.filter(([kind, count, expected]) => pageKinds.textFloor(kind, count) !== expected);
   check(`既有 ${legacy.length} 个 kind 的正文下限逐字未变`, wrong.length === 0,
     JSON.stringify(wrong));
+  // t6：`data-docs` 一项随数据出口整族下架删除（那个 kind 已从 `page-kinds.js` 移除）。
   check('新家族的下限都已声明（不是落在缺省 600+60n 上）',
     pageKinds.textFloor('plans-hub', 2) === 700 + 60 * 2
     && pageKinds.textFloor('models-index', 3) === 600 + 60 * 3
     && pageKinds.textFloor('model', 0) === 700
     && pageKinds.textFloor('archive-index', 1) === 600 + 60
-    && pageKinds.textFloor('archive-detail', 0) === 600
-    && pageKinds.textFloor('data-docs', 0) === 1200);
+    && pageKinds.textFloor('archive-detail', 0) === 600);
+  // t6：`data-docs` 一项同上删除。其余四条（入口 0.9 / 详情 0.7 / 工具页 0.3）一字未改。
   check('sitemap priority 是声明（入口 0.9 / 枢纽 0.8 / 详情 0.7 / 工具页更低）',
     pageKinds.sitemapMeta('plans-hub').priority === '0.9'
     && pageKinds.sitemapMeta('model').priority === '0.7'
-    && pageKinds.sitemapMeta('status').priority === '0.3'
-    && pageKinds.sitemapMeta('data-docs').priority === '0.6');
+    && pageKinds.sitemapMeta('status').priority === '0.3');
 }
 
 {

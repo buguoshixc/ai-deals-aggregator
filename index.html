@@ -39,11 +39,6 @@
   <meta name="twitter:description" content="聚合国内外 AI 大模型的真实优惠：新用户免费额度、免费模型、学生/教师/非营利折扣、限时促销。">
   <meta name="twitter:image" content="__SITE_URL__og-image.png">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <!-- 订阅发现：这一行的内容由构建期按 Feed 注册表生成（scripts/lib/feeds.js），
-       源码里不留第二份清单 —— 抄一份的后果是「改了注册表、忘了改 HTML」，
-       而这种漂移没有任何东西会红。首页只暴露四个订阅选择（全部优惠 / 最近变化 /
-       学生 / 开发者），其余集中放在 /feeds/ 订阅中心，不往 <head> 里塞几十个。 -->
-  <!--PRERENDER:feeds-->
   <!-- 厂商 logo：构建期由 scripts/lib/logos.js 从 assets/logos/manifest.json 生成，
        卡片上只写 data-logo 属性，图形由 logos.css 提供，不热链任何第三方 CDN。 -->
   <link rel="stylesheet" href="logos.css">
@@ -1280,12 +1275,18 @@
            （v1.5 的密度账）。厂商名单由构建期按落地页计划注入，源码里不留第二份清单。
            v2.1：套餐对比页也挂在这一行末尾 —— 它与「按厂商 / 分类浏览」是同一类东西
            （长期在售的产品能力），而不是「今天的优惠」。 -->
-      <p class="catnav" aria-label="按厂商、分类与套餐浏览">按厂商 / 分类浏览：<a href="__VENDOR_HREF__">厂商优惠</a> · <a href="__CATEGORY_HREF__">分类优惠</a> · <a href="__MODELS_HREF__">模型资料</a> · <a href="__PLANSHUB_HREF__">套餐与 API 计费</a> · <a href="__ARCHIVE_HREF__">历史档案</a> · <a href="__PLANS_HREF__">套餐对比</a> · <a href="__APIPLAN_HREF__">API 计费对比</a> · <a href="__DATA_HREF__">开放数据</a><!--PRERENDER:vendorline--></p>
-      <!-- 变化雷达页（v1.5）与订阅中心（v1.6）共用一行：加一行页脚会把 5 种深度的
-           输出全部加高，而这两条入口本来就属于同一件事（「变化」与「订阅变化」）。
-           v3.0 Stage I：四个资料库入口（模型资料 / 套餐与计费 / 历史档案 / 开放数据）**全部**
-           挂在上面那一行里，**不新增页脚行** —— 这一行保持 v1.6 的形状不变。 -->
-      <p class="catnav" aria-label="变化与订阅">优惠变化：<a href="__CHANGES_HREF__">变化雷达</a> · <a href="__FEEDS_HREF__">订阅这些优惠</a></p>
+      <p class="catnav" aria-label="按厂商、分类与套餐浏览">按厂商 / 分类浏览：<a href="__VENDOR_HREF__">厂商优惠</a> · <a href="__CATEGORY_HREF__">分类优惠</a> · <a href="__MODELS_HREF__">模型资料</a> · <a href="__PLANSHUB_HREF__">套餐与 API 计费</a> · <a href="__ARCHIVE_HREF__">历史档案</a> · <a href="__PLANS_HREF__">套餐对比</a> · <a href="__APIPLAN_HREF__">API 计费对比</a><!--PRERENDER:vendorline--></p>
+      <!-- ⚠️ t4：页脚的三枚入口在这一轮里删干净了；同一行末尾的 vendorline 预渲染标记必须留着 ——
+           它不是链接，而是构建期注入点（厂商名单由 replaceMarker() 灌进来），删了就抛
+           「index.html 缺少预渲染标记」。配套删掉的还有：
+             · 上一条入口（那一页公开数据的文档页）与它的路由占位符：锚点 / ROUTE_HREFS 条目 / 页面路由 /
+               sitemap 条目四件在同一次改动里一起消失（单独删任何一半都会红：剩下的锚点变孤儿页，
+               留着锚点删声明则变「残留路由占位符」）；
+             · 上一整行页脚（变化雷达 + 订阅中心两枚）：订阅中心页整体下架，变化雷达与它共用一行。
+           ⚠️ 写这一带注释的纪律（t3 真的踩过）：这里**不许出现 HTML 注释的定界串**（尖括号 + 叹号 +
+           两个连字符那种，以及它的闭合形态）—— 外层注释会在那里提前结束，剩下的文字就变成页面上
+           可见的字（实测 186 个页面各多出一行垃圾文本）。同理别复述被删掉的占位符字面量（没人替换
+           它 ⇒ 自检的「残留路由占位符」当场红）与被删掉的入口链接文字（共享页脚会带进每个页面）。 -->
       <!-- v2.x：仓库入口挂在「数据源状态」同一行末尾，**不新增页脚行** ——
            页脚是一份共享片段，多一行会把 5 种深度的输出全部加高（v1.5 的密度账），
            实测 1440/1280/1024/760px 下这一行仍是 1 行 23px、页高不变。
@@ -2080,7 +2081,7 @@
     /* ----------------------------------------------------------------
      * ③.5 中文译文
      *
-     * 国外来源的优惠文案是英文。译文来自 deals.json 的 `zh` 字段（人工维护的
+     * 国外来源的优惠文案是英文。译文来自 assets/data/offers.json 的 `zh` 字段（人工维护的
      * scripts/data/translations_zh.json，构建期贴上），**只做展示、绝不覆盖原文**：
      * 英文原文字段一个字节都不改，译文永远挂在原文下面。
      * 取不到译文就什么都不渲染——渲染层不编造、不机翻。
@@ -2594,7 +2595,7 @@
       // 分类筛选（学生 / 开发者 / 免费 API）。
       //
       // ⚠️ 这里**不重新判断分类归属** —— 判据只有一处，在 `scripts/lib/audience.js` 的
-      // `collectionsOf()`，构建期算好写进 dist/deals.json 的 `collections` 字段。
+      // `collectionsOf()`，构建期算好写进 assets/data/offers.json 的 `collections` 字段。
       // 前端只做一件事：`deal.collections` 里有没有这个 slug。
       //
       // 为什么不在前端再写一份判据：那样「首页筛出 12 条」与「/student/ 列出 12 条」就成了
@@ -2607,7 +2608,7 @@
     /**
      * 分类入口的**展示顺序与文案**（判据不在这里，见 DEFAULT_FILTERS 的注释）。
      * slug 必须与 `audience.COLLECTION_PAGES` 一致 —— 产物自检会对着
-     * dist/deals.json 里真实出现过的 collections 值逐个核对，写错或漏写会红。
+     * assets/data/offers.json 里真实出现过的 collections 值逐个核对，写错或漏写会红。
      */
     const COLLECTION_FACETS = [
       { key: 'student', label: '学生', icon: '🎓' },
@@ -2723,7 +2724,7 @@
      * 完全同分时的收尾比较 —— **让次序与数据文件的行序无关**（v1.1 收口补）。
      *
      * `compareCards` 在「档位相同 + 截止情况相同 + 最近更新相同」时返回 0，
-     * 于是那两张卡的先后完全由 `deals.json` 里的行序决定：换一次采集、某一行的位置变了，
+     * 于是那两张卡的先后完全由 assets/data/offers.json 里的行序决定：换一次采集、某一行的位置变了，
      * 默认视图的顺序就跟着变。既有的 `expiry` 排序已经因为同一个理由补过一次
      * （注释里写着「旧实现两档之间返回 0，等于没排，换个数据文件就换顺序」），
      * 这里是同一条规矩补到 `tier` 这条主排序上。
@@ -2777,7 +2778,7 @@
       if (sort === 'expiry') {
         // 三分类次序：有截止日（按剩余天数升序）→ 未标注截止日期 → 长期活动。
         // 后两档都没有截止日可比，退回「最近更新优先」——这样次序是确定的，不再取决于
-        // deals.json 里的原始行序（旧实现两档之间返回 0，等于没排，换个数据文件就换顺序）。
+        // assets/data/offers.json 里的原始行序（旧实现两档之间返回 0，等于没排，换个数据文件就换顺序）。
         return list.map(withTier).sort((a, b) => {
           const sa = expiryState(a);
           const sb = expiryState(b);
@@ -2990,7 +2991,7 @@
 
     /**
      * 纠错入口：预填标题与正文的 GitHub Issue 链接（纯字符串拼接，无网络、无依赖）。
-     * 把 id 写进正文，维护者能直接对回 deals.json 里的那一条。
+     * 把 id 写进正文，维护者能直接对回仓库数据真值里的那一条。
      * 这是本站「不卖排序、但欢迎纠错」最省事的落点——不需要后端，也不需要表单服务。
      */
     const REPO_URL = 'https://github.com/buguoshixc/ai-deals-aggregator';
@@ -3378,7 +3379,7 @@
      * 三个缺失状态必须分开显示（不适用 / 未知 / 不可用）：人工策展按设计没有采集器，
      * 与「心跳里匹配不到这条记录」是两件不同的事实，合成一句「暂无」就等于丢信息。
      *
-     * sourceFacts 是**构建期派生**字段（只进 dist/deals.json）：源数据里没有它，
+     * sourceFacts 是**构建期派生**字段（只进 assets/data/offers.json）：源数据里没有它，
      * 所以这里每个取值都必须能容忍缺席（缺席一律降级成「未知」，不抛错、不留空白）。
      * ---------------------------------------------------------------- */
 
@@ -3531,7 +3532,7 @@
     /* ----------------------------------------------------------------
      * ⑤.9 变更记录（v1.4）
      *
-     * 数据来自构建期注入的 `deal.history`（只进 dist/deals.json；源数据里没有这个字段）。
+     * 数据来自构建期注入的 `deal.history`（只进 assets/data/offers.json；源数据里没有这个字段）。
      * 与 `sourceBlockHtml` 同样是**纯函数**：详情弹层与 80 个静态详情页共用一份，
      * 因此「有 JS」与「无 JS」两条路径读到的历史不可能分叉。
      *
@@ -3633,9 +3634,9 @@
     /* ----------------------------------------------------------------
      * ⑤.6 关联的正常套餐（v2.4：Deal → Plan）
      *
-     * 数据从哪来：`dist/deals.json` 里每条记录的 `relatedPlans`（构建期由
+     * 数据从哪来：`assets/data/offers.json` 里每条记录的 `relatedPlans`（构建期由
      * `scripts/lib/deal-plan-links.js` 从人工关系表 `scripts/data/deal-plan-links.json`
-     * 算出来并注入）。**源 deals.json 里没有这个字段** —— 它和 `history` / `collections`
+     * 算出来并注入）。**源数据里没有这个字段** —— 它和 `history` / `collections`
      * 一样是「只进 dist」的派生视图，所以浏览器与静态详情页读到的永远是同一份。
      *
      * 三条纪律：
@@ -3958,7 +3959,7 @@
      * 在每个二级页上都要占掉三行，而它回答的是**变化系统自己的状态**，不是读者的问题。
      * 日志不可用（`availability !== 'ok'`）时 `buildRadar` 本来就产出空 sections，
      * 因此与「零变化」走同一条路径 —— 二级页只回答「最近有没有值得我注意的变化」，
-     * 「没拿到日志」由 `/changes/`、首页条带与变化 Feed 说（三处各有断言盯着）。
+     * 「没拿到日志」由 `/changes/`、首页条带与变化流说（三处各有断言盯着）。
      *
      * ## 为什么这里不写基准日 / 起算日
      *
@@ -4927,7 +4928,13 @@
     }
 
     function loadDeals() {
-      return fetch('deals.json', { cache: 'no-cache' })
+      // 首页数据资源的产物路径：`assets/data/offers.json`（t3 起；此前它在产物根，是个数据集式的名字）。
+      // 它相对**页面**解析，而首页永远在站根 ⇒ 这个相对路径在首页成立。
+      // 为什么改名换位置：那份数据是首页应用自己的资源，不是给读者下载的**公开数据集**——
+      // 换到 assets/ 下并改名，站点就不再把它当数据集宣传（页面上没有任何链接提到它）。
+      // 失效方式：路径写错 ⇒ 下面 catch 走错误提示、预渲染卡片照旧可读（不会白屏），
+      // 但筛选/排序/详情弹窗全部失效 —— 而"看起来还在"的静态骨架会让它很难被发现。
+      return fetch('assets/data/offers.json', { cache: 'no-cache' })
         .then(response => {
           if (!response.ok) throw new Error('HTTP ' + response.status);
           return response.json();
@@ -4962,7 +4969,7 @@
         .catch(error => {
           // 预渲染的静态卡片仍在 DOM 里，无 JS / 拉取失败时页面依旧可读可点，
           // 因此这里**不覆盖**已有内容，只加一条提示与重试入口（错误态不能把内容变没）。
-          console.error('加载 deals.json 失败：', error);
+          console.error('加载 assets/data/offers.json 失败：', error);
           // 收藏/对比整块由 JS 建；数据没到手时一个控件都不建，不留死按钮。
           // 顺带把 URL 上那条带 ?compare= 的选择清掉——它已经还原不出来了。
           dropCompareQuery();

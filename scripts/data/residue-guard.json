@@ -274,12 +274,6 @@
       "why": "详情页的来源行：1 条/页（80 页）⇒ 与详情页数一一对应（详情页数本身另有断言）。余量 25% 留给数据面收缩；整族消失（0）时红。"
     },
     {
-      "class": "fdesc",
-      "measured": 25,
-      "floor": 18,
-      "why": "订阅中心每份 Feed 一行说明（25 份 Feed = 1 变化 + 1 今日新增 + 23 厂商订阅）。厂商订阅按门槛生成 ⇒ 条数随数据走，余量取 25%；整族消失时红。"
-    },
-    {
       "class": "chgnote",
       "measured": 19,
       "floor": 14,
@@ -308,6 +302,16 @@
       "measured": 54,
       "floor": 40,
       "why": "首屏档位头说明（5 档）+ 每张卡片「详情」提示（49 张）⇒ 与预渲染卡片数绑定（卡片数另有 45 的下限）。余量 25%；整族被改名/删除时红。"
+    }
+  ],
+  "_retiredFloors": [
+    {
+      "class": "fdesc",
+      "measured": 25,
+      "floor": 18,
+      "retiredAt": "2026-10-09",
+      "retiredBy": "去数据暴露（/feeds/ 页族整体下架）",
+      "why": "`.fdesc` **只存在于 `/feeds/` 订阅中心**（每份 Feed 一行说明；建表实测 25 = 1 变化 + 1 今日新增 + 23 厂商订阅）。该轮按用户决定把 `/feeds/` 整族下架（连同 25 份 Feed 与 `/docs/data/`），容器从此**不可能**再出现 ⇒ 地板 `18` 永远无法满足、构建被永久卡死。**退役它，而不是把地板改成 0** —— 「把门槛改 0 让牙变绿」正是 `_floorSelfGuard` 与 `RESIDUE_MIN_FLOOR_RATIO_HARD` 要挡的动作。退役必须**两处同步**：本表的 `containerFloors` 与 `build-local.js` 的 `RESIDUE_CONTAINER_CLASSES`；只改一处，`tabulated !== declared` 的一致性检查会红。"
     }
   ]
 }

@@ -27,7 +27,9 @@ const landing = require('../lib/landing');
 // `VENDOR_RULES` 是顶层 const，在沙箱里不会挂到 context 上，所以只能经
 // `vendorKeyNames()` 这个纯函数取值器读（只读常量、不碰 DOM）。
 const renderCore = require('../lib/render-core');
-const dataDocs = require('../lib/data-docs');
+// t2：删掉了 `const dataDocs = require('../lib/data-docs');` —— 它的唯一消费者是
+// section ⑪ 里那条「发布清单含 plans.json」的腿（见那里的说明）。数据出口整族下架，
+// 这个模块本身也会被删除，所以依赖与用途一起摘掉，不留一条读已删模块的 require。
 
 /* ------------------------------------------------------------------ */
 /* 静态扫描的小工具（§14：字符串型断言必须先剥注释、按访问形态判）        */
@@ -92,8 +94,8 @@ function tokenPattern(token) {
 /**
  * **访问形态**判据：文件名字符串出现在一个真的会读它的调用里 ⇒ 报红。
  *
- * 为什么不能按裸子串判：`lib/feeds.js` 的 feed source note 里**正当**写着
- * 「套餐数据（plans.json）」—— 那是给读者的说明，不是读取。旧实现
+ * 为什么不能按裸子串判：页面措辞里可以**正当**写出文件名（那是渲染给读者的说明，
+ * 不是读取 —— 例如一句「套餐数据（plans.json）来自人工逐条核对」）。旧实现
  * `source.includes('plans.json')` 把散文判成违规，于是别人在同一个文件里写一句
  * 文档就会把这条门禁染红（实测 233/1，回退该文件立刻 234/0）。
  * 判据改成"谁在读"之后，**写文档的自由**与**读数据的禁令**不再互相撞车。
@@ -1050,17 +1052,16 @@ section('⑪ 边界：谁可以引用 plans，谁不可以');
 
 {
   // v2.1 第二段起，**构建期**合法地引用了 plans（`/plans/coding/` 就是它渲染的），
-  // 但这不等于「哪里都可以引用」。v2.3 又多了**一条**合法通道（订阅层里的套餐变化源），
-  // 所以边界被写成四句话：
+  // 但这不等于「哪里都可以引用」。边界现在写成**三句话**：
   //   ① deals 那半边（采集 / 合并 / 历史 / 优惠雷达 / 落地页 / SEO）**一个字都不许提 plans** ——
   //      套餐数据不参与优惠采集，也不进优惠的任何判据；
-  //   ② 订阅层（`lib/feeds.js`）是**唯一**可以引用 plans 的地方，而且只能用来产出一份
-  //      **独立**的套餐变化源：不许直接读数据文件（plans.json / curated_plans / plan-schema），
-  //      数据一律由构建期传入 ——「谁来读文件」这件事只有一处（build-local）；
-  //   ③ 前端 `index.html` 只允许出现页脚/顶栏两个路由占位符（`__PLANS_HREF__`），
+  //   ② 前端 `index.html` 只允许出现页脚/顶栏两个路由占位符（`__PLANS_HREF__`），
   //      不许直接读 plans.json —— 页面由构建期预渲染，浏览器不 fetch 套餐数据；
-  //   ④ 机制内核 `lib/history-core.js` 由两份日志共用（它在 plan-history-selftest 里被静态
+  //   ③ 机制内核 `lib/history-core.js` 由两份日志共用（它在 plan-history-selftest 里被静态
   //      断言「不含任何一方的专有字段」）。
+  // t2：原有的第 ②（也是最容易被误读的那一条）是「订阅层（`feeds.js`）是唯一可以引用
+  // plans 的地方，而且只能用来产出一份独立的套餐变化源，不许直接读数据文件」——订阅层
+  // 整体下架后它连同被测模块一起消失（见下面那段的删除说明），所以四条变三条、编号顺移。
   // 判据工具 `stripComments` / `dataFileAccessHits` 在文件顶部（模块级）：这一段与下面那些
   // **对照断言**共用同一份实现 —— 判据写两遍就会慢慢分家。
   const planTokens = ['plans.json', 'plan-schema', 'curated_plans', 'plans-page', 'providers.json',
@@ -1078,13 +1079,14 @@ section('⑪ 边界：谁可以引用 plans，谁不可以');
   check('deals 链路（采集 / 合并 / 历史 / 优惠雷达 / 落地页 / SEO）完全不引用 plans',
     chainHits.length === 0, chainHits.join(' | '));
 
-  // ② 订阅层：允许引用 plans 的模块，但不许自己读数据文件，也不许把套餐混进优惠的判据里
-  const feedsSource = fs.readFileSync(path.join(ROOT, 'scripts/lib/feeds.js'), 'utf8');
-  const feedsDataHits = dataFileAccessHits(feedsSource, FEEDS_FORBIDDEN_DATA);
-  check('订阅层不自己读套餐数据文件（判据是**访问形态**：真的去读才红，提到文件名不算）',
-    feedsDataHits.length === 0, feedsDataHits.join(' | '));
+  // （原 ② 订阅层：允许引用 plans 的模块，但不许自己读数据文件，也不许把套餐混进优惠的判据里）
+  // t2 删除：这一支原来读订阅层 `feeds.js` 的源码，断言「订阅层不自己读套餐数据文件」
+  // 并「只有 plan-changes 一条引用通道」。订阅层整体下架后那个模块不存在了 —— 留着这条
+  // 只会在 T4 删文件之后得到 ENOENT（一条离原因很远的红）。**这不是放宽**：判据的被测模块
+  // 已经不存在，它守的行为也随之无对象；真正承重的两条（① deals 链路零引用、② 前端零读取）
+  // 与下面那些**对照断言**（证明 `dataFileAccessHits` 仍有牙）原样保留。
 
-  // ②-对照（常驻）：这条判据必须能真的红、也必须不冤枉文档
+  // 对照（常驻）：这条判据必须能真的红、也必须不冤枉文档
   //   正向 ①：`path.join` 拼接 + readFileSync（最常见的那一种）
   check('【对照】插入一处真实读取（path.join + readFileSync）→ 必须报红',
     dataFileAccessHits(`const fs = require('fs');\nconst raw = fs.readFileSync(path.join(ROOT, 'plans.json'), 'utf8');\n`,
@@ -1105,7 +1107,7 @@ section('⑪ 边界：谁可以引用 plans，谁不可以');
   check('【对照·已知边界】先把路径存进变量再 readFileSync → 静态判据抓不到（只能靠 review）',
     dataFileAccessHits("const p = path.join(ROOT, 'plans.json');\nconst raw = fs.readFileSync(p, 'utf8');\n",
       FEEDS_FORBIDDEN_DATA).length === 0);
-  //   反向 ①：现行 feeds.js 里那种**散文**（feed source note 写到文件名）→ 不得报红
+  //   反向 ①：只把文件名写进措辞（渲染给读者的说明）→ 不得报红
   check('【对照】只提到文件名（散文 / 说明文字）→ 不得报红（门禁不许限制别人怎么写文档）',
     dataFileAccessHits("const note = '套餐变化来自人工逐条核对官方页后重建的套餐数据（plans.json），API 价格变化来自 api-plans.json';\n",
       FEEDS_FORBIDDEN_DATA).length === 0);
@@ -1118,10 +1120,6 @@ section('⑪ 边界：谁可以引用 plans，谁不可以');
     dataFileAccessHits("const raw = fs.readFileSync(path.join(ROOT, 'api-plans.json'), 'utf8');\n",
       FEEDS_FORBIDDEN_DATA).length === 0);
 
-  check('订阅层对 plans 的引用只有「套餐变化」这一条通道（kind = plan-changes）',
-    feedsSource.includes("kind: 'plan-changes'") && feedsSource.includes('PLAN_CHANGE_FEED') &&
-    /kind === 'plan-changes'/.test(feedsSource));
-
   const indexSource = stripComments(fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8'));
   const plansHrefs = (indexSource.match(/__PLANS_HREF__/g) || []).length;
   check('前端 index.html 只用路由占位符引用套餐页（不直接读 plans.json）',
@@ -1132,15 +1130,19 @@ section('⑪ 边界：谁可以引用 plans，谁不可以');
     `占位符 ${plansHrefs} 个（页脚 + 顶栏）`);
 
   // 正向：构建期**必须**引用它，否则上面那些"不许引用"的断言会因为"整条线根本不存在"而假绿。
-  // 发布清单的**唯一出处**已经搬到 Dataset Manifest（`lib/data-docs.js` 的 datasetCopyUrls()），
-  // 所以这里问模块，而不是在 build-local.js 的源码里正则一个数组字面量 ——
-  // 后者会在清单搬家那天变成一条"看起来还在守、其实已经失配"的断言（本轮实测：它先红了）。
+  //
+  // t2：第三条腿原来是「发布清单含 plans.json」（问 `lib/data-docs.js` 的 `datasetCopyUrls()`）。
+  // 数据出口整族下架后，`plans.json` **不再复制进产物** —— 再断言它出现在发布清单里会是一条
+  // **与终态相反**的断言（而且那个模块也已经不存在）。改问 build-local 源码里的**正文渲染**
+  // 函数：占位符没了 ⇒ 入口消失；路由常量没了 ⇒ 构建期不再声明这一页；正文渲染没了 ⇒
+  // 页面只剩壳。三条都只依赖构建脚本自身，与产物清单解耦。
+  // 「plans.json 不许出现在产物里」这件事由构建期的 `lib/published-assets.js`
+  // fail-closed 扫描守着（比在这里问一个注册表更强：它扫的是真实产物）。
   const buildSource = stripComments(fs.readFileSync(path.join(ROOT, 'scripts/tools/build-local.js'), 'utf8'));
-  const publishedCopies = dataDocs.datasetCopyUrls();
-  check('构建期确实接进了套餐页（占位符 → 路由 → 发布清单）',
+  check('构建期确实接进了套餐页（占位符 → 路由 → 正文渲染）',
     buildSource.includes('__PLANS_HREF__') && buildSource.includes('plansPage.PLANS_ROUTE') &&
-    publishedCopies.includes('plans.json'),
-    `占位符 / 路由 / 发布清单三者缺一不可（发布清单含 plans.json：${publishedCopies.includes('plans.json')}）`);
+    buildSource.includes('plansPage.plansPageBody'),
+    `占位符 / 路由 / 正文渲染三者缺一不可（正文渲染：${buildSource.includes('plansPage.plansPageBody')}）`);
 }
 
 /* ================================================================== */

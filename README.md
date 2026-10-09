@@ -1234,10 +1234,13 @@ App 页面下载的私钥是 **PKCS#1**（`-----BEGIN RSA PRIVATE KEY-----`，�
 - **时间只来自数据**：`pubDate` = 首次收录或事件日期；`lastSeen`（每轮采集都刷新）
   永不进机器可读时间字段。
 - **文案微调与元信息不进订阅**：`description` 改一个标点、换一处分类都不会推给读者。
-- 唯一权威在 `scripts/lib/feeds.js`，契约在 [`docs/SCHEMA-v1.6.md`](docs/SCHEMA-v1.6.md)。
+- 站点常量（`SITE_URL` / `SITE_NAME` / `xmlEscape` / `VENDOR_*`）的唯一出处是
+  `scripts/lib/site.js`。
 
-相关命令：`npm run selftest:feeds`（66 项，含 4 项 Tooth Test）·
-`npm run check:feeds:reproducible -- --runs=10`（连续构建逐字节比对）· `npm run report:feeds`（人读报告）。
+> ⚠️ 2026-10 收口：**订阅层与数据出口整族下架** —— `scripts/lib/feeds.js`、
+> `scripts/lib/data-docs.js`、`/feeds/` 与 `/docs/data/` 两个页面族、全部 Feed 与数据文件
+> （除首页自己那份 `assets/data/offers.json`）都已删除；上面几段是历史口径，不再是现役行为。
+> 本节原先列的三条命令（`selftest:feeds` / `check:feeds:reproducible` / `report:feeds`）随之删除。
 
 ## 隐私声明
 

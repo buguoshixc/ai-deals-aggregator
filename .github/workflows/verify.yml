@@ -110,7 +110,7 @@ jobs:
       # ⑪ 未加引号的标量里不得出现「冒号 + 空格」—— 那在块上下文里是映射分隔符，GitHub 的
       #    真实 YAML 解析器会拒绝整个文件（本仓库的缩进读取器读得过去，于是本地全绿、
       #    推上去什么都不跑；2026-09-28 实测踩到过一次，用 Python 的 YAML 解析器才发现）。
-      # ⑫ 带外项数：`--expect-checks=38` 把「总项数」这个事实钉在**调用方**（本文件），因为看门狗
+      # ⑫ 带外项数：`--expect-checks=39` 把「总项数」这个事实钉在**调用方**（本文件），因为看门狗
       #    保护不了自己被删（删掉它自己时项数会静默降 1 且仍 exit 0）。这个数字是**唯一出处**：
       #    脚本命令行不带参数裸跑（本地、以及 collect/deploy 里的裸跑）时也会回来读本行。
       #    注意这条 run **必须是单行**：读取器刻意跳过 `run: |` 块标量（fail-closed）。
@@ -139,6 +139,12 @@ jobs:
       #    它一次都不会执行，而检查器照样 exit 0（t7 的 D5 探针实测过；t14 独立审查
       #    也把它记为 T14-F3）。它和 (0b)「未登记的新 workflow 一律硬红」是同一条原则：
       #    登记制必须**双向**都有人守。豁免只能是逐文件 + 写明理由的白名单（当前为空）。
+      #    2026-10-09（t2 · 数据暴露收口）：门禁**删了三步** ——
+      #    `Feeds self-test`、`Data-docs self-test (/docs/data/ + /data/index.json)`、
+      #    `Feeds reproducibility (build twice, byte-compare)`（随订阅层与数据出口整族下架）。
+      #    项数**仍然是 39**：被删的是门禁**步骤**（由 GATE_STEP_NAMES / GATE_STEP_RUN /
+      #    GATE_ARTIFACT_STEPS 三处逐条对账），不是 check-ci 自己的断言项；数字没变，
+      #    实跑确认过了，**不要凭感觉改这一行**。
       - name: CI consistency (action / runner / node-version / engines drift)
         run: node scripts/tools/check-ci-consistency.js --expect-checks=39
 

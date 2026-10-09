@@ -11,11 +11,17 @@
  *   · `tools/build-local.js` 的 `SITEMAP_PRIORITY`  —— 每类页面的 sitemap priority。
  *
  * 四处各写一份的直接后果是：**新增一个页面家族时，最容易被漏掉的那一处恰好是门禁最松的那一处**。
- * v3.0 要一次新增四个家族（`/plans/` `/models/` `/archive/` `/docs/data/`），
+ * v3.0 当年一次新增四个家族（`/plans/` `/models/` `/archive/` `/docs/data/`），
  * 因此把声明收成一份**纯数据**模块（不 require `fs`、不读 dist、不看时钟）：
  *
  *   · `lib/seo.js`（构建期规则层）读它的下限与 ItemList 默认值；
  *   · `tools/seo-verify.js`（独立门禁）读它的固定路由表与 ItemList 默认值。
+ *
+ * ⚠️ 上面那四个家族里，**`/docs/data/`（`data-docs` kind）已经在「去数据暴露」那一轮整体下架**：
+ * 它整页都在介绍本站发布的 JSON 数据集，而本次收口之后产物里已经不再有任何数据文件
+ *（唯一的数据资源是首页自己的 `assets/data/offers.json`，且页面上不提及它）。
+ * 页面没了，它的 `data-docs` kind 与固定路由映射也跟着删了 —— 所以下面两张表里都找不到它。
+ * 这段史述刻意留着：「为什么这个家族不在这里」正是下一个人会问的问题。
  *
  * ⚠️ **两者仍然各自从 dist 解析页面**：这个文件只声明"这一页应该长成什么样"，
  * 不提供任何读取产物的能力。共享声明 ≠ 合并执行路径 —— 后者的价值在于
@@ -151,13 +157,6 @@ const KIND_TABLE = {
     itemList: { expect: true, checkRows: true, checkMembers: false, marker: 'item' },
     sitemap: { priority: '0.8', changefreq: 'daily' }
   },
-  feeds: {
-    label: '订阅中心',
-    layout: 'wide',
-    textFloor: floor(600),
-    itemList: { expect: false, checkRows: true, checkMembers: true, marker: 'item' },
-    sitemap: { priority: '0.6', changefreq: 'weekly' }
-  },
   plans: {
     label: '套餐 / API 计费对比页',
     layout: 'wide',
@@ -225,16 +224,6 @@ const KIND_TABLE = {
     textFloor: floor(600),
     itemList: { expect: false, checkRows: true, checkMembers: false, marker: 'item' },
     sitemap: { priority: '0.6', changefreq: 'monthly' }
-  },
-  // Stage G：/docs/data/ 数据出口文档。六个必需段落（索引 / 文档 / 示例 / 引用 / Schema 稳定性 / License），
-  // 光段落文案就远超 1200 字，因此下限从 1200 起步而不是 600。
-  'data-docs': {
-    label: '数据文档',
-    layout: 'wide',
-    textFloor: floor(1200),
-    // Dataset Index 一张表 = 一份数据一行，因此它在场、行数要查；成员是静态 JSON 文件，不是站内条目。
-    itemList: { expect: true, checkRows: true, checkMembers: false, marker: 'item' },
-    sitemap: { priority: '0.6', changefreq: 'weekly' }
   }
 };
 
@@ -249,13 +238,11 @@ const FIXED_ROUTE_KINDS = {
   '': 'home',
   'status/': 'status',
   'changes/': 'changes',
-  'feeds/': 'feeds',
   'plans/': 'plans-hub',
   'plans/coding/': 'plans',
   'plans/api/': 'plans',
   'models/': 'models-index',
-  'archive/': 'archive-index',
-  'docs/data/': 'data-docs'
+  'archive/': 'archive-index'
 };
 
 /**

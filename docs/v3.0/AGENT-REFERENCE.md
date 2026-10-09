@@ -282,17 +282,20 @@ npm run check:api-plan-history
 npm run check:zh
 npm run check:ci
 npm run selftest:zh; npm run selftest:expiry; npm run selftest:text; npm run selftest:health
-npm run selftest:provenance; npm run selftest:history; npm run selftest:changes; npm run selftest:feeds
+npm run selftest:provenance; npm run selftest:history; npm run selftest:changes
 npm run selftest:audience; npm run selftest:app-token; npm run selftest:plans; npm run selftest:plan-history
 npm run selftest:deal-plan-links; npm run selftest:api-plans; npm run selftest:seo
-npm run selftest:planshub; npm run selftest:archive; npm run selftest:data-docs        # 新（页面层）
+npm run selftest:planshub; npm run selftest:archive                     # 新（页面层）
 npm run selftest:models; npm run selftest:model-registry                             # 新（页面层 / 身份层，两支）
 npm run ai:selftest; npm run fixture:test
 npm run build
 npm run verify; npm run verify:seo; npm run verify:regress
-npm run check:feeds:reproducible
 npm run report:coverage                    # 新
 ```
+
+> ⚠️ 2026-10 收口：`selftest:feeds`（订阅层自测）、`selftest:data-docs`（数据出口声明对账）、
+> `check:feeds:reproducible`（构建两次比对 Feed）三条命令**已删除** —— 订阅层与数据出口整族
+> 下架，那三个 npm script 与对应文件不再存在（`check-ci` 的登记制断言会抓半删状态）。
 
 真浏览器验收需要 `$env:DSH_EDGE`（见 §0），否则 `verify-site.js` 会用写死的 Windows Edge 路径。
 

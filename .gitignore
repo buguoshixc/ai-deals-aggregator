@@ -55,6 +55,17 @@ research/_raw/coverage-depth-v1/release-evidence/raw/
 *.building/
 *.stale/
 
+# 说明意图清单（build-local.js）：t3 起它是**产物目录的兄弟文件**（`<输出目录>.notes.ndjson`，
+# 如 dist.notes.ndjson / dist.deexpose.notes.ndjson），不再进 dist/ —— 它是构建过程的意图侧快照，
+# 不是上线内容（留在产物里等于多送一份「构建期维护口径」的可下载文件）。按后缀匹配，
+# `--out=<dir>` 时名字随之变化。
+*.notes.ndjson
+
+# 本机「去掉数据暴露」收口轮次的隔离产物目录（build-local.js --out=dist.deexpose）：
+# 与 dist/ 同一条构建路径、落在别处，避免与别的会话正在用的 dist/ 互相踩踏。
+# 验证完即弃；这里兜底，防止中断时留下半成品进 git 索引。
+dist.deexpose/
+
 # v1.6 订阅可复现门禁的临时输出目录（构建后即删；这里兜底，防止中断时留下半成品）
 dist.feeds-repro*/
 
@@ -100,3 +111,6 @@ research/**/scratch/
 !research/_raw/*/README.md
 !research/_raw/*/INDEX.md
 !research/_raw/*/manifest.json
+# 各成员的临时 scratch 目录：与 .agent-teams/ 同一类（协作过程的中间产物，不是项目源
+# 码；体积小但会污染提交）。research/**/scratch/ 只覆盖 research/ 底下，这里补上其他位置。
+.scratch/

@@ -23,9 +23,58 @@ const path = require('path');
 const { chromium } = require('playwright-core');
 
 const ROOT = path.join(__dirname, '..', '..');
-// 零依赖的注册表（订阅与落地页）：验收脚本据此**按数据**算出「这一页应该声明几条订阅源」，
-// 而不是把一个数字写死在断言里 —— 写死的后果是每加一份分类 Feed 都要来改一次验收脚本。
-const feedsLib = require('../lib/feeds');
+/**
+ * **真值改从仓库根读**（决策 D1）。为什么不是从被服务的产物里读：
+ * 本轮把全部面向读者的数据文件下架（`plans.json` / `api-plans.json` / `models.json` /
+ * `model-registry-links.json` / `*-history.json` / `source-health.json` / `deal-plan-links.json`
+ * 都不再进 `dist/`），产物里已经**没有**这些真值可取。
+ *
+ * 为什么仍然成立：页面渲染的就是这些源文件（构建期不做二次派生，只有首页那一份
+ * `assets/data/offers.json` 例外），而「产物里的副本 == 源文件」这件事本来属于构建期的
+ * 断言（`check:*:reproducible` 一族对账仓库根），不需要真浏览器再证一遍。
+ *
+ * ⚠️ 用 `ROOT` 而**不是** `path.dirname(DIR)`：`--dir=` 可以指向任何目录（形态注入副本、
+ * 别人的 worktree），仓库根只有一个定义，就是本文件所在仓库的根。
+ */
+const readRoot = rel => JSON.parse(fs.readFileSync(path.join(ROOT, rel), 'utf8'));
+
+/**
+ * 「这一页有没有**订阅声明**」的**唯一判据**（t6：从 T5 的 6 条同形断言里抽出来）。
+ *
+ * `rel="alternate"` 在 HTML 里有两种语义完全不同的用法，数总量会把它们混为一谈：
+ *   ① **订阅声明**（Feed）：必带 `type="application/rss+xml"` 或 `application/feed+json`；
+ *   ② **语言/地区声明**：带 `hreflang`（`index.html:26-27` 与每个 deal 详情页各 2 枚，
+ *      由 `page-shell.js:241` 的 hreflang 槽位注入；`build-local.js:6268` 的首页自检
+ *      反过来**要求**它存在：`if (!/hreflang="x-default"/.test(html)) fail('缺少 hreflang')`）。
+ *
+ * 本轮要消灭的是 ①。判据刻意做成**双侧**，而且不是可有可无的对称：
+ *   · ① 带 `type` 的必须 0 条；
+ *   · ② 剩下的每一条都**必须带 `hreflang`** —— 只做 ① 的话，把订阅声明的 `type` 抹掉
+ *     （`<link rel="alternate" href="feed.xml">`）就能骗过它；② 正好堵这条路。
+ *
+ * 为什么必须抽成一份：原先 6 个页面族各写一遍裸选择器计数，而其中**首页那一条永远不可能为真**
+ * （它把 2 枚 hreflang 语言声明也数进去了）—— 一条永远红的断言不提供任何保护，只会掩盖真问题。
+ * 抽成一份之后，「哪些页面族该有 hreflang」这件事不再影响这条判据：语言声明一律放行，
+ * 订阅声明一律判红。
+ *
+ * @param {Array<{type?:string,hreflang?:string,href?:string}>} links 页面上的全部 `link[rel="alternate"]`
+ * @returns {string|null} null = 通过；否则是一句可读的问题描述（直接当 check 的 detail）
+ */
+function subscriptionDeclarationProblem(links) {
+  const list = (Array.isArray(links) ? links : []).map(link => link || {});
+  const typed = list.filter(link => String(link.type || '').trim() !== '');
+  if (typed.length) {
+    return `仍声明了 ${typed.length} 条订阅源（带 type 的 rel="alternate"）：`
+      + typed.map(link => `${link.href || '(无 href)'}[${link.type}]`).join(' · ');
+  }
+  const unclassified = list.filter(link => String(link.hreflang || '').trim() === '');
+  if (unclassified.length) {
+    return `${unclassified.length} 条 rel="alternate" 既不带 type 也不带 hreflang —— `
+      + `既不是订阅声明、也不是语言声明，判据不放行（抹掉 type 想混进来，会被这一条抓住）：`
+      + unclassified.map(link => link.href || '(无 href)').join(' · ');
+  }
+  return null;
+}
 const landingsLib = require('../lib/landing');
 // 首页专题导航卡（v1.8）的**唯一来源**：卡数 / 标题 / href / 落地页 h1 全部按注册表现算，
 // 不把「10」写进断言里 —— 加一条需求页时这些断言自动跟着走，而不是变成一条永远为真的死断言。
@@ -53,20 +102,30 @@ const WIDE_NARROW_ENTRIES = WIDE_NARROW_REGISTRY.entries || [];
 const WIDE_TOL = 1;                        // 亚像素取整容差（px）
 const WIDE_DESKTOP = 1440;                 // 桌面档一（全站逐条）
 
-/**
- * 某个落地页**应该**声明几条 `rel="alternate"`：站点根 Feed 对（2 条）
- * + 它自己的那一对（有专属 Feed 时 2 条）。别名页与无专属 Feed 的页面只有根那一对。
+/*
+ * t5 删除：`expectedFeedTags(kind, slug)` 整函数 + `void landingsLib;`。
+ * 【历史】它按订阅注册表算出「某个落地页应该声明几条 rel="alternate"（根 Feed 对 2 条
+ * + 它自己的那一对）」，曾是 landing 族「声明几条订阅源」三条断言的判据来源 ——
+ * 那套机制随订阅层整族下架**已删除**（`lib/feeds.js` 与全部 Feed 产物都不在了），
+ * 这个函数也一起删掉。
+ * 【现役契约】页面**一条订阅声明都不许有**：各页面族各自断言「0 条带 `type` 的
+ * `rel="alternate"`」，首页另加一条「剩下的 alternate 必须**全部**是 hreflang 语言声明、
+ * 且恰好 2 条」——见 §14 那两条 check（那里写清了为什么不能只数裸选择器）。
+ * `landingsLib` 本身仍在别处使用（枢纽路由等），所以只删 `void landingsLib;` 那一行。
  */
-function expectedFeedTags(kind, slug) {
-  if (kind === 'alias') return 2;
-  const own = feedsLib.feedsForPage({ kind, slug });
-  return 2 + (own.length ? 2 : 0);
-}
-void landingsLib;
 
 const dirArg = process.argv.find(a => a.startsWith('--dir='));
 const urlArg = process.argv.find(a => a.startsWith('--url='));
 const DIR = path.join(ROOT, dirArg ? dirArg.slice(6) : 'dist');
+/**
+ * 说明清单的路径（决策 D4）：写点已经搬到**产物目录的兄弟文件**，
+ * 即 `<产物目录>.notes.ndjson`（默认 `dist.notes.ndjson`，`--dir=dist.deexpose` 时
+ * 就是 `dist.deexpose.notes.ndjson`）。**由 `DIR` 推导**而不是 `path.dirname(DIR)`：
+ * 后者在 `--dir=` 指向另一份产物副本时会指错（它要的是"这一份产物自己的意图侧"）。
+ * 为什么不再写进 `dist/`：任务目标就是消灭"可以按 URL 下载到的数据文件"——
+ * 清单留在产物根目录会让任何以 `dist/` 为根的预览服务都能下载它。
+ */
+const NOTES_MANIFEST_PATH = `${DIR}.notes.ndjson`;
 const EDGE = process.env.DSH_EDGE || 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
 
 const MIME = {
@@ -162,14 +221,18 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 
   /**
-   * `deals.json` 的绝对地址 —— **由 base 解析**，绝不写死 `/deals.json`。
+   * 首页那份数据资源的绝对地址（`assets/data/offers.json`）—— **由 base 解析**，绝不写死路径。
    *
    * 为什么：线上是 GitHub **项目页**，站点挂在 `/ai-deals-aggregator/` 下，根路径的
-   * `/deals.json` 是 404。原先几处 `evaluate` 里写死了绝对根路径，本地服务在根路径上永远绿，
-   * 一跑 `--url=` 线上就取不到数据：先是「取样前提」报错，接着 v1.3 的取样解引用 null 直接崩。
-   * 用 `new URL('deals.json', base)` 之后，本地根路径与线上子路径同时成立。
+   * `/assets/data/offers.json` 是 404。原先几处 `evaluate` 里写死了绝对根路径，本地服务在根路径上
+   * 永远绿，一跑 `--url=` 线上就取不到数据：先是「取样前提」报错，接着 v1.3 的取样解引用 null 直接崩。
+   * 用 `new URL('assets/data/offers.json', base)` 之后，本地根路径与线上子路径同时成立。
+   *
+   * t5：路径由 `deals.json` 迁到 `assets/data/offers.json`（首页数据资产本轮搬家）；
+   * 仓库根的 `deals.json` 仍是数据真值，但**不再进产物** —— 所以浏览器侧只能取这份搬家后的资源，
+   * 而需要真值的地方（真值对账）一律走上面的 `readRoot()`。
    */
-  const DEALS_URL = JSON.stringify(new URL('deals.json', base).href);
+  const DEALS_URL = JSON.stringify(new URL('assets/data/offers.json', base).href);
 
   const errors = [];
   const failedRequests = [];
@@ -201,7 +264,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   });
 
   console.log('\n=== 1) 无 JS：预渲染骨架 ===');
-  await page.route('**/deals.json', route => route.abort());   // 断掉数据，只看静态 HTML
+  await page.route('**/assets/data/offers.json', route => route.abort());   // 断掉数据，只看静态 HTML
   await page.goto(base, { waitUntil: 'load' });
   const noJs = await page.evaluate(() => {
     const body = document.body;
@@ -246,13 +309,13 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   check('静态骨架每张卡片都带「数据更新」日期', noJs.stampedCards === noJs.cards && noJs.cards > 0,
     `${noJs.stampedCards}/${noJs.cards}`);
 
-  // 第 1 步故意断掉了 deals.json，这里把收集器清空，后面测的是正常加载
+  // 第 1 步故意断掉了首页数据资源，这里把收集器清空，后面测的是正常加载
   errors.length = 0;
   failedRequests.length = 0;
   externalRequests.length = 0;
 
   console.log('\n=== 2) 有 JS：接管后的默认视图 ===');
-  await page.unroute('**/deals.json');
+  await page.unroute('**/assets/data/offers.json');
   await page.goto(base, { waitUntil: 'networkidle' });
   await waitForApp(page);
 
@@ -461,8 +524,10 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   //      varies 的卡必须写着「各型号额度不同」且**不许**出现「共用同一份额度」；
   //   ⑤ 卡片那行文案**没被裁**，且折叠卡至少说清了代表条目的一句话（空话/摘要话必红）；
   //   ⑥ 被折叠的每一条都还能从首页走到自己的详情页（预渲染的站内链接，无 JS 也成立）。
-  const folded = await page.evaluate(async () => {
-    const data = await (await fetch('deals.json')).json();
+  // t5：数据资源的地址由**调用方**注进来（`DEALS_URL` 由 base 解析），不在页面里写相对路径 ——
+  // 首页数据已搬到 `assets/data/offers.json`，写死的 `deals.json` 会 404。
+  const folded = await page.evaluate(async (dealsUrl) => {
+    const data = await (await fetch(dealsUrl)).json();
     const norm = text => String(text || '').replace(/[^a-z0-9\u4e00-\u9fa5]+/gi, '').toLowerCase();
     const cards = [...document.querySelectorAll('article.g')].map(card => {
       const tx = card.querySelector('.of .tx');
@@ -580,7 +645,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       ghostIds,
       foldedCards
     };
-  });
+  }, JSON.parse(DEALS_URL));
 
   check('每条优惠按 id 归到恰好一张卡上（没有条目丢失、也没有凭空捏造的 id）',
     folded.unmatched.length === 0 && folded.multiOwned.length === 0 && folded.ghostIds.length === 0,
@@ -764,12 +829,12 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
    * 用户**看得见**的中文必须搜得到：卡片上的「中文」胶囊指的就是详情弹层里那段人工译文，
    * 把其中一段中文复制进搜索框却 0 结果，就是「看得见搜不到」。
    *
-   * 不硬编码任何条目：从同一份产物（`fetch('deals.json')`，本地与 --url= 线上冒烟都同源可取）里
+   * 不硬编码任何条目：从首页那份数据资源（`DEALS_URL`，本地与 --url= 线上冒烟都同源可取）里
    * 现取一条**当前视图里真有卡**的带译文条目，再取它译文里连续 ≥6 个汉字去搜。
    * 卡片标题用两种口径匹配：单条卡（标题即条目标题）与折叠卡（标题是折叠后的，靠 data-deal-ids 认领）。
    */
   const ZH_PROBE = `(async () => {
-    const payload = await (await fetch('deals.json')).json();
+    const payload = await (await fetch(${DEALS_URL})).json();
     const deals = payload.deals || [];
     const cards = [...document.querySelectorAll('article.g')];
     const cardTitles = new Set();
@@ -1366,7 +1431,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     `卡片 transition-duration=${reduced.dur} · 仍在动的元素 ${reduced.offenders} 个`);
   await rmPage.close();
 
-  console.log('\n=== 14) 订阅 · 同页锚点 · 纠错入口 ===');
+  // t5：标题里原有一项「订阅」——订阅发现子块整段删除后，本节只剩结构 / 同页锚点 / 纠错入口。
+  console.log('\n=== 14) 结构与同页锚点 · 纠错入口 ===');
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.reload({ waitUntil: 'load' });
   await waitForApp(page);
@@ -1491,226 +1557,55 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     Boolean(report) && report.blank && report.prefilled && /github\.com\/.+\/issues\/new/.test(report.href),
     report ? `${report.href.slice(0, 76)}…（rel=${report.rel}）` : '未找到纠错链接');
 
-  // 订阅（v1.6）：首页只暴露四个订阅选择（各两种格式 = 8 条 rel="alternate"），
-  // 每条都要**真的打得开、真的是那个格式、标题与 Feed 自己的 <title> 逐字相同**。
+  /* ------------------------------------------------------------------ */
+  /* t5 删除：订阅发现（首页 8 条 rel="alternate" + 每个 feed 的探针）        */
+  /* ------------------------------------------------------------------ */
   //
-  // 为什么在真浏览器里再验一遍：`build-local.js` 的产物自检只看字符串，
-  // 而阅读器关心的是「这份 XML 能不能被真解析器读出来」。这里用浏览器自带的
-  // DOMParser（一个与 build-local 的手写检查器**完全独立**的实现）来判良构。
-  const feedProbe = await page.evaluate(async () => {
-    const links = [...document.querySelectorAll('link[rel="alternate"]')]
-      .map(l => ({ type: l.type, title: l.title, href: l.getAttribute('href') }))
-      .filter(l => /feed/.test(l.href || ''));
-    // 站点绝对前缀从 canonical 现取（本地服务时它仍是线上地址，所以条目链接是绝对的）
-    const canonical = (document.querySelector('link[rel="canonical"]') || {}).href || '';
-    const site = canonical.replace(/[^/]*$/, '');
-    const targets = ['feed.xml', 'feed.json', 'feed/changes.xml', 'feed/changes.json',
-      'feed/student.xml', 'feed/student.json', 'feed/developer.xml', 'feed/developer.json'];
-    const out = { links, site, targets: {} };
-    for (const rel of targets) {
-      const response = await fetch(rel, { cache: 'no-cache' });
-      const text = await response.text();
-      const box = { ok: response.ok, status: response.status, bytes: text.length, title: null, items: 0, ids: [], urls: [], parserError: null, version: null };
-      if (rel.endsWith('.xml')) {
-        const doc = new DOMParser().parseFromString(text, 'application/xml');
-        box.parserError = doc.querySelector('parsererror') ? doc.querySelector('parsererror').textContent.slice(0, 120) : null;
-        box.title = doc.querySelector('channel > title') ? doc.querySelector('channel > title').textContent : null;
-        const nodes = [...doc.querySelectorAll('item')];
-        box.items = nodes.length;
-        box.ids = nodes.map(node => (node.querySelector('guid') || {}).textContent || '');
-        box.urls = nodes.map(node => (node.querySelector('link') || {}).textContent || '');
-        box.image = Boolean(doc.querySelector('channel > image > url'));
-        box.selfLink = Boolean(doc.querySelector('channel > link[rel="self"]'));
-        box.lastBuildDate = doc.querySelector('channel > lastBuildDate') ? doc.querySelector('channel > lastBuildDate').textContent : null;
-      } else {
-        try {
-          const box2 = JSON.parse(text);
-          box.version = box2.version;
-          box.title = box2.title;
-          box.items = box2.items.length;
-          box.ids = box2.items.map(item => item.id);
-          box.urls = box2.items.map(item => item.url);
-          box.icon = box2.icon;
-          box.favicon = box2.favicon;
-          box.offMidnight = box2.items.filter(item =>
-            (item.date_published && !/T00:00:00\+08:00$/.test(item.date_published)) ||
-            (item.date_modified && !/T00:00:00\+08:00$/.test(item.date_modified))).length;
-        } catch (error) { box.parseError = error.message; }
-      }
-      out.targets[rel] = box;
-    }
-    return out;
-  });
-
-  check('首页声明了四个订阅选择 × 两种格式 = 8 条 rel="alternate"',
-    feedProbe.links.length === 8 &&
-    feedProbe.links.filter(l => /rss\+xml/.test(l.type)).length === 4 &&
-    feedProbe.links.filter(l => /feed\+json/.test(l.type)).length === 4,
-    feedProbe.links.map(l => l.href).join(' · ') || '未声明');
-
-  check('每个订阅目标的 <title> 与首页声明的 title 逐字相同（改了注册表忘了改页面就会红）',
-    feedProbe.links.every(l => {
-      const target = feedProbe.targets[l.href];
-      return target && target.title === l.title;
-    }),
-    feedProbe.links.filter(l => {
-      const target = feedProbe.targets[l.href];
-      return !target || target.title !== l.title;
-    }).map(l => `${l.href}: ${l.title} ≠ ${(feedProbe.targets[l.href] || {}).title}`).join(' | ') || '8 条一致');
-
-  const feedTargets = Object.entries(feedProbe.targets);
-  check('全部订阅目标是 200 且被真解析器读出来（无 XML 解析错误）',
-    feedTargets.every(([, box]) => box.ok && !box.parserError) && feedTargets.some(([rel]) => rel.endsWith('.xml')),
-    feedTargets.filter(([, box]) => !box.ok || box.parserError).map(([rel, box]) => `${rel}: ${box.status}${box.parserError ? ` ${box.parserError}` : ''}`).join(' | ') || `${feedTargets.length} 个目标`);
-
-  check('RSS 与 JSON Feed 的条目数、id 集合两侧一致',
-    feedTargets.filter(([rel]) => rel.endsWith('.xml')).every(([rel, box]) => {
-      const jsonBox = feedProbe.targets[rel.replace(/\.xml$/, '.json')];
-      return jsonBox && jsonBox.items === box.items &&
-        JSON.stringify(jsonBox.ids) === JSON.stringify(box.ids);
-    }),
-    feedTargets.filter(([rel]) => rel.endsWith('.xml')).map(([rel, box]) =>
-      `${rel} ${box.items} 条`).join(' · '));
-
-  check('订阅条目的主链接指向**本站**页面（不是把流量导出站外）',
-    feedTargets.every(([, box]) => box.urls.every(url => !url || url.startsWith(feedProbe.site))),
-    (feedTargets.map(([rel, box]) => box.urls.find(url => url && !url.startsWith(feedProbe.site)) && `${rel}: ${box.urls.find(url => url && !url.startsWith(feedProbe.site))}`).filter(Boolean)[0]) || '全部站内');
-
-  check('订阅条目的时间都是数据日期的北京时间零点（没有构建时刻泄进产物）',
-    feedTargets.filter(([rel]) => rel.endsWith('.json')).every(([, box]) => !box.offMidnight) &&
-    feedTargets.filter(([rel]) => rel.endsWith('.xml')).every(([, box]) => /GMT$/.test(String(box.lastBuildDate || ''))),
-    feedTargets.map(([rel, box]) => `${rel}:${box.offMidnight || 0}`).slice(0, 4).join(' · '));
-
-  check('JSON Feed 都带 icon 与 favicon；RSS 都带 <image> 与 atom:link rel=self',
-    feedTargets.filter(([rel]) => rel.endsWith('.json')).every(([, box]) => box.icon && box.favicon) &&
-    feedTargets.filter(([rel]) => rel.endsWith('.xml')).every(([, box]) => box.image && box.selfLink),
-    '两种格式的图标与自指字段齐备');
-
-  check('订阅里确实有优惠条目（不是空壳）', feedProbe.targets['feed.xml'].items > 0,
-    `feed.xml ${feedProbe.targets['feed.xml'].items} 条 · feed/changes.xml ${feedProbe.targets['feed/changes.xml'].items} 条（变化流为空是事实）`);
-
-  // 抽 3 条订阅里的链接真的打得开。**必须换成本地地址再取**：
-  // 产物里的链接是线上绝对 URL，直接 fetch 会真的打到 GitHub Pages ——
-  // 那既污染了第 10 节的「没有外部请求」断言，也让本地验收依赖公网。
-  const feedLinks = feedProbe.targets['feed.xml'].urls
-    .slice(0, 3)
-    .map(url => url.replace(feedProbe.site, ''))
-    .map(rel => (rel.startsWith('http') ? null : rel))
-    .filter(Boolean);
-  const linkProbe = await page.evaluate(async urls => {
-    const out = [];
-    for (const rel of urls) {
-      const response = await fetch(rel, { cache: 'no-cache' });
-      out.push({ rel, ok: response.ok, status: response.status });
-    }
-    return out;
-  }, feedLinks);
-  check('订阅里的条目链接真的打得开（换成本地地址取，不碰公网）',
-    linkProbe.length > 0 && linkProbe.every(row => row.ok),
-    linkProbe.map(row => `${row.rel} ${row.status}`).join(' · '));
+  // 为什么删：这一段是上面「结构 / 无障碍 / 纠错入口」之后的订阅子块 ——
+  // 它用浏览器探针逐条打开首页声明的 8 条 `rel="alternate"`，断言「每个都真的打得开、
+  // 真的是那个格式、标题与 Feed 自己的 <title> 逐字相同」，再对账 RSS 与 JSON 的条目 id、
+  // icon/favicon/`<image>`/`atom:self`、以及每个 feed 条目 URL 对应的详情页存在。
+  // 订阅层整体下架后这些文件一个都不再产出（探针只会拿到 404）。
+  //
+  // t6（队长授权的契约例外，判据**变严不变松**）：T5 在这里写的是「0 条 rel="alternate"」——
+  // 那个判定对**首页**永远不可能为真：它把「订阅声明」与「hreflang 语言声明」数在了一起。
+  // 现在改用顶部的共享判据 `subscriptionDeclarationProblem()`（双侧：0 条带 `type` 的订阅声明，
+  // 且剩下的每一条都必须是 hreflang 语言声明），首页额外保留一条**本页事实**断言：
+  // `index.html:26-27` 恰好两枚 `hreflang`（`zh-CN` / `x-default`），由 `build-local.js:6268`
+  // 的首页自检反过来要求其存在。
+  const homeAlternates = await page.evaluate(() =>
+    [...document.querySelectorAll('link[rel="alternate"]')].map(l => ({
+      href: l.getAttribute('href') || '',
+      type: l.getAttribute('type') || '',
+      hreflang: l.getAttribute('hreflang') || ''
+    })));
+  const homeSubProblem = subscriptionDeclarationProblem(homeAlternates);
+  check('首页不再声明任何订阅源（0 条带 type 的 rel="alternate"；语言声明不算订阅）',
+    homeSubProblem === null, homeSubProblem || `alternate ${homeAlternates.length} 条，全部是 hreflang 语言声明`);
+  check('首页剩下的 rel="alternate" 恰好是 2 条 hreflang 语言声明（index.html:26-27），不是被抹掉 type 的订阅声明',
+    homeAlternates.length === 2 && homeAlternates.every(l => l.hreflang !== ''),
+    `${homeAlternates.length} 条：[${homeAlternates.map(l => `${l.hreflang || '(无 hreflang)'}${l.type ? `/${l.type}` : ''}`).join(', ')}]`);
 
   const ldTypes = await page.evaluate(() => [...document.querySelectorAll('script[type="application/ld+json"]')]
     .map(s => { try { return JSON.parse(s.textContent)['@type']; } catch (e) { return 'PARSE_ERROR'; } }));
   check('结构化数据含 WebSite 节点', ldTypes.includes('WebSite') && ldTypes.includes('Organization'),
     ldTypes.join(' / '));
 
-  // ---- 14b) 订阅中心 /feeds/ ----
-  console.log('\n=== 14b) 订阅中心 /feeds/ ===');
-  const feedsPageUrl = new URL('feeds/', base).href;
-  await page.goto(feedsPageUrl, { waitUntil: 'load' });
-  const feedsPage = await page.evaluate(() => {
-    // 页面上列出的订阅地址是**线上绝对 URL**（就是要让人复制走的），所以在浏览器里
-    // 一律不 fetch —— 那会真的打到 GitHub Pages。存在性在 Node 侧对产物目录逐条核。
-    const hrefs = [...new Set([...document.querySelectorAll('a[href]')].map(a => a.getAttribute('href')))]
-      .filter(href => /\/feed(\/|\.xml|\.json)/.test(href));
-    return {
-      title: document.title,
-      canonical: (document.querySelector('link[rel="canonical"]') || {}).href || '',
-      alternates: document.querySelectorAll('link[rel="alternate"]').length,
-      ldTypes: [...document.querySelectorAll('script[type="application/ld+json"]')]
-        .map(s => { try { return JSON.parse(s.textContent)['@type']; } catch (e) { return 'PARSE_ERROR'; } }),
-      rows: document.querySelectorAll('li.frow').length,
-      listed: hrefs,
-      text: document.body.textContent.replace(/\s+/g, ' ')
-    };
-  });
-  check('/feeds/ 存在且有标题', /订阅/.test(feedsPage.title), feedsPage.title);
-  check('/feeds/ canonical 自指', feedsPage.canonical.endsWith('/feeds/'), feedsPage.canonical);
-  check('/feeds/ 声明恰好两个订阅源（根 Feed 对）', feedsPage.alternates === 2, `${feedsPage.alternates} 个`);
-  check('/feeds/ JSON-LD 是 CollectionPage + BreadcrumbList',
-    JSON.stringify(feedsPage.ldTypes.slice().sort()) === JSON.stringify(['BreadcrumbList', 'CollectionPage']),
-    feedsPage.ldTypes.join(', '));
-  check('/feeds/ 列出了全部订阅源（每个厂商 Feed 一行）', feedsPage.rows >= 18, `${feedsPage.rows} 行`);
-  {
-    // 逐条对产物目录核对：页面上列出的每一个订阅地址都必须有对应文件
-    const sitePrefix = feedsPage.canonical.replace(/[^/]*$/, '');
-    const missing = feedsPage.listed
-      .map(href => href.replace(sitePrefix, ''))
-      .filter(route => /^feed(\/|\.)|^feed$/.test(route) && !fs.existsSync(path.join(DIR, decodeURIComponent(route))));
-    check('/feeds/ 上列出的每一个订阅地址都有对应产物文件',
-      feedsPage.listed.length >= 36 && missing.length === 0,
-      missing.length ? `缺 ${missing.slice(0, 3).join('、')}` : `${feedsPage.listed.length} 个地址全部存在`);
-  }
-  check('/feeds/ 明说不需要账号（无 JS 时也读得到）',
-    /没有账号|不需要账号/.test(feedsPage.text) && /没有邮件列表/.test(feedsPage.text));
-  // 变化流**为空**时，页面必须明说「这是空态 + 起算日」（不是一片空白）；
-  // **非空**时同一句话换成「N 条 + 最近一条日期」——两种状态都必须说清，只是说的内容不同。
-  // 只看「有没有起算句」会在非空时永远红，只看「有没有条数」会在空态漏掉「我们没查到」这句话。
-  {
-    const changeItems = feedProbe.targets['feed/changes.xml'] ? feedProbe.targets['feed/changes.xml'].items : 0;
-    const countLine = new RegExp(`最近变化\\s*${changeItems}\\s*条`);
-    check(`/feeds/ 的变化订阅按当前状态说清（空 ⇒ 起算日 / 非空 ⇒ 条数与最近一条日期）`,
-      changeItems > 0
-        ? countLine.test(feedsPage.text) && /最近一条\s*\d{4}-\d{2}-\d{2}/.test(feedsPage.text)
-        : /起算|记录自/.test(feedsPage.text),
-      changeItems > 0
-        ? `变化 ${changeItems} 条 · 页面写的是「最近变化 … 条 + 最近一条 …」`
-        : `变化流为空 · 页面写的是起算日`);
-  }
-  // v3.0 Stage H4：注册表里的**每一条变化流**都必须在订阅中心上被列出，
-  // 且 RSS / JSON Feed 两个地址都在（H4 要求「订阅中心一致」）。
-  for (const spec of feedsLib.PLAN_CHANGE_FEEDS) {
-    const hasTitle = feedsPage.text.includes(spec.title);
-    const hasRss = feedsPage.listed.some(href => href.endsWith(spec.path));
-    const hasJson = feedsPage.listed.some(href => href.endsWith(spec.jsonPath));
-    check(`/feeds/ 列出了「${spec.title}」的 RSS 与 JSON Feed`,
-      hasTitle && hasRss && hasJson,
-      `标题 ${hasTitle} · RSS ${hasRss} · JSON ${hasJson}`);
-  }
-  // 空态那一行的起算日取自**它自己**那份日志：只有真的为空时才写出来，
-  // 所以这里只断言「为空的那条变化流写出了起算日」。
-  // （「起算日取错来源」这条牙由 `feeds-selftest` 用**注入不同 startedAt 的夹具**钉住 ——
-  //   真实数据上两条日志的 startedAt 相同，在这里写断言会恒真、等于没有牙。）
+  /* ------------------------------------------------------------------ */
+  /* t5 删除：14b) 订阅中心 /feeds/ —— 整节                                */
+  /* ------------------------------------------------------------------ */
   //
-  // 「这一行是不是 0 条」的判据是 `lib/feeds.js` 的 `isZeroCountRow()`（**唯一出处**）。
-  // 这里刻意不再写 `/0 条/`：那是**子串**匹配，`10 条` / `80 条` / `100 条` 全都命中 ——
-  // t28 的 T28-F1 就是这么来的（API 价格变化长到 10 条之后，两条变化流都被当成空态、
-  // 都被要求写起算日 ⇒ 门禁自造假红）。判据改成数字边界后，只有真的说「0 条」的行才进空态分支。
-  {
-    const rowsOf = spec => {
-      const idx = feedsPage.text.indexOf(spec.title);
-      if (idx < 0) return null;
-      // 窗口右界取**下一条变化流标题**的下标（没有就退回 260 字符上限）：
-      // 固定长度窗口会把邻行的文案框进来，两条相邻空行时甚至能借到邻行的起算日。
-      const next = feedsLib.PLAN_CHANGE_FEEDS
-        .map(other => feedsPage.text.indexOf(other.title, idx + spec.title.length))
-        .filter(hit => hit >= 0)
-        .sort((a, b) => a - b)[0];
-      const end = Math.min(next === undefined ? idx + 260 : next, idx + 260);
-      return feedsPage.text.slice(idx, end);
-    };
-    const rows = feedsLib.PLAN_CHANGE_FEEDS.map(spec => ({ spec, row: rowsOf(spec) }));
-    const problems = rows.filter(({ row }) => row === null || !feedsLib.changeRowIsHonest(row));
-    check('/feeds/ 为空的变化流那一行写出了起算日',
-      problems.length === 0 && rows.every(({ row }) => row !== null),
-      rows.map(({ spec, row }) => row === null
-        ? `${spec.title}: 页面里找不到标题`
-        : `${spec.title}: 说 0 条=${feedsLib.isZeroCountRow(row)} · 有起算日=${feedsLib.hasChangeStartDate(row)}`).join(' | '));
-  }
+  // 为什么整节删：`/feeds/` 页面（订阅中心：25 份订阅 × RSS + JSON Feed、分组表、
+  // 空 Feed 的诚实性说明）本轮整体下架 ⇒ 页面、feed 文件、注册表一起消失。
+  // 这一节的六条断言（页面存在 / canonical / 恰好 2 条 alternate / JSON-LD 集合 /
+  // `li.frow >= 18` / listed >= 36 且逐文件存在 / 空变化流的起算日）全部失去被测对象。
+  // 同节「RSS 与 JSON 的条目 id 相等」那条口径属于 `feeds.js` 的序列化契约，随该模块一起退场；
+  // **页面侧**的新契约（任何页面都不再声明 alternate）改在每个页面族里各自断言。
 
   console.log('\n=== 15) 独立详情页 ===');
-  // 14b 把浏览器带到了 /feeds/，这一节要从首页取样 —— 显式回首页，
-  // 而不是依赖「上一步恰好还在首页」（那种隐式依赖一改顺序就炸）。
+  // 这一节要从首页取样 —— 显式回首页，而不是依赖「上一步恰好还在首页」（那种隐式依赖一改顺序就炸）。
+  // （t5：原先这里写的是「14b 把浏览器带到了 /feeds/」——14b 整节随 `/feeds/` 下架删除，
+  //  但显式导航的理由更强了：本节与上一节之间不再有任何页面跳转。）
   await page.goto(base, { waitUntil: 'load' });
   await waitForApp(page);
   const homeLink = await page.evaluate(() => {
@@ -1887,7 +1782,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
    *
    * 为什么必须在这里再验一遍（构建自检已经逐条对过账）：自检读的是**内存里的 payload**
    * 与渲染函数，而读者拿到的是**写盘后的静态页**。两者断的链路不同 —— 例如「块被写进
-   * dist/deals.json 却没进详情页」「详情页模板抽取时把这块截掉了」，自检都看不见。
+   * 首页数据资源却没进详情页」「详情页模板抽取时把这块截掉了」，自检都看不见。
    *
    * 四个取样都**现场从 deals.json 挑**（照 §8b 的写法），不硬编码标题：数据每天变，
    * 硬编码明天就是假红。缺样例时优雅跳过。
@@ -2143,7 +2038,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
    * 断言分四类：
    *   ① 三个路由都真的能打开、canonical 自指、控制台无错、无外部请求；
    *   ② **关掉 JS 也能读到表格与条目**（预渲染的硬定义）+ 三态措辞不压平；
-   *   ③ 页面上的条目集合与 dist/deals.json 里 `collections` 的筛选结果**逐 id 相等**
+   *   ③ 页面上的条目集合与首页数据资源里 `collections` 的筛选结果**逐 id 相等**
    *      （两个方向都查：页面少的、页面多的）；
    *   ④ 首页筛选器：点「学生」筛出来的**卡片数**与分类页的**条数**对得上 ——
    *      这条直接钉住「同一份判据」这件事：如果前端偷偷自己算一遍，两个数字迟早分家。
@@ -2154,7 +2049,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     { slug: 'free-api', key: 'free-api' }
   ];
 
-  // dist/deals.json 里 `collections` 的真值（浏览器与 node 都读这一份）
+  // 产物里首页那份数据资源（`assets/data/offers.json`）的 `collections` 真值 ——
+  // 它是本轮唯一允许发布的 JSON（页面自己就 fetch 它），所以这一支仍从**产物**读。
   const collectionTruth = await page.evaluate(`(async () => {
     const payload = await (await fetch(${DEALS_URL})).json();
     const deals = (payload.deals || []).filter(d => d.type === 'deal');
@@ -2178,10 +2074,12 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       rows: document.querySelectorAll('.ctable tbody tr').length,
       ids: [...document.querySelectorAll('.ctable tbody a[href*="/deal/"]')]
         .map(a => (a.getAttribute('href') || '').split('/deal/')[1] || '').map(s => s.replace(/\/$/, '')),
-      feeds: document.querySelectorAll('link[rel="alternate"]').length,
+      alternates: [...document.querySelectorAll('link[rel="alternate"]')].map(l => ({
+        href: l.getAttribute('href') || '', type: l.getAttribute('type') || '', hreflang: l.getAttribute('hreflang') || ''
+      })),
       ldTypes: [...document.querySelectorAll('script[type="application/ld+json"]')]
         .map(s => { try { return JSON.parse(s.textContent)['@type']; } catch (e) { return 'PARSE_ERROR'; } }),
-      text: document.body ? document.body.innerText.replace(/\\s+/g, ' ').trim().length : 0
+      text: document.body ? document.body.innerText.replace(/\s+/g, ' ').trim().length : 0
     }));
 
     const expectedIds = (collectionTruth && collectionTruth[route.slug]) || [];
@@ -2201,10 +2099,16 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       `${missing.length ? ` · 漏 ${missing.length}` : ''}${extra.length ? ` · 多 ${extra.length}` : ''}`);
     // 「恰好」而不是「包含」：只判包含时，多出一段结构化数据不会有任何东西变红。
     const COLLECTION_LD = ['BreadcrumbList', 'CollectionPage', 'ItemList'];
-    const wantFeeds = expectedFeedTags('collection', route.slug);
-    check(`/${route.slug}/ 恰好 ${wantFeeds} 个订阅源 + 恰好三段 JSON-LD（CollectionPage / BreadcrumbList / ItemList）`,
-      info.feeds === wantFeeds && JSON.stringify(info.ldTypes.slice().sort()) === JSON.stringify(COLLECTION_LD),
-      `feed ${info.feeds} 个 · JSON-LD [${info.ldTypes.join(', ')}]（期望 [${COLLECTION_LD.join(', ')}]）`);
+    // t5：订阅层整体下架 ⇒ 新契约从「恰好 N 个订阅源」变成「**一个都不许有**」。
+    // 这不是删断言：旧断言把声明的条数与注册表算出的数对上，而注册表已经不存在；
+    // 「必须 0 条订阅声明」在任何注册表形态下都成立，而且对「哪天溜回来一条」敏感 —— 比旧断言更严。
+    // t6：判据改用顶部的共享实现 `subscriptionDeclarationProblem()`（双侧：带 type 的必须 0 条，
+    // 剩下的必须全部是 hreflang 语言声明）—— 标签也改成说「订阅声明」，不再说裸选择器。
+    const collectionSubProblem = subscriptionDeclarationProblem(info.alternates);
+    check(`/${route.slug}/ 不再声明任何订阅源 + 恰好三段 JSON-LD（CollectionPage / BreadcrumbList / ItemList）`,
+      collectionSubProblem === null && JSON.stringify(info.ldTypes.slice().sort()) === JSON.stringify(COLLECTION_LD),
+      `${collectionSubProblem || `订阅声明 0 条（alternate 合计 ${info.alternates.length} 条，全部是 hreflang）`}`
+      + ` · JSON-LD [${info.ldTypes.join(', ')}]（期望 [${COLLECTION_LD.join(', ')}]）`);
     check(`/${route.slug}/ 没有 JS 错误、没有外部请求`,
       errors.length === errorsBefore && externalRequests.length === externalBefore,
       `错误 ${errors.length - errorsBefore} · 外部请求 ${externalRequests.length - externalBefore}`);
@@ -2302,7 +2206,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   })()`).catch(() => null);
 
   if (!needTruth || !Object.keys(needTruth.needs).length) {
-    check('dist/deals.json 里有按需求命中（needs 字段）', false, '读不到 deals.json 或 needs 为空');
+    check('产物里的首页数据资源存在按需求命中（needs 字段）', false, '读不到 assets/data/offers.json 或 needs 为空');
   } else {
     // 首页专题导航卡：逐张读出「href / 标题 / 条数 / 说明 / 图标 / 箭头」与几何（每张卡的矩形）。
     // ⚠️ 期望值一律不写死：卡数与逐条对账都跟 scripts/lib/audience.js 的 NEED_PAGES 比。
@@ -2379,7 +2283,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     // ① 卡数：注册表是唯一来源（NEED_PAGES.length），同时与「数据里真有命中的需求数」对账。
     check('首页专题导航卡：卡数 == NEED_PAGES.length（按注册表现算，不写死条数）',
       Boolean(navRow) && navRow.count === needPages.length,
-      navRow ? `${navRow.count} 张卡 / 注册表 ${needPages.length} 条需求 · dist/deals.json 里 ${Object.keys(needTruth.needs).length} 个需求有命中`
+      navRow ? `${navRow.count} 张卡 / 注册表 ${needPages.length} 条需求 · 首页数据资源里 ${Object.keys(needTruth.needs).length} 个需求有命中`
         : '找不到 nav.needs');
     check('首页有「按需求找优惠」入口行，且每条都是 <a>（无 JS 也能点）',
       Boolean(navRow) && navRow.count === Object.keys(needTruth.needs).length &&
@@ -2493,7 +2397,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         headers: [...document.querySelectorAll('.ctable thead th')].map(el => el.textContent.trim()),
         bodyHasEvidence: /适用人群：|福利类型含|定价模式：|分类：|需要信用卡：|中国大陆可用性：/.test(
           (document.querySelector('.ctable tbody') || {}).textContent || ''),
-        feeds: document.querySelectorAll('link[rel="alternate"]').length,
+        alternates: [...document.querySelectorAll('link[rel="alternate"]')].map(l => ({
+          href: l.getAttribute('href') || '', type: l.getAttribute('type') || '', hreflang: l.getAttribute('hreflang') || ''
+        })),
         ldTypes: [...document.querySelectorAll('script[type="application/ld+json"]')]
           .map(s => { try { return JSON.parse(s.textContent)['@type']; } catch (e) { return 'PARSE_ERROR'; } }),
         text: document.body ? document.body.innerText.replace(/\\s+/g, ' ').trim().length : 0,
@@ -2509,11 +2415,14 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         info.rows === expectedIds.length,
         `页面 ${info.ids.length} 条 / 数据 ${expectedIds.length} 条` +
         `${missing.length ? ` · 漏 ${missing.length}` : ''}${extra.length ? ` · 多 ${extra.length}` : ''}`);
-      const wantFeeds = expectedFeedTags('need', slug);
-      check(`/need/${slug}/ canonical 自指 + ${wantFeeds} 个订阅源 + 三段 JSON-LD`,
-        info.canonical.endsWith(`/need/${slug}/`) && info.feeds === wantFeeds &&
+      // t5：与 collection 族同一条新契约 —— 0 条订阅声明，而不是「等于注册表算出的条数」。
+      // t6：判据走顶部共享实现（双侧：带 type 的 0 条 + 剩下的必须是 hreflang 语言声明）。
+      const needSubProblem = subscriptionDeclarationProblem(info.alternates);
+      check(`/need/${slug}/ canonical 自指 + 不再声明任何订阅源 + 三段 JSON-LD`,
+        info.canonical.endsWith(`/need/${slug}/`) && needSubProblem === null &&
         JSON.stringify(info.ldTypes.slice().sort()) === JSON.stringify(['BreadcrumbList', 'CollectionPage', 'ItemList']),
-        `${info.canonical} · feed ${info.feeds} · JSON-LD [${info.ldTypes.join(', ')}]`);
+        `${info.canonical} · ${needSubProblem || `订阅声明 0 条（alternate 合计 ${info.alternates.length} 条，全部是 hreflang）`}`
+        + ` · JSON-LD [${info.ldTypes.join(', ')}]`);
       check(`/need/${slug}/ 有「为什么在这一页」一列且写了依据`,
         info.headers.includes('为什么在这一页') && info.bodyHasEvidence,
         `表头 [${info.headers.join(' | ')}]`);
@@ -3016,7 +2925,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       canonical: (document.querySelector('link[rel="canonical"]') || {}).href || '',
       rows: document.querySelectorAll('.stable tbody tr').length,
       statuses: [...document.querySelectorAll('.stt')].map(el => el.textContent.trim()),
-      feeds: document.querySelectorAll('link[rel="alternate"]').length,
+      alternates: [...document.querySelectorAll('link[rel="alternate"]')].map(l => ({
+        href: l.getAttribute('href') || '', type: l.getAttribute('type') || '', hreflang: l.getAttribute('hreflang') || ''
+      })),
       ldTypes: [...document.querySelectorAll('script[type="application/ld+json"]')]
         .map(s => { try { return JSON.parse(s.textContent)['@type']; } catch (e) { return 'PARSE_ERROR'; } }),
       healthLinks: [...document.querySelectorAll('a')]
@@ -3026,34 +2937,36 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     // 真值取机器可读的那一份：页面与它同源，但**浏览器里读出来的那一页**才算数。
     // ⚠️ 地址同样由 base 解析（`/status/` 是子路径）：写死根路径时本地绿、线上 404，
     //    而失败形态是「读不到 source-health.json」+ 一条 404 的 JS 错误 —— 看着像数据缺失。
-    const healthTruth = await page.evaluate(`(async () => {
-      const doc = await (await fetch(${JSON.stringify(new URL('source-health.json', base).href)})).json();
-      const rows = doc.sources || [];
-      const label = { healthy: '✅ 正常', degraded: '⚠️ 异常', failed: '❌ 失败' };
-      return { total: rows.length, labels: rows.map(r => label[r.status] || r.status) };
-    })()`).catch(() => null);
+    // t5：`healthTruth` 这一支整块删除 —— `source-health.json` 不再进产物，浏览器取不到它。
+    //     页面侧的「行数 == 标签数」自洽判据保留（见下），跨源对账交给构建期门禁。
 
+    // t5 删除：原「/status/ 行数与状态标签与 source-health.json 逐个对账」——
+    // 真值 `source-health.json` 本轮起不再发布（/status/ 也不再链它），浏览器里取不到。
+    // 真值侧的守卫没有丢：`selftest:health` 与构建期的源健康逐条对账仍在对**仓库根**的那一份上跑。
     check('/status/ 能打开且标题非空',
       Boolean(st.h1) && st.rows > 0, `「${st.h1}」· 表格 ${st.rows} 行 · 正文 ${st.text} 字`);
     check('/status/ canonical 自指',
       st.canonical.endsWith('/status/') && st.canonical.includes('buguoshixc.github.io'), st.canonical);
-    check('/status/ 行数与状态标签与 source-health.json 逐个对账',
-      Boolean(healthTruth) && st.rows === healthTruth.total &&
-      st.rows === st.statuses.length &&
-      st.statuses.slice().sort().join(',') === healthTruth.labels.slice().sort().join(','),
-      healthTruth
-        ? `页面 ${st.rows} 行 / 数据 ${healthTruth.total} 个 · 标签 [${[...new Set(st.statuses)].join(' ')}]`
-        : '读不到 source-health.json');
+    // t5：行数与状态标签的**自洽**仍然守着（对账的那一份数据改成构建期门禁的职责）。
+    check('/status/ 表格行数 == 状态标签数（每一行都有状态，没有半行）',
+      st.rows > 0 && st.rows === st.statuses.length,
+      `行 ${st.rows} · 标签 ${st.statuses.length} · 标签取值 [${[...new Set(st.statuses)].join(' ')}]`);
     // JSON-LD 断言**恰好等于**，不是「包含」：SCHEMA §10.4.1 明确写了这一页不发
     // Dataset / ItemList（机器可读的那份是 source-health.json，声明两次迟早分家）。
     // 只判包含的话，加第三段谁都不会发现 —— 那句承诺就没有守卫。
-    // feed 同理取「恰好两个」。
+    // t5：订阅层下架后这一页**不该有任何订阅声明**（原判据是「恰好两个」）。
+    // t6：判据走顶部共享实现（双侧：带 type 的 0 条 + 剩下的必须是 hreflang 语言声明）。
     const STATUS_LD = ['BreadcrumbList', 'WebPage'];
-    check('/status/ 补齐五条约定：恰好两个 feed + 恰好两段 JSON-LD（WebPage + BreadcrumbList）',
-      st.feeds === 2 && JSON.stringify(st.ldTypes.slice().sort()) === JSON.stringify(STATUS_LD),
-      `feed ${st.feeds} 个 · JSON-LD [${st.ldTypes.join(', ')}]（期望 [${STATUS_LD.join(', ')}]）`);
-    check('/status/ 有指向 source-health.json 的链接（机器可读的那一份）',
-      st.healthLinks > 0, `${st.healthLinks} 个`);
+    const statusSubProblem = subscriptionDeclarationProblem(st.alternates);
+    check('/status/ 补齐约定：0 条订阅声明 + 恰好两段 JSON-LD（WebPage + BreadcrumbList）',
+      statusSubProblem === null && JSON.stringify(st.ldTypes.slice().sort()) === JSON.stringify(STATUS_LD),
+      `${statusSubProblem || `订阅声明 0 条（alternate 合计 ${st.alternates.length} 条，全部是 hreflang）`}`
+      + ` · JSON-LD [${st.ldTypes.join(', ')}]（期望 [${STATUS_LD.join(', ')}]）`);
+    // t5 把原断言**反了过来**：原先要求「有指向 source-health.json 的链接（机器可读的那一份）」，
+    // 而那一份正是本轮要撤掉的读者面暴露 ⇒ 现在要求**一个都没有**。同一个读数、相反的判定：
+    // 这不是删断言，而是把「数据文件不许再出现在读者面」变成这条页面上的常驻牙。
+    check('/status/ 不再链接 source-health.json（数据文件已下架，读者面零暴露）',
+      st.healthLinks === 0, `命中 ${st.healthLinks} 条`);
     check('/status/ 没有 JS 错误、没有外部请求',
       errors.length === errorsBefore && externalRequests.length === externalBefore,
       `错误 ${errors.length - errorsBefore} · 外部请求 ${externalRequests.length - externalBefore}`);
@@ -3871,8 +3784,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   await page.goto(base, { waitUntil: 'load' });
   await waitForApp(page);
   const foldedFav = await (async () => {
-    const member = await page.evaluate(async () => {
-      const data = await (await fetch('deals.json')).json();
+    const member = await page.evaluate(async (dealsUrl) => {
+      const data = await (await fetch(dealsUrl)).json();
       const card = [...document.querySelectorAll('article.g')].find(c => (c.dataset.dealIds || '').split(',').length > 3);
       if (!card) return null;
       const ids = card.dataset.dealIds.split(',');
@@ -3883,7 +3796,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         rep: ids[0],
         deals: data.deals.length
       };
-    });
+    }, JSON.parse(DEALS_URL));
     if (!member) return { skipped: true };
     await page.evaluate(id => localStorage.setItem('dsh.favorites', JSON.stringify([id])), member.id);
     await page.goto(base, { waitUntil: 'load' });
@@ -3928,19 +3841,21 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   // ==================================================================
   console.log('\n=== 10b) 变化雷达（v1.5：首页条带 + /changes/ 静态页）===');
 
-  // 期望值在**测试侧**独立算一遍（不调用构建期的 buildRadar）：从 deals.json 拿基准日，
-  // 从 deal-history.json 拿事件，按「最近 7 天 + 已结束/重新出现 30 天」数出来。
-  // 这样这条断言才算第二把尺子，而不是把被测代码的答案抄一遍。
-  const DEALS_URL_RAW = new URL('deals.json', base).href;
-  const radarExpect = await page.evaluate(async (dealsUrl) => {
-    const payload = await (await fetch(dealsUrl)).json();
+  // 期望值在**测试侧**独立算一遍（不调用构建期的 buildRadar）：从**仓库根**的 `deals.json`
+  // 拿基准日、从 `ROOT/scripts/data/deal-history.json` 拿事件，按「最近 7 天 + 已结束/重新出现
+  // 30 天」数出来。这样这条断言才算第二把尺子，而不是把被测代码的答案抄一遍。
+  //
+  // t5（决策 D1）：两份文件本轮起都不再进产物，所以改在 **Node 侧读仓库根**再注进浏览器
+  // （浏览器里只判首页条带这一侧）。⚠️ 原来的写法用相对 deals URL 拼 `deal-history.json`
+  // （`new URL('deal-history.json', dealsUrl)`）—— 数据资产搬去 `assets/data/offers.json` 之后
+  // 那会解析到 `assets/data/deal-history.json`，一个**刻意不存在**的路径。
+  const radarDealsDoc = readRoot('deals.json');
+  const radarHistoryDoc = readRoot('scripts/data/deal-history.json');
+  // ⚠️ page.evaluate(fn, arg) **只接受一个**参数 —— 两份数据必须打成一个对象传进去
+  // （先前写成两个位置参数时第二个被静默忽略，页面里读到 `undefined.events` 直接抛错）。
+  const radarExpect = await page.evaluate(async ({ payload, historyDoc }) => {
     const asOf = String(payload.updatedAt || '').slice(0, 10);
-    const historyUrl = new URL('deal-history.json', dealsUrl).href;
-    let events = [];
-    try {
-      const doc = await (await fetch(historyUrl)).json();
-      events = Array.isArray(doc.events) ? doc.events : [];
-    } catch (error) { events = null; }
+    const events = Array.isArray(historyDoc.events) ? historyDoc.events : null;
     if (!events) return { unavailable: true };
     const day = n => new Date(Date.parse(`${asOf}T00:00:00Z`) + n * 86400000).toISOString().slice(0, 10);
     const recentFrom = day(-6);
@@ -3966,7 +3881,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       soon: soonIds.length,
       allowedIds: [...new Set([...highValueIds, ...soonIds])]
     };
-  }, DEALS_URL_RAW);
+  }, { payload: radarDealsDoc, historyDoc: radarHistoryDoc });
 
   await page.goto(base, { waitUntil: 'load' });
   await waitForApp(page);
@@ -4036,7 +3951,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       headings: heads,
       other: Boolean(document.querySelector('.chgother')),
       canonical: (document.querySelector('link[rel="canonical"]') || {}).href || '',
-      alternates: [...document.querySelectorAll('link[rel="alternate"]')].map(l => l.getAttribute('href') || ''),
+      alternates: [...document.querySelectorAll('link[rel="alternate"]')].map(l => ({
+        href: l.getAttribute('href') || '', type: l.getAttribute('type') || '', hreflang: l.getAttribute('hreflang') || ''
+      })),
       wrongPrefix: links.filter(href => href.startsWith('deal/')).length,
       links,
       // v2.3：套餐变化块
@@ -4071,24 +3988,14 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     changesPage.headings.join(' | '));
   check('/changes/ 有「不计入高价值的其他变化」折叠块', changesPage.other);
   check('/changes/ 的 canonical 自指', changesPage.canonical.endsWith('/changes/'), changesPage.canonical);
-  // v3.0 Stage H4：声明的变化订阅源 = 优惠变化那一对 + **注册表里每一条变化流各一对**。
-  // 判据从注册表派生（不写死 4/6）：加第三条变化流时这一页的声明数自动跟上，漏一条则红。
-  {
-    const expectedPairs = 1 + feedsLib.PLAN_CHANGE_FEEDS.length;
-    const perFeed = [['feed/changes.(xml|json)', '优惠变化']].concat(
-      feedsLib.PLAN_CHANGE_FEEDS.map(spec => [
-        spec.path.replace(/[.]/g, '\\.').replace(/\//g, '\\/') + '|' + spec.jsonPath.replace(/[.]/g, '\\.').replace(/\//g, '\\/'),
-        spec.id
-      ]));
-    const bad = perFeed.filter(([pattern]) => {
-      const re = new RegExp(`(${pattern})$`);
-      return changesPage.alternates.filter(href => re.test(href)).length !== 2;
-    }).map(([, label]) => label);
-    check('/changes/ 声明了每一条变化流各一对订阅源（优惠变化 + 注册表里的每一条）',
-      changesPage.alternates.length === expectedPairs * 2 && bad.length === 0,
-      `共 ${changesPage.alternates.length} 条（期望 ${expectedPairs * 2}）${bad.length ? ` · 缺/多：${bad.join(',')}` : ''} · ` +
-      changesPage.alternates.join(' · '));
-  }
+  // t5 删除：原「/changes/ 声明了每一条变化流各一对订阅源」的对账块（判据从注册表派生、
+  // 逐条正则匹配 `feed/changes.(xml|json)` 与每条变化流的路径）。订阅层整体下架 ⇒
+  // 页面不该再声明任何订阅源。新契约下的等价牙齿就在下面（t6 起走顶部共享判据：
+  // 双侧 —— 带 type 的必须 0 条、剩下的必须全部是 hreflang 语言声明）。
+  const changesSubProblem = subscriptionDeclarationProblem(changesPage.alternates);
+  check('/changes/ 不再声明任何订阅源（订阅层已整体下架）',
+    changesSubProblem === null,
+    changesSubProblem || `订阅声明 0 条（alternate 合计 ${changesPage.alternates.length} 条，全部是 hreflang）`);
   check('/changes/ 的内链都带输出深度前缀（../deal/…）', changesPage.wrongPrefix === 0,
     changesPage.wrongPrefix ? `${changesPage.wrongPrefix} 条前缀错误` : `抽查 ${changesPage.links.length} 条`);
 
@@ -4158,201 +4065,16 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   check('/changes/ API 价格变化块没有在日志可用时说「没有拿到日志」',
     !changesPage.apiUnavailable, changesPage.apiUnavailable ? '描述写错了（日志其实可用）' : '措辞正确');
 
-  // v3.0 Stage H2：API 价格变化订阅源本身（RSS + JSON Feed）必须能取到，
-  // 且 guid **逐条等于**产物那份 `api-plan-history.json` 的派生事件身份 ——
-  // 「不能每次 build 重新生成」这条承诺只有在这里能被独立复核。
+  /* ------------------------------------------------------------------ */
+  /* t5 删除：API 价格变化订阅源（RSS + JSON Feed）的 guid / 窗口对账整块     */
+  /* ------------------------------------------------------------------ */
   //
-  // ⚠️ t32（feed-guid-window-judge-fix-v1）修掉的一处**只在巧合下成立**的判据：
-  //    旧版在这里比的是「feed 条数 == 日志**全部**事件数」，而订阅源的分栏口径是**窗口**
-  //    （唯一实现 `scripts/lib/plan-changes.js` 的 `PLAN_CHANGES_WINDOWS`）：
-  //      · `created` / `changed`：`at >= asOf - (recentDays-1)` ← 7 天窗口，`asOf-6` 在内；
-  //      · `ended` / `restored`：`at >= asOf - (endedDays-1)` ← 30 天窗口（**不是同一个窗口**）；
-  //      · `asOf` = `api-plans.json.updatedAt` 的**前 10 位**（build-local.js 的 `radarAsOf`），
-  //        取的是**数据时间**而不是构建时刻；
-  //      · `type === 'updated'`（记录级元信息）不进订阅（feeds.js `changeItemsFor`）；
-  //      · 每个分栏最多 30 条（`PLAN_CHANGES_LIMITS.itemsPerSection`）。
-  //    实测巧合：master 的日志 17 条`at` 全落在 2026-09-29..2026-10-05（asOf=2026-10-05）⇒ 17/17 ✓。
-  //    任何一次如实的数据更新都会把它弄红：t28 把 anthropic 的 `lastSeen` 推到 2026-10-08
-  //    ⇒ 窗口变成 2026-10-02..10-08 ⇒ 日志里 6 条 2026-10-01 的 `created` 掉出窗口 ⇒ 12/18 ✗。
-  //    **那不是数据错，是判据错**：feed 本来就不该包含窗口外的事件。
-  //
-  // 现在按**设计口径**比，而且窗口在这里**独立重算**（不 require `plan-changes.js` 的窗口逻辑）——
-  // 否则这条判据就退化成「用产品自己的实现证明产品自己」，产品口径写错时它一样绿。
-  // 代价是一条**登记在案的边界**：镜像常量必须与产品声明同步（下面那颗「漂移即红」的守卫盯着它）。
-  {
-    const historyFile = path.join(DIR, 'api-plan-history.json');
-    const historyEvents = fs.existsSync(historyFile)
-      ? (JSON.parse(fs.readFileSync(historyFile, 'utf8')).events || [])
-      : [];
-    const eventIds = new Set(historyEvents.map(event => event.eventId).filter(Boolean));
-    const feedPaths = ['feed/plans/api/changes.xml', 'feed/plans/api/changes.json'];
-
-    // ---- 窗口的**独立重算**（镜像口径，每条都注明产品出处）--------------------------------
-    // 与 `check-ci-consistency.js` 读 `action.yml` 同一手法：这里只**自己算**，不调用产品实现。
-    const API_FEED_WINDOW_MIRROR = {
-      recentDays: 7,                 // plan-changes.js: `PLAN_CHANGES_WINDOWS.recentDays`
-      endedDays: 30,                 // plan-changes.js: `PLAN_CHANGES_WINDOWS.endedDays`
-      metaFieldTypes: ['updated'],   // plan-changes.js: `API_PLAN_META_FIELD_TYPES`（feeds.js 同一条过滤）
-      sectionCap: 30                 // plan-changes.js: `PLAN_CHANGES_LIMITS.itemsPerSection`
-    };
-    const API_FEED_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
-    /** 基准日加减天数（与 `changes.addDays` 同口径：按 UTC 日的纯日期算术，不碰本地时区） */
-    const apiFeedAddDays = (date, delta) => (API_FEED_DATE_RE.test(String(date || ''))
-      ? new Date(Date.parse(`${date}T00:00:00Z`) + delta * 86400000).toISOString().slice(0, 10)
-      : null);
-    /** 日期差（later - earlier，单位天）；任一非法返回 null（与 `changes.daysBetween` 同口径） */
-    const apiFeedDaysBetween = (later, earlier) => {
-      if (!API_FEED_DATE_RE.test(String(later || '')) || !API_FEED_DATE_RE.test(String(earlier || ''))) return null;
-      const a = Date.parse(`${later}T00:00:00Z`);
-      const b = Date.parse(`${earlier}T00:00:00Z`);
-      if (!Number.isFinite(a) || !Number.isFinite(b)) return null;
-      return Math.round((a - b) / 86400000);
-    };
-    const apiPlansFile = path.join(DIR, 'api-plans.json');
-    const apiPlansDoc = fs.existsSync(apiPlansFile)
-      ? JSON.parse(fs.readFileSync(apiPlansFile, 'utf8'))
-      : null;
-    // asOf 是**数据时间**：`api-plans.json.updatedAt` 的前 10 位（build-local.js: `radarAsOf`）
-    const apiFeedAsOf = String((apiPlansDoc && apiPlansDoc.updatedAt) || '').slice(0, 10);
-    const apiFeedAsOfOk = API_FEED_DATE_RE.test(apiFeedAsOf);
-    const apiFeedRecentFrom = apiFeedAsOfOk
-      ? apiFeedAddDays(apiFeedAsOf, -(API_FEED_WINDOW_MIRROR.recentDays - 1)) : null;
-    const apiFeedEndedFrom = apiFeedAsOfOk
-      ? apiFeedAddDays(apiFeedAsOf, -(API_FEED_WINDOW_MIRROR.endedDays - 1)) : null;
-    /** 这条事件用哪个窗口：ended / restored 走 30 天，其余走 7 天（plan-changes.js 的分栏循环） */
-    const apiFeedFromOf = event => ((event.type === 'ended' || event.type === 'restored')
-      ? apiFeedEndedFrom : apiFeedRecentFrom);
-    // 期望集 = 日志里**落在窗口内**的事件（脏事件 / 未来日期 / 元信息 / 非 12 位 hex 身份全部排除）
-    const apiFeedWindowEvents = apiFeedAsOfOk ? historyEvents.filter(event => {
-      if (!event || typeof event !== 'object') return false;
-      if (typeof event.at !== 'string' || !API_FEED_DATE_RE.test(event.at)) return false;   // 脏事件不渲染
-      const diff = apiFeedDaysBetween(event.at, apiFeedAsOf);
-      if (diff === null || diff > 0) return false;                                          // 未来日期不渲染
-      return event.at >= apiFeedFromOf(event);
-    }) : [];
-    const apiFeedExpectedIds = apiFeedWindowEvents
-      .filter(event => !API_FEED_WINDOW_MIRROR.metaFieldTypes.includes(event.type))
-      .filter(event => typeof event.eventId === 'string' && /^[0-9a-f]{12}$/.test(event.eventId))
-      .map(event => event.eventId);
-    // 分栏上限：总数 ≤ 每栏上限 ⇒ **任一栏都不可能被截断**（保守前提，宁严不宽）
-    const apiFeedCapBites = apiFeedExpectedIds.length > API_FEED_WINDOW_MIRROR.sectionCap;
-    // ⚠️ 必须取到**当前被验收那一份站点**的根，而不是 `location.origin + '/'`。
-    //
-    // 这一条曾经写错、并在**线上冒烟时**才暴露：本站是 GitHub 项目页，线上地址带一级子路径
-    // （`/ai-deals-aggregator/`），而 `location.origin + '/'` 会把它丢掉 ⇒ 请求
-    // `https://buguoshixc.github.io/feed/plans/api/changes.xml` ⇒ 404。
-    // 更糟的是那两条 404 会**顺带把「没有 JS 错误」也带红** —— 一个自己的失误伪装成两个问题
-    // （这条注释原本就写在这里警告过，但实现没跟上；现在实现与警告一致）。
-    //
-    // 判据：canonical 与当前路径**共享第一段**时，那一段就是站点前缀（子路径部署）。
-    // 这个判据在两种验收模式下都成立：
-    //   · 本地验收（`verify-site.js` 默认）：当前在 `127.0.0.1/...`，canonical 指向生产域，
-    //     第一段不同 ⇒ 前缀取 `/` ⇒ 取的就是本地服务上的那份产物；
-    //   · 线上验收（`--url=`）：当前与 canonical 都在同一子路径下 ⇒ 前缀取该子路径。
-    // 因此它**永远取当前被验收的那一份**，不会退化成"本地验收却去 fetch 生产站点"。
-    // 已知限制：站点若部署在根路径且页面有 ≥3 段（本仓不存在这种情形），回退为父目录。
-    // 注意：`page.evaluate` 的函数体**只在浏览器上下文里执行**，拿不到 Node 侧的变量，
-    // 所以 `feedBaseHref` 的逻辑必须**内联**在下面这个函数里（不能引用外面的同名函数）。
-    const probe = await page.evaluate(async (paths) => {
-      const out = {};
-      const seg = p => String(p || '').split('/').filter(Boolean);
-      const cur = new URL(location.href);
-      const canonicalHref = (document.querySelector('link[rel="canonical"]') || {}).href || '';
-      let feedBase;
-      try {
-        const canon = new URL(canonicalHref);
-        const curSegs = seg(cur.pathname);
-        const canonSegs = seg(canon.pathname);
-        const prefix = (curSegs.length && canonSegs.length && curSegs[0] === canonSegs[0]) ? `/${curSegs[0]}/` : '/';
-        feedBase = cur.origin + prefix;
-      } catch (error) {
-        feedBase = new URL('.', location.href).href;
-      }
-      for (const p of paths) {
-        const response = await fetch(new URL(p, feedBase).href);
-        out[p] = { ok: response.ok, status: response.status, body: await response.text() };
-      }
-      return out;
-    }, feedPaths);
-    const xml = (probe[feedPaths[0]] || {}).body || '';
-    const jsonFeed = (probe[feedPaths[1]] || {}).body || '';
-    let jsonGuids = [];
-    try { jsonGuids = (JSON.parse(jsonFeed).items || []).map(item => item.id); } catch (error) { jsonGuids = null; }
-    const xmlGuids = [...xml.matchAll(/<guid[^>]*>([^<]+)<\/guid>/g)].map(m => m[1]);
-    check('API 价格变化订阅源可取（RSS + JSON Feed 各一份，HTTP 200）',
-      probe[feedPaths[0]].ok && probe[feedPaths[1]].ok,
-      `HTTP ${probe[feedPaths[0]].status} / ${probe[feedPaths[1]].status}`);
-    // ---- 边界守卫（t32）：镜像常量 ↔ 产品声明的**漂移即红** --------------------------------
-    // 「独立重算」的代价是镜像可能与产品声明分叉。把它做成机器可读 —— 只解析**声明文本**，
-    // 不 require 产品模块（判据的**计算**仍然独立），与 `check-ci-consistency.js` 读 `action.yml`
-    // 同一条纪律：口径改了而这里没跟，必须**红**，不许静默失守。
-    const apiFeedPlanChangesSrc = fs.readFileSync(path.join(ROOT, 'scripts/lib/plan-changes.js'), 'utf8');
-    const apiFeedBlockOf = name => {
-      const m = apiFeedPlanChangesSrc.match(new RegExp(`${name}\\s*=\\s*\\{([\\s\\S]*?)\\n\\}`));
-      return m ? m[1] : '';
-    };
-    const apiFeedDeclaredNumber = (block, key) => {
-      const m = block.match(new RegExp(`${key}\\s*:\\s*(\\d+)`));
-      return m ? Number(m[1]) : null;
-    };
-    const apiFeedDeclaredMeta = (() => {
-      const m = apiFeedPlanChangesSrc.match(/API_PLAN_META_FIELD_TYPES\s*=\s*(\[[^\]]*\])/);
-      if (!m) return null;
-      try { return JSON.parse(m[1].replace(/'/g, '"')); } catch (error) { return null; }
-    })();
-    const apiFeedDeclaredRecent = apiFeedDeclaredNumber(apiFeedBlockOf('PLAN_CHANGES_WINDOWS'), 'recentDays');
-    const apiFeedDeclaredEnded = apiFeedDeclaredNumber(apiFeedBlockOf('PLAN_CHANGES_WINDOWS'), 'endedDays');
-    const apiFeedDeclaredCap = apiFeedDeclaredNumber(apiFeedBlockOf('PLAN_CHANGES_LIMITS'), 'itemsPerSection');
-
-    // 期望集与 feed 的比较放在这里（`jsonGuids` 已就绪；上面那段只做**纯数据**的窗口重算）
-    const apiFeedMissing = Array.isArray(jsonGuids)
-      ? apiFeedExpectedIds.filter(id => !jsonGuids.includes(id))
-      : apiFeedExpectedIds;
-    check('API 价格变化订阅的 guid 逐条等于日志里**落在当前窗口内**的派生事件身份（不是每次 build 重新生成）',
-      Array.isArray(jsonGuids) && apiFeedAsOfOk && !apiFeedCapBites && apiFeedExpectedIds.length > 0
-      && jsonGuids.length === apiFeedExpectedIds.length          // ① 条数 == **窗口内**事件数（旧版比的是全量 ⇒ 只在巧合下成立）
-      && jsonGuids.every(id => eventIds.has(id))                 // ② 每条 guid ∈ 日志全量身份空间（既有牙齿，保留）
-      && JSON.stringify(xmlGuids) === JSON.stringify(jsonGuids),  // ③ RSS 与 JSON 逐条相同（既有牙齿，保留）
-      `JSON ${Array.isArray(jsonGuids) ? jsonGuids.length : 'n/a'} 条 / RSS ${xmlGuids.length} 条`
-      + ` / 窗口内日志 ${apiFeedExpectedIds.length} 条（日志全量事件 ${eventIds.size} 条 · asOf ${apiFeedAsOf || '—'}`
-      + ` · 窗口 ${apiFeedRecentFrom || '—'}..${apiFeedAsOf || '—'}，ended/restored 用 ${apiFeedEndedFrom || '—'}..）`
-      + (apiFeedCapBites
-        ? ` · ⚠️ 窗口内 ${apiFeedExpectedIds.length} 条 > 分栏上限 ${API_FEED_WINDOW_MIRROR.sectionCap}：`
-          + '条数等式不再成立，判据需要按分栏镜像截断（这是**如实报出的边界**，不是数据错）' : ''));
-    // 新牙（t32）：上面那颗只能证明「**条数**对」。它挡不住「少一条窗口内、多一条窗口外」这类**集合**错 ——
-    // 那时条数仍相等、每条 guid 也仍 ∈ 日志（窗口外那条本来就是真事件）⇒ 上面三条全过。
-    // 这里逐条点名：日志里**窗口内的每一条**事件都必须出现在 feed 里。
-    check('API 价格变化订阅：日志里**窗口内的每一条**事件都出现在 feed 里（只比条数挡不住「换掉一条」）',
-      Array.isArray(jsonGuids) && apiFeedAsOfOk && !apiFeedCapBites && apiFeedMissing.length === 0,
-      apiFeedMissing.length
-        ? `窗口内 ${apiFeedExpectedIds.length} 条里有 ${apiFeedMissing.length} 条没进 feed：${apiFeedMissing.join(', ')}`
-        : `窗口内 ${apiFeedExpectedIds.length} 条逐条命中（feed ${Array.isArray(jsonGuids) ? jsonGuids.length : 'n/a'} 条`
-          + ` · 日志全量 ${eventIds.size} 条，其中 ${eventIds.size - apiFeedExpectedIds.length} 条在窗口外 —— **窗口外缺席不算错**）`);
-    check('API 变化订阅的窗口镜像常量与产品声明一致（漂移即红：改 recentDays / endedDays / 元信息类型 / 分栏上限都必须同步这条判据）',
-      apiFeedDeclaredRecent === API_FEED_WINDOW_MIRROR.recentDays
-      && apiFeedDeclaredEnded === API_FEED_WINDOW_MIRROR.endedDays
-      && apiFeedDeclaredCap === API_FEED_WINDOW_MIRROR.sectionCap
-      && Array.isArray(apiFeedDeclaredMeta)
-      && JSON.stringify(apiFeedDeclaredMeta) === JSON.stringify(API_FEED_WINDOW_MIRROR.metaFieldTypes),
-      `产品声明（scripts/lib/plan-changes.js）recentDays ${apiFeedDeclaredRecent} / endedDays ${apiFeedDeclaredEnded}`
-      + ` / 分栏上限 ${apiFeedDeclaredCap} / 元信息 ${JSON.stringify(apiFeedDeclaredMeta)}`
-      + ` ↔ 判据镜像 ${JSON.stringify(API_FEED_WINDOW_MIRROR)}`
-      + (apiFeedDeclaredRecent === null || apiFeedDeclaredEnded === null
-        || apiFeedDeclaredCap === null || !Array.isArray(apiFeedDeclaredMeta)
-        ? ' · ⚠️ 产品声明没解析出来（改名 / 改格式？）：这**不算通过**，请人工确认镜像是否仍然成立' : ''));
-    check('API 价格变化订阅的链接全部指向 /plans/api/#plan-<id>（跨页深链，不是本页锚点）',
-      xmlGuids.length > 0 && feedsLib.parseRssItems(xml)
-        .every(item => /\/plans\/api\/#plan-[0-9a-f]{12}$/.test(String(item.link || ''))),
-      `${xmlGuids.length} 条`);
-    check('API 价格变化订阅里没有混入 Coding 套餐事件（两份日志的身份空间不相交）',
-      (() => {
-        const planFile = path.join(DIR, 'plan-history.json');
-        const planIds = new Set(fs.existsSync(planFile)
-          ? (JSON.parse(fs.readFileSync(planFile, 'utf8')).events || []).map(event => event.eventId).filter(Boolean)
-          : []);
-        return Array.isArray(jsonGuids) && jsonGuids.every(id => !planIds.has(id));
-      })(), Array.isArray(jsonGuids) ? jsonGuids.join(',') : 'n/a');
-  }
+  // 为什么整块删：这一块（含 `API_FEED_WINDOW_MIRROR` 的独立重算）验的是
+  // `feed/plans/api/changes.{xml,json}` 的 guid 逐条等于窗口内的派生事件身份、
+  // 「RSS 与 JSON 逐条相同」「没有混入 Coding 套餐事件」。订阅层整体下架后这些文件不再产出，
+  // 真值（`api-plan-history.json`）与判据（feed 产物）同时消失。
+  // 窗口口径本身没有丢守卫：`scripts/lib/plan-changes.js` 的窗口常量仍由
+  // `check-plan-history.js` / `selftest:api-plans` 这类**对账仓库根源文件**的门禁盯着。
 
   // 雷达行 → 单条优惠的详情页（要求 4：详情页能看单条优惠的历史）。
   // 没有可点的雷达行时如实报「本轮无样本」，并改验另一条出口（条带 → /changes/）。
@@ -4517,7 +4239,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
           crumbs: [...document.querySelectorAll('.crumb a')].map(a => a.getAttribute('href') || ''),
           summaryRows: document.querySelectorAll('[data-summary-label]').length,
           robots: (document.querySelector('meta[name="robots"]') || {}).content || 'index, follow',
-          feeds: document.querySelectorAll('link[rel="alternate"]').length,
+          alternates: [...document.querySelectorAll('link[rel="alternate"]')].map(l => ({
+            href: l.getAttribute('href') || '', type: l.getAttribute('type') || '', hreflang: l.getAttribute('hreflang') || ''
+          })),
           text: document.body ? document.body.innerText.replace(/\s+/g, ' ').trim().length : 0
         };
       });
@@ -4540,8 +4264,13 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         const parent = sample.kind === 'category' ? 'category/' : 'vendor/';
         check(`${sample.label} /${sample.route} 面包屑指向真实存在的枢纽页`,
           info.crumbs.some(href => href.endsWith(`/${parent}`)), info.crumbs.join(' '));
-        check(`${sample.label} /${sample.route} 有数据摘要块且声明了自己的订阅源`,
-          info.summaryRows >= 1 && info.feeds === 4, `摘要 ${info.summaryRows} 行 · feed ${info.feeds} 个`);
+        // t5：与 collection / need 两族同一条新契约 —— 分类页与厂商页也**一个订阅源都不许声明**。
+        // 旧断言是「恰好 4 个」（根 Feed 对 + 它自己那一对），判据来自已下架的订阅注册表。
+        // t6：判据走顶部共享实现（双侧：带 type 的 0 条 + 剩下的必须是 hreflang 语言声明）。
+        const landingSubProblem = subscriptionDeclarationProblem(info.alternates);
+        check(`${sample.label} /${sample.route} 有数据摘要块且不再声明任何订阅源`,
+          info.summaryRows >= 1 && landingSubProblem === null,
+          `摘要 ${info.summaryRows} 行 · ${landingSubProblem || `订阅声明 0 条（alternate 合计 ${info.alternates.length} 条，全部是 hreflang）`}`);
       }
       if (sample.kind === 'hub') {
         check(`${sample.label} /${sample.route} 的每一行都是子页链接（不夹带条目行）`,
@@ -4605,19 +4334,16 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       footLinks: [...document.querySelectorAll('footer a')].map(a => a.getAttribute('href') || ''),
       text: document.body ? document.body.innerText.replace(/\s+/g, ' ').trim() : ''
     }));
-    // 真值取机器可读的那一份（`dist/plans.json`）。地址同样由 base 解析 ——
-    // 写死根路径时本地绿、线上 404，而失败形态是「读不到数据」+ 一条 404 的 JS 错误。
-    const plansTruth = await page.evaluate(`(async () => {
-      const doc = await (await fetch(${JSON.stringify(new URL('plans.json', base).href)})).json();
-      return (doc.plans || []).map(p => ({
-        id: p.id,
-        planName: p.planName,
-        officialUrl: p.officialUrl,
-        regular: p.billing.regularPrice,
-        promo: p.billing.promoPrice,
-        unit: p.derivedMetrics && p.derivedMetrics.nominalUnitPrice ? p.derivedMetrics.nominalUnitPrice.price : null
-      }));
-    })()`).catch(() => null);
+    // 真值改从**仓库根**读（决策 D1）：`dist/plans.json` 本轮起不再发布，
+    // 而页面渲染的就是仓库根那一份。映射在 Node 侧做完 —— 浏览器侧只负责量页面。
+    const plansTruth = readRoot('plans.json').plans.map(p => ({
+      id: p.id,
+      planName: p.planName,
+      officialUrl: p.officialUrl,
+      regular: p.billing.regularPrice,
+      promo: p.billing.promoPrice,
+      unit: p.derivedMetrics && p.derivedMetrics.nominalUnitPrice ? p.derivedMetrics.nominalUnitPrice.price : null
+    }));
 
     check('/plans/coding/ 能打开且恰好一个 h1',
       pt.h1Count === 1 && pt.text.length > 1200 && /套餐/.test(pt.h1),
@@ -4715,18 +4441,16 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     await page.goto(plansRouteUrl, { waitUntil: 'load' });
     await page.waitForSelector('.pctl .f[data-facet]', { timeout: 10000 });
 
-    const truth = await page.evaluate(`(async () => {
-      const doc = await (await fetch(${JSON.stringify(new URL('plans.json', base).href)})).json();
-      return (doc.plans || []).map(p => ({
-        id: p.id, provider: p.provider, region: p.region, quotaType: p.quota.type,
-        period: p.billing.period, currency: p.billing.currency,
-        regular: p.billing.regularPrice, promo: p.billing.promoPrice,
-        officialUrl: p.officialUrl,
-        models: Array.isArray(p.supportedModels) ? p.supportedModels.map(m => m.name) : [],
-        modelsMissing: !Array.isArray(p.supportedModels),
-        unit: p.derivedMetrics && p.derivedMetrics.nominalUnitPrice ? p.derivedMetrics.nominalUnitPrice.price : null
-      }));
-    })()`);
+    // t5（决策 D1）：真值改从仓库根读（`dist/plans.json` 不再发布），映射在 Node 侧做完。
+    const truth = readRoot('plans.json').plans.map(p => ({
+      id: p.id, provider: p.provider, region: p.region, quotaType: p.quota.type,
+      period: p.billing.period, currency: p.billing.currency,
+      regular: p.billing.regularPrice, promo: p.billing.promoPrice,
+      officialUrl: p.officialUrl,
+      models: Array.isArray(p.supportedModels) ? p.supportedModels.map(m => m.name) : [],
+      modelsMissing: !Array.isArray(p.supportedModels),
+      unit: p.derivedMetrics && p.derivedMetrics.nominalUnitPrice ? p.derivedMetrics.nominalUnitPrice.price : null
+    }));
 
     const visibleIds = () => page.evaluate(() =>
       [...document.querySelectorAll('.ptable tbody tr[data-item]')]
@@ -5138,19 +4862,21 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         `每句行数 [${notes.lines.join(' ')}] · 最多 ${notes.maxLines} 行`);
     }
 
-    // ⑩ v2.3：套餐变化（最近变化块 / 行锚点 / 时间线 / 订阅源）
+    // ⑩ v2.3：套餐变化（最近变化块 / 行锚点 / 时间线）
     //
-    // 判据一律**现场从 plan-history.json 推导**（不硬编码条数与文案）：日志每天可能变，
+    // 判据一律**现场从变化日志推导**（不硬编码条数与文案）：日志每天可能变，
     // 硬编码会在明天变成假红。这里刻意**不重算雷达分栏**（那是 `lib/plan-changes.js` 的判据，
-    // 复刻一份就等于两套判据）——只对账三件不依赖判据的事实：
+    // 复刻一份就等于两套判据）——只对账两件不依赖判据的事实：
     //   ① 块里每条的日期都真的在日志里，且条数 ≤ 上限；
-    //   ② 块里每条的 `#plan-<id>` 锚点在页面上真的有落点；
-    //   ③ 订阅源里每条的 guid 都等于日志里重算出来的事件身份。
+    //   ② 块里每条的 `#plan-<id>` 锚点在页面上真的有落点。
+    // （第三条「订阅源里每条的 guid 等于日志事件身份」随订阅层下架删除 —— feed 不再产出。）
     {
       await page.goto(plansRouteUrl, { waitUntil: 'load' });
+      // t5（决策 D1）：两份真值（套餐变化日志 + 套餐表）改从**仓库根**读再注进来 ——
+      // 产物里已经没有它们了（`plan-history.json` / `plans.json` 本轮起不发布）。
       const planData = await page.evaluate(`(async () => {
-        const history = await (await fetch(${JSON.stringify(new URL('plan-history.json', base).href)})).json();
-        const plans = await (await fetch(${JSON.stringify(new URL('plans.json', base).href)})).json();
+        const history = ${JSON.stringify(readRoot('scripts/data/plan-history.json'))};
+        const plans = ${JSON.stringify(readRoot('plans.json'))};
         return {
           startedAt: history.startedAt || null,
           eventIds: (history.events || []).map(e => e.eventId).filter(Boolean),
@@ -5210,7 +4936,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
           planData.block.links.some(href => /changes\//.test(href)), planData.block.links.join(' '));
       }
 
-      check('/plans/coding/ 每个套餐行都有 #plan-<id> 锚点（订阅与最近变化的落点）',
+      check('/plans/coding/ 每个套餐行都有 #plan-<id> 锚点（最近变化与跨页深链的落点）',
         planData.rowAnchors.length === planData.planIds.length &&
         planData.planIds.every(id => planData.rowAnchors.includes(`plan-${id}`)),
         `${planData.rowAnchors.length} 个锚点 / ${planData.planIds.length} 条套餐`);
@@ -5249,30 +4975,10 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         await page.click(`.ptable [data-detail="${firstId}"]`);
       }
 
-      // 订阅源：guid 必须等于日志里的事件身份，链接必须带页内锚点
-      const planFeed = await page.evaluate(`(async () => {
-        const res = await fetch(${JSON.stringify(new URL('feed/plans/coding/changes.xml', base).href)});
-        const xml = await res.text();
-        const doc = new DOMParser().parseFromString(xml, 'application/xml');
-        return {
-          status: res.status,
-          parserError: doc.querySelector('parsererror') ? doc.querySelector('parsererror').textContent.slice(0, 100) : null,
-          guids: [...doc.querySelectorAll('item > guid')].map(g => (g.textContent || '').trim()),
-          links: [...doc.querySelectorAll('item > link')].map(l => (l.textContent || '').trim())
-        };
-      })()`).catch(error => ({ status: -1, error: String(error), guids: [], links: [] }));
-      check('/plans/coding/ 的套餐变化订阅源可访问且良构',
-        planFeed.status === 200 && !planFeed.parserError && planFeed.error === undefined,
-        `HTTP ${planFeed.status}${planFeed.parserError ? ` · ${planFeed.parserError}` : ''}`);
-      check('套餐变化订阅源的每一条 guid 都等于日志里重算出来的事件身份',
-        planFeed.guids.every(guid => planData.eventIds.includes(guid)),
-        `${planFeed.guids.length} 条 guid（日志 ${planData.eventIds.length} 条事件）`);
-      check('套餐变化订阅源的每一条链接都落在套餐对比页的某一行上',
-        planFeed.links.every(link => {
-          const id = (link.match(/#plan-([0-9a-f]{12})$/) || [])[1];
-          return Boolean(id) && planData.rowAnchors.includes(`plan-${id}`);
-        }),
-        planFeed.links.slice(0, 2).join(' '));
+    // t5 删除：/plans/coding/ 的套餐变化订阅源（`feed/plans/coding/changes.xml`）那一组断言 ——
+    // guid 等于日志事件身份 / 链接落在套餐页某一行上。订阅层下架后这份 feed 不再产出，
+    // 被测对象消失。「guid 来自日志身份」这条判据在 `plan-history-selftest` 与
+    // `check-plan-history.js` 里对**仓库根**的日志仍有承重面。
     }
 
     // ⑨ 关掉 JS：基础静态内容必须仍在，而且一个控件都不能有（无死按钮）
@@ -5312,17 +5018,19 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
 
   // ⑪ v2.4：优惠 ↔ 套餐（Deal → Plan / Plan → Deal）真实浏览器对账
   //
-  // 判据**现场从产物重算**：读 `dist/deal-plan-links.json` + `dist/deals.json` + `dist/plans.json`
-  // （外加 deal-history 的 ended 事件），自己判断"哪些关系算当前"，再与页面上的 DOM 逐条对账。
+  // 判据**现场重算**：读 `ROOT/scripts/data/deal-plan-links.json` + `ROOT/deals.json` +
+  // `ROOT/plans.json`（外加 `ROOT/scripts/data/deal-history.json` 的 ended 事件），
+  // 自己判断"哪些关系算当前"，再与页面上的 DOM 逐条对账。
   // 刻意不硬编码条数与文案（数据每天都在变，硬编码第二天就变成假红），也不 require 构建期的
   // 判据模块 —— 这一节的价值正是"用另一条路算一遍"。
+  //
+  // t5（决策 D1）：真值改从**仓库根**读 —— 关系表 / 套餐表 / 优惠表 / 历史日志本轮起都不再进产物。
   {
-    const readDist = rel => JSON.parse(fs.readFileSync(path.join(DIR, rel), 'utf8'));
-    const linksDoc = readDist('deal-plan-links.json');
-    const dealsDoc = readDist('deals.json');
-    const plansDoc = readDist('plans.json');
-    const apiPlansDoc = fs.existsSync(path.join(DIR, 'api-plans.json')) ? readDist('api-plans.json') : { plans: [] };
-    const historyDoc = fs.existsSync(path.join(DIR, 'deal-history.json')) ? readDist('deal-history.json') : { events: [] };
+    const linksDoc = readRoot('scripts/data/deal-plan-links.json');
+    const dealsDoc = readRoot('deals.json');
+    const plansDoc = readRoot('plans.json');
+    const apiPlansDoc = readRoot('api-plans.json');
+    const historyDoc = readRoot('scripts/data/deal-history.json');
     const asOf = [String(dealsDoc.updatedAt || '').slice(0, 10), String(plansDoc.updatedAt || '').slice(0, 10)]
       .filter(Boolean).sort().pop();
     const dealsById = new Map((dealsDoc.deals || []).map(deal => [deal.id, deal]));
@@ -5394,14 +5102,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         missing.length === 0, missing.join(' '));
       check('/plans/coding/ 已结束的优惠没有以「当前优惠」形态出现（Tooth #4 的浏览器侧）',
         block.rows.flatMap(row => row.currentDeals).filter(dealId => !isCurrentDeal(dealId)).length === 0);
-      const servedLinks = await page.evaluate(`(async () => {
-        const response = await fetch(${JSON.stringify(new URL('deal-plan-links.json', base).href)});
-        return { status: response.status, body: await response.text() };
-      })()`);
-      let servedOk = false;
-      try { servedOk = JSON.stringify(JSON.parse(servedLinks.body).links) === JSON.stringify(linksDoc.links); } catch (error) { servedOk = false; }
-      check('dist/deal-plan-links.json 可下载且与源表一致（关系可被外部核对）',
-        servedLinks.status === 200 && servedOk, `HTTP ${servedLinks.status}`);
+      // t5 删除：原「dist/deal-plan-links.json 可下载且与源表一致（关系可被外部核对）」——
+      // 关系表本轮起不再发布，产物里没有可下载的副本。它的**真值侧**没有失去守卫：
+      // `selftest:deal-plan-links` 与 `check:reproducible` 仍逐字节对账仓库根的关系表。
     }
 
     const anchors = new Set(block ? block.rows.map(row => `plan-${row.planId}`) : []);
@@ -5505,8 +5208,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       text: document.body ? document.body.innerText.replace(/\s+/g, ' ').trim() : ''
     }));
 
+    // t5（决策 D1）：`api-plans.json` 不再进产物 ⇒ 真值改从仓库根读、注进浏览器。
     const apiTruth = await page.evaluate(`(async () => {
-      const doc = await (await fetch(${JSON.stringify(new URL('api-plans.json', base).href)})).json();
+      const doc = ${JSON.stringify(readRoot('api-plans.json'))};
       const rows = [];
       for (const plan of doc.plans || []) {
         for (const entry of plan.models || []) {
@@ -5579,7 +5283,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       Boolean(truthRows) && ap.officialLinks.length === truthRows.length, `${ap.officialLinks.length} 个`);
     check('/plans/api/ 没有任何交互控件（v1 是预渲染静态表，无 JS 也给不出"点了没反应"的暗示）',
       ap.controls === 0, `${ap.controls} 个`);
-    // 锚点：每条**记录**一个（不是每行一个）—— 订阅源与深链的落点必须在浏览器里真的存在。
+    // 锚点：每条**记录**一个（不是每行一个）—— 最近变化与跨页深链的落点必须在浏览器里真的存在。
     const expectedAnchors = apiTruth ? apiTruth.recordIds.map(id => `plan-${id}`).sort() : null;
     check('/plans/api/ 每条记录都有 #plan-<id> 锚点（记录数 == 锚点数）',
       Boolean(expectedAnchors) && JSON.stringify(ap.anchors.slice().sort()) === JSON.stringify(expectedAnchors),
@@ -5780,7 +5484,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         data.officialCount >= officialMin && data.officialHrefs.every(href => /^https?:\/\//.test(href)),
         `${data.officialCount} 条`);
     } else {
-      check(`${label} 按设计没有站外链接（这一页只做站内导航与数据出口）`,
+      // t5 改写：这一页原先被描述成「只做站内导航与**数据出口**」——「数据出口」整族本轮下架，
+      // 说法改成「只做站内导航」；判据（0 条站外链接）一字未动。
+      check(`${label} 按设计没有站外链接（这一页只做站内导航）`,
         data.outboundCount === 0,
         `${data.outboundCount} 条：${data.outboundHrefs.slice(0, 2).join(' ')}` +
         (data.officialCount > data.outboundCount
@@ -5839,9 +5545,10 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       && data.text.includes('进入 Coding 套餐对比') && data.text.includes('进入 API / Token 计费对比'));
     check('/plans/ 不是第三张重复大表（0 个 <table>）',
       (await page.evaluate('document.querySelectorAll("table").length')) === 0);
+    // t5（决策 D1）：`plans.json` / `api-plans.json` 都不再进产物 ⇒ 两份真值从仓库根读后注进来。
     const hubTruth = await page.evaluate(`(async () => {
-      const plans = await (await fetch(${JSON.stringify(new URL('plans.json', base).href)})).json();
-      const api = await (await fetch(${JSON.stringify(new URL('api-plans.json', base).href)})).json();
+      const plans = ${JSON.stringify(readRoot('plans.json'))};
+      const api = ${JSON.stringify(readRoot('api-plans.json'))};
       return { plans: plans.count, apiRecords: api.count,
         apiItems: (api.plans || []).reduce((n, p) => n + (p.models || []).length, 0) };
     })()`).catch(() => null);
@@ -5856,11 +5563,14 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         }
         return Object.entries(want).every(([label, value]) => read[label] === String(value));
       })()`);
-      check('/plans/ 的计数与 dist 数据逐个对账（套餐数 / 计费记录 / 模型计价条目）',
+      check('/plans/ 的计数与仓库根数据逐个对账（套餐数 / 计费记录 / 模型计价条目）',
         summaryMatches, JSON.stringify(hubTruth));
     }
-    check('/plans/ 互链到模型资料 / 历史档案 / 数据文档（枢纽页互链）',
-      data.text.includes('模型资料索引') && data.text.includes('历史档案') && data.text.includes('数据文档'));
+    // t5 改写：原来这一条还要求页面互链「数据文档」（`/docs/data/`）—— 数据出口整族下架，
+    // 那两个字面量不再允许出现在读者面上，所以判据从「含三个词」变成「含前两个、且**不含**第三个」。
+    // 这不是放宽：旧判据对「哪天数据文档的入口又溜回来」本来也无感，新判据正好补上那一半。
+    check('/plans/ 互链到模型资料 / 历史档案，且不再出现「数据文档」入口（枢纽页互链）',
+      data.text.includes('模型资料索引') && data.text.includes('历史档案') && !data.text.includes('数据文档'));
   }
 
   /* ------------------------------------------------------------------ */
@@ -5877,10 +5587,12 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       itemList: true,
       official: 0
     });
+    // t5（决策 D1）：三份真值（模型注册表 / 关系表 / API 计费）都不再进产物 ⇒
+    // 从仓库根读后注进浏览器；下面这一支的展开口径与构建期逐字一致，输入源换了但判据没换。
     const modelsTruth = await page.evaluate(`(async () => {
-      const doc = await (await fetch(${JSON.stringify(new URL('models.json', base).href)})).json();
-      const linksDoc = await (await fetch(${JSON.stringify(new URL('model-registry-links.json', base).href)})).json();
-      const apiDoc = await (await fetch(${JSON.stringify(new URL('api-plans.json', base).href)})).json();
+      const doc = ${JSON.stringify(readRoot('models.json'))};
+      const linksDoc = ${JSON.stringify(readRoot('model-registry-links.json'))};
+      const apiDoc = ${JSON.stringify(readRoot('api-plans.json'))};
       const planById = new Map((apiDoc.plans || []).map(plan => [plan.id, plan]));
       // 一条 API 映射认领的**真实计价条目**：variant 为 null/空 ⇒ 该 modelKey 在该记录里的
       // **全部真实变体**（口径与 scripts/tools/registry-join-audit.js 逐字一致：
@@ -5904,7 +5616,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       const multiVariantSlugs = Object.keys(expectedBySlug).filter(slug => (linksDoc.links || []).some(link =>
         link.registrySlug === slug && link.apiPlanId && multiPairs.includes(link.apiPlanId + '|' + link.modelKey)));
       // coverage-expansion-v1：默认可见性**在这一层按数据现算**（不写死集合、不读页面自报的数）。
-      // 期望值只从 dist/models.json 的 catalogStatus 推：current / aging / unknown 默认展示，
+      // 期望值只从**仓库根** models.json 的 catalogStatus 推：current / aging / unknown 默认展示，
       // legacy / historical 默认隐藏。枚举外的值按页面同一条口径回落到 unknown（展示）。
       const DEFAULT_VISIBLE_STATUSES = ['current', 'aging', 'unknown'];
       const catalogRows = (doc.models || []).map(model => ({
@@ -5943,7 +5655,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       // 因此它不再等于表里的行数 —— 两条口径分开量，谁也不许吞行。
       const tableRows = await page.evaluate('document.querySelectorAll("#models-table tbody tr[data-model]").length');
       const itemRows = await page.evaluate('document.querySelectorAll("#models-table tbody tr[data-item]").length');
-      check(`/models/ 静态表行数 == dist/models.json 全部模型数（${modelsTruth.count} 个）`,
+      check(`/models/ 静态表行数 == 仓库根 models.json 全部模型数（${modelsTruth.count} 个）`,
         tableRows === modelsTruth.count, `页面 ${tableRows} 行 / 数据 ${modelsTruth.count} 个`);
       check('/models/ 有详情页的行（data-item）== ItemList 声明数 == 元素数（成员口径没被默认隐藏改掉）',
         itemRows === data.declared && data.declared === data.elements,
@@ -6339,9 +6051,10 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   {
     // 取样现场从数据算：deal 取 deals.json 里 url **最长**的一条（最长的官方页 URL 最容易把
     // 来源块撑破），model 取 models.json[0]。两个都不写死 id/slug。
-    const leafTruth = await page.evaluate(`(async () => {
-      const deals = await (await fetch(${JSON.stringify(new URL('deals.json', base).href)})).json();
-      const models = await (await fetch(${JSON.stringify(new URL('models.json', base).href)})).json();
+    // t5（决策 D1）：两份数据都改从仓库根读再注进来（产物里已经没有它们了）。
+    const leafTruth = await page.evaluate(`(() => {
+      const deals = ${JSON.stringify(readRoot('deals.json'))};
+      const models = ${JSON.stringify(readRoot('models.json'))};
       const list = (deals.deals || deals).slice();
       const longest = list.slice().sort((a, b) => String(b.url || '').length - String(a.url || '').length)[0];
       const rows = models.models || [];
@@ -6867,9 +6580,23 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   //     在 `<main>` 里已**无页面级说明可变异**（这正是 ③b 与构建期首屏扫描断言的东西）。
   //     而 M1–M4 守的是 **`.snote` 的宽柱规则本身**（冻结串的 `max-width: none` +
   //     `overflow-wrap: anywhere`），不是「目录页有说明」—— 所以价值随承重面迁移到
-  //     `plans/`（12 条说明），覆盖面扩大而非缩小；四个壳的**家族多样性**（plans-hub / status /
-  //     changes / feeds）一个都不少，只是不再有一个「零说明的家族」占着壳位。
-  const WIDE_MUTATION_TARGETS = ['plans/', 'status/', 'changes/', 'feeds/'];
+  //     `plans/`（12 条说明），覆盖面扩大而非缩小；四个壳的**家族多样性**一个都不少，
+  //     只是不再有一个「零说明的家族」占着壳位。
+  //
+  //   · **第三次**（t5 · 数据暴露收口，本轮）：`feeds/` → `models/`。
+  //     理由：`/feeds/`（订阅中心）整页随订阅层下架，产物里没有这一页了 —— 壳守卫
+  //     （`wideMeta` 里有这一页 + `family === 'wide'` + `geometry.noteCount > 0`）会当场红。
+  //     取 `models/` 的依据（与上两次换靶同一条尺子：**实测读数**，不是感觉）：
+  //       · `wideMeta.family === 'wide'`，且 `<main>` 内 `.snote` = **3 条**（> 0，壳守卫成立）；
+  //       · 冻结串在页面里恰好 1 次（壳的自检要求）；
+  //       · 它在 `wideSampleRoutes` 的样本集里，未注入状态下 0 违规码（M1–M4 是"注入即出码"型牙，
+  //         靶页本身必须干净，否则牙的读数分不清是谁出的码）；
+  //       · 它与 `plans-hub` / `status` / `changes` 分属不同页面族，四壳的家族多样性仍为 4。
+  //     换靶后四壳 = `plans-hub`(`plans/`) / `status` / `changes` / `models/`，**四页**。
+  //     ⚠️ M15 那条竖排牙原先也用 `feeds/` 当靶页，它**另换一页**：`feeds/` → `status/`
+  //     （t5）→ `plans/coding/`（CI 修复轮：靶页必须逐条都是单文本节点，见 M15 定义处的四次沿革）。
+  //     它与四壳**不共用**页面，所以换靶不影响这里的家族多样性。
+  const WIDE_MUTATION_TARGETS = ['plans/', 'status/', 'changes/', 'models/'];
 
   /**
    * 首屏说明（intro）的行数上限 —— secondary-page-content-simplification 的新判据。
@@ -6889,7 +6616,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
    *
    * 这条判据的第一版**没有**限定阅读列宽，结果是：1440/1600 全站 0 命中，
    * 而 @760 命中 4 条、@360 命中 **17 条** —— 命中的还大多是本轮**根本没改**的页面
-   * （`/plans/` `/models/` `/docs/data/` `/changes/` `/feeds/` `/status/`，都是 prompt §37
+   * （`/plans/` `/models/` `/changes/` `/status/`，都是 prompt §37
    * 「已经简洁、KEEP」的那一批）。原因很朴素：**同一段文字在窄屏上必然折成更多行**，
    * 那是响应式排版的正常行为，不是缺陷。
    *
@@ -6980,8 +6707,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
    * 样本集（prompt §12）：**现场推导**，一个 id/slug 都不写死。
    *   ① 注册表驱动的入口全部取：COLLECTION_PAGES → `<slug>/`、NEED_PAGES → `need/<slug>/`、
    *      landing 的两个枢纽路由（每一类入口各代表一套判据，少一个就少一条覆盖面）；
-   *   ② 磁盘上**不匹配任何 ROUTE_PATTERNS 通配**的静态路由全部取（首页 / 状态 / 变化 / 订阅 /
-   *      套餐三页 / 模型索引 / 档案索引 / 数据文档）；
+   *   ② 磁盘上**不匹配任何 ROUTE_PATTERNS 通配**的静态路由全部取（首页 / 状态 / 变化 /
+   *      套餐三页 / 模型索引 / 档案索引）；
    *   ③ 每个通配族（deal / model / vendor / category / archive-detail）各取磁盘上**第一条**
    *      真实路由 —— 真实 id/slug 由产物决定，脚本里维护不了、也不许维护。
    */
@@ -7210,6 +6937,30 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         walk(el);
         return rects;
       };
+      /**
+       * 非空白**文本节点**的个数（与 glyphRectsOf 同一套遍历口径：排除 <noscript> 子树）。
+       *
+       * 为什么必须显式量出来（vertical-note-coverage-v1 修复轮 · M15 承重证明的结构性前提）：
+       * glyphRectsOf 是**逐文本节点**建 Range 的，所以「列片段」的边界与文本节点边界重合。
+       * 恰好 1 个文本节点时，每个片段都是从**列顶**开始的一段连续文本 ⇒ mergeLines（按行归并）
+       * **必然**只得到 1 个单元 —— 可证：所有片段顶边相同，逐个并入时与已并单元的垂直重叠量
+       * 恒等于较矮者的全高（> 0.5 × 较矮者）。
+       * 文本节点 > 1 时，中间那段（例如 <b> 包起来的一小段）会落在列的**中段**，行归并的结果
+       * 就变成**字体度量的函数**：CI（ubuntu + playwright chromium）实测同一形态按行归并出 3 行
+       * ⇒ 「旧口径按行必然静默」这条前提在那种字体下不成立。量出这个数，前提才能被断言成
+       * 结构性的（而不是靠本机字体碰巧成立）。
+       */
+      const textRunCountOf = el => {
+        let count = 0;
+        const walk = node => {
+          for (const child of node.childNodes) {
+            if (child.nodeType === 3) { if (child.textContent.trim()) count += 1; }
+            else if (child.nodeType === 1 && child.tagName !== 'NOSCRIPT') walk(child);
+          }
+        };
+        walk(el);
+        return count;
+      };
       /** 与文本节点的「非空」口径一致：同样是排除了 <noscript> 之后的文本 */
       const visibleTextOf = el => {
         let out = '';
@@ -7338,7 +7089,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       /**
        * ★ notes-manifest-v1：说明容器按「槽位 id × class token 集合」分组计数。
        *
-       * 这是跨源对账里**渲染侧**的读数：清单（dist/_notes.ndjson）说「这一页的哪个槽位
+       * 这是跨源对账里**渲染侧**的读数：清单（产物目录旁的 .notes.ndjson，见顶部 NOTES_MANIFEST_PATH）说「这一页的哪个槽位
        * 应当有几条什么签名的说明」，这里数真浏览器 DOM 里实际有几条。口径必须与
        * build-local.js 的 noteSignaturesInMain() **逐字同构**：class 属性分词、按排序后的
        * token 集合分组；检测是 token 级（含槽位 token 即算），判定是集合级（签名必须相等）。
@@ -7407,6 +7158,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
             : (contentBox > 0 ? contentBox : noteBox.width);
           // 判据量：逐行字迹（横排）/ 逐列字迹（竖排）—— 两轴同构，见 mergeAxis 的注释
           const glyphRects = glyphRectsOf(el);
+          // M15 承重证明的**结构性前提**：这条说明由几个文本节点组成（恰 1 个 ⇒ 行归并必然只有 1 行）
+          const textRuns = textRunCountOf(el);
           const lines = mergeLines(glyphRects);
           const visibleText = visibleTextOf(el);
           // t24 / T22-F1：原始文本（不排除 <noscript>）用来判定「文字是不是全在 <noscript> 里」
@@ -7439,6 +7192,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
             writingMode: writingMode,
             vertical: vertical,
             glyphRects: glyphRects.length,
+            // 文本节点个数（非空白 · 排除 <noscript>）：M15 承重证明的结构性前提，见 textRunCountOf
+            textRuns: textRuns,
             lineCount: lines.length,
             widestLine: lines.length ? lines.reduce((max, line) => Math.max(max, line.width), 0) : 0,
             lines: lines,
@@ -7569,7 +7324,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       //   判据：**min(主数据区宽, 页面列宽) > 70ch** ⇒ 「盒满宽、字被排进 70ch 窄轨」物理上可能发生。
       //   实测（R3-1 的独立探针，见 review/R3-review.md §5）：1440 列 1120–1380 · 1600 列 1240–1500 ·
       //   760 列 676–728，全部 > 452.81 ⇒ **判**；360 列 276–328 < 452.81 ⇒ **不判**
-      //   （天然保住 360 档 feeds/#2「按「我是谁」…」的已知边界：328px 列里排成 2 行、最宽 264px，
+      //   （天然保住 360 档某条长说明的已知边界：328px 列里排成 2 行、最宽 264px，
       //   那是 CJK 断行 + 行内 /student/ 这类不可断片段的正常余量，不是缺陷）。
       //   ch70 缺失（外部合成几何没带这个量）时按 0 处理 ⇒ 前置条件成立、照判 ——
       //   宁可多判也不能让「量不到尺子」变成静默跳过。逐条的 `note.ch70` 在下面循环里取用。
@@ -8165,8 +7920,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       // 用的是**同一个量**），并且不依赖任何字符串约定。
       //
       // **作用域 = 目录页家族**（collection / need / category / vendor / hub / alias）。
-      // 其它宽页（`/status/` `/feeds/` `/plans/*` `/models/*` `/archive/` `/docs/data/` `/changes/`）
-      // 的导语是**那一页自己的主体**（例如订阅中心解释怎么订阅），不在本规则射程内 ——
+      // 其它宽页（`/status/` `/plans/*` `/models/*` `/archive/` `/changes/`）
+      // 的导语是**那一页自己的主体**（例如状态页解释怎么读健康度表），不在本规则射程内 ——
       // 把它们一起判红就是「一条在正常页面上失败的守卫」，比没有守卫更糟。
       //
       // ## 本轮（secondary-page-residue-v1）把这条判据**收窄到一件事**：`introNoteRoutes.length === 0`
@@ -8198,7 +7953,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         //   而 `'alias'` 在这把尺子下**恒不命中** —— 一个**死元素**：看着像在显式覆盖别名页，
         //   其实一条都没覆盖到。这正是 F2 报的那件事。
         //
-        // **第二版**（F2 的修法，**修出了新缺陷**）：改成只读 `dist/_notes.ndjson` 的
+        // **第二版**（F2 的修法，**修出了新缺陷**）：改成只读说明清单的
         //   `pageKind`，并把 `'alias'` 从集合里删掉。但清单里别名页的 `pageKind` **就是 `'alias'`**
         //   （`build-local.js` 的 `notePage(route, { kind })` 传的是页面描述符的 kind），
         //   于是 `'alias'` 不是死元素、而是**清单真会返回的取值之一** —— 删掉它 ⇒ 三个别名页
@@ -8209,11 +7964,13 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         // **现在（并集）**：同时认两把尺子 —— `meta.kind` 与清单的 `pageKind`，任一命中即算目录页家族。
         //   两边都不是死元素：`meta.kind` 覆盖路由前缀那一族，清单 `pageKind` 覆盖别名
         //   （且将来别名迁出 `need/` 也照样命中）。`'alias'` 因此**必须留在集合里**。
+        //   ⚠️ t5（决策 D4）：清单的路径从 `<产物目录>/_notes.ndjson` 改成 `<产物目录>.notes.ndjson`
+        //   （写点搬到产物目录的兄弟文件）—— 清单不再是一个"可以按 URL 下载到"的产物文件。
         const DIRECTORY_KINDS = new Set(['collection', 'need', 'category', 'vendor', 'hub', 'alias']);
         const kindByRoute = new Map();
         let manifestKindRead = false;
         try {
-          const manifestFile = path.join(DIR, '_notes.ndjson');
+          const manifestFile = NOTES_MANIFEST_PATH;
           if (fs.existsSync(manifestFile)) {
             for (const line of fs.readFileSync(manifestFile, 'utf8').split('\n')) {
               if (!line.trim()) continue;
@@ -8255,9 +8012,15 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       // ---- ⑨ 说明清单 × DOM 跨源对账（notes-manifest-v1）--------------------------------
       //
       // 闭合 `NEXT-STEPS` §0 里那条 P1「判据只认 `.snote` 这个类名（换名 / 换容器即隐形）」。
-      // 清单（`dist/_notes.ndjson`）是**意图侧**：构建期在内容构造点登记「这一页打算输出几条
-      // 说明、每条的槽位与完整 class token 集合」；这里是**渲染侧**：真浏览器 DOM 里数出来。
-      // 两侧按 `route × 槽位 × 签名` 逐条对账，不等 ⇒ 红，消息点名 `route#index` 并给两侧读数。
+      // 清单（`NOTES_MANIFEST_PATH`，即 `<产物目录>.notes.ndjson`）是**意图侧**：构建期在内容构造点
+      // 登记「这一页打算输出几条说明、每条的槽位与完整 class token 集合」；这里是**渲染侧**：
+      // 真浏览器 DOM 里数出来。两侧按 `route × 槽位 × 签名` 逐条对账，不等 ⇒ 红，消息点名
+      // `route#index` 并给两侧读数。
+      //
+      // ⚠️ t5（决策 D4）：清单**不再进产物**（写点是产物目录的兄弟文件），所以这一节从现在起是
+      // 「**当前工作树最后一次构建的**意图侧」而不是「这一份产物自己的意图侧」——
+      // 拿 `--dir=<别的产物副本>` 跑时两侧可能对不上。这是**明确记下的性质下降**（见交付说明），
+      // 换来的事实是：任何以 `dist/` 为根的预览服务都下载不到它。
       //
       // 判据与构建期自检（`build-local.js` 的 noteManifestSelfCheck）**同一套口径**，两侧必须一致：
       //   ① 逐页逐槽位：清单声明的「签名 × 条数」== DOM 数出来的（台账页面只做单向 —— DOM 多出来
@@ -8266,13 +8029,13 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       //   ③ 台账下限 + 页面族结构下限：守住「登记与模板一起被删」那种两侧同时消失的改法；
       //   ④ 棘轮：DOM 里有 `.snote` 的页面必须全部登记过 —— 新的隐形说明面不许悄悄出现。
       {
-        const manifestPath = path.join(DIR, '_notes.ndjson');
+        const manifestPath = NOTES_MANIFEST_PATH;
         const manifestLabel = path.relative(ROOT, manifestPath).split(path.sep).join('/');
         const manifestProblems = [];
         let manifestPages = new Map();
         let manifestHeader = null;
         if (!fs.existsSync(manifestPath)) {
-          manifestProblems.push(`缺少 ${manifestLabel} —— 清单必须进产物（构建期 writeNotesManifest() 写入）`);
+          manifestProblems.push(`缺少 ${manifestLabel} —— 清单必须由构建期 writeNotesManifest() 写在产物目录旁边（不在产物里）`);
         } else {
           const lines = fs.readFileSync(manifestPath, 'utf8').split('\n').filter(line => line.trim());
           try {
@@ -8361,7 +8124,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         }
         const missingPages = wideMeta.filter(meta => !manifestPages.has(meta.route)).map(meta => meta.route);
         const extraPages = [...manifestPages.keys()].filter(route => !wideDiskSet.has(route));
-        check('§22c ⑨ 说明清单可读、每页一条、与产物页面对得上（`dist/_notes.ndjson`）',
+        check(`§22c ⑨ 说明清单可读、每页一条、与产物页面对得上（${manifestLabel}）`,
           manifestProblems.length === 0 && extraPages.length === 0 && missingPages.length === 0,
           (manifestProblems.length ? `清单问题：${manifestProblems.join('；')}；` : '')
           + `清单 ${manifestPages.size} 页 / 产物 ${wideMeta.length} 页 · schemaVersion ${manifestHeader ? manifestHeader.schemaVersion : '—'}`
@@ -8376,7 +8139,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
           untrackedProblems.length === 0,
           untrackedProblems.length ? untrackedProblems.slice(0, 4).join('；')
             : `台账逐页成立：每条无条件的说明（见清单里 untracked.structural）都还在页面上`);
-        check('§22c ⑨ 页面族结构下限：目录页家族（**含别名页**）0 条页面级说明、状态页 2 条、订阅中心 3+1 条、厂商页六节说明',
+        // t5：措辞里的「订阅中心 3+1 条」随 `/feeds/` 整页下架删除 —— 那个页面族已经不存在，
+        // 它的下限也不再由清单登记。剩下三个族的读数仍然逐条成立（目录页 0 / 状态页 2 / 厂商页 5）。
+        check('§22c ⑨ 页面族结构下限：目录页家族（**含别名页**）0 条页面级说明、状态页 2 条、厂商页五节说明',
           floorProblems.length === 0,
           floorProblems.length ? floorProblems.slice(0, 4).join('；')
             : '全部页面族的说明条数下限成立（下限守住「登记与模板一起被删」那种两侧同时消失的改法；'
@@ -8562,7 +8327,12 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
           rule: '.snote { padding-right: calc(100% - 70ch); }',
           what: 'F1 原型：把 .snote 的 padding-right 写成 calc(100% - 70ch) —— 盒宽一字不动、有字区域恒等于 70ch（修复前整轮 0 失败放行的那一条）'
             + '（靶页同上换到 plans/：这条断言读**未注入**几何的 notes[0]，plans/ 有 12 条说明，成立性比原靶页的 1 条更好）' },
-        { id: 'M9a', route: 'docs/data/', width: WIDE_DESKTOP, expect: 'note-narrow', target: 'extend',
+        // t5 换靶：`docs/data/` → `plans/coding/`。原靶页随数据出口整族下架（产物里没有这一页）。
+        // 取 `plans/coding/` 的依据：wide 族、`<main>` 内 `.snote` 5 条（`.snote ~ .snote`
+        // 相邻兄弟选择器有承重面）、冻结串恰好 1 次、未注入时 0 违规码。
+        // 注意 M16 也以 `plans/coding/` 为靶页，但它是 `target: 'style'`（追加一条 CSS，不动冻结串），
+        // 与这里的 `extend`（在冻结串之后追加规则）互不干扰。
+        { id: 'M9a', route: 'plans/coding/', width: WIDE_DESKTOP, expect: 'note-narrow', target: 'extend',
           rule: '.snote ~ .snote { max-width: 70ch; }', selector: '.snote ~ .snote',
           what: 'F2 原型：只压**非首个** .snote（相邻兄弟选择器）' },
         { id: 'M9b', route: 'changes/', width: WIDE_DESKTOP, expect: 'note-narrow', target: 'extend',
@@ -8583,7 +8353,12 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
           what: 't8 的 F-R2-2 原型：真实文本 font-size:0（一个字形都不画），正文交给 ::before 的 content 去画'
             + ' —— 盒宽/行数一切正常，只有字形盒能看穿（靶页同上换到 plans/）' },
         // ---- t24（修复轮 5）新增：把盒高压成 0 的那一类（T22-F1）----
-        { id: 'M13', route: 'docs/data/', width: WIDE_DESKTOP, expect: 'note-unrendered', target: 'extend', expectUnrendered: true,
+        // t5 换靶：`docs/data/` → `archive/`。原靶页随数据出口整族下架。
+        // 取 `archive/` 的依据：wide 族、`<main>` 内 `.snote` 5 条、冻结串恰好 1 次、未注入时 0 违规码；
+        // 而且 `archive-index` **没有** `main-snote` 的结构性下限 —— 这一条的注入把盒高压成 0
+        // （`note-unrendered`），如果靶页本身带 floor，塌陷会带出一串伴随的 floor 抱怨，
+        // 读数就分不清"是这条牙咬到的"还是"下限被撞了"。
+        { id: 'M13', route: 'archive/', width: WIDE_DESKTOP, expect: 'note-unrendered', target: 'extend', expectUnrendered: true,
           rule: '.snote { font-size: 0; }',
           what: 'T22-F1 原型：**裸** font-size:0（没有 ::before 高度恢复器）—— 盒高被压成 0 ⇒ rendered=false，'
             + '修复前会让窄柱 / 逐行字迹 / 藏字三条判据同时静默（整页零码）；现在由 note-unrendered 咬住' },
@@ -8612,20 +8387,66 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         // ---- vertical-note-coverage-v1 新增：把「竖排」这条覆盖不对称钉成常驻牙（闭合 T31 的 P1）----
         //   形态逐字取 T31 现场用的那一份（`verify/t31/mk-form-scratch.cjs` 的 FORM_CSS，
         //   与 adversary 的 `coverage-asymmetry-writing-mode.json` form.injection 同字节）。
-        //   为什么必须是这条牙：它是**唯一**能让「盒/内容盒满宽 + 按行归并只有 1 行」同时成立的形态，
-        //   也就是旧口径两条判据（① 内容盒、② 逐行字迹）同时静默的那一类。
-        //   ⚠️ 靶页换过**两次**（如实记）：
+        //   为什么必须是这条牙：它给「盒/内容盒满宽，但字迹在水平轴上铺不开」这一类形态留下
+        //   常驻承重面 —— 也就是旧口径两条判据（① 内容盒、② 逐行字迹）同时静默的那一类。
+        //   ⚠️ 这里原先写的是「它是**唯一**能让『盒/内容盒满宽 + 按行归并只有 1 行』同时成立的
+        //   形态」—— **那句话是错的**（本轮修，实测见 ④）：注入形态只决定「盒子满宽」这一半；
+        //   「按行归并只剩 1 行」还取决于**说明的文本节点结构**与所在环境的字体度量。
+        //   ⚠️ 靶页换过**四次**（如实记）：
         //   ① T31 的原靶页 `category/agent/` 自 `secondary-page-intro-changes-v1` 起
         //   **一条 .snote 都没有**了（目录页首屏说明整层删除）—— 拿它当靶页等于「变异没有承重面」
         //   （实测：注入后 noteCount 0、一条码都不出），于是换成别名页 `need/free-api/`
         //   （它的那 1 条导航更正说明由当时的 ③b 断言「恰好 1 条」，承重面是结构性的）。
-        //   ② 本轮（`secondary-page-residue-v1`）把那条导航更正整条删除 ⇒ `need/free-api/`
+        //   ② `secondary-page-residue-v1` 把那条导航更正整条删除 ⇒ `need/free-api/`
         //   同样变成 0 条 `.snote`，`wideMutate` 的「冻结串恰好 1 次」守卫还在（页内 CSS 仍在、
         //   冻结串仍恰好 1 次），但**注入的规则命不中任何元素** ⇒ 一条码都不会出。
-        //   换成 `feeds/`：首屏 intro 区有真实页面级说明（实测 @1440：106 字 / 1 行 /
+        //   于是换成 `feeds/`：首屏 intro 区有真实页面级说明（实测 @1440：106 字 / 1 行 /
         //   盒 1380 / 数据区 `.flist` 1380），且它在**未注入**状态下 0 违规码、0 竖排说明
         //   （M15 的正对照断言正好需要一个这样的页）。
-        { id: 'M15', route: 'feeds/', width: WIDE_DESKTOP, expect: 'note-ink-narrow', target: 'extend',
+        //   ③ 本轮（t5 · 数据暴露收口）`/feeds/` 整页随订阅层下架 ⇒ 产物里没有这一页，
+        //   M15 靶页前提断言（靶页必须含 ≥1 条页面级说明）会直接红。换成 `status/`：
+        //   它在 `wideMeta` 里是 wide 族、`<main>` 内 `.snote` **2 条**（> 0，承重面成立）、
+        //   未注入状态下 0 违规码且 0 条竖排说明 —— 与 M15 正对照要的那两条性质逐条对上。
+        //   它与 M7（DOM 注入 detail-main）、M1–M4 的壳共用这一页：那三条的注入形态各不相同
+        //   （`target: 'dom'` / 冻结串替换 / 这里在冻结串之后追加），互不干扰。
+        //   ④ 本轮（CI 修复轮 · PR #110 的那条红）：`status/` 只满足「页面级说明 ≥ 1 条」，
+        //   不满足承重证明真正需要的那条**结构性**前提。它那 1 条说明由 **9 个文本节点**组成
+        //   （4 个 <b> 片段各 4 字：最近一次 / ❌ 失败 / ⚠️ 异常 / ✅ 正常），而 glyphRectsOf
+        //   是**逐文本节点**建 Range 的 ⇒ 列片段的边界与文本节点边界重合。当字体步进较小时
+        //   （CI = ubuntu + playwright chromium，字体与本机不同），那 4 个短片段会落在**列的中段**，
+        //   按行归并得到 3 个单元 ⇒ 承重证明里的 `lineEvidenceMissing`（按行归并 ≤ 1 行）不成立。
+        //   CI 原始读数：列 3 / 列栈 54.78px / 行 3（最宽 54.78px）/ 字形盒 9。
+        //   本机可复现同一条（不必换浏览器）：给同一形态再叠一条 `.snote { letter-spacing: -9.5px }`
+        //   —— 只改**行内步进**，字号/行高/列宽/盒宽一字不动 ⇒ 本机同样读出 列 3 / 行 3。
+        //   结论：坏的不是牙，而是前提被写成了一条**与字体度量有关的读数**。
+        //   换成 `plans/coding/`：产物里只有它与 `changes/` 满足「**所有可能被咬的** .snote 都是
+        //   **单文本节点**」（判据要的是**全部被咬的条**都单文本节点 —— 只要有一条是多文本节点，
+        //   前提就又退回字体度量；「可能被咬」而不是「全部」是必须说清的：见下面那条真 DOM 复核，
+        //   该页 5 条里有 2 条**根本进不了被咬集合**，那 2 条谈不上单/多文本节点）。
+        //   取前者的理由：被咬的条要**够长**才有承重面 —— ② 要求「字迹在水平轴上至少铺开 2 列」，
+        //   即 字数 × 字符步进 > 5.6rem（89.6px）。`changes/` 最长只有 62 字，
+        //   在退化字体下（步进约 1.4px/字，量级由 CI 那条读数反推：128 字 ⇒ 3 列）只有约 87px
+        //   < 89.6px ⇒ 可能一条都咬不到；`plans/coding/` 的 #0 是 84 字（约 118px）⇒ 留出余量。
+        //   真 DOM 逐条复核（2026-10-10，口径同 `textRunCountOf`：非空白文本节点、排除 <noscript>）：
+        //   `#0` 84 字 / 1 节点（被咬）· `#2` 41 字 / 1 节点（被咬）· `#4` 67 字 / 1 节点（被咬）·
+        //   `#1` 可见文本 **0**（这段说明的文字**全在 <noscript> 里**，脚本开启时不渲染 —— 就是
+        //   wideProblems 里「真·合法未渲染」那条）· `#3` 可见文本 **0**（构建期就是空占位
+        //   `<p class="snote"></p>`）。后两条**不可能**进入被咬集合 ⇒ 它们不参与「单文本节点」前提。
+        //   这也是「判据只要被咬的条单文本节点」而不是「页面内全部单文本节点」的原因。
+        //   ⚠️ **残留的环境依赖（如实写清失效方式）**：若某个字体的步进小到连最长的 84 字说明都
+        //   铺不满一列（约 < 1.07px/字，整条说明塌成一个墨点），那就一条也咬不到 —— M15 会以
+        //   「期望码没出现」判红。要说清的是：**那种字体下这条形态本身已经不再是「窄条」缺陷**
+        //   （字迹根本没有铺开的地方）⇒ 红的是「靶页在这个环境下没有承重面」，不是判据退化；
+        //   处置是换一条更长的**单文本节点**靶页，**不是**放宽判据。
+        //   CI 现场反推的步进约 1.4px/字（128 字 ⇒ 3 列）⇒ 对 84 字留约 1.3× 余量。
+        //   单文本节点时「按行归并只有 1 行」是**可证**的（全部列片段顶边相同，逐个并入时重叠量
+        //   恒等于较矮者的全高），不再依赖字体；这条结构前提现在由承重证明**显式断言**
+        //   （`note.textRuns === 1`，见 textRunCountOf 的注释），所以将来谁把靶页换回多文本节点的
+        //   说明，**本机就会确定性判红**，而不是等到 CI 上以「字体不同」的形式红。
+        //   ⚠️ 该页同时是 M9a（冻结串替换成 `.snote ~ .snote { max-width: 70ch }`）与 M16
+        //   （DOM 追加 <style>）的靶页：三条牙的注入形态各不相同、各自跑在**独立的页面加载**上，
+        //   互不干扰（与 M8/M10/M12/M1–M4 共用 `plans/` 是同一种安排）。
+        { id: 'M15', route: 'plans/coding/', width: WIDE_DESKTOP, expect: 'note-ink-narrow', target: 'extend',
           expectVertical: true,
           // ⚠️ 允许集**照抄**脚本自己的正对照口径（下面 `m15Expected`），**不许**加第三个数。
           //    `note-intro-long` 是竖排形态的固有伴随码：首屏区是**注入后的现场几何**，
@@ -8639,7 +8460,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
             + '盒宽/内容盒/同轴一个都不动，正文竖成一根细条（T31 在原靶页 @1440 实测：盒 1380 / 内容盒 1380 /'
             + '24 个 16px 宽的竖列 / 字迹并集 342.25×87.3 / 按行归并恒为 1 行）；'
             + '轮 6 口径下 @1440/@1600 完全无感，唯一咬到它的是 @360 的自裁切副作用（且只在 29 页样本集里）'
-            + '（靶页本轮由 need/free-api/ 换到 feeds/，见上面那段两次换靶记录）' },
+            + '（靶页本轮由 status/ 换到 plans/coding/：前者那条说明由 9 个文本节点组成，CI 的字体度量下'
+            + '按行归并出 3 个单元 ⇒ 承重证明的前提不成立；见上面那段四次换靶记录）' },
         // ---- narrow-reading-columns-v1 新增：保留窄阅读列的登记制（M16）----
         //   注入的是「已登记条目的**另一个**取值」：`.pdetailbody` 从 72ch 被覆盖成 70ch ——
         //   选择器、页面、元素全是真实存在的，唯一变化是「这条声明**不在登记清单里**」。
@@ -8781,6 +8603,12 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         //   被咬的条必须真的是竖排、且判据用的是**列**（列数 ≥ 2 / 列栈水平范围 < 阈值）；
         //   同时把「旧口径为什么必然静默」也钉住：这些条**按行归并只有 1 行**（前置条件不成立），
         //   盒宽与内容盒都还是满宽的（① 也看不见）。三条同时成立才证明换轴是承重的，而不是换了个说法。
+        //   ★ 本轮（CI 修复轮 · PR #110）补上**结构性前提** `singleRunEvidence`：
+        //   「按行归并只有 1 行」在**单文本节点**的说明上是可证的（见 textRunCountOf），而在多文本
+        //   节点的说明上它是**字体度量的函数** —— CI（字体不同）实测同一条说明按行归并出 3 行，
+        //   这条承重证明因此红。只留 `lineEvidenceMissing`（读数）的话，同一份代码在不同字体下
+        //   会给不同结论；补上结构前提之后，前提要么**可证成立**，要么**确定性地红**（与字体无关）。
+        //   口径：`textRuns` 量不到（老几何/合成几何）按不成立处理 —— 与 ch70 那条前置同一纪律。
         if (mutation.expectVertical) {
           const inkKeys = (wideMutationExtra.get(mutation.id) || {}).inkNarrowKeys || [];
           const rowsOfInk = geometry ? geometry.notes.filter(note => inkKeys.includes(wideNoteKey(mutation.route, note.index))) : [];
@@ -8791,6 +8619,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
             && note.columnSpan > 0 && note.columnSpan < WIDE_NOTE_RATIO * column - 0.01);
           // 旧口径静默的两条独立原因（都必须是「成立」才算承重）：
           const lineEvidenceMissing = rowsOfInk.length > 0 && rowsOfInk.every(note => note.lineCount <= 1);
+          // 上面那条「按行归并 ≤ 1 行」的**结构性来源**：被咬的条必须由**恰好 1 个文本节点**组成。
+          const singleRunEvidence = rowsOfInk.length > 0 && rowsOfInk.every(note => note.textRuns === 1);
           const boxesStayedWide = rowsOfInk.length > 0
             && rowsOfInk.every(note => note.textWidth >= WIDE_NOTE_RATIO * column - 0.01)
             && narrowKeys.length === 0;
@@ -8801,14 +8631,18 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
                 && Math.abs(prior.box.left - note.box.left) <= WIDE_TOL;
             });
           check(`§22c ${mutation.id} 承重证明：咬中的条是**竖排按列判**（列数 ≥ 2 · 列栈水平范围 < ${WIDE_NOTE_RATIO}×列宽），`
-            + `且旧口径两条判据在它们身上必然静默（按行归并 ≤ 1 行 + 盒/内容盒满宽，盒宽与注入前逐条相同）`,
-            inkKeys.length > 0 && allVertical && columnEvidence && lineEvidenceMissing && boxesStayedWide && boxUnchanged,
+            + `且旧口径两条判据在它们身上必然静默（按行归并 ≤ 1 行 + 盒/内容盒满宽，盒宽与注入前逐条相同）`
+            + `—— 「按行归并 ≤ 1 行」还必须是**结构性的**（被咬的条各由恰好 1 个文本节点组成：那时全部列片段`
+            + `顶边相同，行归并只有 1 个单元是可证的；多文本节点时它只是字体度量的偶然结果）`,
+            inkKeys.length > 0 && allVertical && columnEvidence && lineEvidenceMissing && singleRunEvidence
+            && boxesStayedWide && boxUnchanged,
             `note-ink-narrow ${inkKeys.length} 条 [${inkKeys.join(', ')}]`
             + ` · 逐条：${rowsOfInk.map(note => `#${note.index} ${note.writingMode} 列 ${note.columnCount} / 列栈 ${wideRound(note.columnSpan)}px`
               + ` / 行 ${note.lineCount}（最宽 ${wideRound(note.widestLine)}px） / 内容盒 ${wideRound(note.textWidth)}px`
-              + ` / 字形盒 ${note.glyphRects}`).join(' · ') || '（无）'}`
+              + ` / 字形盒 ${note.glyphRects} / 文本节点 ${note.textRuns}`).join(' · ') || '（无）'}`
             + ` · 列宽 ${wideRound(column)}px · 阈值 ${wideRound(WIDE_NOTE_RATIO * column)}px`
-            + ` · note-narrow ${narrowKeys.length} 条（0 = ① 也看不见）· 盒宽与注入前一致 ${boxUnchanged}`);
+            + ` · note-narrow ${narrowKeys.length} 条（0 = ① 也看不见）· 盒宽与注入前一致 ${boxUnchanged}`
+            + ` · 结构前提（逐条单文本节点）${singleRunEvidence}`);
         }
         // **隔离性**（对抗复核 F4，`secondary-page-residue-v1`）：
         //   上面那条通用判据只查 `codes.includes(expect)` —— 多出**伴随码**也照样绿。
@@ -8908,13 +8742,18 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       const wideControlExemptions = [];
       const wideNoInjectionControls = [
         { id: 'M8', route: 'plans/', width: WIDE_DESKTOP },
-        { id: 'M9a', route: 'docs/data/', width: WIDE_DESKTOP },
+        // t5 换靶：M9a 的靶页 `docs/data/` → `plans/coding/`（原靶页随数据出口整族下架）。
+        { id: 'M9a', route: 'plans/coding/', width: WIDE_DESKTOP },
         { id: 'M9b', route: 'changes/', width: WIDE_DESKTOP },
         { id: 'M10', route: 'plans/', width: WIDE_WIDE },
         // M15 的正对照（vertical-note-coverage-v1）：同一页不注入竖排 ⇒ 直接量它自己的读数 ——
         // 「该页说明一条都不是竖排 + 0 违规码」同时证明新判据不是「凡是说明就判窄」。
-        // 靶页与 M15 同步换到 `feeds/`（原靶页 `need/free-api/` 删掉别名说明后 0 条 `.snote`）。
-        { id: 'M15', route: 'feeds/', width: WIDE_DESKTOP }
+        // ⚠️ 这里必须与 M15 的 `route` **同一个页面**，否则「不注入 ⇒ 干净」证明的可能只是
+        // 「另拿了一个没有说明的页」（换靶记录见 M15 定义处那段四次沿革）。
+        // ④ 本轮（CI 修复轮）与 M15 同步由 `status/` 换到 `plans/coding/`（理由同上：靶页必须
+        // 逐条都是单文本节点，承重证明的结构前提才可证）。该页同时是 M9a 的对照行 —— 同一页
+        // 出现两行是**故意的**：两行各自回答「这一页在**那条牙**对应的档位上是否干净」。
+        { id: 'M15', route: 'plans/coding/', width: WIDE_DESKTOP }
       ].map(control => {
         const problems = wideProblemsAt.get(`${control.width}|${control.route}`);
         const geometry = wideGeometry.get(`${control.width}|${control.route}`);
@@ -9456,19 +9295,17 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       //   · 每页必须真的渲染出六节；
       //   · 官方入口必须给 ≥1 条站外链接，且**每一条都能在 dist 数据里找到出处**
       //     （「写一个看起来像主页的地址」是这一页最容易犯的错）；
-      //   · 页面上的 API 记录数必须与 dist/api-plans.json 按 provider key 现算的值逐个对账。
-      // 数据侧的真值在这里**从 dist 现场读**（与构建期不同源，这正是这一节的价值）。
-      const externalAllowed = await page.evaluate(`(async () => {
+      //   · 页面上的 API 记录数必须与 api-plans.json 按 provider key 现算的值逐个对账。
+      // t5（决策 D1）：三份数据都改从**仓库根**读（产物里已经没有它们了）。
+      // 这一节的价值不变：判据是"现场从数据重算"，只是真值的来源从发布副本换成了源文件。
+      const externalAllowed = (() => {
         const urls = new Set();
-        const deals = (await (await fetch(${JSON.stringify(new URL('deals.json', base).href)})).json()).deals || [];
-        for (const deal of deals) if (deal.url) urls.add(deal.url);
-        const plans = (await (await fetch(${JSON.stringify(new URL('plans.json', base).href)})).json()).plans || [];
-        for (const plan of plans) if (plan.officialUrl) urls.add(plan.officialUrl);
-        const api = (await (await fetch(${JSON.stringify(new URL('api-plans.json', base).href)})).json()).plans || [];
-        for (const plan of api) if (plan.officialUrl) urls.add(plan.officialUrl);
+        for (const deal of (readRoot('deals.json').deals || [])) if (deal.url) urls.add(deal.url);
+        for (const plan of (readRoot('plans.json').plans || [])) if (plan.officialUrl) urls.add(plan.officialUrl);
+        for (const plan of (readRoot('api-plans.json').plans || [])) if (plan.officialUrl) urls.add(plan.officialUrl);
         return [...urls];
-      })()`).catch(() => null);
-      const allowedSet = new Set(externalAllowed || []);
+      })();
+      const allowedSet = new Set(externalAllowed);
       const sample = vendorIndex.routes.slice(0, 3);
       for (const route of sample) {
         const { data } = await auditLibraryPage({
@@ -9499,7 +9336,11 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
             const node = el.querySelector('[data-vendor-count="' + name + '"]');
             return node ? Number(node.getAttribute('data-vendor-value')) : -1;
           };
-          const sections = ['vendor-official', 'vendor-plans', 'vendor-api', 'vendor-models', 'vendor-changes', 'vendor-feeds']
+          // t5：vendor-feeds（订阅这一家）随订阅层整节下架 ⇒ 资料区块从六节变**五节**。
+          // 这一条是「恰好」型断言，删掉一节就必须把数字一起改 —— 否则它会以
+          // 「5 节 ≠ 6 节」的形式在真浏览器里红，而页面其实完全正确。
+          // ⚠️ 本段是浏览器侧模板串：注释里不许出现反引号（会提前截断模板）。
+          const sections = ['vendor-official', 'vendor-plans', 'vendor-api', 'vendor-models', 'vendor-changes']
             .filter(id => document.getElementById(id)).length;
           return {
             sections,
@@ -9510,8 +9351,8 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
             }))
           };
         })()`);
-        check(`/${route} 资料区块六节齐（官方入口 / 套餐 / API / 模型 / 变化 / 订阅）`,
-          Boolean(knowledge) && knowledge.sections === 6,
+        check(`/${route} 资料区块五节齐（官方入口 / 套餐 / API / 模型 / 变化）`,
+          Boolean(knowledge) && knowledge.sections === 5,
           knowledge ? `${knowledge.sections} 节` : '缺少 #vendor-knowledge');
         if (knowledge) {
           check(`/${route} 资料区块的官方入口指向**数据里有出处**的地址`,
@@ -9564,27 +9405,34 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     });
     check('/archive/ 三组都在（优惠 / Coding 套餐 / API 计费记录）',
       await page.evaluate(`['archive-deal','archive-plan','archive-api'].every(id => Boolean(document.getElementById(id)))`));
-    const archiveTruth = await page.evaluate(`(async () => {
-      const files = { deal: 'deal-history.json', plan: 'plan-history.json', api: 'api-plan-history.json' };
+    // t5（决策 D1）：三份变化日志改从**仓库根**读（`ROOT/scripts/data/*-history.json`）——
+    // 它们本轮起不再进产物，浏览器里 `fetch(base + 'deal-history.json')` 只会拿到 404。
+    // 判据本身一字未改：仍然是"页面上的档案条数 == 日志里 ended/restored 覆盖的唯一记录数"。
+    const archiveTruth = (() => {
+      const files = {
+        deal: 'scripts/data/deal-history.json',
+        plan: 'scripts/data/plan-history.json',
+        api: 'scripts/data/api-plan-history.json'
+      };
       const out = {};
       for (const [kind, file] of Object.entries(files)) {
-        const r = await fetch(${JSON.stringify(base)} + file);
-        const doc = r.ok ? await r.json() : null;
+        const doc = readRoot(file);
         // 档案条目是**按记录**的：同一记录的 ended + restored 是两条事件、**一个条目**
         // （条目身份 = (kind, id)）。所以期望值取唯一记录数，不取事件数 ——
         // 后者在非空数据上必然大于行数，那不是页面错，是判据错。
-        out[kind] = doc ? new Set((doc.events || [])
+        out[kind] = new Set((doc.events || [])
           .filter(e => e.type === 'ended' || e.type === 'restored')
-          .map(e => e.planId || e.id)).size : null;
+          .map(e => e.planId || e.id)).size;
       }
       return out;
-    })()`).catch(() => null);
-    check('/archive/ 三份变化日志都取到了（没有把 api-plan-history 写成 api-history 这类文件名错误）',
-      Boolean(archiveTruth) && Object.values(archiveTruth).every(value => value !== null),
-      JSON.stringify(archiveTruth));
-    const totalEnded = archiveTruth ? Object.values(archiveTruth).reduce((n, v) => n + (v || 0), 0) : null;
+    })();
+    // 原「三份变化日志都取到了（没有把 api-plan-history 写成 api-history 这类文件名错误）」
+    // 判据**随读取方式一起删除**：它原本靠「fetch 拿到 !ok ⇒ null」来发现文件名写错，
+    // 现在三份都在 Node 侧整份读 —— 文件名写错会当场 ENOENT 抛出（fail-closed），
+    // 比一条 null 判据更硬，留着只会变成一条恒真的空断言。
+    const totalEnded = Object.values(archiveTruth).reduce((n, v) => n + v, 0);
     check('/archive/ 的档案条数与三份日志里 ended/restored 的**唯一记录数**一致（空 ⇒ 0 行）',
-      totalEnded === null ? data.rows === 0 : data.rows === totalEnded,
+      data.rows === totalEnded,
       `页面 ${data.rows} 行 · 日志里 ended/restored 覆盖 ${totalEnded} 条记录`);
     check('/archive/ 空态写明「0 条是事实，不是故障」（空是事实，不是故障）',
       data.rows > 0 || data.text.includes('0 条是事实，不是故障'));
@@ -9597,49 +9445,14 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
   }
 
   /* ------------------------------------------------------------------ */
-  /* 数据出口（v3.0 Stage G）                                             */
+  /* t5 删除：数据出口（v3.0 Stage G）整节 —— /docs/data/ + data/index.json */
   /* ------------------------------------------------------------------ */
-
-  console.log('\n=== 25) 数据出口（/docs/data/）===');
-  {
-    const { data } = await auditLibraryPage({
-      label: '/docs/data/',
-      route: 'docs/data/',
-      noJsText: ['数据集索引', '使用示例', '引用方式', 'Schema 稳定性', 'License 状态'],
-      minText: 1200,
-      itemList: true,
-      official: 0
-    });
-    const manifestTruth = await page.evaluate(`(async () => {
-      const doc = await (await fetch(${JSON.stringify(new URL('data/index.json', base).href)})).json();
-      return { count: doc.count, urls: (doc.datasets || []).map(d => d.url), shapes: (doc.datasets || []).map(d => d.updatedAtShape) };
-    })()`).catch(() => null);
-    if (manifestTruth) {
-      check(`/docs/data/ 行数 == dist/data/index.json 的数据集数（${manifestTruth.count} 份）`,
-        data.rows === manifestTruth.count, `页面 ${data.rows} 行 / Manifest ${manifestTruth.count} 份`);
-      const statuses = await page.evaluate(`(async () => {
-        const urls = ${JSON.stringify(manifestTruth.urls)};
-        const out = {};
-        for (const url of urls) {
-          try { out[url] = (await fetch(${JSON.stringify(base)} + url, { method: 'GET' })).status; }
-          catch (e) { out[url] = 0; }
-        }
-        return out;
-      })()`).catch(() => null);
-      check('/docs/data/ 里每个 endpoint 都真的能取到（逐条 HTTP 200）',
-        Boolean(statuses) && Object.values(statuses).every(status => status === 200),
-        statuses ? Object.entries(statuses).filter(([, s]) => s !== 200).map(([u, s]) => `${u}=${s}`).join(' ') : '读取失败');
-      check('/docs/data/ 页面标出每份数据的时间形状（真实时刻 / 日期规范化 / 纯日期）',
-        await page.evaluate(`(async () => {
-          const doc = await (await fetch(${JSON.stringify(new URL('data/index.json', base).href)})).json();
-          const shapes = new Set((doc.datasets || []).map(d => d.updatedAtShape));
-          const onPage = new Set([...document.querySelectorAll('[data-time-shape]')].map(el => el.getAttribute('data-time-shape')));
-          return [...shapes].every(s => onPage.has(s));
-        })()`).catch(() => false));
-    }
-    check('/docs/data/ 引用示例里带官方出处（不宣称本站是官方来源）',
-      data.text.includes('docs.anthropic.com') && data.text.includes('不是官方来源'));
-  }
+  //
+  // 为什么整节删：这一节验的是「文档页行数 == Manifest 数据集数」「每个 endpoint 逐条 HTTP 200」
+  // 「每份数据的时间形状徽章」「引用示例带官方出处」。本轮 `docs/data/` 页面族与 `data/index.json`
+  // 一起下架 ⇒ **被测对象与真值来源同时消失**，留在这里只会得到一串 404 造成的假红。
+  // 读者面的新契约（页面不出现数据文件名 / JSON / 「开放数据」入口）由构建期的
+  // `lib/published-assets.js` fail-closed 扫描 + 产物级断言守着，不再需要一个浏览器节。
 
   /* ------------------------------------------------------------------ */
   /* 私有站点分析（private-analytics-v1）                                 */

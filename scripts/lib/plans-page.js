@@ -125,7 +125,7 @@ const PLANS_NOTES = [
   '搜索覆盖平台名与常见别名、套餐名、模型名，以及页面上显示的额度类型与地区；中文显示值也能搜到（例如「智谱」「灵码」）。',
   // v2.4：优惠 ↔ 套餐。为什么必须写在页面上：这一块会把读者引到优惠页，而「为什么这条套餐有优惠、
   // 那条没有」的判据如果不说，读者只能猜 —— 猜出来的结论往往是「我们漏了」。
-  '「当前优惠」只来自**显式确认**的关联（`deal-plan-links.json`，每条都带官方出处），并且只在优惠尚未结束、套餐仍在售时显示；相似度匹配只产出候选报告，不会自动写进这一页。',
+  '「当前优惠」只来自**显式确认**的关联（人工维护的关系表，每条都带官方出处），并且只在优惠尚未结束、套餐仍在售时显示；相似度匹配只产出候选报告，不会自动写进这一页。',
   '优惠结束后套餐**不会消失**：那一行会变成「暂无当前优惠」，而这段关系仍记在「历史优惠」里（已下架的优惠保留标题与厂商快照，因此不会有指向不存在页面的链接）。'
 ];
 
@@ -886,11 +886,17 @@ function planDealsBlockHtml(view, opts = {}) {
   if (!view || !Array.isArray(view.rows)) return '';
   const prefix = opts.prefix || '';
   const kind = opts.kind || 'coding';
-  const home = opts.home || PLANS_HOME_HREF;
-  const note = escapeHtml(PLAN_DEALS_WORDING.note).replace(
-    'deal-plan-links.json',
-    `<a href="${escapeHtml(`${home}deal-plan-links.json`)}">deal-plan-links.json</a>`
-  );
+  // t3：这里原先把说明文本里的文件名替换成一个 `deal-plan-links.json` 的链接。
+  // 那个链接删掉了（本轮的目标是读者面不再出现数据文件名与数据文件入口）。
+  //
+  // ⚠️ 两个必须知道的事实：
+  //   ① 说明文本本身在更早一轮已整条删除（见上面 `PLAN_DEALS_WORDING` 的 [T5-…] 标记），
+  //      所以这一行现在求值成**空串** —— 页面上对应的 `<p class="snote"></p>` 是空元素。
+  //      那是既有事实（改前构建的产物里也是空的），不是这次删链接引入的；
+  //   ② 删掉这个空元素要把 `noteIn(opts)(…)` 那一支（连同它的登记）与相关 floors 一起改 ——
+  //      那是"删一条说明"的完整动作，属另一处改动，不在本轮范围内，所以这里只摘掉链接。
+  //      留着它的代价：一个读者看不见的空段落仍被说明台账计作一条 `.snote`。
+  const note = escapeHtml(PLAN_DEALS_WORDING.note);
   const rows = view.rows.filter(row => (row.planKind || 'coding') === kind);
   const body = rows.map(row => planDealsRowHtml(row, { prefix })).join('\n');
   const unit = opts.unit || '条套餐';

@@ -897,8 +897,7 @@ ${unlinkedBlock}      ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', cla
         <a href="${escapeHtml(`${prefix}plans/`)}">套餐与 API 计费资料库</a> ·
         <a href="${escapeHtml(`${prefix}plans/api/`)}">API / Token 计费对比</a> ·
         <a href="${escapeHtml(`${prefix}vendor/`)}">按厂商浏览</a> ·
-        <a href="${escapeHtml(`${prefix}archive/`)}">历史档案</a> ·
-        <a href="${escapeHtml(`${prefix}docs/data/`)}">数据文档</a>
+        <a href="${escapeHtml(`${prefix}archive/`)}">历史档案</a>
       </p>`)}
 ${modelsIndexFilterScriptHtml()}
 `;

@@ -396,7 +396,7 @@ ${blocks.join('\n')}`;
 
 function crossLinkHtml(prefix, note = null) {
   return `      ${noteIn(note)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote" id="api-cross">相关页面：<a href="${prefix}plans/coding/">AI Coding 套餐对比</a>`
-    + `（长期订阅的价格与额度） · <a href="${prefix}changes/">最近变化</a> · <a href="${prefix}feeds/">订阅</a></p>`)}`;
+    + `（长期订阅的价格与额度） · <a href="${prefix}changes/">最近变化</a></p>`)}`;
 }
 
 /**

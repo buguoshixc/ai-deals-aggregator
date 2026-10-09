@@ -55,9 +55,9 @@
 | 变化雷达视图 | `scripts/lib/changes.js` | `itemListRecords()` 是成员集合的权威判据 |
 | 套餐变化视图 | `scripts/lib/plan-changes.js` | |
 | 归档（结束/恢复） | `scripts/lib/archive.js` | baseline + events + absence + 墓碑 label |
-| 订阅注册表 | `scripts/lib/feeds.js` | `feedsForPage()` 按路由解析 |
+| 站点常量 | `scripts/lib/site.js` | `SITE_URL` / `SITE_NAME` / `SITE_DESCRIPTION` / `xmlEscape` / `VENDOR_*` 的**唯一出处**（原先住在订阅层的 `feeds.js`，随订阅层下架搬到这一支） |
 | 落地页计划 | `scripts/lib/landing.js` | `planLandingPages()` 一张表 + 一个循环 |
-| 数据出口 Manifest | `scripts/lib/data-docs.js` | `PUBLIC_DATASETS` 是唯一注册表 |
+| 产物资产门禁 | `scripts/lib/published-assets.js` | 允许出现在产物里的非 HTML 文件的**唯一注册表**（扫 `dist/**`，未登记即构建失败） |
 
 **硬守的四条真值边界**（重构不得退化）：
 
@@ -132,15 +132,26 @@ OG+Twitter、主题色、favicon、共享 `<style>`、页面级 `<style>` 槽位
 
 ---
 
-## 4. Feed 怎么生成
+## 4. 订阅层与数据出口：**已整体下架**（2026-10）
 
-- **注册表唯一**：`scripts/lib/feeds.js` 的 `feedsForPage()`（按路由解析）与 `FEEDS` 声明。
-- **站点常量唯一**：`SITE_URL` / `SITE_NAME` / `SITE_DESCRIPTION` / `xmlEscape` 都在这里。
-- 构建期产出 25 个 Feed × 2 种格式（RSS + JSON Feed）= 50 个文件。
-- **稳定 ID**：条目 id 由数据决定，不由构建时刻决定（时间只来自数据）。
-- **可复现门禁**：`npm run check:feeds:reproducible`（构建两次逐字节比对）。
-- **订阅发现**：`rootFeedTags()` / `feedLinkTags()` 两个原语；`<head>` 里的标签由它们产出，
-  源码里不留第二份清单。`verify-site.js` 按**数据**算每页应声明几条（不写死数字）。
+早先这一节写的是「Feed 怎么生成」：注册表在 `scripts/lib/feeds.js`、构建期产出 25 个 Feed ×
+2 种格式 = 50 个文件、`/feeds/` 订阅中心页、每页 `<head>` 的 `rel="alternate"` 订阅发现。
+
+本轮把面向读者的数据暴露整体收口 —— **这些都不再存在**：
+
+- **订阅层整族删除**：`scripts/lib/feeds.js`（86 KB）已删除；`/feeds/` 页面、`feed.xml` /
+  `feed.json` / `feed/**`（各 25 份 × 2 格式）、每页的订阅声明与页脚订阅入口全部下架。
+  判据侧：`verify-site.js` 的每个页面族都断言 **0 条 `rel="alternate"`**（比旧断言更严：
+  对「哪天溜回来一条」敏感）。
+- **站点常量没有跟着陪葬**：`SITE_URL` / `SITE_NAME` / `SITE_DESCRIPTION` / `xmlEscape` /
+  `VENDOR_SLUGS` / `VENDOR_THRESHOLDS` 搬到 `scripts/lib/site.js`（它们从来不是订阅专属）。
+- **数据文件不再进产物**：除首页自己那份 `assets/data/offers.json`（不被任何页面文本/链接提及）
+  之外，`*.json` / `*.ndjson` / `feed*` 一律不许出现 —— 由构建期 `lib/published-assets.js`
+  fail-closed 扫描守着。仓库根的那些源文件仍是数据真值（`check:*:reproducible` 一族对账它们）。
+- **数据出口整族删除**：`scripts/lib/data-docs.js`、`/docs/data/` 文档页、`data/index.json`
+  Manifest 与 9 份数据集 endpoint 全部下架。
+- **真值来源**：产物级验收（`verify-site.js`）改从**仓库根**读源文件（`readRoot()`）——
+  「产物里的副本 == 源文件」这件事由构建期门禁负责，不需要真浏览器再证一遍。
 
 ---
 

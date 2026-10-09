@@ -108,7 +108,7 @@ const PLANS_HUB_NOTES = [
   + 'API 单价表在 [API / Token 计费对比](plans/api/)。本页只给计数、口径与变化，不复制那两张表。',
   '三份资料是**互相独立**的：订阅套餐按月/年收费，API 按量计费，优惠是厂商的促销或赠送。'
   + '它们之间**不互相换算**（我们不把 API 单价折成月费，也不把 credits 折成 token）。',
-  '「相关优惠」只来自**显式确认**的关联（`deal-plan-links.json`，每条都带官方出处），'
+  '「相关优惠」只来自**显式确认**的关联（人工维护的关系表，每条都带官方出处），'
   + '并且只在优惠尚未结束、记录仍在售时显示；相似度匹配只产出候选报告，不会自动写进这一页。',
   '「最近更新」是我们最后一次人工对照官方页的日期，不是官方承诺不变的日期。'
 ];
@@ -291,8 +291,7 @@ function changesSectionHtml(view, prefix, note = null) {
         ${noteIn(note)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">「不再收录」表示人工来源层不再列出它，不表示厂商已经下架。</p>`)}
 ${coding}
 ${api}
-        ${noteIn(note)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote"><a href="${escapeHtml(`${prefix}changes/`)}">${escapeHtml(changes.CHANGES_WORDING.CHANGES_LABELS.all)} →</a> ·
-          <a href="${escapeHtml(`${prefix}feeds/`)}">订阅变化（RSS / JSON Feed） →</a></p>`)}
+        ${noteIn(note)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote"><a href="${escapeHtml(`${prefix}changes/`)}">${escapeHtml(changes.CHANGES_WORDING.CHANGES_LABELS.all)} →</a></p>`)}
       </section>`;
 }
 
@@ -337,6 +336,9 @@ ${body}
  *   `deals`               优惠记录（判关联是否仍然当前）
  *   `asOf`                数据基准日（**不是构建时刻**）
  *   `prefix`              回到站根的相对前缀（缺省由路由深度推导）
+ *
+ * ⚠️ t3：不再有 `dataDocs` 参数 —— 它只控制「数据出口」那条说明里的 `/docs/data/` 链接，
+ * 而那条说明整支删除（本轮的目标是读者面不再出现数据文件与数据文档入口）。
  */
 function renderPlansHubPage(ctx = {}) {
   const prefix = ctx.prefix === undefined ? PLANS_HUB_HOME_HREF : ctx.prefix;
@@ -366,15 +368,7 @@ ${apiSectionHtml(view, prefix, ctx.note)}
 
 ${changesSectionHtml({ ...view, apiPlanHistoryStore: ctx.apiPlanHistoryStore || null, apiPlans: ctx.apiPlans || [] }, prefix, ctx.note)}
 
-${ctx.dealLinks === undefined || ctx.dealLinks === null ? '' : `${currentOffersHtml(view, prefix, ctx.note)}\n`}      ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote" id="plans-hub-data">数据出口：
-        <a href="${escapeHtml(`${prefix}deals.json`)}">deals.json</a> ·
-        <a href="${escapeHtml(`${prefix}plans.json`)}">plans.json</a> ·
-        <a href="${escapeHtml(`${prefix}api-plans.json`)}">api-plans.json</a>${
-  // `/docs/data/` 由 Stage G 生成。**只有它真的存在时才链接** —— 站内链接存在性是硬门禁，
-  // 先写一条指向未来页面的链接就是造一条死链（t10 接上之后由构建期传 `dataDocs: true`）。
-  ctx.dataDocs ? ` ·\n        <a href="${escapeHtml(`${prefix}docs/data/`)}">数据文档</a>` : ''}
-      </p>`)}
-
+${ctx.dealLinks === undefined || ctx.dealLinks === null ? '' : `${currentOffersHtml(view, prefix, ctx.note)}\n`}
       ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote" id="plans-hub-cross">相关资料库：
         <a href="${escapeHtml(`${prefix}models/`)}">模型资料索引</a> ·
         <a href="${escapeHtml(`${prefix}vendor/`)}">按厂商浏览</a> ·

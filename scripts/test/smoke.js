@@ -14,12 +14,14 @@
  * 快、稳、不重复门禁，失败了也知道该去看什么。
  *
  * 用法：
- *   node scripts/test/smoke.js                       # 站点地址取 lib/feeds.js 的 SITE_URL
+ *   node scripts/test/smoke.js                       # 站点地址取 lib/site.js 的 SITE_URL
  *   node scripts/test/smoke.js --url=https://…/      # 指定其它部署（预发 / PR preview）
  */
 const https = require('https');
 const http = require('http');
-const { SITE_URL } = require('../lib/feeds');
+// 站点常量（SITE_URL）的唯一出处：t2 起从订阅层的 `feeds.js` 改指 `site.js`
+// （订阅层整体下架，常量不能跟着陪葬；这个脚本只用它的 SITE_URL 拼线上地址）。
+const { SITE_URL } = require('../lib/site');
 
 const arg = name => (process.argv.find(a => a.startsWith(`--${name}=`)) || '').slice(name.length + 3);
 
@@ -27,19 +29,20 @@ const arg = name => (process.argv.find(a => a.startsWith(`--${name}=`)) || '').s
  * 关键页清单：每个**页面族**各取一条代表。
  * 之所以不是「全部 186 页」：那正是 Full Gate 做的事；smoke 要的是「部署没漏东西」的信号，
  * 一族一条就足以发现整族缺席（而整族缺席才是发布事故的常见形态）。
+ *
+ * t2：`feeds/`（订阅中心）与 `docs/data/`（数据出口）两条从一个清单里删掉 —— 这两个页面族
+ * 本轮整体下架，线上不再存在。留着它们等于让冒烟门禁去请求两个**注定 404** 的地址。
  */
 const ROUTES = [
   ['', '首页'],
   ['student/', '专题集合页'],
   ['status/', '状态页'],
   ['changes/', '变化页'],
-  ['feeds/', '订阅中心'],
   ['plans/coding/', '套餐对比页'],
   ['plans/api/', 'API 计费页'],
   ['models/', '模型资料索引'],
   ['vendor/', '厂商枢纽'],
-  ['archive/', '历史档案'],
-  ['docs/data/', '数据出口']
+  ['archive/', '历史档案']
 ];
 
 const ORIGIN = (arg('url') || SITE_URL).replace(/\/$/, '');

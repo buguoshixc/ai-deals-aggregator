@@ -22,7 +22,7 @@
  *
  * **不拥有**（刻意留给调用方，避免这一层重新做业务判断）：
  *   · 标题、描述、canonical 地址**由调用方算好并转义**后传入；
- *   · `feedTagsHtml` / `jsonLdHtml` / `crumbHtml` / `headerExtra` / `extraCss` / `extraScript`
+ *   · `jsonLdHtml` / `crumbHtml` / `headerExtra` / `extraCss` / `extraScript`
  *     一律是**预渲染好的字符串**——订阅标签有 6 种取法、JSON-LD 每页段数不同，
  *     这些语义留在各自的页面模块里，本文件只负责把它们放到文档的正确位置。
  *   · 布局族（wide / detail / prose）**不在本文件声明**——唯一出处是
@@ -44,7 +44,7 @@
  * const html = shell.renderWidePageShell({
  *   kind: 'status', route: 'status/', prefix: '../', parts,
  *   title, description, canonicalUrl, faviconHref: '../favicon.svg',
- *   feedTagsHtml: feeds.rootFeedTags('../'), jsonLdHtml,
+
  *   crumbHtml, bodyHtml, where: 'renderStatusPage'
  * });
  * ```
@@ -205,7 +205,7 @@ function docStart(spec) {
     title, description, canonicalUrl,
     robots = '', hreflang = [], og = null,
     faviconHref, logoCssHref = '',
-    feedTagsHtml = '', extraCss = '', jsonLdHtml = '',
+    extraCss = '', jsonLdHtml = '',
     headerExtra = '', mainClass, expectLayout, where = kind
   } = spec;
 
@@ -259,7 +259,7 @@ ${hreflangHtml}${hreflangHtml ? '\n' : ''}${ogHtml}${ogHtml ? '\n' : ''}<meta na
 <meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="${faviconHref}" type="image/svg+xml">
-${logoCssHtml}${feedTagsHtml}${feedTagsHtml ? '\n' : ''}${parts.themeScript}
+${logoCssHtml}${parts.themeScript}
 ${parts.sharedStyle}
 ${extraCssHtml}${jsonLdHtmlBlock}</head>
 <body>

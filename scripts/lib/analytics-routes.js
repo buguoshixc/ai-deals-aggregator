@@ -87,12 +87,6 @@ const ROUTE_RULES = [
     why: '历史档案索引'
   },
   {
-    re: /^docs\/data\/$/,
-    trackable: true,
-    kind: 'data-docs',
-    why: '数据出口文档：回答「这些开放数据有没有人真的在用」'
-  },
-  {
     re: /^(?:student|developer|free-api)\/$/,
     trackable: true,
     kind: 'collection',
@@ -133,12 +127,6 @@ const ROUTE_RULES = [
     trackable: true,
     kind: 'changes',
     why: '变化雷达页：判断版本发布前后趋势变化时的关键观察点'
-  },
-  {
-    re: /^feeds\/$/,
-    trackable: true,
-    kind: 'feeds',
-    why: '订阅中心：回答「订阅这件事有没有人真的在找」'
   }
 ];
 
@@ -148,7 +136,10 @@ const ROUTE_RULES = [
  * 它们按设计只放静态资产与数据，不该出现 `.html`；真要出现了，说明有人往这些目录里
  * 塞了页面 —— 那种页面既不会被声明表判出来，也没有经过共享页脚，应当直接判红。
  */
-const NON_PAGE_DIR_PREFIXES = ['data/', 'feed/', 'logos/'];
+// t4：数据出口（`data/`）与 Feed（`feed/`）两个目录都撤了，改成当前真实存在的两个非页面目录。
+// ⚠️ 这条清单是**防御**：这些目录按设计只放静态资产，一旦出现 `.html` 就说明有人往里塞了页面
+//（那种页面既不在声明表里、也没经过共享页脚）。留着已消失的目录等于把防御挂在空气上。
+const NON_PAGE_DIR_PREFIXES = ['logos/', 'assets/'];
 
 /** 路由归一：站根相对、带尾斜杠（首页是空串）——与 canonical / sitemap 同一口径。 */
 function normalizeRoute(route) {

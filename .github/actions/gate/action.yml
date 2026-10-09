@@ -168,17 +168,6 @@ runs:
       shell: bash
       run: node scripts/tools/changes-selftest.js
 
-    # v1.6 订阅层自测：零依赖、离线、秒级。
-    # 它盯的是订阅赖以成立的全部承诺：Stable ID（同一天同一字段变两次不撞 id）、
-    # 时间只来自数据（首次发现 / 事件日期，lastSeen 永不进机器可读字段）、
-    # 连续 10 次构建逐字节一致、工具/已结束/已过期不进「当前优惠」、文案微调与元信息
-    # 不进变化流、厂商门槛、空 Feed 策略、XML 良构检查器，以及 **4 项 Tooth Test**
-    # （篡改 guid / 判据 / 事件 / 链接必须恰好报出对应 code）。
-    # 它红的时候没有别的步骤会替它红 —— 与上面几支同一条判断标准。
-    - name: Feeds self-test
-      shell: bash
-      run: node scripts/tools/feeds-selftest.js
-
     # v1.7 SEO 门禁自测：零依赖、离线、秒级。
     # 它盯两件事，两件都必须用跑出来的结果回答：
     #   ① **27 个检查码每一条都真的会响**（逐个定向篡改，断言对应 code 出现）——
@@ -391,10 +380,6 @@ runs:
       shell: bash
       run: node scripts/tools/archive-selftest.js --dir=dist
 
-    - name: Data-docs self-test (/docs/data/ + /data/index.json)
-      shell: bash
-      run: node scripts/tools/data-docs-selftest.js --dir=dist
-
     # private-analytics-v1 新增：私有站点分析（Cloudflare Web Analytics）的独立门禁。
     # 它红的时候没有别的步骤会替它红 —— 构建期那一遍的输入是「构建过程自己记下来的描述符」，
     # 而这一支**只读 dist/** 现场：自己推导路由、自己数 `data-dsh-analytics`、把
@@ -409,15 +394,6 @@ runs:
       shell: bash
       run: node scripts/tools/analytics-selftest.js --dir=dist
 
-    # v1.6 订阅可复现：**真实连续构建**两次，逐字节比对全部 36 个 Feed 文件。
-    # 为什么自测之外还要这一支：自测证明的是「纯函数同输入同输出」，证明不了
-    # 「构建脚本没把时钟/路径写进产物」。这里跑的是与发布完全同一条路径，
-    # 还额外核对「所有时间字段都是数据日期的北京时间零点」。
-    # 交付报告里的 10 次实证：node scripts/tools/check-feeds-reproducible.js --runs=10
-    - name: Feeds reproducibility (build twice, byte-compare)
-      shell: bash
-      run: node scripts/tools/check-feeds-reproducible.js --dir=dist
-
     # secondary-page-residue-v2 新增：**「删掉不许回流 + 扫描面不许收缩」的产物级复核**。
     #
     # 判据本体只有一份（`build-local.js` 的 `scanResidue()`），这一步通过 `check-residue.js`
@@ -431,13 +407,18 @@ runs:
     # 的唯一入口（adversary 靠它做对抗复核，见
     # research/_raw/secondary-page-residue-v2/mutation/README.md）；
     # 把它拿掉，判据还在，但**没人能在不重建的前提下证伪它**。
+    # ⚠️ 合并说明：本条之前原有一支 `Feeds reproducibility`（真实构建两次、逐字节比对
+    # Feed 产物），它随「去数据暴露」那一轮整体下架一并删除 —— 合并 origin/master 时按
+    # 「保留对方的 Residue guard、丢弃 Feeds 那一支」解决冲突（Feed 产物已不存在，留着只会红）。
     - name: Residue guard (deleted copy must not return; container floors)
       shell: bash
       run: node scripts/tools/check-residue.js --dir=dist
 
     # v2.1 新增：plans.json 可重建性 —— 盘上那份必须等于人工来源层产出的那一份（逐字节）。
-    # 与上一条红的含义不同：Feeds 那条问的是「构建产物里有没有被塞进时钟」，
-    # 这一条问的是「有没有人手改了派生产物 / 改了来源层却忘了重建」。
+    # 它问的是「有没有人手改了派生产物 / 改了来源层却忘了重建」。
+    # （t2 删掉了原先那句「与上一条红的含义不同：Feeds 那条问的是构建产物里有没有被塞进时钟」——
+    #  被引用的 `Feeds reproducibility` 步骤随订阅层整体下架一起删除，留着一句指向不存在步骤的
+    #  对照只会让下一个人去找一个已经不存在的门禁。）
     - name: Plans reproducibility (curated → plans.json, byte-compare)
       shell: bash
       run: node scripts/tools/check-plans-reproducible.js
@@ -452,10 +433,12 @@ runs:
       shell: bash
       run: node scripts/tools/check-plan-history.js
 
-    # v1.7 SEO 独立验收：**只读 dist/**，把可索引性、条目集合、sitemap 成员、Feed 清单
-    # 全部从产物现场重新推导一遍，再与页面上的标记逐个对账。
-    # 为什么构建期那一遍不够：那里的描述符是构建过程自己记下来的，两份数据同源时，
-    # 一个错误的判据会在两边一致地错下去。这一支与它**输入完全不同源**。
+    # v1.7 SEO 独立验收：从**产物**出发（页面 HTML / sitemap.xml / 目录结构 / 产物里那份首页
+    # 数据资源 `assets/data/offers.json`），把可索引性、条目集合、sitemap 成员重新推导一遍，
+    # 再与页面上的标记逐个对账。
+    # 为什么构建期那一遍不够：那里的描述符是构建过程自己记下来的，一个错误的判据会在两边
+    # 一致地错下去。这一支的价值在**重算 + 与产物对账**，不在「真值来自哪一份文件」——
+    # t6 起四份已下架的数据（plans / api-plans / models / model-registry-links）改从仓库根读。
     - name: SEO verification (independent, from dist/)
       shell: bash
       run: node scripts/tools/seo-verify.js

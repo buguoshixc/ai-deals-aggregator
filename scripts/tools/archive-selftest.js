@@ -417,7 +417,7 @@ section('⑦′ 详情页的相对引用：每条都必须解析到真实目标�
   //   ③ 把每条相对引用按页面路由**解析**一遍，落点必须是已声明的路由或静态文件
   //      （判据来自 `page-kinds.js` 的声明表与路由模式，不复制渲染层的前缀算式）。
   const seo = require('../lib/seo');
-  const STATIC_FILES = new Set(['favicon.svg', 'feed.xml', 'feed.json', 'robots.txt', 'icon.png', 'og-image.png', 'sitemap.xml']);
+  const STATIC_FILES = new Set(['favicon.svg', 'assets/data/offers.json', 'robots.txt', 'og-image.png', 'sitemap.xml']);
   const declaredRoutes = new Set(Object.keys(pageKinds.FIXED_ROUTE_KINDS));
   // `/vendor/` 与 `/category/` 是**枢纽页**（kind='hub'，由落地页计划按数据生成），
   // 因此不在固定路由声明表里；它们是真实存在的页面（产物里 `vendor/index.html` /
@@ -677,10 +677,14 @@ section('⑩ 真实产物（接线后才有；未接线时如实跳过）');
     // 缺产物已经不在这里「跳过并计 ✓」了：requireDist 要么已记红，要么是显式 OPTIONAL DIAGNOSTIC。
   } else {
     const html = fs.readFileSync(distIndex, 'utf8');
+    // t2：三份日志改从**仓库根**读（`scripts/data/*`，就是上面 `realStores` 用的那一份），
+    // 不再从 `dist/` 读发布副本 —— 本轮起数据文件整体下架，产物里没有它们了。
+    // 为什么这样仍然成立：`/archive/` 页面渲染的本来就是这三份源日志（构建期不做二次派生），
+    // 而「产物里的副本 == 仓库根源文件」这件事本轮已经不再需要（副本不存在了）。
     const diskStores = {
-      deal: JSON.parse(fs.readFileSync(path.join(DIST, 'deal-history.json'), 'utf8')),
-      plan: JSON.parse(fs.readFileSync(path.join(DIST, 'plan-history.json'), 'utf8')),
-      api: JSON.parse(fs.readFileSync(path.join(DIST, 'api-plan-history.json'), 'utf8'))
+      deal: readJson('scripts/data/deal-history.json'),
+      plan: readJson('scripts/data/plan-history.json'),
+      api: readJson('scripts/data/api-plan-history.json')
     };
     const diskArchives = ['deal', 'plan', 'api'].map(kind => archiveLib.buildArchive({
       kind,

@@ -21,7 +21,10 @@ const path = require('path');
 const landing = require('../lib/landing');
 const vendorPage = require('../lib/vendor-page');
 const seo = require('../lib/seo');
-const feeds = require('../lib/feeds');
+// 站点常量（SITE_URL / VENDOR_SLUGS / VENDOR_THRESHOLDS）的唯一出处：t2 起从订阅层的
+// `feeds.js` 改指本模块。订阅注册表那一支（`feedsForPage`）随订阅层下架一起摘 ——
+// 见 `ctxFor()` 里 `feeds:` 那一格的说明。
+const site = require('../lib/site');
 const providers = require('../lib/providers');
 const renderCore = require('../lib/render-core');
 
@@ -101,9 +104,9 @@ const providerTable = providerLoad.table;
 const renderCoreBundle = renderCore.load(path.join(ROOT, 'index.html'));
 const vendorKeyOf = deal => renderCoreBundle.vendorOf(deal).name;
 
-const vendorThresholds = feeds.VENDOR_THRESHOLDS;
+const vendorThresholds = site.VENDOR_THRESHOLDS;
 const planOptions = {
-  deals, vendorKeyOf, vendorSlugs: feeds.VENDOR_SLUGS, vendorThresholds, eventCountOf: () => 0
+  deals, vendorKeyOf, vendorSlugs: site.VENDOR_SLUGS, vendorThresholds, eventCountOf: () => 0
 };
 const basePlan = landing.planLandingPages(planOptions);
 const extPlan = landing.planLandingPages({
@@ -116,7 +119,9 @@ function ctxFor(spec, extra = {}) {
     deals: landing.itemsOf(spec, deals, { vendorKeyOf }),
     plans, apiPlans, models, modelLinks,
     planHistoryStore, apiPlanHistoryStore, providerTable,
-    feeds: feeds.feedsForPage({ kind: 'vendor', slug: spec.slug }, []),
+    // t5：`feeds:` 这一格 fixture **整格删除** —— t2 当时先把它置空（保住 `vendorViewOf()` 的
+    // `view.feed` 管道被走到），t3 已把「订阅这一家」整节连同 `view.feed` / `ctx.feeds`
+    // 一起下架，厂商页不再读这个参数。留一个空数组只会让下一个读者以为订阅还在。
     prefix: '../',
     ...extra
   };
@@ -260,7 +265,7 @@ section('③ 牙 #6：同一 provider 两个 canonical slug');
 /* ================================================================== */
 
 {
-  const good = vendorPage.assertVendorSlugCanonical(vendorPages, { providerTable, vendorSlugs: feeds.VENDOR_SLUGS });
+  const good = vendorPage.assertVendorSlugCanonical(vendorPages, { providerTable, vendorSlugs: site.VENDOR_SLUGS });
   check('真实数据上 slug 唯一且与两份登记表一致（断言不是恒红）', good.length === 0, good.slice(0, 2).join('；'));
 
   // ── R5（队长裁定；t41 改为**派生式**判据）──────────────────────────────
@@ -313,7 +318,7 @@ section('③ 牙 #6：同一 provider 两个 canonical slug');
     skipped: extPlan.skipped,
     pages: vendorPages,
     dirs: diskVendorDirs,
-    slugs: feeds.VENDOR_SLUGS,
+    slugs: site.VENDOR_SLUGS,
   });
   check(`【R5】${nullIdentityNames.length} 个没有 A 空间厂商名的身份：逐条有 skip 记录，且计划 / 磁盘 / 登记表里都没有它的路由`
     + `（${nullIdentityNames.join(' / ')}）`,
@@ -331,7 +336,7 @@ section('③ 牙 #6：同一 provider 两个 canonical slug');
         skipped: extPlan.skipped,
         pages: [...vendorPages, { kind: 'vendor', key: 'Trae', slug: 'trae', route: 'vendor/trae/' }],
         dirs: [...plannedSlugsOf(vendorPages), 'trae'],
-        slugs: { ...feeds.VENDOR_SLUGS, Trae: 'trae' },
+        slugs: { ...site.VENDOR_SLUGS, Trae: 'trae' },
       });
       // 必须是**各自**报出来，而不是一条兜底：
       return problems.some(p => p.includes('竟然生成了厂商页'))
@@ -343,7 +348,7 @@ section('③ 牙 #6：同一 provider 两个 canonical slug');
       skipped: extPlan.skipped,
       pages: vendorPages,
       dirs: [...plannedSlugsOf(vendorPages), 'ghost-vendor'],
-      slugs: feeds.VENDOR_SLUGS,
+      slugs: site.VENDOR_SLUGS,
     }).some(problem => problem.includes('计划外的路由目录：ghost-vendor')));
   check('【R5 牙】计划里有页、磁盘上却缺目录 → 红（少一个也不许静默）',
     nullIdentityProblemsOf({
@@ -351,7 +356,7 @@ section('③ 牙 #6：同一 provider 两个 canonical slug');
       skipped: extPlan.skipped,
       pages: vendorPages,
       dirs: plannedSlugsOf(vendorPages).slice(1),
-      slugs: feeds.VENDOR_SLUGS,
+      slugs: site.VENDOR_SLUGS,
     }).some(problem => problem.includes('计划里有页、磁盘上没有')));
   check('【R5 牙】有 A 空间身份且达标的 provider 却没有页 → 红（原方向不许被删弱）',
     (() => {
@@ -365,7 +370,7 @@ section('③ 牙 #6：同一 provider 两个 canonical slug');
     vendorPage.assertVendorCandidateIdentity(vendorPages, { providerTable }).length === 0);
 
   // 队长补充：slug 必须来自权威表（不能只靠 providers.json 兜底）
-  const declared = vendorPage.assertVendorSlugDeclared(vendorPages, { vendorSlugs: feeds.VENDOR_SLUGS });
+  const declared = vendorPage.assertVendorSlugDeclared(vendorPages, { vendorSlugs: site.VENDOR_SLUGS });
   check(`【R5 续】${vendorPages.length} 个厂商页的 slug 全部来自 vendor-slugs.json（权威表，不靠 provider 兜底）`,
     declared.length === 0, declared.slice(0, 2).join('；'));
   check('【R5 续牙】某家未登记 slug（只靠 provider 兜底）→ 红',
@@ -403,7 +408,7 @@ section('③ 牙 #6：同一 provider 两个 canonical slug');
 
   const pageMismatch = vendorPage.assertVendorSlugCanonical([
     { kind: 'vendor', key: '智谱AI', slug: 'zhipu-ai', route: 'vendor/zhipu-ai/' }
-  ], { providerTable, vendorSlugs: feeds.VENDOR_SLUGS });
+  ], { providerTable, vendorSlugs: site.VENDOR_SLUGS });
   check('【牙 #6】页面用的 slug 与 canonical 不一致 → 红',
     pageMismatch.some(problem => problem.includes('canonical')), pageMismatch.slice(0, 1).join(''));
 }
@@ -535,8 +540,11 @@ section('⑧ 真实产物（接线后才有；未接线时如实跳过）');
     && fs.readdirSync(path.join(DIST, 'vendor'))
       .some(slug => fs.existsSync(path.join(DIST, 'vendor', slug, 'index.html'))
         && fs.readFileSync(path.join(DIST, 'vendor', slug, 'index.html'), 'utf8').includes(vendorPage.KNOWLEDGE_WRAPPER_ID));
-  const ready = requireDistFiles('dist 现场的厂商资料页', ['vendor', 'api-plans.json', 'plans.json',
-    'models.json', 'model-registry-links.json', 'sitemap.xml']);
+  // t5（决策 D1）：这一格的**产物依赖**只剩页面本身与 sitemap —— 四份 join 数据
+  // （api-plans / plans / models / model-registry-links）本轮起都不再进产物，
+  // 继续把它们当"必需产物"列在这里会让这一步在删数据文件之后当场记红（fail-closed 的本意
+  // 是抓"构建没跑"，不是抓"数据文件按计划下架"）。
+  const ready = requireDistFiles('dist 现场的厂商资料页', ['vendor', 'sitemap.xml']);
   if (!ready) {
     // 缺产物：已记红（或显式 OPTIONAL DIAGNOSTIC）。
   } else if (!wired) {
@@ -544,10 +552,15 @@ section('⑧ 真实产物（接线后才有；未接线时如实跳过）');
     check('厂商资料区块在产物里不存在（build-local 的 extraSections 没有接线 / 接线回归）', false);
   } else {
     const problems = [];
-    const diskApiPlans = JSON.parse(fs.readFileSync(path.join(DIST, 'api-plans.json'), 'utf8')).plans;
-    const diskPlans = JSON.parse(fs.readFileSync(path.join(DIST, 'plans.json'), 'utf8')).plans;
-    const diskModels = JSON.parse(fs.readFileSync(path.join(DIST, 'models.json'), 'utf8')).models;
-    const diskLinks = JSON.parse(fs.readFileSync(path.join(DIST, 'model-registry-links.json'), 'utf8')).links;
+    // t5（决策 D1）：四份 join 数据改从**仓库根**读（`readJson` 就是本文件顶部那个
+    // `path.join(ROOT, …)` 读取器）。判据一字未变 —— 仍然是"页面上的计数 / 链接必须等于
+    // 按数据重算的值"，只是真值的来源从发布副本换成源文件：
+    // 「产物里的副本 == 源文件」这件事由构建期的 `check:*:reproducible` 一族对账仓库根，
+    // 不需要产物级自测再证一遍（副本本身已经不存在了）。
+    const diskApiPlans = readJson('api-plans.json').plans;
+    const diskPlans = readJson('plans.json').plans;
+    const diskModels = readJson('models.json').models;
+    const diskLinks = readJson('scripts/data/model-registry-links.json').links;
     const sitemap = fs.readFileSync(path.join(DIST, 'sitemap.xml'), 'utf8');
     for (const spec of vendorPages) {
       const file = path.join(DIST, spec.route, 'index.html');

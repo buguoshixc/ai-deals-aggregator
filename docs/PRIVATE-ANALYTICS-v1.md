@@ -52,8 +52,9 @@
 
 - 不产生 `traffic.json` / `analytics.json` / `public-analytics.json` / `stats.json`（构建期硬失败 + 独立门禁双向检查）；
 - 不调用 Cloudflare Analytics API，**没有任何** `Cloudflare API → GitHub Actions → JSON → commit` 这条链路；
-- 不把 Analytics 登记进 `PUBLIC_DATASETS`，因此它不出现在 `/data/index.json`、数据文档页、
-  Feed、History、Archive、Model Registry 里；
+- 与任何公开数据集注册表**无关**：`PUBLIC_DATASETS` 与 `/data/index.json`、数据文档页、Feed
+  本轮已随数据出口 / 订阅层整族下架（不再存在），产物里的非 HTML 文件由
+  `scripts/lib/published-assets.js` 的允许清单 fail-closed 兜底 —— Analytics 不在其中；
 - 与 Deals / Plans / API Pricing / Models / History **完全解耦**。
 
 唯一的例外是**构建产物**里那份 `<script data-dsh-analytics=…>`：它不是数据，是**取数代码**。

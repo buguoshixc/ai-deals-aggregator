@@ -540,15 +540,21 @@ function summarize(radar) {
 }
 
 /* ------------------------------------------------------------------ */
-/* 变化日志的可用性 → 数据出口 Manifest 的**如实登记**                  */
+/* 变化日志的可用性 → 页面措辞（与**曾经**的数据出口登记）              */
 /* ------------------------------------------------------------------ */
 //
-// 背景（`p2-honesty-single-source-v1` 闭合 t4 登记的缺口 A）：
+// 背景（`p2-honesty-single-source-v1` 闭合当时登记的缺口 A）：
 // 三份变化日志缺失或损坏时，页面按纪律说「本次构建没有拿到…日志 —— 这不表示「没有变化」」；
-// 但构建会**在 Dataset Manifest 那一步死**——每条数据集都要求一个可识别的 `updatedAt`，
-// 而日志不可用时它该有的是「没有」。处置：**不许用别的日期顶上**（不许写构建时刻「今天」，
+// 当年构建还会**在 Dataset Manifest 那一步死**——每条数据集都要求一个可识别的 `updatedAt`，
+// 而日志不可用时它该有的是「没有」。处置是「**不许用别的日期顶上**」（不许写构建时刻「今天」，
 // 也不许拿 deals 的数据日期冒充日志的日期），把数据集显式登记为 `availability: 'unavailable'`
 // + `updatedAt: null` + `updatedAtNote`（同一句「没有拿到」），并配三条**更严**的新断言。
+//
+// ⚠️ t4（去数据暴露）：数据出口子系统整体下架之后，**Manifest 那一半已经不存在**
+//（`markUnavailableLogDatasets()` / `logDatasetHonestyProblems()` / `logDatasetDiskHonestyProblems()` /
+// `toleratedLogComplaints()` 四个函数与 Manifest 一起删除，见下面那段说明），
+// 今天活下来的只有 `logAvailabilityOf()`：它服务的是**页面措辞**——
+//「这一页要不要说『没有拿到日志』」由它决定，判据一个字没放宽。
 //
 // 这里放的是**纯函数**：构建期（`build-local.js`）与独立门禁都从这里取同一条规则；
 // `seo-selftest.js` 直接对它们开牙（空值必须显式登记、可用时不许登记、日期顶替即红）。
@@ -557,55 +563,26 @@ function summarize(radar) {
 /* 说明的**机器无关性**（t27：`unavailable-note-machine-independence-v1`）  */
 /* ------------------------------------------------------------------ */
 //
-// 背景（t19 独立复核的观察 O1）：`logUnavailableNote()` 原先直接印加载器给的
-// `item.file`，而三个加载器的 `file` 都是 `path.join(__dirname, …)` 算出来的**绝对路径**，
-// 于是这份「如实说明」里嵌进了宿主路径，实测形如：
-//   `本次构建没有拿到 D:\…\scripts\data\deal-history.json（文件缺失）——…`
-// 两个后果：① 该形态的产物**跨机器不可逐字节复现**（同一份源码在两台机器上构建出的
-// `data/index.json` 不同）；② `/docs/data/` 与数据出口 endpoint 是**公开面**，等于把
-// 构建机的目录结构发布出去。判据只要求说明里含「没有拿到」（这条一个字不改），
-// 说明**点哪一份日志**用 basename 就够读者读懂了。
+// 背景（t19 独立复核的观察 O1）：不可用说明里不能嵌宿主绝对路径，两个后果：
+// ① 该形态的产物**跨机器不可逐字节复现**；② 说明是**公开面**，等于把构建机的目录结构发布出去。
+//
+// ⚠️ t4（去数据暴露）：这条不变量的**承重面换了**，判据本身留着。
+// 原先它钉在两处：Manifest 的 `updatedAtNote`（`markUnavailableLogDatasets()` /
+// `logDatasetHonestyProblems()` / `logDatasetDiskHonestyProblems()`）与页面上的「没有拿到」措辞。
+// 数据出口子系统整体下架之后 Manifest 与那几个函数一起消失，页面措辞成了**唯一**承重面 ——
+// 所以判据（`machineDependenceProblems()`）改由 `build-local.js` 的全页 HTML 扫描调用：
+// 页面文本含「没有拿到」时它必须为空，否则构建当场红。
+// 这条判据今天仍然是活的：三份日志的页面措辞全是**静态字面量**
+//（`changes.js` 的 CHANGES_NOTES、`plan-changes.js`、`api-plan-history.js`，以及 plans-hub /
+// models / vendor / archive 各自的「没有拿到日志」句）—— 谁把加载器的绝对路径拼进页面，
+// 就会当场红，而不是把宿主目录发布出去。
 //
 // ⚠️ 这里同时给出**判据**（`machineDependenceProblems()`）：修文案不改判据的话，下一次
-// 有人把绝对路径拼进说明仍然是静默失效。两个诚实性检查函数都会调用它（构建期 + 独立门禁）。
+// 有人把绝对路径拼进说明仍然是静默失效。
 
 /**
- * 只留文件名：说明里点名的对象必须是**机器无关**的 basename。
- *
- * 刻意不用 `path.basename()`：它在 POSIX 上不认 `\`，而这个站的产物要在任何机器上逐字节相同 ——
- * 两种分隔符都得切。`D:\a\b\deal-history.json` 与 `/a/b/deal-history.json` 都应得
- * `deal-history.json`。
+ * 说明里**不许出现**的机器相关形状。逐条给名字，红的时候能直接说出犯的是哪一条。
  */
-function noteFileLabel(file) {
-  const value = String(file == null ? '' : file);
-  const parts = value.split(/[\\/]/).filter(Boolean);
-  return parts.length ? parts[parts.length - 1] : value;
-}
-
-/**
- * 把一段文本里出现的**宿主绝对路径**压成 basename（盘符 / UNC / POSIX 绝对路径三种形态）。
- *
- * 加载器的 `broken` 字段在少数失败形态下是 `fs` 的错误文本（`EPERM: … open 'D:\…'`），
- * 也会带出宿主路径；所以 `reason` 一并过这道。规则刻意**只认"绝对路径形状"**：
- * 路径必须以字符串开头、空白或引号/括号起始 —— 免得把 `https://…` 这类 URL 误伤成路径。
- *
- * 两步走，第 ① 步是**实测教训**换来的：只做第 ② 步时，`open 'D:\…\Code\AI Page\scripts\data\deal-history.json'`
- * 会在空格处截断，留下 `'AI Page\scripts\data\deal-history.json'` —— 判据随即把它抓红
- * （fail-closed 是对的，但构建会因为"说明写不干净"而失败）。本仓库自己的目录就叫 `AI Page`，
- * 所以"引号里的路径允许含空格"这一步是必须的。
- */
-function machineIndependentText(text) {
-  const value = String(text == null ? '' : text);
-  return value
-    // ① 引号里的路径：整段（**允许含空格**）压成 basename
-    .replace(/(['"`])((?:[A-Za-z]:[\\/]|\\\\|\/)[^'"`\n]*)\1/g,
-      (match, quote, hit) => `${quote}${noteFileLabel(hit)}${quote}`)
-    // ② 没有引号的路径（保守：遇到空白就停，宁可少压一点 —— 剩下的由判据兜底变红）
-    .replace(/(^|[\s"'`（(【「])((?:[A-Za-z]:[\\/]|\\\\|\/)[^\s"'`）)】」]*)/g,
-      (match, prefix, hit) => `${prefix}${noteFileLabel(hit)}`);
-}
-
-/** 说明里**不许出现**的机器相关形状。逐条给名字，红的时候能直接说出犯的是哪一条。 */
 const MACHINE_DEPENDENT_SHAPES = [
   ['Windows 盘符绝对路径', /(^|[^A-Za-z0-9])[A-Za-z]:[\\/]/],
   ['UNC 路径', /\\\\[^\s]/],
@@ -623,14 +600,6 @@ const MACHINE_DEPENDENT_SHAPES = [
 function machineDependenceProblems(text) {
   const value = String(text == null ? '' : text);
   return MACHINE_DEPENDENT_SHAPES.filter(([, pattern]) => pattern.test(value)).map(([label]) => label);
-}
-
-/** 如实说明：与页面上的措辞同源（都点明「不表示没有变化」），且**机器无关** */
-function logUnavailableNote(item) {
-  const file = noteFileLabel(item.file);
-  const reason = machineIndependentText(item.reason || '缺失或损坏');
-  return `本次构建没有拿到 ${file}（${reason}）——这份数据集的更新时间不可公布，`
-    + '这不表示「没有变化」。';
 }
 
 /**
@@ -662,133 +631,27 @@ function logAvailabilityOf(loads = []) {
   });
 }
 
-/** 把 Manifest 里对应的数据集**如实**登记为不可用（不用任何日期顶替） */
-function markUnavailableLogDatasets(manifest, availability = []) {
-  for (const item of availability) {
-    if (item.availability === 'ok') continue;
-    const entry = ((manifest && manifest.datasets) || []).find(dataset => dataset.id === item.id);
-    if (!entry) continue;
-    entry.updatedAt = null;          // 没有拿到日志 ⇒ 没有可公布的更新时间
-    entry.updatedAtShape = null;     // 没有值就没有形状
-    entry.availability = 'unavailable';
-    entry.updatedAtNote = logUnavailableNote(item);
-  }
-  return manifest;
-}
-
 /**
- * 新增断言（比"只看形状"更严的那一半）：不可用状态必须逐字登记；可用时不许登记。
- *
- * @param {object} manifest   Manifest（已过 `markUnavailableLogDatasets`）
- * @param {Array}  availability  `logAvailabilityOf()` 的结果
+ * ⚠️ t4：这里原先还有四个**只服务于 Dataset Manifest** 的函数，随数据出口子系统一起删除：
+ * `markUnavailableLogDatasets()`（把数据集登记为 unavailable）、
+ * `logDatasetHonestyProblems()`（源侧诚实性）、`logDatasetDiskHonestyProblems()`（盘侧诚实性）、
+ * `toleratedLogComplaints()`（放过两条形态抱怨）。删它们的理由：
+ *   · 唯一消费者是 `build-local.js` 的 Stage G 产物回读块与 Manifest 写出（同批删除），
+ *     以及 `seo-selftest.js` / `seo-verify.js` 的 Manifest 牙（**那两处已随收尾任务删除**）；
+ *   · 它们判的是「一份公开 JSON 里怎么如实写不可用」，而公开 JSON 这个面本身已经不存在了。
+ * 留下的 `logAvailabilityOf()` 仍然有用：构建期拿它决定页面上的「没有拿到日志」措辞
+ * （`/changes/`、套餐页、API 计费页与厂商页的 availability 分支）。
+ * 机器无关性判据（`machineDependenceProblems()`）也留着 —— 它的新挂载点见上面的注释。
  */
-function logDatasetHonestyProblems(manifest, availability = []) {
-  const problems = [];
-  for (const dataset of ((manifest && manifest.datasets) || [])) {
-    const item = availability.find(row => row.id === dataset.id);
-    const declared = dataset.availability === 'unavailable';
-    if (!item) {
-      if (declared) problems.push(`${dataset.id}: 只有本次登记的日志数据集才允许 availability: unavailable`);
-      continue;
-    }
-    if (item.availability === 'ok') {
-      if (declared) problems.push(`${dataset.id}: 源日志本次可用，不许登记为 unavailable`);
-      if (dataset.updatedAt === null) problems.push(`${dataset.id}: 源日志本次可用，updatedAt 不许留空`);
-      continue;
-    }
-    if (!declared) problems.push(`${dataset.id}: 源日志不可用（${item.reason}）时必须显式登记 availability: unavailable`);
-    if (dataset.updatedAt !== null) {
-      problems.push(`${dataset.id}: 源日志不可用时 updatedAt 必须是 null（不许用别的日期顶上，实得 ${dataset.updatedAt}）`);
-    }
-    if (dataset.updatedAtShape !== null) {
-      problems.push(`${dataset.id}: 源日志不可用时 updatedAtShape 必须是 null（实得 ${dataset.updatedAtShape}）`);
-    }
-    if (!dataset.updatedAtNote || !dataset.updatedAtNote.includes('没有拿到')) {
-      problems.push(`${dataset.id}: 必须给出「没有拿到日志」的如实说明（updatedAtNote）`);
-    }
-    // 说明必须**机器无关**：产物要在任何机器、任何目录下**逐字节相同**（t27）。
-    // 这条只管形状（盘符 / UNC / POSIX 绝对路径 / `~`），不管文案好坏；失败方向是红。
-    for (const shape of machineDependenceProblems(dataset.updatedAtNote)) {
-      problems.push(`${dataset.id}: updatedAtNote 含机器相关形状「${shape}」——`
-        + '不可用说明必须跨机器可复现（日志名只写 basename，不许出现宿主绝对路径）');
-    }
-  }
-  return problems;
-}
-
-/**
- * 允许放过的**两条**形状抱怨（**逐字生成**，不做模式匹配）。
- *
- * 生成源就是登记本身：`updatedAt: null` 在 `lib/data-docs.js` 的 `assertManifestShape()`
- * 里必然产生「缺少 updatedAt」，在 `assertPageHonesty()` 里必然再产生一条
- * 「页面上没有标出时间形状 null」。没有登记却想留空时这两条不会被放过 —— 失败方向是红。
- */
-function toleratedLogComplaints(manifest) {
-  const tolerated = new Set();
-  for (const dataset of ((manifest && manifest.datasets) || [])) {
-    if (dataset.availability !== 'unavailable') continue;
-    tolerated.add(`dataset ${dataset.id}: 缺少 updatedAt`);
-    tolerated.add(`${dataset.id}: 页面上没有标出时间形状 ${dataset.updatedAtShape}`);
-  }
-  return tolerated;
-}
-
-/**
- * 盘侧（自检 / 独立门禁）的同一条不变量：**没有时间的数据文件必须登记为不可用**，反之亦然。
- *
- * 与 `logDatasetHonestyProblems()` 的区别：这里不需要"源日志加载结果"，也不需要**任何 id 清单**——
- * 只看产物 Manifest 与盘上数据文件本身（因此独立门禁与构建期用的是同一句话）。
- * 两条合起来把"源 ⇒ Manifest ⇒ 盘"三段钉住。
- *
- * @param {object} manifest          产物里的 data/index.json
- * @param {object} actualUpdatedAt   { [id]: updatedAt|null }（文件不存在时**不给键**：那条由 endpoint 存在性断言负责）
- */
-function logDatasetDiskHonestyProblems(manifest, actualUpdatedAt = {}) {
-  const problems = [];
-  for (const dataset of ((manifest && manifest.datasets) || [])) {
-    const declared = dataset.availability === 'unavailable';
-    const hasKey = Object.prototype.hasOwnProperty.call(actualUpdatedAt, dataset.id);
-    const real = hasKey ? actualUpdatedAt[dataset.id] : undefined;
-    if (declared) {
-      if (dataset.updatedAt !== null) {
-        problems.push(`${dataset.id}: 已登记为不可用，Manifest 的 updatedAt 必须是 null（实得 ${dataset.updatedAt}）`);
-      }
-      if (dataset.updatedAtShape !== null) {
-        problems.push(`${dataset.id}: 已登记为不可用，updatedAtShape 必须是 null（实得 ${dataset.updatedAtShape}）`);
-      }
-      if (!dataset.updatedAtNote || !dataset.updatedAtNote.includes('没有拿到')) {
-        problems.push(`${dataset.id}: 必须给出「没有拿到日志」的如实说明（updatedAtNote）`);
-      }
-      // 独立门禁这一侧也钉住机器无关性：构建期漏了，`verify:seo` 仍会红（t27）。
-      for (const shape of machineDependenceProblems(dataset.updatedAtNote)) {
-        problems.push(`${dataset.id}: updatedAtNote 含机器相关形状「${shape}」——`
-          + '不可用说明必须跨机器可复现（日志名只写 basename，不许出现宿主绝对路径）');
-      }
-      if (real !== null && real !== undefined) {
-        problems.push(`${dataset.id}: 登记为不可用，但盘上的数据文件带着时间 ${real} —— 登记与产物不一致`);
-      }
-      continue;
-    }
-    // 文件在盘上、却一个时间都取不到 ⇒ 只有"如实登记为不可用"这一条路（不许拿别的日期顶上）
-    if (real === null) {
-      problems.push(`${dataset.id}: 盘上的数据文件没有可公布的更新时间（updatedAt / startedAt 都取不到）`
-        + '⇒ 必须登记为 availability: unavailable（如实登记，不许用别的日期顶上）');
-    }
-  }
-  return problems;
-}
 
 module.exports = {
   CHANGES_WORDING,
-  logUnavailableNote,
-  noteFileLabel,
-  machineIndependentText,
+  // t4：`logUnavailableNote` / `noteFileLabel` / `machineIndependentText` 与四个 Manifest 专用函数
+  //（`markUnavailableLogDatasets` / `logDatasetHonestyProblems` / `logDatasetDiskHonestyProblems` /
+  // `toleratedLogComplaints`）随数据出口子系统一起从导出表里消失 —— 留着导出而函数不存在是
+  // `ReferenceError`（实测过），留着函数而没人用则是"下一个改文案的人以为它还在承重"。
   machineDependenceProblems,
   logAvailabilityOf,
-  markUnavailableLogDatasets,
-  logDatasetHonestyProblems,
-  logDatasetDiskHonestyProblems,
-  toleratedLogComplaints,
   WINDOWS,
   LIMITS,
   SECTION_ORDER,
