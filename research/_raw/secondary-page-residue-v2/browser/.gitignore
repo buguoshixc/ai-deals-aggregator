@@ -1,0 +1,48 @@
+# 为什么这里的某些文件不入库（`docs/EVIDENCE-POLICY.md` Tier 3）
+
+入库（Tier 1，结论 + 判据）：`README.md` · `summary.md` · `summary.json`
+—— 结论、口径、原始命令×退出码表、局限清单都在这里，是本轮的**可引用证据**。
+
+不入库（Tier 3，可重建的大块机器明细）：
+
+| 文件 | 约 | 为什么排掉 |
+|---|---|---|
+| `verify-site.json` | 730 KB | `verify-site.js` 的完整输出（892 项逐条）。**头部结论**（892 项 / 失败 0）已写进 `summary.json`；要明细就复跑下面那条命令 |
+| `browser-readings.json` | 371 KB | 抽样 40 路由 × 2 视口 × 每个容器的纯文本与盒模型（逐条明细）。结论在 `summary.md` 的表里 |
+| `full-site-sweep.json` | 162 KB | 186 页逐页容器计数。**合计**已在 `summary.json`（8/8 类逐类相等） |
+| `baseline-diff.json` | 89 KB | 80 页删前/删后逐字节重建的逐页结果。结论「80/80 相同（+ 时间口径归一）」在 `summary.md` |
+| `text-floor-recount.json` | 38 KB | 186 页正文余量重算。**最小值与跌破页数**结论在 `summary.json` |
+| `dist-post-build.digest.json` | 30 KB | 304 个产物的逐文件摘要。**树摘要**（`59db0aa5…`）在 `summary.json` 的头部 |
+| `dist-pre-build.digest.json` | 30 KB | 同上（删前那棵树） |
+| `before-dist.digest.json` | 30 KB | 同上（主检出那棵只读树） |
+
+排除判据与上一轮 `_raw/secondary-page-residue-v1/` 的处置**完全一致**：**只留结论与可复跑判据，
+不留可重建的逐页/逐文件明细 dump**（上一轮把 1135 个文件压到 37 个用的就是这条理由）。
+
+复现其中任何一份（只读产物，不改任何东西；**注意：这几条会起真浏览器 / 重算产物，别与其他
+成员的浏览器套件同时跑**）：
+
+```bash
+node research/_raw/secondary-page-residue-v2/browser/browser-suite.cjs      # → browser-readings.json
+node research/_raw/secondary-page-residue-v2/browser/full-site-sweep.cjs    # → full-site-sweep.json
+node research/_raw/secondary-page-residue-v2/browser/baseline-diff.cjs      # → baseline-diff.json
+node research/_raw/secondary-page-residue-v2/browser/recount.cjs            # → text-floor-recount.json
+node scripts/tools/verify-site.js --dir=dist --json=research/_raw/secondary-page-residue-v2/browser/verify-site.json
+node research/_raw/secondary-page-residue-v2-captain-recon/dataplane-diff.cjs snap <out>   # 树摘要
+```
+
+**顺带记一句出处**：`verify-site.js` 会把 `mutations.json` 写到 `--json=` 的**同目录**
+（`verify-site.js:9286`），所以本目录里的 `mutations.json` **不是** t5 的产物 ——
+它的出处已在 `README.md` 写明。它只有 26 KB 且是判据（写进这里是为了让读者不被误导）。
+
+`.cjs` / `.log` / `.txt` / `.stdout.txt` 由仓库根 `.gitignore` 的 Tier-3 类别规则统一排除，不在此重复。
+
+# 下面这些按上表排除（Tier 3）
+/verify-site.json
+/browser-readings.json
+/full-site-sweep.json
+/baseline-diff.json
+/text-floor-recount.json
+/dist-post-build.digest.json
+/dist-pre-build.digest.json
+/before-dist.digest.json

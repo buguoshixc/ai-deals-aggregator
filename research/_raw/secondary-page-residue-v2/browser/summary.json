@@ -1,0 +1,4068 @@
+{
+  "at": "2026-10-09T07:57:43.711Z",
+  "what": "t5 汇总：真浏览器读数 + 产物层正文下限重数 + 删前删后几何对照",
+  "digests": {
+    "after": {
+      "dir": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\secondary-page-residue-v2\\dist",
+      "treeDigest": "59db0aa5aaef0ac01589c4203dc9dfeda2c7ddbe3883c2a0774f24451607d04a",
+      "files": 304,
+      "bytes": 20337838,
+      "manifestSha256": "c27410e61933ae3d0a8ceb5eb276376cbfc0ab6700be0ad532e2029337ed4fda",
+      "digestSource": "现场现算（tree-digest-lib.cjs，与 scripts/tools/tree-digest.cjs 同口径）+ 与 dist-post-build.digest.json 逐字段核对"
+    },
+    "before": {
+      "dir": "D:\\OneDrive\\Desktop\\Code\\AI Page\\dist",
+      "treeDigest": "141af6139516922f925cc9605ee45efd6c4b65c499b2ad2cda689984612d2f34",
+      "files": 304,
+      "bytes": 20361169,
+      "manifestSha256": "585df968ed77284451f0ca07e396c6374b5894b2ffd7b777e8cf4c773a4d7ec9",
+      "digestSource": "现场现算 + 与 before-dist.digest.json 逐字段核对",
+      "note": "主检出 dist/ —— t1 普查锚定产物（treeDigest 141af613…），充当「删前」副本（t2 §4 的前提：两棵树在 /deal/* 上的差异只有被删文案 + 时间戳，见 baseline-diff.json）"
+    }
+  },
+  "browser": {
+    "engine": "playwright-core",
+    "version": "154.0.4258.62",
+    "executablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+    "headful": false
+  },
+  "sampling": {
+    "deals": 20,
+    "other": 20,
+    "total": 40,
+    "viewports": [
+      "1440x900",
+      "390x844"
+    ],
+    "dealIdsInAfter": 80,
+    "dealSample": [
+      "deal/017bdbc04e70/",
+      "deal/176234a80147/",
+      "deal/2db62eb1a8a0/",
+      "deal/42c65c0d8d9d/",
+      "deal/4a875a435019/",
+      "deal/4d4bcb5b6829/",
+      "deal/57847fbcc1ed/",
+      "deal/62e3166acec0/",
+      "deal/6869e7866510/",
+      "deal/833a9889bfb7/",
+      "deal/8dada3205ed8/",
+      "deal/97d21ff73d3e/",
+      "deal/aacd5856bba2/",
+      "deal/b56f33b3d4f3/",
+      "deal/bf156583e97c/",
+      "deal/c4ab5c5d8101/",
+      "deal/d6aaee8c7379/",
+      "deal/e237cab7c007/",
+      "deal/e63402b5cc83/",
+      "deal/ead998e58cd9/"
+    ],
+    "otherSample": [
+      "",
+      "feeds/",
+      "plans/",
+      "plans/api/",
+      "plans/coding/",
+      "status/",
+      "models/",
+      "changes/",
+      "category/",
+      "category/chat/",
+      "need/no-card/",
+      "need/ai-coding/",
+      "vendor/",
+      "vendor/openai/",
+      "student/",
+      "developer/",
+      "free-api/",
+      "docs/data/",
+      "archive/",
+      "models/qwen-max/"
+    ]
+  },
+  "deletedLiterals": {
+    "registeredEntries": 32,
+    "assertionLiterals": 48,
+    "registry": "scripts/data/residue-guard.json",
+    "literals": [
+      "c2-01/literal",
+      "c2-01/visible",
+      "c2-02/literal",
+      "c2-02/visible",
+      "c2-03/literal",
+      "c2-03/visible",
+      "c2-04/literal",
+      "c2-04/visible",
+      "c1-05/literal",
+      "c1-06/literal",
+      "c1-06/visible",
+      "c1-07/literal",
+      "c1-07/visible",
+      "c1-08/literal",
+      "c1-08/visible",
+      "c1-09/literal",
+      "c1-09/visible",
+      "c1-10/literal",
+      "c1-10/visible",
+      "c1-11/literal",
+      "c1-11/visible",
+      "c1-12/literal",
+      "c1-12/visible",
+      "c1-13/literal",
+      "c1-13/visible",
+      "c1-14/literal",
+      "c1-14/visible",
+      "c1-15/literal",
+      "c1-16/literal",
+      "c1-17/literal",
+      "c1-18/literal",
+      "c1-19/literal",
+      "c1-19/visible",
+      "c1-20/literal",
+      "c1-20/visible",
+      "c1-21/literal",
+      "c1-21/visible",
+      "c1-22/literal",
+      "c1-23/literal",
+      "c1-24/literal",
+      "c1-25/literal",
+      "c1-26/literal",
+      "c1-27/literal",
+      "v2-plans-hub-description-tail/literal",
+      "v2-plans-hub-notes-clause/literal",
+      "v2-plans-api-note-head/literal",
+      "v2-models-caption-tail/literal",
+      "v2-headless-capture-paren/literal"
+    ]
+  },
+  "checks": [
+    {
+      "name": "抽样页全部 HTTP 200",
+      "ok": true,
+      "detail": "200 80/80 · console 错误合计 0 条"
+    },
+    {
+      "name": "回流检测（浏览器层 innerText）：被删文案 0 命中",
+      "ok": true,
+      "detail": "innerText 0 次 · textContent 0 次 · 序列化 HTML（剥 script/style/注释）0 次 · 每页检查 48 条字面"
+    },
+    {
+      "name": "回流检测的阳性对照：删前产物命中 > 0，删后 = 0",
+      "ok": true,
+      "detail": "deal/adcb6471a512/ innerText 命中 [7,7] → [0,0] · deal/2db62eb1a8a0/ innerText 命中 [7,7] → [0,0] · deal/57847fbcc1ed/ innerText 命中 [7,7] → [0,0]"
+    },
+    {
+      "name": "横向溢出：页面级 scrollWidth == clientWidth（两个视口）",
+      "ok": true,
+      "detail": "无页面级溢出"
+    },
+    {
+      "name": "横向溢出：没有元素真的把页面撑宽（被可滚动祖先裁掉的不算）",
+      "ok": true,
+      "detail": "无 · 被祖先裁掉的可滚动溢出 2581 处（登记为读数，不判红）"
+    },
+    {
+      "name": "8 类容器：真浏览器 DOM 元素数 ≥ 文件层 token 数（构建期扫描面没有虚高）",
+      "ok": true,
+      "detail": "全部一致 · 抽样页 DOM 合计 {\"dsrc-note\":41,\"ddesc\":20,\"fdesc\":25,\"chgnote\":19,\"pchnote\":4,\"pftdesc\":4,\"chgmeta\":1,\"hint\":54}"
+    },
+    {
+      "name": "说明清单对账：声明 vs 真浏览器 DOM（槽位 × 签名 × 条数，逐页逐视口）",
+      "ok": true,
+      "detail": "全部一致"
+    },
+    {
+      "name": "页高：删后不高于删前（3 个 /deal/* × 2 视口）",
+      "ok": true,
+      "detail": "deal/adcb6471a512/ desktop 1511px→1511px (Δ0) mobile 1963px→1941px (Δ-22) · deal/2db62eb1a8a0/ desktop 1493px→1493px (Δ0) mobile 1961px→1939px (Δ-22) · deal/57847fbcc1ed/ desktop 1493px→1493px (Δ0) mobile 2018px→1996px (Δ-22)"
+    },
+    {
+      "name": ".dsrc-note / .ddesc 元素与文本：删后仍在场（条数不变，只短了尾半句）",
+      "ok": true,
+      "detail": "desktop dsrc-note 2→2 ddesc 1→1 文本 27→27 字 · mobile dsrc-note 2→2 ddesc 1→1 文本 27→27 字 | desktop dsrc-note 2→2 ddesc 1→1 文本 27→27 字 · mobile dsrc-note 2→2 ddesc 1→1 文本 27→27 字 | desktop dsrc-note 2→2 ddesc 1→1 文本 27→27 字 · mobile dsrc-note 2→2 ddesc 1→1 文本 27→27 字"
+    }
+  ],
+  "checksAllOk": true,
+  "textFloors": {
+    "counter": {
+      "visibleText": "scripts/lib/seo.js:113 visibleText()（去 script/style/注释/标签 + 折叠空白 + 解实体）",
+      "textFloor": "scripts/lib/page-kinds.js:310 textFloor(kind, itemCount)",
+      "count": "去重后的 data-item / data-child 标记值个数（hub 与 plans-hub 用 data-child）",
+      "kind": "scripts/lib/page-kinds.js kindOfRoute() + 本脚本顶部登记的目录页家族映射"
+    },
+    "anchors": [
+      {
+        "route": "feeds/",
+        "expectedMargin": 3371,
+        "actualMargin": 3465,
+        "ok": false,
+        "beforeTreeMargin": 3371,
+        "beforeTreeOk": true,
+        "deltaVsBeforeTree": 94,
+        "src": "t1 census §5 / t3 §①（旧树 10-08 数据态）",
+        "chars": 4065,
+        "floor": 600,
+        "beforeTreeChars": 3971,
+        "beforeTreeFloor": 600
+      },
+      {
+        "route": "status/",
+        "expectedMargin": 628,
+        "actualMargin": 628,
+        "ok": true,
+        "beforeTreeMargin": 628,
+        "beforeTreeOk": true,
+        "deltaVsBeforeTree": 0,
+        "src": "t1 census §5",
+        "chars": 1228,
+        "floor": 600,
+        "beforeTreeChars": 1228,
+        "beforeTreeFloor": 600
+      },
+      {
+        "route": "models/",
+        "expectedMargin": 2050,
+        "actualMargin": 2050,
+        "ok": true,
+        "beforeTreeMargin": 2080,
+        "beforeTreeOk": false,
+        "deltaVsBeforeTree": -30,
+        "src": "t3 §⑤（删前 2080 − 30 字）",
+        "chars": 5710,
+        "floor": 3660,
+        "beforeTreeChars": 5740,
+        "beforeTreeFloor": 3660
+      }
+    ],
+    "anchorsAllOk": true,
+    "dealMinMargin": {
+      "route": "deal/adcb6471a512/",
+      "margin": 639,
+      "chars": 1139
+    },
+    "registeredResiduals": [
+      {
+        "route": "need/no-card/",
+        "registeredChars": 710,
+        "chars": 710,
+        "registeredFloor": 660,
+        "floor": 660,
+        "registeredMargin": 50,
+        "margin": 50,
+        "ok": true
+      },
+      {
+        "route": "category/",
+        "registeredChars": 923,
+        "chars": 923,
+        "registeredFloor": 800,
+        "floor": 800,
+        "registeredMargin": 123,
+        "margin": 123,
+        "ok": true
+      },
+      {
+        "route": "category/audio/",
+        "registeredChars": 1083,
+        "chars": 1083,
+        "registeredFloor": 960,
+        "floor": 960,
+        "registeredMargin": 123,
+        "margin": 123,
+        "ok": true
+      },
+      {
+        "route": "need/ai-coding/",
+        "registeredChars": 976,
+        "chars": 976,
+        "registeredFloor": 840,
+        "floor": 840,
+        "registeredMargin": 136,
+        "margin": 136,
+        "ok": true
+      },
+      {
+        "route": "category/image/",
+        "registeredChars": 1039,
+        "chars": 1039,
+        "registeredFloor": 900,
+        "floor": 900,
+        "registeredMargin": 139,
+        "margin": 139,
+        "ok": true
+      },
+      {
+        "route": "category/agent/",
+        "registeredChars": 982,
+        "chars": 982,
+        "registeredFloor": 840,
+        "floor": 840,
+        "registeredMargin": 142,
+        "margin": 142,
+        "ok": true
+      }
+    ],
+    "pagesBelowFloor": [],
+    "thinnest12": [
+      {
+        "route": "need/no-card/",
+        "kind": "need",
+        "count": 1,
+        "chars": 710,
+        "floor": 660,
+        "margin": 50,
+        "bytes": 91909
+      },
+      {
+        "route": "category/",
+        "kind": "hub",
+        "count": 5,
+        "chars": 923,
+        "floor": 800,
+        "margin": 123,
+        "bytes": 93692
+      },
+      {
+        "route": "category/audio/",
+        "kind": "category",
+        "count": 6,
+        "chars": 1083,
+        "floor": 960,
+        "margin": 123,
+        "bytes": 95987
+      },
+      {
+        "route": "need/ai-coding/",
+        "kind": "need",
+        "count": 4,
+        "chars": 976,
+        "floor": 840,
+        "margin": 136,
+        "bytes": 94022
+      },
+      {
+        "route": "category/image/",
+        "kind": "category",
+        "count": 5,
+        "chars": 1039,
+        "floor": 900,
+        "margin": 139,
+        "bytes": 95397
+      },
+      {
+        "route": "category/agent/",
+        "kind": "category",
+        "count": 4,
+        "chars": 982,
+        "floor": 840,
+        "margin": 142,
+        "bytes": 94686
+      },
+      {
+        "route": "need/edu-identity/",
+        "kind": "need",
+        "count": 7,
+        "chars": 1429,
+        "floor": 1020,
+        "margin": 409,
+        "bytes": 96310
+      },
+      {
+        "route": "student/",
+        "kind": "collection",
+        "count": 12,
+        "chars": 1773,
+        "floor": 1320,
+        "margin": 453,
+        "bytes": 99451
+      },
+      {
+        "route": "need/free-model/",
+        "kind": "need",
+        "count": 12,
+        "chars": 1774,
+        "floor": 1320,
+        "margin": 454,
+        "bytes": 99884
+      },
+      {
+        "route": "models/qwen-max/",
+        "kind": "model",
+        "count": 1,
+        "chars": 1177,
+        "floor": 700,
+        "margin": 477,
+        "bytes": 88888
+      },
+      {
+        "route": "models/gpt-live-1/",
+        "kind": "model",
+        "count": 1,
+        "chars": 1181,
+        "floor": 700,
+        "margin": 481,
+        "bytes": 88753
+      },
+      {
+        "route": "models/spark-x2.5/",
+        "kind": "model",
+        "count": 1,
+        "chars": 1192,
+        "floor": 700,
+        "margin": 492,
+        "bytes": 88942
+      }
+    ]
+  },
+  "containerTokens": {
+    "perClass": [
+      {
+        "class": "dsrc-note",
+        "beforeCount": 165,
+        "afterCount": 165,
+        "gateMeasured": 165,
+        "floor": 123,
+        "matchesGate": true,
+        "unchanged": true,
+        "clearsFloor": true
+      },
+      {
+        "class": "ddesc",
+        "beforeCount": 80,
+        "afterCount": 80,
+        "gateMeasured": 80,
+        "floor": 60,
+        "matchesGate": true,
+        "unchanged": true,
+        "clearsFloor": true
+      },
+      {
+        "class": "fdesc",
+        "beforeCount": 25,
+        "afterCount": 25,
+        "gateMeasured": 25,
+        "floor": 18,
+        "matchesGate": true,
+        "unchanged": true,
+        "clearsFloor": true
+      },
+      {
+        "class": "chgnote",
+        "beforeCount": 19,
+        "afterCount": 19,
+        "gateMeasured": 19,
+        "floor": 14,
+        "matchesGate": true,
+        "unchanged": true,
+        "clearsFloor": true
+      },
+      {
+        "class": "pchnote",
+        "beforeCount": 4,
+        "afterCount": 4,
+        "gateMeasured": 4,
+        "floor": 1,
+        "matchesGate": true,
+        "unchanged": true,
+        "clearsFloor": true
+      },
+      {
+        "class": "pftdesc",
+        "beforeCount": 4,
+        "afterCount": 4,
+        "gateMeasured": 4,
+        "floor": 1,
+        "matchesGate": true,
+        "unchanged": true,
+        "clearsFloor": true
+      },
+      {
+        "class": "chgmeta",
+        "beforeCount": 1,
+        "afterCount": 1,
+        "gateMeasured": 1,
+        "floor": 1,
+        "matchesGate": true,
+        "unchanged": true,
+        "clearsFloor": true
+      },
+      {
+        "class": "hint",
+        "beforeCount": 54,
+        "afterCount": 54,
+        "gateMeasured": 54,
+        "floor": 40,
+        "matchesGate": true,
+        "unchanged": true,
+        "clearsFloor": true
+      }
+    ],
+    "allMatchGate": true,
+    "allUnchanged": true,
+    "allClearFloor": true
+  },
+  "baseline": {
+    "changedFiles": {
+      "total": 186,
+      "byExt": {
+        ".ndjson": 1,
+        ".html": 134,
+        ".json": 25,
+        ".xml": 26
+      },
+      "dealPages": 80,
+      "other": 106
+    },
+    "dealPages": {
+      "sameIdSet": true,
+      "identicalWithoutTemporalNormalization": false,
+      "identicalAfterRemovingCopyAndTimestamps": true,
+      "occurrences": {
+        "；最终以厂商官方页面为准 × 1": 80,
+        "（无头浏览器渲染后提取） × 0": 63,
+        "（无头浏览器渲染后提取） × 1": 17
+      },
+      "temporalTokensNormalizedRange": {
+        "min": 16,
+        "max": 34
+      },
+      "dateRollForward": {
+        "beforeDistinct": [
+          "2026-09-21",
+          "2026-09-22",
+          "2026-09-23",
+          "2026-09-28",
+          "2026-10-08"
+        ],
+        "afterDistinct": [
+          "2026-09-21",
+          "2026-09-22",
+          "2026-09-23",
+          "2026-09-28",
+          "2026-10-08",
+          "2026-10-09"
+        ],
+        "pagesWithChangedDateSet": 80
+      },
+      "firstRawDiff": {
+        "at": 62865,
+        "before": "an>·</span><span>国内</span><span>·</span><span>数据更新 2026-10-08</span></div><div class=\"doffer\"><div class=\"lab\">档位 2 · 免费",
+        "after": "an>·</span><span>国内</span><span>·</span><span>数据更新 2026-10-09</span></div><div class=\"doffer\"><div class=\"lab\">档位 2 · 免费"
+      }
+    },
+    "nonDealHtmlChanged": 54,
+    "nonDealDataChanged": 52
+  },
+  "clippedOverflowTop": [
+    {
+      "key": "mobile th.(no-class) ← div.ptable-wrap",
+      "n": 7
+    },
+    {
+      "key": "mobile table.ctable ← div.ctable-wrap",
+      "n": 7
+    },
+    {
+      "key": "mobile caption.(no-class) ← table.ctable",
+      "n": 7
+    },
+    {
+      "key": "mobile thead.(no-class) ← table.ctable",
+      "n": 7
+    },
+    {
+      "key": "mobile tr.(no-class) ← table.ctable",
+      "n": 7
+    },
+    {
+      "key": "mobile th.(no-class) ← table.ctable",
+      "n": 7
+    },
+    {
+      "key": "mobile tbody.(no-class) ← table.ctable",
+      "n": 7
+    },
+    {
+      "key": "mobile table.ptable ← div.ptable-wrap",
+      "n": 4
+    },
+    {
+      "key": "mobile caption.(no-class) ← div.ptable-wrap",
+      "n": 4
+    },
+    {
+      "key": "mobile thead.(no-class) ← div.ptable-wrap",
+      "n": 4
+    },
+    {
+      "key": "mobile tr.(no-class) ← div.ptable-wrap",
+      "n": 4
+    },
+    {
+      "key": "desktop span.(no-class) ← div.fmembers",
+      "n": 3
+    }
+  ],
+  "fullSiteSweep": {
+    "dir": "D:\\OneDrive\\Desktop\\Code\\AI Page\\.worktrees\\secondary-page-residue-v2\\dist",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "pages": 186,
+    "deletedLiterals": 48,
+    "containerTotals": [
+      {
+        "class": "dsrc-note",
+        "domTotal": 165,
+        "gateMeasured": 165,
+        "floor": 123,
+        "matchesGate": true,
+        "clearsFloor": true
+      },
+      {
+        "class": "ddesc",
+        "domTotal": 80,
+        "gateMeasured": 80,
+        "floor": 60,
+        "matchesGate": true,
+        "clearsFloor": true
+      },
+      {
+        "class": "fdesc",
+        "domTotal": 25,
+        "gateMeasured": 25,
+        "floor": 18,
+        "matchesGate": true,
+        "clearsFloor": true
+      },
+      {
+        "class": "chgnote",
+        "domTotal": 19,
+        "gateMeasured": 19,
+        "floor": 14,
+        "matchesGate": true,
+        "clearsFloor": true
+      },
+      {
+        "class": "pchnote",
+        "domTotal": 4,
+        "gateMeasured": 4,
+        "floor": 1,
+        "matchesGate": true,
+        "clearsFloor": true
+      },
+      {
+        "class": "pftdesc",
+        "domTotal": 4,
+        "gateMeasured": 4,
+        "floor": 1,
+        "matchesGate": true,
+        "clearsFloor": true
+      },
+      {
+        "class": "chgmeta",
+        "domTotal": 1,
+        "gateMeasured": 1,
+        "floor": 1,
+        "matchesGate": true,
+        "clearsFloor": true
+      },
+      {
+        "class": "hint",
+        "domTotal": 54,
+        "gateMeasured": 54,
+        "floor": 40,
+        "matchesGate": true,
+        "clearsFloor": true
+      }
+    ],
+    "reflowTotal": 0,
+    "rawOuterHtmlHitTotal": 0,
+    "checks": [
+      {
+        "name": "全站 186 页 HTTP 200",
+        "ok": true,
+        "detail": "200 186/186"
+      },
+      {
+        "name": "全站 186 页：被删文案在 innerText / textContent / 序列化 HTML 三面 0 命中",
+        "ok": true,
+        "detail": "命中 0 次（每页检查 48 条字面）"
+      },
+      {
+        "name": "全站 186 页：**不剥** script/style/注释的整份 DOM 也 0 命中（对应构建期「只报不判」那条）",
+        "ok": true,
+        "detail": "0 次（186 页 × 48 条字面）"
+      },
+      {
+        "name": "全站 186 页：8 类容器 DOM 总数 == 构建期牙的实测值",
+        "ok": true,
+        "detail": "dsrc-note 165/165 · ddesc 80/80 · fdesc 25/25 · chgnote 19/19 · pchnote 4/4 · pftdesc 4/4 · chgmeta 1/1 · hint 54/54"
+      },
+      {
+        "name": "全站 186 页：8 类容器都过下限",
+        "ok": true,
+        "detail": "dsrc-note 165≥123 · ddesc 80≥60 · fdesc 25≥18 · chgnote 19≥14 · pchnote 4≥1 · pftdesc 4≥1 · chgmeta 1≥1 · hint 54≥40"
+      },
+      {
+        "name": "全站 186 页：说明清单「槽位 × 签名 × 条数」逐页一致且容器 DOM ≥ 文件层",
+        "ok": true,
+        "detail": "逐页一致"
+      },
+      {
+        "name": "全站 186 页：无页面级横向溢出、无元素把页面撑宽",
+        "ok": true,
+        "detail": "全 0"
+      },
+      {
+        "name": "console 错误",
+        "ok": true,
+        "detail": "0 条"
+      }
+    ],
+    "checksAllOk": true
+  },
+  "verifySite": {
+    "target": "http://127.0.0.1:54733/",
+    "generatedAt": "2026-10-09T07:46:24.043Z",
+    "total": 892,
+    "failed": 0,
+    "metrics": {
+      "pageHeight": 4787,
+      "cards": 50,
+      "coveredDeals": 80,
+      "jsErrors": 0,
+      "externalRequests": 0,
+      "httpNotFound": []
+    },
+    "highlights": [
+      {
+        "name": "首页顶栏 761px：页面不横向溢出、搜索框仍可用、入口仍在视口里",
+        "ok": true,
+        "detail": "溢出 0px · 搜索框 721px · 顶栏高 104px"
+      },
+      {
+        "name": "首页顶栏 820px：页面不横向溢出、搜索框仍可用、入口仍在视口里",
+        "ok": true,
+        "detail": "溢出 0px · 搜索框 780px · 顶栏高 104px"
+      },
+      {
+        "name": "首页顶栏 900px：页面不横向溢出、搜索框仍可用、入口仍在视口里",
+        "ok": true,
+        "detail": "溢出 0px · 搜索框 860px · 顶栏高 104px"
+      },
+      {
+        "name": "首页顶栏 940px：页面不横向溢出、搜索框仍可用、入口仍在视口里",
+        "ok": true,
+        "detail": "溢出 0px · 搜索框 900px · 顶栏高 104px"
+      },
+      {
+        "name": "首页顶栏 941px：页面不横向溢出、搜索框仍可用、入口仍在视口里",
+        "ok": true,
+        "detail": "溢出 0px · 搜索框 216px · 顶栏高 59px"
+      },
+      {
+        "name": "无横向溢出",
+        "ok": true,
+        "detail": "溢出 0px"
+      },
+      {
+        "name": "360px 页面级无横向溢出（390px 那条量不到更窄的视口）",
+        "ok": true,
+        "detail": "溢出 0px · 网格 328px / 容器 328px"
+      },
+      {
+        "name": "详情页信息来源块 390px 不产生横向溢出（长 URL 必须换行而不是撑宽）",
+        "ok": true,
+        "detail": "页面溢出 0px · 10 行中越界 0 行"
+      },
+      {
+        "name": "详情页信息来源块 360px 不产生横向溢出（长 URL 必须换行而不是撑宽）",
+        "ok": true,
+        "detail": "页面溢出 0px · 10 行中越界 0 行"
+      },
+      {
+        "name": "详情页变更记录块 390px 不产生横向溢出",
+        "ok": true,
+        "detail": "页面溢出 0px · 0 条事件行中越界 0 行"
+      },
+      {
+        "name": "详情页变更记录块 360px 不产生横向溢出",
+        "ok": true,
+        "detail": "页面溢出 0px · 0 条事件行中越界 0 行"
+      },
+      {
+        "name": "专题导航卡 1600px：每张卡都在视口内、无重叠、页面零横向溢出（逐张量矩形）",
+        "ok": true,
+        "detail": "10/10 张在视口内 · left 110 / right 1490（视口 1600）· 2 行（5/5）· 卡高 68px · 重叠 0 对 · 页面溢出 0px"
+      },
+      {
+        "name": "专题导航卡 1440px：每张卡都在视口内、无重叠、页面零横向溢出（逐张量矩形）",
+        "ok": true,
+        "detail": "10/10 张在视口内 · left 30 / right 1410（视口 1440）· 2 行（5/5）· 卡高 68px · 重叠 0 对 · 页面溢出 0px"
+      },
+      {
+        "name": "专题导航卡 1280px：每张卡都在视口内、无重叠、页面零横向溢出（逐张量矩形）",
+        "ok": true,
+        "detail": "10/10 张在视口内 · left 20 / right 1260（视口 1280）· 2 行（5/5）· 卡高 68px · 重叠 0 对 · 页面溢出 0px"
+      },
+      {
+        "name": "专题导航卡 768px：每张卡都在视口内、无重叠、页面零横向溢出（逐张量矩形）",
+        "ok": true,
+        "detail": "10/10 张在视口内 · left 20 / right 748（视口 768）· 4 行（3/3/3/1）· 卡高 68px · 重叠 0 对 · 页面溢出 0px"
+      },
+      {
+        "name": "专题导航卡 430px：每张卡都在视口内、无重叠、页面零横向溢出（逐张量矩形）",
+        "ok": true,
+        "detail": "10/10 张在视口内 · left 16 / right 414（视口 430）· 10 行（1/1/1/1/1/1/1/1/1/1）· 卡高 68px · 重叠 0 对 · 页面溢出 0px"
+      },
+      {
+        "name": "专题导航卡 390px：每张卡都在视口内、无重叠、页面零横向溢出（逐张量矩形）",
+        "ok": true,
+        "detail": "10/10 张在视口内 · left 16 / right 374（视口 390）· 10 行（1/1/1/1/1/1/1/1/1/1）· 卡高 68px · 重叠 0 对 · 页面溢出 0px"
+      },
+      {
+        "name": "按需求入口 390px：全部入口在视口内、不被裁、页面不横向溢出",
+        "ok": true,
+        "detail": "10/10 可见 · 10 行卡（1/1/1/1/1/1/1/1/1/1）· 整块 758px · 被裁 0 · 页面溢出 0px"
+      },
+      {
+        "name": "按需求入口 360px：全部入口在视口内、不被裁、页面不横向溢出",
+        "ok": true,
+        "detail": "10/10 可见 · 10 行卡（1/1/1/1/1/1/1/1/1/1）· 整块 758px · 被裁 0 · 页面溢出 0px"
+      },
+      {
+        "name": "390px：整行点击区 ≥44px、summary 不超出视口、展开后正文与页面都不横向溢出",
+        "ok": true,
+        "detail": "summary 358×44px（视口 390） · 页面溢出 0px · 正文溢出 0/3 段 · 状态文案仍在行内=true"
+      },
+      {
+        "name": "/status/ 390px 不产生页面级横向溢出（宽表应在容器内横滚，而不是撑开整页）",
+        "ok": true,
+        "detail": "页面溢出 0px · .stable-wrap overflow-x=auto · 表格宽 495px / 容器宽 358px"
+      },
+      {
+        "name": "/status/ 360px 不产生页面级横向溢出（宽表应在容器内横滚，而不是撑开整页）",
+        "ok": true,
+        "detail": "页面溢出 0px · .stable-wrap overflow-x=auto · 表格宽 495px / 容器宽 328px"
+      },
+      {
+        "name": "手机端列表视图明显更短且不横向溢出",
+        "ok": true,
+        "detail": "卡片 11830px → 列表 4811px（5.7 屏 · 50 行 · 横向溢出 0px）"
+      },
+      {
+        "name": "390px 下对比条展开也不产生横向溢出",
+        "ok": true,
+        "detail": "对比条 0–390px / 视口 390px · 溢出 0px · 「已选 4 / 4 条进入对比」"
+      },
+      {
+        "name": "390px 与 360px：收藏入口与清理按钮都在视口内、无横向溢出",
+        "ok": true,
+        "detail": "390px：入口 16–117 · 清理 124–203 · 溢出 0px · 360px：入口 16–117 · 清理 149–228 · 溢出 0px"
+      },
+      {
+        "name": "390px：/changes/ 零横向溢出（列表式布局，不是宽表）",
+        "ok": true,
+        "detail": "溢出 0px · 分栏 7"
+      },
+      {
+        "name": "/plans/coding/ 390px 不产生页面级横向溢出（11 列宽表应在容器内横滚）",
+        "ok": true,
+        "detail": "页面溢出 0px · .ptable-wrap overflow-x=auto · 表格宽 1055px / 容器宽 358px"
+      },
+      {
+        "name": "/plans/coding/ 360px 不产生页面级横向溢出（11 列宽表应在容器内横滚）",
+        "ok": true,
+        "detail": "页面溢出 0px · .ptable-wrap overflow-x=auto · 表格宽 1055px / 容器宽 328px"
+      },
+      {
+        "name": "/plans/coding/ 390px 筛选 + 展开详情后仍无页面级横向溢出",
+        "ok": true,
+        "detail": "溢出 0px"
+      },
+      {
+        "name": "/plans/coding/ 360px 筛选 + 展开详情后仍无页面级横向溢出",
+        "ok": true,
+        "detail": "溢出 0px"
+      },
+      {
+        "name": "/plans/api/ 390px 不产生页面级横向溢出（11 列宽表应在容器内横滚）",
+        "ok": true,
+        "detail": "溢出 0px"
+      },
+      {
+        "name": "/plans/api/ 360px 不产生页面级横向溢出（11 列宽表应在容器内横滚）",
+        "ok": true,
+        "detail": "溢出 0px"
+      },
+      {
+        "name": "/plans/ 390px 不产生页面级横向溢出",
+        "ok": true,
+        "detail": "0px"
+      },
+      {
+        "name": "/plans/ 360px 不产生页面级横向溢出",
+        "ok": true,
+        "detail": "0px"
+      },
+      {
+        "name": "/models/ 390px 不产生页面级横向溢出",
+        "ok": true,
+        "detail": "0px"
+      },
+      {
+        "name": "/models/ 360px 不产生页面级横向溢出",
+        "ok": true,
+        "detail": "0px"
+      },
+      {
+        "name": "/models/deepseek-v3.2/（默认隐藏的旧型号） 390px 不产生页面级横向溢出",
+        "ok": true,
+        "detail": "0px"
+      },
+      {
+        "name": "/models/deepseek-v3.2/（默认隐藏的旧型号） 360px 不产生页面级横向溢出",
+        "ok": true,
+        "detail": "0px"
+      },
+      {
+        "name": "/models/ernie-5.1/ 390px 不产生页面级横向溢出",
+        "ok": true,
+        "detail": "0px"
+      },
+      {
+        "name": "/models/ernie-5.1/ 360px 不产生页面级横向溢出",
+        "ok": true,
+        "detail": "0px"
+      },
+      {
+        "name": "/models/glm-4.5v/ 390px 不产生页面级横向溢出",
+        "ok": true,
+        "detail": "0px"
+      },
+      {
+        "name": "/models/glm-4.5v/ 360px 不产生页面级横向溢出",
+        "ok": true,
+        "detail": "0px"
+      },
+      {
+        "name": "/models/glm-4.6v/ 390px 不产生页面级横向溢出",
+        "ok": true,
+        "detail": "0px"
+      },
+      {
+        "name": "/models/glm-4.6v/ 360px 不产生页面级横向溢出",
+        "ok": true,
+        "detail": "0px"
+      },
+      {
+        "name": "/models/360zhinao-pro/ 390px 不产生页面级横向溢出",
+        "ok": true,
+        "detail": "0px"
+      },
+      {
+        "name": "/models/360zhinao-pro/ 360px 不产生页面级横向溢出",
+        "ok": true,
+        "detail": "0px"
+      },
+      {
+        "name": "/models/360zhinao-turbo-llm-geo/ 390px 不产生页面级横向溢出",
+        "ok": true,
+        "detail": "0px"
+      },
+      {
+        "name": "/models/360zhinao-turbo-llm-geo/ 360px 不产生页面级横向溢出",
+        "ok": true,
+        "detail": "0px"
+      },
+      {
+        "name": "/models/baichuan-m3/ 390px 不产生页面级横向溢出",
+        "ok": true,
+        "detail": "0px"
+      },
+      {
+        "name": "/models/baichuan-m3/ 360px 不产生页面级横向溢出",
+        "ok": true,
+        "detail": "0px"
+      },
+      {
+        "name": "§22b @768 内容列宽 == .wrap 可用宽（窄屏铺满、不另立断点）且页面无横向溢出",
+        "ok": true,
+        "detail": "deal 列 728 / 可用 728 · model 列 728 / 可用 728 · scrollWidth deal 768 / model 768（视口 768） · 无违规码"
+      },
+      {
+        "name": "§22c @1440 全站 186 页都没有横向溢出",
+        "ok": true,
+        "detail": "documentElement.scrollWidth ≤ 视口+1 全部成立"
+      },
+      {
+        "name": "§22c @1600 全站 186 页都没有横向溢出",
+        "ok": true,
+        "detail": "documentElement.scrollWidth ≤ 视口+1 全部成立"
+      },
+      {
+        "name": "§22c @950 全站 186 页都没有横向溢出",
+        "ok": true,
+        "detail": "documentElement.scrollWidth ≤ 视口+1 全部成立"
+      },
+      {
+        "name": "§22c ⑨ 说明清单可读、每页一条、与产物页面对得上（`dist/_notes.ndjson`）",
+        "ok": true,
+        "detail": "清单 186 页 / 产物 186 页 · schemaVersion 1 · 槽位 main-snote / main-pnote / main-vsnote"
+      },
+      {
+        "name": "§22c ⑨ 逐页逐槽位对账：清单声明的「签名 × 条数」== 真浏览器 DOM 数出来的（523 条登记说明 × 3 个槽位）",
+        "ok": true,
+        "detail": "逐条一致（登记说明 523 条）"
+      },
+      {
+        "name": "§22c ⑨ 页面族结构下限：目录页家族（**含别名页**）0 条页面级说明、状态页 2 条、订阅中心 3+1 条、厂商页六节说明",
+        "ok": true,
+        "detail": "全部页面族的说明条数下限成立（下限守住「登记与模板一起被删」那种两侧同时消失的改法；别名页本轮从「恰好 1 条」并入「目录页家族 0 条」—— 依据见 build-local.js renderDirectoryPage 顶部）"
+      },
+      {
+        "name": "§22c ⑨ 棘轮：DOM 里有 `.snote` 的页面必须在清单里登记过（新的隐形说明面不许悄悄出现）",
+        "ok": true,
+        "detail": "有 .snote 的页面全部登记过（DOM 侧 60 页有页面级说明）"
+      },
+      {
+        "name": "/vendor/baidu-ai-cloud/ 390px 不产生页面级横向溢出",
+        "ok": true,
+        "detail": "0px"
+      },
+      {
+        "name": "/vendor/baidu-ai-cloud/ 360px 不产生页面级横向溢出",
+        "ok": true,
+        "detail": "0px"
+      },
+      {
+        "name": "/vendor/volcengine/ 390px 不产生页面级横向溢出",
+        "ok": true,
+        "detail": "0px"
+      },
+      {
+        "name": "/vendor/volcengine/ 360px 不产生页面级横向溢出",
+        "ok": true,
+        "detail": "0px"
+      },
+      {
+        "name": "/vendor/zhipu/ 390px 不产生页面级横向溢出",
+        "ok": true,
+        "detail": "0px"
+      },
+      {
+        "name": "/vendor/zhipu/ 360px 不产生页面级横向溢出",
+        "ok": true,
+        "detail": "0px"
+      },
+      {
+        "name": "/vendor/ 390px 不产生页面级横向溢出",
+        "ok": true,
+        "detail": "0px"
+      },
+      {
+        "name": "/vendor/ 360px 不产生页面级横向溢出",
+        "ok": true,
+        "detail": "0px"
+      },
+      {
+        "name": "/archive/ 390px 不产生页面级横向溢出",
+        "ok": true,
+        "detail": "0px"
+      },
+      {
+        "name": "/archive/ 360px 不产生页面级横向溢出",
+        "ok": true,
+        "detail": "0px"
+      },
+      {
+        "name": "/docs/data/ 390px 不产生页面级横向溢出",
+        "ok": true,
+        "detail": "0px"
+      },
+      {
+        "name": "/docs/data/ 360px 不产生页面级横向溢出",
+        "ok": true,
+        "detail": "0px"
+      }
+    ]
+  },
+  "geometry": [
+    {
+      "route": "/deal/adcb6471a512/",
+      "fileLayer": {
+        "beforeVisibleTextChars": 1163,
+        "afterVisibleTextChars": 1139,
+        "deltaChars": -24,
+        "beforeVisibleMarkerHits": [
+          "c2-01/literal",
+          "c2-01/visible",
+          "c2-02/visible",
+          "c2-03/visible",
+          "c2-04/visible",
+          "c1-05/literal",
+          "v2-headless-capture-paren/literal"
+        ],
+        "afterVisibleMarkerHits": []
+      },
+      "byViewport": {
+        "desktop": {
+          "pageHeightBefore": 1511,
+          "pageHeightAfter": 1511,
+          "pageHeightDelta": 0,
+          "mainHeightDelta": 0,
+          "hOverflowBefore": 0,
+          "hOverflowAfter": 0,
+          "domVisibleBefore": 1048,
+          "domVisibleAfter": 1024,
+          "dsrcNoteCountBefore": 2,
+          "dsrcNoteCountAfter": 2,
+          "dsrcNoteTextsBefore": [
+            "27 字",
+            "49 字"
+          ],
+          "dsrcNoteTextsAfter": [
+            "27 字",
+            "37 字"
+          ],
+          "dsrcNoteTailBefore": "对优惠是否有效、是否适用于你的判断；最终以厂商官方页面为准。",
+          "dsrcNoteTailAfter": "与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断。",
+          "ddescBefore": "来源：智谱开放平台官方价格页营销位与活动说明（无头浏览器渲染后提取）。",
+          "ddescAfter": "来源：智谱开放平台官方价格页营销位与活动说明。",
+          "reflowBefore": 7,
+          "reflowAfter": 0,
+          "dsrcBox": {
+            "before": {
+              "width": 1070,
+              "height": 320,
+              "top": 818,
+              "left": 185,
+              "right": 1255,
+              "bottom": 1137
+            },
+            "after": {
+              "width": 1070,
+              "height": 320,
+              "top": 818,
+              "left": 185,
+              "right": 1255,
+              "bottom": 1137
+            }
+          },
+          "noteBox": {
+            "before": {
+              "width": 1070,
+              "height": 18,
+              "top": 1120,
+              "left": 185,
+              "right": 1255,
+              "bottom": 1137
+            },
+            "after": {
+              "width": 1070,
+              "height": 18,
+              "top": 1120,
+              "left": 185,
+              "right": 1255,
+              "bottom": 1137
+            }
+          },
+          "ddescBox": {
+            "before": {
+              "width": 1070,
+              "height": 22,
+              "top": 296,
+              "left": 185,
+              "right": 1255,
+              "bottom": 318
+            },
+            "after": {
+              "width": 1070,
+              "height": 22,
+              "top": 296,
+              "left": 185,
+              "right": 1255,
+              "bottom": 318
+            }
+          },
+          "heightAttribution": "无变化（.ddesc 与 .dsrc-note 都是单行，删字不改行数）"
+        },
+        "mobile": {
+          "pageHeightBefore": 1963,
+          "pageHeightAfter": 1941,
+          "pageHeightDelta": -22,
+          "mainHeightDelta": -22,
+          "hOverflowBefore": 0,
+          "hOverflowAfter": 0,
+          "domVisibleBefore": 1048,
+          "domVisibleAfter": 1024,
+          "dsrcNoteCountBefore": 2,
+          "dsrcNoteCountAfter": 2,
+          "dsrcNoteTextsBefore": [
+            "27 字",
+            "49 字"
+          ],
+          "dsrcNoteTextsAfter": [
+            "27 字",
+            "37 字"
+          ],
+          "dsrcNoteTailBefore": "对优惠是否有效、是否适用于你的判断；最终以厂商官方页面为准。",
+          "dsrcNoteTailAfter": "与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断。",
+          "ddescBefore": "来源：智谱开放平台官方价格页营销位与活动说明（无头浏览器渲染后提取）。",
+          "ddescAfter": "来源：智谱开放平台官方价格页营销位与活动说明。",
+          "reflowBefore": 7,
+          "reflowAfter": 0,
+          "dsrcBox": {
+            "before": {
+              "width": 316,
+              "height": 357,
+              "top": 1155,
+              "left": 37,
+              "right": 353,
+              "bottom": 1512
+            },
+            "after": {
+              "width": 316,
+              "height": 357,
+              "top": 1133,
+              "left": 37,
+              "right": 353,
+              "bottom": 1489
+            }
+          },
+          "noteBox": {
+            "before": {
+              "width": 316,
+              "height": 35,
+              "top": 1476,
+              "left": 37,
+              "right": 353,
+              "bottom": 1512
+            },
+            "after": {
+              "width": 316,
+              "height": 35,
+              "top": 1454,
+              "left": 37,
+              "right": 353,
+              "bottom": 1489
+            }
+          },
+          "ddescBox": {
+            "before": {
+              "width": 316,
+              "height": 44,
+              "top": 419,
+              "left": 37,
+              "right": 353,
+              "bottom": 463
+            },
+            "after": {
+              "width": 316,
+              "height": 22,
+              "top": 419,
+              "left": 37,
+              "right": 353,
+              "bottom": 441
+            }
+          },
+          "heightAttribution": ".ddesc 44→22px（少一行，行高 ≈ 22px）· .dsrc-note 35→35px（行数不变）"
+        }
+      }
+    },
+    {
+      "route": "/deal/2db62eb1a8a0/",
+      "fileLayer": {
+        "beforeVisibleTextChars": 1399,
+        "afterVisibleTextChars": 1375,
+        "deltaChars": -24,
+        "beforeVisibleMarkerHits": [
+          "c2-01/literal",
+          "c2-01/visible",
+          "c2-02/visible",
+          "c2-03/visible",
+          "c2-04/visible",
+          "c1-05/literal",
+          "v2-headless-capture-paren/literal"
+        ],
+        "afterVisibleMarkerHits": []
+      },
+      "byViewport": {
+        "desktop": {
+          "pageHeightBefore": 1493,
+          "pageHeightAfter": 1493,
+          "pageHeightDelta": 0,
+          "mainHeightDelta": 0,
+          "hOverflowBefore": 0,
+          "hOverflowAfter": 0,
+          "domVisibleBefore": 1290,
+          "domVisibleAfter": 1266,
+          "dsrcNoteCountBefore": 2,
+          "dsrcNoteCountAfter": 2,
+          "dsrcNoteTextsBefore": [
+            "27 字",
+            "49 字"
+          ],
+          "dsrcNoteTextsAfter": [
+            "27 字",
+            "37 字"
+          ],
+          "dsrcNoteTailBefore": "对优惠是否有效、是否适用于你的判断；最终以厂商官方页面为准。",
+          "dsrcNoteTailAfter": "与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断。",
+          "ddescBefore": "来源：火山方舟产品页「免费额度」表（无头浏览器渲染后提取）。",
+          "ddescAfter": "来源：火山方舟产品页「免费额度」表。",
+          "reflowBefore": 7,
+          "reflowAfter": 0,
+          "dsrcBox": {
+            "before": {
+              "width": 1070,
+              "height": 365,
+              "top": 754,
+              "left": 185,
+              "right": 1255,
+              "bottom": 1119
+            },
+            "after": {
+              "width": 1070,
+              "height": 365,
+              "top": 754,
+              "left": 185,
+              "right": 1255,
+              "bottom": 1119
+            }
+          },
+          "noteBox": {
+            "before": {
+              "width": 1070,
+              "height": 18,
+              "top": 1101,
+              "left": 185,
+              "right": 1255,
+              "bottom": 1119
+            },
+            "after": {
+              "width": 1070,
+              "height": 18,
+              "top": 1101,
+              "left": 185,
+              "right": 1255,
+              "bottom": 1119
+            }
+          },
+          "ddescBox": {
+            "before": {
+              "width": 1070,
+              "height": 22,
+              "top": 296,
+              "left": 185,
+              "right": 1255,
+              "bottom": 318
+            },
+            "after": {
+              "width": 1070,
+              "height": 22,
+              "top": 296,
+              "left": 185,
+              "right": 1255,
+              "bottom": 318
+            }
+          },
+          "heightAttribution": "无变化（.ddesc 与 .dsrc-note 都是单行，删字不改行数）"
+        },
+        "mobile": {
+          "pageHeightBefore": 1961,
+          "pageHeightAfter": 1939,
+          "pageHeightDelta": -22,
+          "mainHeightDelta": -22,
+          "hOverflowBefore": 0,
+          "hOverflowAfter": 0,
+          "domVisibleBefore": 1290,
+          "domVisibleAfter": 1266,
+          "dsrcNoteCountBefore": 2,
+          "dsrcNoteCountAfter": 2,
+          "dsrcNoteTextsBefore": [
+            "27 字",
+            "49 字"
+          ],
+          "dsrcNoteTextsAfter": [
+            "27 字",
+            "37 字"
+          ],
+          "dsrcNoteTailBefore": "对优惠是否有效、是否适用于你的判断；最终以厂商官方页面为准。",
+          "dsrcNoteTailAfter": "与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断。",
+          "ddescBefore": "来源：火山方舟产品页「免费额度」表（无头浏览器渲染后提取）。",
+          "ddescAfter": "来源：火山方舟产品页「免费额度」表。",
+          "reflowBefore": 7,
+          "reflowAfter": 0,
+          "dsrcBox": {
+            "before": {
+              "width": 316,
+              "height": 505,
+              "top": 982,
+              "left": 37,
+              "right": 353,
+              "bottom": 1486
+            },
+            "after": {
+              "width": 316,
+              "height": 505,
+              "top": 960,
+              "left": 37,
+              "right": 353,
+              "bottom": 1464
+            }
+          },
+          "noteBox": {
+            "before": {
+              "width": 316,
+              "height": 35,
+              "top": 1451,
+              "left": 37,
+              "right": 353,
+              "bottom": 1486
+            },
+            "after": {
+              "width": 316,
+              "height": 35,
+              "top": 1429,
+              "left": 37,
+              "right": 353,
+              "bottom": 1464
+            }
+          },
+          "ddescBox": {
+            "before": {
+              "width": 316,
+              "height": 44,
+              "top": 374,
+              "left": 37,
+              "right": 353,
+              "bottom": 418
+            },
+            "after": {
+              "width": 316,
+              "height": 22,
+              "top": 374,
+              "left": 37,
+              "right": 353,
+              "bottom": 396
+            }
+          },
+          "heightAttribution": ".ddesc 44→22px（少一行，行高 ≈ 22px）· .dsrc-note 35→35px（行数不变）"
+        }
+      }
+    },
+    {
+      "route": "/deal/57847fbcc1ed/",
+      "fileLayer": {
+        "beforeVisibleTextChars": 1426,
+        "afterVisibleTextChars": 1402,
+        "deltaChars": -24,
+        "beforeVisibleMarkerHits": [
+          "c2-01/literal",
+          "c2-01/visible",
+          "c2-02/visible",
+          "c2-03/visible",
+          "c2-04/visible",
+          "c1-05/literal",
+          "v2-headless-capture-paren/literal"
+        ],
+        "afterVisibleMarkerHits": []
+      },
+      "byViewport": {
+        "desktop": {
+          "pageHeightBefore": 1493,
+          "pageHeightAfter": 1493,
+          "pageHeightDelta": 0,
+          "mainHeightDelta": 0,
+          "hOverflowBefore": 0,
+          "hOverflowAfter": 0,
+          "domVisibleBefore": 1319,
+          "domVisibleAfter": 1295,
+          "dsrcNoteCountBefore": 2,
+          "dsrcNoteCountAfter": 2,
+          "dsrcNoteTextsBefore": [
+            "27 字",
+            "49 字"
+          ],
+          "dsrcNoteTextsAfter": [
+            "27 字",
+            "37 字"
+          ],
+          "dsrcNoteTailBefore": "对优惠是否有效、是否适用于你的判断；最终以厂商官方页面为准。",
+          "dsrcNoteTailAfter": "与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断。",
+          "ddescBefore": "来源：火山方舟产品页「免费额度」表（无头浏览器渲染后提取）。",
+          "ddescAfter": "来源：火山方舟产品页「免费额度」表。",
+          "reflowBefore": 7,
+          "reflowAfter": 0,
+          "dsrcBox": {
+            "before": {
+              "width": 1070,
+              "height": 365,
+              "top": 754,
+              "left": 185,
+              "right": 1255,
+              "bottom": 1119
+            },
+            "after": {
+              "width": 1070,
+              "height": 365,
+              "top": 754,
+              "left": 185,
+              "right": 1255,
+              "bottom": 1119
+            }
+          },
+          "noteBox": {
+            "before": {
+              "width": 1070,
+              "height": 18,
+              "top": 1101,
+              "left": 185,
+              "right": 1255,
+              "bottom": 1119
+            },
+            "after": {
+              "width": 1070,
+              "height": 18,
+              "top": 1101,
+              "left": 185,
+              "right": 1255,
+              "bottom": 1119
+            }
+          },
+          "ddescBox": {
+            "before": {
+              "width": 1070,
+              "height": 22,
+              "top": 296,
+              "left": 185,
+              "right": 1255,
+              "bottom": 318
+            },
+            "after": {
+              "width": 1070,
+              "height": 22,
+              "top": 296,
+              "left": 185,
+              "right": 1255,
+              "bottom": 318
+            }
+          },
+          "heightAttribution": "无变化（.ddesc 与 .dsrc-note 都是单行，删字不改行数）"
+        },
+        "mobile": {
+          "pageHeightBefore": 2018,
+          "pageHeightAfter": 1996,
+          "pageHeightDelta": -22,
+          "mainHeightDelta": -22,
+          "hOverflowBefore": 0,
+          "hOverflowAfter": 0,
+          "domVisibleBefore": 1319,
+          "domVisibleAfter": 1295,
+          "dsrcNoteCountBefore": 2,
+          "dsrcNoteCountAfter": 2,
+          "dsrcNoteTextsBefore": [
+            "27 字",
+            "49 字"
+          ],
+          "dsrcNoteTextsAfter": [
+            "27 字",
+            "37 字"
+          ],
+          "dsrcNoteTailBefore": "对优惠是否有效、是否适用于你的判断；最终以厂商官方页面为准。",
+          "dsrcNoteTailAfter": "与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断。",
+          "ddescBefore": "来源：火山方舟产品页「免费额度」表（无头浏览器渲染后提取）。",
+          "ddescAfter": "来源：火山方舟产品页「免费额度」表。",
+          "reflowBefore": 7,
+          "reflowAfter": 0,
+          "dsrcBox": {
+            "before": {
+              "width": 316,
+              "height": 539,
+              "top": 1004,
+              "left": 37,
+              "right": 353,
+              "bottom": 1543
+            },
+            "after": {
+              "width": 316,
+              "height": 539,
+              "top": 982,
+              "left": 37,
+              "right": 353,
+              "bottom": 1521
+            }
+          },
+          "noteBox": {
+            "before": {
+              "width": 316,
+              "height": 35,
+              "top": 1508,
+              "left": 37,
+              "right": 353,
+              "bottom": 1543
+            },
+            "after": {
+              "width": 316,
+              "height": 35,
+              "top": 1485,
+              "left": 37,
+              "right": 353,
+              "bottom": 1521
+            }
+          },
+          "ddescBox": {
+            "before": {
+              "width": 316,
+              "height": 44,
+              "top": 396,
+              "left": 37,
+              "right": 353,
+              "bottom": 440
+            },
+            "after": {
+              "width": 316,
+              "height": 22,
+              "top": 396,
+              "left": 37,
+              "right": 353,
+              "bottom": 418
+            }
+          },
+          "heightAttribution": ".ddesc 44→22px（少一行，行高 ≈ 22px）· .dsrc-note 35→35px（行数不变）"
+        }
+      }
+    }
+  ],
+  "rows": [
+    {
+      "route": "/deal/017bdbc04e70/",
+      "kind": "deal",
+      "count": 0,
+      "beforeVisibleChars": 1372,
+      "afterVisibleChars": 1360,
+      "deltaChars": -12,
+      "floor": 500,
+      "margin": 860,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 3,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 1685,
+      "pageHeightMobile": 2476,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 1214,
+      "bodyInnerTextChars": 1298,
+      "fileCounts": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 0,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {}
+      },
+      "domBySlot": {},
+      "domBySignature": {},
+      "dsrcNoteTexts": [
+        "起算日之前的状态没有历史记录，因此这里不显示任何变化。",
+        "以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断。"
+      ],
+      "ddescTexts": [
+        "百度千帆大模型平台新用户免费额度，访问平台并同意用户协议后自动开通发放，仅可抵扣预置模型在线推理消耗的 Tokens。"
+      ],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）；该页删前删后差异已在 baseline-diff 里逐字节核过"
+    },
+    {
+      "route": "/deal/176234a80147/",
+      "kind": "deal",
+      "count": 0,
+      "beforeVisibleChars": 1347,
+      "afterVisibleChars": 1335,
+      "deltaChars": -12,
+      "floor": 500,
+      "margin": 835,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 3,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 1638,
+      "pageHeightMobile": 2282,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 1206,
+      "bodyInnerTextChars": 1285,
+      "fileCounts": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 0,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {}
+      },
+      "domBySlot": {},
+      "domBySignature": {},
+      "dsrcNoteTexts": [
+        "起算日之前的状态没有历史记录，因此这里不显示任何变化。",
+        "以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断。"
+      ],
+      "ddescTexts": [
+        "首次注册扣子个人版账号并登录后按官方规则发放，到账时间以页面实际提示为准（通常实时或 T+1）；积分余额与到期时间可在「订阅管理 - 积分明细」查看。"
+      ],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）；该页删前删后差异已在 baseline-diff 里逐字节核过"
+    },
+    {
+      "route": "/deal/2db62eb1a8a0/",
+      "kind": "deal",
+      "count": 0,
+      "beforeVisibleChars": 1399,
+      "afterVisibleChars": 1375,
+      "deltaChars": -24,
+      "floor": 500,
+      "margin": 875,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 7,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 1493,
+      "pageHeightMobile": 1939,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 1266,
+      "bodyInnerTextChars": 1335,
+      "fileCounts": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 0,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {}
+      },
+      "domBySlot": {},
+      "domBySignature": {},
+      "dsrcNoteTexts": [
+        "起算日之前的状态没有历史记录，因此这里不显示任何变化。",
+        "以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断。"
+      ],
+      "ddescTexts": [
+        "来源：火山方舟产品页「免费额度」表。"
+      ],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）；该页删前删后差异已在 baseline-diff 里逐字节核过"
+    },
+    {
+      "route": "/deal/42c65c0d8d9d/",
+      "kind": "deal",
+      "count": 0,
+      "beforeVisibleChars": 1657,
+      "afterVisibleChars": 1645,
+      "deltaChars": -12,
+      "floor": 500,
+      "margin": 1145,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 3,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 1697,
+      "pageHeightMobile": 2543,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 1502,
+      "bodyInnerTextChars": 1583,
+      "fileCounts": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 0,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {}
+      },
+      "domBySlot": {},
+      "domBySignature": {},
+      "dsrcNoteTexts": [
+        "起算日之前的状态没有历史记录，因此这里不显示任何变化。",
+        "以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断。"
+      ],
+      "ddescTexts": [
+        "在 Google 官方学生 hub（gemini.google.com/students）领取；含 4 倍 Gemini 用量、Gmail/Docs 中的 Gemini、5TB 存储等。"
+      ],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）；该页删前删后差异已在 baseline-diff 里逐字节核过"
+    },
+    {
+      "route": "/deal/4a875a435019/",
+      "kind": "deal",
+      "count": 0,
+      "beforeVisibleChars": 1731,
+      "afterVisibleChars": 1719,
+      "deltaChars": -12,
+      "floor": 500,
+      "margin": 1219,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 3,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 1769,
+      "pageHeightMobile": 2506,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 1606,
+      "bodyInnerTextChars": 1692,
+      "fileCounts": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 0,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {}
+      },
+      "domBySlot": {},
+      "domBySignature": {},
+      "dsrcNoteTexts": [
+        "起算日之前的状态没有历史记录，因此这里不显示任何变化。",
+        "以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断。"
+      ],
+      "ddescTexts": [
+        "Apply through Canva Nonprofits or Canva Education eligibility verification."
+      ],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）；该页删前删后差异已在 baseline-diff 里逐字节核过"
+    },
+    {
+      "route": "/deal/4d4bcb5b6829/",
+      "kind": "deal",
+      "count": 0,
+      "beforeVisibleChars": 1318,
+      "afterVisibleChars": 1306,
+      "deltaChars": -12,
+      "floor": 500,
+      "margin": 806,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 3,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 1685,
+      "pageHeightMobile": 2372,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 1178,
+      "bodyInnerTextChars": 1262,
+      "fileCounts": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 0,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {}
+      },
+      "domBySlot": {},
+      "domBySignature": {},
+      "dsrcNoteTexts": [
+        "起算日之前的状态没有历史记录，因此这里不显示任何变化。",
+        "以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断。"
+      ],
+      "ddescTexts": [
+        "百度千帆大模型平台新用户免费额度，访问平台并同意用户协议后自动开通发放，仅可抵扣预置模型在线推理消耗的 Tokens。"
+      ],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）；该页删前删后差异已在 baseline-diff 里逐字节核过"
+    },
+    {
+      "route": "/deal/57847fbcc1ed/",
+      "kind": "deal",
+      "count": 0,
+      "beforeVisibleChars": 1426,
+      "afterVisibleChars": 1402,
+      "deltaChars": -24,
+      "floor": 500,
+      "margin": 902,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 7,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 1493,
+      "pageHeightMobile": 1996,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 1295,
+      "bodyInnerTextChars": 1364,
+      "fileCounts": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 0,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {}
+      },
+      "domBySlot": {},
+      "domBySignature": {},
+      "dsrcNoteTexts": [
+        "起算日之前的状态没有历史记录，因此这里不显示任何变化。",
+        "以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断。"
+      ],
+      "ddescTexts": [
+        "来源：火山方舟产品页「免费额度」表。"
+      ],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）；该页删前删后差异已在 baseline-diff 里逐字节核过"
+    },
+    {
+      "route": "/deal/62e3166acec0/",
+      "kind": "deal",
+      "count": 0,
+      "beforeVisibleChars": 1318,
+      "afterVisibleChars": 1306,
+      "deltaChars": -12,
+      "floor": 500,
+      "margin": 806,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 3,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 1685,
+      "pageHeightMobile": 2350,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 1181,
+      "bodyInnerTextChars": 1264,
+      "fileCounts": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 0,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {}
+      },
+      "domBySlot": {},
+      "domBySignature": {},
+      "dsrcNoteTexts": [
+        "起算日之前的状态没有历史记录，因此这里不显示任何变化。",
+        "以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断。"
+      ],
+      "ddescTexts": [
+        "智谱开放平台（bigmodel.cn）注册并创建 API Key 后可直接调用，无需单独领取额度。"
+      ],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）；该页删前删后差异已在 baseline-diff 里逐字节核过"
+    },
+    {
+      "route": "/deal/6869e7866510/",
+      "kind": "deal",
+      "count": 0,
+      "beforeVisibleChars": 1301,
+      "afterVisibleChars": 1289,
+      "deltaChars": -12,
+      "floor": 500,
+      "margin": 789,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 3,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 1528,
+      "pageHeightMobile": 2175,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 1167,
+      "bodyInnerTextChars": 1241,
+      "fileCounts": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 0,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {}
+      },
+      "domBySlot": {},
+      "domBySignature": {},
+      "dsrcNoteTexts": [
+        "起算日之前的状态没有历史记录，因此这里不显示任何变化。",
+        "以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断。"
+      ],
+      "ddescTexts": [
+        "注册讯飞开放平台并创建应用后，使用对应版本的 APIPassword 即可调用；Lite 版免费用量在控制台查看。"
+      ],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）；该页删前删后差异已在 baseline-diff 里逐字节核过"
+    },
+    {
+      "route": "/deal/833a9889bfb7/",
+      "kind": "deal",
+      "count": 0,
+      "beforeVisibleChars": 1220,
+      "afterVisibleChars": 1208,
+      "deltaChars": -12,
+      "floor": 500,
+      "margin": 708,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 3,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 1638,
+      "pageHeightMobile": 2157,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 1093,
+      "bodyInnerTextChars": 1170,
+      "fileCounts": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 0,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {}
+      },
+      "domBySlot": {},
+      "domBySignature": {},
+      "dsrcNoteTexts": [
+        "起算日之前的状态没有历史记录，因此这里不显示任何变化。",
+        "以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断。"
+      ],
+      "ddescTexts": [
+        "注册讯飞开放平台账号后在新手指南页按引导领取，部分权益需完成认证。"
+      ],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）；该页删前删后差异已在 baseline-diff 里逐字节核过"
+    },
+    {
+      "route": "/deal/8dada3205ed8/",
+      "kind": "deal",
+      "count": 0,
+      "beforeVisibleChars": 1399,
+      "afterVisibleChars": 1375,
+      "deltaChars": -24,
+      "floor": 500,
+      "margin": 875,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 7,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 1493,
+      "pageHeightMobile": 1939,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 1266,
+      "bodyInnerTextChars": 1335,
+      "fileCounts": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 0,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {}
+      },
+      "domBySlot": {},
+      "domBySignature": {},
+      "dsrcNoteTexts": [
+        "起算日之前的状态没有历史记录，因此这里不显示任何变化。",
+        "以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断。"
+      ],
+      "ddescTexts": [
+        "来源：火山方舟产品页「免费额度」表。"
+      ],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）；该页删前删后差异已在 baseline-diff 里逐字节核过"
+    },
+    {
+      "route": "/deal/97d21ff73d3e/",
+      "kind": "deal",
+      "count": 0,
+      "beforeVisibleChars": 1598,
+      "afterVisibleChars": 1574,
+      "deltaChars": -24,
+      "floor": 500,
+      "margin": 1074,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 7,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 1883,
+      "pageHeightMobile": 2610,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 1423,
+      "bodyInnerTextChars": 1520,
+      "fileCounts": {
+        "dsrc-note": 3,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 3,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 0,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {}
+      },
+      "domBySlot": {},
+      "domBySignature": {},
+      "dsrcNoteTexts": [
+        "套餐价格与额度以平台官方定价页为准；「当前活动价」是该套餐自己的官方活动价，与这条优惠不是同一个价格。",
+        "起算日之前的状态没有历史记录，因此这里不显示任何变化。",
+        "以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断。"
+      ],
+      "ddescTexts": [
+        "来源：智谱开放平台官方价格页营销位与活动说明。"
+      ],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）；该页删前删后差异已在 baseline-diff 里逐字节核过"
+    },
+    {
+      "route": "/deal/aacd5856bba2/",
+      "kind": "deal",
+      "count": 0,
+      "beforeVisibleChars": 1338,
+      "afterVisibleChars": 1326,
+      "deltaChars": -12,
+      "floor": 500,
+      "margin": 826,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 3,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 1632,
+      "pageHeightMobile": 2336,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 1184,
+      "bodyInnerTextChars": 1264,
+      "fileCounts": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 0,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {}
+      },
+      "domBySlot": {},
+      "domBySignature": {},
+      "dsrcNoteTexts": [
+        "起算日之前的状态没有历史记录，因此这里不显示任何变化。",
+        "以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断。"
+      ],
+      "ddescTexts": [
+        "提交非营利证明材料申请，审核通过后 Notion 自动应用折扣并邮件通知，随后即可按折扣价升级 Business 计划。"
+      ],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）；该页删前删后差异已在 baseline-diff 里逐字节核过"
+    },
+    {
+      "route": "/deal/b56f33b3d4f3/",
+      "kind": "deal",
+      "count": 0,
+      "beforeVisibleChars": 1899,
+      "afterVisibleChars": 1887,
+      "deltaChars": -12,
+      "floor": 500,
+      "margin": 1387,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 3,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 1835,
+      "pageHeightMobile": 2842,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 1736,
+      "bodyInnerTextChars": 1822,
+      "fileCounts": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 0,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {}
+      },
+      "domBySlot": {},
+      "domBySignature": {},
+      "dsrcNoteTexts": [
+        "起算日之前的状态没有历史记录，因此这里不显示任何变化。",
+        "以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断。"
+      ],
+      "ddescTexts": [
+        "注册魔搭账号 → 绑定阿里云账号并完成实名认证 → 在支持 API-Inference 的模型详情页复制代码范例（Base URL api-inference.modelscope.cn/v1 + 访问令牌）即可免费调用；官方提示它面向体验、请勿用于需要高并发或 SLA 保障的线上任务。"
+      ],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）；该页删前删后差异已在 baseline-diff 里逐字节核过"
+    },
+    {
+      "route": "/deal/bf156583e97c/",
+      "kind": "deal",
+      "count": 0,
+      "beforeVisibleChars": 1339,
+      "afterVisibleChars": 1327,
+      "deltaChars": -12,
+      "floor": 500,
+      "margin": 827,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 3,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 1685,
+      "pageHeightMobile": 2414,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 1192,
+      "bodyInnerTextChars": 1276,
+      "fileCounts": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 0,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {}
+      },
+      "domBySlot": {},
+      "domBySignature": {},
+      "dsrcNoteTexts": [
+        "起算日之前的状态没有历史记录，因此这里不显示任何变化。",
+        "以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断。"
+      ],
+      "ddescTexts": [
+        "百度千帆大模型平台新用户免费额度，访问平台并同意用户协议后自动开通发放，仅可抵扣预置模型在线推理消耗的 Tokens。"
+      ],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）；该页删前删后差异已在 baseline-diff 里逐字节核过"
+    },
+    {
+      "route": "/deal/c4ab5c5d8101/",
+      "kind": "deal",
+      "count": 0,
+      "beforeVisibleChars": 1375,
+      "afterVisibleChars": 1363,
+      "deltaChars": -12,
+      "floor": 500,
+      "margin": 863,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 3,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 1685,
+      "pageHeightMobile": 2476,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 1216,
+      "bodyInnerTextChars": 1300,
+      "fileCounts": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 0,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {}
+      },
+      "domBySlot": {},
+      "domBySignature": {},
+      "dsrcNoteTexts": [
+        "起算日之前的状态没有历史记录，因此这里不显示任何变化。",
+        "以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断。"
+      ],
+      "ddescTexts": [
+        "百度千帆大模型平台新用户免费额度，访问平台并同意用户协议后自动开通发放，仅可抵扣预置模型在线推理消耗的 Tokens。"
+      ],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）；该页删前删后差异已在 baseline-diff 里逐字节核过"
+    },
+    {
+      "route": "/deal/d6aaee8c7379/",
+      "kind": "deal",
+      "count": 0,
+      "beforeVisibleChars": 1429,
+      "afterVisibleChars": 1405,
+      "deltaChars": -24,
+      "floor": 500,
+      "margin": 905,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 7,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 1493,
+      "pageHeightMobile": 1981,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 1285,
+      "bodyInnerTextChars": 1354,
+      "fileCounts": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 0,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {}
+      },
+      "domBySlot": {},
+      "domBySignature": {},
+      "dsrcNoteTexts": [
+        "起算日之前的状态没有历史记录，因此这里不显示任何变化。",
+        "以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断。"
+      ],
+      "ddescTexts": [
+        "来源：火山方舟产品页「免费额度」表。"
+      ],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）；该页删前删后差异已在 baseline-diff 里逐字节核过"
+    },
+    {
+      "route": "/deal/e237cab7c007/",
+      "kind": "deal",
+      "count": 0,
+      "beforeVisibleChars": 1417,
+      "afterVisibleChars": 1405,
+      "deltaChars": -12,
+      "floor": 500,
+      "margin": 905,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 3,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 1707,
+      "pageHeightMobile": 2481,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 1283,
+      "bodyInnerTextChars": 1367,
+      "fileCounts": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 0,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {}
+      },
+      "domBySlot": {},
+      "domBySignature": {},
+      "dsrcNoteTexts": [
+        "起算日之前的状态没有历史记录，因此这里不显示任何变化。",
+        "以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断。"
+      ],
+      "ddescTexts": [
+        "阿里云百炼（Model Studio）对首次开通的用户发放通义千问等模型的免费 Token 额度，额度按模型独立计算，需完成实名认证后使用。"
+      ],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）；该页删前删后差异已在 baseline-diff 里逐字节核过"
+    },
+    {
+      "route": "/deal/e63402b5cc83/",
+      "kind": "deal",
+      "count": 0,
+      "beforeVisibleChars": 1459,
+      "afterVisibleChars": 1447,
+      "deltaChars": -12,
+      "floor": 500,
+      "margin": 947,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 3,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 1753,
+      "pageHeightMobile": 2408,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 1318,
+      "bodyInnerTextChars": 1402,
+      "fileCounts": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 0,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {}
+      },
+      "domBySlot": {},
+      "domBySignature": {},
+      "dsrcNoteTexts": [
+        "起算日之前的状态没有历史记录，因此这里不显示任何变化。",
+        "以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断。"
+      ],
+      "ddescTexts": [
+        "完成实名认证后发放；剩余额度可在控制台「费用明细」查看，代金券用完后需充值继续使用。"
+      ],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）；该页删前删后差异已在 baseline-diff 里逐字节核过"
+    },
+    {
+      "route": "/deal/ead998e58cd9/",
+      "kind": "deal",
+      "count": 0,
+      "beforeVisibleChars": 1163,
+      "afterVisibleChars": 1139,
+      "deltaChars": -24,
+      "floor": 500,
+      "margin": 639,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 7,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 1511,
+      "pageHeightMobile": 2005,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 1026,
+      "bodyInnerTextChars": 1100,
+      "fileCounts": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 2,
+        "ddesc": 1,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 0,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {}
+      },
+      "domBySlot": {},
+      "domBySignature": {},
+      "dsrcNoteTexts": [
+        "起算日之前的状态没有历史记录，因此这里不显示任何变化。",
+        "以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断。"
+      ],
+      "ddescTexts": [
+        "来源：智谱开放平台官方价格页营销位与活动说明。"
+      ],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）；该页删前删后差异已在 baseline-diff 里逐字节核过"
+    },
+    {
+      "route": "/",
+      "kind": "home",
+      "count": 0,
+      "beforeVisibleChars": 13306,
+      "afterVisibleChars": 13302,
+      "deltaChars": -4,
+      "floor": 3000,
+      "margin": 10302,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 0,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 4787,
+      "pageHeightMobile": 11830,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 12612,
+      "bodyInnerTextChars": 12278,
+      "fileCounts": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 54
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 54
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 0,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {}
+      },
+      "domBySlot": {},
+      "domBySignature": {},
+      "dsrcNoteTexts": [],
+      "ddescTexts": [],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）—— 非 /deal/* 页两棵树还叠着数据态差异，列出来仅供参照，不作判据"
+    },
+    {
+      "route": "/feeds/",
+      "kind": "feeds",
+      "count": 0,
+      "beforeVisibleChars": 3971,
+      "afterVisibleChars": 4065,
+      "deltaChars": 94,
+      "floor": 600,
+      "margin": 3465,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 0,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 3254,
+      "pageHeightMobile": 4312,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 4005,
+      "bodyInnerTextChars": 4120,
+      "fileCounts": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 25,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 25,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 5,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {
+          "main-snote|snote": 5
+        }
+      },
+      "domBySlot": {
+        "main-snote": 5
+      },
+      "domBySignature": {
+        "main-snote|snote": 5
+      },
+      "dsrcNoteTexts": [],
+      "ddescTexts": [],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）—— 非 /deal/* 页两棵树还叠着数据态差异，列出来仅供参照，不作判据"
+    },
+    {
+      "route": "/plans/",
+      "kind": "plans-hub",
+      "count": 2,
+      "beforeVisibleChars": 3286,
+      "afterVisibleChars": 3249,
+      "deltaChars": -37,
+      "floor": 820,
+      "margin": 2429,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 4,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 1957,
+      "pageHeightMobile": 3426,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 3112,
+      "bodyInnerTextChars": 3232,
+      "fileCounts": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 2,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 2,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 12,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {
+          "main-snote|snote": 12
+        }
+      },
+      "domBySlot": {
+        "main-snote": 12
+      },
+      "domBySignature": {
+        "main-snote|snote": 12
+      },
+      "dsrcNoteTexts": [],
+      "ddescTexts": [],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）—— 非 /deal/* 页两棵树还叠着数据态差异，列出来仅供参照，不作判据"
+    },
+    {
+      "route": "/plans/api/",
+      "kind": "plans",
+      "count": 87,
+      "beforeVisibleChars": 31056,
+      "afterVisibleChars": 31043,
+      "deltaChars": -13,
+      "floor": 5820,
+      "margin": 25223,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 1,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 11512,
+      "pageHeightMobile": 49409,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 30531,
+      "bodyInnerTextChars": 20661,
+      "fileCounts": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 4,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 4,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 5,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {
+          "main-snote|snote": 5
+        }
+      },
+      "domBySlot": {
+        "main-snote": 5
+      },
+      "domBySignature": {
+        "main-snote|snote": 5
+      },
+      "dsrcNoteTexts": [],
+      "ddescTexts": [],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）—— 非 /deal/* 页两棵树还叠着数据态差异，列出来仅供参照，不作判据"
+    },
+    {
+      "route": "/plans/coding/",
+      "kind": "plans",
+      "count": 44,
+      "beforeVisibleChars": 33208,
+      "afterVisibleChars": 33195,
+      "deltaChars": -13,
+      "floor": 3240,
+      "margin": 29955,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 1,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 8837,
+      "pageHeightMobile": 14585,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 15892,
+      "bodyInnerTextChars": 16406,
+      "fileCounts": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 2,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 2,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 5,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {
+          "main-snote|snote": 4,
+          "main-snote|pnoscript snote": 1
+        }
+      },
+      "domBySlot": {
+        "main-snote": 5
+      },
+      "domBySignature": {
+        "main-snote|snote": 4,
+        "main-snote|pnoscript snote": 1
+      },
+      "dsrcNoteTexts": [],
+      "ddescTexts": [],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）—— 非 /deal/* 页两棵树还叠着数据态差异，列出来仅供参照，不作判据"
+    },
+    {
+      "route": "/status/",
+      "kind": "status",
+      "count": 0,
+      "beforeVisibleChars": 1228,
+      "afterVisibleChars": 1228,
+      "deltaChars": 0,
+      "floor": 600,
+      "margin": 628,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 0,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 1106,
+      "pageHeightMobile": 1327,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 1093,
+      "bodyInnerTextChars": 1124,
+      "fileCounts": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 2,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {
+          "main-snote|snote": 2
+        }
+      },
+      "domBySlot": {
+        "main-snote": 2
+      },
+      "domBySignature": {
+        "main-snote|snote": 2
+      },
+      "dsrcNoteTexts": [],
+      "ddescTexts": [],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）—— 非 /deal/* 页两棵树还叠着数据态差异，列出来仅供参照，不作判据"
+    },
+    {
+      "route": "/models/",
+      "kind": "models-index",
+      "count": 51,
+      "beforeVisibleChars": 5740,
+      "afterVisibleChars": 5710,
+      "deltaChars": -30,
+      "floor": 3660,
+      "margin": 2050,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 1,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 3627,
+      "pageHeightMobile": 4940,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 5912,
+      "bodyInnerTextChars": 5988,
+      "fileCounts": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 3,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {
+          "main-snote|snote": 2,
+          "main-snote|mcount snote": 1
+        }
+      },
+      "domBySlot": {
+        "main-snote": 3
+      },
+      "domBySignature": {
+        "main-snote|snote": 2,
+        "main-snote|mcount snote": 1
+      },
+      "dsrcNoteTexts": [],
+      "ddescTexts": [],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）—— 非 /deal/* 页两棵树还叠着数据态差异，列出来仅供参照，不作判据"
+    },
+    {
+      "route": "/changes/",
+      "kind": "changes",
+      "count": 0,
+      "beforeVisibleChars": 4410,
+      "afterVisibleChars": 4430,
+      "deltaChars": 20,
+      "floor": 600,
+      "margin": 3830,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 0,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 4150,
+      "pageHeightMobile": 5091,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 4168,
+      "bodyInnerTextChars": 4242,
+      "fileCounts": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 19,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 1,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 19,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 1,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 14,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {
+          "main-snote|snote": 14
+        }
+      },
+      "domBySlot": {
+        "main-snote": 14
+      },
+      "domBySignature": {
+        "main-snote|snote": 14
+      },
+      "dsrcNoteTexts": [],
+      "ddescTexts": [],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）—— 非 /deal/* 页两棵树还叠着数据态差异，列出来仅供参照，不作判据"
+    },
+    {
+      "route": "/category/",
+      "kind": "hub",
+      "count": 5,
+      "beforeVisibleChars": 923,
+      "afterVisibleChars": 923,
+      "deltaChars": 0,
+      "floor": 800,
+      "margin": 123,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 0,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 900,
+      "pageHeightMobile": 1061,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 891,
+      "bodyInnerTextChars": 832,
+      "fileCounts": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 0,
+          "main-pnote": 2,
+          "main-vsnote": 0
+        },
+        "bySignature": {
+          "main-pnote|pnote": 2
+        }
+      },
+      "domBySlot": {
+        "main-pnote": 2
+      },
+      "domBySignature": {
+        "main-pnote|pnote": 2
+      },
+      "dsrcNoteTexts": [],
+      "ddescTexts": [],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）—— 非 /deal/* 页两棵树还叠着数据态差异，列出来仅供参照，不作判据"
+    },
+    {
+      "route": "/category/chat/",
+      "kind": "category",
+      "count": 15,
+      "beforeVisibleChars": 2164,
+      "afterVisibleChars": 2164,
+      "deltaChars": 0,
+      "floor": 1500,
+      "margin": 664,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 0,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 1709,
+      "pageHeightMobile": 2920,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 2064,
+      "bodyInnerTextChars": 2092,
+      "fileCounts": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 0,
+          "main-pnote": 2,
+          "main-vsnote": 0
+        },
+        "bySignature": {
+          "main-pnote|pnote": 2
+        }
+      },
+      "domBySlot": {
+        "main-pnote": 2
+      },
+      "domBySignature": {
+        "main-pnote|pnote": 2
+      },
+      "dsrcNoteTexts": [],
+      "ddescTexts": [],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）—— 非 /deal/* 页两棵树还叠着数据态差异，列出来仅供参照，不作判据"
+    },
+    {
+      "route": "/need/no-card/",
+      "kind": "need",
+      "count": 1,
+      "beforeVisibleChars": 710,
+      "afterVisibleChars": 710,
+      "deltaChars": 0,
+      "floor": 660,
+      "margin": 50,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 0,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 900,
+      "pageHeightMobile": 844,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 669,
+      "bodyInnerTextChars": 564,
+      "fileCounts": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 0,
+          "main-pnote": 4,
+          "main-vsnote": 0
+        },
+        "bySignature": {
+          "main-pnote|pnote": 4
+        }
+      },
+      "domBySlot": {
+        "main-pnote": 4
+      },
+      "domBySignature": {
+        "main-pnote|pnote": 4
+      },
+      "dsrcNoteTexts": [],
+      "ddescTexts": [],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）—— 非 /deal/* 页两棵树还叠着数据态差异，列出来仅供参照，不作判据"
+    },
+    {
+      "route": "/need/ai-coding/",
+      "kind": "need",
+      "count": 4,
+      "beforeVisibleChars": 976,
+      "afterVisibleChars": 976,
+      "deltaChars": 0,
+      "floor": 840,
+      "margin": 136,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 0,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 910,
+      "pageHeightMobile": 1182,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 927,
+      "bodyInnerTextChars": 873,
+      "fileCounts": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 0,
+          "main-pnote": 3,
+          "main-vsnote": 0
+        },
+        "bySignature": {
+          "main-pnote|pnote": 3
+        }
+      },
+      "domBySlot": {
+        "main-pnote": 3
+      },
+      "domBySignature": {
+        "main-pnote|pnote": 3
+      },
+      "dsrcNoteTexts": [],
+      "ddescTexts": [],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）—— 非 /deal/* 页两棵树还叠着数据态差异，列出来仅供参照，不作判据"
+    },
+    {
+      "route": "/vendor/",
+      "kind": "<unknown>",
+      "count": 0,
+      "beforeVisibleChars": 2699,
+      "afterVisibleChars": 2699,
+      "deltaChars": 0,
+      "floor": 600,
+      "margin": 2099,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 0,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 1523,
+      "pageHeightMobile": 3345,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 2667,
+      "bodyInnerTextChars": 2589,
+      "fileCounts": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 0,
+          "main-pnote": 3,
+          "main-vsnote": 0
+        },
+        "bySignature": {
+          "main-pnote|pnote": 3
+        }
+      },
+      "domBySlot": {
+        "main-pnote": 3
+      },
+      "domBySignature": {
+        "main-pnote|pnote": 3
+      },
+      "dsrcNoteTexts": [],
+      "ddescTexts": [],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）—— 非 /deal/* 页两棵树还叠着数据态差异，列出来仅供参照，不作判据"
+    },
+    {
+      "route": "/vendor/openai/",
+      "kind": "vendor",
+      "count": 1,
+      "beforeVisibleChars": 1968,
+      "afterVisibleChars": 1968,
+      "deltaChars": 0,
+      "floor": 660,
+      "margin": 1308,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 0,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 1719,
+      "pageHeightMobile": 1993,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 1896,
+      "bodyInnerTextChars": 1793,
+      "fileCounts": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 0,
+          "main-pnote": 4,
+          "main-vsnote": 6
+        },
+        "bySignature": {
+          "main-vsnote|vsnote": 5,
+          "main-vsnote|vnone vsnote": 1,
+          "main-pnote|pnote": 4
+        }
+      },
+      "domBySlot": {
+        "main-vsnote": 6,
+        "main-pnote": 4
+      },
+      "domBySignature": {
+        "main-vsnote|vsnote": 5,
+        "main-vsnote|vnone vsnote": 1,
+        "main-pnote|pnote": 4
+      },
+      "dsrcNoteTexts": [],
+      "ddescTexts": [],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）—— 非 /deal/* 页两棵树还叠着数据态差异，列出来仅供参照，不作判据"
+    },
+    {
+      "route": "/student/",
+      "kind": "collection",
+      "count": 12,
+      "beforeVisibleChars": 1773,
+      "afterVisibleChars": 1773,
+      "deltaChars": 0,
+      "floor": 1320,
+      "margin": 453,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 0,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 1730,
+      "pageHeightMobile": 2119,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 1701,
+      "bodyInnerTextChars": 1669,
+      "fileCounts": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 0,
+          "main-pnote": 3,
+          "main-vsnote": 0
+        },
+        "bySignature": {
+          "main-pnote|pnote": 3
+        }
+      },
+      "domBySlot": {
+        "main-pnote": 3
+      },
+      "domBySignature": {
+        "main-pnote|pnote": 3
+      },
+      "dsrcNoteTexts": [],
+      "ddescTexts": [],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）—— 非 /deal/* 页两棵树还叠着数据态差异，列出来仅供参照，不作判据"
+    },
+    {
+      "route": "/developer/",
+      "kind": "collection",
+      "count": 67,
+      "beforeVisibleChars": 6655,
+      "afterVisibleChars": 6655,
+      "deltaChars": 0,
+      "floor": 4620,
+      "margin": 2035,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 0,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 5668,
+      "pageHeightMobile": 9794,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 6428,
+      "bodyInnerTextChars": 6550,
+      "fileCounts": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 0,
+          "main-pnote": 4,
+          "main-vsnote": 0
+        },
+        "bySignature": {
+          "main-pnote|pnote": 4
+        }
+      },
+      "domBySlot": {
+        "main-pnote": 4
+      },
+      "domBySignature": {
+        "main-pnote|pnote": 4
+      },
+      "dsrcNoteTexts": [],
+      "ddescTexts": [],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）—— 非 /deal/* 页两棵树还叠着数据态差异，列出来仅供参照，不作判据"
+    },
+    {
+      "route": "/free-api/",
+      "kind": "collection",
+      "count": 45,
+      "beforeVisibleChars": 4777,
+      "afterVisibleChars": 4777,
+      "deltaChars": 0,
+      "floor": 3300,
+      "margin": 1477,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 0,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 4184,
+      "pageHeightMobile": 7119,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 4601,
+      "bodyInnerTextChars": 4697,
+      "fileCounts": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 0,
+          "main-pnote": 3,
+          "main-vsnote": 0
+        },
+        "bySignature": {
+          "main-pnote|pnote": 3
+        }
+      },
+      "domBySlot": {
+        "main-pnote": 3
+      },
+      "domBySignature": {
+        "main-pnote|pnote": 3
+      },
+      "dsrcNoteTexts": [],
+      "ddescTexts": [],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）—— 非 /deal/* 页两棵树还叠着数据态差异，列出来仅供参照，不作判据"
+    },
+    {
+      "route": "/docs/data/",
+      "kind": "data-docs",
+      "count": 9,
+      "beforeVisibleChars": 5562,
+      "afterVisibleChars": 5562,
+      "deltaChars": 0,
+      "floor": 1200,
+      "margin": 4362,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 0,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 2685,
+      "pageHeightMobile": 4595,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 5418,
+      "bodyInnerTextChars": 5476,
+      "fileCounts": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 6,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {
+          "main-snote|snote": 6
+        }
+      },
+      "domBySlot": {
+        "main-snote": 6
+      },
+      "domBySignature": {
+        "main-snote|snote": 6
+      },
+      "dsrcNoteTexts": [],
+      "ddescTexts": [],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）—— 非 /deal/* 页两棵树还叠着数据态差异，列出来仅供参照，不作判据"
+    },
+    {
+      "route": "/archive/",
+      "kind": "archive-index",
+      "count": 0,
+      "beforeVisibleChars": 1348,
+      "afterVisibleChars": 1348,
+      "deltaChars": 0,
+      "floor": 600,
+      "margin": 748,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 0,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 951,
+      "pageHeightMobile": 1426,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 1309,
+      "bodyInnerTextChars": 1326,
+      "fileCounts": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 5,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {
+          "main-snote|snote": 5
+        }
+      },
+      "domBySlot": {
+        "main-snote": 5
+      },
+      "domBySignature": {
+        "main-snote|snote": 5
+      },
+      "dsrcNoteTexts": [],
+      "ddescTexts": [],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）—— 非 /deal/* 页两棵树还叠着数据态差异，列出来仅供参照，不作判据"
+    },
+    {
+      "route": "/models/qwen-max/",
+      "kind": "model",
+      "count": 1,
+      "beforeVisibleChars": 1177,
+      "afterVisibleChars": 1177,
+      "deltaChars": 0,
+      "floor": 700,
+      "margin": 477,
+      "belowFloor": false,
+      "beforeFileLayerLiteralHits": 0,
+      "reflowInnerTextHits": 0,
+      "reflowTextContentHits": 0,
+      "reflowSerializedHits": 0,
+      "pageHeightDesktop": 1074,
+      "pageHeightMobile": 1357,
+      "hOverflowDesktop": 0,
+      "hOverflowMobile": 0,
+      "beyondViewport": 0,
+      "domVisibleTextChars": 1109,
+      "bodyInnerTextChars": 1142,
+      "fileCounts": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "domCountsDesktop": {
+        "dsrc-note": 0,
+        "ddesc": 0,
+        "fdesc": 0,
+        "chgnote": 0,
+        "pchnote": 0,
+        "pftdesc": 0,
+        "chgmeta": 0,
+        "hint": 0
+      },
+      "declared": {
+        "bySlot": {
+          "main-snote": 3,
+          "main-pnote": 0,
+          "main-vsnote": 0
+        },
+        "bySignature": {
+          "main-snote|mnone snote": 2,
+          "main-snote|snote": 1
+        }
+      },
+      "domBySlot": {
+        "main-snote": 3
+      },
+      "domBySignature": {
+        "main-snote|snote": 1,
+        "main-snote|mnone snote": 2
+      },
+      "dsrcNoteTexts": [],
+      "ddescTexts": [],
+      "note": "删前 = 主检出 dist/（141af613…，10-08 数据态）—— 非 /deal/* 页两棵树还叠着数据态差异，列出来仅供参照，不作判据"
+    }
+  ]
+}

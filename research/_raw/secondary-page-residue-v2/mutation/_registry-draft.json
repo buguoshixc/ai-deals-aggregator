@@ -1,0 +1,226 @@
+[
+ {
+  "id": "c2-01",
+  "literal": "；最终以厂商官方页面为准。",
+  "visible": "最终以厂商官方页面为准。",
+  "src": "census2",
+  "why": "删的是 .dsrc-note 的尾半句；可见面就是它自己（去掉前导分号）。"
+ },
+ {
+  "id": "c2-02",
+  "literal": "'来源：火山方舟产品页「免费额度」表（无头浏览器渲染后提取）。'",
+  "visible": "（无头浏览器渲染后提取）",
+  "src": "census2",
+  "why": "A 类：删的是括号（采集方式），整句 `来源：…` 保留 ⇒ 可见核 = 括号本身。"
+ },
+ {
+  "id": "c2-03",
+  "literal": "'来源：智谱开放平台官方价格页营销位与活动说明（无头浏览器渲染后提取）。'",
+  "visible": "（无头浏览器渲染后提取）",
+  "src": "census2",
+  "why": "同上（智谱那条）。"
+ },
+ {
+  "id": "c2-04",
+  "literal": "'来源：火山方舟产品页「最新活动」区（无头浏览器渲染后提取）。'",
+  "visible": "（无头浏览器渲染后提取）",
+  "src": "census2",
+  "why": "同上（最新活动那条）。"
+ },
+ {
+  "id": "c1-05",
+  "literal": "最终以厂商官方页面为准。",
+  "visible": "",
+  "src": "census-v1",
+  "why": "本身已是纯可见文案，没有额外的可见核。"
+ },
+ {
+  "id": "c1-06",
+  "literal": "plansSource: '套餐变化来自本站重建套餐数据时的观测记录；变更记录自 {date} 起。',",
+  "visible": "套餐变化来自本站重建套餐数据时的观测记录；",
+  "src": "census-v1",
+  "why": "kind=half：只删前半句（生成方式），保留 `变更记录自 …起。`。"
+ },
+ {
+  "id": "c1-07",
+  "literal": "      + '不表示厂商已经下架或套餐已经停售。价格、额度与条款最终以厂商官方页面为准。'",
+  "visible": "价格、额度与条款最终以厂商官方页面为准。",
+  "src": "census-v1",
+  "why": "kind=half：只删尾句（与共享页脚同义），保留前半句。"
+ },
+ {
+  "id": "c1-08",
+  "literal": "plansSource: 'API 价格变化来自本站重建 API 计费数据时的观测记录；变更记录自 {date} 起。',",
+  "visible": "API 价格变化来自本站重建 API 计费数据时的观测记录；",
+  "src": "census-v1",
+  "why": "同上（API 计费那一支）。"
+ },
+ {
+  "id": "c1-09",
+  "literal": "      + '不表示厂商已经下架或停止提供。价格、免费额度与条款最终以厂商官方页面为准。'",
+  "visible": "价格、免费额度与条款最终以厂商官方页面为准。",
+  "src": "census-v1",
+  "why": "kind=half：只删尾句。"
+ },
+ {
+  "id": "c1-10",
+  "literal": "<p class=\"snote\">示例只用到上面列出的真实 endpoint；它们不是\"伪代码\"，是可以直接复制运行的取数方式。</p>",
+  "visible": "示例只用到上面列出的真实 endpoint；",
+  "src": "census-v1",
+  "why": "kind=whole：整条 .snote 删；可见核取前半句（后半句含引号包裹的「伪代码」，逐字不稳）。"
+ },
+ {
+  "id": "c1-11",
+  "literal": "<p class=\"snote\">用到的 endpoint：${endpoints}</p>",
+  "visible": "用到的 endpoint：",
+  "src": "census-v1",
+  "why": "kind=whole：整条删；可见核只能取 `${endpoints}` 之前的静态前缀（endpoint 是动态内容）。"
+ },
+ {
+  "id": "c1-12",
+  "literal": "note: '按「我是谁」和「能不能在大陆用上」切；判据与 /student/、/need/china-usable/ 两页<b>同一份</b>。'",
+  "visible": "判据与 /student/、/need/china-usable/ 两页",
+  "src": "census-v1",
+  "why": "kind=whole：note 整条删；可见核取不含 `<b>` 的那一段。"
+ },
+ {
+  "id": "c1-13",
+  "literal": "note: '按福利类型与用途切；与目录页、按需求页共用同一套判据，所以订阅里的条数与页面上的行数不可能分头变化。'",
+  "visible": "按福利类型与用途切；与目录页、按需求页共用同一套判据，所以订阅里的条数与页面上的行数不可能分头变化。",
+  "src": "census-v1",
+  "why": "kind=whole：note 整条删；可见核 = 引号内全文（无标签、无模板）。"
+ },
+ {
+  "id": "c1-14",
+  "literal": "note: '按站点的分类落地页切（/category/api/ 等五页）；判据与那五页<b>同一份</b>，'",
+  "visible": "按站点的分类落地页切（/category/api/ 等五页）",
+  "src": "census-v1",
+  "why": "kind=whole：note 两行整段删；可见核取 `<b>` 之前那一段。"
+ },
+ {
+  "id": "c1-15",
+  "literal": "}, `<p class=\"snote\">厂商订阅只给「当前收录的优惠 ≥ ${feeds.VENDOR_THRESHOLDS.minDeals} 条」或「历史变更事件 ≥ ${feeds.VENDOR_THRESHOLDS.minEvents} 条」的厂商生成：`",
+  "visible": "",
+  "src": "census-v1",
+  "why": "无可靠逐字可见核：句子中间嵌了两个 `${…} 条」计数（随门槛常量与数据变）⇒ 只能断言源码写法，不写可见核（写一个半截句子会变成误报源）。"
+ },
+ {
+  "id": "c1-16",
+  "literal": "全部来自本站 <a href=\"${escapeHtml(`${prefix}plans/api/`)}\">API / Token 计费对比</a> 的同一份数据；",
+  "visible": "",
+  "src": "census-v1",
+  "why": "无可靠逐字可见核：渲染结果是「全部来自本站 API / Token 计费对比 的同一份数据；」，其中链接文本与空格由模板决定 ⇒ 写死会误报。"
+ },
+ {
+  "id": "c1-17",
+  "literal": " —— 本站不按套餐里的模型名猜关系（supportedModels 是自由文本，没有模型键）。",
+  "visible": "",
+  "src": "census-v1",
+  "why": "本身已是纯可见文案（前缀「 —— 」也是渲染面的一部分）。"
+ },
+ {
+  "id": "c1-18",
+  "literal": " —— 本站不用标题关键词猜关系。",
+  "visible": "",
+  "src": "census-v1",
+  "why": "同上。"
+ },
+ {
+  "id": "c1-19",
+  "literal": "这一节是**派生视图**：直接把 API 计费日志里与该模型有关的记录事件排出来，不新建第四套历史真值。",
+  "visible": "：直接把 API 计费日志里与该模型有关的记录事件排出来，不新建第四套历史真值。",
+  "src": "census-v1",
+  "why": "exactSubstring 带 Markdown 强调记号（渲染成 `<b>`），逐字断言挡不住重新渲染 ⇒ 另加无标记的可见核。"
+ },
+ {
+  "id": "c1-20",
+  "literal": "<p class=\"snote\">以下是本站重建 API 计费数据时留下的观测记录（最多 ${limit} 条）。`",
+  "visible": "以下是本站重建 API 计费数据时留下的观测记录",
+  "src": "census-v1",
+  "why": "kind=half：删前一半句；可见核取不含动态条数上限的静态段。"
+ },
+ {
+  "id": "c1-21",
+  "literal": "note: '关联是显式确认的：只有人工在 deal-plan-links.json 写明、且能在官方页找到出处的关联才会计入；相似度匹配只产出候选报告，不会自动写进这一页。',",
+  "visible": "关联是显式确认的：只有人工在 deal-plan-links.json 写明、且能在官方页找到出处的关联才会计入；相似度匹配只产出候选报告，不会自动写进这一页。",
+  "src": "census-v1",
+  "why": "kind=whole：note 整条删；可见核 = 引号内全文。"
+ },
+ {
+  "id": "c1-22",
+  "literal": "（取自本站收录的官方页面地址；本站不推断厂商主页）",
+  "visible": "",
+  "src": "census-v1",
+  "why": "本身已是纯可见文案。"
+ },
+ {
+  "id": "c1-23",
+  "literal": "<span class=\"vsrc\">全部来自 <a href=\"${escapeHtml(`${prefix}plans/api/`)}\">API / Token 计费对比</a> 的同一份数据</span>",
+  "visible": "",
+  "src": "census-v1",
+  "why": "无可靠逐字可见核：同 16（动态链接文本）。"
+ },
+ {
+  "id": "c1-24",
+  "literal": "<span class=\"vsrc\">（developer/owner 逐字相等，或关系层显式映射到这一家的计费记录；不按名称相似度归并）</span>",
+  "visible": "",
+  "src": "census-v1",
+  "why": "本身已是纯可见文案（`<span class=\"vsrc\">` 是外层标签，逐字断言已覆盖可见文本）。"
+ },
+ {
+  "id": "c1-25",
+  "literal": "（同一份事件、同一套措辞，这一层只搬运）",
+  "visible": "",
+  "src": "census-v1",
+  "why": "本身已是纯可见文案。"
+ },
+ {
+  "id": "c1-26",
+  "literal": "（订阅源按「当前有效优惠 ≥ 门槛」生成）",
+  "visible": "",
+  "src": "census-v1",
+  "why": "本身已是纯可见文案。"
+ },
+ {
+  "id": "c1-27",
+  "literal": "全部来自既有数据关系的显式匹配。",
+  "visible": "",
+  "src": "census-v1",
+  "why": "本身已是纯可见文案。"
+ },
+ {
+  "id": "v2-plans-hub-description-tail",
+  "literal": "价格与条款最终以厂商官方页面为准。",
+  "visible": "",
+  "src": "residue-v2",
+  "why": "本轮 t3：/plans/ 导语尾句（同时是 meta description 与 JSON-LD description）。"
+ },
+ {
+  "id": "v2-plans-hub-notes-clause",
+  "literal": "价格、额度与条款最终以厂商官方页面为准；",
+  "visible": "",
+  "src": "residue-v2",
+  "why": "本轮 t3（队长裁定后执行）：/plans/「口径与说明」第 4 条的句首分句。"
+ },
+ {
+  "id": "v2-plans-api-note-head",
+  "literal": "价格与额度以官方页面为准：",
+  "visible": "",
+  "src": "residue-v2",
+  "why": "本轮 t3：/plans/coding/ 与 /plans/api/ 两条清单条目的句首（两页共用同一形状）。"
+ },
+ {
+  "id": "v2-models-caption-tail",
+  "literal": "「目录状态」是派生分类，「模型角色」来自 registry。",
+  "visible": "",
+  "src": "residue-v2",
+  "why": "本轮 t3：/models/ 题注末句（`registry` 是内部机制名 + 与下方「口径与说明」重复）。"
+ },
+ {
+  "id": "v2-headless-capture-paren",
+  "literal": "（无头浏览器渲染后提取）",
+  "visible": "",
+  "src": "residue-v2",
+  "why": "本轮的共同被删子串：census2 三条 A 类 `.ddesc` 的**同一个**括号，落地在数据面（deals.json）+ 采集器 headless.js。"
+ }
+]

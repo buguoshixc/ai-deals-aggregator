@@ -134,6 +134,17 @@ npm run smoke -- --url=https://…/               # 指定其它部署
   （那行注释就是这项变更的留痕）；
 - 本轮新增的两个步骤（`Architecture fitness` / `Evidence policy`）**没有**改变断言项数
   —— 它们是新的**步骤**，不是新的**断言**，所以 `--expect-checks` 仍是 38。
+- secondary-page-residue-v2 新增的一个步骤（`Residue guard (deleted copy must not return;
+  container floors)`）同理：**只是步骤，不是断言**，`--expect-checks` 不变。
+  它的判据本体在 `build-local.js` 的 `scanResidue()`（构建期主守卫，每次构建都跑，
+  含登记表缩表检查），`check-residue.js` 是对**已就绪产物**的再复核 + `--dir=<沙箱>` 入口
+  ——「删掉不许回流 / 扫描面不许收缩」的规则与登记表读 `docs/DESIGN-RULES.md`、
+  `scripts/data/residue-guard.json` 的 `_why`。
+
+  ⚠️ 顺带记一处**本轮没动**的文档漂移：本节正文里的 `--expect-checks=38` 是旧值，
+  实际（`verify.yml` 的 gate 调用行）已是 **39**；`PRIVATE-ANALYTICS-v1.md:273` 也提到同一处口径。
+  本轮不改它们（不属本轮 scope，改文档口径要连同 `verify.yml` 那行注释一起留痕），
+  登记在 `research/secondary-page-residue-v2-report.md` 的「已知边界」里。
 
 ---
 

@@ -1,0 +1,60 @@
+{
+  "at": "2026-10-09T08:30:15.006Z",
+  "what": "变异演练（构建路径）：源码副本树里的三类回归 × 真构建（build-local.js）",
+  "tree": "research/_raw/secondary-page-residue-v2/mutation/tree",
+  "distUntouchedCheck": "真产物由 mut-product.cjs 与收口读数复核（本脚本只写 tree/dist）",
+  "realDistIndexHtmlSha16Before": "3ad7db7cc9675311",
+  "mutations": [
+    {
+      "id": "M2a-render-deleted-copy",
+      "what": "把被删文案重新渲染出来：lib/plans-page.js 的清单条目恢复句首「价格与额度以官方页面为准：」",
+      "command": "node scripts/tools/build-local.js --out=dist（副本树 tree/，真构建）",
+      "expect": "red（exit 1）· ① 删掉不许回流 点名该字面",
+      "exitCode": 1,
+      "seconds": 4,
+      "verdict": "red-as-expected",
+      "toothMessageSeen": true,
+      "hits": [
+        "  ✗ 删掉的字面又回到了产物里（1 个文件 · 原样 1 处 · 登记 v2-plans-api-note-head/literal）：「价格与额度以官方页面为准：」 ⇒ plans/coding/index.html（原样字面）×1 · 现场：…与任何排序。</li> <li>价格与额度以官方页面为准：表中每条都链到该平台的官方定价页，本站只做收录与…",
+        "  ✗ 删掉的字面以**等价写法**回到了产物里（归一化后 1 处 · 1 个文件 · 登记 v2-plans-api-note-head/literal）：归一化针「价格与额度以官方页面为准:」 ⇒ plans/coding/index.html · 现场（归一化后）：…不出的一律显示\"-\",不填0,也不参与任何排序.价格与额度以官方页面为准:表中每条都链到该平台的官方定价页,本站只做收录与…"
+      ]
+    },
+    {
+      "id": "M2b-container-family-renamed",
+      "what": "把 `.fdesc` 这一族容器改名（唯一构造点 build-local.js 的 `<p class=\"fdesc\">`）⇒ 全族在产物里消失",
+      "command": "node scripts/tools/build-local.js --out=dist（副本树 tree/，真构建）",
+      "expect": "red（exit 1）· ② 扫描面不许收缩 点名 .fdesc 低于下限",
+      "exitCode": 1,
+      "seconds": 3,
+      "verdict": "red-as-expected",
+      "toothMessageSeen": true,
+      "hits": [
+        "  ✗ .fdesc 在产物里只有 0 次 < 下限 18 ——这一族容器可能被整族删掉 / 改名了（容器没了，逐条扫描自然也不再命中它；实测值与取值依据见 scripts/data/residue-guard.json 的 containerFloors）"
+      ]
+    },
+    {
+      "id": "M3-registry-shrunk",
+      "what": "把登记表 deletedCopy 从 32 条砍到 29 条（≤ 反空洞下限 30）",
+      "command": "node scripts/tools/build-local.js --out=dist（副本树 tree/，真构建）",
+      "expect": "red（exit 1）· 登记表自身被缩表（< RESIDUE_MIN_ENTRIES）",
+      "exitCode": 1,
+      "seconds": 3,
+      "verdict": "red-as-expected",
+      "toothMessageSeen": true,
+      "hits": [
+        "  ✗ 被删文案登记表只有 29 条 < 下限 30（scripts/data/residue-guard.json 的 deletedCopy）——删条目必须同时显式改 build-local.js 的 RESIDUE_MIN_ENTRIES，不许静默缩表"
+      ]
+    },
+    {
+      "id": "M4-registry-missing",
+      "what": "把登记表整份删掉（「删掉登记 = 让判据失效」的另一半：连表都不在）",
+      "command": "node scripts/tools/build-local.js --out=dist（副本树 tree/，真构建）",
+      "expect": "red（exit 1）· 读不到登记表 ⇒ 抛错（判据不许退化为「没有可判的字面」）",
+      "exitCode": 1,
+      "seconds": 2,
+      "verdict": "red-as-expected",
+      "toothMessageSeen": true,
+      "hits": []
+    }
+  ]
+}
