@@ -1048,9 +1048,12 @@ function distProblems(overrides = {}) {
   const indexHtml = overrides.indexHtml !== undefined ? overrides.indexHtml : fs.readFileSync(indexFile, 'utf8');
   const sitemapText = overrides.sitemapText !== undefined
     ? overrides.sitemapText : fs.readFileSync(path.join(DIST, 'sitemap.xml'), 'utf8');
+  // t6（决策 D1）：这一格原先读 `dist/models.json`（发布副本），缺失即报「缺少 dist/models.json」。
+  // 数据文件整族下架后产物里不再有它 —— 改读**仓库根**那一份（页面渲染用的就是它）。
+  // 缺失时照旧判红：fail-closed 的对象从「构建没跑」换成「源数据不在盘上」，后者更该红。
   const modelsDoc = overrides.publishedModels !== undefined ? overrides.publishedModels
-    : (fs.existsSync(path.join(DIST, 'models.json')) ? JSON.parse(fs.readFileSync(path.join(DIST, 'models.json'), 'utf8')) : null);
-  if (!modelsDoc) problems.push('缺少 dist/models.json（发布数据集）');
+    : (fs.existsSync(path.join(ROOT, 'models.json')) ? JSON.parse(fs.readFileSync(path.join(ROOT, 'models.json'), 'utf8')) : null);
+  if (!modelsDoc) problems.push('缺少 models.json（仓库根的模型注册表 —— 页面渲染的真值）');
 
   const markup = modelsPage.markupOnly(indexHtml);
   if (!sitemapText.includes(`<loc>${SITE_URL}models/</loc>`)) problems.push('sitemap 里没有 /models/');
@@ -1146,10 +1149,11 @@ if (DIST_MODELS_OK) {
     distProblems({ detailHtml: { [firstSlug]: detailHtml.replace(/<h1>[\s\S]*?<\/h1>/, '') } })
       .some(problem => problem.includes('h1')));
 
-  const dealsArtifact = path.join(DIST, 'models.json');
-  check('发布数据集 dist/models.json 与仓库里那份派生产物逐字节相同',
-    fs.existsSync(dealsArtifact)
-    && fs.readFileSync(dealsArtifact, 'utf8') === `${JSON.stringify(publishedModels, null, 2)}\n`);
+  // t6 删除：「发布数据集 dist/models.json 与仓库里那份派生产物逐字节相同」这一半。
+  // 理由：数据文件整族下架后产物里没有 `models.json` 了（缺文件即红这一半会恒红）；
+  // 而「仓库里的派生文件 == 它的人工来源层」已经由 L2 的 `check:models:reproducible`
+  // 逐字节守着 —— 那条对账的是**仓库根**，不是发布副本。页面级覆盖没有降低：
+  // 上面所有 distProblems() 断言读的仍是**产物 HTML**（逐行逐格与数据重算的值对账）。
 }
 // 缺产物不在这里「跳过并计 ✓」：requireDistFiles() 要么已记红，要么是显式 OPTIONAL DIAGNOSTIC。
 

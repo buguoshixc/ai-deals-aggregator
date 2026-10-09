@@ -616,8 +616,7 @@ ${sections}
         <a href="${escapeHtml(`${prefix}changes/`)}">最近变化</a> ·
         <a href="${escapeHtml(`${prefix}plans/`)}">套餐与 API 计费资料库</a> ·
         <a href="${escapeHtml(`${prefix}models/`)}">模型资料索引</a> ·
-        <a href="${escapeHtml(`${prefix}vendor/`)}">按厂商浏览</a> ·
-        <a href="${escapeHtml(`${prefix}docs/data/`)}">数据文档</a>
+        <a href="${escapeHtml(`${prefix}vendor/`)}">按厂商浏览</a>
       </p>`)}
 `;
 }

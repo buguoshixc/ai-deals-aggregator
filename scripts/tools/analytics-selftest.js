@@ -11,7 +11,7 @@
  *   · 页面覆盖：**读 dist/ 的磁盘现场**，自己推导路由、自己数 bootstrap；
  *   · Production Guard：把 `lib/analytics.js` 的 guard 区块拿进 `vm` 沙箱**真的执行**，
  *     喂 10 组 location，逐条比对真值表（不是 grep 源码里有没有某个字符串）；
- *   · 配置：与 `lib/feeds.js` 的 `SITE_URL` 现场对账（配置与站点常量分家是最隐蔽的失效）；
+ *   · 配置：与 `lib/site.js` 的 `SITE_URL` 现场对账（配置与站点常量分家是最隐蔽的失效）；
  *   · 凭据：扫仓库里的 Cloudflare **账户**凭据形状，并**明确区分**合法的 browser Site Token；
  *   · **牙测试**：在临时副本上做 8 种定向篡改，每一种都必须被扫出来（防止「永远报绿」）。
  *
@@ -33,7 +33,9 @@ const path = require('path');
 
 const analytics = require('../lib/analytics');
 const analyticsRoutes = require('../lib/analytics-routes');
-const feeds = require('../lib/feeds');
+// 站点常量（SITE_URL / VENDOR_*）的唯一出处：t2 起从订阅层的 `feeds.js` 改指本模块
+// （订阅层整体下架，站点常量不能跟着陪葬）。本自测只用 SITE_URL 与配置现场对账。
+const site = require('../lib/site');
 const pageKinds = require('../lib/page-kinds');
 const secretScan = require('../lib/secret-scan');
 
@@ -208,7 +210,7 @@ function cleanupTemp() {
 section('1) 配置（唯一配置源：scripts/lib/analytics.js）');
 {
   const cfg = analytics.ANALYTICS;
-  const verdict = analytics.validateConfig(cfg, { siteUrl: feeds.SITE_URL });
+  const verdict = analytics.validateConfig(cfg, { siteUrl: site.SITE_URL });
   check('配置形状与站点常量对账（provider / enabled / token 形状 / hostname / path 前缀 / 白名单）',
     verdict.ok, verdict.problems.join('；'));
 
@@ -217,10 +219,12 @@ section('1) 配置（唯一配置源：scripts/lib/analytics.js）');
     `形状 ${String(cfg.siteToken).length} 位`);
 
   // 与「本站真实地址」现场对账：改域名时两处必须一起改。
-  const site = new URL(feeds.SITE_URL);
+  // ⚠️ 局部变量刻意**不叫** `site`：顶部那个 `site` 是 `lib/site.js` 的模块对象，
+  // 同名会在这一块里形成 TDZ（`const site = new URL(site.SITE_URL)` 直接抛错）。
+  const parsedSite = new URL(site.SITE_URL);
   check('productionHostname / productionPathPrefix 等于 SITE_URL 解析出的 host 与 path',
-    cfg.productionHostname === site.hostname && cfg.productionPathPrefix === site.pathname,
-    `${cfg.productionHostname}${cfg.productionPathPrefix} vs ${site.hostname}${site.pathname}`);
+    cfg.productionHostname === parsedSite.hostname && cfg.productionPathPrefix === parsedSite.pathname,
+    `${cfg.productionHostname}${cfg.productionPathPrefix} vs ${parsedSite.hostname}${parsedSite.pathname}`);
 
   check('外部请求白名单只含官方需要的两个 origin（脚本 + 上报），没有通配',
     cfg.allowedOrigins.length === 2
@@ -243,7 +247,7 @@ section('1) 配置（唯一配置源：scripts/lib/analytics.js）');
     { label: '多了一个未知字段', cfg: { ...cfg, trackingId: 'x' } },
     { label: 'enabled 写成字符串', cfg: { ...cfg, enabled: 'true' } }
   ];
-  const missed = broken.filter(item => analytics.validateConfig(item.cfg, { siteUrl: feeds.SITE_URL }).ok);
+  const missed = broken.filter(item => analytics.validateConfig(item.cfg, { siteUrl: site.SITE_URL }).ok);
   check('配置校验自身有牙：8 种改坏都必须被判红',
     missed.length === 0, missed.map(item => item.label).join('、'));
 
@@ -358,7 +362,9 @@ if (distReady) {
 
 section('4) 注入内容与唯一配置源逐项一致');
 if (distReady) {
-  const sampleRoutes = ['', 'deal/', 'plans/api/', 'plans/coding/', 'models/', 'vendor/', 'changes/', 'status/', 'feeds/', 'docs/data/'];
+  // t2：样本里去掉 `feeds/` 与 `docs/data/` —— 这两个页面族整体下架后产物里不再有它们，
+  // 继续抽样会让「抽样路由都能在产物里找到」变成一条与产品无关的假红。
+  const sampleRoutes = ['', 'deal/', 'plans/api/', 'plans/coding/', 'models/', 'vendor/', 'changes/', 'status/'];
   const files = listFiles(DIST).filter(file => file.endsWith('.html'));
   const pick = route => {
     if (route === '') return files.includes('index.html') ? 'index.html' : null;
@@ -568,19 +574,19 @@ section('6) 凭据边界（Cloudflare 账户凭据 vs browser Site Token）');
 }
 
 /* ------------------------------------------------------------------ */
-/* 7) 不公开：没有公开统计页面、没有公开数据集登记                       */
+/* 7) 不公开：没有公开统计页面、统计文件不落仓库 / 产物                   */
 /* ------------------------------------------------------------------ */
 
-section('7) 不公开统计（无 /stats/、不进公开数据集）');
+section('7) 不公开统计（无 /stats/、统计文件不进仓库与产物）');
 {
   const forbiddenFiles = ['traffic.json', 'analytics.json', 'public-analytics.json'];
   const found = forbiddenFiles.filter(name => fs.existsSync(path.join(ROOT, name)));
   check('仓库根没有 traffic.json / analytics.json / public-analytics.json', found.length === 0, found.join('、'));
 
-  const docs = require('../lib/data-docs');
-  const registry = JSON.stringify(docs.PUBLIC_DATASETS);
-  check('Analytics 没有被登记进 PUBLIC_DATASETS（访问数据不是公开数据集）',
-    !/traffic|analytics/i.test(registry), 'PUBLIC_DATASETS 里没有分析相关条目');
+  // t2 删除：原来这里拿 `lib/data-docs.js` 的 `PUBLIC_DATASETS` 做交叉检查（「分析没有被登记成
+  // 公开数据集」）。数据出口整族下架后那个注册表不再存在，而它守的**事实**并没有失去守卫：
+  // 产物里任何未登记的数据文件现在由构建期 `lib/published-assets.js` 的 fail-closed 扫描当场拦下，
+  // 比"在某个注册表里查不到自己的名字"强得多。所以这里整条删掉，不留一条读已删模块的空登记。
 
   // sitemap 里不许出现任何统计页面
   const sitemapFile = path.join(DIST, 'sitemap.xml');

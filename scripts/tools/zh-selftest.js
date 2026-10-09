@@ -121,7 +121,11 @@ try {
   if (removed.byId[onlyOne].src) delete removed.byId[onlyOne].src.description;
   write(removed);
   const r4 = run();
-  const distZh = JSON.parse(fs.readFileSync(path.join(ROOT, 'dist', 'deals.json'), 'utf8'));
+  // t6：首页那份数据资源在产物里的路径本轮迁到 `assets/data/offers.json`
+  //（仓库根的 `deals.json` 仍是数据真值，但**不再进产物**）。
+  // ⚠️ 这里**必须继续读产物**、不能改读仓库根：这一条的语义是「覆盖层撤掉一条译文后，
+  // **产物**里也必须消失」——读源文件就证明不了构建真的把译文拿掉了。
+  const distZh = JSON.parse(fs.readFileSync(path.join(ROOT, 'dist', 'assets', 'data', 'offers.json'), 'utf8'));
   const stillThere = distZh.deals.some(d => d.id === onlyOne && d.zh && d.zh.description);
   record('覆盖层删掉译文 → 产物同步消失',
     r4.code === 0 && !stillThere,
@@ -136,7 +140,8 @@ try {
   delete withdrawn.byId[onlyOne];
   write(withdrawn);
   const r5 = run();
-  const unmanagedZh = JSON.parse(fs.readFileSync(path.join(ROOT, 'dist', 'deals.json'), 'utf8'))
+  // 同 ④ 的口径：读**产物**（`assets/data/offers.json`），不读仓库根。
+  const unmanagedZh = JSON.parse(fs.readFileSync(path.join(ROOT, 'dist', 'assets', 'data', 'offers.json'), 'utf8'))
     .deals.some(d => d.id === onlyOne && d.zh && Object.keys(d.zh).length);
   record('撤回整条译文 → 构建放行但产物里的旧译文被标为覆盖层管不到',
     r5.code === 0 && unmanagedZh && /不在覆盖层里/.test(r5.out),

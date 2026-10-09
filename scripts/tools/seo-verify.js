@@ -8,16 +8,19 @@
  * **构建过程自己记下来的**。那样能抓住「写坏了」，但抓不住「一开始就算错了」——
  * 两份数据同源时，一个错误的判据会在两边一致地错下去。
  *
- * 这个工具**只读 dist/**：页面 HTML、sitemap.xml、deals.json、目录结构。
+ * 这个工具只读**产物**：页面 HTML、sitemap.xml、目录结构，以及产物里那份首页数据资源
+ * （`<产物>/assets/data/offers.json`；本轮起它是产物里唯一的真值副本 —— 其余数据文件
+ * 已整体下架，那几份改从仓库根读，见下面的说明）。
  * 条目集合、可索引性、Feed 清单、sitemap 成员全部**从产物现场重新推导**：
  *
  *   · 可索引性 ← 页面自己的 `<meta name="robots">`（不读任何注册表）；
- *   · 条目集合 ← `dist/deals.json` + 厂商归一 + 页面类型判据，重新算一遍，
+ *   · 条目集合 ← 产物里的 `assets/data/offers.json` + 厂商归一 + 页面类型判据，重新算一遍，
  *     再与页面上的 `data-item` 标记**逐个 id 对账**；
  *   · sitemap 成员 ← 解析 sitemap.xml，与「非 noindex 的页面集合」比；
- *   · Feed 清单 ← 磁盘上真实存在的 feed 文件（不读 feeds.js 的注册表）。
+ *   · Feed 清单 ← 磁盘上真实存在的 feed 文件（订阅层下架后恒为空集）。
  *
- * 规则本身仍调用 `lib/seo.js`（规则只有一份），但**输入完全不同源**。
+ * 规则本身仍调用 `lib/seo.js`（规则只有一份），而**计划在这里重新推导一遍** ——
+ * 这一支的独立性在「重算 + 与产物对账」，不在「真值来自哪一份文件」。
  *
  * 用法：`node scripts/tools/seo-verify.js [--dir=dist]`
  * 退出码：0 全过 / 1 有问题。
@@ -30,7 +33,9 @@ const ROOT = path.join(__dirname, '..', '..');
 const seo = require('../lib/seo');
 const pageKinds = require('../lib/page-kinds');
 const landing = require('../lib/landing');
-const feeds = require('../lib/feeds');
+// 站点常量（SITE_URL / VENDOR_SLUGS / VENDOR_THRESHOLDS）的唯一出处。t2 起从订阅层的
+// `feeds.js` 改指本模块：订阅层整体下架后这份常量不能跟着陪葬，而本工具只用到这三样。
+const site = require('../lib/site');
 
 const dirArg = process.argv.find(a => a.startsWith('--dir='));
 const OUT = path.resolve(ROOT, dirArg ? dirArg.slice(6) : 'dist');
@@ -129,7 +134,10 @@ if (!fs.existsSync(path.join(OUT, 'index.html'))) {
 
 const renderCore = require('../lib/render-core').load(path.join(ROOT, 'index.html'));
 const vendorKeyOf = deal => renderCore.vendorOf(deal).name;
-const payload = JSON.parse(fs.readFileSync(path.join(OUT, 'deals.json'), 'utf8'));
+// t6（决策 D1 的一处**刻意例外**）：`deals` 侧读**产物**里那份首页数据资源
+// （`<产物>/assets/data/offers.json`）—— 本轮起它是产物里**唯一**的真值副本，
+// 读它才保得住这一支「独立从产物出发」的性质（页面上的条目 id 就是它派生的）。
+const payload = JSON.parse(fs.readFileSync(path.join(OUT, 'assets', 'data', 'offers.json'), 'utf8'));
 const deals = payload.deals;
 const dealsById = new Map(deals.map(deal => [deal.id, deal]));
 const asOf = String(payload.updatedAt || '').slice(0, 10);
@@ -139,18 +147,24 @@ const asOf = String(payload.updatedAt || '').slice(0, 10);
 // v3.0 Stage E：厂商页的门槛从「只有优惠条数」变成三条 OR（条数 / 历史事件 / **非优惠资料**），
 // 所以这里的重算也必须交出与构建期同样的五份 join 输入 —— 否则这个「独立门禁」会拿一份
 // **过时的计划**去判产物，把 10 个真实生成的厂商页判成「多出来的子页」（实测正是如此）。
-// 五份数据全部**从 dist 现场读**（与构建期的来源不同源，这正是这一支的价值）。
+// t6（决策 D1）：另外四份改从**仓库根**读 —— 它们本轮起不再进产物（`plans.json` /
+// `api-plans.json` / `models.json` / `model-registry-links.json` 都不再是发布副本）。
+//
+// ⚠️ 顺带纠正一句此前站不住的注释：原文写「五份数据全部从 dist 现场读（与构建期的来源不同源，
+// 这正是这一支的价值）」——「不同源」本来就是虚的（`dist/` 里那几份正是同一份数据由**同一次构建**
+// 拷出来的）。这一支真正的独立性在**重算**：计划在这里从原始数据重新推导一遍，
+// 再与产物页面逐个对账；真值来自仓库根还是产物副本，都不改变「判据是第二把尺子」这件事。
 const providerTable = require('../lib/providers').load().table;
-const plansForPlan = JSON.parse(fs.readFileSync(path.join(OUT, 'plans.json'), 'utf8')).plans;
-const apiPlansForPlan = JSON.parse(fs.readFileSync(path.join(OUT, 'api-plans.json'), 'utf8')).plans;
-const modelsForPlan = JSON.parse(fs.readFileSync(path.join(OUT, 'models.json'), 'utf8')).models;
-const modelLinksForPlan = JSON.parse(fs.readFileSync(path.join(OUT, 'model-registry-links.json'), 'utf8')).links;
+const plansForPlan = JSON.parse(fs.readFileSync(path.join(ROOT, 'plans.json'), 'utf8')).plans;
+const apiPlansForPlan = JSON.parse(fs.readFileSync(path.join(ROOT, 'api-plans.json'), 'utf8')).plans;
+const modelsForPlan = JSON.parse(fs.readFileSync(path.join(ROOT, 'models.json'), 'utf8')).models;
+const modelLinksForPlan = JSON.parse(fs.readFileSync(path.join(ROOT, 'model-registry-links.json'), 'utf8')).links;
 const plan = landing.planLandingPages({
   deals,
   vendorKeyOf,
-  vendorSlugs: feeds.VENDOR_SLUGS,
+  vendorSlugs: site.VENDOR_SLUGS,
   thresholds: undefined,
-  vendorThresholds: feeds.VENDOR_THRESHOLDS,
+  vendorThresholds: site.VENDOR_THRESHOLDS,
   eventCountOf: () => 0,
   pinned: landing.loadPinned(),
   aliases: landing.loadAliases(),
@@ -303,7 +317,7 @@ check('每个落地页的可见数据行 == 按 dist/deals.json 重新算出的�
   const routesSet = new Set(routes);
   const memberRoutes = members.map(element => {
     const href = String((element && (element.url || element.item)) || '');
-    return href.startsWith(feeds.SITE_URL) ? href.slice(feeds.SITE_URL.length) : href;
+    return href.startsWith(site.SITE_URL) ? href.slice(site.SITE_URL.length) : href;
   });
   const memberIds = memberRoutes.map(relRoute => {
     const match = relRoute.match(/^deal\/([^/]+)\/$/);
@@ -331,15 +345,15 @@ check('每个落地页的可见数据行 == 按 dist/deals.json 重新算出的�
 /* ③ 规则层（与构建期同一份规则，输入完全不同源）                        */
 /* ------------------------------------------------------------------ */
 
-const sitemapSet = new Set(sitemap.map(url => url.slice(feeds.SITE_URL.length)));
+const sitemapSet = new Set(sitemap.map(url => url.slice(site.SITE_URL.length)));
 for (const page of descriptors) page.inSitemap = sitemapSet.has(page.route);
 
 const verdict = seo.validate(descriptors, {
-  siteUrl: feeds.SITE_URL,
+  siteUrl: site.SITE_URL,
   sitemap,
   pinned: pinned.map(row => row.route),
   aliases,
-  thresholds: { categoryMinDeals: landing.CATEGORY_MIN_DEALS, vendorMinDeals: feeds.VENDOR_THRESHOLDS.minDeals },
+  thresholds: { categoryMinDeals: landing.CATEGORY_MIN_DEALS, vendorMinDeals: site.VENDOR_THRESHOLDS.minDeals },
   dealsById,
   asOf,
   vendorKeyOf,
@@ -538,44 +552,16 @@ const ownVisibleText = html => unescapeHtml(
 }
 
 /* ------------------------------------------------------------------ */
-/* ③⁗ 变化日志的可用性：Manifest 的如实登记 ↔ 产物文件                 */
+/* t6 删除：③⁗「变化日志的可用性：Manifest 的如实登记 ↔ 产物文件」整块      */
 /* ------------------------------------------------------------------ */
 //
-// `p2-honesty-single-source-v1` 闭合 t4 登记的缺口 A：日志缺失/损坏时产物**照常出**，
-// 页面按纪律说「没有拿到…日志」，而数据出口的 Manifest 把这份数据集登记为
-// `availability: 'unavailable'` + `updatedAt: null`（**不许用别的日期顶上**）。
-// 构建期有那三条断言；这里（独立门禁）只看**产物**，把同一条不变量再钉一遍：
-//   · 登记为不可用 ⇒ Manifest 的 updatedAt 必须是 null、产物文件也不许带时间、必须有说明；
-//   · 产物文件没有可公布的时间 ⇒ 必须登记为不可用（不许悄悄留空）；
-//   · 有时间的 ⇒ Manifest 与产物文件必须逐字相等。
-// 全部由 `lib/changes.js` 的纯函数取口径（唯一出处），这里不重写一份日志清单。
-{
-  const changesLib = require('../lib/changes');
-  const manifestFile = path.join(OUT, 'data', 'index.json');
-  const manifest = fs.existsSync(manifestFile) ? JSON.parse(fs.readFileSync(manifestFile, 'utf8')) : null;
-  const problems = [];
-  const actualUpdatedAt = {};
-  let declared = 0;
-  let datasets = 0;
-  for (const dataset of ((manifest && manifest.datasets) || [])) {
-    datasets += 1;
-    const file = path.join(OUT, dataset.url);
-    if (!fs.existsSync(file)) { problems.push(`${dataset.url} 不存在（endpoint 必须在场）`); continue; }
-    const parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
-    const real = parsed.updatedAt || parsed.startedAt || null;
-    actualUpdatedAt[dataset.id] = real;
-    const declaredUnavailable = dataset.availability === 'unavailable';
-    if (declaredUnavailable) declared += 1;
-    // 有时间的数据集：Manifest 与产物文件必须逐字相等（没时间的那种交给下面那条通用不变量）
-    if (!declaredUnavailable && real !== null && String(dataset.updatedAt) !== String(real)) {
-      problems.push(`${dataset.id}: Manifest updatedAt=${dataset.updatedAt} ≠ 产物文件里的 ${real}`);
-    }
-  }
-  // 通用不变量（不需要 id 清单）：登记为不可用 ⇒ null + 说明 + 文件也不许带时间；反之没有时间 ⇒ 必须登记为不可用。
-  problems.push(...changesLib.logDatasetDiskHonestyProblems(manifest, actualUpdatedAt));
-  check(`数据集的可用性：Manifest 的如实登记 ↔ 产物文件逐条一致（${datasets} 份，其中登记为不可用 ${declared} 份）`,
-    problems.length === 0, problems.slice(0, 3).join('；'));
-}
+// 为什么整块删：这一块读 `<产物>/data/index.json`（数据出口 Manifest）与每一份数据集 endpoint，
+// 逐条对账「登记为不可用 ⇒ updatedAt 为 null / 产物文件也不许带时间 / 必须有说明」。
+// 数据出口子系统下架后 Manifest 与全部数据 endpoint 都不再产出（`lib/data-docs.js` 也已删除），
+// 这一块只会得到「Manifest 文件不存在」这一种结果。它当年守的那条不变量并没有失去守卫：
+// 现在改挂在**页面措辞**上 —— `build-local.js` 的全页 HTML 扫描会在页面文本含「没有拿到」时
+// 调用 `changes.machineDependenceProblems()`（宿主绝对路径一律判红），
+// 而 `selftest:seo` 第八节对这条判据本身开了牙。
 
 /* ------------------------------------------------------------------ */
 /* ④ 只属于独立验收的三条：sitemap 成员、noindex、Feed 文件              */
@@ -583,7 +569,7 @@ const ownVisibleText = html => unescapeHtml(
 
 {
   const indexableRoutes = descriptors.filter(page => page.indexable).map(page => page.route);
-  const sitemapRoutes = sitemap.map(url => url.slice(feeds.SITE_URL.length));
+  const sitemapRoutes = sitemap.map(url => url.slice(site.SITE_URL.length));
   const notInSitemap = indexableRoutes.filter(route => !sitemapRoutes.includes(route));
   const extraInSitemap = sitemapRoutes.filter(route => !indexableRoutes.includes(route));
   check('sitemap 成员 == 非 noindex 页面的集合（现场按 robots meta 判定）',

@@ -94,7 +94,6 @@ npm run gate           门禁本体（与 CI 同一份 action.yml，~277s）
 |---|---|
 | `scripts/tools/coverage-targets-selftest.js` | 分支覆盖最密的一支 |
 | `scripts/tools/verify-site.js` | §22b 的 M1–M5（浏览器内变异）+ 反空洞守卫 |
-| `scripts/tools/data-docs-selftest.js` | 声明与产物对账 |
 | `scripts/tools/ai-eval.js` | AI 层抽题用例 |
 
 ### 5.2 四类与默认处置

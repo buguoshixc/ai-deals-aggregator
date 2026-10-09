@@ -301,65 +301,11 @@ function selfCheck(png) {
   return { white, pale, faint };
 }
 
-/* ---------------- Feed 图标（144×144） ---------------- */
+// t4：这里原先还有一整节「Feed 图标（144×144）」——`ICON_SIZE` / `renderIcon()` / `selfCheckIcon()`。
+// 它的唯一消费者是订阅产物（RSS 的 `<image>` 与 JSON Feed 的 `icon`）；订阅子系统整体下架、
+// 产物里不再有 `icon.png`（决策 D3：唯一存在理由是 Feed），这一节随之删除。
+// ⚠️ `readIdat()` 留着：它是 OG 图自检（`selfCheck`）共用的 PNG 解析助手。
 
-/**
- * 订阅源的图标：RSS `<image>` 与 JSON Feed 的 `icon` 都要一张**点阵方图**。
- *
- * 为什么必须现场生成、不复用 og-image.png：RSS 2.0 的 `<image>` 规定
- * width ≤ 144、height ≤ 400，而 OG 图是 1200×630 —— 直接引用是违反规范的
- * （多数阅读器会忽略，少数会报错）。这里复用同一套零依赖 PNG 编码器与绘图助手，
- * 画一张 144×144 的方形图标（蓝底 + 白色圆角块 + % 简笔，与 favicon 呼应）。
- *
- * 构建确定性：没有随机数、没有时间戳，同一个输入永远产出同一串字节。
- */
-const ICON_SIZE = 144;
-
-function renderIcon() {
-  const S = ICON_SIZE;
-  const canvas = createCanvas(S, S, BRAND);
-  // 左下角斜向装饰块（与 OG 图的同款手法，避免纯色单调）
-  for (let y = 0; y < S; y++) {
-    for (let x = 0; x < S; x++) {
-      if (x - y + S > 168 && x - y + S < 236) setPixel(canvas, x, y, [0x35, 0x50, 0xd8], 1, S, S);
-    }
-  }
-  const markSize = 96;
-  const markX = Math.round((S - markSize) / 2);
-  const markY = Math.round((S - markSize) / 2);
-  fillRoundRect(canvas, markX, markY, markSize, markSize, 20, WHITE, S, S);
-  // % 简笔：两个圆点 + 斜线
-  fillRect(canvas, markX + 24, markY + 30, 11, 11, BRAND, S, S);
-  fillRect(canvas, markX + 61, markY + 55, 11, 11, BRAND, S, S);
-  for (let i = 0; i < 36; i++) {
-    fillRect(canvas, markX + 54 - i, markY + 33 + i, 5, 5, BRAND, S, S);
-  }
-  return encodePng(S, S, canvas);
-}
-
-/** 图标自检：尺寸必须是 144×144、且白块与品牌色都真的画进去了 */
-function selfCheckIcon(png) {
-  const width = png.readUInt32BE(16);
-  const height = png.readUInt32BE(20);
-  if (width !== ICON_SIZE || height !== ICON_SIZE) {
-    throw new Error(`Feed 图标尺寸异常：${width}x${height}（应为 ${ICON_SIZE}x${ICON_SIZE}）`);
-  }
-  if (width > 144 || height > 400) throw new Error('Feed 图标违反 RSS <image> 的尺寸上限');
-  const raw = zlib.inflateSync(readIdat(png));
-  const stride = ICON_SIZE * 4;
-  let white = 0;
-  let brand = 0;
-  for (let y = 0; y < ICON_SIZE; y++) {
-    for (let x = 0; x < ICON_SIZE; x++) {
-      const i = y * (stride + 1) + 1 + x * 4;
-      if (raw[i] === 255 && raw[i + 1] === 255 && raw[i + 2] === 255) white++;
-      if (raw[i] === BRAND[0] && raw[i + 1] === BRAND[1] && raw[i + 2] === BRAND[2]) brand++;
-    }
-  }
-  if (white < 2000) throw new Error(`Feed 图标白块像素过少(${white})，标记可能没画出来`);
-  if (brand < 2000) throw new Error(`Feed 图标品牌色像素过少(${brand})`);
-  return { white, brand };
-}
 
 /** 从 PNG buffer 取出 IDAT 数据 */
 function readIdat(png) {
@@ -395,4 +341,4 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { render, renderIcon, encodePng, selfCheck, selfCheckIcon, textWidth, WIDTH, HEIGHT, ICON_SIZE };
+module.exports = { render, encodePng, selfCheck, textWidth, WIDTH, HEIGHT };

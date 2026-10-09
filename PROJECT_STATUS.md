@@ -124,7 +124,7 @@
 
 | 维度 | v2.5（基点） | v3.0（实测） |
 |---|---|---|
-| 可索引页面 | 115 页 | **170 页**（`seo-verify` 的 `indexable URLs`；dist 共 173 页 = 170 + 3 条 noindex 别名）（+ 模型索引 + 44 模型详情 + 档案索引 + 数据文档） |
+| 可索引页面 | 115 页 | **170 页**（`seo-verify` 的 `indexable URLs`；dist 共 173 页 = 170 + 3 条 noindex 别名）（+ 模型索引 + 44 模型详情 + 档案索引 + 数据文档 ⚠️ 2026-10 收口：`/docs/data/` 数据文档页已随数据出口整族下架，现役产物为 184 页） |
 | sitemap | 112 条 | **170 条** |
 | 厂商页 | 9 | **19**（身份门：只有 A 空间有厂商名的 provider 才建路由） |
 | Feed | 24 | **25**（+ API 价格变化）→ **2026-10-04 重算：24 份 · ×2 = 48 文件**（含 T12 新增的 5 个 `category-*` = 10 文件；`/feeds/` 列出 48 个地址。v3.0 当时记 25，口径未复现，以重算值为准） |
@@ -3078,6 +3078,10 @@ return crypto.createHash('sha1').update(basis).digest('hex').slice(0, 12);
   注意 `/feed/`（文件，单数）与 `/feeds/`（页面，复数）刻意不同名。
 - **三层验证**：产物自检（20 个检查码的三方对账）· `selftest:feeds`（**66 项**，含 4 项 Tooth Test）·
   真浏览器 §14/§14b（`DOMParser` 真解析、链接可达、`/feeds/` 可用）。
+  > ⚠️ 2026-10 收口（读到这里的人请注意）：本条与下面那条门禁记录里的东西**已整体下架** ——
+  > `/feeds/` 页、Feed Discovery 的 8 条 `rel="alternate"`、`selftest:feeds`、
+  > `check:feeds:reproducible` 与门禁里的 `Feeds self-test` / `Feeds reproducibility` 两步
+  > 全部删除（订阅层整族退场）。保留这段作为历史记录，不要照它恢复任何东西。
 - **门禁**：`gate` 新增 `Feeds self-test` 与 `Feeds reproducibility (build twice, byte-compare)` 两步
   （冻结序列 21 → 23 步）；`--expect-checks=32` **不变**。
 - **实测**：`npm run build` 通过（36 个 Feed 文件 · 338 条条目 · 产物 937.9 KB）；

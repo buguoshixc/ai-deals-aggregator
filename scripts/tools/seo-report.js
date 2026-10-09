@@ -15,7 +15,9 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '..', '..');
 const landing = require('../lib/landing');
-const feeds = require('../lib/feeds');
+// 站点常量（SITE_URL / VENDOR_SLUGS / VENDOR_THRESHOLDS）的唯一出处：t2 起从订阅层的
+// `feeds.js` 改指本模块（订阅层整体下架，常量不能跟着陪葬）。本报告只用到 slug 表与门槛。
+const site = require('../lib/site');
 const history = require('../lib/history');
 const audience = require('../lib/audience');
 
@@ -45,8 +47,8 @@ const vendorEventCount = (() => {
 const plan = landing.planLandingPages({
   deals: payload.deals,
   vendorKeyOf,
-  vendorSlugs: feeds.VENDOR_SLUGS,
-  vendorThresholds: feeds.VENDOR_THRESHOLDS,
+  vendorSlugs: site.VENDOR_SLUGS,
+  vendorThresholds: site.VENDOR_THRESHOLDS,
   eventCountOf: name => vendorEventCount.get(name) || 0
 });
 const pinned = new Set(landing.loadPinned().map(row => row.route));
@@ -59,7 +61,7 @@ const pad = (text, width) => String(text).padEnd(width, ' ');
 console.log(`\n=== 落地页报告（数据更新 ${asOf}）===`);
 console.log(`页面 ${stats.total} 个：可索引 ${stats.indexable} · noindex ${stats.noindex}` +
   `（${Object.entries(stats.byKind).map(([kind, n]) => `${kind} ${n}`).join(' · ')}）`);
-console.log(`门槛：厂商 有效优惠 ≥ ${feeds.VENDOR_THRESHOLDS.minDeals} 条 或 历史事件 ≥ ${feeds.VENDOR_THRESHOLDS.minEvents} 条` +
+console.log(`门槛：厂商 有效优惠 ≥ ${site.VENDOR_THRESHOLDS.minDeals} 条 或 历史事件 ≥ ${site.VENDOR_THRESHOLDS.minEvents} 条` +
   ` · 分类 有效优惠 ≥ ${landing.CATEGORY_MIN_DEALS} 条（且有人工文案）`);
 
 console.log('\n--- 页面清单 ---');
@@ -90,14 +92,17 @@ for (const [route, alias] of Object.entries(aliases)) {
 }
 
 console.log('\n--- 索引策略 ---');
+// t6：两处事实陈述随本轮收口改掉 —— ① 索引清单里不再有「订阅中心」（`/feeds/` 已下架）；
+// ② 「非页面资源」清单按**产物允许清单**重写（唯一注册表在 `lib/published-assets.js`）：
+//    数据文件整族下架后，产物里的非 HTML 文件只剩下面这些 + 首页自己那份数据资源。
 console.log('  可索引（进 sitemap）：首页 · 分类页 3 · 按需求页 7 · 分类落地页 ' + stats.byKind.category +
-  ' · 厂商落地页 ' + stats.byKind.vendor + ' · 枢纽 ' + (stats.byKind.hub || 0) + ' · 详情页 · 状态页 · 变化雷达页 · 订阅中心');
+  ' · 厂商落地页 ' + stats.byKind.vendor + ' · 枢纽 ' + (stats.byKind.hub || 0) + ' · 详情页 · 状态页 · 变化雷达页');
 console.log('  noindex（不进 sitemap）：' + Object.keys(aliases).join(' · '));
-console.log('  非页面资源（从不进 sitemap）：feed/** · deals.json · deal-history.json · source-health.json · logos/** · og-image.png · icon.png');
+console.log('  非页面资源（从不进 sitemap）：.nojekyll · favicon.svg · logos.css · og-image.png · robots.txt · sitemap.xml · logos/** · assets/data/offers.json');
 
 console.log('\n--- slug 契约 ---');
-console.log(`  厂商 slug（${Object.keys(feeds.VENDOR_SLUGS).length} 条，键是规范显示名）：`);
-for (const [name, slug] of Object.entries(feeds.VENDOR_SLUGS)) {
+console.log(`  厂商 slug（${Object.keys(site.VENDOR_SLUGS).length} 条，键是规范显示名）：`);
+for (const [name, slug] of Object.entries(site.VENDOR_SLUGS)) {
   const count = payload.deals.filter(deal => deal.type === 'deal' && vendorKeyOf(deal) === name).length;
   console.log(`    ${pad(name, 22)}${pad(slug, 20)}${count} 条`);
 }

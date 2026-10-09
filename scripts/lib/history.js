@@ -148,7 +148,7 @@ const RENDER_LIMIT = 20;
 const ABSENCE_RETENTION_DAYS = 365;
 
 // [T5-history-201-disclaimer-tail]
-// T5 删除（census B · 重复）：删尾句「最终以厂商官方页面为准。」—— 它与共享页脚（每页都有「优惠信息来自各厂商官方页面与公开折扣页，最终以官方页面为准。」）同义，属 B 类「同一句话的第二个容器」。保留前半句（「不再收录」的必要解释，C 类口径）。⚠️ 同一常量 `HISTORY_NOTES.disclaimer` 也被 Feed 产物消费（feeds.js 对 ended 事件推入）⇒ **改它是全站同改**；当前数据 ended=0，本次不改任何 Feed 字节（收口时核对 dist/feed/**）。门禁：无既有断言引用这句；台账/清单由 noteDeclare 自动同步。
+// T5 删除（census B · 重复）：删尾句「最终以厂商官方页面为准。」—— 它与共享页脚（每页都有「优惠信息来自各厂商官方页面与公开折扣页，最终以官方页面为准。」）同义，属 B 类「同一句话的第二个容器」。保留前半句（「不再收录」的必要解释，C 类口径）。⚠️ 这条常量当时还被 Feed 产物消费（feeds.js 对 ended 事件推入）⇒ 曾经是「改它就是全站同改」；**订阅子系统整体下架后那条消费者已经不存在**（`lib/feeds.js` 已删除、产物里不再有 `dist/feed/**`），所以现在改这句话只落在页面侧。门禁：无既有断言引用这句；台账/清单由 noteDeclare 自动同步。
 const HISTORY_WORDING = {
   HISTORY_LABELS: {
     sectionTitle: '变更记录',
@@ -574,8 +574,9 @@ module.exports = {
   replayedValue,
   lastLifecycleOf,
   eventsOf,
-  // v1.6 订阅层用：变化条目的稳定 id 直接取这把「事件身份」尺子（lib/feeds.js 的 eventFeedId），
-  // 不另写一套唯一性判据 —— 同一件事只允许有一种身份定义。
+  // 「事件身份」这把尺子的对外出口：订阅层当年直接用它算变化条目的稳定 id（`lib/feeds.js` 的
+  // `eventFeedId`，已随订阅子系统删除）；模块内的幂等集合与自测仍在用同一条判据。
+  // 留着的理由：**同一件事只允许有一种身份定义** —— 谁要再算「同一件事」，仍然从这里取。
   eventKey: event => core.eventKey(event, PROFILE),
   verifyStore,
   historyFor,

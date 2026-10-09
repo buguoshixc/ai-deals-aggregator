@@ -84,14 +84,14 @@
   不另开一套窗口；被截断时 `description` 追加既有措辞「另有 N 条未显示」。
 - **文案微调与 `updated` 类元信息永远不进 Feed**（雷达的 `other` 两个桶）。
 
-### 3.3 首页订阅发现
+### 3.3 首页订阅发现：**已删除**（2026-10）
 
-`index.html` 的 `<head>` 里是 `<!--PRERENDER:feeds-->` 标记，构建期由注册表注入
-**4 个选择 × 2 种格式 = 8 条** `rel="alternate"`：
+早先 `index.html` 的 `<head>` 里是 `<!--PRERENDER:feeds-->` 标记，构建期由订阅注册表注入
+**4 个选择 × 2 种格式 = 8 条** `rel="alternate"`（全部优惠 / 最近变化 / 学生优惠 / 开发者优惠）。
 
-```
-全部优惠（all）· 最近变化（changes）· 学生优惠（student）· 开发者优惠（developer）
-```
+订阅层整体下架后：那个标记、注册表与全部 Feed 产物都不再存在，**任何页面都不再声明
+`rel="alternate"`**（`verify-site.js` 逐族断言 0 条）。这一小节保留下来只为说明历史口径 ——
+不要照着它去恢复任何东西。
 
 其余页面声明**根 Feed 对**（`/status/`、分类页、按需求页、详情页、订阅中心），
 **`/changes/` 声明变化 Feed 对**（这一页订的是变化本身）。
@@ -202,10 +202,14 @@ HTML 里不留第二份清单。
 
 | 层 | 在哪 | 问什么 |
 |---|---|---|
-| 产物自检（构建期） | `build-local.js` 的 `selfCheck` 调 `feeds.validate()` | 三方对账（内存条目 ↔ RSS 回读 ↔ JSON 回读）+ 语义不变量 + 订阅发现一致性 + 订阅中心五条约定 |
-| 规则自测（CI） | `scripts/tools/feeds-selftest.js` | 注册表 / Stable ID / 时间口径 / 排除项 / 空策略 / 厂商门槛 / XML 检查器 / **4 项 Tooth Test** |
-| 真浏览器（CI） | `verify-site.js` §14 / §14b / §10b | `DOMParser` 判 XML 良构、两侧 id 集合一致、链接可达、`/feeds/` 可用、`/changes/` 订到变化流 |
-| 可复现（CI） | `scripts/tools/check-feeds-reproducible.js` | **真实连续构建** N 次逐字节一致 + 时间字段全来自数据日期 |
+| 产物自检（构建期） | `build-local.js` 的 `selfCheck` + `published-assets.assertNoPublishedData()` | 产物结构 / 逐页对账 / 说明清单 / **产物资产门禁**（除 `assets/data/offers.json` 外不许有任何数据文件） |
+| 规则自测（CI） | `npm run selftest:seo`（`scripts/tools/seo-selftest.js`） | SEO 检查码逐条定向篡改 + 干净夹具必须静默 + 页面说明的机器无关性（宿主绝对路径即红） |
+| 真浏览器（CI） | `verify-site.js` | 结构 / 无 JS 预渲染 / 落地页与详情页对账 / §22c 几何与变异牙 / **每个页面族 0 条 `rel="alternate"`** |
+| 可复现（CI） | `check:reproducible` · `check:plans:reproducible` · `check:api-plans:reproducible` · `check:models:reproducible` | 仓库根的派生产物 == 它的人工来源层（逐字节） |
+
+> ⚠️ 2026-10：本表原先列的是订阅层的四层验证（`feeds.validate()` / `feeds-selftest.js` /
+> `verify-site.js` §14·§14b·§10b / `check-feeds-reproducible.js`）。订阅层整体下架后那四支
+> 全部删除（含 `/feeds/` 页与全部 Feed 产物），本表按**现役**门禁重写。
 
 ### 9.1 `validate()` 的检查码
 

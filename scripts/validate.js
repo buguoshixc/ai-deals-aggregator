@@ -1023,7 +1023,11 @@ function checkIndex() {
     return;
   }
   const html = fs.readFileSync(INDEX_FILE, 'utf8');
-  if (!/deals\.json/.test(html)) error('index.html 未引用 deals.json');
+  // t3：首页数据资源从 `deals.json` 搬到 `assets/data/offers.json`（产物里的路径），断言跟着搬。
+  // 它守的事没变：首页必须真的引用一份数据资源。
+  // ⚠️ 别写回裸 `deals.json`：仓库根那份数据真值文件也叫这个名字，裸子串断言会永远为真，
+  // 于是「首页根本没引用数据资源」这件事再也报不出来（这条断言就变成了装饰）。
+  if (!/assets\/data\/offers\.json/.test(html)) error('index.html 未引用 assets/data/offers.json');
   if (!/payload\.deals/.test(html) && !/schemaVersion/.test(html)) {
     warn('index.html 似乎没有按 v2 结构（payload.deals）读取数据');
   }

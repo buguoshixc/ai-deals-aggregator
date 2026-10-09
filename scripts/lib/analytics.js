@@ -416,11 +416,11 @@ function describeRoute(route) {
 
 /**
  * 配置自检（唯一实现）。**故意不只看 token**：这一层最容易出的错是
- * 「配置与站点常量分家」—— 比如将来换了域名，`feeds.SITE_URL` 改了而这里没改，
+ * 「配置与站点常量分家」—— 比如将来换了域名，`site.SITE_URL`（唯一出处 `lib/site.js`）改了而这里没改，
  * 症状是「线上一个统计数据都没有」且没有任何东西报错。
  *
  * @param {object} config 待校验配置
- * @param {{siteUrl?:string}} [context] 站点真实地址（构建期由 lib/feeds.js 传入）
+ * @param {{siteUrl?:string}} [context] 站点真实地址（构建期由 `lib/site.js` 的 `SITE_URL` 传入）
  * @returns {{ok:boolean, problems:string[]}}
  */
 function validateConfig(config = ANALYTICS, context = {}) {

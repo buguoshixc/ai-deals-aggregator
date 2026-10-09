@@ -3,54 +3,54 @@
     "route": "need/no-card/",
     "kind": "need",
     "count": 1,
-    "chars": 710,
+    "chars": 683,
     "floor": 660,
-    "margin": 50,
-    "registeredAt": "2026-10-08"
+    "margin": 23,
+    "registeredAt": "2026-10-09"
   },
   {
     "route": "category/",
     "kind": "hub",
     "count": 5,
-    "chars": 923,
+    "chars": 838,
     "floor": 800,
-    "margin": 123,
-    "registeredAt": "2026-10-08"
+    "margin": 38,
+    "registeredAt": "2026-10-09"
   },
   {
     "route": "category/audio/",
     "kind": "category",
     "count": 6,
-    "chars": 1083,
+    "chars": 1056,
     "floor": 960,
-    "margin": 123,
-    "registeredAt": "2026-10-08"
+    "margin": 96,
+    "registeredAt": "2026-10-09"
   },
   {
     "route": "need/ai-coding/",
     "kind": "need",
     "count": 4,
-    "chars": 976,
+    "chars": 949,
     "floor": 840,
-    "margin": 136,
-    "registeredAt": "2026-10-08"
+    "margin": 109,
+    "registeredAt": "2026-10-09"
   },
   {
     "route": "category/image/",
     "kind": "category",
     "count": 5,
-    "chars": 1039,
+    "chars": 1012,
     "floor": 900,
-    "margin": 139,
-    "registeredAt": "2026-10-08"
+    "margin": 112,
+    "registeredAt": "2026-10-09"
   },
   {
     "route": "category/agent/",
     "kind": "category",
     "count": 4,
-    "chars": 982,
+    "chars": 955,
     "floor": 840,
-    "margin": 142,
-    "registeredAt": "2026-10-08"
+    "margin": 115,
+    "registeredAt": "2026-10-09"
   }
 ]

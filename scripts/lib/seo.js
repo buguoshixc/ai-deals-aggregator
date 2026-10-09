@@ -1,7 +1,7 @@
 /**
  * SEO 安全门禁的**规则层**（v1.7）。
  *
- * 形状刻意与 scripts/lib/feeds.js 的 `validate()` 一致：
+ * 形状**刻意统一**（原对照物是订阅层的 `validate()`；`lib/feeds.js` 已随订阅子系统下架删除）：
  *   · **纯函数**：输入是页面描述符数组，输出是 `{ problems, warnings, stats }`；
  *   · **可在被篡改的深拷贝上调用**（`seo-selftest` 就是这么演练每一条检查码的）；
  *   · **不读盘、不联网、不看时钟** —— 描述符由调用方给（构建期给内存里刚写下的页面，
@@ -30,7 +30,7 @@ const PROBLEM_CODES = [
   'breadcrumb-target-exists', 'sitemap-target-exists', 'sitemap-policy',
   'orphan', 'internal-link-exists', 'thin-content', 'thin-content-margin',
   'duplicate-item-set',
-  'summary-source', 'feed-declared'
+  'summary-source'
 ];
 
 /**
@@ -70,12 +70,24 @@ const PROBLEM_CODES = [
  * 见 `research/_raw/p2-residuals-v1/floor-census.json`。
  */
 const TEXT_FLOOR_RESIDUALS = [
-  { route: 'need/no-card/', kind: 'need', count: 1, chars: 710, floor: 660, margin: 50, registeredAt: '2026-10-08' },
-  { route: 'category/', kind: 'hub', count: 5, chars: 923, floor: 800, margin: 123, registeredAt: '2026-10-08' },
-  { route: 'category/audio/', kind: 'category', count: 6, chars: 1083, floor: 960, margin: 123, registeredAt: '2026-10-08' },
-  { route: 'need/ai-coding/', kind: 'need', count: 4, chars: 976, floor: 840, margin: 136, registeredAt: '2026-10-08' },
-  { route: 'category/image/', kind: 'category', count: 5, chars: 1039, floor: 900, margin: 139, registeredAt: '2026-10-08' },
-  { route: 'category/agent/', kind: 'category', count: 4, chars: 982, floor: 840, margin: 142, registeredAt: '2026-10-08' }
+  // ⚠️ t3 一次性重新登记（六条一起，理由是**正文被有意删掉**，不是下限被调低）：
+  //   · 六页共同的 −20 字：页脚删掉了「优惠变化：变化雷达 · 订阅这些优惠」那一行
+  //     （去数据暴露：t3 删了页脚的订阅那整行 = −20 字；t4 又删了页脚最后一枚「开放数据」入口 = −7 字。
+  //      见 `index.html` 的 t4 注释与 `build-local.js` 的 `ROUTE_HREFS`）。
+  //     页脚是一份共享片段，所以每一页的可见正文都同步短了 20 字。
+  //   · `/category/` 额外的 −58 字：枢纽表删掉了第 4 列「订阅」（RSS / JSON 地址），
+  //     5 行的那一格文本加上表头随之下线。
+  // **下限一个字没动**（下面的 `floor` 与 `kind` / `count` 全部保持原值），判据也仍是
+  // 「实时余量 ≥ 登记值」—— 变的只是"登记当天读到的那一串数字"。
+  // 机器可读的 JSON 转写（`research/_raw/p2-residuals-v1/text-floor-margins.json`）必须同步，
+  // 否则 `seo-selftest` 的「逐字节相同」当场红；重新登记块由
+  // `node scripts/tools/seo-verify.js --print-floor-margins` 打印（唯一出处仍是本表）。
+  { route: 'need/no-card/', kind: 'need', count: 1, chars: 683, floor: 660, margin: 23, registeredAt: '2026-10-09' },
+  { route: 'category/', kind: 'hub', count: 5, chars: 838, floor: 800, margin: 38, registeredAt: '2026-10-09' },
+  { route: 'category/audio/', kind: 'category', count: 6, chars: 1056, floor: 960, margin: 96, registeredAt: '2026-10-09' },
+  { route: 'need/ai-coding/', kind: 'need', count: 4, chars: 949, floor: 840, margin: 109, registeredAt: '2026-10-09' },
+  { route: 'category/image/', kind: 'category', count: 5, chars: 1012, floor: 900, margin: 112, registeredAt: '2026-10-09' },
+  { route: 'category/agent/', kind: 'category', count: 4, chars: 955, floor: 840, margin: 115, registeredAt: '2026-10-09' }
 ];
 
 /** 路由 → 登记项（登记表很小，线性查；重复登记由 `seo-selftest` 断言） */
@@ -612,27 +624,13 @@ function validate(pages, opts = {}) {
     if (!routeSet.has(rel)) fail('sitemap-target-exists', rel, 'sitemap 里的这条 URL 没有对应的页面');
   }
 
-  // ---- Feed 声明 ----
-  // 声明的 Feed 从 HTML 里**现读**（不信任调用方传进来的清单）：页面声明了什么，
-  // 只有页面自己说了算。`feedMatch` 是「这一页**应该**有哪份 Feed」（由注册表推导）。
-  if (opts.feedSpecs) {
-    const byPath = new Map();
-    for (const spec of opts.feedSpecs) {
-      byPath.set(spec.path, spec);
-      byPath.set(spec.jsonPath, spec);
-    }
-    for (const page of list) {
-      const declared = internalLinks(page.html || '', page.route)
-        .filter(link => /^feed.*\.(xml|json)$/.test(link));
-      for (const rel of declared) {
-        if (!byPath.has(rel)) fail('feed-declared', page.route, `声明了不存在的订阅源：${rel}`);
-      }
-      const declaredIds = new Set(declared.map(rel => (byPath.get(rel) || {}).id).filter(Boolean));
-      for (const id of page.feedMatch || []) {
-        if (!declaredIds.has(id)) fail('feed-declared', page.route, `本页有对应的订阅源 ${id}，但页面没有声明它`);
-      }
-    }
-  }
+  // ---- （t4 已删）Feed 声明 ----
+  // 这里原先有一整块 `feed-declared` 检查：从页面 HTML 里现读 `feed*.xml|json` 声明，
+  // 与调用方给的 `opts.feedSpecs` 注册表双向对账（声明了不存在的订阅源 / 有订阅源却没声明）。
+  // 订阅子系统整体下架之后：页面不再声明任何 Feed（`page-shell.js` 的 `feedTagsHtml` 已删）、
+  // 注册表（`lib/feeds.js`）也不再是构建期的输入，这块检查没有任何数据可喂 ——
+  // 而"每个注册的判定码都必须能被证明会红"是本仓的纪律，所以**删码**（连 `PROBLEM_CODES` 里的
+  // 名字与描述符里的 `feedMatch` / `feedIds` 一起删），不留一段永远不会触发的死检查。
 
   void uuid;
   void summaryRowsByRoute;

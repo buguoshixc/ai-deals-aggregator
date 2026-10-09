@@ -9,8 +9,8 @@
  *   ② **没有篡改时它是静默的吗？** 一份干净的夹具必须得到 0 个问题。
  *      （没有这一条，把验证器写成「永远报错」也能通过 ①。）
  *
- * 与 `feeds-selftest.js` 同一套做法：先把验证器当纯函数在深拷贝上调用，
- * 再断言它报的 code 恰好是我们注入的那一类。
+ * 做法：先把验证器当纯函数在深拷贝上调用，再断言它报的 code 恰好是我们注入的那一类
+ * （牙与断言共用同一支判据，所以「注入没生效」也是一条会红的失败）。
  *
  * 另外三节是注册表层的不变量：门槛函数的分支、slug 表、钉住/别名/排除表的一致性。
  */
@@ -21,7 +21,9 @@ const path = require('path');
 const ROOT = path.join(__dirname, '..', '..');
 const seo = require('../lib/seo');
 const landing = require('../lib/landing');
-const feeds = require('../lib/feeds');
+// 站点常量（SITE_URL / VENDOR_SLUGS / VENDOR_THRESHOLDS）的唯一出处：t2 起从订阅层的
+// `feeds.js` 改指本模块。本自测只用到这三样，订阅层下架与它无关。
+const site = require('../lib/site');
 const audience = require('../lib/audience');
 
 let passed = 0;
@@ -33,7 +35,7 @@ function check(name, ok, detail = '') {
 function section(title) { console.log(`\n${title}`); }
 const clone = value => JSON.parse(JSON.stringify(value));
 
-const SITE = feeds.SITE_URL;
+const SITE = site.SITE_URL;
 const depthOf = route => route.split('/').filter(Boolean).length;
 const prefixOf = route => '../'.repeat(depthOf(route));
 
@@ -41,11 +43,9 @@ const prefixOf = route => '../'.repeat(depthOf(route));
 /* 夹具：一份「干净」的页面集合                                          */
 /* ------------------------------------------------------------------ */
 
-const FEED_SPECS = [
-  { id: 'all', path: 'feed.xml', jsonPath: 'feed.json', title: '全部优惠' },
-  { id: 'category-api', path: 'feed/category-api.xml', jsonPath: 'feed/category-api.json', title: '分类 API' }
-];
-const STATIC_FILES = new Set(['feed/category-api.xml', 'feed/category-api.json', 'feed.xml', 'feed.json', 'logos.css']);
+// t6：`FEED_SPECS` 与 STATIC_FILES 里的 feed 路径随订阅层下架删除 —— 订阅注册表（`feeds.js`）
+// 与全部 feed 产物都不再存在，夹具里继续摆着它们只会制造"看起来还在验订阅"的假象。
+const STATIC_FILES = new Set(['logos.css']);
 
 const DEALS = {
   aaa: { id: 'aaa', type: 'deal', vendor: 'Acme', category: 'API服务', firstSeen: '2026-09-29', claimRequirements: { creditCardRequired: false }, availability: { chinaUsable: true }, benefitType: ['free_api'] },
@@ -86,10 +86,6 @@ function pageHtml(opts) {
 <meta name="description" content="${desc}">
 <meta name="robots" content="${robots}">
 <link rel="canonical" href="${canonical}">
-<link rel="alternate" type="application/rss+xml" title="分类 API" href="${prefix}feed/category-api.xml">
-<link rel="alternate" type="application/feed+json" title="分类 API" href="${prefix}feed/category-api.json">
-<link rel="alternate" type="application/rss+xml" title="全部优惠" href="${prefix}feed.xml">
-<link rel="alternate" type="application/feed+json" title="全部优惠" href="${prefix}feed.json">
 ${ld.map(data => `<script type="application/ld+json">${JSON.stringify(data)}</script>`).join('\n')}
 </head><body>
 ${'<h1>标题</h1>'.repeat(h1)}
@@ -123,7 +119,7 @@ function cleanPages() {
     mk('', { kind: 'home', checkItemListRows: false, checkItemListMembers: false }, {
       title: '首页标题', desc: '首页描述', listUrls: [`${SITE}deal/aaa/`], listCount: 1
     }),
-    mk('category/api/', { kind: 'category', slug: 'api', itemIds: ['aaa', 'bbb'], count: 2, pinned: true, feedMatch: ['category-api'] }, {
+    mk('category/api/', { kind: 'category', slug: 'api', itemIds: ['aaa', 'bbb'], count: 2, pinned: true }, {
       title: '分类页标题', desc: '分类页描述', rows: ['aaa', 'bbb'],
       listUrls: [`${SITE}deal/aaa/`, `${SITE}deal/bbb/`],
       summary: [{ label: '当前条目', value: 2 }],
@@ -158,7 +154,6 @@ const BASE_OPTS = {
   dealsById: new Map(Object.values(DEALS).map(deal => [deal.id, deal])),
   asOf: '2026-09-30',
   vendorKeyOf: deal => String(deal.vendor || ''),
-  feedSpecs: FEED_SPECS,
   staticFiles: STATIC_FILES,
   gate: { skipped: [] }
 };
@@ -370,12 +365,9 @@ section('二、每一条检查码都必须真的会响（逐个定向篡改）')
     pages[1].html = pages[1].html.replace('data-summary-value="2"', 'data-summary-value="7"');
     return run(pages);
   }]);
-  fixtures.push(['feed-declared', () => {
-    const pages = cleanPages();
-    // RSS 与 JSON 指向同一份 Feed：两份都要摘掉，只摘一份时「已声明」仍然成立
-    pages[1].html = pages[1].html.replace(/<link rel="alternate"[^>]*feed\/category-api\.(xml|json)"[^>]*>\n?/g, '');
-    return run(pages);
-  }]);
+  // t6 删除：原 `feed-declared` 夹具（把页面上的 `rel="alternate"` 摘掉 ⇒ 判据报「已声明的订阅源
+  // 不存在」）。T4 已按决策 D2 把这个检查码从 `lib/seo.js` 的 PROBLEM_CODES 里删除 ——
+  // 码与夹具必须同批删，否则下面那条「每个码都有夹具」的自动对账会红（当年就是这么设计的）。
 
   const covered = new Set();
   for (const [code, build] of fixtures) {
@@ -394,7 +386,7 @@ section('二、每一条检查码都必须真的会响（逐个定向篡改）')
 section('三、门槛函数的分支（shouldGenerateLandingPage）');
 
 {
-  const thresholds = feeds.VENDOR_THRESHOLDS;
+  const thresholds = site.VENDOR_THRESHOLDS;
   const gate = (kind, candidate) => landing.shouldGenerateLandingPage(kind, candidate, {
     vendorThresholds: thresholds, categoryMinDeals: landing.CATEGORY_MIN_DEALS
   });
@@ -482,8 +474,8 @@ section('四、注册表与产物的一致性（用真实数据）');
   const renderCore = require('../lib/render-core').load(path.join(ROOT, 'index.html'));
   const vendorKeyOf = deal => renderCore.vendorOf(deal).name;
   const plan = landing.planLandingPages({
-    deals: payload.deals, vendorKeyOf, vendorSlugs: feeds.VENDOR_SLUGS,
-    vendorThresholds: feeds.VENDOR_THRESHOLDS, eventCountOf: () => 0
+    deals: payload.deals, vendorKeyOf, vendorSlugs: site.VENDOR_SLUGS,
+    vendorThresholds: site.VENDOR_THRESHOLDS, eventCountOf: () => 0
   });
 
   check('计划里没有问题（违规在构建期就直接抛错）', plan.problems.length === 0, plan.problems.join('；'));
@@ -497,9 +489,9 @@ section('四、注册表与产物的一致性（用真实数据）');
   // （例如 DeepSeek：只有 api-plans 记录、0 条 deal）本来就是靠 A 空间键（`vendorKey`）拿到资格的。
   const aSpaceNames = new Set(renderCore.vendorKeyNames().map(pair => pair.name));
   check('slug 表：厂商键全部是 A 空间的**规范显示名**（不是采集时的原始字符串）', (() => {
-    const bad = Object.keys(feeds.VENDOR_SLUGS).filter(name => !aSpaceNames.has(name));
+    const bad = Object.keys(site.VENDOR_SLUGS).filter(name => !aSpaceNames.has(name));
     return bad.length === 0;
-  })(), Object.keys(feeds.VENDOR_SLUGS).filter(name => !aSpaceNames.has(name)).join(', '));
+  })(), Object.keys(site.VENDOR_SLUGS).filter(name => !aSpaceNames.has(name)).join(', '));
   // 姊妹断言（队长要求，补上另一半判据）：**A 空间是厂商页身份的唯一来源** ⇒ 一个 provider
   // 只有在 A 空间有名（name 逐字属于 A 空间规范名）时才有 `/vendor/` 路由资格；name 不在 A 空间里的
   // provider 必须 `vendorKey === null`（"没有厂商名 ⇒ 不参与厂商身份空间"）。两个说法同时成立才算对。
@@ -520,9 +512,9 @@ section('四、注册表与产物的一致性（用真实数据）');
       .map(([key, entry]) => `${key}(${entry.name}, vendorKey=${entry.vendorKey})`).join(', ');
   })());
   check('slug 表与分类 slug 表的形状合法且全局唯一',
-    landing.validateSlugTable(feeds.VENDOR_SLUGS, '厂商').length === 0 &&
+    landing.validateSlugTable(site.VENDOR_SLUGS, '厂商').length === 0 &&
     landing.validateSlugTable(landing.loadCategorySlugs(), '分类').length === 0,
-    [...landing.validateSlugTable(feeds.VENDOR_SLUGS, '厂商'), ...landing.validateSlugTable(landing.loadCategorySlugs(), '分类')].join('；'));
+    [...landing.validateSlugTable(site.VENDOR_SLUGS, '厂商'), ...landing.validateSlugTable(landing.loadCategorySlugs(), '分类')].join('；'));
   check('分类 slug 表里没有 categories.js 之外的枚举值',
     Object.keys(landing.loadCategorySlugs()).every(category => require('../lib/categories').CATEGORIES.includes(category)));
   check('每个分类页都登记了 slug 与理由（或进了排除表）', (() => {
@@ -643,8 +635,8 @@ section('六、正文下限**余量**登记（P2 残留 e1：/need/no-card/ 只�
     needs: audience.needsOf(deal), collections: audience.collectionsOf(deal)
   }));
   const plan = landing.planLandingPages({
-    deals: dealsWithDerived, vendorKeyOf, vendorSlugs: feeds.VENDOR_SLUGS,
-    vendorThresholds: feeds.VENDOR_THRESHOLDS, eventCountOf: () => 0
+    deals: dealsWithDerived, vendorKeyOf, vendorSlugs: site.VENDOR_SLUGS,
+    vendorThresholds: site.VENDOR_THRESHOLDS, eventCountOf: () => 0
   });
   const staleRows = rows.filter(row => {
     const spec = plan.pages.find(page => page.route === row.route);
@@ -740,9 +732,14 @@ section('七、入口文案契约（P2 残留 e3：「全部变化 →」而不�
 
   // 会渲染这条入口的源文件（页面壳 + 措辞表）：一个「查看全部」都不许有。
   // 改名的正确做法是改措辞表，而不是在某处手写一个新词。
+  //
+  // t2：这份清单原先还含订阅层的 `feeds.js`（它的 Feed 标题里也会出现入口词）。
+  // 订阅层整体下架后那个文件不再存在 —— 读它会当场 ENOENT，所以直接把这一项摘掉。
+  // **不拿 `scripts/lib/site.js` 顶位**：那个文件只放站点常量与 XML 转义，一个面向读者的
+  // 措辞都没有，把它列进来会变成一条"看起来在守着措辞、其实永远为真"的空登记。
   const wordingSources = [
     'index.html',
-    'scripts/lib/changes.js', 'scripts/lib/plan-changes.js', 'scripts/lib/feeds.js',
+    'scripts/lib/changes.js', 'scripts/lib/plan-changes.js',
     'scripts/lib/plans-hub-page.js', 'scripts/lib/plans-page.js', 'scripts/lib/api-plans-page.js'
   ];
   const offenders = wordingSources.filter(rel => fs.readFileSync(path.join(ROOT, rel), 'utf8').includes(FORBIDDEN));
@@ -795,71 +792,34 @@ section('七、入口文案契约（P2 残留 e3：「全部变化 →」而不�
 }
 
 /* ------------------------------------------------------------------ */
-section('八、日志不可用时的**如实登记**（p2-honesty-single-source-v1 / 缺口 A）');
+section('八、页面说明的**机器无关性**（p2-honesty-single-source-v1 / 缺口 A 的另一半）');
 
 {
-  // 缺口 A 的规则本体在 `lib/changes.js`（纯函数）——这里直接对它开牙，不经过构建。
-  // 合成清单刻意用 `log-a/b/c` 这种占位 id：本自测不依赖任何真实日志文件名。
+  // 规则本体在 `lib/changes.js`（纯函数）——这里直接对它开牙，不经过构建。
+  //
+  // ⚠️ t6 改写：这一节原先钉的是 **Dataset Manifest 的如实登记**（`logAvailabilityOf()` +
+  // `logDatasetHonestyProblems()` / `logDatasetDiskHonestyProblems()` / `toleratedLogComplaints()`）。
+  // 数据出口子系统下架后那四个 Manifest 专用函数连同公开 JSON 这个面一起消失（见 `changes.js` 的
+  // 删除说明），于是这一节改成钉**同一个缺口里唯一还活着的那个不变量**：
+  // 页面说明里不许嵌宿主绝对路径（两条后果：跨机器不可逐字节复现；说明是公开面，等于把构建机的
+  // 目录结构发布出去）。判据 `machineDependenceProblems()` 的新挂载点是 `build-local.js` 的全页
+  // HTML 扫描（页面文本含「没有拿到」时必须为空）—— 而判据本身是纯函数，所以这里能不开浏览器开牙。
+  //
+  // 为什么这不算"降级"：旧的四条断言判的是"一份公开 JSON 里怎么如实写不可用"，那个面已经不存在了；
+  // 新的一条判的是**仍然存在**的读者面（页面措辞），而且方向更硬 —— 内容一旦带上宿主路径，
+  // 构建当场红，不存在"写错但没人看见"的空间。
   const changesLib = require('../lib/changes');
-  const availability = changesLib.logAvailabilityOf([
-    { id: 'log-a', file: 'a.json', label: 'A 日志', load: { missing: true } },
-    { id: 'log-b', file: 'b.json', label: 'B 日志', load: { broken: '坏掉的 JSON' } },
-    { id: 'log-c', file: 'c.json', label: 'C 日志', load: {} }
-  ]);
 
-  check('登记表：缺失 / 损坏 ⇒ unavailable（原因如实带出来）；正常 ⇒ ok',
-    availability[0].availability === 'unavailable' && availability[0].reason === '文件缺失'
-    && availability[1].availability === 'unavailable' && availability[1].reason === '坏掉的 JSON'
-    && availability[2].availability === 'ok' && availability[2].reason === null,
-    availability.map(row => `${row.id}=${row.availability}(${row.reason || '-'})`).join(' · '));
-
-  const mixed = {
-    datasets: [
-      { id: 'log-a', updatedAt: null, updatedAtShape: null, availability: 'unavailable', updatedAtNote: '', count: 0 },
-      { id: 'log-b', updatedAt: '2026-01-01', updatedAtShape: 'date', count: 0 },
-      { id: 'log-c', updatedAt: '2026-01-02', updatedAtShape: 'date', count: 0 },
-      { id: 'other', updatedAt: '2026-01-03', updatedAtShape: 'date', count: 0 }
-    ]
-  };
-  const mixedProblems = changesLib.logDatasetHonestyProblems(mixed, availability);
-  check('【牙】源日志不可用却没登记 ⇒ 红；拿别的日期顶替 ⇒ 红；没给「没有拿到」说明 ⇒ 红',
-    mixedProblems.some(problem => problem.includes('log-b') && problem.includes('必须显式登记'))
-    && mixedProblems.some(problem => problem.includes('log-b') && problem.includes('不许用别的日期顶上'))
-    && mixedProblems.some(problem => problem.includes('log-a') && problem.includes('updatedAtNote')),
-    mixedProblems.slice(0, 3).join('；'));
-
-  check('【反证】源日志本次可用：登记为 unavailable 或留空 updatedAt ⇒ 红（不许反过来放水）',
-    (() => {
-      const forged = {
-        datasets: [{ id: 'log-c', updatedAt: null, updatedAtShape: null, availability: 'unavailable', updatedAtNote: '没有拿到' }]
-      };
-      const problems = changesLib.logDatasetHonestyProblems(forged, availability);
-      return problems.some(problem => problem.includes('不许登记为 unavailable'))
-        && problems.some(problem => problem.includes('不许留空'));
-    })());
-
-  check('【盘侧】产物文件没有时间却没登记 ⇒ 红；登记了、文件却带着时间 ⇒ 红',
-    changesLib.logDatasetDiskHonestyProblems({ datasets: [{ id: 'x', updatedAt: '2026-01-01', updatedAtShape: 'date' }] }, { x: null })
-      .some(problem => problem.includes('必须登记为 availability: unavailable'))
-    && changesLib.logDatasetDiskHonestyProblems(
-      { datasets: [{ id: 'y', updatedAt: null, updatedAtShape: null, availability: 'unavailable', updatedAtNote: '没有拿到' }] },
-      { y: '2026-01-01' }).some(problem => problem.includes('登记与产物不一致')));
-
-  check('【正例】如实登记的那一份三条断言都不响；tolerated 只放过它的那两条形状抱怨（一条都不多）',
-    (() => {
-      const good = {
-        datasets: [{
-          id: 'log-a', updatedAt: null, updatedAtShape: null, availability: 'unavailable',
-          updatedAtNote: '本次构建没有拿到 a.json —— 这不表示「没有变化」。'
-        }]
-      };
-      const tolerated = changesLib.toleratedLogComplaints(good);
-      return changesLib.logDatasetHonestyProblems(good, [availability[0]]).length === 0
-        && changesLib.logDatasetDiskHonestyProblems(good, { 'log-a': null }).length === 0
-        && tolerated.size === 2
-        && tolerated.has('dataset log-a: 缺少 updatedAt')
-        && changesLib.toleratedLogComplaints({ datasets: [{ id: 'log-c', updatedAt: '2026-01-02', updatedAtShape: 'date' }] }).size === 0;
-    })());
+  const winText = '本次构建没有拿到日志：D:\\Code\\AI Page\\scripts\\data\\a.json（这不表示「没有变化」）';
+  check('【牙】说明里嵌了 Windows 盘符绝对路径 ⇒ 必须报出「Windows 盘符绝对路径」形状',
+    changesLib.machineDependenceProblems(winText).includes('Windows 盘符绝对路径'),
+    changesLib.machineDependenceProblems(winText).join(' / ') || '（没有报出任何形状）');
+  check('【牙】POSIX 绝对路径同样报出（换一台机器 / 另一个运行器构建就会分叉的那一半）',
+    changesLib.machineDependenceProblems('没有拿到 /home/runner/work/repo/scripts/data/b.json').includes('POSIX 绝对路径'));
+  check('【反向】纯中文措辞（不含任何路径）⇒ 一条形状都不报（判据不是"凡是说明就报红"）',
+    changesLib.machineDependenceProblems('本次构建没有拿到套餐变更日志 —— 这不表示「没有变化」。').length === 0);
+  check('【边界】空文本 / null ⇒ 不报（缺省不是违规；`null` 不许变成字符串 "null" 混进来）',
+    changesLib.machineDependenceProblems('').length === 0 && changesLib.machineDependenceProblems(null).length === 0);
 }
 
 /* ------------------------------------------------------------------ */

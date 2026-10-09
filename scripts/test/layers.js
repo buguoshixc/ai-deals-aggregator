@@ -42,10 +42,16 @@
  *
  * 层的顺序即执行顺序；层内按此顺序跑。分类依据（本轮实测）：
  *   · L3 成员都在源码里真的读 `dist/`（`zh`/`planshub`/`models`/`vendor`/`archive`/
- *     `data-docs`/`analytics` 自测读产物，`verify:seo` 从 dist 解析，
- *     `check:feeds:reproducible` 构建两次并比对产物目录）；
+ *     `analytics` 自测读产物，`verify:seo` 从 dist 解析）；
  *   · L2 里的 `check:*` 是**仓库内部派生文件**的可复现门禁（重建后与仓库里那份逐字节比），
  *     不碰 dist —— 所以它们能、也确实跑在门禁的构建步骤**之前**。
+ *
+ * t2：原 L3 里还有 `selftest:data-docs`（读 `/docs/data/` 与 `/data/index.json`）与
+ * `check:feeds:reproducible`（构建两次比对 Feed 产物），L2 里有 `selftest:feeds`。
+ * 这三条随「订阅层 + 数据出口整族下架」一起删 —— 它们的被测对象在产物里已经不存在，
+ * 留着只会得到「找不到文件」这种离原因很远的红。删 script 与删文件**必须同批**：
+ * `check-ci-consistency.js` 的反向登记断言（磁盘上每个 `*-selftest.js` 都要能被某条
+ * npm script 跑到）会抓半删状态。
  */
 const LAYERS = {
   L1: {
@@ -70,7 +76,6 @@ const LAYERS = {
       'selftest:provenance',
       'selftest:history',
       'selftest:changes',
-      'selftest:feeds',
       'selftest:health',
       'selftest:plans',
       'selftest:api-plans',
@@ -99,10 +104,8 @@ const LAYERS = {
       'selftest:models',
       'selftest:vendor',
       'selftest:archive',
-      'selftest:data-docs',
       'selftest:analytics',
-      'verify:seo',
-      'check:feeds:reproducible'
+      'verify:seo'
     ]
   },
   L4: {

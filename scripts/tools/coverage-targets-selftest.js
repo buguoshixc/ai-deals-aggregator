@@ -35,7 +35,6 @@ const providers = require('../lib/providers');
 const registry = require('../lib/model-registry');
 const freshnessLib = require('../lib/model-freshness');
 const { load: loadRenderCore } = require('../lib/render-core');
-const dataDocs = require('../lib/data-docs');
 
 const ROOT = path.join(__dirname, '..', '..');
 const REPORT = path.join(ROOT, 'scripts', 'tools', 'coverage-report.js');
@@ -138,13 +137,40 @@ check('真实盘面：MISSING 的格子必须真的没有记录、且没有被�
   realDerived.rows.filter(row => row.state === ct.STATES.MISSING)
     .every(row => row.present === 0 && !row.ruling));
 
-// 意图层**不发布**：它不是公开数据集，也不进 Feed / Manifest / Sitemap 的数据集清单
-const docsText = JSON.stringify(dataDocs.PUBLIC_DATASETS);
-check('coverage-targets 没有被登记成公开数据集（PUBLIC_DATASETS）', !/coverage-targets/.test(docsText));
-const manifestUrls = typeof dataDocs.datasetUrls === 'function' ? dataDocs.datasetUrls() : [];
-check('coverage-targets 不在 Manifest 的数据集地址里', !manifestUrls.some(url => /coverage-targets/.test(url)));
-const feedsSource = fs.readFileSync(path.join(ROOT, 'scripts', 'lib', 'feeds.js'), 'utf8');
-check('coverage-targets 没有进 Feed 层（lib/feeds.js 里不出现）', !/coverage-targets/.test(feedsSource));
+// 意图层**不发布**：它不是公开数据集，也不进站点常量层，更不许出现在产物里。
+//
+// t2 改写（原两条随 `lib/data-docs.js` 的注册表一起下架）：原先这里问的是
+// `PUBLIC_DATASETS` 里有没有它、`datasetUrls()` 里有没有它 —— 数据出口整族删除后
+// 那个注册表不存在了。但这条纪律不能跟着消失，所以换成一条**更强的替代**：
+// 直接扫产物，断言没有任何路径名或文件内容提到 `coverage-targets`。
+// 为什么更强：「没被登记进某个注册表」只能证明它没被登记；「产物里一处都没有」
+// 才是真的没被发布 —— 而后者正是本层想守住的事实。
+const siteSource = fs.readFileSync(path.join(ROOT, 'scripts', 'lib', 'site.js'), 'utf8');
+check('coverage-targets 没有进站点常量层（lib/site.js 里不出现）', !/coverage-targets/.test(siteSource));
+
+// 产物扫描（默认 `dist/`，可用 `--dir=` 指到别的产物副本）。
+// ⚠️ 产物不存在就**如实跳过**并打印一行说明 —— 这条读取是条件式的，所以本自测仍能在
+// 没有 dist 的干净检出里跑（`scripts/test/layers.js` 把本自测归类为 L2 的依据之一）。
+const distArg = process.argv.find(a => a.startsWith('--dir='));
+const DIST = path.resolve(ROOT, distArg ? distArg.slice('--dir='.length) : 'dist');
+if (!fs.existsSync(DIST)) {
+  console.log(`  ⚠ 跳过「产物里没有 coverage-targets」扫描：${path.relative(ROOT, DIST) || '.'} 不存在`
+    + '（干净检出 / 未构建）。有产物时这一条会生效，本次不计入通过项。');
+} else {
+  const mentions = [];
+  const walk = dir => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const abs = path.join(dir, entry.name);
+      const rel = path.relative(DIST, abs).split(path.sep).join('/');
+      if (/coverage-targets/.test(rel)) mentions.push(`${rel}（路径名）`);
+      if (entry.isDirectory()) walk(abs);
+      else if (fs.readFileSync(abs, 'utf8').includes('coverage-targets')) mentions.push(`${rel}（文件内容）`);
+    }
+  };
+  walk(DIST);
+  check('产物里没有任何路径或文件内容提到 coverage-targets（意图层不发布）',
+    mentions.length === 0, mentions.slice(0, 3).join('；'));
+}
 const targetsLibSource = fs.readFileSync(path.join(ROOT, 'scripts', 'lib', 'coverage-targets.js'), 'utf8');
 check('判据层是纯函数：不读墙上时钟、不联网、不写盘',
   !/Date\.now|new Date\(/.test(targetsLibSource) && !/https?:\/\//.test(targetsLibSource.replace(/^[\s\S]*?\*\//, ''))

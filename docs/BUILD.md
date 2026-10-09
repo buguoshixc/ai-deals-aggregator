@@ -56,7 +56,7 @@ npm run check:reproducible            # deals.json 侧
 npm run check:plans:reproducible      # plans.json
 npm run check:api-plans:reproducible  # api-plans.json
 npm run check:models:reproducible     # models.json
-npm run check:feeds:reproducible      # 构建两次逐字节比对 Feed
+# 注：`check:feeds:reproducible`（构建两次比对 Feed）随订阅层整族下架删除 —— 没有 Feed 产物了。
 ```
 
 ---

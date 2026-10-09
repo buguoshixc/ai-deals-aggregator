@@ -4,7 +4,14 @@
  * ## 这一层做什么、不做什么
  *
  * 现有 `/vendor/<slug>/` 是「优惠聚合页」；v3.0 把它升级成**资料库页面**：
- * 同一个 URL 上同时给出优惠、Coding 套餐、API 计费、模型归属、最近变化与订阅。
+ * 同一个 URL 上同时给出优惠、Coding 套餐、API 计费、模型归属与最近变化。
+ *
+ * ⚠️ t3（去数据暴露）：**「订阅这一家」那一节整节删除**。它把本页自己的 Feed 与全站订阅中心
+ * （`/feeds/`、RSS / JSON Feed）摆在读者面前，而本轮的目标正是「站点不再面向读者暴露订阅与
+ * 数据文件」。删的是**整节** —— `SECTION_IDS.feeds` + 两种分支（有 Feed / 没有 Feed）+ 渲染块，
+ * 不是让它渲染成空串：说明清单（notes-manifest-v1）按「登记了几条」逐页对账，返回空串会留下
+ * 幽灵声明（清单声明 N 条 / DOM N−1 条），构建期 `noteManifestSelfCheck()` 与真浏览器 §22c ⑨ 同时红。
+ * 连带影响：`VENDOR_NOTE_COUNT` 6 → 5（见该常量处的说明）。
  *
  * **全部靠 join，不 duplicate**：
  *   · 优惠 ← `deals.json`（判据是 `landing.itemsOf(spec, …)` 的既有归属，页面表格已经在列）；
@@ -12,8 +19,7 @@
  *   · API 计费 ← `api-plans.json` 的 `provider`（`pricing.unit` / `channel` / `models[]` 全部来自记录）；
  *   · 模型 ← `models.json` 的 `developer`/`owner` 逐字相等，或关系层 `model-registry-links.json`
  *     把模型映射到这家厂商的 API 记录（两跳全显式）；
- *   · 变化 ← 三份既有变化日志（deal / plan / api-plan），一行都不重新判据；
- *   · 订阅 ← `lib/feeds.js` 的注册表（本页自己的 Feed）。
+ *   · 变化 ← 三份既有变化日志（deal / plan / api-plan），一行都不重新判据。
  * 没有任何新的 provider 数据文件，也没有"厂商数据"的第二真值。
  *
  * ## 三条纪律（都有断言）
@@ -53,8 +59,11 @@ const SECTION_IDS = {
   plans: 'vendor-plans',
   api: 'vendor-api',
   models: 'vendor-models',
-  changes: 'vendor-changes',
-  feeds: 'vendor-feeds'
+  changes: 'vendor-changes'
+  // t3：删掉 `feeds: 'vendor-feeds'`。它在两处被消费 —— 渲染块（那一节整节删除）与
+  // `assertVendorPageHonesty()` 的「每个区块都在」循环（自己跟着 `SECTION_IDS` 收敛）。
+  // 失效方式：只删渲染块、留着这个 id ⇒ 断言当场红（「缺少资料区块 feeds」）（这是要的：
+  // 它保证"删了区块"必须是一次同时改两处的决定，而不是渲染层悄悄少写一节）。
 };
 
 /* ------------------------------------------------------------------ */
@@ -102,8 +111,10 @@ function latestSeenOf(records) {
  *   `modelLinks`         `model-registry-links.json` 的 links
  *   `planHistoryStore` / `apiPlanHistoryStore`  两份变化日志（可缺）
  *   `providerTable`      providers.json 的归一表（取 provider key / 官方入口）
- *   `feeds`              本页自己的订阅源（`feeds.feedsForPage()` 的产物，可缺）
  *   `officialUrlOf(name)` 可选的「厂商官方入口」解析（缺省时用记录里的官方地址）
+ *
+ * ⚠️ t3 起**不再接受 `feeds`**：厂商页的订阅节整节删除（见文件头）。传进来的 `ctx.feeds`
+ * 现在被静默忽略 —— 不是"可缺"，而是"这一层不再有订阅这个概念"。
  */
 function vendorViewOf(spec, ctx = {}) {
   const vendorName = String((spec && spec.key) || '');
@@ -192,7 +203,9 @@ function vendorViewOf(spec, ctx = {}) {
   const apiEvents = apiStore && Array.isArray(apiStore.events)
     ? apiStore.events.filter(event => event && apiPlanIds.has(event.planId)) : [];
 
-  const feed = Array.isArray(ctx.feeds) && ctx.feeds.length ? ctx.feeds[0] : null;
+  // t3：这里曾有 `const feed = ctx.feeds[0] || null;`（本页自己的 Feed）。订阅节整节删除之后
+  // 它没有任何消费者 —— 留着就会成为"视图里有一个永远没人读的字段"，下一个改厂商页的人会
+  // 以为订阅还在。 删掉它同时让调用方少传一个参数（`build-local.js` 传 `feeds:` 的那一行也删）。
 
   return {
     vendorName,
@@ -223,8 +236,7 @@ function vendorViewOf(spec, ctx = {}) {
     planEvents,
     apiEvents,
     planAvailability: planStore ? 'ok' : 'unavailable',
-    apiAvailability: apiStore ? 'ok' : 'unavailable',
-    feed
+    apiAvailability: apiStore ? 'ok' : 'unavailable'
   };
 }
 
@@ -282,8 +294,12 @@ function apiEventLine(event) {
 // T5 删除（census A · 半句）：删「（developer/owner 逐字相等，或关系层显式映射到这一家的计费记录；不按名称相似度归并）」—— **归一实现自证**。计数「Model Registry 归属模型 N 个」**保留**（删的只是括号里的实现说明）。
 // [T5-vendor-354-changes-paren]
 // T5 删除（census A · 半句）：删「（同一份事件、同一套措辞，这一层只搬运）」—— **实现自证**（我们这一层只是搬运）。两支的标题与列表保留。
-// [T5-vendor-377-feed-threshold-paren]
-// T5 删除（census A · 半句）：删「（订阅源按「当前有效优惠 ≥ 门槛」生成）」—— **生成门槛自证**。空态事实与「全站订阅见 订阅中心」保留。⚠️ 元素保留（`.vsnote.vnone`，16 页 kind=half⇒ `main-vsnote` 元素数恒为 6 == floor 6，与 captain 的真浏览器实测一致）。
+// [T5-vendor-377-feed-threshold-paren] —— 该半句连同**整个订阅节**在 t3 一起下架：
+// 节本身（`.vsnote` 两种分支 + `<div class="vsec" id="vendor-feeds">`）已删除，
+// 所以「生成门槛自证」那句也随之消失，不需要单独处理。
+// ⚠️ 与它一起变的还有一个数字：厂商页**无条件**产出的 `main-vsnote` 从 6 条变成 5 条，
+// `VENDOR_NOTE_COUNT` 从 6 改成 5（`build-local.js` 的说明台账 floors 读的就是它）。
+// 不同步改的下场：16 页 kind=half 的 `main-vsnote` 元素数 5 < floor 6 ⇒ §22c ⑨ 的结构下限当场红。
 function renderVendorKnowledgeSections(spec, ctx = {}) {
   if (!spec || spec.kind !== 'vendor') return '';
   const view = ctx.view || vendorViewOf(spec, ctx);
@@ -293,10 +309,11 @@ function renderVendorKnowledgeSections(spec, ctx = {}) {
    * 说明意图（notes-manifest-v1）：本节的每一条 `.vsnote` 都走「先登记、后输出」。
    *
    * `ctx.note` 由构建期注入（`build-local.js` 的目录页循环把 route 绑成一个登记入口），
-   * 登记出的清单落进 `dist/_notes.ndjson`，构建期与 §22c 各自回读 HTML / DOM 对账。
+   * 登记出的清单落在**产物目录的兄弟文件**（`<产物目录>.notes.ndjson`；t3 起不再进 dist/，
+   * 见 `build-local.js` 的 `NOTES_MANIFEST_PATH`），构建期与 §22c 各自回读 HTML / DOM 对账。
    * 没有注入时（离线自测、报告工具直接调用本模块）退化成恒等函数：**不登记也不拦**，
    * 那种调用路径不产出页面；一旦构建期漏注入，厂商页的 `main-vsnote` 结构下限
-   * （6 条）会当场把它抓出来，不会静默。
+   * （5 条，t3 起；原为 6 条）会当场把它抓出来，不会静默。
    */
   const note = typeof ctx.note === 'function' ? ctx.note : (decl, html) => html;
   const DECLARED_BY = 'lib/vendor-page.js:renderVendorKnowledgeSections';
@@ -375,17 +392,13 @@ ${listOrEmpty(planChangeLines.map(planEventLine), '变化日志里没有与这�
 ${listOrEmpty(apiChangeLines.map(apiEventLine), '变化日志里没有与这家厂商的计费记录相关的事件。')}
       </ul>`}`);
 
-  // ⚠️ t13 跨范围修复（阻断级）：`ctx.feeds` 是 `feeds.feedsForPage()` 的产物 —— 一个
-  // **feed bundle 数组**（`{spec, items, …}`），不是 spec 数组。此前这里直接读 `view.feed.path`，
-  // 于是接了真订阅源的厂商页会写出 `href="undefined"`（SEO 的 `internal-link-exists` 当场红，
-  // 而只传 `feeds: []` 的自测看不见这个形状）。两种形状都接受，取 spec 再读 path。
-  const feedSpec = view.feed ? (view.feed.spec || view.feed) : null;
-  const feedsBlock = feedSpec
-    ? vsnote('vendor-feed', `<p class="vsnote">订阅这一家：<a href="${escapeHtml(`${prefix}${feedSpec.path}`)}">RSS</a>`
-      + ` · <a href="${escapeHtml(`${prefix}${feedSpec.jsonPath || feedSpec.path}`)}">JSON Feed</a>`
-      + `${feedSpec.title ? `（${escapeHtml(feedSpec.title)}）` : ''}</p>`)
-    : vsnote('vendor-feed-missing', `<p class="vsnote vnone">这家厂商当前没有独立的订阅源；`
-      + `全站订阅见 <a href="${escapeHtml(`${prefix}feeds/`)}">订阅中心</a>。</p>`, true);
+  // ⚠️ t3：这里曾有「订阅这一家」的两种分支（`vendor-feed` / `vendor-feed-missing`）。
+  // **两支一起删**（整节下架），不是二选一地留一支 —— 理由有两条：
+  //   ① 读者面：本轮的目标是站点不再面向读者暴露订阅与数据文件，而这节正是厂商页上唯一的
+  //      `/feeds/` 入口（它同时是 `/feeds/` 页面在整站里**最后**的入链之一）；
+  //   ② 说明清单：两条分支各自 `vsnote()` 登记一条，任何一条被改成"渲染空串"都会留下
+  //      幽灵声明（清单 N 条 / DOM N−1 条），构建期 `noteManifestSelfCheck()` 与 §22c ⑨ 同时红。
+  // 连带：`VENDOR_NOTE_COUNT` 6 → 5；`view.feed` 字段与 `ctx.feeds` 参数一起消失。
 
   return `      <section class="vknow" id="${KNOWLEDGE_WRAPPER_ID}" aria-labelledby="vendor-knowledge-h">
         <h2 class="vh2" id="vendor-knowledge-h">${escapeHtml(view.vendorName)} 的资料（来自已有数据关系）</h2>
@@ -409,10 +422,6 @@ ${modelsBlock}
         <div class="vsec" id="${SECTION_IDS.changes}">
           <h3 class="vh3">最近变化（套餐 / API 计费）</h3>
 ${changesBlock}
-        </div>
-        <div class="vsec" id="${SECTION_IDS.feeds}">
-          <h3 class="vh3">订阅</h3>
-${feedsBlock}
         </div>
       </section>
 `;
@@ -596,14 +605,19 @@ const VENDOR_KNOWLEDGE_CSS = `  /* v3.0 Stage E：厂商统一资料页的追加
 `;
 
 /**
- * 厂商资料页**无条件**产出的说明条数（`.vsnote`）—— 六节各一条：
- * 官方入口 · 数据更新时间 · API 计数 · 模型计数 · 变化来源 · 订阅。
+ * 厂商资料页**无条件**产出的说明条数（`.vsnote`）—— 五节各一条：
+ * 官方入口 · 数据更新时间 · API 计数 · 模型计数 · 变化来源。
+ *
+ * t3 起是 **5**（原为 6）：「订阅这一家」那一节整节删除（见文件头与 `SECTION_IDS` 处的说明）。
+ * 这个数字是 `build-local.js` 里说明台账 floors 的**唯一输入**（`'main-vsnote'` 那一项），
+ * 16 页 kind=half 的厂商页元素数从 6 变 5，不同步改 ⇒ §22c ⑨ 的结构下限当场红。
+ * 失效方式（另一个方向）：数值改小了而节没删 ⇒ 台账下限低于实际，删掉一整节也不会有东西红。
  *
  * 判据在 `notes-manifest-v1`（`build-local.js` 的说明意图清单）：它是厂商页族的
  * **结构下限**（整节说明连同它的登记一起被删 ⇒ 红），而「每条是哪一条」由各自的
  * `vsnote()` 构造点登记。另有两支 `vnone` 形态（日志不可用时）是条件产出的，不计入下限。
  */
-const VENDOR_NOTE_COUNT = 6;
+const VENDOR_NOTE_COUNT = 5;
 
 /**
  * 渲染结果 + 需要的样式（接线方一次拿全，避免"忘了加 CSS"这种看不见的缺陷）。

@@ -1,7 +1,7 @@
 {
-  "_note": "厂商规范显示名 → URL 里的 slug（订阅 /feed/vendor/<slug>.* 与落地页 /vendor/<slug>/ 共用同一个）。人工维护，理由见 docs/SCHEMA-v1.7.md §3：显示名不可控（同一个厂商出现过多种写法）、哈希不可读、自动音译会随库变化 —— 只有人工表能同时满足「可读」与「厂商改名后 URL 不变」。",
+  "_note": "厂商规范显示名 → URL 里的 slug（用于落地页 /vendor/<slug>/）。⚠️ 它当年还与厂商订阅 /feed/vendor/<slug>.* 共用同一个 slug —— 那套订阅已在「去数据暴露」里整体下架、产物里不再有 /feed/**，所以今天 slug 只服务落地页路由。人工维护，理由见 docs/SCHEMA-v1.7.md §3：显示名不可控（同一个厂商出现过多种写法）、哈希不可读、自动音译会随库变化 —— 只有人工表能同时满足「可读」与「厂商改名后 URL 不变」。",
   "_keying": "键是 **规范化之后的厂商显示名**（index.html 的 RENDER-CORE 里 vendorOf() 的 name，例如「火山引擎（字节跳动）」规范化为「火山引擎」）。v1.6 之前键的是原始字符串，同一个公司会因此分裂成两行 —— v1.7 统一为规范名，slug 值一个未改。",
-  "_rule": "slug 必须匹配 ^[a-z0-9][a-z0-9-]*$，全局唯一。够门槛（当前有效优惠 >= 2 条，或历史变更事件 >= 3 条）的厂商必须在这里有一行，否则 selftest:feeds / selftest:seo 会红并给出建议值。改名必须换 slug 时，在 scripts/data/landing-aliases.json 登记旧路由 → 新路由，构建会自动产出旧 URL 的 noindex 别名页。",
+  "_rule": "slug 必须匹配 ^[a-z0-9][a-z0-9-]*$，全局唯一。够门槛（当前有效优惠 >= 2 条，或历史变更事件 >= 3 条）的厂商必须在这里有一行，否则 selftest:seo 会红并给出建议值。改名必须换 slug 时，在 scripts/data/landing-aliases.json 登记旧路由 → 新路由，构建会自动产出旧 URL 的 noindex 别名页。",
   "_rule_v3_stage_e": "v3.0 Stage E（D13，队长 2026-10-01）：本表是 **/vendor/<slug>/ 路由 slug 的唯一权威**。Stage E 起厂商页的候选集合扩大到「有优惠的 A 空间厂商名 ∪ providers.json 里**在 A 空间有厂商名（vendorKey !== null）**且有非优惠资料（Coding 套餐 / API 记录 / 模型归属）的 provider」—— 后者以前根本进不了这张表，于是它们的 slug 只能从 providers.json 的 slug 字段**隐式兜底**（landing.js 的 `vendorSlugs[name] || providerEntry.slug`）。那等于把已发布的 URL 空间降级成「能跑就行」：所以这 10 家**逐个显式登记**（值逐字等于 providers.json 里同名条目的 slug；两边一致性由 providers.validateSlugAgreement 与 selftest:vendor 的 assertVendorSlugDeclared 双重把守）。补表不新增、不改名任何路由 —— 它只是把隐式来源变成显式登记。**vendorKey === null 的 4 家（Trae / Qoder CN / 腾讯 CodeBuddy / Qoder International）不登记**：它们没有 A 空间厂商名，按 R5 不建 /vendor/ 路由（planLandingPages 会记进 skipped(reason=no-vendor-identity)）。",
   "百度智能云": "baidu-ai-cloud",
   "智谱AI": "zhipu",

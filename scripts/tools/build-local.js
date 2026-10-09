@@ -29,7 +29,7 @@
 const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
-const { render: renderOgImage, renderIcon, selfCheck: selfCheckOgImage, selfCheckIcon } = require('../lib/og-image');
+const { render: renderOgImage, selfCheck: selfCheckOgImage } = require('../lib/og-image');
 const { load: loadLogos, write: writeLogos } = require('../lib/logos');
 const { load: loadRenderCore } = require('../lib/render-core');
 const { attach: attachZh, summarize: summarizeZh } = require('../lib/zh');
@@ -38,9 +38,14 @@ const audience = require('../lib/audience');
 const provenance = require('../lib/provenance');
 const history = require('../lib/history');
 const changes = require('../lib/changes');
-const feeds = require('../lib/feeds');
+// t4：订阅层（`lib/feeds.js`）从本文件**彻底摘掉**了 —— 注册表、Feed 落盘、/feeds/ 页面、
+// 订阅发现标签、订阅自检全部随订阅子系统下架一起删除。文件本身还在（`verify-site.js` 的
+// 订阅专属检查暂时还 require 它，归后续任务逐块删除），但构建期不再有任何 `feeds.*` 调用。
+// 失效方式（历史教训，留作说明）：只删 require 不删调用点 ⇒ 构建启动即 ReferenceError；
+// 只删调用点不删 require ⇒ 一个"看起来还在用"的死依赖（本文件曾经就有几十处）。
+const site = require('../lib/site');
 const landing = require('../lib/landing');
-// v3.0 Stage E：厂商统一资料页（六个资料区块 + 四条诚实性断言）。
+// v3.0 Stage E：厂商统一资料页（五个资料区块 + 四条诚实性断言；t3 删掉「订阅」一节）。
 const vendorPage = require('../lib/vendor-page');
 const seo = require('../lib/seo');
 const secretScan = require('../lib/secret-scan');
@@ -72,9 +77,11 @@ const modelFreshness = require('../lib/model-freshness');
 // v3.0 Stage F：历史档案（`/archive/`）。归档层是**派生视图**：三份日志的
 // baseline + events + absence（+ ended 的墓碑 label）→ 结束/恢复条目，不落新真值文件。
 const archiveLib = require('../lib/archive');
-// v3.0 Stage G：数据出口（`/docs/data/` + `/data/index.json` Manifest）。
-// 文档与 Manifest **同源对账**：endpoint 必须真实存在、schemaVersion / count / updatedAt 逐字段一致。
-const dataDocs = require('../lib/data-docs');
+// t4：数据出口子系统（`/docs/data/` + `/data/index.json` Manifest）整体下架之后，
+// 那条「产物里每个 *.json 都必须被某个注册表认领」的闭环换成更窄更硬的一版：
+// **产物里不许有数据文件**，只允许一份明确定义的例外（首页应用自己的数据资源）。
+// 唯一注册表在 `lib/published-assets.js`（逐路径 + 理由，不许通配）。
+const publishedAssets = require('../lib/published-assets');
 // v3.0：页面类型声明表 —— 路由 → kind / 正文下限 / ItemList 要求 / sitemap priority 的唯一出处。
 // 构建期与独立门禁（tools/seo-verify.js）都读它，但**各自从 dist 解析**（执行路径不合并）。
 const pageKinds = require('../lib/page-kinds');
@@ -86,7 +93,8 @@ const shell = require('../lib/page-shell');
 const planChanges = require('../lib/plan-changes');
 const providers = require('../lib/providers');
 // v2.4：优惠 ↔ 套餐关系层。真值在 scripts/data/deal-plan-links.json，
-// 这里只读、只校验、只派生（注入 dist/deals.json + 发布 dist/deal-plan-links.json）。
+// 这里只读、只校验、只派生（注入 dist/assets/data/offers.json）。t4 起**不再发布**
+// dist/deal-plan-links.json —— 那份发布副本随本轮数据文件下架一起删除。
 const dealPlanLinks = require('../lib/deal-plan-links');
 // private-analytics-v1：私有站点分析（Cloudflare Web Analytics）。
 // 定义只有一处 —— `lib/analytics.js` 的 ANALYTICS-GUARD 区块就是浏览器里跑的那段源码；
@@ -178,31 +186,87 @@ function assertNoDuplicateScriptKeys() {
 assertNoDuplicateScriptKeys();
 
 /**
- * 页面级说明意图清单的产物文件名。
+ * 页面级说明意图清单的**文件名口径**（`_notes.ndjson`）。
  *
- * 为什么是 `.ndjson` 而不是 `.json`：产物里每个 `*.json` 都必须被某个注册表认领
- * （`lib/data-docs.js` §10.7 方向 2 的 fail-closed 判据），而本轮 in-scope 路径不含那个注册表。
- * 完整论证见下面「页面级说明的构建期意图清单」一节。
+ * 为什么是 `.ndjson` 而不是 `.json`：当年的判据是「产物里每个 `*.json` 都必须被某个注册表认领」
+ * （那条判据原在 `lib/data-docs.js`，**已随数据出口子系统整体下架**；今天对应这条纪律的是
+ * `lib/published-assets.js` 的「产物里不许有数据文件」）。完整论证见下面
+ * 「页面级说明的构建期意图清单」一节。
+ *
+ * ⚠️ t3 起它**不再进产物目录**（曾经的路径是 `dist/_notes.ndjson`）：它是构建过程的
+ * **意图侧快照**，不是上线内容 —— 留在产物里，等于给任何以产物目录为根的预览服务
+ * 多送一份「构建期维护口径」的可下载文件。落盘位置见下面的 `NOTES_MANIFEST_PATH`。
  */
 const NOTES_MANIFEST_FILE = '_notes.ndjson';
 
 /**
- * 原样拷贝到产物根的源码文件。
+ * 说明意图清单的**实际落盘位置**：产物目录的**兄弟文件**。
  *
- * v2.1：`plans.json` 从这一版起**发布**（此前它只是仓库里的输入数据）。
- * 为什么现在才发：页面（`/plans/coding/`）在这一版才存在；先前发布一份没人读的数据文件，
- * 只会让「这个站到底发布了几份数据」这件事变得含糊。发布之后它同样进产物自检。
+ * 默认产物是 `dist/` ⇒ `dist.notes.ndjson`；`--out=dist.deexpose` ⇒ `dist.deexpose.notes.ndjson`
+ * （名字按产物目录名派生，所以"这份清单是给哪个目录用的"看一眼就知道）。
  *
- * v3.0 P2-25：**数据集那几行不再手写** —— 唯一注册表是 `lib/data-docs.js` 的 `PUBLIC_DATASETS`
- * （`copy` / `rewrite` 的进这一张、`generated` 的进下面那一张）。新增一份公开数据集时只改注册表，
- * 拷贝清单、Manifest、数据文档页与产物扫描会一起跟上，不会再出现"三份清单各自漂移"。
+ * **为什么是兄弟文件而不是仓库根写死一个名字**：`verify-site.js` §22c ⑨ 支持 `--dir=<产物副本>`，
+ * 拿哪一份产物去验、就应该读哪一次构建的意图侧。
+ *
+ * ⚠️ **本轮接受的性质下降（写出来，免得变成一次静默的口径变化）**：清单一旦移出产物目录，
+ * 它就不再是「这份产物自己的意图侧」，而变成「本工作树**最后一次成功构建**的意图侧」。
+ * 用 `--dir=` 指向另一份产物副本时，§22c ⑨ 读到的清单可能与那份产物不对应 ——
+ * 那时唯一的解药是"重新构建一次、再验"，而不是放宽判据。
+ *
+ * 失效方式：谁把产物目录名改成两个不同的东西却共用一份清单（例如硬编码回 `_notes.ndjson`），
+ * 就会让「A 产物的清单 + B 产物的 DOM」这种错配重新变成可能，而错配的红看起来像"说明被删了"。
  */
-const PUBLIC_FILES = ['index.html', 'favicon.svg', 'robots.txt', '.nojekyll', ...dataDocs.datasetCopyUrls()];
-/** 构建期生成、不走源码拷贝的产物 */
-const GENERATED_FILES = ['logos.css', 'sitemap.xml', 'og-image.png', 'feed.xml', 'feed.json', 'icon.png', 'source-health.json',
-  ...dataDocs.datasetGeneratedUrls(), dataDocs.MANIFEST_URL, NOTES_MANIFEST_FILE];
-// 站点常量与 XML 转义的**唯一出处**是 lib/feeds.js（v1.6 起订阅层也要用它们）。
-const { SITE_URL, SITE_NAME, SITE_DESCRIPTION, xmlEscape } = feeds;
+const NOTES_MANIFEST_PATH = path.join(path.dirname(FINAL_OUT), `${path.basename(FINAL_OUT)}.notes.ndjson`);
+
+/**
+ * 原样拷贝到产物根的源码文件（**全部是站点外壳资源，一份数据文件都没有**）。
+ *
+ * 历史（v2.1～v3.0）：`plans.json` / `api-plans.json` / `deals.json` 曾经在这一张里，
+ * 因为那时站点的定位是"把数据公开出来给读者取"。t4「去数据暴露」之后这条定位被推翻：
+ * 产物里不许有数据文件（唯一例外是首页应用自己的 `assets/data/offers.json`，由构建期写出，
+ * 不走拷贝），判据在 `lib/published-assets.js`。
+ * 失效方式：谁把某份 JSON 加回这张清单 ⇒ 构建自检的产物资产门禁当场红（点名路径），
+ * 而不是让它悄悄上线 —— 这正是那条门禁存在的理由。
+ */
+const PUBLIC_FILES = ['index.html', 'favicon.svg', 'robots.txt', '.nojekyll'];
+/**
+ * 构建期生成、不走源码拷贝的产物（**同样一份数据文件都没有**）。
+ *
+ * ⚠️ t4 起只剩这三个：`logos.css`（厂商 logo 样式表）、`sitemap.xml`、`og-image.png`。
+ * 删掉的项与理由：`feed.xml` / `feed.json` / `icon.png`（订阅子系统整体下架）、
+ * `source-health.json`（它是运维观测数据，"给读者一份可下载的 JSON"这条面撤了；
+ * `/status/` 页面本身保留，页面与断言改读仓库根那份真值 —— 见自检里的注释）、
+ * `data/index.json`（Dataset Manifest，数据出口子系统下架）。
+ *
+ * ⚠️ 说明意图清单（`NOTES_MANIFEST_FILE`）**不在这一张里**：它的落盘位置在产物目录之外
+ * （`NOTES_MANIFEST_PATH`），而下面「声明文件必须存在于 OUT」的循环会逐个
+ * `fs.existsSync(path.join(OUT, file))` —— 留着它必然红。这也是"清单真的搬走了"的**牙**。
+ */
+const GENERATED_FILES = ['logos.css', 'sitemap.xml', 'og-image.png'];
+
+/**
+ * 首页数据资产在产物里的路径（t3：`deals.json` → `assets/data/offers.json`）。
+ *
+ * **为什么搬家**：`deals.json` 这个名字 + 它坐在产物根的位置，等于把「这是一份公开数据集」写在脸上
+ * —— 而它其实是**首页应用自己的数据资源**（筛选 / 排序 / 详情弹窗读它），不是给读者下载的接口。
+ * 搬到 `assets/data/` 之后它仍然可以被 GET 到（浏览器必须取它），但站点不再把它当数据集宣传：
+ * 页面上不再有任何文本或链接提到它。仓库根的 `deals.json` **不动** —— 它是数据真值，
+ * validate / collect / rebuild-deals 与大量门禁都读它。
+ *
+ * ⚠️ 载荷结构**一个字不改**：Schema、派生字段（collections / needs / history / relatedPlans）、
+ * 客户端渲染逻辑全都不动，只换文件位置与名字。所以这一条改动对浏览器是透明的。
+ *
+ * 失效方式：写点与读取方**必须同时改**（本文件里读取一律走 `path.join(OUT, OFFERS_ARTIFACT)`）。
+ * 只改写点 ⇒ 自检回读产物时 ENOENT，构建红（这是好的一面：fail-fast）；
+ * 只改读取方 ⇒ 读到上一轮留下的旧文件，构建拿陈旧数据自证，静默通过。
+ */
+const OFFERS_ARTIFACT = 'assets/data/offers.json';
+// 站点常量与 XML 转义的**唯一出处**是 lib/site.js（t1 从 lib/feeds.js 逐行搬来；搬迁期两边逐值相等，
+// feeds.js 整体删除后这里就是唯一定义处）。本文件里它们的三个用途：canonical / JSON-LD / sitemap 拼 URL
+// → SITE_URL，页面标题与结构化数据 → SITE_NAME / SITE_DESCRIPTION，HTML 正文与属性转义 → xmlEscape。
+// 失效方式：改回从 feeds 取，等于把「站点常量」的出处留在随订阅层一起下架的那个文件里 ——
+// 正是这次搬家要避免的事。
+const { SITE_URL, SITE_NAME, SITE_DESCRIPTION, xmlEscape } = site;
 
 /* ------------------------------------------------------------------ */
 /* 页面级说明的**构建期意图清单**（notes-manifest-v1）                    */
@@ -234,26 +298,30 @@ const { SITE_URL, SITE_NAME, SITE_DESCRIPTION, xmlEscape } = feeds;
  *
  * ## 为什么清单落成 `_notes.ndjson` 而不是 `_notes.json`
  *
- * 产物里**每一个 `*.json` 都必须被某个注册表认领**（`lib/data-docs.js` §10.7 方向 2 的
- * fail-closed 判据：Manifest 自身 / Feed 家族 / `INTERNAL_ARTIFACTS` 豁免项 / 已登记的公开
- * 数据集）。本轮 in-scope 路径**不含** `lib/data-docs.js`，而把一个内部清单塞进
+ * 当年的判据是：产物里**每一个 `*.json` 都必须被某个注册表认领**（那条 fail-closed 判据原在
+ * `lib/data-docs.js` 的 §10.7 方向 2，**随数据出口子系统整体下架**；今天对应的纪律由
+ * `lib/published-assets.js` 承重：产物里不许有数据文件）。而把一个内部清单塞进当年的
  * `PUBLIC_DATASETS` 会让它出现在 `/docs/data/` 的公开数据集索引里（那是产品面变化，
- * 不只是多一个文件）。所以清单用 **NDJSON**（一行一个 JSON 对象：首行头部，其余每行一页）
- * —— 机器可读、可 `grep`、可逐字节重建，且不冒充公开数据集。
+ * 不只是多一个文件）—— 这两处现在都已下架，但命名沿用了下来。
+ * ⚠️ 今天更直接的理由是：**这份清单根本不在产物目录里**（见上面的 `NOTES_MANIFEST_PATH`），
+ * 所以它连"产物里的文件"都不是。用 **NDJSON**（一行一个 JSON 对象：首行头部，其余每行一页）
+ * 是为了机器可读、可 `grep`、可逐字节重建。
  *
  * ## 覆盖边界（**写在代码里，不写在别处**）
  *
  * 意图源只能登记**它自己代码路径上**的说明构造点。全站 `<main>` 里的说明容器实测
  * （2026-10-08，`dist` 186 页）分三类：`.snote` 271 条 · `.pnote` 159 条 · `.vsnote` 150 条。
  * **这三类现在全部逐条登记**（`notes-manifest-residual-v1`，2026-10-08）：原先落在范围之外的
- * 七个构造点已经接管 —— `lib/models-page.js` / `lib/plans-page.js` / `lib/api-plans-page.js` /
- * `lib/plans-hub-page.js` / `lib/data-docs.js` / `lib/archive.js` / `index.html` 的 RENDER-CORE
+ * 构造点已经接管 —— `lib/models-page.js` / `lib/plans-page.js` / `lib/api-plans-page.js` /
+ * `lib/plans-hub-page.js` / `lib/archive.js` / `index.html` 的 RENDER-CORE
  * 区块（`changesPageHtml`）都按 route 收到登记入口 `ctx.note`，在**产出那一段 HTML 的同一次调用**里
- * 登记（与 `lib/vendor-page.js` 同形）。**台账（`untracked`）因此从 58 页清到 0 页** ——
+ * 登记（与 `lib/vendor-page.js` 同形）。⚠️ 当年这份名单里还有一个 `lib/data-docs.js` ——
+ * 它随 `/docs/data/` 数据文档页在「去数据暴露」里整体下架，**已不在列**（那个模块已删除）。**台账（`untracked`）因此从 58 页清到 0 页** ——
  * `noteUntracked()` 这个机制保留（下一个「构造点确实不在本文件路径上」的页面族还得能用它如实登记），
  * 但当前**没有任何调用点**：整份清单每一页都是 `complete`，构建期与 §22c 都按「逐字相等」判。
  *
- * 文件名常量 `NOTES_MANIFEST_FILE` 与产物清单放在一起（`GENERATED_FILES` 那一段）。
+ * 文件名常量 `NOTES_MANIFEST_FILE` 与它的落盘位置 `NOTES_MANIFEST_PATH` 放在一起（产物清单那一段，
+ * 见 `PUBLIC_FILES` / `GENERATED_FILES`）。⚠️ 它**不在** `GENERATED_FILES` 里 —— 清单不进产物目录。
  */
 
 /**
@@ -600,9 +668,19 @@ const ROUTE_HREFS = [
   ['__DEVELOPER_HREF__', 'developer/'],
   ['__FREEAPI_HREF__', 'free-api/'],
   // v1.5：变化雷达静态页（与首页条带同一个数据源，只是列出全部分栏）
-  ['__CHANGES_HREF__', 'changes/'],
+  //
+  // ⚠️ t3 删掉了这条路由（`['__CHANGES_HREF__', 'changes/']`）。它的**唯一**一处页脚出现是
+  // `index.html` 那一行「优惠变化：变化雷达 · 订阅这些优惠」，而那一行整行删除了（订阅面要撤；
+  // 变化雷达与订阅共用一行，只留一半就要为一半的深度前缀另立规矩）。
+  // 删这条**不会**让 `/changes/` 变成孤儿页：实测它还有 7 个非页脚入链
+  // （首页条带、`/plans/` 枢纽、`/plans/coding/`、`/plans/api/`、`/archive/`、`/models/`）。
+  // 失效方式：只删 `index.html` 那一行、不删这条 ⇒ 下面「页脚路由链接」的**正向**断言当场红
+  //（"缺少 <prefix>changes/ 的链接"）—— 那条断言正是为"页脚某一条被悄悄删掉"写的。
+  //
   // v1.6：订阅中心（列出全部 Feed，并给出 RSS / JSON Feed 地址）
-  ['__FEEDS_HREF__', 'feeds/'],
+  //
+  // ⚠️ t3 已删 `['__FEEDS_HREF__', 'feeds/']`；t4 把 `/feeds/` 页面本身也删了（整函数 + 落盘 + 自检），
+  // 所以这条路由与它的页面都不存在了。页脚曾经是它唯一的可见入口 —— 现在连页面都没有了。
   // v1.7：厂商页与分类页两个枢纽（页脚那一行）
   ['__VENDOR_HREF__', 'vendor/'],
   ['__CATEGORY_HREF__', 'category/'],
@@ -615,7 +693,12 @@ const ROUTE_HREFS = [
   // 实测 `__PLANSHUB_HREF__` 不包含 `__PLANS_HREF__`（第 7 个字符是 H 而不是 S）。
   ['__PLANSHUB_HREF__', 'plans/'],
   // v3.0 Stage G：数据出口（数据文档页 + /data/index.json Manifest）。
-  ['__DATA_HREF__', 'docs/data/'],
+  //
+  // ⚠️ t4 **已删**（`['__DATA_HREF__', 'docs/data/']` 不再存在）。t3 时它曾被迫保留：页脚那一枚
+  // 是 `/docs/data/` 唯一的入链（实测非页脚入链 = 0），删它就会撞 `lib/seo.js` 的 `orphan` 硬失败。
+  // t4 把「锚点 / 这条声明 / `/docs/data/` 路由 / sitemap 条目」**在同一次改动里**一起删掉了 ——
+  // 这正是那件"必须同时发生"的四件事，任何一半单独发生都会留下一次红
+  //（要么"页脚缺少一条路由的链接"，要么"孤儿页"，要么"残留路由占位符"）。
   // v3.0 Stage F：历史档案（资料失效不等于资料删除）。
   ['__ARCHIVE_HREF__', 'archive/'],
   // v3.0 Stage D5：模型资料索引。与「按厂商 / 分类浏览」是同一类东西（长期存在的资料维度），
@@ -791,7 +874,7 @@ const MIN_PRERENDERED_CARDS = 45;
 /** 骨架里所有必须被构建期填掉的标记 */
 const PRERENDER_MARKERS = [
   'PRERENDER:deals', 'PRERENDER:facets', 'PRERENDER:topstat',
-  'PRERENDER:stats', 'PRERENDER:categories', 'PRERENDER:needs', 'PRERENDER:changes', 'PRERENDER:feeds', 'PRERENDER:jsonld',
+  'PRERENDER:stats', 'PRERENDER:categories', 'PRERENDER:needs', 'PRERENDER:changes', 'PRERENDER:jsonld',
   // v1.7：页脚那一行的「少量厂商入口」（由落地页计划生成，见 renderVendorLine）
   'PRERENDER:vendorline'
 ];
@@ -1055,7 +1138,7 @@ function buildJsonLd(faqItems, cards) {
     .join('\n');
 }
 
-/** XML 文本转义在 lib/feeds.js（RSS 里一个裸 & 就能让整份 feed 解析失败） */
+/** XML 文本转义在 lib/site.js（RSS 里一个裸 & 就能让整份 feed 解析失败） */
 
 /** 详情页模板里做 HTML 转义：字符集与 XML 转义相同，直接复用 */
 const htmlEscape = xmlEscape;
@@ -1084,7 +1167,7 @@ const htmlEscape = xmlEscape;
  * PROJECT_STATUS.md「七、审计发现」的模板分叉那一节（那里记了 2026-09-23 工作区的确切行号；
  * 本文件自己的行号刻意不写——加几行注释就会整体位移）。
  *
- * **纯静态**：详情页不加载主脚本，不 fetch deals.json——没有列表要渲染，也就没有控制台错误；
+ * **纯静态**：详情页不加载主脚本，不 fetch assets/data/offers.json——没有列表要渲染，也就没有控制台错误；
  * 只保留一个极小的主题切换脚本（与首页同一套 localStorage 约定）。
  */
 function writeDetailPages(payload, indexHtml, renderCore, plan) {
@@ -1215,7 +1298,6 @@ function writeDetailPages(payload, indexHtml, renderCore, plan) {
       },
       faviconHref: '../../favicon.svg',
       logoCssHref: '../../logos.css',
-      feedTagsHtml: feeds.rootFeedTags('../../'),
       jsonLdHtml: jsonLd,
       headerExtra: themeSeg,
       where: 'writeDetailPages'
@@ -1287,8 +1369,9 @@ function renderStatusPage(healthDoc, indexHtml, route = 'status/') {
   // 与分类页同一条约定：**一段一个对象**（塞成数组时 `JSON.parse(block)['@type']` 得到
   // undefined，自检既不抛错也不命中 —— 分类页第一版就是这么写的，被自检当场拦下）。
   //
-  // 为什么不给这张表再发一份 `ItemList` / `Dataset`：机器可读的那一份是
-  // `source-health.json`，页面上直接链着它。把同一份事实声明两次，两次迟早会分家，
+  // 为什么不给这张表再发一份 `ItemList` / `Dataset`：这张表是**运维观测**，不是内容集合；
+  // 同一份事实的另一份机器可读形态另有其物（`source-health.json` —— t3 起页面不再链它，
+  // 但文件本身与数据侧的对账都还在）。把同一份事实声明两次，两次迟早会分家，
   // 而分家时**没有任何东西会红**（两边各自看都自洽）。宁可少声明一次。
   const jsonLdBlocks = [
     {
@@ -1370,13 +1453,11 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
         el.textContent = text;
       });
     })();`;
-  const feedTagsHtml = `<!-- feed 约定：状态页自己不产出条目（订阅是「内容更新」语义，一页运维表不是更新），
-     但必须能被订阅发现 —— 与首页、详情页、分类页声明同两个 feed。
-     这一条是 v1.1 收口补的：此页原先只满足五条既有约定里的两条。 -->
-${feeds.rootFeedTags('../')}`;
-  // 说明意图（notes-manifest-v1）：状态页**恰好两条**页面级说明（判读口径 + 机器可读出口），
-  // 两条都在上面各自的构造点登记；这里登记页面族与结构下限（两条都是无条件的）。
-  notePage(route, { kind: 'status', floors: { 'main-snote': { min: 2 } } });
+  // 说明意图（notes-manifest-v1）：状态页页面级说明**恰好一条**（判读口径）。
+  // ⚠️ t3：原先还有第二条「机器可读的同一份数据：source-health.json」—— 那一条**整条删除**
+  // （连同它的 `noteDeclare` 分支），因为本轮的目标是站点不再面向读者暴露数据文件。
+  // 删条数必须同步改下面的 floors：不同步 ⇒ 「清单声明 2 条 / DOM 1 条」当场红（幽灵声明）。
+  notePage(route, { kind: 'status', floors: { 'main-snote': { min: 1 } } });
   return `${shell.docStart({
     kind: 'status',
     route,
@@ -1386,7 +1467,6 @@ ${feeds.rootFeedTags('../')}`;
     description: htmlEscape(STATUS_DESCRIPTION),
     canonicalUrl: `${SITE_URL}status/`,
     faviconHref: '../favicon.svg',
-    feedTagsHtml,
     extraCss: pageCss,
     jsonLdHtml: jsonLdBlocks,
     where: 'renderStatusPage'
@@ -1425,12 +1505,7 @@ ${noteDeclare(route, {
       </table>
       </div>
 
-${noteDeclare(route, {
-    kind: 'status-machine-readable', slot: 'main-snote', classes: 'snote',
-    declaredBy: 'build-local.js:renderStatusPage(机器可读出口)'
-  }, `      <p class="snote" style="margin-top: var(--s3)">
-        机器可读的同一份数据：<a href="../source-health.json">source-health.json</a>。
-      </p>`)}${shell.docEnd({ route, prefix: '../', parts, extraScript: pageScript, where: 'renderStatusPage' })}`;
+${shell.docEnd({ route, prefix: '../', parts, extraScript: pageScript, where: 'renderStatusPage' })}`;
 }
 
 /* ------------------------------------------------------------------ */
@@ -1500,7 +1575,6 @@ function markChangesRows(body, records, expectedRows) {
 }
 
 function renderChangesPage(radar, indexHtml, renderCore, context = {}) {
-  const changeFeedTags = context.changeFeedTags || feeds.rootFeedTags('../');
   const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS);
 
   const W = changes.CHANGES_WORDING;
@@ -1617,9 +1691,6 @@ ${body}`;
     description: htmlEscape(PAGE_DESCRIPTION),
     canonicalUrl: pageUrl,
     faviconHref: '../favicon.svg',
-    feedTagsHtml: `<!-- feed 约定：这一页自己不产出条目（订阅是「内容更新」语义），但**必须订到变化本身** ——
-     v1.6 起声明的是变化 Feed（v1.5 报告里「雷达没有自己的订阅源」那条技术债的收口）。 -->
-${changeFeedTags}`,
     extraCss: `  /* 只用首页已有的设计变量，不新建一套视觉语言。
      列表式（不是宽表）：手机上自然换行、不产生横向滚动 —— 与目录页的表格相反，
      这里每行都有一段可能很长的原文（原值 → 新值），表格会把手机变成横向滚动条。 */
@@ -1757,12 +1828,10 @@ function renderPlansPage(planStore, indexHtml, context = {}) {
   const prefix = '../../'; // /plans/coding/ 是两层路由
   const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS);
 
-  // v2.3：这一页**有专属订阅源**（套餐变化），必须声明它 —— 与根 Feed 并列，
-  // 而不是替换：读者既可以订全站优惠，也可以只订套餐变化。
-  // v3.0：这一页有专属订阅源（Coding 套餐变化），必须声明它 —— 与根 Feed 并列，而不是替换。
-  // 取法收敛到注册表：`feedsForPage` 按路由解析（此前是按 spec id 写死的）。
-  const planOwnFeeds = feeds.feedsForPage({ route: plansPage.PLANS_ROUTE }, context.allFeeds || []);
-  const planFeed = planOwnFeeds[0] || { spec: feeds.PLAN_CHANGE_FEED };
+  // 【史述·已下架】v2.3 / v3.0：这一页当年**有专属订阅源**（套餐变化），要求在 `<head>` 里
+  // 与根 Feed 并列声明它（而不是替换：读者既可以订全站优惠，也可以只订套餐变化）。
+  // 订阅层整体下架后页面不再声明任何订阅源，`feedsForPage` 与那份声明一起删除 ——
+  // 这一段现在不做任何订阅相关注入。
 
   const pageUrl = `${SITE_URL}${plansPage.PLANS_ROUTE}`;
   const plans = planStore.plans || [];
@@ -1894,10 +1963,6 @@ ${plansCompareSource()}
     description: htmlEscape(plansPage.PLANS_DESCRIPTION),
     canonicalUrl: pageUrl,
     faviconHref: `${prefix}favicon.svg`,
-    feedTagsHtml: `<!-- feed 约定：与首页、状态页、变化页声明同两个根 Feed；v2.3 起另加**本页专属的
-     套餐变化源**（这一页不产出优惠条目，但它自己确实有一条变化流）。 -->
-${feeds.rootFeedTags(prefix)}
-${feeds.feedLinkTags([planFeed], prefix)}`,
     // 顺序与迁移前一致：本页静态表格原语在前，`css`（筛选/搜索/展开，由 plans-compare.js 驱动）在后。
     extraCss: `${PLANS_TABLE_CSS}\n${css}`,
     extraTailHtml: compareScript,
@@ -1929,11 +1994,9 @@ function renderApiPlansPage(apiStore, indexHtml, context = {}) {
   const plans = apiStore.plans || [];
   const providerTable = context.providerTable || null;
 
-  // v3.0 Stage H4：这一页**有自己的订阅源**（API 价格变化），必须在 `<head>` 里声明它 ——
-  // 与根 Feed 并列，而不是替换。取法与 `/plans/coding/` 一致：**都从注册表推导**
-  // （`feedsForPage` 按路由解析），不在模板里写死 spec id。
-  const apiOwnFeedTags = feeds.feedLinkTags(
-    feeds.feedsForPage({ route: apiPlansPage.API_PLANS_ROUTE }, context.allFeeds || []), prefix);
+  // 【史述·已下架】v3.0 Stage H4：这一页当年**有自己的订阅源**（API 价格变化），要求在 `<head>` 里
+  // 声明它（与根 Feed 并列，而不是替换）；取法与 `/plans/coding/` 一致，都从注册表推导，
+  // 不在模板里写死 spec id。订阅层下架后这里与 `/plans/coding/` 一样不再声明任何订阅源。
 
   const jsonLdBlocks = apiPlansPage.apiPlansJsonLd(plans, { siteUrl: SITE_URL, providerTable })
     .map(data => `<script type="application/ld+json">
@@ -1960,12 +2023,6 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
     canonicalUrl: pageUrl,
     faviconHref: `${prefix}favicon.svg`,
     logoCssHref: `${prefix}logos.css`,
-    feedTagsHtml: `<!-- v2.5：这一页的「平台」列会写 data-logo 属性，所以必须引用 logos.css ——
-     漏了它的表现是**每一行的 logo 位是一个空方块**（页面看起来只是"有点空"），
-     而真浏览器那一条「没有 JS 错误、没有外部请求」的断言不会红（缺的是本地样式表，
-     既不报错也不发外部请求）。这是构建期自检「模板引用的 logo key 全部已登记」查不到的那一类。 -->
-${apiOwnFeedTags}
-${feeds.rootFeedTags(prefix)}`,
     extraCss: `  /* 只用首页已有的设计变量，不新建一套视觉语言。 */
   .stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
   .stop h1 { font-size: 19px; margin: 0; }
@@ -2067,7 +2124,6 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
     description: htmlEscape(plansHubPage.PLANS_HUB_DESCRIPTION),
     canonicalUrl: pageUrl,
     faviconHref: `${prefix}favicon.svg`,
-    feedTagsHtml: `${feeds.rootFeedTags(prefix)}`,
     extraCss: `  /* 只用首页与两个对比页已有的设计变量，不新建一套视觉语言。 */
   .stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
   .stop h1 { font-size: 19px; margin: 0; }
@@ -2173,16 +2229,21 @@ const STATIC_PAGE_CSS = `  /* 只用首页已有的设计变量，不新建视�
   }`;
 
 /**
- * 五个「静态资料页族」共用的**参数映射**：/models/ · /models/<slug>/ · /archive/ ·
- * /archive/<kind>/<id>/ · /docs/data/。
+ * 四个「静态资料页族」共用的**参数映射**：/models/ · /models/<slug>/ · /archive/ ·
+ * /archive/<kind>/<id>/。
+ *
+ * ⚠️ 曾经还有第五族 `/docs/data/`（数据文档页）：它在「去数据暴露」那一轮**整体下架**，
+ * 连 `page-kinds.js` 的 `data-docs` kind 与固定路由映射一起删了 —— 所以这里与 `page-kinds.js`
+ * 都找不到 `data-docs`，那是**下架的结果**，不是漏登记。
  *
  * ⚠️ 它**不是第二份页面壳**：文档脚手架只有 \`lib/page-shell.js\` 一处实现，这里只做映射。
- * 这五族的正文与 JSON-LD 都已经是现成的值，且都不用 robots / hreflang / OG，
- * 于是把「route → canonical → favicon → 根 Feed → JSON-LD 段」这几步固定下来，
- * 避免在 5 个调用点各抄一遍 —— 上一版是一份 105 行的**自带文档脚手架**，那正是本轮要消灭的形态。
+ * 这四族的正文与 JSON-LD 都已经是现成的值，且都不用 robots / hreflang / OG，
+ * 于是把「route → canonical → favicon → JSON-LD 段」这几步固定下来
+ * （原来的「根 Feed」那一步已随订阅层下架删除），
+ * 避免在 4 个调用点各抄一遍 —— 上一版是一份 105 行的**自带文档脚手架**，那正是本轮要消灭的形态。
  *
- * \`kind\` **必须由调用方显式给出**，它决定布局族（\`models-index\` / \`archive-index\` /
- * \`data-docs\` 是 wide，\`model\` / \`archive-detail\` 是 detail）。上一版靠「传不传 mainClass」
+ * \`kind\` **必须由调用方显式给出**，它决定布局族（\`models-index\` / \`archive-index\`
+ * 是 wide，\`model\` / \`archive-detail\` 是 detail）。上一版靠「传不传 mainClass」
  * 暗示这件事，而忘了传的症状是**详情页悄悄渲染成宽页**；交给 \`page-kinds.js\` 的声明表判之后，
  * 这件事不再依赖记性（detail 族缺内容列会当场抛错）。
  *
@@ -2205,7 +2266,6 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
     description: htmlEscape(description),
     canonicalUrl: `${SITE_URL}${route}`,
     faviconHref: `${prefix}favicon.svg`,
-    feedTagsHtml: feeds.rootFeedTags(prefix),
     // 这一族的表格原语 + 各页自己的追加样式（顺序与迁移前一致：族原语在前、页面追加在后）。
     extraCss: extraCss ? `${STATIC_PAGE_CSS}\n${extraCss}` : STATIC_PAGE_CSS,
     jsonLdHtml,
@@ -2234,16 +2294,6 @@ const ARCHIVE_PAGE_CSS = `  /* v3.0 Stage F：历史档案。 */
   .ainfo, .aknown { display: grid; grid-template-columns: 7.5em minmax(0, 1fr); gap: 3px 10px; margin: 0 0 var(--s3); font-size: var(--fs-sm); }
   .ainfo dt, .aknown dt { color: var(--mut); }
   .ainfo dd, .aknown dd { margin: 0; overflow-wrap: anywhere; }
-`;
-
-/**
- * `/docs/data/` 的样式（只用首页已有的设计变量）。纯追加：只在这一页上拼进 `<style>`。
- */
-const DATA_DOCS_PAGE_CSS = `  /* v3.0 Stage G：数据文档。 */
-  .dterms b { color: var(--ink); }
-  .codeblock { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: var(--s2) var(--s3); overflow-x: auto; font-size: 12px; line-height: 1.6; }
-  .codeblock code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--ink2); }
-  .ptable small[data-time-shape] { color: var(--mut); }
 `;
 
 /**
@@ -2282,231 +2332,6 @@ function vendorHrefFor(developer, providerTable, directoryPages) {
  * 缺席的字段不写。分类归属本身也只认**肯定信号**（见 `audience.studentSignal` 的注释：
  * 覆盖率口径与分类口径在这里刻意不同）。
  */
-/* ------------------------------------------------------------------ */
-/* 订阅中心（/feeds/）：把注册表原样摊开，并如实说明空 Feed 为什么空     */
-/* ------------------------------------------------------------------ */
-
-/**
- * 订阅中心。**它不产数据、不产条目**：全部内容来自 `lib/feeds.js` 的注册表与
- * 已经算好的条目数，页面只做排版。
- *
- * 三条与站内其它页面同源的约定：
- *   · 页面壳子（style / 主题脚本 / 页脚）从**已组装好的 index.html** 里抽，
- *     不写第二份视觉语言；
- *   · 站点常量与 URL 一律走 feeds 模块（那一份是唯一出处）；
- *   · 订阅地址写**绝对 URL**：这一页的全部意义就是让读者把地址复制走。
- *
- * 空 Feed 的处理是本页的重点：`/feed/changes.*` 与 `/feed/new.*` 会长期为空
- * （变更日志的起算日就是交付日），页面必须说清「这是事实，不是故障」，
- * 措辞直接取 `lib/changes.js` 的权威表，不另写一句话。
- */
-function renderFeedsPage(feedList, indexHtml, context = {}) {
-  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS);
-
-  const W = feeds.FEEDS_WORDING;
-  const PAGE_HEADING = W.FEEDS_LABELS.pageTitle;
-  const PAGE_DESCRIPTION = '订阅 AI 优惠：全部优惠、最近变化、最近新增，以及按学生 / 开发者意图与按厂商切分的订阅源。' +
-    'RSS 与 JSON Feed 两种格式，全部由本站构建期生成的静态文件提供 —— 没有账号、没有邮件列表、没有推送服务。';
-  const pageUrl = `${SITE_URL}feeds/`;
-
-  // 分组与成员**全部来自注册表**（`lib/feeds.js` 的 `pageGroups()` 从 spec.listGroup 派生）：
-  // 这一层**不许**再有第二份 id 清单 —— 手写清单正是 P3-4 的成因（分类 Feed 整组漏在
-  // 汇总页之外，而页面上与自检里都看不出来）。新增一条 Feed 只需在注册表里声明它属于哪一组，
-  // 「注册表 → 页面」这个方向由 `checkFeedsPage()` 的双向断言盯着。
-  const plan = feeds.pageGroups(feedList);
-  const groups = plan.groups.filter(group => group.key !== 'vendor');   // 厂商那一段单独排版（带门槛说明）
-  const vendorFeeds = (plan.groups.find(group => group.key === 'vendor') || { feeds: [] }).feeds;
-  // 兜底：public 但没有分组的 Feed 也照常列出来。两件事同时成立 ——
-  // 页面上不会静默少一份订阅，而 `checkFeedsPage()` 会把「没分组」报成必须修的问题。
-  const ungroupedFeeds = plan.ungrouped;
-  /** 站点根 Feed：按注册表的路径取，不再按 id 字面量取 */
-  const ownFeed = feedList.find(feed => feed.spec.path === feeds.ROOT_FEED.path) || null;
-
-  const rowHtml = feed => {
-    const spec = feed.spec;
-    const rss = SITE_URL + spec.path;
-    const json = SITE_URL + spec.jsonPath;
-    const latest = feed.items.length ? (feed.items[0].dateModified || feed.items[0].datePublished) : null;
-    const empty = feed.items.length === 0;
-    const changeKind = spec.kind === 'changes' || spec.kind === 'plan-changes';
-    // v3.0 Stage H：措辞与**起算日**都按来源取自己的那一份。
-    // 起算日直接读 `spec.startedAt` —— `buildFeeds` 已经按来源从各自日志的 `startedAt` 算好了；
-    // 继续用 `context.planStartedAt` 会让 API 那一条显示套餐日志的起算日（那是假话）。
-    const sinceLabels = spec.kind !== 'plan-changes'
-      ? changes.CHANGES_WORDING.CHANGES_LABELS
-      : feeds.changeWordingOf(spec);
-    const sinceDate = spec.kind === 'plan-changes'
-      ? (spec.startedAt || context.asOf || '未知')
-      : (context.startedAt || context.asOf || '未知');
-    const countText = empty
-      ? `0 条${changeKind ? `（${sinceLabels.since.replace('{date}', sinceDate)}）` : ''}`
-      : `${feed.items.length} 条${latest ? ` · 最近一条 ${latest}` : ''}`;
-    const pageLink = spec.pageRoute
-      ? `<a href="../${spec.pageRoute}">看这一页</a> · `
-      : '';
-    return `      <li class="frow">
-        <div class="fhead"><b>${htmlEscape(spec.title)}</b><span class="fcount">${htmlEscape(countText)}</span></div>
-        <p class="fdesc">${htmlEscape(spec.description)}</p>
-        <p class="furl">${pageLink}<a href="${htmlEscape(rss)}">RSS</a> · <a href="${htmlEscape(json)}">JSON Feed</a></p>
-      </li>`;
-  };
-
-  // 说明意图（notes-manifest-v1）：这一页的每条 `.snote` 都在它**自己的分支里**登记
-  // （`noteDeclare()` 与输出是同一次调用），因此「清单里的条数」按定义等于「真的输出了几条」；
-  // 结构下限 4 条是页面族不变式：订阅方法说明 / 厂商订阅口径 / 两组「怎么读」说明，四条无条件。
-  const FEEDS_ROUTE = 'feeds/';
-  const noteRoute = FEEDS_ROUTE;
-  notePage(FEEDS_ROUTE, { kind: 'feeds', floors: { 'main-snote': { min: 4 } } });
-
-  const groupHtml = groups.map(group => {
-    const rows = group.feeds;
-    if (!rows.length) return '';
-    return `    <section class="fsec">
-      <h2>${htmlEscape(group.label)}</h2>
-      ${group.note ? noteDeclare(noteRoute, {
-    kind: 'feed-group-scope', slot: 'main-snote', classes: 'snote',
-    declaredBy: 'build-local.js:renderFeedsPage(FEED_LIST_GROUPS 的分组口径)'
-  }, `<p class="snote">${group.note}</p>`) : ''}
-      <ul class="flist">
-${rows.map(rowHtml).join('\n')}
-      </ul>
-    </section>`;
-  }).filter(Boolean).join('\n');
-  // 没分组的 public Feed：单独一段列出来（正常情况下永远是空的；一旦出现，
-  // 构建自检会红，页面这里也保证它不会消失得无声无息）。
-  const ungroupedHtml = ungroupedFeeds.length
-    ? `    <section class="fsec">
-      <h2>其他订阅</h2>
-      ${noteDeclare(noteRoute, {
-    kind: 'feed-ungrouped', slot: 'main-snote', classes: 'snote',
-    declaredBy: 'build-local.js:renderFeedsPage(未分组订阅的兜底说明)'
-  }, '<p class="snote">这些订阅源还没在注册表里声明分组（见 lib/feeds.js 的 FEED_LIST_GROUPS），先照实列出。</p>')}
-      <ul class="flist">
-${ungroupedFeeds.map(rowHtml).join('\n')}
-      </ul>
-    </section>`
-    : '';
-
-  const emptyChangeFeeds = feedList.filter(feed => feed.spec.kind === 'changes' && !feed.items.length);
-  const emptyNote = emptyChangeFeeds.length
-    ? noteDeclare(noteRoute, {
-      kind: 'feed-empty-changes', slot: 'main-snote', classes: 'snote',
-      declaredBy: 'build-local.js:renderFeedsPage(变化订阅为空时的说明)'
-    }, `<p class="snote">最近变化与最近新增现在是空的：本站的变更记录自 ${htmlEscape(context.startedAt || context.asOf || '未知')} 起算，此前没有历史。` +
-      `空订阅是<b>事实</b>，不是故障 —— 一旦有新增或重要变化，它们会出现在这里。` +
-      `${context.availability !== 'ok' ? '（本次构建没有拿到变更日志，因此无法确认有没有变化。）' : ''}</p>`)
-    : '';
-  // v2.3 / v3.0：变化源的空态**逐条自己说**（各自的起算日与可用性是另一份数据，
-  // 不能拿 deals 的话顶上，也不能让 API 那条借用套餐的起算日）。
-  // `spec.startedAt` 与可用性都取自**它自己**那一份日志的视图。
-  const changeAvailabilityOf = spec => (typeof context.changeAvailabilityOf === 'function'
-    ? context.changeAvailabilityOf(spec)
-    : (spec.changeSource === 'api' ? context.apiPlanAvailability : context.planAvailability));
-  const emptyPlanNotes = feedList
-    .filter(feed => feed.spec.kind === 'plan-changes' && !feed.items.length)
-    .map(feed => {
-      const spec = feed.spec;
-      const unavailable = changeAvailabilityOf(spec) !== 'ok';
-      const what = spec.changeSource === 'api'
-        ? 'API 计费数据（api-plans.json）'
-        : '套餐数据（plans.json）';
-      return noteDeclare(noteRoute, {
-        kind: 'feed-empty-plan-changes', slot: 'main-snote', classes: 'snote',
-        declaredBy: 'build-local.js:renderFeedsPage(套餐/API 变化订阅为空时的说明)'
-      }, `<p class="snote">${htmlEscape(spec.title)}现在是空的：这套变更记录自 `
-        + `${htmlEscape(spec.startedAt || context.asOf || '未知')} 起算，`
-        + `此前只沉淀了一份「既有状态」基线（它不是创建事件）。空订阅是<b>事实</b>，不是故障。`
-        + `${unavailable ? `（本次构建没有拿到这份变化日志，因此无法确认 ${htmlEscape(what)} 有没有变化。）` : ''}</p>`);
-    })
-    .join('\n');
-  const emptyPlanNote = emptyPlanNotes;
-// [T5-build-local-2427-vendor-scope-note]
-// T5 删除（census A · 自证整条）：**整条删除**「厂商订阅门槛口径」那条 .snote。为什么删：它渲染的是**生成门槛的数值与内部理由**（「≥ N 条才给这一家生成订阅」「只出现一两条记录的厂商单独开一个订阅没有价值」「地址来自人工维护的 slug 表」）—— 判据实现 / 取舍理由 / 内部命名机制三类都是维护口径。怎么删：真分支**整支去掉**（不是返回空串）—— 返回空串会留下一个 noteDeclare 的**幽灵声明**（清单声明 1 条 / DOM 0 条 ⇒ §22c ⑨ 逐页逐槽位对账当场红）。门禁核对：`feeds/` 的台账下限是 `floors.main-snote ≥ 4`，本轮同批删掉 3 条分组 note（feeds.js 的 student / developer / category）+ 这一条 ⇒ 8 − 4 = **4 == floor**（压线，未破）；§22c ⑨ 的「结构下限」与「棘轮」在收口时逐条复核（stage-b-deltas.json 的 gatesAffected）。
-  const vendorNote = vendorFeeds.length
-    ? ''
-    : noteDeclare(noteRoute, {
-      kind: 'feed-vendor-empty', slot: 'main-snote', classes: 'snote',
-      declaredBy: 'build-local.js:renderFeedsPage(没有达门槛厂商订阅时的说明)'
-    }, '<p class="snote">当前没有达到门槛的厂商订阅。</p>');
-
-  const jsonLdBlocks = [
-    {
-      '@context': 'https://schema.org',
-      '@type': 'CollectionPage',
-      name: `${PAGE_HEADING} · ${SITE_NAME}`,
-      description: PAGE_DESCRIPTION,
-      url: pageUrl,
-      inLanguage: 'zh-CN',
-      isPartOf: { '@type': 'WebSite', name: SITE_NAME, url: SITE_URL }
-    },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'BreadcrumbList',
-      itemListElement: [
-        { '@type': 'ListItem', position: 1, name: '首页', item: SITE_URL },
-        { '@type': 'ListItem', position: 2, name: PAGE_HEADING, item: pageUrl }
-      ]
-    }
-  ].map(data => `<script type="application/ld+json">
-${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
-</script>`).join('\n');
-
-  const pageCss = `  /* 只用首页已有的设计变量。列表式（不是宽表）：订阅地址很长，窄屏上不能产生横向滚动。 */
-  .fsec { margin: 0 0 var(--s4); border-top: 1px solid var(--line); padding-top: var(--s3); }
-  .fsec h2 { font-size: 15px; margin: 0 0 var(--s2); }
-  .flist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
-  .frow { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 10px 12px; }
-  .fhead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px var(--s2); font-size: var(--fs-sm); }
-  .fcount { color: var(--mut); font-variant-numeric: tabular-nums; }
-  .fdesc { margin: 4px 0 0; color: var(--ink2); font-size: var(--fs-sm); line-height: 1.6; }
-  .furl { margin: 6px 0 0; font-size: 11.5px; overflow-wrap: anywhere; }
-  .furl a { color: var(--brand); }`;
-  return `${shell.docStart({
-    kind: 'feeds',
-    route: 'feeds/',
-    prefix: '../',
-    parts,
-    title: `${htmlEscape(PAGE_HEADING)} · ${htmlEscape(SITE_NAME)}`,
-    description: htmlEscape(PAGE_DESCRIPTION),
-    canonicalUrl: pageUrl,
-    faviconHref: '../favicon.svg',
-    feedTagsHtml: `<!-- feed 约定：这一页自己不产出条目（订阅是「内容更新」语义），但必须能被订阅发现。 -->
-${feeds.feedLinkTags(ownFeed ? [ownFeed] : [], '../')}`,
-    extraCss: pageCss,
-    jsonLdHtml: jsonLdBlocks,
-    where: 'renderFeedsPage'
-  })}
-      <nav class="crumb" aria-label="面包屑"><a href="../">首页</a> › <span>${htmlEscape(PAGE_HEADING)}</span></nav>
-      <h1>${htmlEscape(PAGE_HEADING)}</h1>
-      ${noteDeclare(noteRoute, {
-    kind: 'feed-how-to-subscribe', slot: 'main-snote', classes: 'snote',
-    declaredBy: 'build-local.js:renderFeedsPage(怎么订阅)'
-  }, `<p class="snote">把下面的地址粘进任意 RSS / JSON Feed 阅读器即可订阅。本站没有账号、没有邮件列表、没有推送服务，
-        也不会记录谁订阅了哪一份 —— 这些就是一个静态文件，和打开任何一个网页没有区别。</p>`)}
-      ${emptyNote}
-      ${emptyPlanNote}
-${groupHtml}
-${ungroupedHtml}
-    <section class="fsec">
-      <h2>厂商订阅</h2>
-      ${vendorNote}
-      <ul class="flist">
-${vendorFeeds.map(rowHtml).join('\n')}
-      </ul>
-    </section>
-    <section class="fsec">
-      <h2>说明</h2>
-      ${noteDeclare(noteRoute, {
-    kind: 'feed-reading-guide', slot: 'main-snote', classes: 'snote',
-    declaredBy: 'build-local.js:renderFeedsPage(两类订阅的区别)'
-  }, `<p class="snote">优惠订阅回答「当前有哪些符合这个条件的优惠」；最近变化与最近新增回答「最近发生了什么」，
-        只收优惠内容、领取条件、有效期与收录状态的变化 —— 改一个标点、换一处分类不会推给你。</p>`)}
-      ${noteDeclare(noteRoute, {
-    kind: 'feed-source-note', slot: 'main-snote', classes: 'snote',
-    declaredBy: 'build-local.js:renderFeedsPage(信息来源说明)'
-  }, `<p class="snote">${htmlEscape(W.FEEDS_NOTES.officialNote)}</p>`)}
-    </section>${shell.docEnd({ route: 'feeds/', prefix: '../', parts, where: 'renderFeedsPage' })}`;
-}
 
 /* ------------------------------------------------------------------ */
 /* 目录页：分类页（/student/ …）与按需求页（/need/<slug>/）共用一条生成路径 */
@@ -2528,7 +2353,8 @@ ${vendorFeeds.map(rowHtml).join('\n')}
  * 三条路由各写一遍，等于把「哪一条忘了进 sitemap」变成一个靠记性维持的不变量。
  * v1.2 再加十页时，这个诱惑更大（「照抄一份分类页改改」）—— 所以它现在**不是**两份实现：
  * 分类页与按需求页是同一张注册表的两种 `kind`，共用本函数，共用
- * canonical / 双 feed / 三段 JSON-LD / 页脚深度 / 正文下限 / 空表兜底。
+ * canonical / 三段 JSON-LD / 页脚深度 / 正文下限 / 空表兜底
+ * （原来的「双 feed」一项已随订阅层下架删除）。
  * 差别只有两处：**表头**与**「命中依据」那一列**（`spec.kind === 'need'` 时才有）。
  *
  * ## 诚实性约束（与详情页同一把尺子）
@@ -2555,19 +2381,6 @@ function renderDirectoryPage(spec, deals, indexHtml, context) {
   const isAlias = kind === 'alias';
   const summary = Array.isArray(context.summary) ? context.summary : [];
   const plan = context.plan || null;
-  const pageFeeds = Array.isArray(context.feedsForPage) ? context.feedsForPage : [];
-  // v3.0 Stage E：厂商资料页的追加区块（六节 + 它自己的 CSS）。
-  // 其它 kind 不传 → `extraHtml` / `extraCss` 都是空串 → 输出与 v2.x 逐字节相同
-  // （这条「纯追加」边界由 `selftest:vendor` 与 `check-reproducible` 两边钉住）。
-  const extraBundle = typeof context.extraSections === 'function'
-    ? (context.extraSections(spec) || { html: '', css: '' })
-    : { html: context.extraSections || '', css: context.extraSectionsCss || '' };
-  const extraHtml = extraBundle.html || '';
-  const extraCss = extraBundle.css || '';
-  // 订阅声明：本页自己的 Feed（如果有）+ 站点根 Feed。两者都要 ——
-  // 根 Feed 是「全部优惠」，本页 Feed 是「这一类」，读者的选择不同。
-  const ownFeedTags = pageFeeds.length ? feeds.feedLinkTags(pageFeeds, prefix) : '';
-  const feedTags = [ownFeedTags, feeds.rootFeedTags(prefix)].filter(Boolean).join('\n');
 
   const triText = value => (value === true ? '是' : value === false ? '否' : '尚未确认');
 
@@ -2652,8 +2465,12 @@ function renderDirectoryPage(spec, deals, indexHtml, context) {
 
   const isNeed = kind === 'need';
   const useEvidence = isNeed || kind === 'category' || kind === 'vendor' || isAlias;
+  // 表头：枢纽页 3 列（t3 起），其余目录页 5 列。
+  // ⚠️ 枢纽页原来有第 4 列「订阅」（RSS / JSON Feed 地址）。它随「站点不再面向读者暴露订阅与
+  // 数据文件」一起删除：那一列是整站**唯一**把 Feed 地址印在普通页面表格里的地方。
+  // 非枢纽分支**没有**这一列，别把两边的列数改混（下面的 colspan 与断言都跟着这一处）。
   const HEADERS = isHub
-    ? ['页面', '条目数', '这一页收什么', '订阅']
+    ? ['页面', '条目数', '这一页收什么']
     : (useEvidence
       ? ['优惠', '适用人群', '为什么在这一页', '门槛 / 领取要求', '中国大陆可用性']
       : ['优惠', '适用人群', '福利类型', '门槛 / 领取要求', '中国大陆可用性']);
@@ -2681,23 +2498,25 @@ function renderDirectoryPage(spec, deals, indexHtml, context) {
         </tr>`;
   };
 
-  /** 枢纽页的一行：只有子页面链接、条数与订阅地址，不夹带条目 */
+  /**
+   * 枢纽页的一行：只有子页面链接、条数与「这一页收什么」，不夹带条目。
+   *
+   * t3：**删掉第 4 格「订阅」**（原先按 `feeds.feedsForPage(child)` 列出该子页的 RSS / JSON
+   * 地址）。删的理由与表头同一处；这里额外说明一个**失效方式**：那一格在没有任何专属 Feed 时
+   * 会渲染成 `<span class="none">站点根 Feed</span>`（该格与它的 Feed 渲染已随订阅层下架），所以"少了一格"不会像空白那样显眼 ——
+   * 列数由下面的 `colspan` 与 `HEADERS.length` 两条一起守着，改一处漏一处就会当场错位。
+   */
   const hubRowHtml = child => {
-    const childFeeds = feeds.feedsForPage(child, context.allFeeds || []);
-    const sub = childFeeds.length
-      ? childFeeds.map(feed => `<a href="${prefix}${feed.spec.path}">RSS</a> · <a href="${prefix}${feed.spec.jsonPath}">JSON</a>`).join('<br>')
-      : '<span class="none">站点根 Feed</span>';
     return `
         <tr data-child="${htmlEscape(child.route)}">
           <th scope="row"><a href="${prefix}${child.route}">${htmlEscape(child.title || child.label)}</a></th>
           <td>${htmlEscape(String(child.count))}</td>
           <td>${htmlEscape(child.description || child.heading || '')}</td>
-          <td>${sub}</td>
         </tr>`;
   };
 
   const emptyRow = isHub
-    ? '<tr><td colspan="4">当前没有达到门槛的子页面。这不代表没有这类优惠，只代表我们手上的条目里还没有一类满足生成门槛。</td></tr>'
+    ? '<tr><td colspan="3">当前没有达到门槛的子页面。这不代表没有这类优惠，只代表我们手上的条目里还没有一类满足生成门槛。</td></tr>'
     : (useEvidence
       ? '<tr><td colspan="5">当前没有符合这一页判据的条目。这不代表没有这类优惠，只代表我们手上的条目里没有一条满足本页判据。</td></tr>'
       : '<tr><td colspan="5">当前没有符合这一分类、且有明确依据的条目。</td></tr>');
@@ -2978,6 +2797,17 @@ ${summary.map(row => `        <li data-summary-label="${htmlEscape(row.label)}" 
   // `spec.aliasReason` 仍在 `landing.js` 里随计划传入（配置侧保留溯源），
   // 只是不再有任何渲染路径把它写进页面。
 
+  // v3.0 Stage E：**厂商页的追加区块**（资料区块 + 它自己的 CSS）。
+  //
+  // ⚠️ t4 修复记录：这一块原先夹在「订阅声明」那几行之间（`const pageFeeds = …` 到
+  // `const feedTags = …`），而 t4 删订阅声明时把这一段一起删掉了 —— 症状是 vendor 页整块资料
+  // 消失、并且 `extraCss` / `extraHtml` 变成未定义（构建期 ReferenceError，好在 fail-fast）。
+  // 现在把它**独立地**放回这里：它与订阅无关；只有 vendor 会返回非空 bundle，其余 kind 返回空，
+  // 所以非厂商页的输出一个字节都没变（`check-reproducible` 替我们盯着这件事）。
+  const extraBundle = typeof context.extraSections === 'function' ? context.extraSections(spec) : null;
+  const extraHtml = extraBundle && extraBundle.html ? extraBundle.html : '';
+  const extraCss = extraBundle && extraBundle.css ? extraBundle.css : '';
+
   const pageCss = `  /* 只用首页已有的设计变量，不新建一套视觉语言 */
   .cstop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
   .cstop h1 { font-size: 19px; margin: 0; }
@@ -3073,7 +2903,6 @@ ${extraCss}`;
     canonicalUrl: pageUrl,
     robots: isAlias ? 'noindex, follow' : 'index, follow, max-image-preview:large',
     faviconHref: `${prefix}favicon.svg`,
-    feedTagsHtml: feedTags,
     extraCss: pageCss,
     jsonLdHtml: jsonLdBlocks,
     where: 'renderDirectoryPage'
@@ -3143,8 +2972,8 @@ function assemble() {
 
   const payload = JSON.parse(fs.readFileSync(path.join(ROOT, 'deals.json'), 'utf8'));
 
-  // 中文译文覆盖层：构建期贴一次，并把**贴好的**那份写进 dist/deals.json。
-  // 关键点——浏览器 fetch('deals.json') 拿到的和下面预渲染用的是同一份对象，
+  // 中文译文覆盖层：构建期贴一次，并把**贴好的**那份写进 dist/assets/data/offers.json。
+  // 关键点——浏览器 fetch('assets/data/offers.json') 拿到的和下面预渲染用的是同一份对象，
   // 于是「构建期预渲染」与「浏览器端渲染」仍然只有一条代码路径。
   // 译文只在 zh 字段，英文原文字段一个字节都不动。
   const zhAttached = attachZh(payload.deals);
@@ -3160,7 +2989,7 @@ function assemble() {
     throw new Error(`中文译文不合规（${zhAttached.report.skipped.length} 处），已阻止发布：\n${lines.join('\n')}`);
   }
 
-  // 分类归属在**构建期**由 `audience.collectionsOf` 一处算出，写进 `dist/deals.json` 的
+  // 分类归属在**构建期**由 `audience.collectionsOf` 一处算出，写进 `dist/assets/data/offers.json` 的
   // `collections` 字段；分类页与首页筛选器都读它。
   //
   // 于是「首页筛出来的条数」与「分类页列出的条数」**不可能不一致** —— 它们读的是同一份
@@ -3176,7 +3005,7 @@ function assemble() {
   }
 
   // 按需求入口的命中（v1.2）：同样在构建期由**一处**算出（`audience.needsOf`），
-  // 写进 `dist/deals.json` 的 `needs` 字段。页面生成、首页入口数字、断言都读这一份 ——
+  // 写进 `dist/assets/data/offers.json` 的 `needs` 字段。页面生成、首页入口数字、断言都读这一份 ——
   // 前端一个判据都不复刻（`collections` 那条注释里的教训在这里原样适用）。
   // 顺序由注册表决定（`NEED_PAGES` 的次序），所以同一份数据每次构建的序列化结果相同。
   for (const deal of payload.deals) {
@@ -3218,7 +3047,7 @@ function assemble() {
   //
   // 源数据里**不能**有 `history`（`validateDeal` 的白名单会拒，`check-reproducible` 也另有一条断言）：
   // 它是「时间维度的派生视图」，真值在 `scripts/data/deal-history.json`。
-  // 注入是有界的（每条最近 N 条 + 总数），保证浏览器只需 fetch 一次 deals.json，
+  // 注入是有界的（每条最近 N 条 + 总数），保证浏览器只需 fetch 一次 assets/data/offers.json，
   // 且弹层与静态详情页读到的历史**完全同源**（v1.3 那次 `known` 被渲染成「未知」的教训）。
   const historyStore = history.load();
   let historyStats = null;
@@ -3229,15 +3058,13 @@ function assemble() {
     // ⚠️ 空账本**不声称任何日期**（既不写构建时刻「今天」，也不拿 deals 的数据日期顶替）——
     // 它不是「没有变化」，只是「这一份账本里没有可公布的历史」。
     // 规则本体见 `lib/changes.js` 的「变化日志的可用性 → 数据出口 Manifest 的如实登记」。
-    fs.writeFileSync(path.join(OUT, 'deal-history.json'), `${JSON.stringify(historyStore.store, null, 2)}\n`, 'utf8');
     console.warn(`    ⚠️  历史日志不可用（${historyStore.broken || '文件缺失'}）——本次产物里没有变更记录，`
       + 'check:history 会报错；dist/deal-history.json 是**如实空账本**（无日期 / 无事件）');
   } else {
     historyStats = history.summarize(historyStore.store, payload.deals);
     payload.deals = history.attachToDeals(payload.deals, historyStore.store);
-    fs.writeFileSync(path.join(OUT, 'deal-history.json'), `${JSON.stringify(historyStore.store, null, 2)}\n`, 'utf8');
     console.log(`  变更记录: ${historyStats.events} 条事件 · 涉及 ${historyStats.recordsWithHistory} 条记录 · ` +
-      `起算日 ${historyStats.startedAt}（deal-history.json + 每条最近 ${history.RENDER_LIMIT} 条注入 dist/deals.json）`);
+      `起算日 ${historyStats.startedAt}（deal-history.json + 每条最近 ${history.RENDER_LIMIT} 条注入 dist/assets/data/offers.json）`);
   }
 
   // v1.5：变化雷达。**判据只有一处**（lib/changes.js 的 buildRadar），这里算一次，
@@ -3268,7 +3095,7 @@ function assemble() {
   // v1.7：落地页计划。**一次算清**「哪些页面该存在、每页收哪些条目、谁被跳过、为什么」，
   // 之后目录页生成、sitemap、首页入口行、页脚厂商行、Feed 声明与产物自检都读这一份。
   //
-  // 厂商门槛**复用订阅那一套常量**（feeds.VENDOR_THRESHOLDS）：页面与 Feed 的集合
+  // 厂商门槛**复用订阅那一套常量**（site.VENDOR_THRESHOLDS）：页面与 Feed 的集合
   // 因此在结构上不可能分头变化 —— 这正是 v1.6 报告里那条「URL 稳定性只兜住一半」的补法。
   const vendorEventCount = (() => {
     const counts = new Map();
@@ -3312,11 +3139,9 @@ function assemble() {
   const planHistoryAvailability = planHistoryLoad.missing || planHistoryLoad.broken ? 'unavailable' : 'ok';
   if (planHistoryAvailability !== 'ok') {
     // 与 `deal-history.json` 同一处置：发布**如实空账本**，让数据出口的 endpoint 自洽（无日期、无事件）。
-    fs.writeFileSync(path.join(OUT, 'plan-history.json'), `${JSON.stringify(planHistoryLoad.store, null, 2)}\n`, 'utf8');
     console.warn(`    ⚠️  套餐变化日志不可用（${planHistoryLoad.broken || '文件缺失'}）——本次产物里没有套餐变更记录，`
       + 'check:plan-history 会报错；dist/plan-history.json 是**如实空账本**（无日期 / 无事件）');
   } else {
-    fs.writeFileSync(path.join(OUT, 'plan-history.json'), `${JSON.stringify(planHistoryLoad.store, null, 2)}\n`, 'utf8');
   }
   const planRadar = planChanges.buildPlanRadar({
     plans: plansStore.plans,
@@ -3347,11 +3172,9 @@ function assemble() {
   const apiPlanHistoryAvailability = apiPlanHistoryLoad.missing || apiPlanHistoryLoad.broken ? 'unavailable' : 'ok';
   if (apiPlanHistoryAvailability !== 'ok') {
     // 同上：如实空账本，无日期 / 无事件。
-    fs.writeFileSync(path.join(OUT, 'api-plan-history.json'), `${JSON.stringify(apiPlanHistoryLoad.store, null, 2)}\n`, 'utf8');
     console.warn(`    ⚠️  API 计费变化日志不可用（${apiPlanHistoryLoad.broken || '文件缺失'}）——本次产物里没有 API 价格变更记录，`
       + 'check:api-plan-history 会报错；dist/api-plan-history.json 是**如实空账本**（无日期 / 无事件）');
   } else {
-    fs.writeFileSync(path.join(OUT, 'api-plan-history.json'), `${JSON.stringify(apiPlanHistoryLoad.store, null, 2)}\n`, 'utf8');
   }
   const apiPlanHistoryStore = apiPlanHistoryAvailability === 'ok' ? apiPlanHistoryLoad.store : null;
   {
@@ -3456,15 +3279,11 @@ function assemble() {
     table: modelsTable, links: modelLinksDoc, apiPlans: apiPlansStore.plans, plans: plansStore.plans, catalog: modelCatalog
   });
   const publishedModelLinksModelDoc = modelRegistry.publishedLinks(modelLinksDoc, modelsTable);
-  for (const [file, doc] of [['models.json', publishedModels], ['model-registry-links.json', publishedModelLinksModelDoc]]) {
-    fs.writeFileSync(path.join(OUT, file), modelRegistry.serialize(doc), 'utf8');
-    const shipped = path.join(ROOT, file);
-    if (fs.existsSync(shipped)) {
-      const a = fs.readFileSync(shipped, 'utf8');
-      const b = fs.readFileSync(path.join(OUT, file), 'utf8');
-      if (a !== b) throw new Error(`${file} 与仓库里那份派生产物不是逐字节相同（先跑 npm run models:rebuild）`);
-    }
-  }
+  // t4：原先这里把派生出的 models.json / model-registry-links.json 写进产物，并与仓库里那份
+  //（npm run models:rebuild 的产物）逐字节对账。产物里不再发布任何数据集（判据见
+  // lib/published-assets.js），所以**写盘与那条对账一起删除** —— 「派生产物可重建」这件事
+  // 本来就由 L2 门禁 check:models:reproducible 独立守着（它不依赖发布副本，比这里更强）。
+  // 页面与自检仍然用内存里的 publishedModels / publishedModelLinksModelDoc（见 return）。
   {
     const stats = modelRegistry.summarize(publishedModels);
     const coverageStats = modelRegistry.coverageOf({
@@ -3490,8 +3309,8 @@ function assemble() {
   PLAN = landing.planLandingPages({
     deals: payload.deals,
     vendorKeyOf: VENDOR_KEY_OF,
-    vendorSlugs: feeds.VENDOR_SLUGS,
-    vendorThresholds: feeds.VENDOR_THRESHOLDS,
+    vendorSlugs: site.VENDOR_SLUGS,
+    vendorThresholds: site.VENDOR_THRESHOLDS,
     eventCountOf: name => vendorEventCount.get(name) || 0,
     // v3.0 Stage E：五份 join 输入（不传时行为与 v2.x 逐字节相同，由 selftest:vendor 钉住）。
     plans: plansStore.plans,
@@ -3564,35 +3383,22 @@ function assemble() {
   }
   {
     const published = dealPlanLinks.publishedDoc(dealLinksLoad.doc);
-    fs.writeFileSync(path.join(OUT, 'deal-plan-links.json'), `${JSON.stringify(published, null, 2)}\n`, 'utf8');
     console.log(`  优惠 ↔ 套餐: ${dealLinksCheck.stats.links} 条当前关系 · 历史 ${dealLinksCheck.stats.retired} 条` +
       ` · 覆盖 ${dealLinksCheck.stats.plansWithCurrent}/${dealLinksCheck.stats.plans} 条套餐` +
       ` · 基准日 ${dealLinksAsOf || '未知'}` +
       (dealLinksCheck.stats.editorial ? ` · 人工判断 ${dealLinksCheck.stats.editorial} 条` : ''));
   }
 
-  const feedBundle = feeds.buildFeeds({
-    deals: payload.deals,
-    store: historyStore.store,
-    radar,
-    asOf: radarAsOf,
-    updatedAt: payload.updatedAt,
-    availability: radarAvailability,
-    vendorKeyOf: VENDOR_KEY_OF,
-    planRadar,
-    planAvailability: planHistoryAvailability,
-    plans: plansStore.plans,
-    providerTable,
-    // v3.0 Stage H：API 价格变化是**并列的第二条变化流**（各自一份日志、各自的起算日）。
-    // 不传这四项，API 那条 spec 就会按「没有拿到日志」渲染 —— 那正是 t4 里刻意避开的假话，
-    // 所以下面的产物自检会断言「日志可用时描述里不许出现『没有拿到』」。
-    apiPlanRadar,
-    apiPlanAvailability: apiPlanHistoryAvailability,
-    apiPlans: apiPlansStore.plans,
-    apiProviderTable: providerTable
-  });
+  // t4：这里原先是 Feed 的 `feedBundle`（`feeds.buildFeeds()`：把三份日志与注册表翻译成
+  // RSS 2.0 与 JSON Feed）。订阅子系统整体下架，这个 bundle 与它的全部消费者
+  //（首页订阅发现注入、每页的 rel="alternate" 标签、Feed 落盘、/feeds/ 页面、订阅自检）
+  // 一起删除。删掉它之后"页面声明的订阅源"这个概念在产物里不再存在 ——
+  // 这也是 `lib/seo.js` 删掉 `feed-declared` 检查码的原因。
 
-  fs.writeFileSync(path.join(OUT, 'deals.json'), `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
+  // 首页数据资产（t3：`assets/data/offers.json`）。`dist/assets/` 本来不存在（仓库里的 `assets/`
+  // 只有 `assets/logos/` 这个源目录），所以**必须先建目录**再写 —— 少了这一行就是 ENOENT。
+  fs.mkdirSync(path.dirname(path.join(OUT, OFFERS_ARTIFACT)), { recursive: true });
+  fs.writeFileSync(path.join(OUT, OFFERS_ARTIFACT), `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
   console.log(`  中文译文: ${summarizeZh(zhAttached.report)}`);
   zhAttached.report.stale.forEach(row =>
     console.warn(`    🔁 原文已变，译文已停用待复核: ${row.title} — ${row.message}`));
@@ -3631,12 +3437,9 @@ function assemble() {
   // 变化雷达条带（v1.5）：同样一行静态导航，紧跟按需求入口行。它与 /changes/ 页
   // 共用 RENDER-CORE 的渲染函数，读的是上面算好的同一份 radar。
   html = replaceMarker(html, '<!--PRERENDER:changes-->', renderCore.changesStripHtml(radar));
-  // 订阅发现（v1.6）：首页 <head> 只暴露四个订阅选择（全部优惠 / 最近变化 / 学生 / 开发者），
-  // 每个两种格式 = 8 条 rel="alternate"。**由注册表生成**，不在 index.html 里抄一份清单 ——
-  // 抄一份的后果是「改了注册表、忘了改 HTML」，而那种漂移没有任何东西会红。
-  html = replaceMarker(html, '<!--PRERENDER:feeds-->', feeds.feedLinkTags(
-    feedBundle.feeds.filter(feed => feed.spec.homepage), ''));
-  console.log(`  筛选条 / 汇总 / 分类选项 / 按需求入口 / 变化雷达 / 订阅发现: 已填充`);
+  // t4：这里原先是「订阅发现」（首页 <head> 里由 Feed 注册表现场生成 8 条 rel="alternate"）。
+  // 订阅子系统整体下架之后首页不再声明任何 Feed，这个注入点与 index.html 里的标记一起删掉了。
+  console.log(`  筛选条 / 汇总 / 分类选项 / 按需求入口 / 变化雷达: 已填充`);
 
   // 站点绝对地址：源码里不硬编码第二份 URL
   const urlSlots = html.split('__SITE_URL__').length - 1;
@@ -3685,12 +3488,10 @@ function assemble() {
   console.log(`  OG 分享图: ${(og.length / 1024).toFixed(1)} KB`);
   console.log(`    OG 自检: 标记 ${ogStats.white}px · 副标题 ${ogStats.pale}px · 底部说明 ${ogStats.faint}px`);
 
-  // Feed 图标：RSS <image> 与 JSON Feed 的 icon 都要一张 ≤144px 的点阵方图，
-  // OG 图（1200×630）不合规，所以现场画一张。同样走「画完立刻自检」。
-  const icon = renderIcon();
-  fs.writeFileSync(path.join(OUT, 'icon.png'), icon);
-  const iconStats = selfCheckIcon(icon);
-  console.log(`  Feed 图标: icon.png 144×144（${(icon.length / 1024).toFixed(1)} KB · 白块 ${iconStats.white}px）`);
+  // t4：这里原先还画一张 `icon.png`（Feed 的 `<image>` / JSON Feed 的 `icon` 都要它）。
+  // 订阅产物下架之后它没有消费者了 —— 一张只被 RSS 引用的点阵图不该继续躺着
+  //（决策 D3；`lib/og-image.js` 的 `renderIcon` / `selfCheckIcon` / `ICON_SIZE` 同批删除）。
+  // 它同样不该出现在产物里：产物资产门禁只认 favicon.svg 与 og-image.png 两张图。
 
   // 独立详情页（每条优惠一个静态 URL）+ sitemap
   const lastmod = String(payload.updatedAt || '').slice(0, 10);
@@ -3717,12 +3518,9 @@ function assemble() {
     // ⚠️ 这里**不再给 topic 注入标题**（secondary-page-intro-changes-v1）：模块标题固定为
     // 「最近变化」。上一版注入的是 `「${spec.title}」最近的变化`，读者已经在那一页上，
     // 标题只是把页面名再念一遍（prompt §11）。
-    const pageFeeds = feeds.feedsForPage(spec, feedBundle.feeds);
     const page = renderDirectoryPage(spec, matched, html, {
-      lastmod, summary, topic, plan: PLAN, feedsForPage: pageFeeds, allFeeds: feedBundle.feeds, renderCore,
-      // v3.0 Stage E：厂商页的六个资料区块（官方入口 / 优惠 / Coding 套餐 / API 计费 /
-      // 模型 / 最近变化 / 订阅）。只有 vendor 进入这个分支；其余 kind 返回空 bundle，
-      // 因此非厂商页的输出一个字节都没变（`check-reproducible` 会替我们盯着这件事）。
+      lastmod, summary, topic, plan: PLAN, renderCore,
+      // v3.0 Stage E：厂商页的资料区块（官方入口 / Coding 套餐 / API 计费 / 模型 / 最近变化）。
       //
       // `hasTopicChanges`：资料区块里那句「优惠变化见本页上方的「最近变化」块」必须只在
       // 上方**真的有**那一块时出现 —— 否则它指向空气（模块现在是条件渲染的）。
@@ -3736,10 +3534,9 @@ function assemble() {
           planHistoryStore,
           apiPlanHistoryStore,
           providerTable,
-          feeds: pageFeeds,
           hasTopicChanges: Boolean(topic && topic.sections && topic.sections.length),
           prefix: '../'.repeat(vendorSpec.depth || spec.depth || 1),
-          // 说明意图（notes-manifest-v1）：厂商页那六节 `.vsnote` 由 vendor-page.js 构造，
+          // 说明意图（notes-manifest-v1）：厂商页那五节 `.vsnote` 由 vendor-page.js 构造，
           // 登记入口连同 route 一起注入 —— 它不再是「调用方猜出来的条数」，而是构造点自己说出口。
           note: noteDeclarerFor(vendorSpec.route || spec.route)
         }))
@@ -3756,11 +3553,8 @@ function assemble() {
       indexable: spec.indexable, aliasOf: spec.aliasOf || null, pinned: Boolean(spec.pinned),
       itemIds: matched.map(deal => deal.id),
       childRoutes: spec.kind === 'hub' ? (spec.children || []).map(child => child.route) : [],
-      summary, feedIds: pageFeeds.map(feed => feed.spec.id),
-      // 「本页应该有哪份 Feed」取自**实际存在的那一份**（feedBundle），不按类型推断：
       // 钉住但跌破门槛的厂商页会照常生成，而它的 Feed 不会（Feed 门槛是另一道），
       // 按类型推断就会要求页面声明一份不存在的订阅源 —— 一条永远红的假警报。
-      feedMatch: pageFeeds.map(feed => feed.spec.id),
       // v3.0 Stage E：把门槛判据带下去 —— `seo.js` 的 `gate-threshold` 要用**同一条 OR**
       // （条数 / 历史事件 / 至少一种非优惠资料）判厂商页，否则「靠非优惠资料达标」的
       // 那几家会被判红（它们本来就是我们决定要生成的页面）。
@@ -3802,9 +3596,6 @@ function assemble() {
   fs.writeFileSync(path.join(changesDir, 'index.html'), renderChangesPage(radar, html, renderCore, {
     // 这一页订阅「变化」本身：声明变化 Feed 而不是全量 Feed（v1.5 报告 §九-5 的遗留项）。
     // v2.3：这一页同时列出**套餐变化**，所以那一份订阅也在这里声明（两者是两条独立的变化流）。
-    changeFeedTags: feeds.feedLinkTags(
-      feedBundle.feeds.filter(feed => (feed.spec.kind === 'changes' && feed.spec.id === 'changes')
-        || feed.spec.kind === 'plan-changes'), '../'),
     planChanges: planRadar,
     // v3.0 Stage H：第三条变化流（API 价格变化）也落在这一页上。
     apiPlanChanges: apiPlanRadar,
@@ -3828,7 +3619,6 @@ function assemble() {
     providerTable,
     planChanges: planRadar,
     planHistoryStore,
-    allFeeds: feedBundle.feeds,
     dealLinks: dealLinksView
   });
   // 说明意图：`/plans/coding/` 的**无 JS 提示**（`.snote.pnoscript`）是这一页对读者的
@@ -3870,7 +3660,6 @@ function assemble() {
     apiPlanHistoryStore,
     dealLinks: dealLinksView,
     // v3.0 Stage H4：这一页要在 <head> 里声明自己那份订阅源 —— 从注册表取，不写死 id。
-    allFeeds: feedBundle.feeds
   });
   notePage(apiPlansPage.API_PLANS_ROUTE, { kind: 'api-plans' });
   fs.writeFileSync(path.join(apiPlansDir, 'index.html'), apiPlansHtml, 'utf8');
@@ -3899,9 +3688,10 @@ function assemble() {
     apiPlanHistoryStore,
     dealLinks: dealLinksLoad.doc,
     deals: payload.deals,
-    asOf: dealLinksAsOf,
-    // v3.0 Stage G 落地之后，资料入口才给出「数据文档」链接（此前是刻意不给的死链）。
-    dataDocs: true
+    asOf: dealLinksAsOf
+    // t3：**删掉 `dataDocs: true`**。它唯一的用途是让 /plans/ 页面多渲染一条「数据出口」说明
+    // （deals.json / plans.json / api-plans.json / 数据文档四个链接）—— 那条说明整支删除，
+    // 参数也随之消失。留着它就是一个"传了没人读"的参数，下一个人会以为数据出口还在页面上。
   });
   notePage(plansHubPage.PLANS_HUB_ROUTE, { kind: 'plans-hub' });
   fs.writeFileSync(path.join(OUT, plansHubPage.PLANS_HUB_ROUTE, 'index.html'), plansHubHtml, 'utf8');
@@ -4131,162 +3921,26 @@ function assemble() {
       ` · 页面 ${(indexHtml.length / 1024).toFixed(1)} KB）`);
   }
 
-  // ---- v3.0 Stage G：Data Docs / 数据出口（/docs/data/ + /data/index.json）---------------
+  // ---- t4：数据出口子系统整体下架（原 v3.0 Stage G：Data Docs / 数据出口）----
   //
-  // 数据出口有三条硬承诺，全部可核对：
-  //   ① 文档里写出的**每个 endpoint 都必须真实存在**（构建期查产物目录，独立门禁另查 dist）；
-  //   ② 每个 schemaVersion / count / **updatedAt** 必须与磁盘逐字段一致；
-  //   ③ Manifest 条数 == 真实发布的数据集数。
-  // Manifest（`data/index.json`）**只描述数据集**（URL / 版本 / 更新时间 / 记录数 / 用途），
-  // 不复制任何数据 —— 它是"数据出口的门牌"，不是第四份数据。
+  // 这里原先是一整块数据出口设施：注册表形状断言、`buildManifestFromRegistry()`、
+  // `data/index.json`（Dataset Manifest）的写出、`/docs/data/` 页面的渲染与诚实性断言
+  // （三条硬承诺：文档里的每个 endpoint 都真实存在 / schemaVersion 与 count 逐字段一致 /
+  // Manifest 条数 == 真实发布的数据集数）。整块删除 —— 它描述的**公开数据面**本身被撤掉了：
+  // 产物里不再有任何数据集、没有 Manifest、也没有数据文档页；新的判据只有一条
+  // （`lib/published-assets.js`：产物里不许有数据文件，唯一例外是首页应用自己的
+  // `assets/data/offers.json`）。数据真值仍在仓库里（`plans.json` / `api-plans.json` /
+  // `scripts/data/**`），只是不再发布 —— 页面在构建期从真值渲染，读者不需要也不该下载它们。
   //
-  // 时间形状显式区分（题面点名）：`deals.json` 的 updatedAt 是**真实时刻**，
-  // plans / api-plans / models / links 是**日期规范化**（当天零点），变化日志是**纯日期**。
-  // v3.0 P2-25（`F-v3-export-001`）：公开数据集的**唯一注册表**是 `lib/data-docs.js` 的
-  // `PUBLIC_DATASETS`。这里只交出**运行期取值**（schemaVersion / updatedAt / count）——
-  // 名称、类别、发布地址、countNote 全在注册表里；Manifest、构建拷贝、`/docs/data/`
-  // 与产物扫描都从那一份派生。新增一份公开数据集 = 注册表加一行 + 这里给出它的取值；
-  // 只加了一边（注册表有、取值没有）会在这里硬失败，而不是悄悄少一份。
-  //
-  // ---- 变化日志不可用时：**如实登记**（p2-honesty-single-source-v1，闭合 t4 登记的缺口 A）----
-  //
-  // 缺口（t4 亲口登记、本轮源码级实测复现）：三份变化日志（`deal-history.json` /
-  // `plan-history.json` / `api-plan-history.json`）缺失或损坏时，页面按纪律必须说
-  // 「本次构建没有拿到…日志 —— 这不表示「没有变化」」；但构建**在 Dataset Manifest 那一步就死了**：
-  // manifest 的每条数据集都要求一个可识别的 `updatedAt`，而日志不可用时它该有的是「没有」——
-  // 于是那句诚实性措辞永远上不了线，不可用分支是**够不着的**。
-  //
-  // 处置：**不许用别的日期顶上**（既不许写构建时刻「今天」，也不许拿 deals 的数据日期冒充日志的日期），
-  // 而是把这条数据集显式登记成 `availability: 'unavailable'` + `updatedAt: null` + `updatedAtNote`
-  //（同一句「没有拿到日志」）。配套的是**三条新增断言**（比原来的"只看形状"更严）：
-  //   · 源不可用 ⇒ updatedAt 必须为 null（拿任何日期顶上即红）；
-  //   · 源不可用 ⇒ 必须显式登记 availability + 如实说明；
-  //   · 源可用   ⇒ 不许登记为 unavailable、不许留空 updatedAt。
-  // 只放过的两条"形状"抱怨由 `toleratedLogComplaints()` **从登记本身逐字生成**（不做模式匹配）：
-  // 忘了登记 ⇒ 抱怨照旧 ⇒ 红。失败方向始终是红。
-  //
-  // ⚠️ 规则本体在 `lib/changes.js`（纯函数，可被 `seo-selftest.js` 直接开牙），
-  // 因为 `lib/data-docs.js` 的 `assertManifestShape()` 不在本任务的写作用域里；
-  // 报告 §7 给了"把这段上移进 schema"的逐行补丁。
+  // ⚠️ 唯一活下来的是下面这三行 `logAvailability`：它不服务于 Manifest，而是**页面措辞**的判据
+  //（`/changes/`、套餐页、API 计费页与厂商页的 availability 分支靠它决定「没有拿到日志」这一句
+  // 要不要出现）。删掉它，那些页会静默退化成"没有变化"—— 那是假话，所以它必须留着。
   const logAvailability = changes.logAvailabilityOf({
     'deal-history': historyStore,
     'plan-history': planHistoryLoad,
     'api-plan-history': apiPlanHistoryLoad
   });
-  const unavailableLogIds = new Set(logAvailability.filter(item => item.availability !== 'ok').map(item => item.id));
-  const { markUnavailableLogDatasets, logDatasetHonestyProblems, toleratedLogComplaints } = changes;
-  const datasetRegistryProblems = dataDocs.assertDatasetRegistryShape();
-  if (datasetRegistryProblems.length) {
-    throw new Error(`公开数据集注册表（PUBLIC_DATASETS）不合法（${datasetRegistryProblems.length} 处）：\n  - ` +
-      `${datasetRegistryProblems.slice(0, 5).join('\n  - ')}`);
-  }
-  const { manifest: dataManifest, missingValues: missingDatasetValues } = dataDocs.buildManifestFromRegistry({
-    deals: {
-      schemaVersion: payload.schemaVersion, updatedAt: payload.updatedAt,
-      count: typeof payload.count === 'number' ? payload.count : (payload.deals || []).length
-    },
-    plans: {
-      schemaVersion: plansStore.schemaVersion, updatedAt: plansStore.updatedAt, count: plansStore.count
-    },
-    'api-plans': {
-      schemaVersion: apiPlansStore.schemaVersion, updatedAt: apiPlansStore.updatedAt, count: apiPlansStore.count
-    },
-    models: {
-      schemaVersion: publishedModels.schemaVersion, updatedAt: publishedModels.updatedAt, count: publishedModels.count
-    },
-    'model-registry-links': {
-      schemaVersion: publishedModelLinksModelDoc.schemaVersion,
-      updatedAt: publishedModelLinksModelDoc.updatedAt,
-      count: publishedModelLinksModelDoc.count
-    },
-    'deal-plan-links': {
-      schemaVersion: dealLinksLoad.doc.schemaVersion,
-      updatedAt: dealPlanLinks.canonicalUpdatedAt(dealLinksLoad.doc),
-      count: (dealLinksLoad.doc.links || []).length
-    },
-    'deal-history': {
-      schemaVersion: historyStore.store.schemaVersion, updatedAt: historyStore.store.startedAt,
-      count: (historyStore.store.events || []).length
-    },
-    // ⚠️ 这里读的是**加载结果里的账本**（`…Load.store`），不是「不可用时 = null」的便利变量
-    // （`planHistoryStore` / `apiPlanHistoryStore`）—— 后者只为「这一页要不要渲染变化块」服务。
-    // `lib/plan-history.js` 的 `load()` 契约写明「不存在或损坏时不抛，且 `store` 总是可用」
-    // （不可用时是**如实空账本**：`startedAt: null`、0 事件、0 基线）。读便利变量就是
-    // `Cannot read properties of null` —— 那正是 t29 修的缺陷：日志不可用时构建崩在 Manifest 这一步，
-    // 「没有拿到日志」这句诚实性措辞永远上不了线。隔壁 deal-history 那一条一直是对的参照。
-    'plan-history': {
-      schemaVersion: planHistoryLoad.store.schemaVersion, updatedAt: planHistoryLoad.store.startedAt,
-      count: (planHistoryLoad.store.events || []).length
-    },
-    'api-plan-history': {
-      schemaVersion: apiPlanHistoryLoad.store.schemaVersion, updatedAt: apiPlanHistoryLoad.store.startedAt,
-      count: (apiPlanHistoryLoad.store.events || []).length
-    }
-  });
-  if (missingDatasetValues.length) {
-    throw new Error(`PUBLIC_DATASETS 登记了这些公开数据集，但本次构建没有交出它们的取值：` +
-      `${missingDatasetValues.join('、')}（在 build-local.js 的 buildManifestFromRegistry() 调用里补上 ` +
-      `schemaVersion / updatedAt / count）`);
-  }
-  {
-    const dir = path.join(OUT, 'data');
-    fs.mkdirSync(dir, { recursive: true });
-    // ★ 如实登记必须在**写盘之前**：标记要落进 data/index.json（页面与独立门禁都读它）。
-    markUnavailableLogDatasets(dataManifest, logAvailability);
-    fs.writeFileSync(path.join(dir, 'index.json'), `${JSON.stringify(dataManifest, null, 2)}\n`, 'utf8');
-    const tolerated = toleratedLogComplaints(dataManifest);
-    const shapeProblems = dataDocs.assertManifestShape(dataManifest).filter(problem => !tolerated.has(problem));
-    const honestyProblems = logDatasetHonestyProblems(dataManifest, logAvailability);
-    const manifestProblems = [...shapeProblems, ...honestyProblems];
-    if (manifestProblems.length) {
-      throw new Error(`Dataset Manifest 形状/诚实性不合法（${manifestProblems.length} 处）：\n  - ${manifestProblems.slice(0, 5).join('\n  - ')}`);
-    }
-    if (unavailableLogIds.size) {
-      console.log(`  ⚠️  变化日志不可用（${[...unavailableLogIds].join('、')}）——Manifest 按「如实不可用」登记`
-        + `（updatedAt: null + availability: unavailable + 说明），页面按纪律说「没有拿到日志」，不用别的日期顶替`);
-    }
-  }
-  const dataLicense = ['LICENSE', 'LICENSE.md', 'COPYING'].find(file => fs.existsSync(path.join(ROOT, file)));
-  const dataDocsCtx = {
-    note: noteDeclarerFor(dataDocs.DATA_DOCS_ROUTE),
-    manifest: dataManifest,
-    // 许可证状态**从仓库现状读**，不写死：没有就说没有，并列为"需项目所有者决定"。
-    license: dataLicense ? { status: 'present', file: dataLicense } : { status: 'absent' },
-    siteUrl: SITE_URL,
-    prefix: '../../',
-    // 三份对账的回调：构建期查的产物目录**就是刚写下的这一份**（独立门禁会另查一遍）。
-    endpointExists: url => fs.existsSync(path.join(OUT, url)),
-    actualSchemaVersions: Object.fromEntries(dataManifest.datasets.map(dataset => [dataset.id, dataset.schemaVersion])),
-    actualCounts: Object.fromEntries(dataManifest.datasets.map(dataset => [dataset.id, dataset.count])),
-    actualUpdatedAt: Object.fromEntries(dataManifest.datasets.map(dataset => [dataset.id, dataset.updatedAt]))
-  };
-  {
-    const docsDir = path.join(OUT, 'docs', 'data');
-    fs.mkdirSync(docsDir, { recursive: true });
-    const body = dataDocs.renderDataDocsPage(dataDocsCtx);
-    const docsHtml = renderStaticPage({
-      kind: 'data-docs',
-      route: dataDocs.DATA_DOCS_ROUTE,
-      title: dataDocs.DATA_DOCS_HEADING,
-      description: dataDocs.DATA_DOCS_DESCRIPTION,
-      body,
-      jsonLd: dataDocs.dataDocsJsonLd(dataDocsCtx),
-      prefix: '../../',
-      extraCss: DATA_DOCS_PAGE_CSS
-    }, html);
-    notePage(dataDocs.DATA_DOCS_ROUTE, { kind: 'data-docs' });
-    fs.writeFileSync(path.join(docsDir, 'index.html'), docsHtml, 'utf8');
-    const pageHonestyProblems = dataDocs.assertPageHonesty(docsHtml, dataDocsCtx)
-      .filter(problem => !toleratedLogComplaints(dataManifest).has(problem));
-    if (pageHonestyProblems.length) {
-      throw new Error(`数据文档页的诚实性断言未通过（${pageHonestyProblems.length} 处）：\n  - ${pageHonestyProblems.slice(0, 5).join('\n  - ')}`);
-    }
-    console.log(`  数据出口: /docs/data/（${dataManifest.count} 份数据集 · Manifest /data/index.json` +
-      ` · 时间形状 真实时刻 ${dataManifest.datasets.filter(d => d.updatedAtShape === 'timestamp').length} /` +
-      ` 日期规范化 ${dataManifest.datasets.filter(d => d.updatedAtShape === 'date-normalized').length} /` +
-      ` 纯日期 ${dataManifest.datasets.filter(d => d.updatedAtShape === 'date').length}` +
-      ` · License ${dataLicense || '未定（需项目所有者决定）'}）`);
-  }
+
 
   const dealUrls = detailPages.map(page => `  <url>
     <loc>${page.url}</loc>
@@ -4325,9 +3979,6 @@ function assemble() {
     // （历史 event 本身不生成页面 —— §F4）。
     `${SITE_URL}${archiveLib.ARCHIVE_INDEX_ROUTE}`,
     ...gatedArchiveEntries.map(entry => `${SITE_URL}${archiveLib.archiveEntryRoute(entry)}`),
-    // v3.0 Stage G：数据文档页进 sitemap（它是数据出口的门牌，不是叶子）。
-    // `/data/index.json` 与各数据集是**静态文件**，不进 sitemap（它们不是页面）。
-    `${SITE_URL}${dataDocs.DATA_DOCS_ROUTE}`,
     ...detailPages.map(page => page.url)];
 
   // 状态页也进 sitemap（五条既有约定的第三条，v1.1 收口补）。
@@ -4351,19 +4002,6 @@ function assemble() {
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>`;
-
-  // 订阅中心进 sitemap：priority 0.6 **低于**详情页 0.7 —— 它是给「想订阅的人」的
-  // 工具页（列出全部 Feed 地址），不是读者找优惠的入口。声明与实际用途必须一致，
-  // 这和状态页拿 0.3 是同一条理由。
-  const feedsUrl = `  <url>
-    <loc>${SITE_URL}feeds/</loc>
-    <lastmod>${lastmod}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>`;
-
-  // v3.0 Stage F：档案索引与厂商枢纽同级（0.8 —— 它是入口，但内容随历史增长），
-  // 档案详情是追溯用的叶子（0.6，低于优惠/模型详情 0.7）。值全部取自 page-kinds 的声明。
   const archiveIndexUrl = `  <url>
     <loc>${SITE_URL}${archiveLib.ARCHIVE_INDEX_ROUTE}</loc>
     <lastmod>${lastmod}</lastmod>
@@ -4379,16 +4017,6 @@ function assemble() {
 
   // v3.0 Stage G：数据文档页的 sitemap 声明（priority 0.6 —— 它是给"要取数据的人"的入口，
   // 与订阅中心同级；不是读者找优惠的入口）。
-  const dataDocsUrl = `  <url>
-    <loc>${SITE_URL}${dataDocs.DATA_DOCS_ROUTE}</loc>
-    <lastmod>${lastmod}</lastmod>
-    <changefreq>${pageKinds.sitemapMeta('data-docs').changefreq}</changefreq>
-    <priority>${pageKinds.sitemapMeta('data-docs').priority}</priority>
-  </url>`;
-
-  // v3.0 Stage B：/plans/ 是所有套餐与计费资料的**入口**，优先级与两个对比页同级（0.9）。
-  // 值来自 `lib/page-kinds.js` 的声明（`sitemapMeta('plans-hub')`），不再手写一遍 ——
-  // 新增页面家族时"忘了一处 priority"正是这张表要消灭的那类不一致。
   const plansHubUrl = `  <url>
     <loc>${SITE_URL}${plansHubPage.PLANS_HUB_ROUTE}</loc>
     <lastmod>${lastmod}</lastmod>
@@ -4444,7 +4072,6 @@ function assemble() {
 ${directoryUrls}
 ${statusUrl}
 ${changesUrl}
-${feedsUrl}
 ${plansHubUrl}
 ${modelsIndexUrl}
 ${archiveIndexUrl}
@@ -4453,53 +4080,13 @@ ${apiPlansUrl}
 ${dealUrls}
 ${modelUrls}
 ${archiveDetailUrls}
-${dataDocsUrl}
 </urlset>
 `, 'utf8');
 
-  // 订阅产物（v1.6）：注册表在 lib/feeds.js，这里只负责落盘与日志。
-  //
-  // 三类语义各自成 Feed（优惠 / 变化 / 厂商），判据**全部引用既有注册表**：
-  // 优惠 Feed 用 audience.js 的谓词、变化 Feed 用 radar 的同一份分栏结果。
-  // 因此自检能拿「Feed 条目集合」与「页面表格行集合」逐条 id 对账，不需要第二份判据。
-  for (const feed of feedBundle.feeds) {
-    const file = path.join(OUT, feed.spec.path);
-    fs.mkdirSync(path.dirname(file), { recursive: true });
-    fs.writeFileSync(file, feed.rss, 'utf8');
-    fs.writeFileSync(path.join(OUT, feed.spec.jsonPath), feed.json, 'utf8');
-  }
-  const feedStats = feeds.summarize(feedBundle.feeds);
-  console.log(`  订阅产物: ${feedStats.count} 个 Feed × 2 种格式 = ${feedStats.files} 个文件 · ` +
-    `共 ${feedStats.items} 条条目（优惠 ${feedStats.perKind.collection} 个 / 变化 ${feedStats.perKind.changes} 个）` +
-    (feedStats.empty.length ? ` · 空 Feed：${feedStats.empty.join('、')}（已显式允许）` : ''));
-  if (feedBundle.vendorUnmapped.length) {
-    console.warn(`    ⚠️  ${feedBundle.vendorUnmapped.length} 家够门槛的厂商没在 vendor-slugs.json 里登记，` +
-      `本轮不生成它们的订阅：${feedBundle.vendorUnmapped.join('、')}`);
-  }
-  if (feedBundle.vendorSkipped.length) {
-    console.warn(`    ⚠️  跳过 ${feedBundle.vendorSkipped.length} 个厂商 Feed（当前有效优惠为 0）：` +
-      `${feedBundle.vendorSkipped.map(row => row.vendor).join('、')}`);
-  }
-
-  // 订阅中心 /feeds/：把注册表原样摊开给读者，顺带解释「变化订阅为什么现在是空的」。
-  {
-    const feedsDir = path.join(OUT, 'feeds');
-    fs.mkdirSync(feedsDir, { recursive: true });
-    fs.writeFileSync(path.join(feedsDir, 'index.html'),
-      renderFeedsPage(feedBundle.feeds, html, {
-        lastmod,
-        asOf: radarAsOf,
-        availability: radarAvailability,
-        startedAt: historyStats ? historyStats.startedAt : null,
-        planAvailability: planHistoryAvailability,
-        planStartedAt: planRadar.startedAt,
-        // v3.0 Stage H：API 那条有自己的可用性（起算日已由 `spec.startedAt` 逐条带上）。
-        apiPlanAvailability: apiPlanHistoryAvailability,
-        changeAvailabilityOf: spec => (spec.changeSource === 'api'
-          ? apiPlanHistoryAvailability : planHistoryAvailability)
-      }), 'utf8');
-    console.log(`  订阅中心: /feeds/（${feedStats.count} 个 Feed，RSS + JSON Feed 各一份）`);
-  }
+  // t4：订阅产物（25 个 Feed × 2 种格式）、厂商 Feed 的跳过/未登记警告、以及 /feeds/ 订阅中心
+  // 页面本身，全部随订阅子系统整体下架一起删除。这一段的坏法从来不是「页面看起来不对」：
+  // Feed 是**可下载的订阅产物**，页面只是它们的目录 —— 页面删了而文件还在，那道门就没人守了。
+  // 现在这两件事由 lib/published-assets.js 的产物资产门禁兜底（feed* 一个都不许发布）。
 
   // 数据源状态：把采集写入的心跳文件发布出去（机器可读），并生成一页可读的 /status/。
   // 文件缺失（还没跑过一次成功采集）时生成「暂无数据」页，而不是让构建失败——
@@ -4507,7 +4094,9 @@ ${dataDocsUrl}
   // ⚠️ `healthStore / healthDoc` 在前面派生 `sourceFacts` 时已经加载过一次 —— 这里复用，
   // 不重新 load：两次 load 之间文件若被采集改动，页面上的「来源状态」与记录上的
   // 「最近成功采集」就会来自两个不同版本的心跳，而两边各自看都自洽。
-  fs.writeFileSync(path.join(OUT, 'source-health.json'), `${JSON.stringify(healthDoc, null, 2)}\n`, 'utf8');
+  // t4：**这里原先写一份 source-health.json 到产物里** —— 已删除（产物里不许有数据文件）。
+  // ⚠️ 注意别把它改成写仓库真值：`scripts/data/source-health.json` 是**采集写的心跳文件**，
+  // 构建期对它只有读的权限（下面的 /status/ 对账就是读它）。写进去等于构建流程篡改采集证据。
   const statusDir = path.join(OUT, 'status');
   fs.mkdirSync(statusDir, { recursive: true });
   fs.writeFileSync(path.join(statusDir, 'index.html'), renderStatusPage(healthDoc, html), 'utf8');
@@ -4521,7 +4110,7 @@ ${dataDocsUrl}
     healthSources: healthSummary.total,
     healthStatusText: healthSummary.rows.map(row => `${row.source}=${row.status}`).join(','),
     // 目录页交给自检做**逐条回读对账**：文件存在不算数，页面上的条目集合
-    // 必须与 dist/deals.json 里 `collections` / `needs` 的筛选结果逐个 id 对得上。
+    // 必须与 dist/assets/data/offers.json 里 `collections` / `needs` 的筛选结果逐个 id 对得上。
     // v1.2：两类页面（分类页与按需求页）都在这一个列表里，`collectionPages` 保留为
     // 它的过滤视图，既有断言不用改。
     directoryPages,
@@ -4555,15 +4144,22 @@ ${dataDocsUrl}
     apiPlanRadarStats,
     apiPlanHistoryAvailability,
     // v2.4：优惠 ↔ 套餐关系。自检要拿**这一份**（构建期算出来的视图）去回读对账：
-    // dist/deals.json 的注入、dist/deal-plan-links.json、优惠页与套餐页上的文字都必须与它逐条一致。
+    // dist/assets/data/offers.json 的注入、dist/deal-plan-links.json、优惠页与套餐页上的文字都必须与它逐条一致。
     dealLinksDoc: dealLinksLoad.doc,
     dealLinksView,
     dealLinksByDeal,
     dealLinksAsOf,
-    // v1.6：订阅层交给自检做**回读对账**（内存条目 ↔ RSS 回读 ↔ JSON 回读 + 语义不变量）。
-    // 判据不重算：validate() 用的就是构建期这一份 feedBundle。
-    feedBundle,
-    feedStats,
+    // t4：订阅层的回读对账随订阅子系统下架一起删除（feedBundle / feedStats 不再存在）；
+    // 数据出口的 Manifest 同批删除；**发布副本**那一批断言也一并处置 —— 数据现在只从仓库根
+    // 真值或构建期内存对象读（见 selfCheck 里各处的注释）。下面是自检需要的构建期对象，
+    // 它们原先靠「从 dist 回读」拿到，现在直接传入：
+    publishedModelsDoc: publishedModels,
+    modelLinksDoc,
+    plansStore,
+    apiPlansStore,
+    historyStore,
+    planHistoryLoad,
+    apiPlanHistoryLoad,
     // v3.0 Stage D5/D6：模型页的规模与门槛结果 —— sitemap 对账（详情页条数 / 未过门槛的不许进）
     // 与产物自检都从这里取，不各算一遍。
     modelGates,
@@ -4577,9 +4173,6 @@ ${dataDocsUrl}
     archiveAsOf,
     archiveDetailCount: gatedArchiveEntries.length,
     archiveDetailRoutes: gatedArchiveEntries.map(entry => archiveLib.archiveEntryRoute(entry)),
-    // v3.0 Stage G：数据出口的 Manifest（页面与自检读同一份）
-    dataManifest,
-    dataLicense: dataLicense || null,
     // 变化日志的**可用性登记**（自检据此区分「分栏齐」与「如实说没有拿到日志」两支；
     // 规则本体在 lib/changes.js，见 p2-honesty-single-source-v1）。
     logAvailability,
@@ -4589,7 +4182,6 @@ ${dataDocsUrl}
       '',
       'status/',
       'changes/',
-      'feeds/',
       plansHubPage.PLANS_HUB_ROUTE,
       plansPage.PLANS_ROUTE,
       apiPlansPage.API_PLANS_ROUTE,
@@ -4597,7 +4189,6 @@ ${dataDocsUrl}
       ...gatedModels.map(model => modelsPage.modelHrefOf(model)),
       archiveLib.ARCHIVE_INDEX_ROUTE,
       ...gatedArchiveEntries.map(entry => archiveLib.archiveEntryRoute(entry)),
-      dataDocs.DATA_DOCS_ROUTE,
       ...detailPages.map(page => `deal/${encodeURIComponent(page.id)}/`),
       ...directoryPages.map(page => page.route)
     ])
@@ -4605,14 +4196,22 @@ ${dataDocsUrl}
 }
 
 /**
- * 把页面级说明的**意图清单**写进产物（`dist/_notes.ndjson`）。
+ * 把页面级说明的**意图清单**写到产物目录的**兄弟文件**（`<FINAL_OUT>.notes.ndjson`）。
  *
- * 位置在 `assemble()` 的最后一步：此时全部页面都已经写进暂存目录，清单是本次构建的
- * 意图侧快照；紧接着 `selfCheck()` 会回读刚生成的 HTML 与它逐页对账（渲染侧）。
+ * 时机：`main()` 里是 `assemble()` → `selfCheck()` → `promoteStaging()` **之后**（t3 调整过顺序）。
+ * 理由：清单描述的是「这一份产物打算输出哪些说明」，所以它应当**跟着产物一起出现**。
+ * 失效方式（这就是调整顺序的原因）：留在 `selfCheck()` 之前写 —— 一次失败的构建（说明对不上、
+ * 或任何别的自检红）也会在仓库根留下一份「描述了一份从未就位的产物」的清单，
+ * 接着跑 `verify-site --dir=<产物副本>` 的人会把这份陈旧清单当成意图侧，看到一堆无法解释的红。
+ *
+ * 与自检的关系：`noteManifestSelfCheck()` **不读这个文件**（它用内存里的 `noteIntent` +
+ * 回读 `OUT` 的 HTML 做对账），所以把它放到 `selfCheck()` 之后不影响自检；真正读它的是
+ * 独立进程的真浏览器门禁（`verify-site.js` §22c ⑨）。
  * 文件是 NDJSON（见本节开头「为什么不是 `.json`」），页按 route 排序 ⇒ 连续两次构建逐字节一致。
  */
 function writeNotesManifest() {
-  fs.writeFileSync(path.join(OUT, NOTES_MANIFEST_FILE), notesManifestText(), 'utf8');
+  fs.mkdirSync(path.dirname(NOTES_MANIFEST_PATH), { recursive: true });
+  fs.writeFileSync(NOTES_MANIFEST_PATH, notesManifestText(), 'utf8');
 }
 
 /**
@@ -4648,24 +4247,10 @@ function selfCheck(built) {
    * `startedAt: null`、0 事件、0 基线），**不是**整条跳过 —— 跳过就放过了「产物里凭空冒出一个日期」
    * 这种坏法，而那正是这一层要挡的。（口径与 deal-history 侧一致：那边由 `verifyStore` 的可用性分支守着。）
    */
-  const checkPublishedLog = (label, publishedPath, sourcePath, load) => {
-    if (!fs.existsSync(publishedPath)) { fail(`缺少 ${label}（它进产物）`); return; }
-    const published = fs.readFileSync(publishedPath, 'utf8');
-    if (load.missing || load.broken) {
-      const expected = `${JSON.stringify(load.store, null, 2)}\n`;
-      if (published !== expected) {
-        fail(`dist/${label} 不是如实空账本（源日志不可用：${load.broken || '文件缺失'}）——`
-          + '不可用时不拿任何日期顶替，产物必须与内存里那份空账本逐字节相同');
-      } else {
-        console.log(`  ✓ ${label}: 源日志不可用（${load.broken || '文件缺失'}）⇒ 产物是**如实空账本**（无日期 / 无事件）`);
-      }
-      return;
-    }
-    if (!fs.existsSync(sourcePath)) { fail(`缺少源 ${path.relative(ROOT, sourcePath)}`); return; }
-    const source = fs.readFileSync(sourcePath, 'utf8');
-    if (source !== published) fail(`dist/${label} 与源脚本的日志不是逐字节相同`);
-    else console.log(`  ✓ ${label}: 与源日志逐字节相同（${(published.length / 1024).toFixed(1)} KB）`);
-  };
+  // t4：这里原先是 `checkPublishedLog()` —— 「产物里那份日志副本 == 源日志（或如实空账本）」的对账。
+  // 日志副本不再发布（产物里不许有数据文件），这条断言随之删除：它与 L2 的 `check:plan-history` /
+  // `check:api-plan-history` 判的是同一件事（源 ⇄ 派生），而那两条不依赖发布副本、更强。
+  // 页面侧的口径一条都没放松：日志不可用时页面仍必须说「没有拿到日志」（见下面各页的断言）。
 
   /**
    * 两份变化日志在**自检**里的视图（t29）：与构建期那一次同一口径 ——
@@ -4676,9 +4261,11 @@ function selfCheck(built) {
    */
   const planLogSelf = planHistory.load();
   const apiPlanLogSelf = apiPlanHistory.load();
-  const distLogView = (rel, load) => ((load.missing || load.broken)
-    ? null
-    : JSON.parse(fs.readFileSync(path.join(OUT, rel), 'utf8')));
+  // t4：原先这里读的是**产物里的那一份**日志副本（deal-history.json 等）。产物里不再有数据文件
+  //（判据在 lib/published-assets.js），所以这里直接用构建期加载结果，语义完全一致：
+  // 加载失败（缺失 / 损坏）⇒ null（模块走它的「没有拿到日志」分支，断言要求页面如实说出来）；
+  // 加载成功 ⇒ 那份账本。两边的差别只有「读盘上副本还是内存对象」，而副本本来就是内存对象的序列化。
+  const distLogView = (rel, load) => ((load.missing || load.broken) ? null : load.store);
 
   for (const file of [...PUBLIC_FILES, ...GENERATED_FILES]) {
     const ok = fs.existsSync(path.join(OUT, file));
@@ -4714,8 +4301,8 @@ function selfCheck(built) {
     else console.log(`  ✓ logo: ${rules.length} 条规则 → logos/ ${fs.readdirSync(logoDir).length} 个文件`);
   }
 
-  const payload = JSON.parse(fs.readFileSync(path.join(OUT, 'deals.json'), 'utf8'));
-  console.log(`  deals.json: schemaVersion=${payload.schemaVersion}, count=${payload.count}, updatedAt=${payload.updatedAt}`);
+  const payload = JSON.parse(fs.readFileSync(path.join(OUT, OFFERS_ARTIFACT), 'utf8'));
+  console.log(`  ${OFFERS_ARTIFACT}: schemaVersion=${payload.schemaVersion}, count=${payload.count}, updatedAt=${payload.updatedAt}`);
   if (payload.schemaVersion !== 2) fail('schemaVersion 不是 2');
   if (payload.count !== payload.deals.length) fail('count 与 deals 长度不一致');
 
@@ -4726,22 +4313,14 @@ function selfCheck(built) {
   // 所以这里断言的是最强的那一种 —— **逐字节相等**。
   // 一旦将来要在构建期给它注入派生字段（比如 provider 显示名），这条断言会立刻变红，
   // 逼人把「注入什么」写下来 —— 那正是它该干的事。
+  // t4：这里原先断言「产物里的 plans.json 与源文件逐字节相同」。产物里不再发布这份数据集，
+  // 那条断言随之删除 —— 替代者是既有的 L2 门禁 `check:plans:reproducible`（判「源 ⇄ 派生」，
+  // 不依赖发布副本）。**页面与数据的对账一条都没少**：下面仍从内存 store 回读页面逐项比对。
   {
-    const publishedPlans = path.join(OUT, 'plans.json');
-    const sourcePlans = path.join(ROOT, 'plans.json');
-    if (!fs.existsSync(publishedPlans)) fail('缺少 plans.json（v2.1 起它在 PUBLIC_FILES 里）');
-    else {
-      const a = fs.readFileSync(sourcePlans, 'utf8');
-      const b = fs.readFileSync(publishedPlans, 'utf8');
-      if (a !== b) fail('dist/plans.json 与源 plans.json 不是逐字节相同');
-      else console.log(`  ✓ plans.json: 与源文件逐字节相同（${(b.length / 1024).toFixed(1)} KB）`);
-    }
 
     // v2.3：套餐变化日志同样**逐字节**发布（读者能下载到的那一份必须与真值一致）。
     // 可用 / 不可用两种口径见 `selfCheck` 顶部的 `checkPublishedLog()`（t29：日志不可用时
     // 断言「产物就是如实空账本」，而不是整条跳过）。
-    checkPublishedLog('plan-history.json', path.join(OUT, 'plan-history.json'),
-      path.join(ROOT, 'scripts', 'data', 'plan-history.json'), planHistory.load());
 
     // 套餐对比页：**从磁盘回读**再跑一遍诚实性断言。
     //
@@ -4753,7 +4332,7 @@ function selfCheck(built) {
     else {
       // 真值取**发布出去的那一份**（`dist/plans.json`）而不是仓库里的源：这一页的载荷是
       // 页面自己的派生数据，它必须与"读者能下载到的那份数据集"一致（v2.1 已断言 dist 与源逐字节相同）。
-      const diskPlans = JSON.parse(fs.readFileSync(path.join(OUT, 'plans.json'), 'utf8'));
+      const diskPlans = JSON.parse(fs.readFileSync(path.join(ROOT, 'plans.json'), 'utf8'));
       const diskTable = providers.load().table;
       const diskHtml = fs.readFileSync(plansPageFile, 'utf8');
       // t29：变化日志的**自检视图**与构建期那一次同一口径（不可用 ⇒ null ⇒ 模块走它的
@@ -4799,26 +4378,17 @@ function selfCheck(built) {
   //
   // 与 plans 同一条纪律：这一层在发布链上**没有任何变换**，所以断言的是最强的那一种。
   // 一旦将来要在构建期给它注入派生字段（比如模型显示名映射），这条断言会立刻变红。
+  // t4：同 plans：产物里不再发布 api-plans.json，「发布副本 == 源」那条断言删除
+  //（替代者是 L2 的 `check:api-plans:reproducible`）。页面与内存 store 的对账保留。
   {
-    const publishedApiPlans = path.join(OUT, 'api-plans.json');
-    const sourceApiPlans = path.join(ROOT, 'api-plans.json');
-    if (!fs.existsSync(publishedApiPlans)) fail('缺少 api-plans.json（v2.5 起它在 PUBLIC_FILES 里）');
-    else {
-      const a = fs.readFileSync(sourceApiPlans, 'utf8');
-      const b = fs.readFileSync(publishedApiPlans, 'utf8');
-      if (a !== b) fail('dist/api-plans.json 与源 api-plans.json 不是逐字节相同');
-      else console.log(`  ✓ api-plans.json: 与源文件逐字节相同（${(b.length / 1024).toFixed(1)} KB）`);
-    }
 
     // v2.5：API 计费变化日志同样逐字节发布 —— 可用/不可用两种口径与上面 `plan-history.json` 同一把尺子。
-    checkPublishedLog('api-plan-history.json', path.join(OUT, 'api-plan-history.json'),
-      path.join(ROOT, 'scripts', 'data', 'api-plan-history.json'), apiPlanHistory.load());
 
     // API 计费页：**从磁盘回读**再跑一遍诚实性断言（与套餐页同一个理由）。
     const apiPlansPageFile = path.join(OUT, apiPlansPage.API_PLANS_ROUTE, 'index.html');
     if (!fs.existsSync(apiPlansPageFile)) fail(`缺少 ${apiPlansPage.API_PLANS_ROUTE}index.html`);
     else {
-      const diskApiPlans = JSON.parse(fs.readFileSync(path.join(OUT, 'api-plans.json'), 'utf8'));
+      const diskApiPlans = JSON.parse(fs.readFileSync(path.join(ROOT, 'api-plans.json'), 'utf8'));
       const diskApiHistory = distLogView('api-plan-history.json', apiPlanLogSelf);
       const diskHtml = fs.readFileSync(apiPlansPageFile, 'utf8');
       const pageProblems = [
@@ -4869,8 +4439,8 @@ function selfCheck(built) {
     if (!fs.existsSync(hubFile)) fail(`缺少 ${plansHubPage.PLANS_HUB_ROUTE}index.html`);
     else {
       const diskHtml = fs.readFileSync(hubFile, 'utf8');
-      const diskPlans = JSON.parse(fs.readFileSync(path.join(OUT, 'plans.json'), 'utf8'));
-      const diskApiPlans = JSON.parse(fs.readFileSync(path.join(OUT, 'api-plans.json'), 'utf8'));
+      const diskPlans = JSON.parse(fs.readFileSync(path.join(ROOT, 'plans.json'), 'utf8'));
+      const diskApiPlans = JSON.parse(fs.readFileSync(path.join(ROOT, 'api-plans.json'), 'utf8'));
       const diskPlanHistory = distLogView('plan-history.json', planLogSelf);
       const diskApiPlanHistory = distLogView('api-plan-history.json', apiPlanLogSelf);
       const pageProblems = plansHubPage.assertPageHonesty(diskHtml, {
@@ -4879,8 +4449,8 @@ function selfCheck(built) {
         providerTable: providers.load().table,
         planHistoryStore: diskPlanHistory,
         apiPlanHistoryStore: diskApiPlanHistory,
-        dealLinks: JSON.parse(fs.readFileSync(path.join(OUT, 'deal-plan-links.json'), 'utf8')),
-        deals: JSON.parse(fs.readFileSync(path.join(OUT, 'deals.json'), 'utf8')).deals,
+        dealLinks: built.dealLinksDoc,
+        deals: JSON.parse(fs.readFileSync(path.join(OUT, OFFERS_ARTIFACT), 'utf8')).deals,
         asOf: built.dealLinksAsOf,
         prefix: '../',
         siteUrl: SITE_URL
@@ -4913,22 +4483,28 @@ function selfCheck(built) {
     }
   }
 
-  // ---- v3.0 Stage D5/D6：模型页（从磁盘回读对账）--------------------------------
+  // ---- v3.0 Stage D5/D6：模型页（页面从磁盘回读；真值按 D1 读仓库根）-------------
   //
-  // 与两个对比页 / 资料入口同一条纪律：读者拿到的是盘上的字节。回读时用的数据必须是
-  // **盘上的那一份**（dist/models.json + dist/model-registry-links.json + dist/api-plans.json
-  // + dist/plans.json + dist/deal-plan-links.json），而不是构建期的内存对象。
+  // 与两个对比页 / 资料入口同一条纪律：读者拿到的是盘上的字节 —— 所以**页面 HTML**
+  // （`dist/models/index.html`）仍然从盘上回读。
+  //
+  // ⚠️ 别照旧注释理解取数来源：t4 / 决策 D1 已把**真值来源从产物移到仓库根**。
+  //   · 那五份数据文件（models.json / model-registry-links.json / api-plans.json /
+  //     plans.json / deal-plan-links.json）**已随本轮整体下架**，产物里根本没有 `dist/*.json` 可读；
+  //   · 所以下面取的是 `path.join(ROOT, …)`（关系表真值在 `scripts/data/deal-plan-links.json`）；
+  //   · 唯一的例外是 `dealLinks`：它只存在于构建期，`const diskDealLinks = built.dealLinksDoc;`
+  //     用的**正是内存对象** —— 那不是"漏改成读盘"，是 D1 之后唯一还成立的取法。
   {
     const modelsIndexFile = path.join(OUT, modelsPage.MODELS_INDEX_ROUTE, 'index.html');
     if (!fs.existsSync(modelsIndexFile)) fail(`缺少 ${modelsPage.MODELS_INDEX_ROUTE}index.html`);
     else {
       const diskIndexHtml = fs.readFileSync(modelsIndexFile, 'utf8');
-      const diskModels = JSON.parse(fs.readFileSync(path.join(OUT, 'models.json'), 'utf8'));
-      const diskLinks = JSON.parse(fs.readFileSync(path.join(OUT, 'model-registry-links.json'), 'utf8'));
-      const diskApiPlans = JSON.parse(fs.readFileSync(path.join(OUT, 'api-plans.json'), 'utf8'));
-      const diskPlans = JSON.parse(fs.readFileSync(path.join(OUT, 'plans.json'), 'utf8'));
-      const diskDeals = JSON.parse(fs.readFileSync(path.join(OUT, 'deals.json'), 'utf8'));
-      const diskDealLinks = JSON.parse(fs.readFileSync(path.join(OUT, 'deal-plan-links.json'), 'utf8'));
+      const diskModels = JSON.parse(fs.readFileSync(path.join(ROOT, 'models.json'), 'utf8'));
+      const diskLinks = JSON.parse(fs.readFileSync(path.join(ROOT, 'model-registry-links.json'), 'utf8'));
+      const diskApiPlans = JSON.parse(fs.readFileSync(path.join(ROOT, 'api-plans.json'), 'utf8'));
+      const diskPlans = JSON.parse(fs.readFileSync(path.join(ROOT, 'plans.json'), 'utf8'));
+      const diskDeals = JSON.parse(fs.readFileSync(path.join(OUT, OFFERS_ARTIFACT), 'utf8'));
+      const diskDealLinks = built.dealLinksDoc;
       const diskApiHistory = distLogView('api-plan-history.json', apiPlanLogSelf);
       const diskCtxBase = {
         links: diskLinks,
@@ -4985,10 +4561,14 @@ function selfCheck(built) {
     }
   }
 
-  // ---- v3.0 Stage F：历史档案（从磁盘回读对账）--------------------------------
+  // ---- v3.0 Stage F：历史档案（索引页从磁盘回读 + 账本重算）----------------------
   //
   // 三条牙的构建期落点：
-  //   · #9  归档只依赖事件：用**盘上的日志**重算一遍，条目集合与内存里的必须一致；
+  //   · #9  归档只依赖事件：**只喂 events**（故意不喂 anomalies / records）再重算一遍
+  //         （`assertEntrySetStable`），条目集合必须逐条不变 —— 它证明条目集合只由事件推出。
+  //         ⚠️ t4：产物里不再有数据文件，两侧输入现在都是**构建期账本**
+  //         （`built.historyStore` / `built.planHistoryLoad` / `built.apiPlanHistoryLoad`），
+  //         不再是"盘上的日志"；盘上仍读的是索引页 HTML。
   //   · #10 大批 ended：可疑标记与异常留档必须同时在（`assertArchiveIntegrity`）；
   //   · #11 ended→restored 之后状态必须是 restored（同样由 integrity 重推比对）。
   // 再加上：索引页三组齐、sitemap 成员 == 过门槛的详情页、不为历史 event 建页。
@@ -4998,16 +4578,15 @@ function selfCheck(built) {
     else {
       const diskHtml = fs.readFileSync(archiveIndexFile, 'utf8');
       const diskStores = {
-        deal: JSON.parse(fs.readFileSync(path.join(OUT, 'deal-history.json'), 'utf8')),
-        plan: fs.existsSync(path.join(OUT, 'plan-history.json'))
-          ? JSON.parse(fs.readFileSync(path.join(OUT, 'plan-history.json'), 'utf8')) : null,
-        api: fs.existsSync(path.join(OUT, 'api-plan-history.json'))
-          ? JSON.parse(fs.readFileSync(path.join(OUT, 'api-plan-history.json'), 'utf8')) : null
+        // t4：原先从产物回读这三份日志，现在直接用构建期账本（产物里不再有数据文件）。
+        deal: built.historyStore.store,
+        plan: built.planHistoryLoad.store,
+        api: built.apiPlanHistoryLoad.store
       };
       const diskRecords = {
-        deal: JSON.parse(fs.readFileSync(path.join(OUT, 'deals.json'), 'utf8')).deals,
-        plan: JSON.parse(fs.readFileSync(path.join(OUT, 'plans.json'), 'utf8')).plans,
-        api: JSON.parse(fs.readFileSync(path.join(OUT, 'api-plans.json'), 'utf8')).plans
+        deal: JSON.parse(fs.readFileSync(path.join(OUT, OFFERS_ARTIFACT), 'utf8')).deals,
+        plan: built.plansStore.plans,
+        api: built.apiPlansStore.plans
       };
       const diskArchives = ['deal', 'plan', 'api'].map(kind => archiveLib.buildArchive({
         kind,
@@ -5064,81 +4643,23 @@ function selfCheck(built) {
     }
   }
 
-  // ---- v3.0 Stage G：数据出口（从磁盘回读对账）--------------------------------
+  // ---- t4：产物资产门禁（替代原「数据出口」闭环）--------------------------------
   //
-  // 三条牙的构建期落点（全部对着**盘上的文件**重算一遍）：
-  //   #12 文档里的 endpoint 不存在 → 红（查 dist 里有没有这个文件）；
-  //   #13 schemaVersion 与真实数据不一致 → 红；
-  //   #14 Manifest 条数与真实发布的数据集数不一致 → 红；
-  // 外加 updatedAt 逐字段 + **时间形状**对账（真实时刻 vs 日期规范化）。
+  // 原先是数据出口的三条牙（文档里的 endpoint 存在 / schemaVersion 与真实数据一致 /
+  // Manifest 条数与真实数据集数一致），随数据出口子系统下架一起删除。新的闭环更窄也更硬：
+  // **产物里不许有数据文件**，只允许 `lib/published-assets.js` 里逐条写明理由的那一份
+  //（首页应用自己的 `assets/data/offers.json`）。
+  //
+  // 为什么这条不能省：一个静态站会悄悄长出新数据文件（新增一份 JSON 导出、某处顺手写盘），
+  // 而「多了一份没人知道的数据」从来不会自己变红 —— 它只会在某天被人从浏览器里下载走。
+  // 三条纪律（空输入不许判绿 / 豁免逐路径写清不许通配 / 失败点名路径）写在那个模块里。
   {
-    const dataIndexFile = path.join(OUT, 'data', 'index.json');
-    const docsFile = path.join(OUT, dataDocs.DATA_DOCS_ROUTE, 'index.html');
-    if (!fs.existsSync(dataIndexFile)) fail('缺少 data/index.json（Dataset Manifest）');
-    else if (!fs.existsSync(docsFile)) fail(`缺少 ${dataDocs.DATA_DOCS_ROUTE}index.html`);
+    const problems = publishedAssets.assertNoPublishedData(OUT);
+    if (problems.length) fail(`产物资产门禁未通过（${problems.length} 处）：${problems.slice(0, 3).join('；')}`);
     else {
-      const diskManifest = JSON.parse(fs.readFileSync(dataIndexFile, 'utf8'));
-      const docsHtml = fs.readFileSync(docsFile, 'utf8');
-      // 真实值：**从盘上各数据集文件现读**，不信内存里的那一份
-      const actual = {};
-      for (const dataset of diskManifest.datasets) {
-        const file = path.join(OUT, dataset.url);
-        if (!fs.existsSync(file)) continue;
-        const parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
-        actual[dataset.id] = {
-          schemaVersion: parsed.schemaVersion,
-          count: typeof parsed.count === 'number' ? parsed.count
-            : (Array.isArray(parsed.events) ? parsed.events.length
-              : (Array.isArray(parsed.links) ? parsed.links.length : null)),
-          updatedAt: parsed.updatedAt || parsed.startedAt || null
-        };
-      }
-      const diskTolerated = changes.toleratedLogComplaints(diskManifest);
-      const problems = [
-        ...dataDocs.assertManifestShape(diskManifest),
-        ...dataDocs.assertEndpointsExist(diskManifest, url => fs.existsSync(path.join(OUT, url))),
-        ...dataDocs.assertSchemaVersions(diskManifest, Object.fromEntries(
-          Object.entries(actual).map(([id, row]) => [id, row.schemaVersion]))),
-        ...dataDocs.assertManifestCounts(diskManifest, Object.fromEntries(
-          Object.entries(actual).map(([id, row]) => [id, row.count]))),
-        ...dataDocs.assertUpdatedAt(diskManifest, Object.fromEntries(
-          Object.entries(actual).map(([id, row]) => [id, row.updatedAt]))),
-        ...dataDocs.assertPageHonesty(docsHtml, {
-          manifest: diskManifest,
-          license: built.dataLicense ? { status: 'present', file: built.dataLicense } : { status: 'absent' },
-          siteUrl: SITE_URL,
-          prefix: '../../',
-          endpointExists: url => fs.existsSync(path.join(OUT, url)),
-          actualSchemaVersions: Object.fromEntries(Object.entries(actual).map(([id, row]) => [id, row.schemaVersion])),
-          actualCounts: Object.fromEntries(Object.entries(actual).map(([id, row]) => [id, row.count])),
-          actualUpdatedAt: Object.fromEntries(Object.entries(actual).map(([id, row]) => [id, row.updatedAt]))
-        })
-      ].filter(problem => !diskTolerated.has(problem));
-      // ★ 盘侧同一条不变量（不需要源加载结果）：没有时间的日志数据文件必须登记为不可用，反之亦然。
-      problems.push(...changes.logDatasetDiskHonestyProblems(diskManifest,
-        Object.fromEntries(Object.entries(actual).map(([id, row]) => [id, row.updatedAt]))));
-      // 发布的数据集数必须 == Manifest 条数（"多了一份没人知道的数据"同样要红）。
-      // 判据来自**唯一注册表**（`PUBLIC_DATASETS`），不是这里再抄一份 9 文件清单 ——
-      // 抄一份清单的后果正是 P2-25：新加一份公开 JSON 时没有任何东西会红。
-      const registeredDataFiles = dataDocs.datasetUrls();
-      const missingFromManifest = registeredDataFiles.filter(file => !diskManifest.datasets.some(d => d.url === file));
-      if (missingFromManifest.length) {
-        problems.push(`有 ${missingFromManifest.length} 份已登记的公开数据集没进 Manifest：${missingFromManifest.join('、')}`);
-      }
-      // ---- 方向 2（§10.7）：扫描产物里的**全部** JSON，逐个要求"被某个注册表认领" ----
-      // Feed 家族的产出清单从 `feedBundle` 现取（就是刚刚落盘的那一份），
-      // 于是「feed 目录里的文件」与「Feed 注册表说要产出的文件」双向对账，不靠通配豁免。
-      const coverage = dataDocs.assertArtifactCoverage(listArtifactFiles(OUT), diskManifest, {
-        feedFiles: built.feedBundle.feeds.flatMap(feed => [feed.spec.path, feed.spec.jsonPath])
-      });
-      problems.push(...coverage.problems);
-      if (problems.length) fail(`数据出口未通过诚实性断言：${problems.slice(0, 3).join('、')}`);
-      else {
-        console.log(`  ✓ 数据出口: Manifest ${diskManifest.count} 份数据集（六类齐）· ${docsHtml.includes('data/index.json') ? '页面给出 Manifest 地址' : '缺 Manifest 地址'}` +
-          ` · endpoint 逐个存在 · schemaVersion / count / updatedAt 逐字段对账` +
-          ` · 方向 2 扫描：${dataDocs.artifactCoverageSummary(coverage.counts)}` +
-          ` · 时间形状 真实时刻 ${diskManifest.datasets.filter(d => d.updatedAtShape === 'timestamp').length} / 日期规范化 ${diskManifest.datasets.filter(d => d.updatedAtShape === 'date-normalized').length} / 纯日期 ${diskManifest.datasets.filter(d => d.updatedAtShape === 'date').length}`);
-      }
+      const summary = publishedAssets.summarizePublishedFiles(OUT);
+      console.log(`  ✓ 产物资产: ${summary.total} 个文件（页面 ${summary.pages} / 非页面 ${summary.nonPages}`
+        + ` · 数据资源 ${summary.data} 份 —— 只有首页那一份）· 无未登记文件 · 无 *.ndjson · 无订阅产物`);
     }
   }
 
@@ -5147,7 +4668,7 @@ function selfCheck(built) {
   // 这一层的坏法全都是「页面看起来正常」：注入漏了 → 有关系的那几条优惠页少一块；
   // 注入的是上一次的关系 → 页面显示一条谁也没确认过的关联；套餐页的块与视图不同步 →
   // 「当前优惠」与「暂无当前优惠」对不上。所以这里读回磁盘，对账三份东西：
-  //   ① `dist/deals.json` 的 `relatedPlans` 必须等于用关系表**重算**的结果（逐字段）；
+  //   ① `dist/assets/data/offers.json` 的 `relatedPlans` 必须等于用关系表**重算**的结果（逐字段）；
   //   ② `dist/deal-plan-links.json` 的 links/retired 与源表深等，count/updatedAt 等于推导值；
   //   ③ 优惠页与套餐页上的块落到字节上（含 `../../` 深度前缀、套餐行锚点落点、反向无块）。
   {
@@ -5160,8 +4681,8 @@ function selfCheck(built) {
       }
     }
 
-    // ① dist/deals.json 的注入
-    const published = JSON.parse(fs.readFileSync(path.join(OUT, 'deals.json'), 'utf8'));
+    // ① dist/assets/data/offers.json 的注入
+    const published = JSON.parse(fs.readFileSync(path.join(OUT, OFFERS_ARTIFACT), 'utf8'));
     const expectedByDeal = new Map();
     for (const [dealId, rows] of built.dealLinksByDeal) expectedByDeal.set(dealId, dealPlanLinks.relatedPlansOf(rows));
     let injected = 0;
@@ -5182,17 +4703,9 @@ function selfCheck(built) {
     }
 
     // ② 发布的关系文件
-    const linksFile = path.join(OUT, 'deal-plan-links.json');
-    if (!fs.existsSync(linksFile)) {
-      problems.push('缺少 dist/deal-plan-links.json');
-    } else {
-      const doc = JSON.parse(fs.readFileSync(linksFile, 'utf8'));
-      const expected = dealPlanLinks.publishedDoc(built.dealLinksDoc);
-      if (JSON.stringify(doc.links) !== JSON.stringify(expected.links)) problems.push('dist/deal-plan-links.json 的 links 与源表不一致');
-      if (JSON.stringify(doc.retired) !== JSON.stringify(expected.retired)) problems.push('dist/deal-plan-links.json 的 retired 与源表不一致');
-      if (doc.count !== expected.count) problems.push(`dist/deal-plan-links.json 的 count（${doc.count}）≠ 推导值 ${expected.count}`);
-      if (doc.updatedAt !== expected.updatedAt) problems.push(`dist/deal-plan-links.json 的 updatedAt（${doc.updatedAt}）≠ 推导值 ${expected.updatedAt}`);
-    }
+    // t4：原先这里回读 `dist/deal-plan-links.json` 并与源表推导值对账。产物里不再发布这份数据集，
+    // 这条对账随之删除 —— 关系表本身的对账仍在上面（① 注入到 offers.json 的 relatedPlans 逐字段重算）
+    // 与 L2 的 `selftest:deal-plan-links` + `check:reproducible`（它们判源 ⇄ 派生，不依赖发布副本）。
 
     // ③ 页面上的块（套餐页 + 有关系的优惠详情页）
     const plansPagePath = path.join(OUT, plansPage.PLANS_ROUTE, 'index.html');
@@ -5250,7 +4763,7 @@ function selfCheck(built) {
 
   // ---- 源数据 vs 发布数据的一致性门禁（v1.0 就记着的债，v1.1 收口补上）----
   //
-  // 为什么必须有：`dist/deals.json` 是**发布出去的那一份** —— 浏览器 fetch 的是它，
+  // 为什么必须有：`dist/assets/data/offers.json` 是**发布出去的那一份** —— 浏览器 fetch 的是它，
   // 首页的每个数字、每张卡片都从它来。而在此之前，没有任何东西比对过它与源 `deals.json`：
   // 构建只断言了它的几个**属性**（schemaVersion / count），属性对了而**内容**是旧的、
   // 或者少了一批字段，照样发布。v1.0 的报告里就记着这条债，一直没还。
@@ -5302,7 +4815,7 @@ function selfCheck(built) {
         if (problems.length > 8) break;
       }
     }
-    if (problems.length) fail(`deals.json 与发布产物不一致：${problems.slice(0, 8).join('；')}`);
+    if (problems.length) fail(`源 deals.json 与发布产物 ${OFFERS_ARTIFACT} 不一致：${problems.slice(0, 8).join('；')}`);
     else console.log(`  ✓ 源/产物一致: ${payload.deals.length} 条逐字段相同（构建期只动 zh / collections / needs / sourceFacts / history / relatedPlans）`);
   }
 
@@ -5318,7 +4831,7 @@ function selfCheck(built) {
   // 把引文也纳入扫描会让这条红线在第一句真实引文上就变成假红，然后被人改松。
   {
     const problems = [];
-    const doc = JSON.parse(fs.readFileSync(path.join(OUT, 'source-health.json'), 'utf8'));
+    const doc = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts', 'data', 'source-health.json'), 'utf8'));
     const byName = new Map((doc.sources || []).map(row => [row.name, row]));
 
     const budget = provenance.budgetOf(payload.deals);
@@ -5475,7 +4988,7 @@ function selfCheck(built) {
       const today = (payload.updatedAt || '').slice(0, 10) || undefined;
       problems.push(...history.verifyStore(store.store, payload.deals, { today, bytes }).slice(0, 4));
 
-      const distLogPath = path.join(OUT, 'deal-history.json');
+      const distLogPath = path.join(ROOT, 'scripts', 'data', 'deal-history.json');
       if (!fs.existsSync(distLogPath)) problems.push('缺少产物 deal-history.json');
       else if (fs.readFileSync(distLogPath, 'utf8') !== `${JSON.stringify(store.store, null, 2)}\n`) {
         problems.push('产物 deal-history.json 与源历史日志不一致');
@@ -5613,16 +5126,16 @@ function selfCheck(built) {
       if (dangling.length) problems.push(`雷达指向了不存在的详情页: ${dangling.slice(0, 3).map(i => i.id).join(', ')}`);
     }
 
-    // ③ /changes/ 页：五条约定（预渲染 / 无 JS 可读 / sitemap / 双 feed / JSON-LD）
+    // ③ /changes/ 页：四条约定（预渲染 / 无 JS 可读 / sitemap / JSON-LD）——
+    //    原来的第五条「双 feed」已随订阅层下架删除（下面紧邻处写明了它为什么失去对象）。
     if (!fs.existsSync(pageFile)) {
       problems.push('缺少 changes/index.html');
     } else {
       const page = fs.readFileSync(pageFile, 'utf8');
       const noScript = page.replace(/<script[\s\S]*?<\/script>/gi, '');
       if (!page.includes(`<link rel="canonical" href="${SITE_URL}changes/">`)) problems.push('changes/ 的 canonical 不是自指');
-      if (!page.includes('href="../feed/changes.xml"') || !page.includes('href="../feed/changes.json"')) {
-        problems.push('changes/ 没有声明**变化**订阅源（v1.6 起这一页订的是变化本身，不是全量优惠）');
-      }
+      // t4：这里原先断言 /changes/ 声明了「变化」订阅源（feed/changes.xml|json）。订阅子系统整体下架、
+      // 产物里不再有 Feed（判据在 lib/published-assets.js），这条断言失去了对象，随之删除。
       if (/__[A-Z_]+_HREF__/.test(page)) problems.push('changes/ 残留路由占位符');
       let ldTypes = [];
       try {
@@ -5751,9 +5264,9 @@ function selfCheck(built) {
       for (const [href, label] of [['#deals', '优惠变化'], ['#plans', '套餐变化'], ['#api-plans', 'API 价格变化']]) {
         if (!page.includes(`href="${href}"`)) problems.push(`changes/ 的锚点导航缺少「${label}」（${href}）`);
       }
-      if (!page.includes(`href="../feed/plans/coding/changes.xml"`)) {
-        problems.push('changes/ 没有声明套餐变化订阅源');
-      }
+      // t4：这里原先断言 /changes/ 声明了「套餐变化」订阅源（feed/plans/coding/changes.*）。
+      // 订阅子系统整体下架、页面不再声明任何 Feed，这条断言随之删除（判据改由产物资产门禁兜底：
+      // 只要产物里还剩一个 feed 前缀的文件，lib/published-assets.js 就当场红）。
       if (!noScript.includes(planW.PLAN_CHANGES_LABELS.sectionTitle)) problems.push('changes/ 缺少「套餐变化」分栏标题');
       const planBlock = (noScript.match(/<section class="chgsec pchanges" id="plans">[\s\S]*?<\/section>/) || [])[0] || '';
       if (!planBlock) problems.push('changes/ 缺少套餐变化块');
@@ -5780,7 +5293,7 @@ function selfCheck(built) {
         if (listed !== expected) problems.push(`套餐变化块列出 ${listed} 条 ≠ 雷达 ${expected} 条`);
         // 句子要用与渲染层同一份上下文（币种 / 额度单位从套餐记录里取），否则会写出「20 → 10」
         const planSentenceOpts = {
-          plansById: new Map(JSON.parse(fs.readFileSync(path.join(OUT, 'plans.json'), 'utf8')).plans.map(p => [p.id, p])),
+          plansById: new Map(built.plansStore.plans.map(p => [p.id, p])),
           providerTable: providers.load().table
         };
         for (const item of planChanges.itemsOf(built.planRadar)) {
@@ -5801,9 +5314,9 @@ function selfCheck(built) {
       //   · 判据来自 `api-plan-history`（`built.apiPlanRadar`），没有第二套变化检测。
       const apiW = planChanges.API_PLAN_CHANGES_WORDING;
       if (!page.includes(`id="api-plans"`)) problems.push('changes/ 缺少 API 价格变化块的锚点落点（#api-plans）');
-      if (!page.includes(`href="../feed/plans/api/changes.xml"`)) {
-        problems.push('changes/ 没有声明 API 价格变化订阅源');
-      }
+      // t4：同上一处：这一页原先还断言声明了「API 价格变化」订阅源，随订阅层一起删除。
+      // 「三条变化流都能从导航直达」那一条断言（上面 #deals / #plans / #api-plans 锚点）**保留** ——
+      // 它判的是页面自己能不能被读者读懂，与订阅无关。
       if (!noScript.includes(apiW.API_PLAN_CHANGES_LABELS.sectionTitle)) {
         problems.push('changes/ 缺少「API 价格变化」分栏标题');
       }
@@ -5892,7 +5405,7 @@ function selfCheck(built) {
   if (!fs.existsSync(statusFile)) fail('缺少 status/index.html');
   else {
     const page = fs.readFileSync(statusFile, 'utf8');
-    const doc = JSON.parse(fs.readFileSync(path.join(OUT, 'source-health.json'), 'utf8'));
+    const doc = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts', 'data', 'source-health.json'), 'utf8'));
     const summary = health.summarize(doc);
     const rows = [...page.matchAll(/<span class="stt ([a-z]+)">/g)].map(m => m[1]);
     const problems = [];
@@ -5913,7 +5426,11 @@ function selfCheck(built) {
     if (summary.total === 0 && !/还没有采集记录/.test(page)) {
       problems.push('没有采集数据时，状态页必须明说，而不是给一张空表');
     }
-    if (!page.includes('source-health.json')) problems.push('状态页没有指向 source-health.json 的链接');
+    // t3：这里原先断言「状态页必须指向 source-health.json」。那条链接与它的断言**一起删** ——
+    // 链接指向的是一份数据文件，而本轮的目标正是让产物里不再有可下载的数据文件、读者面也不再
+    // 提它们。留着断言就等于强制一个谁都不想要的链接（那是"为了绿而绿"，比没有断言更糟）。
+    // 注意：**数据侧**的对账（读产物里的 source-health.json、逐来源比对状态标签与行数）一条都没动 ——
+    // 这一页仍然被断言"页面上的每个状态都真的等于数据里的状态"。
 
     // ── 五条既有约定：这一页原先只满足两条（预渲染、无 JS 可读）────────────────
     //
@@ -5922,9 +5439,8 @@ function selfCheck(built) {
     // 一条「写漏了不会红」的约定等于没有这条约定：它靠记性维持，而记性不随构建变红。
     // 分类页那三条能站住，靠的就是这一段形状的自检 + 浏览器侧各一条断言。
     if (!page.includes(`<link rel="canonical" href="${SITE_URL}status/">`)) problems.push('canonical 不是自指');
-    if (!page.includes('href="../feed.xml"') || !page.includes('href="../feed.json"')) {
-      problems.push('没有声明两个订阅源');
-    }
+      // t4：这里原先有两条订阅声明断言（每页必须声明两个根 Feed / 有专属 Feed 的页面必须声明它）。
+      // 订阅子系统整体下架之后页面不再声明任何 Feed，这两条一起删除。
     let statusLd = [];
     try {
       statusLd = [...page.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)]
@@ -5972,10 +5488,12 @@ function selfCheck(built) {
     if (problems.length) fail(`数据源状态页：${problems.join('；')}`);
     else console.log(`  ✓ 数据源状态: ${summary.total} 个来源与 source-health.json 逐个对账一致` +
       `（正常 ${summary.healthy} · 异常 ${summary.degraded} · 失败 ${summary.failed}）` +
-      ` · 五条约定齐（sitemap/canonical/双 feed/JSON-LD ${statusLd.length} 段/预渲染 ${statusText.length} 字）`);
+      // t4：措辞同步 —— 这一页原先还声明两个根 Feed，那两条约定随订阅层一起撤了；
+      // 现在仍然逐条查的是 sitemap 成员、自指 canonical、JSON-LD 与预渲染正文长度。
+      ` · 约定齐（sitemap/canonical/JSON-LD ${statusLd.length} 段/预渲染 ${statusText.length} 字）`);
   }
 
-  // 译文必须真的落到产物里：浏览器 fetch('deals.json') 拿的就是这一份，
+  // 译文必须真的落到产物里：浏览器 fetch('assets/data/offers.json') 拿的就是这一份，
   // 这里漏写不会报错，只会让线上详情页静悄悄没有中文。
   const zhDeals = payload.deals.filter(deal => deal.zh && Object.keys(deal.zh).length);
   const zhFields = zhDeals.reduce((n, deal) => n + Object.keys(deal.zh).length, 0);
@@ -6029,8 +5547,7 @@ function selfCheck(built) {
       ['status/index.html', '../'],
       // v1.5：变化雷达页（浅一层路由）
       ['changes/index.html', '../'],
-      // v1.6：订阅中心（同样一层深）
-      ['feeds/index.html', '../'],
+      // t4：订阅中心（feeds/index.html）已随订阅子系统下架删除，不再进这张逐层扫描表。
       // v3.0：/plans/ 资料入口是**一层**路由 —— 深度写错的话这一页的页头/页脚内链全是 404，
       // 而页面本身看起来完全正常，所以它必须进这张逐层扫描表。
       [`${plansHubPage.PLANS_HUB_ROUTE}index.html`, '../'],
@@ -6043,7 +5560,6 @@ function selfCheck(built) {
       [`${archiveLib.ARCHIVE_INDEX_ROUTE}index.html`, '../'],
       ...built.archiveDetailRoutes.map(route => [`${route}index.html`, archiveLib.routePrefixOf(route)]),
       // v3.0 Stage G：数据文档页（两层路由）。
-      [`${dataDocs.DATA_DOCS_ROUTE}index.html`, '../../'],
       // v2.1：套餐对比页是**两层**深路由。深度写错的话，这一页的页头/页脚内链全是 404，
       // 而页面本身看起来完全正常 —— 所以它必须进这张逐层扫描表。
       [`${plansPage.PLANS_ROUTE}index.html`, '../../'],
@@ -6133,6 +5649,32 @@ function selfCheck(built) {
       fail(`作者正文里残留 Markdown 记号（读者会原样看到）：${mdMarkers.slice(0, 4).join('；')}`);
     } else {
       console.log('  ✓ 作者正文无 Markdown 记号: .snote / .vsnote / <caption> / <details> 里的强调一律用 <b>，字段名直接写');
+    }
+
+    // ---- 说明的**机器无关性**（t4 重挂：见 `lib/changes.js` 的头部注释）----------------
+    //
+    // 为什么这条还在：三份日志的页面措辞（`changes.js` / `plan-changes.js` / `api-plan-history.js`
+    // 的 CHANGES_NOTES，以及 plans-hub / models / vendor / archive 各自的「没有拿到日志」句）
+    // 全是**静态字面量**。Dataset Manifest 下架之后，那个「说明里不许出现宿主绝对路径」的不变量
+    // 只剩这一处承重面 —— 判据不能零 owner。
+    //
+    // 判据：页面文本里出现「没有拿到」时，那段文本必须**机器无关**（没有盘符 / UNC / POSIX 绝对路径 /
+    // 家目录记号）。红的时候点名 route 与命中的形状名，因为那种红的原因（谁把 `path.join(__dirname, …)`
+    // 拼进了页面）离症状很远。
+    const machineDependent = [];
+    for (const [rel] of routeOutputs) {
+      const file = path.join(OUT, rel);
+      if (!fs.existsSync(file)) continue;
+      const text = prerenderedText(fs.readFileSync(file, 'utf8'));
+      if (!text.includes('没有拿到')) continue;
+      for (const shape of changes.machineDependenceProblems(text)) {
+        machineDependent.push(`${rel}（${shape}）`);
+      }
+    }
+    if (machineDependent.length) {
+      fail(`页面上的「没有拿到」说明里含机器相关形状（跨机器不可复现、且会把宿主目录发布出去）：${machineDependent.slice(0, 4).join('；')}`);
+    } else {
+      console.log('  ✓ 说明机器无关性: 出现「没有拿到」的页面里没有宿主机绝对路径 / UNC / 家目录记号');
     }
 
     // 首屏说明**必须为空** —— secondary-page-intro-changes-v1 的主牙（**含一次真实盲区的修复**）。
@@ -6445,16 +5987,16 @@ function selfCheck(built) {
   // 而且条数不再手写公式 —— 直接与构建期生成的那份 `sitemapEntries` 逐条对账。
   const indexableDirectories = built.directoryPages.filter(page => page.indexable);
   const expectedLocs = dealEntries.length + 1 /* 首页 */ + indexableDirectories.length + 1 /* 状态页 */
-    + 1 /* 变化雷达页 */ + 1 /* 订阅中心 */ + 1 /* 资料入口页 */ + 1 /* 套餐对比页 */ + 1 /* API 计费页 */
+    + 1 /* 变化雷达页 */ + 1 /* 资料入口页 */ + 1 /* 套餐对比页 */ + 1 /* API 计费页 */
     + 1 /* 模型资料索引 */ + built.modelDetailCount /* 模型详情页 */
-    + 1 /* 档案索引 */ + built.archiveDetailCount /* 档案详情页 */
-    + 1 /* 数据文档页 */;
+    + 1 /* 档案索引 */ + built.archiveDetailCount /* 档案详情页 */;
+    // t4：公式里去掉「订阅中心 +1」与「数据文档页 +1」—— 那两页随订阅层与数据出口子系统下架。
   if (sitemapLocs.length !== expectedLocs) {
     fail(`sitemap ${sitemapLocs.length} 条 ≠ 首页 1 + 可索引落地页 ${indexableDirectories.length}` +
       `（分类页 ${built.collectionPages.length} + 按需求页/别名 ${built.needPages.length} 中可索引的` +
       ` + 分类落地页 ${built.categoryPages.length} + 厂商落地页 ${built.vendorPages.length}` +
-      ` + 枢纽 ${built.hubPages.length}）+ 状态页 1 + 变化雷达页 1 + 订阅中心 1 + 资料入口页 1 + 套餐对比页 1 + API 计费页 1` +
-      ` + 模型索引 1 + 模型详情页 ${built.modelDetailCount} + 档案索引 1 + 档案详情页 ${built.archiveDetailCount} + 数据文档页 1 + 详情页 ${dealEntries.length}`);
+      ` + 枢纽 ${built.hubPages.length}）+ 状态页 1 + 变化雷达页 1 + 资料入口页 1 + 套餐对比页 1 + API 计费页 1` +
+      ` + 模型索引 1 + 模型详情页 ${built.modelDetailCount} + 档案索引 1 + 档案详情页 ${built.archiveDetailCount} + 详情页 ${dealEntries.length}`);
   } else {
     const notListed = dealEntries.filter(deal => !sitemapLocs.some(loc => loc.endsWith(`/deal/${encodeURIComponent(deal.id)}/`)));
     const directoriesNotListed = indexableDirectories.filter(page => !sitemapLocs.includes(page.url));
@@ -6464,11 +6006,9 @@ function selfCheck(built) {
     else if (aliasesListed.length) fail(`sitemap 里出现了 noindex 的别名页: ${aliasesListed.map(p => p.route).join(', ')}`);
     else if (!sitemapLocs.includes(`${SITE_URL}status/`)) fail('sitemap 漏了状态页 status/');
     else if (!sitemapLocs.includes(`${SITE_URL}changes/`)) fail('sitemap 漏了变化雷达页 changes/');
-    else if (!sitemapLocs.includes(`${SITE_URL}feeds/`)) fail('sitemap 漏了订阅中心 feeds/');
     else if (!sitemapLocs.includes(`${SITE_URL}${plansHubPage.PLANS_HUB_ROUTE}`)) fail(`sitemap 漏了资料入口页 ${plansHubPage.PLANS_HUB_ROUTE}`);
     else if (!sitemapLocs.includes(`${SITE_URL}${modelsPage.MODELS_INDEX_ROUTE}`)) fail(`sitemap 漏了模型资料索引 ${modelsPage.MODELS_INDEX_ROUTE}`);
     else if (!sitemapLocs.includes(`${SITE_URL}${archiveLib.ARCHIVE_INDEX_ROUTE}`)) fail(`sitemap 漏了历史档案索引 ${archiveLib.ARCHIVE_INDEX_ROUTE}`);
-    else if (!sitemapLocs.includes(`${SITE_URL}${dataDocs.DATA_DOCS_ROUTE}`)) fail(`sitemap 漏了数据文档页 ${dataDocs.DATA_DOCS_ROUTE}`);
     else if (built.archiveDetailRoutes.some(route => !sitemapLocs.includes(`${SITE_URL}${route}`))) {
       const missing = built.archiveDetailRoutes.filter(route => !sitemapLocs.includes(`${SITE_URL}${route}`));
       fail(`sitemap 漏了 ${missing.length} 个档案详情页：${missing.slice(0, 3).join('、')}`);
@@ -6485,23 +6025,25 @@ function selfCheck(built) {
     else if (!sitemapLocs.includes(`${SITE_URL}${apiPlansPage.API_PLANS_ROUTE}`)) fail(`sitemap 漏了 API 计费页 ${apiPlansPage.API_PLANS_ROUTE}`);
     else console.log(`  ✓ sitemap: ${sitemapLocs.length} 条（首页 + ${built.collectionPages.length} 个分类页 + ` +
       `${built.needPages.length} 条按需求/别名页中可索引的部分 + ${built.categoryPages.length} 个分类落地页 + ` +
-      `${built.vendorPages.length} 个厂商落地页 + ${built.hubPages.length} 个枢纽页 + 状态页 + 变化雷达页 + 订阅中心 + ` +
+      `${built.vendorPages.length} 个厂商落地页 + ${built.hubPages.length} 个枢纽页 + 状态页 + 变化雷达页 + ` +
       `资料入口页 + 套餐对比页 + API 计费页 + 模型索引 + ${built.modelDetailCount} 个模型详情页 + ` +
-      `档案索引 + ${built.archiveDetailCount} 个档案详情页 + 数据文档页 + ` +
+      `档案索引 + ${built.archiveDetailCount} 个档案详情页 + ` +
       `${dealEntries.length} 个详情页；${built.aliasPages.length} 条别名页已排除）`);
   }
 
   // 分类页：**逐条回读对账**，而不是「文件存在就算过」。
   //
   // 与 /status/ 同一套机制（读回产物 + 与机器可读的那份对账），但断言更硬：
-  //   · 表格里的详情页链接集合 == dist/deals.json 里 `collections` 筛出来的 id 集合
-  //   · 每个分类页都要有 canonical 自指、要声明两个 feed、要有三段 JSON-LD（含 BreadcrumbList）
+  //   · 表格里的详情页链接集合 == dist/assets/data/offers.json 里 `collections` 筛出来的 id 集合
+  //   · 每个分类页都要有 canonical 自指、要有三段 JSON-LD（含 BreadcrumbList）
+  //     （原先还有「要声明两个 feed」一条，已随订阅层下架删除 —— 订阅声明的判据现在在
+  //      产物资产门禁与 verify-site 的「0 条带 type 的 rel="alternate"」那一侧，不在本块）
   //   · 无 JS 可读：表格是构建期写的，正文长度必须够
-  // 为什么 jsonld / feed 要有断言：`/status/` 那页恰恰是「有五条约定里的两条」——
+  // 为什么 jsonld 要有断言：`/status/` 那页恰恰是「有五条约定里的两条」——
   // 没有断言的三条，写漏了不会有任何东西红（子代理核查结论）。新路由不重复那个模式。
   {
     const problems = [];
-    const published = JSON.parse(fs.readFileSync(path.join(OUT, 'deals.json'), 'utf8'));
+    const published = JSON.parse(fs.readFileSync(path.join(OUT, OFFERS_ARTIFACT), 'utf8'));
     const publishedById = new Map(published.deals.map(deal => [deal.id, deal]));
     for (const page of built.directoryPages) {
       const prefix = '../'.repeat(page.route.split('/').length - 1);
@@ -6551,16 +6093,11 @@ function selfCheck(built) {
       if (!body.includes(`<link rel="canonical" href="${page.url}">`)) problems.push(`${page.route} canonical 不是自指`);
       if (!page.indexable && !/name="robots"[^>]*noindex/.test(body)) problems.push(`${page.route} 是别名页却没有 noindex`);
       if (page.indexable && /name="robots"[^>]*noindex/.test(body)) problems.push(`${page.route} 可索引却带了 noindex`);
-      if (!body.includes(`href="${prefix}feed.xml"`) || !body.includes(`href="${prefix}feed.json"`)) {
-        problems.push(`${page.route} 没有声明订阅源（前缀 ${prefix}）`);
-      }
-      // ②′ 有专属 Feed 的页面必须声明它（v1.7：学生/开发者/免费 API/免费 Tokens/AI Coding/国内可用
-      //     /分类页/厂商页都有对应 Feed，页面不声明等于读者找不到订阅入口）
-      for (const feed of feeds.feedsForPage({ kind: page.kind, slug: page.slug }, built.feedBundle.feeds)) {
-        if (!body.includes(`href="${prefix}${feed.spec.path}"`)) {
-          problems.push(`${page.route} 没有声明本页对应的 Feed ${feed.spec.id}（${feed.spec.path}）`);
-        }
-      }
+      // t4：这里原先有两条订阅声明断言（每页必须声明两个根 Feed / 有专属 Feed 的页面必须声明它）。
+      // 订阅子系统整体下架之后页面不再声明任何 Feed，这两条一起删除。
+      // ⚠️ 它们守的是「读者找得到订阅入口」；现在"入口"这件事本身被撤了，所以判据不是被放松，
+      // 而是失去了对象 —— 取而代之的是产物资产门禁：产物里只要还剩一个 feed 前缀的文件，
+      // `lib/published-assets.js` 就当场红（文件在 = 读者仍能下载到，比"页面少列一行"更早、更硬）。
       let ldTypes = [];
       try {
         ldTypes = [...body.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)]
@@ -6717,7 +6254,9 @@ function selfCheck(built) {
     else {
       const collectionSummary = built.collectionPages.map(p => `/${p.slug}/ ${p.count} 条`).join(' · ');
       const needSummary = built.needPages.map(p => `/${p.route} ${p.count} 条`).join(' · ');
-      console.log(`  ✓ 分类页: ${collectionSummary}（逐条 id 对账 · canonical · 双 feed · 三段 JSON-LD · 预渲染正文）`);
+      // 「双 feed」那一项随订阅层下架删除：这一块从不检查订阅声明（产物里带 type 的声明恒为 0），
+      // 所以这里也不再把它写成一条被验过的约定 —— 日志只说这一块**真的**对过账的东西。
+      console.log(`  ✓ 分类页: ${collectionSummary}（逐条 id 对账 · canonical · 三段 JSON-LD · 预渲染正文）`);
       console.log(`  ✓ 按需求页: ${needSummary}（同上 + 命中依据列 · 内链前缀 ${'../../'} · 首页入口数字对齐）`);
     }
   }
@@ -6730,7 +6269,10 @@ function selfCheck(built) {
     if (!page.includes(`/deal/${encodeURIComponent(deal.id)}/`)) { fail(`详情页 canonical 不是自指: ${deal.id}`); detailBad++; }
     const prose = String(deal.discountInfo || '').slice(0, 12);
     if (prose && !page.includes(prose)) { fail(`详情页缺少本条优惠文案（不执行 JS 读不到）: ${deal.id}`); detailBad++; }
-    if (/fetch\('deals\.json'/.test(page)) { fail(`详情页仍会拉 deals.json（应纯静态）: ${deal.id}`); detailBad++; }
+    // 详情页**不许**出现这次 fetch（它是纯静态页）—— 判据从 `OFFERS_ARTIFACT` 现拼，
+    // 免得路径再搬家时这里留下一条"看起来还在守、其实已经失配"的断言。
+    const offersFetchRe = new RegExp(`fetch\\('${OFFERS_ARTIFACT.replace(/\./g, '\\.')}'`);
+    if (offersFetchRe.test(page)) { fail(`详情页仍会拉 ${OFFERS_ARTIFACT}（应纯静态）: ${deal.id}`); detailBad++; }
   }
   if (!detailBad) console.log(`  ✓ 详情页抽样: ${sampleDeals.length} 个均自指 canonical、含本条文案、纯静态`);
 
@@ -6782,17 +6324,17 @@ function selfCheck(built) {
   {
     const providerTableDisk = providers.load().table;
     const problems = [
-      ...vendorPage.assertVendorSlugCanonical(built.directoryPages, { providerTable: providerTableDisk, vendorSlugs: feeds.VENDOR_SLUGS }),
+      ...vendorPage.assertVendorSlugCanonical(built.directoryPages, { providerTable: providerTableDisk, vendorSlugs: site.VENDOR_SLUGS }),
       // slug 必须来自**权威表**（不能只靠 providers.json 的隐式兜底）：补表不改变 URL，
       // 只是把「隐式兜底」换成「显式登记」——没有这条，改 slug 表也不会有人发现。
-      ...vendorPage.assertVendorSlugDeclared(built.directoryPages, { vendorSlugs: feeds.VENDOR_SLUGS }),
+      ...vendorPage.assertVendorSlugDeclared(built.directoryPages, { vendorSlugs: site.VENDOR_SLUGS }),
       ...vendorPage.assertVendorCandidateIdentity(built.directoryPages, { providerTable: providerTableDisk }),
       ...vendorPage.assertNoParallelProviderRoutes(built.directoryPages)
     ];
-    const diskApiPlans = JSON.parse(fs.readFileSync(path.join(OUT, 'api-plans.json'), 'utf8')).plans;
-    const diskPlans = JSON.parse(fs.readFileSync(path.join(OUT, 'plans.json'), 'utf8')).plans;
-    const diskModels = JSON.parse(fs.readFileSync(path.join(OUT, 'models.json'), 'utf8')).models;
-    const diskLinks = JSON.parse(fs.readFileSync(path.join(OUT, 'model-registry-links.json'), 'utf8')).links;
+    const diskApiPlans = built.apiPlansStore.plans;
+    const diskPlans = built.plansStore.plans;
+    const diskModels = built.publishedModelsDoc.models;
+    const diskLinks = built.modelLinksDoc.links;
     const diskPlanHistory = distLogView('plan-history.json', planLogSelf);
     const diskApiHistory = distLogView('api-plan-history.json', apiPlanLogSelf);
     const vendorEntries = built.directoryPages.filter(page => page.kind === 'vendor');
@@ -6800,14 +6342,14 @@ function selfCheck(built) {
       const file = path.join(OUT, spec.route, 'index.html');
       if (!fs.existsSync(file)) { problems.push(`${spec.route}: 缺少产物`); continue; }
       const pageHtml = fs.readFileSync(file, 'utf8');
-      const pageDeals = landing.itemsOf(spec, JSON.parse(fs.readFileSync(path.join(OUT, 'deals.json'), 'utf8')).deals,
+      const pageDeals = landing.itemsOf(spec, JSON.parse(fs.readFileSync(path.join(OUT, OFFERS_ARTIFACT), 'utf8')).deals,
         { vendorKeyOf: VENDOR_KEY_OF });
       const ctx = {
         deals: pageDeals,
         plans: diskPlans, apiPlans: diskApiPlans, models: diskModels, modelLinks: diskLinks,
         planHistoryStore: diskPlanHistory, apiPlanHistoryStore: diskApiHistory,
         providerTable: providerTableDisk,
-        feeds: feeds.feedsForPage(spec, built.feedBundle.feeds),
+        // t3：不再传 `feeds`（厂商页的订阅节整节下架，那一层不再有订阅这个概念）。
         prefix: '../'.repeat(spec.depth || 1),
         siteUrl: SITE_URL
       };
@@ -6818,233 +6360,16 @@ function selfCheck(built) {
       fail(`厂商资料页未通过诚实性断言（${problems.length} 处）：${problems.slice(0, 3).join('、')}`);
     } else {
       console.log(`  ✓ 厂商资料页: ${vendorEntries.length} 页 · slug 唯一且已登记 · 无 /provider/ 并行路由` +
-        ` · API 计数与 dist/api-plans.json 逐个对账 · 资料区块六节齐`);
+        ` · API 计数与 dist/api-plans.json 逐个对账 · 资料区块五节齐`);
     }
   }
 
-  // 订阅产物（v1.6）：**整张注册表**做三方对账 + 语义不变量。
-  //
-  // 这一段替换掉 v1.0–v1.5 的「只数条目数」检查。旧检查的漏洞是结构性的：
-  // 它只问「两份 feed 条数是否相等」——条目 id 重复、链接指向不存在的页面、
-  // 分类 Feed 混进不该有的条目、变化 Feed 引用不存在的事件，它一条都照不到。
-  //
-  // 现在交给 feeds.validate()：内存条目 ↔ RSS 回读 ↔ JSON 回读三方对账 +
-  // 判据/生命周期/事件存在性/时间来源/slug/空 Feed 等不变量，逐项带 code 报出。
-  {
-    const result = feeds.validate({
-      feeds: built.feedBundle.feeds,
-      deals: JSON.parse(fs.readFileSync(path.join(OUT, 'deals.json'), 'utf8')).deals,
-      store: fs.existsSync(path.join(OUT, 'deal-history.json'))
-        ? JSON.parse(fs.readFileSync(path.join(OUT, 'deal-history.json'), 'utf8'))
-        : null,
-      pages: built.pageRoutes,
-      asOf: built.radarAsOf,
-      availability: built.radar.availability,
-      // v2.3 / v3.0：变化源的对账材料**逐来源分开**（事件身份来自**产物那一份**日志）。
-      // 把两份日志合成一个集合，会让「API 订阅里混进了套餐事件」这条最该报红的事静默通过。
-      planEvents: fs.existsSync(path.join(OUT, 'plan-history.json'))
-        ? JSON.parse(fs.readFileSync(path.join(OUT, 'plan-history.json'), 'utf8')).events
-        : [],
-      planAvailability: built.planRadar ? built.planRadar.availability : 'unavailable',
-      apiPlanEvents: fs.existsSync(path.join(OUT, 'api-plan-history.json'))
-        ? JSON.parse(fs.readFileSync(path.join(OUT, 'api-plan-history.json'), 'utf8')).events
-        : [],
-      apiPlanAvailability: built.apiPlanRadar ? built.apiPlanRadar.availability : 'unavailable',
-      // 厂商归属必须与页面/Feed 构建时用的是**同一个**规范名取值器，
-      // 否则「扣子 Coze（字节跳动）」这类写法会被判成「不属于该厂商」。
-      vendorKeyOf: VENDOR_KEY_OF
-    });
-
-    // v2.3 / v3.0：变化条目的深链锚点必须**真的在它自己那一页上**（`#plan-<id>`）。
-    // 反过来说，删掉某一行的 id 属性会让这里当场变红 —— 那是订阅里最典型的死链。
-    //
-    // ⚠️ **逐条 feed**，不是「找第一条 kind === 'plan-changes'」：只说第一条的话，
-    // API 那条（第二条）的锚点永远不会被检查 —— 而题面牙 #16（「API Feed event 指向
-    // 不存在页面锚点」）恰恰只有这里会红：`feeds.validate()` 的 `link-exists` 只判路由存在，
-    // 片段（`#plan-<id>`）不改变「哪一页」，它照不到锚点本身。
-    {
-      for (const spec of feeds.PLAN_CHANGE_FEEDS) {
-        const feed = built.feedBundle.feeds.find(item => item.spec.id === spec.id);
-        const pageFile = path.join(OUT, spec.pageRoute, 'index.html');
-        if (!feed || !fs.existsSync(pageFile)) {
-          if (feed) fail(`变化订阅 ${spec.id} 的落点页面不存在：${spec.pageRoute}`);
-          continue;
-        }
-        if (!feed.items.length) {
-          console.log(`  ✓ 变化订阅 ${spec.id}: 0 条条目（这一轮没有可订阅的变化）`);
-          continue;
-        }
-        const pageHtml = fs.readFileSync(pageFile, 'utf8');
-        // 判据是**链接自己**的落点，而不是「拿 item.planId 拼一个锚点去页面上找」——
-        // 后者在有人把链接拼错（指向另一条记录、或指向 eventId）时会照常通过。
-        const pagePrefix = `${SITE_URL}${spec.pageRoute}`;
-        const dangling = feed.items
-          .map(item => String(item.link || ''))
-          .filter(link => {
-            if (!link.startsWith(pagePrefix)) return true;          // 链接不在它该在的那一页
-            const hash = link.slice(pagePrefix.length).split('#')[1] || '';
-            return !hash || !pageHtml.includes(`id="${hash}"`);      // 片段没有落点
-          });
-        if (dangling.length) {
-          fail(`变化订阅 ${spec.id} 里有 ${dangling.length} 条深链在 ${spec.pageRoute} 上没有落点（如 ${dangling[0]}）`);
-        } else {
-          console.log(`  ✓ 变化订阅 ${spec.id}: ${feed.items.length} 条条目，深链锚点全部落在 ${spec.pageRoute} 上`);
-        }
-      }
-    }
-
-    // v3.0 Stage H（队长 A1）：**「改了 alwaysGenerated 却忘了交视图」必须当场红**。
-    // 症状是那条 Feed 的描述里写着「没有拿到日志」，而日志其实就在盘上 —— 那是假话，
-    // 而且从产物上完全看不出来（文件在、格式对、就是描述说错了话）。
-    {
-      if (built.feedBundle.changeFeedsSkipped.length) {
-        fail(`有变化源没有被登记（未交出视图）：${built.feedBundle.changeFeedsSkipped.map(item => item.id).join('、')}`
-          + ' —— 要么补上 changeViews，要么把 spec 的 alwaysGenerated 保持为 false');
-      }
-      const availabilityOf = source => (source === 'api'
-        ? (built.apiPlanRadar ? built.apiPlanRadar.availability : 'unavailable')
-        : (built.planRadar ? built.planRadar.availability : 'unavailable'));
-      for (const spec of feeds.PLAN_CHANGE_FEEDS) {
-        const feed = built.feedBundle.feeds.find(item => item.spec.id === spec.id);
-        if (!feed || availabilityOf(spec.changeSource) !== 'ok') continue;
-        const unavailableNote = feeds.changeWordingOf(spec).unavailable;
-        if (feed.description.includes(unavailableNote)) {
-          fail(`订阅 ${spec.id} 的日志是可用状态，描述里却写着「没有拿到日志」——视图没有真的交进去`);
-        }
-      }
-    }
-    // 文件真的落盘了吗（含子目录）——存在的清单以注册表为准，不写死文件名
-    const missingFiles = [];
-    for (const feed of built.feedBundle.feeds) {
-      for (const rel of [feed.spec.path, feed.spec.jsonPath]) {
-        if (!fs.existsSync(path.join(OUT, rel))) missingFiles.push(rel);
-      }
-    }
-    if (missingFiles.length) fail(`订阅文件缺失：${missingFiles.slice(0, 4).join('、')}${missingFiles.length > 4 ? ` 等 ${missingFiles.length} 个` : ''}`);
-    for (const problem of result.problems.slice(0, 8)) {
-      fail(`订阅[${problem.code}] ${problem.feed}：${problem.detail}`);
-    }
-    if (result.problems.length > 8) fail(`订阅问题共 ${result.problems.length} 处（上面只列了前 8 处）`);
-    if (!result.problems.length && !missingFiles.length) {
-      console.log(`  ✓ 订阅: ${built.feedStats.count} 个 Feed × 2 种格式 = ${built.feedStats.files} 个文件 · ` +
-        `${built.feedStats.items} 条条目（三方对账 · id 唯一 · 链接可解析 · 判据一致 · 时间来自数据）` +
-        (built.feedStats.empty.length ? ` · 显式允许为空的：${built.feedStats.empty.join('、')}` : ''));
-    }
-  }
-
-  // 订阅发现：HTML 里声明的每一条 rel="alternate" 都必须指向真实存在的 Feed，
-  // 且 title 与那份 Feed 自己的 <title> **逐字相同** —— 这条是「改了注册表忘了改页面」
-  // 唯一会红的地方（首页 8 条由注册表注入，其余页面各处只用 rootFeedTags 这一份）。
-  {
-    const byPath = new Map();
-    for (const feed of built.feedBundle.feeds) {
-      byPath.set(feed.spec.path, feed.spec.title);
-      byPath.set(feed.spec.jsonPath, feed.spec.title);
-    }
-    const progress = [];
-    const problems = [];
-    let declared = 0;
-    for (const [rel, label, prefix] of [
-      ['index.html', '首页', ''],
-      ['status/index.html', '状态页', '../'],
-      ['changes/index.html', '变化雷达页', '../'],
-      ['feeds/index.html', '订阅中心', '../'],
-      [`${plansHubPage.PLANS_HUB_ROUTE}index.html`, '资料入口页', '../'],
-      // v3.0 Stage D5/D6：模型页同样声明根 Feed（订阅发现按深度逐页对账）。
-      [`${modelsPage.MODELS_INDEX_ROUTE}index.html`, '模型资料索引', '../'],
-      ...built.modelDetailRoutes.map(route => [`${route}index.html`, `/${route}`, '../../']),
-      // v3.0 Stage F：档案页同样声明根 Feed（订阅发现按深度逐页对账）。
-      // 详情页前缀同样问 `lib/archive.js` 要（唯一深度真相）。
-      [`${archiveLib.ARCHIVE_INDEX_ROUTE}index.html`, '历史档案', '../'],
-      ...built.archiveDetailRoutes.map(route => [
-        `${route}index.html`, `/${route}`, archiveLib.routePrefixOf(route)
-      ]),
-      // v3.0 Stage G：数据文档页同样声明根 Feed。
-      [`${dataDocs.DATA_DOCS_ROUTE}index.html`, '数据文档', '../../'],
-      [`${plansPage.PLANS_ROUTE}index.html`, '套餐对比页', '../../'],
-      ...built.collectionPages.map(page => [`${page.slug}/index.html`, `/${page.slug}/`, '../']),
-      ...built.needPages.map(page => [`${page.route}index.html`, `/${page.route}`, '../../']),
-      // v1.7：新增的四类页面同样要声明订阅源（分类页/厂商页还各有自己的那一份 Feed）。
-      // 深度按路由段数推导，不写死。
-      ...built.directoryPages
-        .filter(page => page.kind === 'category' || page.kind === 'vendor' || page.kind === 'hub' || page.kind === 'alias')
-        .map(page => [`${page.route}index.html`, `/${page.route}`,
-          '../'.repeat(page.route.split('/').filter(Boolean).length)])
-    ]) {
-      const file = path.join(OUT, rel);
-      if (!fs.existsSync(file)) { problems.push(`${label} 的产物文件缺失`); continue; }
-      const page = fs.readFileSync(file, 'utf8');
-      let count = 0;
-      for (const m of page.matchAll(/<link rel="alternate" type="(application\/rss\+xml|application\/feed\+json)" title="([^"]*)" href="([^"]*)">/g)) {
-        count++;
-        declared++;
-        const title = feeds.unescapeXml(m[2]);
-        const href = m[3];
-        if (!href.startsWith(prefix)) { problems.push(`${label} 的 ${href} 深度前缀不是 ${prefix || '(空)'}`); continue; }
-        const route = href.slice(prefix.length);
-        const expected = byPath.get(route);
-        if (!expected) { problems.push(`${label} 声明了不存在的订阅源 ${href}`); continue; }
-        if (expected !== title) problems.push(`${label} 的 ${href} 标题「${title}」≠ Feed 自己的「${expected}」`);
-        if (m[1] === 'application/rss+xml' && !route.endsWith('.xml')) problems.push(`${label} 的 RSS 类型与后缀不符：${href}`);
-        if (m[1] === 'application/feed+json' && !route.endsWith('.json')) problems.push(`${label} 的 JSON Feed 类型与后缀不符：${href}`);
-      }
-      // 每个页面都必须真的声明了订阅源（只查「没有残留」不够，把整段删掉同样没有残留）
-      if (count === 0) problems.push(`${label} 一条 rel="alternate" 都没有`);
-      progress.push(`${label}${count}`);
-    }
-    if (problems.length) fail(`订阅发现不一致：${problems.slice(0, 4).join('、')}`);
-    else console.log(`  ✓ 订阅发现: ${declared} 条 rel="alternate" 横跨 ${progress.length} 个页面，全部指向真实 Feed 且标题逐字一致`);
-  }
-
-  // 订阅中心页：五条约定（预渲染 / 无 JS 可读 / sitemap / 双 feed / JSON-LD）+
-  // 页面上列出的每一个订阅地址都必须真的存在。
-  {
-    const file = path.join(OUT, 'feeds/index.html');
-    if (!fs.existsSync(file)) fail('缺少 feeds/index.html');
-    else {
-      const page = fs.readFileSync(file, 'utf8');
-      const problems = [];
-      if (!page.includes(`<link rel="canonical" href="${SITE_URL}feeds/">`)) problems.push('canonical 不是自指');
-      if (/__[A-Z_]+_HREF__/.test(page)) problems.push('残留路由占位符');
-      if (!page.includes('href="../feed.xml"') || !page.includes('href="../feed.json"')) problems.push('没有声明根订阅源');
-      let ldTypes = [];
-      try {
-        ldTypes = [...page.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(m => JSON.parse(m[1])['@type']);
-      } catch (error) {
-        problems.push('JSON-LD 解析失败: ' + error.message);
-      }
-      if (JSON.stringify(ldTypes.slice().sort()) !== JSON.stringify(['BreadcrumbList', 'CollectionPage'])) {
-        problems.push(`JSON-LD 不是恰好两段：${ldTypes.join(', ')}`);
-      }
-      // 页面上每个绝对订阅地址都要有对应的产物文件（相对路径还原成站内路由）
-      const listed = [...new Set([...page.matchAll(new RegExp(`href="${SITE_URL.replace(/[.]/g, '\\.')}([^"]+)"`, 'g'))].map(m => m[1]))];
-      for (const route of listed) {
-        if (route.endsWith('/')) continue;
-        if (!fs.existsSync(path.join(OUT, route))) problems.push(`列出的订阅地址没有文件：${route}`);
-      }
-      // v3.0 Stage H（队长 B1）：**注册表里每个变化源都必须出现在这一页上**。
-      // P3-4：这条断言从「只盯 PLAN_CHANGE_FEEDS」扩成**注册表 → 页面 / 页面 → 注册表双向对账**
-      // （唯一实现在 `lib/feeds.js` 的 `checkFeedsPage()`）：分类 Feed 那一组曾经整组漏在这里，
-      // 而当时所有断言都绿 —— 因为页面上少列一条、自检里也没有任何一条要求它必须出现。
-      const audit = feeds.checkFeedsPage({ feedList: built.feedBundle.feeds, page, siteUrl: SITE_URL });
-      for (const problem of audit.problems) problems.push(problem);
-      // hidden/internal 的 Feed 不许留产物文件：隐藏 = 「这份订阅不属于公开产品」，
-      // 不是「页面少列几行」（文件还在 = 读者仍能拿到地址 ⇒ 有产出、无总览入口，正是 P3-4）。
-      for (const feed of built.feedBundle.feeds) {
-        if (feeds.isPublicSpec(feed.spec)) continue;
-        for (const rel of [feed.spec.path, feed.spec.jsonPath]) {
-          if (fs.existsSync(path.join(OUT, rel))) problems.push(`hidden/internal 的 Feed 仍有产物文件：${rel}`);
-        }
-      }
-      const text = page.replace(/<script[\s\S]*?<\/script>/gi, '').replace(/<style[\s\S]*?<\/style>/gi, '')
-        .replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-      if (text.length < 600) problems.push(`预渲染正文过短（${text.length} 字）——无 JS 时读不到内容`);
-      if (!/没有账号|没有邮件列表/.test(text)) problems.push('没有说明「不需要账号」');
-      if (problems.length) fail(`订阅中心：${problems.join('；')}`);
-      else console.log(`  ✓ 订阅中心: /feeds/ 五条约定齐（自指 canonical · 双 feed · 两段 JSON-LD · 预渲染 ${text.length} 字 · ` +
-        `${listed.length} 个订阅地址全部存在）· 双向对账：注册表 ${audit.publicCount} 个 public Feed ↔ 页面列出 ${audit.listedCount} 条地址`);
-    }
-  }
+  // t4：这里原先有三块订阅自检（整张注册表三方对账 / 订阅发现 rel=alternate / 订阅中心页五条约定）。
+  // 它们随订阅子系统整体下架一起删除 —— 没有 Feed、没有订阅声明、没有订阅中心页，就没有可对账的对象。
+  // ⚠️ 删掉的是什么级别的牙，值得写下来：那三块原本能抓住「页面少列一条 Feed」「某页漏了 rel=alternate」
+  // 「hidden 的 Feed 仍留产物文件」这类**产出与总览分家**的事故。它们的替代者是产物资产门禁：
+  // 只要还有一个 feed 前缀的文件留在产物里，`lib/published-assets.js` 就当场红
+  //（比"页面少列一行"更早、也更硬：文件在，读者就能下载到）。
 
   // FAQ 可见文案与 FAQPage 必须逐字一致。
   //
@@ -7094,7 +6419,7 @@ function selfCheck(built) {
     const sitemapXml = fs.readFileSync(path.join(OUT, 'sitemap.xml'), 'utf8');
     const sitemap = [...sitemapXml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1]);
     const sitemapSet = new Set(sitemap.map(url => url.slice(SITE_URL.length)));
-    const published = JSON.parse(fs.readFileSync(path.join(OUT, 'deals.json'), 'utf8')).deals;
+    const published = JSON.parse(fs.readFileSync(path.join(OUT, OFFERS_ARTIFACT), 'utf8')).deals;
     const dealsById = new Map(published.map(deal => [deal.id, deal]));
     const descriptors = [];
     const readPage = (route, meta) => {
@@ -7129,7 +6454,7 @@ function selfCheck(built) {
         expectItemList: true,
         itemIds: built.changesItemList.map(record => record.id)
       }),
-      readPage('feeds/', { kind: 'feeds', expectItemList: false }),
+      // t4：/feeds/ 订阅中心页已整体下架，SEO 门禁的页面清单里不再有它。
       // v3.0 Stage B：/plans/ 资料入口。三个开的默认值都来自 `lib/page-kinds.js` 的声明
       // （`plans-hub`：ItemList 在场 + 行数对账 + 成员对账关掉）。
       // 成员对账关掉的理由与首页/对比页同源：ItemList 指向**子页**，而 `seo.js` 的成员判据
@@ -7158,11 +6483,6 @@ function selfCheck(built) {
       }),
       // v3.0 Stage G：数据文档页。ItemList 成员是**数据集 endpoint**（静态文件），
       // 不是站内 `deal/<id>/`，因此显式关掉成员对账；行数 = Manifest 数据集数。
-      readPage(`${dataDocs.DATA_DOCS_ROUTE}`, {
-        kind: 'data-docs',
-        checkItemListMembers: false,
-        count: built.dataManifest.count
-      }),
       // v2.1：套餐对比页。ItemList 指向**各自的官方定价页**（与首页同一口径），
       // 所以成员校验对不上（它按站内 `deal/<id>/` 判成员）—— 显式关掉那一条，
       // 而不是为了让断言通过去伪造一个本站不存在的套餐详情页。
@@ -7171,19 +6491,23 @@ function selfCheck(built) {
         kind: 'plans',
         expectItemList: true,
         checkItemListMembers: false,
-        // v2.3 / v3.0：这一页有专属的套餐变化源，必须声明它（与根 Feed 并列）。
-        // 判据从注册表取 —— 不再写死 spec id。
-        feedMatch: feeds.feedsForPage({ route: plansPage.PLANS_ROUTE }, built.feedBundle.feeds).map(feed => feed.spec.id),
+        // 【史述·已下架】v2.3 / v3.0：这一页当年有专属的套餐变化源，要声明它（与根 Feed 并列）；
+        // 订阅层下架后页面不再声明任何订阅源（`seo.js` 的 feed-declared 检查码也与描述符里的
+        // feedMatch / feedIds 一起删除），描述符里只剩行数（`count`）等既有字段。
+        // 【故意保留·勿当垃圾清】描述符里的 `feedMatch` 现在是**死字段**（全仓消费者 0），
+        // 但清它可能改变产物 ⇒ 作废本轮全部产物级证据；要清必须先用「产物逐文件 sha256 不变」证明。
         count: JSON.parse(fs.readFileSync(path.join(ROOT, 'plans.json'), 'utf8')).count
       }),
       // v2.5：API 计费页。与套餐页同样：ItemList 指向**各自的官方定价页**，
       // 所以成员校验不适用（本站不为每个模型编一个详情页）；行数校验保留。
-      // v3.0 Stage H：这一页**有了自己的订阅源**（API 价格变化），因此与套餐页一样声明 feedMatch。
+      // 【史述·已下架】v3.0 Stage H：这一页当年有了自己的订阅源（API 价格变化），因此与套餐页一样
+      // 走 feedMatch 判据；订阅层下架后页面不再声明任何订阅源，这里同样只剩行数（`count`）等字段。
+      // 【故意保留·勿当垃圾清】同上面套餐页那条：`feedMatch` 已是死字段（全仓消费者 0），
+      // 队长裁定本轮**不清**（清它可能改变产物 ⇒ 作废全部产物级证据）；要清先证「产物 sha256 不变」。
       readPage(`${apiPlansPage.API_PLANS_ROUTE}`, {
         kind: 'plans',
         expectItemList: true,
         checkItemListMembers: false,
-        feedMatch: feeds.feedsForPage({ route: apiPlansPage.API_PLANS_ROUTE }, built.feedBundle.feeds).map(feed => feed.spec.id),
         count: JSON.parse(fs.readFileSync(path.join(ROOT, 'api-plans.json'), 'utf8')).count
       })
     ].filter(Boolean);
@@ -7218,6 +6542,9 @@ function selfCheck(built) {
       count: page.count,
       pinned: page.pinned,
       expectItemList: true,
+      // 【故意保留·勿当垃圾清】`page.feedMatch` 已无人产出（恒为 undefined）、`seo.js` 也不再读它，
+      // 所以这一行是**死字段**。队长裁定本轮不清：清它可能改变产物（产物一旦变了，本轮全部
+      // 产物级证据作废），收益为零。要清必须先证明「产物逐文件 sha256 不变」。
       feedMatch: page.feedMatch,
       // v3.0 Stage E：厂商页的门槛判据（`seo.js` 按与 landing **同一条 OR** 判）。
       // 不传这两个字段时 seo.js 的行为与 v2.x 逐字相同（只查条数）。
@@ -7233,12 +6560,11 @@ function selfCheck(built) {
       aliases: landing.loadAliases(),
       thresholds: {
         categoryMinDeals: landing.CATEGORY_MIN_DEALS,
-        vendorMinDeals: feeds.VENDOR_THRESHOLDS.minDeals
+        vendorMinDeals: site.VENDOR_THRESHOLDS.minDeals
       },
       dealsById,
       asOf: built.lastmod,
       vendorKeyOf: VENDOR_KEY_OF,
-      feedSpecs: built.feedBundle.feeds.map(feed => feed.spec),
       // 静态文件的清单**从磁盘现场走一遍**，不手写：手写的清单漏一个就会把一条
       // 正常链接判成死链（第一版就漏了 46 个 Feed 文件，一次报出 76 条假红）。
       staticFiles: (() => {
@@ -7304,7 +6630,9 @@ function selfCheck(built) {
       console.log(`    · 逐条登记 ${[...noteIntent.values()].reduce((sum, page) => sum + page.notes.length, 0)} 条`
         + `（其中组装点 pin ${pinnedNotes} 条）· 台账（构造点在范围之外的页面族）${untrackedPages.length} 页`
         + `${untrackedPages.length ? `：${[...new Set(untrackedPages.map(row => row.untracked))].join(' / ')}` : ''}`);
-      console.log(`    · 清单文件 ${NOTES_MANIFEST_FILE}（${Buffer.byteLength(notesManifestText(), 'utf8')} 字节，NDJSON：首行 header + 每行一页，按 route 排序 ⇒ 逐字节可重建）`);
+      console.log(`    · 清单文件 ${NOTES_MANIFEST_FILE} → ${path.relative(ROOT, NOTES_MANIFEST_PATH).split(path.sep).join('/')}`
+        + `（${Buffer.byteLength(notesManifestText(), 'utf8')} 字节，NDJSON：首行 header + 每行一页，按 route 排序 ⇒ 逐字节可重建）`
+        + `；它不在产物目录里，自检全过之后就位`);
     }
   }
 
@@ -7399,13 +6727,15 @@ function discardStaging() {
 function main() {
   runValidate();
   const built = assemble();
-  // 说明意图清单落盘（`dist/_notes.ndjson`）：必须在 selfCheck 之前 —— 自检要一边回读它、
-  // 一边回读刚生成的 HTML，做「意图 × 渲染」的逐页对账。
-  writeNotesManifest();
   // selfCheck 用「返回 false」而不是抛错表示失败；抛错（如 og-image 自检）与返回 false
   // 都必须走下面同一个 catch。只有全部自检通过，才允许把暂存目录换成最终目录。
   if (!selfCheck(built)) throw new SelfCheckFailed('产物自检未通过');
   promoteStaging();
+  // 说明意图清单落盘（`<产物目录>.notes.ndjson`，见 writeNotesManifest() 的头注释）：
+  // 刻意放在 promoteStaging() **之后** —— 清单是「产物已经就位」这件事的副产物，不是构建过程的
+  // 中间文件。构建失败时它一个字节都不该留：仓库根留下「描述一份从未就位的产物」的陈旧清单，
+  // 会让所有以它为意图侧的门禁（verify-site §22c ⑨）误红，而那种红看起来像"说明被删了"。
+  writeNotesManifest();
   console.log(`\n✅ 构建完成 → ${showOut(FINAL_OUT)}（自检全过，已从暂存目录就位）`);
 }
 

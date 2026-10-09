@@ -13,7 +13,10 @@
  * **它只写意图，绝不写状态** —— `COVERED` / `PARTIAL` / `MISSING` 一律由本模块从盘上事实**派生**。
  * 手写状态等于把"我声称覆盖了"当成"事实"，那正是这一轮要消灭的东西。
  *
- * 它**不发布**：不是公开数据集（不进 `PUBLIC_DATASETS` / Dataset Manifest / Feed / Sitemap）。
+ * 它**不发布**。这里当年写的是「不是公开数据集（不进 `PUBLIC_DATASETS` / Dataset Manifest / Feed /
+ * Sitemap）」—— 那条清单、Manifest 与 Feed **都已经随「去数据暴露」整体下架**
+ *（`lib/data-docs.js` 与 `lib/feeds.js` 两个模块本身也已删除），
+ * 所以今天只剩「不进 Sitemap」这一条仍然按现役机制成立（它不是页面，sitemap 只收页面）。
  * 与 `scripts/data/models.json`、`providers.json` 同一类：内部身份/意图来源层，
  * 只在仓库内被报告与门禁读取。
  *

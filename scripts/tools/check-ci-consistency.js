@@ -183,11 +183,6 @@ const GATE_STEP_NAMES = [
   // 上限 / 纯函数 / 墓碑与「不可用」的措辞）。它与 v1.4 那一支互补：
   // 前者管「记录对不对」，这一支管「取出来的视图对不对」，红的含义不同。
   'Change-radar self-test',
-  // v1.6 新增：订阅层（Stable ID / 时间只来自数据 / 10 次构建逐字节一致 / 排除项 /
-  // 空 Feed 策略 / 厂商门槛与 slug / XML 良构 / 4 项 Tooth Test）。
-  // 与 v1.5 那一支互补：前者管「取出来的视图对不对」，这一支管
-  // 「把视图序列化成订阅源之后还对不对」，红的含义不同。
-  'Feeds self-test',
   // v1.7 新增：SEO 门禁自测（28 个检查码逐条定向篡改 + 干净夹具必须静默 +
   // 门槛分支 + 注册表不变量）。它红的时候没有别的步骤会替它红：
   // 构建期那一遍跑的是真数据，验不到「某个检查码其实永远不会响」。
@@ -232,9 +227,10 @@ const GATE_STEP_NAMES = [
   'API-plans reproducibility (curated → api-plans.json, byte-compare)',
   'API-plan-history verify (log consistent with api-plans.json)',
   // v3.0 新增：六个新页面家族与索引层的离线自测。它们红的含义各自独立 ——
-  // 「模型页门槛 / 厂商页 API 计数与 api-plans 现算一致 / 归档状态可从时间线重推 /
-  //  Manifest 与磁盘逐字段一致」都只在这一步被验证：构建期跑的是真数据，
-  // 验不到「某个门槛其实永远不会响」。
+  // 「模型页门槛 / 厂商页 API 计数与 api-plans 现算一致 / 归档状态可从时间线重推」
+  // 都只在这一步被验证：构建期跑的是真数据，验不到「某个门槛其实永远不会响」。
+  // （t2：原先这句里还有「Manifest 与磁盘逐字段一致」——那条判据属于已删除的
+  //  `Data-docs self-test`，数据出口整族下架后它连被测对象都不存在了。）
   'Model-registry self-test (identity + explicit mapping)',
   // v3.0 新增：索引层与关系层的可重建性（与 plans / api-plans 那两条红的含义相同）。
   'Models reproducibility (registry → models.json, byte-compare)',
@@ -266,19 +262,19 @@ const GATE_STEP_NAMES = [
   'Plans-hub self-test (/plans/)',
   'Vendor-pages self-test (/vendor/)',
   'Archive self-test (/archive/, synthetic ended/restored fixtures)',
-  'Data-docs self-test (/docs/data/ + /data/index.json)',
+  // t2：删掉 `Data-docs self-test (/docs/data/ + /data/index.json)`（数据出口整族下架，
+  // 它的被测对象与自测文件一起消失）与 `Feeds reproducibility (build twice, byte-compare)`
+  // （Feed 产物不再存在）。删步骤必须**同批**改三处：action.yml 的步骤、这里的
+  // GATE_STEP_NAMES、以及下面的 GATE_STEP_RUN / GATE_ARTIFACT_STEPS ——
+  // 只改一处会被断言 (10) 与 (17) 逐条点出来。
   // private-analytics-v1 新增：私有站点分析（Cloudflare Web Analytics）的独立门禁。
   // 它同样依赖产物（读 dist/ 现场推导路由与 bootstrap 数），所以也排在 Assemble site 之后，
   // 并在下面的 GATE_ARTIFACT_STEPS 里被逐项钉住「显式 --dir=dist」。
   'Analytics self-test (bootstrap count / production guard / provider)',
-  // v1.6 新增：**真实连续构建**两次，逐字节比对全部 Feed 文件。自测证明的是
-  // 「纯函数同输入同输出」，证明不了「构建脚本没把时钟写进产物」——两者红的含义不同。
-  // §10.9：它同样依赖参考产物（原先缺产物就静默退化成"只自比对"），所以也排在
-  // Assemble site 之后并显式 `--dir=dist`。
-  'Feeds reproducibility (build twice, byte-compare)',
   // v2.1 新增：plans.json 可重建性 —— 盘上那份必须等于人工来源层产出的那一份（逐字节）。
-  // 与上一条红的含义不同：Feeds 那条问「构建产物里有没有被塞进时钟」，
-  // 这一条问「有没有人手改了派生产物 / 改了来源层却忘了重建」。
+  // 它问「有没有人手改了派生产物 / 改了来源层却忘了重建」。
+  // （原先这里还写着「与上一条红的含义不同：Feeds 那条问…」——那条 `Feeds reproducibility`
+  //  随订阅层下架一起删了，指向它的对照句也一并删，免得引用一个不存在的步骤。）
   'Plans reproducibility (curated → plans.json, byte-compare)',
   // v2.3 新增：套餐变化日志与当前 plans.json 的一致性（基线 + 事件重放必须等于今天的数据）。
   // 与上一条红的含义不同：前者问「文件是不是来源层产出的」，这一条问「这份数据是怎么变过来的」。
@@ -341,8 +337,6 @@ const GATE_STEP_RUN = {
     "node scripts/tools/history-selftest.js",
   "Change-radar self-test":
     "node scripts/tools/changes-selftest.js",
-  "Feeds self-test":
-    "node scripts/tools/feeds-selftest.js",
   "SEO self-test":
     "node scripts/tools/seo-selftest.js",
   "Audience self-test":
@@ -393,12 +387,8 @@ const GATE_STEP_RUN = {
     "node scripts/tools/vendor-page-selftest.js --dir=dist",
   "Archive self-test (/archive/, synthetic ended/restored fixtures)":
     "node scripts/tools/archive-selftest.js --dir=dist",
-  "Data-docs self-test (/docs/data/ + /data/index.json)":
-    "node scripts/tools/data-docs-selftest.js --dir=dist",
   "Analytics self-test (bootstrap count / production guard / provider)":
     "node scripts/tools/analytics-selftest.js --dir=dist",
-  "Feeds reproducibility (build twice, byte-compare)":
-    "node scripts/tools/check-feeds-reproducible.js --dir=dist",
   "Plans reproducibility (curated → plans.json, byte-compare)":
     "node scripts/tools/check-plans-reproducible.js",
   "Plan-history verify (log consistent with plans.json)":
@@ -522,11 +512,9 @@ const GATE_ARTIFACT_STEPS = [
   ['Plans-hub self-test (/plans/)', 'planshub-selftest.js'],
   ['Vendor-pages self-test (/vendor/)', 'vendor-page-selftest.js'],
   ['Archive self-test (/archive/, synthetic ended/restored fixtures)', 'archive-selftest.js'],
-  ['Data-docs self-test (/docs/data/ + /data/index.json)', 'data-docs-selftest.js'],
   // private-analytics-v1 新增：分析门禁同样是产物依赖步骤 —— 它读 dist/ 现场推导路由与
   // bootstrap 数，因此必须显式 `--dir=dist` 且排在「Assemble site」之后。
-  ['Analytics self-test (bootstrap count / production guard / provider)', 'analytics-selftest.js'],
-  ['Feeds reproducibility (build twice, byte-compare)', 'check-feeds-reproducible.js']
+  ['Analytics self-test (bootstrap count / production guard / provider)', 'analytics-selftest.js']
 ];
 /** 它们的前置：这一步必须先出现 */
 const GATE_BUILD_STEP = 'Assemble site (same path as deploy.yml)';
