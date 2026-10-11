@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-10-11T01:02:46+08:00",
+  "updatedAt": "2026-10-11T12:11:55+08:00",
   "count": 153,
   "deals": [
     {
@@ -3101,20 +3101,20 @@
       }
     },
     {
-      "id": "7f1250402ebb",
-      "title": "Klarent",
-      "vendor": "Klarent",
-      "url": "https://klarent.ai/",
+      "id": "06bc1d631f62",
+      "title": "Sync.so",
+      "vendor": "Sync.so",
+      "url": "https://sync.so/",
       "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/klarent-15bc54ee",
+      "sourceUrl": "https://futuretools.io/tools/sync-so",
       "region": "global",
       "type": "tool",
       "discountInfo": null,
       "pricingModel": null,
       "priceLine": null,
       "features": null,
-      "category": "编程开发",
-      "description": "AI-powered, no-code QA test automation platform for web and mobile.",
+      "category": "视频",
+      "description": "A tool to sync lips and clone voices in videos",
       "eligibility": null,
       "validity": null,
       "expiresAt": null,
@@ -3123,7 +3123,7 @@
       "verified": false,
       "verifiedAt": null,
       "zh": {
-        "description": "面向 Web 与移动端的 AI 无代码测试自动化平台。"
+        "description": "为视频做口型同步与声音克隆。"
       }
     },
     {
@@ -3150,32 +3150,6 @@
       "verifiedAt": null,
       "zh": {
         "description": "上传照片，找出与你相像的名人。"
-      }
-    },
-    {
-      "id": "06bc1d631f62",
-      "title": "Sync.so",
-      "vendor": "Sync.so",
-      "url": "https://sync.so/",
-      "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/sync-so",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "视频",
-      "description": "A tool to sync lips and clone voices in videos",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-10-11",
-      "verified": false,
-      "verifiedAt": null,
-      "zh": {
-        "description": "为视频做口型同步与声音克隆。"
       }
     },
     {
@@ -3254,6 +3228,32 @@
       "verifiedAt": null,
       "zh": {
         "description": "用数字人把文字或语音做成视频。"
+      }
+    },
+    {
+      "id": "7f1250402ebb",
+      "title": "Klarent",
+      "vendor": "Klarent",
+      "url": "https://klarent.ai/",
+      "source": "Futuretools",
+      "sourceUrl": "https://futuretools.io/tools/klarent-15bc54ee",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "编程开发",
+      "description": "AI-powered, no-code QA test automation platform for web and mobile.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-10-11",
+      "verified": false,
+      "verifiedAt": null,
+      "zh": {
+        "description": "面向 Web 与移动端的 AI 无代码测试自动化平台。"
       }
     },
     {
