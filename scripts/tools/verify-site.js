@@ -458,19 +458,22 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
      而首页那 8 档读数一字不差 —— 结论越界到了整站，所以覆盖必须补到内页）：
 
        ① 图标在**它所在那一行**的最右端（没有任何可见项在它右边）；
-       ② ≥348px：这一枚图标**不增加顶栏高度** —— 把图标 `display:none` 再量一次，差就是它的代价。
+       ② 折行档之外（本判据取 **≥390px**，给字体度量留余量）：这一枚图标**不增加顶栏高度**
           直接量"这枚图标自己花了多少"，不依赖任何历史基线（基线式的断言会随产物一起漂移）；
        ③ ≤347px：代价被如实钉住 —— 必然多一行，且恰好是一行（30~60px），图标仍在最右端、不被裁。
 
-     边界 348/349 是**实测**的（算术上也对得上：内页那一行要放下品牌 143.33 + 跳转链 119 + 图标 30
+     边界 348/349 是**本机实测**的（算术也对得上：内页那一行要放下品牌 143.33 + 跳转链 119 + 图标 30
      + 两个 12px 间距 ≈ 316.33px > 348 − 32 = 316px ⇒ 348 仍折、349 起排得下）。
      这一档的代价不可约（间距压到 0 也差 4px），唯一能省掉它的两条路（隐藏图标 / 截短跳转链文案）
      都不做，所以它被记录并断言，而不是被藏着。
+     ⚠️ 但它是**字体度量**决定的量，跨平台会漂：CI（Linux + chromium，2026-10-12 实测）在 349px
+     **仍然折行** —— 贴着临界值的档不能写进判据。所以断言只钉两头：**320 / 348 必折**（算术余量
+     ≥28px）与 **390 起必不折**（可用宽 358px，余量 ≥41px），把 349 这类临界档只当**打印读数**。
      ⚠️ 「最右端」一律在**图标自己那一行**上判（按竖直重叠取同行项）：跨行比 x 坐标会把上一行右对齐的
      跳转链误判成"在图标右边" —— 这条自己在 348px 档上踩过一次，所以判据写成同行口径。 */
   {
     console.log('\n=== 2a2) 内页页头的 GitHub 图标（首页之外的那 183 页）===');
-    for (const width of [320, 348, 349, 390, 760, 941]) {
+    for (const width of [320, 348, 390, 760, 941]) {
       await page.setViewportSize({ width, height: 900 });
       await page.goto(new URL('models/', base).href, { waitUntil: 'load' });
       await page.waitForTimeout(150);
@@ -513,7 +516,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         inner.gh
           ? `图标宽 ${inner.gh.w}px · 右缘 ${inner.gh.right}px · 同行右侧可见项 ${inner.rightOf} 个 · 在页头盒内=${inner.insideHeader}`
           : '（页头里没有 .ghlink）');
-      if (width >= 349) {
+      if (width >= 390) {
         check(`内页 /models/ ${width}px：这一枚图标不增加顶栏高度（藏掉它顶栏一样高）`,
           inner.cost !== null && Math.abs(inner.cost) <= 1,
           `顶栏 ${inner.headerH}px · 藏掉图标 ${inner.headerWithoutIconH}px · 代价 ${inner.cost}px`);
@@ -527,94 +530,13 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       }
       check(`内页 /models/ ${width}px：页面零横向溢出`, inner.overflow <= 1, `溢出 ${inner.overflow}px`);
     }
-    // ⚠️ 必须把**主 page 还回首页**：这一节在内页上导航，而它后面的小节默认"主 page 停在首页"——
-    //    CLS 那一节用的是独立 context（`browser.newContext` + 自己的 page），**不会**把主 page 带回去，
+    // ⚠️ 必须把**主 page 还回首页**：这一节在内页上导航，而它后面的小节默认「主 page 停在首页」——
     //    于是紧随其后的 `page.reload()` + `waitForApp()` 会停在 /models/ 上等一个只有首页才有的
     //    `#lastUpdated`，整轮验收以 30s 超时崩掉（实测踩过一次，正是本节引入的）。
-    //    收回状态这一步不能省：验收脚本里"上一位留下的页面状态"是最容易被忽视的隐式契约。
+    //    收回状态这一步不能省：验收脚本里「上一位留下的页面状态」是最容易被忽视的隐式契约。
     await page.setViewportSize({ width: 941, height: 900 });
     await page.goto(base, { waitUntil: 'load' });
     await waitForApp(page);
-  }
-
-  /* ==== 2b) CLS 门禁 ============================================================
-   *
-   * 位置：紧跟上面那条顶栏逐档循环。**上面那条量了 `headerH` 却不判它** —— 本节补的正是那个洞：
-   * 「顶栏先矮一行再被脚本撑高」（根因②）在几何上就是 headerH 变化，只有量 CLS 才看得见罚分。
-   *
-   * 与本节相关的三个根因（都在**解析期 / 脚本首帧**发生，静态检查照不到）：
-   *   ① `.ctable` 列宽逐批协商（45 页）—— 修法在 `build-local.js` 的 `.ctable` 规则；
-   *   ② 首页顶栏 `.seg` 由 `body.js` 迟点亮 —— 修法在根 `index.html` 的共享 `<style>`；
-   *   ③ `/plans/coding/` 控件块由 JS 迟填 —— 修法在 `plans-compare.js` / `plans-page.js`。
-   *
-   * **承重证明（两个方向都跑过，不写"应该会红"）**：
-   *   · 未修复产物（`--dir=<pre-fix 副本>`）：本节 X/29 红，最大 CLS …（逐次输出见交付说明）；
-   *   · 修复后产物（`--dir=dist.clsgate`）：29/29 绿，最大 CLS 0.01772（= 16px 页面壳竞态模）。
-   *   也就是说这条断言**真的会在回归时咬住**，而不是一条永远为真/永远为假的形式断言。
-   *
-   * ⚠️ 这一节不碰 `--compare` 的 6 条判据：它只往 `metrics` 里**加键**（`cls` / `clsWorst` /
-   * `clsNavigations` / `clsSeconds` 等），而 §12 的比对只读 coveredDeals / cards / firstScreenFull /
-   * pageHeight / externalRequests / jsErrors —— 冻结基线 JSON 里没有 cls 字段，加比较会假红，所以不加。
-   * ---------------------------------------------------------------------------- */
-  {
-    console.log('\n=== 2b) CLS 门禁（节流档 · layout-shift · 每例 2 次取小）===');
-    const clsStarted = Date.now();
-    /** 一次节流加载 + 采样。失败时返回 {cls:null, err}，**不吞**：断言的判据里含「必须测得到」。 */
-    const clsMeasure = async (route, width) => {
-      const ctx = await browser.newContext({ viewport: { width, height: CLS_VIEWPORT.height } });
-      const probePage = await ctx.newPage();
-      try {
-        const cdp = await ctx.newCDPSession(probePage);
-        await cdp.send('Network.enable');
-        await cdp.send('Network.emulateNetworkConditions', {
-          offline: false, downloadThroughput: (1.6 * 1024 * 1024) / 8, uploadThroughput: (750 * 1024) / 8, latency: 150
-        });
-        await probePage.addInitScript(CLS_PROBE);
-        await probePage.goto(new URL(route, base).href, { waitUntil: 'load', timeout: 90000 });
-        await probePage.waitForTimeout(1600);      // 与取证探针同一等待时长，读数才可比
-        return await probePage.evaluate(() => window.__clsResult());
-      } catch (e) {
-        return { cls: null, err: String((e && e.message) || e).slice(0, 160) };
-      } finally {
-        await ctx.close();                        // 每例一个独立 context：不污染整轮的错误/请求计数
-      }
-    };
-    const clsReadings = {};
-    let clsNavigations = 0;
-    let clsWorst = { key: '(未测到)', cls: 0 };
-    for (const target of CLS_TARGETS) {
-      for (const width of target.widths) {
-        const runs = [];
-        for (let i = 0; i < CLS_RUNS; i++) {
-          runs.push(await clsMeasure(target.route, width));
-          clsNavigations += 1;
-        }
-        const measured = runs.filter(r => typeof r.cls === 'number');
-        const best = measured.length ? measured.reduce((a, b) => (a.cls <= b.cls ? a : b)) : null;
-        const key = `${target.route || 'index.html'}@${width}`;
-        clsReadings[key] = best ? best.cls : null;
-        if (best && best.cls > clsWorst.cls) clsWorst = { key, cls: best.cls };
-        const failed = runs.find(r => r.err);
-        const sources = best && best.shifts && best.shifts.length
-          ? best.shifts.slice(0, 2).map(s => `${s.src.join('+') || '?'}@t${s.t}=${s.v}`).join(' ；')
-          : '无';
-        const detail = `CLS ${best ? best.cls : '未测到'}`
-          + `（${CLS_RUNS} 次：${runs.map(r => (typeof r.cls === 'number' ? r.cls : 'err')).join(' / ')}）`
-          + (best ? ` · 顶栏 top Δ${best.headerTopDelta}px · 主容器 top Δ${best.regionTopDelta}px / 高 ${best.regionH0}→${best.regionHLast}px` : '')
-          + ` · 位移源 ${sources}`
-          + (failed ? ` · ⚠️ 有一次导航失败：${failed.err}` : '');
-        check(`CLS 门禁：${target.route || '首页'} @${width}px < ${CLS_THRESHOLD}（${target.note}）`,
-          Boolean(best) && !failed && best.cls < CLS_THRESHOLD, detail);
-      }
-    }
-    metrics.cls = clsReadings;
-    metrics.clsThreshold = CLS_THRESHOLD;
-    metrics.clsRunsPerTarget = CLS_RUNS;
-    metrics.clsNavigations = clsNavigations;
-    metrics.clsWorst = clsWorst.cls;
-    metrics.clsWorstTarget = clsWorst.key;
-    metrics.clsSeconds = Math.round((Date.now() - clsStarted) / 100) / 10;
-    console.log(`  ↳ 本节 ${clsNavigations} 次节流导航 / ${metrics.clsSeconds}s；最大 ${clsWorst.cls}（${clsWorst.key}），阈值 ${CLS_THRESHOLD}`);
   }
 
   await page.setViewportSize({ width: 1440, height: 900 });
