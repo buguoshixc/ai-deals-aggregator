@@ -17,7 +17,7 @@
  *
  * 拥有（**文档脚手架**）：DOCTYPE / html / head 基础 meta / title / description / robots /
  * canonical / hreflang / OG+Twitter / 主题色 / favicon / 共享 `<style>` / 页面级 `<style>` 槽位 /
- * JSON-LD 槽位 / 订阅发现槽位 / 共享页头标记 / `<div class="wrap">` / `<main>` /
+ * JSON-LD 槽位 / 订阅发现槽位 / 共享页头标记（含 v3.1 那枚 GitHub 图标入口） / `<div class="wrap">` / `<main>` /
  * 共享页脚（含 `finalizePage` 的路由占位符解析与统计注入）/ 页面级 `<script>` 槽位 / 收尾标签。
  *
  * **不拥有**（刻意留给调用方，避免这一层重新做业务判断）：
@@ -34,7 +34,7 @@
  *   ② `title` / `description` / `canonicalUrl` / `bodyHtml` 必填；
  *   ③ `detail` 族必须有内容列 class（默认 `detail-main`）——详情页少了统一内容列是缺陷，
  *      不该静默渲染成宽页（`lib/archive.js` 也有同一条断言，两处守护同一件事）；
- *   ④ 共享片段缺失（`index.html` 被改动导致抽不到 `<style>` / 主题脚本 / 页脚）即抛错；
+ *   ④ 共享片段缺失（`index.html` 被改动导致抽不到 `<style>` / 主题脚本 / 页脚 / 页头图标入口）即抛错；
  *   ⑤ 页脚恰好过一次 `finalizePage()`——残留路由占位符与统计注入数都在那里断言。
  *
  * ## 用法
@@ -62,7 +62,7 @@ const pageKinds = require('./page-kinds');
 const DETAIL_MAIN_CLASS = 'detail-main';
 
 /**
- * 从**已组装好的 index.html** 抽出三份共享片段。
+ * 从**已组装好的 index.html** 抽出四份共享片段。
  *
  * 唯一出处仍然是 `index.html`：本函数只读取，不生成第二份。抽不到即抛错——那意味着
  * 共享片段被改名/删除，而所有页面族会同时失去页头样式与页脚导航，属于必须拦住发布的情况。
@@ -70,25 +70,34 @@ const DETAIL_MAIN_CLASS = 'detail-main';
  * 页脚模板里 `<!--lastUpdated-->` 的初值是 `--`（只有首页的 JS 会填），其它页一律写成
  * 「见首页」——这是 **9 个页面族逐字相同**的一处既有约定，因此收敛在这里。
  *
- * @param {string} indexHtml 已组装好的首页 HTML（含共享 `<style>` / 主题脚本 / 页脚片段）
+ * v3.1 的第四份是**页头最右侧的 GitHub 图标入口**（`SHARED:ghlink` 区间）。它进这张表而不是
+ * 在页面壳里硬编码，理由与页脚完全相同：它是**一份共享标记**，硬编码就会出现第二份副本，
+ * 而「9 个页面族与首页各写一份图标」正是这个模块当初要消灭的形状（见文件头注释）。
+ *
+ * @param {string} indexHtml 已组装好的首页 HTML（含共享 `<style>` / 主题脚本 / 页脚 / 图标入口）
  * @param {Array<[string,string]>} routeHrefs 路由占位符表（`build-local.js` 的 ROUTE_HREFS）
  */
 function loadShellParts(indexHtml, routeHrefs) {
   const sharedStyle = (indexHtml.match(/<style>[\s\S]*?<\/style>/) || [''])[0];
   const themeScript = (indexHtml.match(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/) || [''])[0];
   const footerRaw = (indexHtml.match(/<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/) || [])[1] || '';
+  const ghLinkRaw = (indexHtml.match(/<!--SHARED:ghlink:START-->([\s\S]*?)<!--SHARED:ghlink:END-->/) || [])[1] || '';
   const missing = [];
   if (!sharedStyle) missing.push('共享 <style>');
   if (!themeScript) missing.push('主题前置脚本');
   if (!footerRaw) missing.push('共享页脚片段（<!--SHARED:footer:START-->…END-->）');
+  if (!ghLinkRaw) missing.push('页头图标入口（<!--SHARED:ghlink:START-->…END-->）');
   if (missing.length) {
     throw new Error(`index.html 里抽不到 ${missing.join(' / ')} —— 页面壳失去共享来源，拒绝继续构建`
-      + '（页面壳的样式与页脚纪律：共享规则只有一处出处，见 docs/ARCHITECTURE.md）');
+      + '（页面壳的样式、页脚与页头入口纪律：共享规则只有一处出处，见 docs/ARCHITECTURE.md）');
   }
   return {
     sharedStyle,
     themeScript,
     footerTemplate: footerRaw.replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>'),
+    // `.trim()`：片段是从两个标记之间切出来的，首尾各带一个换行与缩进，
+    // 不裁掉会在每个页头里多出空行（页脚那边用的是同一个手法）。
+    headerGhLink: ghLinkRaw.trim(),
     routeHrefs
   };
 }
@@ -150,8 +159,17 @@ function finalizePage(html, route, prefix, routeHrefs, where = '') {
   return out;
 }
 
-/** 共享页头标记（9 个页面族逐字相同的那一份）。唯一变量是深度前缀。 */
-function sharedHeaderHtml(prefix, headerExtra = '') {
+/**
+ * 共享页头标记（9 个页面族逐字相同的那一份）。两个变量：深度前缀、该页的额外件。
+ *
+ * `headerExtra` 是**预渲染好的字符串**（当前只有详情页传 `#themeSeg`）；`ghLink` 是
+ * `loadShellParts()` 从 `index.html` 现抽的页头图标入口（v3.1）。
+ * ⚠️ 图标入口刻意**不**写成这里的字面量：页头标记与品牌那段本来就是"硬编码的第二份"
+ * （见 `build-local.js` 的 `writeDetailPages()` 头注释），再多一份就多一处会各自漂移的副本。
+ * 两个变量的顺序即 DOM 顺序，且图标**永远是最后一项** —— 右侧的 auto 边距在 `.jumpback`
+ * 上，图标跟着它落在最右端；给图标再写一条 auto 边距会把空白劈成两半。
+ */
+function sharedHeaderHtml(prefix, headerExtra = '', ghLink = '') {
   return `  <header class="top">
     <div class="topin">
       <a class="brand" href="${prefix}">
@@ -163,7 +181,7 @@ function sharedHeaderHtml(prefix, headerExtra = '') {
         </span>
         <span class="btxt"><b>AI <em>优惠</em>聚合器</b><small>真实优惠 · 每日更新</small></span>
       </a>
-      <a class="jumpback" href="${prefix}">← 返回全部优惠</a>${headerExtra ? `\n      ${headerExtra}` : ''}
+      <a class="jumpback" href="${prefix}">← 返回全部优惠</a>${headerExtra ? `\n      ${headerExtra}` : ''}${ghLink ? `\n      ${ghLink}` : ''}
     </div>
   </header>`;
 }
@@ -227,7 +245,7 @@ function docStart(spec) {
       throw new Error(`页面壳：${where} 缺 ${name}（route=${route}）—— 这三项必填，不接受空值`);
     }
   }
-  if (!parts || !parts.sharedStyle || !parts.themeScript || !parts.footerTemplate) {
+  if (!parts || !parts.sharedStyle || !parts.themeScript || !parts.footerTemplate || !parts.headerGhLink) {
     throw new Error(`页面壳：${where} 没有传 loadShellParts() 的结果（或片段为空）`);
   }
 
@@ -263,7 +281,7 @@ ${logoCssHtml}${parts.themeScript}
 ${parts.sharedStyle}
 ${extraCssHtml}${jsonLdHtmlBlock}</head>
 <body>
-${sharedHeaderHtml(prefix, headerExtra)}
+${sharedHeaderHtml(prefix, headerExtra, parts.headerGhLink)}
 
   <div class="wrap">
     <main id="main"${main ? ` class="${main}"` : ''}>`;

@@ -1155,17 +1155,26 @@ const htmlEscape = xmlEscape;
  * 只有 1 个 URL、1 条内链（见 research/GAP-MATRIX.md G1）。这是「可发现性」的根因。
  *
  * **只共用一半，边界要写清楚**：页面主体直接调用 RENDER-CORE 的 `detailHtml()`——与首页详情弹层
- * 是同一个函数；`<style>`、主题前置脚本、页脚三者从**已组装好的 index.html** 里抽出来
- * （页脚靠 `<!--SHARED:footer:START/END-->` 标记，抽不到就抛错，见下面的 `writeDetailPages()`）。
+ * 是同一个函数；`<style>`、主题前置脚本、页脚、页头的 GitHub 图标入口四者从**已组装好的
+ * index.html** 里抽出来（页脚靠 `<!--SHARED:footer:START/END-->`、图标入口靠
+ * `<!--SHARED:ghlink:START/END-->`，抽不到就抛错，见 `lib/page-shell.js` 的 `loadShellParts()`）。
  *
- * **但这三块是硬编码的第二份，没有任何标记或断言保证两边一致**：
- *   ① 品牌头部文案与 mark SVG（本文件下面 `<header class="top">` 里 `<a class="brand">` 那段 ↔ index.html:806-813）；
- *   ② `#themeSeg` 三个主题按钮（本文件下面的 `themeSeg` 常量 ↔ index.html:819-823）；
- *   ③ 详情页的主题切换脚本（本文件下面的 `themeBind` 常量 ↔ index.html:2163-2199，且把 `THEME_KEY`
- *      的值 `'dsh.theme'` 直接抄成字面量，不引用首页那个常量）。
+ * **下面这三块是硬编码的第二份，没有任何标记或断言保证两边一致**：
+ *   ① 品牌头部文案与 mark SVG（**v3.1 起**在 `lib/page-shell.js` 的 `sharedHeaderHtml()` 里
+ *      ↔ index.html 的 `<a class="brand">` 那段）—— 页面壳重构之后它已经不在本文件里，
+ *      但仍然是第二份副本，「改首页品牌文案不会同步到详情页」这条边界没有变；
+ *   ② `#themeSeg` 三个主题按钮（本文件下面的 `themeSeg` 常量 ↔ index.html 的同一个切换器）；
+ *   ③ 详情页的主题切换脚本（本文件下面的 `themeBind` 常量 ↔ index.html 里的首页脚本，且把
+ *      `THEME_KEY` 的值 `'dsh.theme'` 直接抄成字面量，不引用首页那个常量）。
  * 所以**改首页品牌文案或主题行为不会同步到 80 个详情页**，也不会报错。详见
- * PROJECT_STATUS.md「七、审计发现」的模板分叉那一节（那里记了 2026-09-23 工作区的确切行号；
- * 本文件自己的行号刻意不写——加几行注释就会整体位移）。
+ * PROJECT_STATUS.md「七、审计发现」的模板分叉那一节 —— ⚠️ **那一节是 2026-09-23 的历史快照**
+ * （它自己写明"只读审计""上面两列都是 2026-09-23 工作区的值"），里面的 build-local.js 行号与
+ * "品牌头部在本文件 533–541"这句**早已失效** —— 那一段的当前落点在 `lib/page-shell.js` 的
+ * `sharedHeaderHtml()`（见本注释第 ① 条）。读它当历史可以，当现状索引会找错文件
+ * （t3 的残留表述审计把这一处点名为"今天会误导人"）。
+ * 本文件自己的行号刻意不写——加几行注释就会整体位移。
+ * ⚠️ 页头那枚 GitHub 图标入口**不在**上面这份「第二份副本」名单里：它是从 index.html 现抽的
+ * 共享片段（v3.1），所以详情页与首页那一枚逐字节相同，改一处即全站生效。
  *
  * **纯静态**：详情页不加载主脚本，不 fetch assets/data/offers.json——没有列表要渲染，也就没有控制台错误；
  * 只保留一个极小的主题切换脚本（与首页同一套 localStorage 约定）。
@@ -6211,6 +6220,199 @@ function selfCheck(built) {
         `${leftovers.length > 6 ? ` 等 ${leftovers.length} 处` : ''}`);
     } else {
       console.log(`  ✓ 页脚路由链接: ${ROUTE_HREFS.length} 条路由 × ${routeOutputs.length} 个输出，深度前缀与去占位逐项对账`);
+    }
+
+    // v3.1：页头那枚 GitHub 图标入口的**全站正向断言**（上面那条的表只覆盖「进过深度表」的页面族，
+    // 而图标是**每一页都有**的页壳件，所以这里直接走遍产物里的全部 .html）。
+    //
+    // 判据本体从**产物首页的 SHARED:ghlink 区间现取** —— 那就是它的唯一出处，不在这里抄第二份
+    // （抄一份 URL 或一段 SVG 路径进自检，就多一处会各自漂移的副本，正是本文件反复在拆的形状）。
+    // 六条：① 片段**本身仍是一个入口**（形状断言：`<a class="ghlink">` + 绝对 https + target/rel
+    //          + 可读名字 + 内含 `<svg>`，且 host 是 github.com）；
+    //       ② 共享 `<style>` 里仍有 `.ghlink` 规则、且没有被 display:none / visibility:hidden 藏掉；
+    //       ③ 每一页按**元素**数恰好 1 枚（class token 级），且与首页那一枚逐字节相同；
+    //       ④ 出现在 `<header>` 区间里（不是被塞进页脚或正文）；
+    //       ⑤ 页脚区间里**不许**再出现仓库入口（v3.1 把仓库入口从页脚移到页头，删掉的不许回流）——
+    //          链接（带仓库域名的那种）与被删文案的回流（原样字面与等价写法两遍，见 ⑤b）都拦；
+    //       ⑥ 扫描面 = 产物里**全部 .html**（不是只认 `index.html` 这条没人断言的命名约定）。
+    //
+    // 为什么必须有：图标指向的是**绝对 URL**，不像页脚那样有路由占位符 —— 「某一页少了图标」
+    // 不触发任何既有断言（`scanResidue()` 只认登记过的字面），构建与浏览器验收都会一路绿。
+    //
+    // ⚠️ ①②是**补上来的**（独立复核的 medium 发现）：只判「唯一 / 位置 / 逐字节一致」时，下面这些
+    // 失效全都能全绿地穿过去（复核方用本文件原样切片的代码 + 按 `lib/page-shell.js` 的方式重新注入，
+    // 逐个实测过）：片段换成 `<span class="ghlink" aria-hidden="true"></span>`（全站没有入口了）、
+    // 换成一句注释、删掉 title/aria-label（图标链接没有可读名字）、href 改成别的站或相对路径、
+    // 去掉 `<svg>`、把共享 `<style>` 里 `.ghlink` 那一块整块删掉或加 `display:none`（产物里还在但看不见）。
+    // ⚠️ 被删的那段页脚尾巴（` · GitHub 仓库`）**刻意不登记**进 `scripts/data/residue-guard.json` 的
+    // deletedCopy：裸词「GitHub 仓库」现在活在页头的 title / aria-label 里（每页 2 次），登记它等于
+    // 永久假红；而真正危险的两种回流都由上面第⑤条逐页守着 —— 仓库**链接**（带仓库域名的那种）与
+    // 仓库**文案**（**原样字面与等价写法两遍都判**，见 ⑤b 的两根针），两者都在
+    // **页脚这个作用域**内判定，比"整篇产物命中必须为 0"的登记表更精确。
+    // 这是本仓唯一一处「被删文案刻意不登记」的取舍，记在这里，免得下一个人以为是漏登记。
+    {
+      const ghFragment = ((indexHtml.match(/<!--SHARED:ghlink:START-->([\s\S]*?)<!--SHARED:ghlink:END-->/) || [])[1] || '').trim();
+      if (!ghFragment) {
+        fail('产物 index.html 里找不到 SHARED:ghlink 标记区间 ⇒ 页头图标入口的全站断言失去唯一出处'
+          + '（它与 lib/page-shell.js 抽共享页头用的是同一对标记；锚点消失本身必须有人知道）');
+      } else {
+        const ghProblems = [];
+        // ① 形状：只看形状，不抄 URL 里的仓库路径、也不抄 SVG —— 唯一出处仍然是上面那个片段。
+        //    唯一多出来的字面量是 host `github.com/`：图标画的就是 GitHub，它必须还指向 GitHub
+        //    （哪天换到别的托管，这条要连同图标一起**显式**改，而不是静默指过去）。
+        const GH_SHAPE = /^<a\b(?=[^>]*\bclass="ghlink")(?=[^>]*\bhref="https:\/\/[^"]+")(?=[^>]*\btarget="_blank")(?=[^>]*\brel="noopener noreferrer")(?=[^>]*\b(?:aria-label|title)="[^"]+")[^>]*>[\s\S]*<svg[\s\S]*<\/svg>[\s\S]*<\/a>$/;
+        if (!GH_SHAPE.test(ghFragment)) {
+          ghProblems.push('SHARED:ghlink 片段不是一个可用入口（要求：`<a class="ghlink">` + 绝对 https 的 href '
+            + '+ target="_blank" + rel="noopener noreferrer" + 可读名字（aria-label 或 title）+ 内含 <svg>）');
+        }
+        if (!/href="https:\/\/github\.com\//.test(ghFragment)) {
+          ghProblems.push('SHARED:ghlink 片段的 href 不在 github.com 上 —— 图标是 GitHub 入口，指到别处就不是了');
+        }
+        // ② 样式：图标"看得见、点得着"依赖共享 <style> 里那几条 `.ghlink` 规则。
+        //    ⚠️ 只判「存在一条 `.ghlink` 规则」是不够的（t1 的 M7c 探针实测）：把**主体**那条规则
+        //    整块删掉、只留媒体查询里的 `.ghlink { order: 3; }`，构建照样全绿 —— 而图标已经丢了
+        //    尺寸与颜色。所以判据分三层，都只判**有无**、不判具体值（值属于设计细节，改色改尺寸
+        //    不该让构建红）：
+        //      · 至少有一条 `.ghlink` **主体**规则（选择器就是 .ghlink 或它的伪类，不是 `.ghlink svg`
+        //        这种后代选择器 —— 后代规则不能替主体背尺寸与颜色）；
+        //      · 这些主体规则里要有尺寸（width/height）**且**有颜色（color/fill/background）；
+        //      · 任何一条 `.ghlink` 规则里都不许出现 display:none / visibility:hidden —— **主体 / 后代 /
+        //        兄弟组合器都算**（这段注释原本就写着"任何一条"，实现却只遍历主体规则；t6 的复核把这对注释/实现
+        //        不一致摆出来时收口：`.ghlink svg { display: none }` 会让图标变成一个空的、仍可点的
+        //        盒子。t1 第一轮也实测过它穿得过去）。声明的大小写一并认（`DISPLAY: NONE` 是同一件事）。
+        //    ⚠️ 两条**已知边界**（刻意不越界，写在判据旁边，免得下一个人当成洞去补）：
+        //      · 只认 display / visibility 这两种"藏"的写法；`opacity: 0`、`transform: scale(0)`
+        //        这类"渐变/变形到看不见"不在射程内 —— 它们同样可以是正当的入场动效，
+        //        要拦得先有一条能区分两者的判据；
+        //      · 颜色那层只判"某个**主体**规则里有颜色来源"，`:hover` 里的颜色也算数（真删掉基础色时
+        //        图标会继承页头文字色，仍看得见）—— 它是弱判据，不是"基础色必须写在本体规则里"。
+        // ⚠️ 分析前先剥掉 CSS 注释：这一大段注释里就既有 `.ghlink` 又有 `{`（举反例时必然出现），
+        //    不剥的话 `\.ghlink[^{]*\{` 会跨过注释去配下一条规则的 `{`，把注释读成一条规则。
+        const sharedStyle = ((indexHtml.match(/<style>[\s\S]*?<\/style>/) || [''])[0]).replace(/\/\*[\s\S]*?\*\//g, ' ');
+        const ghAllRules = [];   // 全部 `.ghlink` 前缀规则（主体 + 后代 + 兄弟组合器）：判"有没有被藏掉"
+        const ghRules = [];      // 只留**主体**规则：尺寸与颜色只能由它们背
+        for (const rule of sharedStyle.matchAll(/\.ghlink(?![\w-])([^{}]*?)\{([^}]*)\}/g)) {
+          const rawTail = rule[1];
+          const trimmed = rawTail.trim();
+          // 藏没藏要能指出**是哪条规则**：`.ghlink svg` 与 `.ghlink` 只差一个空格、含义完全不同。
+          // ⚠️ 前缀型选择器（`.topin > .search ~ .ghlink`）在本正则里是从 `.ghlink` 开始匹配的，
+          // 只报 `.ghlink` 会把"这条规则长什么样"说错（t7 的 B4 报文实测 + t8 的 M1）。所以往前
+          // 回退到同一条选择器的起点（最近的 `{` / `}` / `;` / 换行），把那段前缀也带上；
+          // 前缀里含逗号（选择器列表）就不带 —— 报一半比报全更糟。
+          const beforeSel = sharedStyle.slice(0, rule.index);
+          const selCut = Math.max(beforeSel.lastIndexOf('{'), beforeSel.lastIndexOf('}'), beforeSel.lastIndexOf(';'), beforeSel.lastIndexOf('\n'));
+          const selLead = beforeSel.slice(selCut + 1).trim();
+          // 护栏：`.ghlink` 若恰好是样式块**首条**且与 `<style>` 同行（`selCut === -1`），回退出来的前缀
+          // 会是 `<style>` 这个标签名（t10 的 M1′ 预演到过；今天不发生 —— 首条是 `:root` 且 `<style>`
+          // 后面紧跟换行）。标签不是选择器，丢掉它，宁可只报 `.ghlink` 也不能报错名字。
+          const selPrefix = /^</.test(selLead) ? '' : selLead;
+          ghAllRules.push({
+            sel: ((selPrefix && !selPrefix.includes(',')) ? selPrefix + ' ' : '') + ('.ghlink' + rawTail).replace(/\s+/g, ' ').trim(),
+            body: rule[2],
+          });
+          // 主体规则 = 选择器**就是** `.ghlink`（可能带伪类/复合类），它与 `{` 之间只有空白 ——
+          // 本文件把它写成 `.ghlink {`，那一个空格会被正则捕进 tail，所以"tail 全是空白"也是主体。
+          // 后代 / 兄弟选择器（`.ghlink svg`、`.ghlink > span`）tail 里有实质内容且以空白或组合符开头，
+          // **不算主体**：它们管的是图标里面的东西。
+          // ⚠️ 两个方向都实测踩过：① 先 `trim()` 再判前导空白 ⇒ `.ghlink svg { width: 18px }`
+          //    被当主体、替主体背下尺寸（t1 的 M7c 探针）；② 直接按"以空白开头就跳过" ⇒ 把主体
+          //    自己那条（`.ghlink {`）也跳掉，于是现状就被误判成"没有主体规则"。
+          if (trimmed !== '' && /^[\s>+~]/.test(rawTail)) continue;
+          ghRules.push({ tail: trimmed, body: rule[2] });
+        }
+        if (!ghRules.length) {
+          ghProblems.push('共享 <style> 里没有 `.ghlink` 的**主体**规则（图标失去样式来源）');
+        } else {
+          // 大小写一并认（CSS 关键字不分大小写）：`WIDTH: 18px` 也是尺寸，漏判会把"有尺寸"读成假红。
+          const sized = ghRules.some(r => /\b(?:width|height)\s*:/i.test(r.body));
+          const painted = ghRules.some(r => /\b(?:color|fill|background(?:-color)?)\s*:/i.test(r.body));
+          if (!sized || !painted) {
+            ghProblems.push('共享 <style> 里 `.ghlink` 主体规则缺'
+              + [!sized ? '尺寸（width/height）' : '', !painted ? '颜色（color/fill/background）' : '']
+                .filter(Boolean).join(' 与 ')
+              + ' —— 图标会丢盒子或丢颜色（只剩 order 之类的定位微调不算样式）');
+          }
+        }
+        for (const hide of [{ re: 'display\\s*:\\s*none', label: 'display: none' }, { re: 'visibility\\s*:\\s*hidden', label: 'visibility: hidden' }]) {
+          // ⚠️ 遍历的是 **ghAllRules**（主体 + 后代 + 兄弟组合器），不是 ghRules：上面注释里那句
+          //    "任何一条 `.ghlink` 规则"是按字面兑现的 —— `.ghlink svg { display: none }` 藏掉的是
+          //    图标内容，读者看到的同样是一个空的、仍可点的盒子（t6 复核点出的注释/实现不一致；
+          //    t1 第一轮实测过它能穿过去）。报文里带上**命中规则**，否则 `.ghlink svg` 与 `.ghlink`
+          //    这一空格之差在失败信息里看不出来。
+          for (const r of ghAllRules) {
+            if (new RegExp(hide.re, 'i').test(r.body)) {
+              ghProblems.push(`共享 <style> 里 \`.ghlink\` 被 ${hide.label} 藏掉了（命中规则 \`${r.sel}\`；产物里还在，读者看不见）`);
+            }
+          }
+        }
+        // ③⑥ 逐页：扫描面 = 产物里全部 .html（不依赖"页面一定叫 index.html"这条命名约定）。
+        // 走 `listArtifactFiles()`（本文件已有的"磁盘上真的有什么"枚举，不读任何清单）——
+        // 自己再写一遍 walk 就多一处会各自漂移的实现。
+        // ⑤b 的两根针与失败报文都从下面**同一个**字面量派生（唯一出处）：归一化那根由本文件自己的口径
+        // 现算（`GitHub 仓库` ⇒ `github仓库`），`normalizeForCompare()` 的入参也用它 —— 换文案只改一处。
+        // ⚠️ 这里必须**两遍都跑**（t7 的第二轮演练用 D5 实测逼出来的，别把其中任何一遍删掉）：
+        //    · 原样那一遍（`includes(FOOTER_TEXT_LITERAL)`）：归一化**不是**字面判定的严格超集 ——
+        //      `normalizeForCompare()` 里第一次 `.replace` 就是 `.replace(/<[^>]*>/g, '')`（那是它的第②步，
+        //      第①步是实体解码），而一段 HTML 注释
+        //      `<!-- … -->` 里唯一的 `>` 就是它自己的终止符 ⇒ **整段注释被当作一个标签整个剥掉**。
+        //      实测：把被删文案写进页脚注释里，原样那遍命中、归一化那遍**看不见**（注释里原样
+        //      复述在改造前是会红的 ⇒ 只留归一化那一遍就是一次覆盖回退，而不是"等价升级"）。
+        //    · 归一化那一遍：覆盖可见文字里的等价写法（实体 / 夹标签 / 零宽 / 折行 / 大小写）。
+        //    两遍取并集 ⇒ 是改造前（字面）与改造后（归一化）两种射程的**并**，两边都不丢。
+        // ⚠️ 已知边界：**注释里再包一层等价写法**（例如注释里写 `GitHub&nbsp;仓库`）两遍都漏 ——
+        //    原样那遍要字面、归一化那遍把注释剥掉了。注释里原样复述会被原样那遍拦下。
+        // 误报面：t6 复核实测 184/184 页的页脚两遍都是 0 命中，所以换上不产生误红。
+        const FOOTER_TEXT_LITERAL = 'GitHub 仓库';
+        const FOOTER_TEXT_NEEDLE = normalizeForCompare(FOOTER_TEXT_LITERAL);
+        const allPages = listArtifactFiles(OUT).filter(file => file.endsWith('.html'));
+        for (const rel of allPages) {
+          const page = fs.readFileSync(path.join(OUT, rel), 'utf8');
+          // ③ 先按**元素**数（class token 级）：只差一个 class 的孪生锚（`class="ghlink gh-dup"`）
+          //    用逐字节子串是数不到的 —— 同一份文件后面 `.snote` / `.vsnote` 那条注释已经立过这条
+          //    纪律（"换个类名就静默失去覆盖"）。逐字节相同是**附加**条件，不是替代。
+          const elements = (page.match(/<a\b[^>]*class="[^"]*\bghlink\b[^"]*"/g) || []).length;
+          if (elements !== 1) ghProblems.push(`${rel} 页头图标入口元素出现 ${elements} 枚（应为恰好 1 枚）`);
+          const hits = page.split(ghFragment).length - 1;
+          if (hits !== 1) ghProblems.push(`${rel} 与首页逐字节相同的图标片段出现 ${hits} 次（应为恰好 1 次）`);
+          const headerBlock = page.match(/<header[\s>][\s\S]*?<\/header>/);
+          if (!headerBlock || !headerBlock[0].includes(ghFragment)) {
+            ghProblems.push(`${rel} 页头图标入口不在 <header> 区间里`);
+          }
+          const footerBlock = page.match(/<footer[\s>][\s\S]*?<\/footer>/);
+          if (footerBlock) {
+            if (/github\.com/i.test(footerBlock[0])) {
+              ghProblems.push(`${rel} 页脚区间里又出现了仓库链接 —— v3.1 已把仓库入口移到页头，删掉的不许回流`);
+            }
+            // ⑤b **文字形态**的回流同样要红（t3 的独立审计提的补牙）：上面那条只拦得住"带仓库域名的
+            // 链接"，把被删的那段文案原样写回页脚（哪怕不加链接、改成纯文本）仍会漏过。
+            // ⚠️ 而"纯文本"有无数种**等价写法**：`GitHub&nbsp;仓库`、`<b>GitHub</b> 仓库`、中间塞零宽
+            // 字符、标签之间折行 —— t6 的复核（R1）实测这四种按**字面**匹配全部穿过去，而本文件自己的
+            // `normalizeForCompare()` 四种全中。所以这里**两遍都跑**（两根针见上面；为什么必须是两遍、
+            // 而不是只留归一化那一遍，见那段注释里 t7 的 D5 实测 —— 归一化会把整段注释当标签剥掉）。
+            // ⚠️ 已知边界：归一化会**剥掉标签、去掉全部空白**，所以"页脚里裸写 GitHub 与「仓库」二字
+            // 只隔标签"这种组合也会命中（今天 184/184 页都不成立；作用域是页脚、针是长串，误报面比
+            // 整篇产物小得多）。真要在页脚同时放这两样，那是设计变更，应当显式改这条判据。
+            // 为什么不用 `residue-guard.json` 的 deletedCopy：裸词「GitHub 仓库」现在活在页头的
+            // title / aria-label 里（每页 2 次），按"整篇产物命中必须为 0"登记它必然永久假红；
+            // 而**页脚这个作用域**里它是独一无二的 —— 做成作用域内的判据比登记表更精确
+            // （登记表的扫描面是整份产物，且每条都要有 census 出处）。
+            const footerRawHit = footerBlock[0].includes(FOOTER_TEXT_LITERAL);
+            const footerNormHit = normalizeForCompare(footerBlock[0]).includes(FOOTER_TEXT_NEEDLE);
+            if (footerRawHit || footerNormHit) {
+              ghProblems.push(`${rel} 页脚区间里又出现了被删掉的仓库入口文案「${FOOTER_TEXT_LITERAL}」`
+                + `（形态：${[footerRawHit ? '原样字面' : '', footerNormHit ? '等价写法' : ''].filter(Boolean).join(' + ')}）`
+                + ' —— v3.1 起入口只留在页头，文字形态的回流同样不许');
+            }
+          }
+        }
+        if (ghProblems.length) {
+          fail(`页头图标入口不对（形状 / 样式 / 缺失 / 重复 / 位置错 / 页脚回流）：${ghProblems.slice(0, 6).join('、')}`
+            + `${ghProblems.length > 6 ? ` 等 ${ghProblems.length} 处` : ''}`);
+        } else {
+          console.log(`  ✓ 页头图标入口: ${allPages.length} 个产物页面逐页对账（片段是可用入口 · 样式在位未隐藏`
+            + ' · 各恰好 1 枚元素且与首页逐字节相同 · 在 <header> 内 · 页脚零仓库链接且零被删文案）');
+        }
+      }
     }
 
     // 作者写的正文里不许残留 Markdown 记号 —— 它是**直接写进 HTML 的**，不是 Markdown。

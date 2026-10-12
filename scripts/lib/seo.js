@@ -82,12 +82,26 @@ const TEXT_FLOOR_RESIDUALS = [
   // 机器可读的 JSON 转写（`research/_raw/p2-residuals-v1/text-floor-margins.json`）必须同步，
   // 否则 `seo-selftest` 的「逐字节相同」当场红；重新登记块由
   // `node scripts/tools/seo-verify.js --print-floor-margins` 打印（唯一出处仍是本表）。
-  { route: 'need/no-card/', kind: 'need', count: 1, chars: 683, floor: 660, margin: 23, registeredAt: '2026-10-09' },
-  { route: 'category/', kind: 'hub', count: 5, chars: 838, floor: 800, margin: 38, registeredAt: '2026-10-09' },
-  { route: 'category/audio/', kind: 'category', count: 6, chars: 1056, floor: 960, margin: 96, registeredAt: '2026-10-09' },
-  { route: 'need/ai-coding/', kind: 'need', count: 4, chars: 949, floor: 840, margin: 109, registeredAt: '2026-10-09' },
-  { route: 'category/image/', kind: 'category', count: 5, chars: 1012, floor: 900, margin: 112, registeredAt: '2026-10-09' },
-  { route: 'category/agent/', kind: 'category', count: 4, chars: 955, floor: 840, margin: 115, registeredAt: '2026-10-09' }
+  // ⚠️ v3.1 一次性重新登记（六条一起，理由与上一次同形：**正文被有意删掉**，不是下限被调低）：
+  //   · 六页共同的 −12 字：页脚那枚指向仓库的文字链（「 · GitHub 仓库」连同它前面的间隔点）
+  //     被删除，改成**页头最右侧的图标入口**（同一改动；图形与地址的唯一出处是 index.html 的
+  //     `SHARED:ghlink` 标记区间，由 `lib/page-shell.js` 抽进全部页面族）。页脚是一份共享片段
+  //     ⇒ 每一页的可见正文同步短 12 字 —— 这与上面 t3 那一次是**同一类**后果，处置也相同。
+  //   · 口径完全不动：**下限一个字没动**（floor / kind / count 全部保持原值），判据仍是
+  //     「实时余量 ≥ 登记值」；变的只是"登记当天读到的那一串数字"。
+  //   · 读数取自构建期自检在这六页上报出的实际值（671 / 826 / 1044 / 937 / 1000 / 943，
+  //     即原读数各 −12），并由 `node scripts/tools/seo-verify.js --print-floor-margins`
+  //     在产物上逐页复核（`--registered-at=2026-10-12`）。
+  //   · 机器可读的 JSON 转写（`research/_raw/p2-residuals-v1/text-floor-margins.json`）必须同步，
+  //     否则 `seo-selftest` 的「逐字节相同」当场红。
+  // 下面这条登记仍然只覆盖「余量 < 150 字」的那几页 —— 这个改动对全站每页都是 −12 字，
+  // 但只有这六页的余量本来就在登记射程内（其余页面离自己的下限还有 150 字以上）。
+  { route: 'need/no-card/', kind: 'need', count: 1, chars: 671, floor: 660, margin: 11, registeredAt: '2026-10-12' },
+  { route: 'category/', kind: 'hub', count: 5, chars: 826, floor: 800, margin: 26, registeredAt: '2026-10-12' },
+  { route: 'category/audio/', kind: 'category', count: 6, chars: 1044, floor: 960, margin: 84, registeredAt: '2026-10-12' },
+  { route: 'need/ai-coding/', kind: 'need', count: 4, chars: 937, floor: 840, margin: 97, registeredAt: '2026-10-12' },
+  { route: 'category/image/', kind: 'category', count: 5, chars: 1000, floor: 900, margin: 100, registeredAt: '2026-10-12' },
+  { route: 'category/agent/', kind: 'category', count: 4, chars: 943, floor: 840, margin: 103, registeredAt: '2026-10-12' }
 ];
 
 /** 路由 → 登记项（登记表很小，线性查；重复登记由 `seo-selftest` 断言） */

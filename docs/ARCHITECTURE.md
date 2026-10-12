@@ -229,7 +229,8 @@ dist/**
 | 想做的事 | 改哪里 |
 |---|---|
 | 新增一页 | `page-kinds.js` 声明 kind + 布局族；写 `lib/<族>-page.js` 正文；在 `assemble()` 里调 `shell.docStart/docEnd`；登记 sitemap / 路由 / 统计范围 |
-| 改共享页头 / meta / 页脚 | `lib/page-shell.js`（**一处**） |
+| 改共享页头（品牌 / 返回链）/ meta / 页脚 | `lib/page-shell.js`（**一处**；页头那枚 GitHub 图标入口**不在**这里，见下一行） |
+| 改页头那枚 GitHub 图标入口（图形 / 文案 / 地址） | `index.html` 的 `SHARED:ghlink` 标记区间（**一处**）—— `lib/page-shell.js` 按同一对标记抽进所有页面族，改一处即全站生效（构建期逐页断言：片段仍是**可用入口**（形状 + github.com host）、`.ghlink` 样式在位且未被隐藏、各恰好 1 枚元素且在 `<header>` 内、与首页逐字节相同、页脚零仓库入口 —— 链接、**被删文案的原样字面**与它的**等价写法**（实体 / 夹标签 / 零宽 / 折行，走构建期 `normalizeForCompare` 口径）都拦 —— 字面那遍与归一化那遍取**并集**，两边都不丢；已知边界：注释里**再包一层**等价写法两遍都漏） |
 | 改全站样式 | `index.html` 的共享 `<style>`（**一处**） |
 | 改某族页面样式 | 该族的 `extraCss` |
 | 新增一个采集源 | `scripts/collectors/*` + `collectors/index.js` 注册表 + fixture 回放 |
