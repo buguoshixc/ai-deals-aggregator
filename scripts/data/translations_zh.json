@@ -351,6 +351,34 @@
         "description": "A tool that creates short, highlight clips from long-form videos."
       },
       "description": "从长视频里自动挑出精彩片段做成短片。"
+    },
+    "4a4f4777ffbc": {
+      "_title": "Flowrite",
+      "src": {
+        "description": "A Google Chrome Extension to create emails."
+      },
+      "description": "一款用于撰写邮件的 Google Chrome 扩展。"
+    },
+    "8f479fcbe8f9": {
+      "_title": "Rocket.new",
+      "src": {
+        "description": "A tool to build apps from text descriptions or Figma designs without coding."
+      },
+      "description": "一款无需写代码，靠文字描述或 Figma 设计稿就能做出应用的工具。"
+    },
+    "69a0d047e3f9": {
+      "_title": "Pickle AI",
+      "src": {
+        "description": "A MacOS App to create AI avatars for video calls, syncing with users' voices in real-time."
+      },
+      "description": "一款 macOS 应用，可生成视频通话用的 AI 虚拟形象，并实时同步用户的嗓音。"
+    },
+    "9d99178344b6": {
+      "_title": "Infinite Slop",
+      "src": {
+        "description": "An endless AI-generated TV channel steered by live chat votes."
+      },
+      "description": "一个由直播间投票实时操控、永不结束的 AI 生成电视频道。"
     }
   }
 }
