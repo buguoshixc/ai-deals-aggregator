@@ -424,9 +424,16 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
      盲点正好长在没人测的中间带。实测（本版修复前）：761px 溢出 **138px**、820px 溢出 79px；
      而把套餐对比入口加长之前那段溢出带**本来就存在**（761px 溢出 78px）。
      搜索框宽度一起量：把搜索框压成一条缝也能让溢出归零，那不是修好。
-     门槛 180px：实测最窄的那一档（941px 的单行布局）是 218px；一旦有人把 `.search` 的
-     min-width 放开成 0，761px 下它会缩到个位数，这条立刻红。 */
-  for (const width of [761, 820, 900, 940, 941]) {
+
+     ⚠️ 档位表不是"随手挑几个宽度"，它要覆盖**每一个会改变顶栏宽度账的边界**。
+     旧表 [761,820,900,940,941] 只测到 941px，而 v3.1 起（页头多了一枚 GitHub 图标、
+     ≤1139px 的间距收到 12px、搜索框有了显式的 `min-width: 180px`）真正最紧的一档是 **1100px**：
+     「API / Token 计费对比」药丸从 `min-width: 1100px` 起出现，正好落在同一档。
+     实测（v3.1，Edge）：941px = 198px、**1100px = 196px**（最窄）、1140px = 200px（间距回到 18px 的那一档）。
+     也就是说旧表把两个"最紧的档"都漏在扫描面之外 —— 判据（180px 门槛 + 零溢出 + 入口在视口内）
+     一个字没动，补的是**覆盖**。（历史读数供对照：加图标前实测 941px = 216.33px，
+     与本仓 index.html 注释里写的 216px 一致；旧注释里的 218px 是更早一版的读数，已按实测更正。） */
+  for (const width of [761, 820, 900, 940, 941, 1100, 1140]) {
     await page.setViewportSize({ width, height: 900 });
     await page.waitForTimeout(150);
     const band = await page.evaluate(() => {
@@ -443,6 +450,95 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       band.overflow <= 1 && band.searchW >= 180 && band.navInView,
       `溢出 ${band.overflow}px · 搜索框 ${band.searchW}px · 顶栏高 ${band.headerH}px`);
   }
+
+  /* v3.1：**内页页头的图标**（首页那一套由上面那条逐档守）。
+     内页页头 = 品牌 + 跳转链 +（详情页还有主题切换器）+ 图标，**没有搜索框** —— 所以图标没有
+     "搜索框那一行"可挂，位置由 DOM 顺序决定（跳转链自带的 `margin-left: auto` 把这一组一起推到右端）。
+     这一节盯三件只看首页看不出来的事（独立复核正是在 ≤350px 的内页上抓到"多折了一行"，
+     而首页那 8 档读数一字不差 —— 结论越界到了整站，所以覆盖必须补到内页）：
+
+       ① 图标在**它所在那一行**的最右端（没有任何可见项在它右边）；
+       ② 折行档之外（本判据取 **≥390px**，给字体度量留余量）：这一枚图标**不增加顶栏高度**
+          直接量"这枚图标自己花了多少"，不依赖任何历史基线（基线式的断言会随产物一起漂移）；
+       ③ ≤347px：代价被如实钉住 —— 必然多一行，且恰好是一行（30~60px），图标仍在最右端、不被裁。
+
+     边界 348/349 是**本机实测**的（算术也对得上：内页那一行要放下品牌 143.33 + 跳转链 119 + 图标 30
+     + 两个 12px 间距 ≈ 316.33px > 348 − 32 = 316px ⇒ 348 仍折、349 起排得下）。
+     这一档的代价不可约（间距压到 0 也差 4px），唯一能省掉它的两条路（隐藏图标 / 截短跳转链文案）
+     都不做，所以它被记录并断言，而不是被藏着。
+     ⚠️ 但它是**字体度量**决定的量，跨平台会漂：CI（Linux + chromium，2026-10-12 实测）在 349px
+     **仍然折行** —— 贴着临界值的档不能写进判据。所以断言只钉两头：**320 / 348 必折**（算术余量
+     ≥28px）与 **390 起必不折**（可用宽 358px，余量 ≥41px），把 349 这类临界档只当**打印读数**。
+     ⚠️ 「最右端」一律在**图标自己那一行**上判（按竖直重叠取同行项）：跨行比 x 坐标会把上一行右对齐的
+     跳转链误判成"在图标右边" —— 这条自己在 348px 档上踩过一次，所以判据写成同行口径。 */
+  {
+    console.log('\n=== 2a2) 内页页头的 GitHub 图标（首页之外的那 183 页）===');
+    for (const width of [320, 348, 390, 760, 941]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(new URL('models/', base).href, { waitUntil: 'load' });
+      await page.waitForTimeout(150);
+      const inner = await page.evaluate(`(() => {
+        const box = el => (el ? el.getBoundingClientRect() : null);
+        const gh = document.querySelector('.ghlink');
+        const header = document.querySelector('header.top');
+        const items = [...document.querySelectorAll('.topin > *')].filter(el => {
+          const s = getComputedStyle(el);
+          const b = el.getBoundingClientRect();
+          return s.display !== 'none' && s.visibility !== 'hidden' && b.width > 0 && b.height > 0;
+        });
+        const ghBox = box(gh);
+        const jump = box(document.querySelector('.jumpback'));
+        const headerBox = box(header);
+        // 「图标自己那一行」= 与它竖直重叠的可见项（跨行比 x 坐标会假红，见上面注释）
+        const ghLine = ghBox ? items.filter(el => { const b = box(el); return b.top < ghBox.bottom - 1 && b.bottom > ghBox.top + 1; }) : [];
+        const headerH = headerBox ? Math.round(headerBox.height * 100) / 100 : null;
+        let withoutIcon = null;
+        if (gh) {
+          const prev = gh.style.display;
+          gh.style.display = 'none';
+          withoutIcon = Math.round(header.getBoundingClientRect().height * 100) / 100;
+          gh.style.display = prev;
+        }
+        return {
+          overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+          headerH,
+          headerWithoutIconH: withoutIcon,
+          cost: headerH !== null && withoutIcon !== null ? Math.round((headerH - withoutIcon) * 100) / 100 : null,
+          gh: ghBox ? { w: Math.round(ghBox.width), right: Math.round(ghBox.right), top: Math.round(ghBox.top), bottom: Math.round(ghBox.bottom) } : null,
+          insideHeader: Boolean(ghBox && headerBox) && ghBox.bottom <= headerBox.bottom + 1 && ghBox.right <= headerBox.right + 1,
+          rightOf: ghBox ? ghLine.filter(el => box(el).left > ghBox.right + 1).length : -1,
+          isRightmost: ghBox ? ghLine.every(el => box(el).right <= ghBox.right + 1) : false,
+          sameLineAsJumpback: Boolean(ghBox && jump) && ghBox.top < jump.bottom && ghBox.bottom > jump.top
+        };
+      })()`);
+      check(`内页 /models/ ${width}px：图标在页头盒内、且是**它那一行**的最右端（同行右侧没有可见项）`,
+        Boolean(inner.gh) && inner.gh.w > 0 && inner.insideHeader && inner.rightOf === 0 && inner.isRightmost,
+        inner.gh
+          ? `图标宽 ${inner.gh.w}px · 右缘 ${inner.gh.right}px · 同行右侧可见项 ${inner.rightOf} 个 · 在页头盒内=${inner.insideHeader}`
+          : '（页头里没有 .ghlink）');
+      if (width >= 390) {
+        check(`内页 /models/ ${width}px：这一枚图标不增加顶栏高度（藏掉它顶栏一样高）`,
+          inner.cost !== null && Math.abs(inner.cost) <= 1,
+          `顶栏 ${inner.headerH}px · 藏掉图标 ${inner.headerWithoutIconH}px · 代价 ${inner.cost}px`);
+        check(`内页 /models/ ${width}px：图标与「← 返回全部优惠」同一行（跳转链那一组的最右端）`,
+          inner.sameLineAsJumpback,
+          `同行=${inner.sameLineAsJumpback} · 图标 top ${inner.gh ? inner.gh.top : '-'}px`);
+      } else {
+        check(`内页 /models/ ${width}px：放不下第三个元素时确实多一行，且代价恰好是一行（30~60px）`,
+          inner.cost !== null && inner.cost >= 30 && inner.cost <= 60,
+          `顶栏 ${inner.headerH}px · 藏掉图标 ${inner.headerWithoutIconH}px · 代价 ${inner.cost}px（= 图标 30 + 间距 12）`);
+      }
+      check(`内页 /models/ ${width}px：页面零横向溢出`, inner.overflow <= 1, `溢出 ${inner.overflow}px`);
+    }
+    // ⚠️ 必须把**主 page 还回首页**：这一节在内页上导航，而它后面的小节默认「主 page 停在首页」——
+    //    于是紧随其后的 `page.reload()` + `waitForApp()` 会停在 /models/ 上等一个只有首页才有的
+    //    `#lastUpdated`，整轮验收以 30s 超时崩掉（实测踩过一次，正是本节引入的）。
+    //    收回状态这一步不能省：验收脚本里「上一位留下的页面状态」是最容易被忽视的隐式契约。
+    await page.setViewportSize({ width: 941, height: 900 });
+    await page.goto(base, { waitUntil: 'load' });
+    await waitForApp(page);
+  }
+
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.reload({ waitUntil: 'load' });
   await waitForApp(page);
@@ -5374,12 +5470,19 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     && librarySitemap.body.includes(`<loc>${librarySiteRoot}${route}</loc>`);
 
   /**
-   * 「站外链接」这一类里**唯一允许的非厂商例外**：页脚那枚指向本项目仓库的链接。
+   * 「站外链接」这一类里**唯一允许的非厂商例外**：站点自己在**共享 chrome**（页头那枚图标入口 /
+   * 共享页脚片段）里声明的那一枚指向本项目仓库的链接。
    *
    * 为什么不写死 URL：写死等于在验收脚本里维护第二份仓库地址；而这里要守的语义是
    * 「枢纽页不许往外送流量给厂商，只允许站点自己的仓库入口」。仓库地址是**站点自己声明**的，
-   * 所以判定基准从首页共享页脚里现取 —— 语义与地址解耦，改域名不用改验收脚本，
+   * 所以判定基准从产物首页的两个共享片段里现取 —— 语义与地址解耦，改域名不用改验收脚本，
    * 而把那一枚换成厂商地址会立刻让枢纽页的断言转红。
+   *
+   * ⚠️ v3.1 起必须**同时读两个片段**：仓库入口从「页脚那一行末尾」搬到了「页头最右侧的图标」
+   * （`SHARED:ghlink` 区间，见 index.html 与 lib/page-shell.js）。只读页脚的症状与下面 t6
+   * 记录过的那次**一模一样**：例外集变空 ⇒ 4 个枢纽页各多报一条「按设计没有站外链接」的假失败
+   * （实测：/plans/ /models/ /vendor/ /archive/ 各 1 条）。例外落在哪个 chrome 槽位不是这条断言
+   * 该管的事 —— 它要守的是「例外只能是站点自己声明的那一枚仓库入口」，而不是「它必须写在页脚」。
    *
    * `--url=` 线上冒烟时读不到 dist，这时返回空集：例外集为空 = 恢复成「一条站外链接都不许」，
    * 是更严的一侧，不会让线上冒烟假绿。
@@ -5390,11 +5493,14 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
    * 现在：`--dir=dist.calib` 读副本的首页页脚；不传 `--dir` 时 `DIR` 就是 `dist`（与旧行为逐字相同，
    * 线上冒烟因此不受影响）；文件真的读不到时仍然返回空集（fail-strict，不放宽）。
    */
-  const sharedFooterExternalHrefs = (() => {
+  const sharedChromeExternalHrefs = (() => {
     try {
       const home = fs.readFileSync(path.join(DIR, 'index.html'), 'utf8');
-      const fragment = (home.match(/<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/) || [])[1] || '';
-      return new Set([...fragment.matchAll(/href="(https?:\/\/[^"]+)"/g)].map(m => m[1]));
+      const chrome = [
+        (home.match(/<!--SHARED:ghlink:START-->([\s\S]*?)<!--SHARED:ghlink:END-->/) || [])[1] || '',
+        (home.match(/<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/) || [])[1] || ''
+      ].join('\n');
+      return new Set([...chrome.matchAll(/href="(https?:\/\/[^"]+)"/g)].map(m => m[1]));
     } catch (error) {
       return new Set();
     }
@@ -5408,9 +5514,10 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
    *   minText      无 JS 时的正文下限（按 page-kinds 的口径取整）
    *   itemList     true=必须有 ItemList 且声明数==元素数==页面行数；false=必须没有；null=不查
    *   official     期望的外部官方链接数下限（默认 0：0 表示"这一页按设计没有外链"）
-   *                ⚠️ 这里数的是**站外链接**，唯一的例外是页脚那一枚指向本项目仓库的链接。
-   *                它由首页页脚（共享片段）声明，因此这个例外是**自证**的：判定基准直接从
-   *                产物里取，不在脚本里写死 URL —— 谁把页脚那枚链接改成厂商地址，枢纽页的
+   *                ⚠️ 这里数的是**站外链接**，唯一的例外是站点自己在共享 chrome 里声明的那一枚
+   *                指向本项目仓库的链接（v3.1 起它在页头图标那一格；见 `sharedChromeExternalHrefs`）。
+   *                它由首页的共享片段声明，因此这个例外是**自证**的：判定基准直接从
+   *                产物里取，不在脚本里写死 URL —— 谁把那枚链接改成厂商地址，枢纽页的
    *                这条断言立刻红。而"不往外送流量给厂商"的原意一字不改。
    *   overflow     true=查 390/360 页面级横向溢出
    *   footerLink   true=页脚必须有指向本页的入口（索引/枢纽页）；详情页为 false
@@ -5440,9 +5547,9 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       const list = lds.find(d => d['@type'] === 'ItemList') || null;
       const crumbLinks = [...document.querySelectorAll('.crumb a')].map(a => a.getAttribute('href') || '');
       const official = [...document.querySelectorAll('a[href^="http"]')].map(a => a.href);
-      // 站外链接里扣掉「站点自己在共享页脚里声明的那一枚仓库入口」，其余一律算数。
+      // 站外链接里扣掉「站点自己在共享 chrome 里声明的那一枚仓库入口」，其余一律算数。
       // 比对用 href（绝对地址）：产物里写的是绝对 URL，但判定不该依赖写法。
-      const repoException = ${JSON.stringify([...sharedFooterExternalHrefs])};
+      const repoException = ${JSON.stringify([...sharedChromeExternalHrefs])};
       const outbound = official.filter(href => !repoException.includes(href));
       return {
         title: strip((document.querySelector('h1') || {}).textContent),
@@ -5490,7 +5597,10 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         data.outboundCount === 0,
         `${data.outboundCount} 条：${data.outboundHrefs.slice(0, 2).join(' ')}` +
         (data.officialCount > data.outboundCount
-          ? `（另有 ${data.officialCount - data.outboundCount} 条本项目仓库入口，由共享页脚声明，不计）`
+          // v3.1：仓库入口从页脚搬到了页头图标那一格，报文不能再写死"由共享页脚声明" ——
+          // 例外集现在由 `sharedChromeExternalHrefs`（页头图标片段 + 页脚片段）现算，
+          // 报文与实现说的必须是同一件事（t3 的残留表述审计抓到的正是这一处）。
+          ? `（另有 ${data.officialCount - data.outboundCount} 条本项目仓库入口，由共享 chrome 片段声明，不计）`
           : ''));
     }
     if (wantOverflow) {
