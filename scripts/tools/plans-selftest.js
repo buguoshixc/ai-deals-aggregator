@@ -1218,6 +1218,17 @@ section('⑫ 套餐页：页面上的数字必须是数据里的数字');
       page.assertPageHonesty(broken, plans).some(problem => problem.includes('口径')),
       page.assertPageHonesty(broken, plans).slice(0, 2).join(' | '));
   }
+  // 【牙】把收录判据删掉 → 必须变红（v3.1）。判据在页面上只有一处，删掉不会有人替它说话；
+  // 替换用的是判据尾句（逐字、不含加粗标记 ⇒ 在 HTML 里是原样出现的），
+  // 同时断言「替换真的命中了」—— 否则文案一改，这条牙会变成永远为真的假绿。
+  {
+    const tail = '这不是对它好不好的评价，而是我们给不出可核对的出处。';
+    const broken = html.replace(tail, '');
+    check('【牙】删掉收录判据 → 页面断言必须变红',
+      broken !== html && page.assertPageHonesty(broken, plans).some(problem => problem.includes('收录判据')),
+      broken === html ? '替换没有命中任何文本（判据文案改过？）'
+        : page.assertPageHonesty(broken, plans).slice(0, 2).join(' | '));
+  }
   // 【牙】往数据里塞一个结论性词汇 → 数据层断言必须变红
   {
     const tampered = JSON.parse(JSON.stringify(plans));

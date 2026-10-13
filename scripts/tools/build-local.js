@@ -275,7 +275,7 @@ const { SITE_URL, SITE_NAME, SITE_DESCRIPTION, xmlEscape } = site;
 /**
  * ## 这一节解决什么问题
  *
- * 长期挂在 `NEXT-STEPS.md` §0 剩余事项里的那条 P1 是：**判据只认 `.snote` 这个类名**
+ * 长期挂在 `NEXT-STEPS.md` §0.1 剩余事项里的那条 P1 是：**判据只认 `.snote` 这个类名**
  * （把类名换掉、或者把说明换进别的容器，门禁就再也看不见它了）。今天所有与说明有关的
  * 断言（`verify-site.js` §22c 的窄柱 / 字迹 / 同轴 / 未渲染、构建期的 Markdown 记号扫描、
  * 「每页冻结串恰好 1 次」）都是**只看渲染结果**的：它们回答的是「已经叫 `.snote` 的那些
