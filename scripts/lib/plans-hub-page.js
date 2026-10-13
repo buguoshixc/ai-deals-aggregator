@@ -24,6 +24,17 @@
  * 3. **空是事实，不是故障**：没有变化就写「当前没有观测到…」；没有关联优惠就写
  *    「暂无当前优惠」；日志缺失就写「没有拿到日志」—— 三种情况三句不同的话。
  *
+ * ## 变化窗口的基准日 = **那个数据集自己的数据日**
+ *
+ * 这一页同时列两套变化（Coding 套餐、API 计费），窗口各锚在**自己**数据集的数据日上：
+ * Coding 那一支锚 `plans` 的「数据最近核对」（= `plans.json` 的 `updatedAt`），也就是
+ * `/plans/coding/` 与 `/changes/` 上**同一支雷达的同一个日期**（`codingAsOf`）。
+ *
+ * ⚠️ **不许**拿关系层的 `asOf`（= `max(deals, plans)`，SCHEMA-v2.4 §7）当窗口基准日：
+ * `deals.json` 每天被采集推进，而套餐那侧的核对日只在人工核对时才推进；窗口的**末端**跟着
+ * 一个每天都在走的日子，事件却停在原处 —— 两者拉开 7 天，窗口就空了。2026-10-12 起采集链
+ * 连红 4 轮就是这个（同一个块在两页上给出两个数，并在窗口空掉之后静默变成「当前没有观测到套餐变化」）。
+ *
  * ## 纯函数
  *
  * 不读盘、不联网、不看时钟、不写盘：输入是各 store 的记录与日志（调用方读好传进来），
@@ -162,10 +173,33 @@ function plansHubView(ctx = {}) {
   };
 
   // 变化：Coding 走 `plan-changes` 的雷达（唯一判据），API 走 API 页那一块（同一份事件与措辞）。
+  //
+  // ⚠️ 这里的基准日**不是** `asOf` —— 两个基准日是两件事：
+  //   · `asOf`       —— **关系层**（deal ↔ plan 的当前性）的基准日 = `max(deals.json, plans.json)`，
+  //                     一处实现（SCHEMA-v2.4 §7），本页的「当前相关优惠」用它；
+  //   · `codingAsOf` —— **Coding 变化窗口**的基准日 = plans 自己的数据日（下面这段）。
+  //
+  // 2026-10-13 实测（不是推断）：这一页原先把 `asOf` 直接喂给 `buildPlanRadar`，于是同一个变化块
+  // 在**另一个数据集的日子**上开窗，长出两个后果：
+  //   · 同一个块、同一天、两页两个数：本地数据（deals 2026-10-11 / plans 2026-10-05）下这一页写
+  //     「最近 7 天变化 7 条 · 今日新增 0 条」+「另有 2 条更早的变化」，而 /plans/coding/ 与
+  //     /changes/ 用 plans 数据日，同一个块写「另有 30 条更早的变化」；
+  //   · 更坏的是它会**静默变空**：采集把 deals 的数据日推到 2026-10-12 之后，7 天窗口
+  //     （`asOf−6 .. asOf`）里一条套餐变化都不剩，块渲染成「当前没有观测到套餐变化」——
+  //     而日志里明明有 35 条事件、/plans/coding/ 上那 5 条也还在。采集链因此连红 4 轮
+  //     （2026-10-12 起，最后一次成功是 2026-10-11）：`planshub-selftest` 的深链牙在一个
+  //     没有深链的空块上成了 no-op（那次红报的是牙，真正的缺陷是这一页把窗口锚错了日子）。
+  //
+  // `latestSeenOf(plans)` 就是这一页 Coding 块上写着的「数据最近核对」，也**恒等于**
+  // `plans.json` 的 `updatedAt`（`plan-schema` 的 `canonicalUpdatedAt` 强制「全部 lastSeen 的最大值」，
+  // 不一致时 `validate.js` 直接报错）—— 也就是 /plans/coding/ 那一支用的 `plansStore.updatedAt`。
+  // 两页的窗口因此从构造上分不开（产物级断言：`planshub-selftest` ⑤ 逐条比对两页的同一个块）。
+  // plans 为空（没有任何 lastSeen）时才退回关系层基准日 —— 那时也没有记录可渲染。
+  const codingAsOf = latestSeenOf(plans) || asOf;
   const codingRadar = planChanges.buildPlanRadar({
     plans,
     store: ctx.planHistoryStore || null,
-    asOf,
+    asOf: codingAsOf,
     availability: ctx.planHistoryStore ? 'ok' : 'unavailable'
   });
   const codingChanges = codingRadar.availability === 'ok'
@@ -334,7 +368,9 @@ ${body}
  *   `apiPlanHistoryStore` `api-plan-history.json`
  *   `dealLinks`           `deal-plan-links.json`（无 → 不渲染这一块）
  *   `deals`               优惠记录（判关联是否仍然当前）
- *   `asOf`                数据基准日（**不是构建时刻**）
+ *   `asOf`                **关系层**基准日（deal ↔ plan 的当前性）= `max(deals.json, plans.json)`
+ *                         （SCHEMA-v2.4 §7）。**不是**构建时刻，也**不是** Coding 变化窗口的基准日 ——
+ *                         后者锚在 plans 自己的数据日上（见 `plansHubView()` 里的 `codingAsOf`）
  *   `prefix`              回到站根的相对前缀（缺省由路由深度推导）
  *
  * ⚠️ t3：不再有 `dataDocs` 参数 —— 它只控制「数据出口」那条说明里的 `/docs/data/` 链接，
