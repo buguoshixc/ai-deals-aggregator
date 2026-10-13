@@ -667,19 +667,22 @@ function noJsControlExemptionFor(route) {
      而首页那 8 档读数一字不差 —— 结论越界到了整站，所以覆盖必须补到内页）：
 
        ① 图标在**它所在那一行**的最右端（没有任何可见项在它右边）；
-       ② ≥348px：这一枚图标**不增加顶栏高度** —— 把图标 `display:none` 再量一次，差就是它的代价。
+       ② 折行档之外（本判据取 **≥390px**，给字体度量留余量）：这一枚图标**不增加顶栏高度**
           直接量"这枚图标自己花了多少"，不依赖任何历史基线（基线式的断言会随产物一起漂移）；
        ③ ≤347px：代价被如实钉住 —— 必然多一行，且恰好是一行（30~60px），图标仍在最右端、不被裁。
 
-     边界 348/349 是**实测**的（算术上也对得上：内页那一行要放下品牌 143.33 + 跳转链 119 + 图标 30
+     边界 348/349 是**本机实测**的（算术也对得上：内页那一行要放下品牌 143.33 + 跳转链 119 + 图标 30
      + 两个 12px 间距 ≈ 316.33px > 348 − 32 = 316px ⇒ 348 仍折、349 起排得下）。
      这一档的代价不可约（间距压到 0 也差 4px），唯一能省掉它的两条路（隐藏图标 / 截短跳转链文案）
      都不做，所以它被记录并断言，而不是被藏着。
+     ⚠️ 但它是**字体度量**决定的量，跨平台会漂：CI（Linux + chromium，2026-10-12 实测）在 349px
+     **仍然折行** —— 贴着临界值的档不能写进判据。所以断言只钉两头：**320 / 348 必折**（算术余量
+     ≥28px）与 **390 起必不折**（可用宽 358px，余量 ≥41px），把 349 这类临界档只当**打印读数**。
      ⚠️ 「最右端」一律在**图标自己那一行**上判（按竖直重叠取同行项）：跨行比 x 坐标会把上一行右对齐的
      跳转链误判成"在图标右边" —— 这条自己在 348px 档上踩过一次，所以判据写成同行口径。 */
   {
     console.log('\n=== 2a2) 内页页头的 GitHub 图标（首页之外的那 183 页）===');
-    for (const width of [320, 348, 349, 390, 760, 941]) {
+    for (const width of [320, 348, 390, 760, 941]) {
       await page.setViewportSize({ width, height: 900 });
       await page.goto(new URL('models/', base).href, { waitUntil: 'load' });
       await page.waitForTimeout(150);
@@ -722,7 +725,7 @@ function noJsControlExemptionFor(route) {
         inner.gh
           ? `图标宽 ${inner.gh.w}px · 右缘 ${inner.gh.right}px · 同行右侧可见项 ${inner.rightOf} 个 · 在页头盒内=${inner.insideHeader}`
           : '（页头里没有 .ghlink）');
-      if (width >= 349) {
+      if (width >= 390) {
         check(`内页 /models/ ${width}px：这一枚图标不增加顶栏高度（藏掉它顶栏一样高）`,
           inner.cost !== null && Math.abs(inner.cost) <= 1,
           `顶栏 ${inner.headerH}px · 藏掉图标 ${inner.headerWithoutIconH}px · 代价 ${inner.cost}px`);
