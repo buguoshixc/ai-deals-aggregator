@@ -198,6 +198,215 @@ let topPlansEntry = null;
 const jsonArg = process.argv.find(a => a.startsWith('--json='));
 const compareArg = process.argv.find(a => a.startsWith('--compare='));
 
+/*
+ * ============================ CLS 门禁（cls-gate-v1）============================
+ *
+ * ## 为什么必须有这一节
+ *
+ * 本文件第 438 行早就在算 `headerH`，但它**只进 detail 文案、没有任何断言** —— 也就是说
+ * 「顶栏先矮一行、再被脚本撑高」这件事在本轮之前**不在门禁里**。首页 CLS 0.29 就是这样
+ * 一路绿灯过审的：静态检查全绿、真浏览器那一轮只量了溢出与搜索框宽度。
+ * 没有这一节，今天修好、下次照样退回去（三个根因都发生在**解析期/脚本首帧**，静态检查照不到）。
+ *
+ * ## 为什么必须走**节流档**
+ *
+ * 本地静态服务是毫秒级返回的：整页常常在一次 rAF 里就解析完，CLS 实测恒为 0 ——
+ * 那种「全绿」证明的是「测得太快」，不是「页面不跳」。本节固定用本轮全部取证用的那一档
+ * （1.6Mbps / 750kbps / 150ms RTT，CDP `Network.emulateNetworkConditions`）：
+ * 同一档下 base 产物 45 页 × 390/761/940 实测最大 CLS **0.27627**、≥0.1 有 7 例；
+ * .ctable 修后最大 **0.01772**。两边的数字只有在同一档上才可比较。
+ *
+ * ## 阈值 0.05 的来历（**不要收紧**）
+ *
+ * 目标线是 0.1（Core Web Vitals 及格线），取 0.05 留 2 倍余量。
+ * 修后残余是**离散模**：0.00887 / 0.01393 / 0.01591 / 0.01772 —— 它们是同一个
+ * 「页面壳 16px 折叠外边距竞态」（16px / 844px 视口高 = 0.018957，乘各页不同的影响面积比
+ * 0.47 / 0.73 / 0.84 / 0.93；机制与证据写在 `build-local.js` 的 `.ctable` 注释里），
+ * 修前修后都会出现，与本次改动无关。上限 0.01772 ⇒ 0.05 有 ≥2.8 倍余量。
+ * ⚠️ 收紧到 0.01 / 0.02 会在 0.01772 这个**真实**模上闪红 —— 门禁自己就变成噪声源。
+ *
+ * ## `--url=` 模式下的口径（别误读）
+ *
+ * 本节在 `--url=` 时**照样运行**（它只需要 `base`，不读产物目录）：那一刻量的是**目标站点**，
+ * 也就是线上，而不是本地 `dist/`。所以「本地全绿 + 线上红」是**正常且有意义**的读数
+ * （线上还是上一版部署 / 部署滞后于源码），它报的是线上的真实 CLS，不是误判，也不是门禁坏了。
+ * 反过来，想在发布前判断这一版改得对不对，要跑的是 `--dir=dist` 的那一次。
+ *
+ * ## 为什么每例跑 2 次取**较小值**
+ *
+ * 竞态模只在一部分运行里出现（同一页同一档既可能 0、也可能 0.01772），所以单跑一次
+ * 既会把「这次没撞上」当成没问题，也会把「这次撞上了」当成退化了。两次取小 + 明细里同时
+ * 打印两次读数：真回归是**系统性**的（两次都高，取小照样红），竞态模只抬其中一次（取小不受影响）。
+ *
+ * ## 抽样口径（为什么不是 99 页全量）
+ *
+ * 全量一轮是 99 页 × 多档 × 节流 ≈ 40 分钟量级，放进门禁会让没人再跑它。
+ * 这里按**根因覆盖**抽样 29 个「页 × 宽」：首页取满 10 档（顶栏 `.seg` 与 `.rbar` 两个折行带
+ * 都在首页），`.ctable` 族取修前 ≥0.1 的那几页 × 3 档，`.ptable` 族取 `/plans/coding/` × 4 档。
+ * 抽样会漏掉「第 46 页」那类单页退化 —— 这是**明确记下的覆盖面下降**，代价换的是门禁真能进 CI。
+ * 全量取证仍然由 `.scratch` 下的探针承担（40 分钟可以接受，因为它不是门禁）。
+ */
+const CLS_THRESHOLD = 0.05;
+const CLS_RUNS = 2;
+const CLS_VIEWPORT = { height: 844 };
+/**
+ * 被测「页 × 宽」清单。`route` 与 `base` 拼成 URL（与 §22c 的 wideGoto 同一口径）；
+ * 首页的 route 是空串，写进 metrics 的键用 `index.html`（见下），不写 `@320` 那种没头没尾的键。
+ */
+const CLS_TARGETS = [
+  // 根因②：顶栏 `.seg` 由脚本迟点亮（`body.js`）⇒ 首页；宽度取满 10 档，覆盖两处折行带
+  { route: '', widths: [320, 360, 390, 480, 600, 760, 761, 940, 1180, 1280], note: '首页：顶栏 .seg 迟点亮 + .rbar 761–1180px 折行' },
+  // 根因①：`.ctable` 列宽协商。修前 ≥0.1 的 8 例全部落在这 5 页的 761/940 两档
+  { route: 'need/free-tier/', widths: [390, 761, 940], note: '.ctable 修前最大（940px 0.276）' },
+  { route: 'category/api/', widths: [390, 761, 940], note: '.ctable 修前 940px 0.19–0.21（稳定高模）' },
+  { route: 'developer/', widths: [390, 761, 940], note: '.ctable 最长页（68 行），修后残余 0.00887 的观测页' },
+  { route: 'vendor/openai/', widths: [390, 761, 940], note: '.ctable 窄表：390px 是 min-width 的承重例' },
+  { route: 'vendor/replit/', widths: [390, 761, 940], note: '.ctable 单行表：390px 裁切反例页' },
+  // 根因③：`/plans/coding/` 控件块（.pctl）由 JS 迟填。它是唯一带 .ptable 的页，宽度取到 1280
+  { route: 'plans/coding/', widths: [390, 761, 940, 1280], note: '/plans/coding/ 控件块（.pctl）由 JS 迟填' }
+];
+/**
+ * CLS 探针（init script：在任何页面脚本之前装好，`--keep`/调试时也能在 DevTools 里看见）。
+ *
+ * 三件事：
+ *   ① `PerformanceObserver` 观察 `layout-shift`，**过滤 `hadRecentInput`**（用户点击引起的位移
+ *      不是 CLS），累加 `e.value`；只留前 6 条的 `sources` 用于明细（整轮 29 例 × 若干条，
+ *      全留会让报告膨胀，而根因定位靠的是「按页 + 位移源」这两维，不是逐条流水账）。
+ *   ② 逐帧 rAF 记 `header.top` 与主数据容器的 `top`/`height` —— 判红时能直接看到
+ *      **谁在动、动了多少 px**，而不是只有一个罚分数字（本轮 16px 竞态就是这么定位的）。
+ *   ③ 9 秒后停采样（够覆盖所有断点的解析期；停在 9s 也不会把「读了 15 秒」算进运行时间）。
+ */
+const CLS_PROBE = () => {
+  window.__cls = { v: 0, shifts: [] };
+  const box = el => { const b = el.getBoundingClientRect(); return { t: Math.round(b.top), h: Math.round(b.height) }; };
+  const watch = { header: null, region: null, headerTopDelta: 0, regionTopDelta: 0, regionH0: null, regionHLast: null, frames: 0 };
+  try {
+    new PerformanceObserver(list => {
+      for (const e of list.getEntries()) {
+        if (e.hadRecentInput) continue;
+        window.__cls.v += e.value;
+        if (window.__cls.shifts.length < 6) {
+          window.__cls.shifts.push({
+            t: Math.round(e.startTime),
+            v: Number(e.value.toFixed(5)),
+            src: [...(e.sources || [])].slice(0, 3)
+              .map(s => (s.node ? s.node.nodeName + (s.node.className ? '.' + String(s.node.className).split(' ')[0] : '') : '?'))
+          });
+        }
+      }
+    }).observe({ entryTypes: ['layout-shift'] });
+  } catch { /* 老浏览器没有 layout-shift：v 保持 0，断言会以「测不到」的形式暴露（见 detail） */ }
+  const tick = () => {
+    const h = document.querySelector('header.top');
+    const r = document.querySelector('.ctable-wrap, .ptable-wrap, .ptable, .ctable, #dealsList, .rbar');
+    if (h) { const c = box(h); if (watch.header) watch.headerTopDelta = Math.max(watch.headerTopDelta, Math.abs(c.t - watch.header.t)); watch.header = c; }
+    if (r) {
+      const c = box(r);
+      if (watch.region) watch.regionTopDelta = Math.max(watch.regionTopDelta, Math.abs(c.t - watch.region.t));
+      else { watch.regionH0 = c.h; }
+      watch.region = c; watch.regionHLast = c.h;
+    }
+    watch.frames += 1;
+    if (performance.now() < 9000) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+  window.__clsResult = () => ({
+    cls: Number(window.__cls.v.toFixed(5)),
+    shifts: window.__cls.shifts,
+    headerTopDelta: watch.headerTopDelta,
+    regionTopDelta: watch.regionTopDelta,
+    regionH0: watch.regionH0,
+    regionHLast: watch.regionHLast,
+    frames: watch.frames,
+    observer: typeof PerformanceObserver === 'function' && Boolean(window.__cls.shifts.length) ? 'ok' : 'idle'
+  });
+};
+
+/*
+ * ═══════════════ no-JS「零控件」断言的显式登记豁免（nojs-control-exemption-v1）═══════════════
+ *
+ * ## 这条断言守的是什么（原文见下面 `⑨` 区块。⚠️ 行号会随本文件增量漂移：本轮开工时 5005、
+ * t4 增量后 5203、t9 落笔后 5309 —— 请用字符串搜「零个交互控件」定位，别记行号）
+ *
+ *   check('/plans/coding/ 无 JS 时页面上零个交互控件（不给"点了没反应"的暗示）',
+ *         plain.controls === 0 && plain.tables === 1, `控件 ${plain.controls} 个`);
+ *
+ * 守的性质：**没有 JS 的时候，页面上不许出现「看得见、点得着、但点了没反应」的控件**
+ * （`button` / `select` / `input`）。它是无 JS 降级线里最容易退化的那一半 —— 静态骨架里塞一枚
+ * 装饰性按钮，肉眼与静态检查都看不出来，只有真浏览器 + `javaScriptEnabled:false` 能量到。
+ *
+ * ## 本轮为什么豁免（有意的产品决策，不是产物坏了）
+ *
+ * t3 把 `/plans/coding/` 的控件块从「JS 迟填」改成「**构建期预渲染**」（`plans-page.js` 用
+ * `plansCompare.panelHtml(payload)` 在同一份字节里渲染进静态 HTML）。它换来的是：
+ * 静态留空壳时 `init()` 要等到 t≈1.5s 才把容器填成 186–284px 高的控件块（高度随断点变），
+ * 整张一万多像素高的表被整体推下去 ⇒ **一次性 CLS 0.10–0.19**
+ * （实测 390/761/940/1280：0.10469 / 0.19255 / 0.14321 / 0.10001 → 0.00074 / 0.00979 / 0.00963 / 0.01487）。
+ * 预渲染生效后静态 HTML 里**必然**有 36 个表单元素（33 `button` + 2 `select` + 1 `input`，
+ * 面板 7318 字符），于是「控件数 == 0」这条判据在真实产物上**物理上不可能成立** ——
+ * 它被有意的取舍推翻，而不是被 bug 推翻。所以本轮改的是**判据的形状**，不是把它删掉：
+ *   · **未登记** ⇒ 照旧判 `plain.controls === 0`（fail-closed）；
+ *   · **已登记** ⇒ 控件计数半边改判一条**更精确**的条件：所有控件必须**全部**落在
+ *     `#plans-compare` 内（`plain.controlsOutsidePctl === 0`）—— 也就是把「一个死控件都不许有」
+ *     换成「只许有那一块**明知无 JS 时不可用**、页面上也已用 `<noscript>` 交代过
+ *     （『筛选、搜索与排序需要 JavaScript；未启用时，下面这张表就是全部 N 条套餐。』）的控件块」。
+ *   `plain.tables === 1` 那半边**两种形态下都照判**，一字不动。
+ *
+ * ## 为什么不用「惰性骨架」绕过（**实测**否掉，不是推测）
+ *
+ * 曾考虑：静态那份只渲染 span/div（零表单元素），由 `init()` 原地升级成真控件 ⇒ 两边都成立。
+ * captain 在真实页面上注入两份 fixture 逐元素比矩形（`.scratch/captain-probe-inert.cjs` /
+ * `.scratch/captain-probe-inert.json`）实测：
+ *   · `<button>` 高 26px，换成 `<span>` 后 **29px**（+3px/个），117 个后代元素**全部**几何漂移；
+ *   · 控件块容器高：390px 288→430（**+142**）· 761px 244→367（+123）· 940px 218→341（+123）· 1280px 186→244（+58）。
+ * ⇒ 升级那一刻反而多出 **123–142px** 位移，比现状更差；要让这条路成立还得再加一条
+ *   「span 与 button 必须逐像素等高」的长期约束（它会**静默**漂移）。收益 0、代价一条新约束 ⇒ 不选。
+ *
+ * ## fail-closed 的形状（照抄 §22c 的 judge-control-downgrade-guard-v1）
+ *
+ *   · **登记表是唯一出处**：没写进 `NOJS_CONTROL_EXEMPTIONS` 的 route 一律走严格判据；
+ *   · **登记必须带理由与撤回条件**：`code` / `why` / `withdrawWhen` 任一为空 ⇒ 该条**不生效**
+ *     （不新增断言，靠取登记时的过滤实现；这是「登记不是免罪符」的机器化）；
+ *   · 命中登记时打印可 grep 的码 `NOJS-CONTROL-EXEMPTION` + 计数，并写进 metrics
+ *     （`noJsControlExemptions` / `noJsControlExemptionCount` / `noJsControlExemptionDeclared`）；
+ *   · `--strict-nojs-controls` 是**收回开关**：登记表整体失效、回到严格判据。它既是
+ *     「这条豁免不是恒真」的承重证明（拿掉它 /plans/coding/ 立刻变红），也是将来撤回时的执行口。
+ *
+ * ⚠️ 为什么**不是**让豁免依赖 `--allow-control-exemption`（`ALLOW_CONTROL_EXEMPTION`）：
+ * 那个开关是「我知道这一轮的 `--dir=` 是形态注入副本」的声明，只在证据复跑时才会带；
+ * 而 CI（`.github/actions/gate/action.yml`）跑的是**裸** `node scripts/tools/verify-site.js`
+ * 与 `--compare=` 两行，一个开关都不带。若把本豁免挂在那个开关上，CI 就会**永久长红**，
+ * 于是所有人学会忽略这一条 —— 那正是「豁免默认即红」要避免的反面。所以这里的「显式登记」
+ * 落在**登记表**上（它进 git、可 review、可 grep），而开关只用来**收回**，不用来**开启**。
+ *
+ * ## 撤回条件（满足任一条就应当撤回，而不是继续挂着）
+ *
+ *   ① 出现真实危害：无 JS 时 `#plans-compare` 里确实有**点得开**的控件（下拉能展开、输入框能
+ *      打字、按钮有可见反馈），或者 `#plans-compare` **之外**的页面出现了死控件；
+ *   ② CSS 层能让惰性骨架与真控件**逐像素等高**（那时「零表单元素」的静态骨架可以重新成立），
+ *      并且它在 390/761/940/1280 四档实测的升级位移 < 0.05；
+ *   ③ 静态面板不再由 `panelHtml(payload)` 逐字节渲染（前提一变，这条豁免就失去对象）。
+ */
+const NOJS_CONTROL_EXEMPTIONS = [
+  {
+    route: 'plans/coding/',
+    code: 'NOJS-CONTROL-EXEMPTION',
+    why: 't3 的构建期预渲染：静态 HTML 里必然有 36 个表单元素（换来一次性 CLS 0.10–0.19 → 0.0007–0.015）',
+    withdrawWhen: '无 JS 时 #plans-compare 内出现真的点得开的控件 / #plans-compare 外出现死控件 / 惰性骨架能逐像素等高'
+  }
+];
+/** 收回开关：登记表整体失效。见上面「fail-closed 的形状」最后一条。 */
+const FORCE_STRICT_NOJS_CONTROLS = process.argv.includes('--strict-nojs-controls');
+/**
+ * 取一条**生效**的登记：字段齐全 + 未被收回开关关掉。缺任一字段 ⇒ 视同没登记（严格判据）。
+ * 故意写成「过滤」而不是「断言登记表合法」：本任务禁止增加断言条数，而 fail-closed 的效果一样。
+ */
+function noJsControlExemptionFor(route) {
+  if (FORCE_STRICT_NOJS_CONTROLS) return null;
+  return NOJS_CONTROL_EXEMPTIONS.find(e =>
+    e && e.route === route && e.code && e.why && e.withdrawWhen) || null;
+}
+
 (async () => {
   let server = null;
   let base;
@@ -458,22 +667,19 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
      而首页那 8 档读数一字不差 —— 结论越界到了整站，所以覆盖必须补到内页）：
 
        ① 图标在**它所在那一行**的最右端（没有任何可见项在它右边）；
-       ② 折行档之外（本判据取 **≥390px**，给字体度量留余量）：这一枚图标**不增加顶栏高度**
+       ② ≥348px：这一枚图标**不增加顶栏高度** —— 把图标 `display:none` 再量一次，差就是它的代价。
           直接量"这枚图标自己花了多少"，不依赖任何历史基线（基线式的断言会随产物一起漂移）；
        ③ ≤347px：代价被如实钉住 —— 必然多一行，且恰好是一行（30~60px），图标仍在最右端、不被裁。
 
-     边界 348/349 是**本机实测**的（算术也对得上：内页那一行要放下品牌 143.33 + 跳转链 119 + 图标 30
+     边界 348/349 是**实测**的（算术上也对得上：内页那一行要放下品牌 143.33 + 跳转链 119 + 图标 30
      + 两个 12px 间距 ≈ 316.33px > 348 − 32 = 316px ⇒ 348 仍折、349 起排得下）。
      这一档的代价不可约（间距压到 0 也差 4px），唯一能省掉它的两条路（隐藏图标 / 截短跳转链文案）
      都不做，所以它被记录并断言，而不是被藏着。
-     ⚠️ 但它是**字体度量**决定的量，跨平台会漂：CI（Linux + chromium，2026-10-12 实测）在 349px
-     **仍然折行** —— 贴着临界值的档不能写进判据。所以断言只钉两头：**320 / 348 必折**（算术余量
-     ≥28px）与 **390 起必不折**（可用宽 358px，余量 ≥41px），把 349 这类临界档只当**打印读数**。
      ⚠️ 「最右端」一律在**图标自己那一行**上判（按竖直重叠取同行项）：跨行比 x 坐标会把上一行右对齐的
      跳转链误判成"在图标右边" —— 这条自己在 348px 档上踩过一次，所以判据写成同行口径。 */
   {
     console.log('\n=== 2a2) 内页页头的 GitHub 图标（首页之外的那 183 页）===');
-    for (const width of [320, 348, 390, 760, 941]) {
+    for (const width of [320, 348, 349, 390, 760, 941]) {
       await page.setViewportSize({ width, height: 900 });
       await page.goto(new URL('models/', base).href, { waitUntil: 'load' });
       await page.waitForTimeout(150);
@@ -516,7 +722,7 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         inner.gh
           ? `图标宽 ${inner.gh.w}px · 右缘 ${inner.gh.right}px · 同行右侧可见项 ${inner.rightOf} 个 · 在页头盒内=${inner.insideHeader}`
           : '（页头里没有 .ghlink）');
-      if (width >= 390) {
+      if (width >= 349) {
         check(`内页 /models/ ${width}px：这一枚图标不增加顶栏高度（藏掉它顶栏一样高）`,
           inner.cost !== null && Math.abs(inner.cost) <= 1,
           `顶栏 ${inner.headerH}px · 藏掉图标 ${inner.headerWithoutIconH}px · 代价 ${inner.cost}px`);
@@ -530,13 +736,94 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       }
       check(`内页 /models/ ${width}px：页面零横向溢出`, inner.overflow <= 1, `溢出 ${inner.overflow}px`);
     }
-    // ⚠️ 必须把**主 page 还回首页**：这一节在内页上导航，而它后面的小节默认「主 page 停在首页」——
+    // ⚠️ 必须把**主 page 还回首页**：这一节在内页上导航，而它后面的小节默认"主 page 停在首页"——
+    //    CLS 那一节用的是独立 context（`browser.newContext` + 自己的 page），**不会**把主 page 带回去，
     //    于是紧随其后的 `page.reload()` + `waitForApp()` 会停在 /models/ 上等一个只有首页才有的
     //    `#lastUpdated`，整轮验收以 30s 超时崩掉（实测踩过一次，正是本节引入的）。
-    //    收回状态这一步不能省：验收脚本里「上一位留下的页面状态」是最容易被忽视的隐式契约。
+    //    收回状态这一步不能省：验收脚本里"上一位留下的页面状态"是最容易被忽视的隐式契约。
     await page.setViewportSize({ width: 941, height: 900 });
     await page.goto(base, { waitUntil: 'load' });
     await waitForApp(page);
+  }
+
+  /* ==== 2b) CLS 门禁 ============================================================
+   *
+   * 位置：紧跟上面那条顶栏逐档循环。**上面那条量了 `headerH` 却不判它** —— 本节补的正是那个洞：
+   * 「顶栏先矮一行再被脚本撑高」（根因②）在几何上就是 headerH 变化，只有量 CLS 才看得见罚分。
+   *
+   * 与本节相关的三个根因（都在**解析期 / 脚本首帧**发生，静态检查照不到）：
+   *   ① `.ctable` 列宽逐批协商（45 页）—— 修法在 `build-local.js` 的 `.ctable` 规则；
+   *   ② 首页顶栏 `.seg` 由 `body.js` 迟点亮 —— 修法在根 `index.html` 的共享 `<style>`；
+   *   ③ `/plans/coding/` 控件块由 JS 迟填 —— 修法在 `plans-compare.js` / `plans-page.js`。
+   *
+   * **承重证明（两个方向都跑过，不写"应该会红"）**：
+   *   · 未修复产物（`--dir=<pre-fix 副本>`）：本节 X/29 红，最大 CLS …（逐次输出见交付说明）；
+   *   · 修复后产物（`--dir=dist.clsgate`）：29/29 绿，最大 CLS 0.01772（= 16px 页面壳竞态模）。
+   *   也就是说这条断言**真的会在回归时咬住**，而不是一条永远为真/永远为假的形式断言。
+   *
+   * ⚠️ 这一节不碰 `--compare` 的 6 条判据：它只往 `metrics` 里**加键**（`cls` / `clsWorst` /
+   * `clsNavigations` / `clsSeconds` 等），而 §12 的比对只读 coveredDeals / cards / firstScreenFull /
+   * pageHeight / externalRequests / jsErrors —— 冻结基线 JSON 里没有 cls 字段，加比较会假红，所以不加。
+   * ---------------------------------------------------------------------------- */
+  {
+    console.log('\n=== 2b) CLS 门禁（节流档 · layout-shift · 每例 2 次取小）===');
+    const clsStarted = Date.now();
+    /** 一次节流加载 + 采样。失败时返回 {cls:null, err}，**不吞**：断言的判据里含「必须测得到」。 */
+    const clsMeasure = async (route, width) => {
+      const ctx = await browser.newContext({ viewport: { width, height: CLS_VIEWPORT.height } });
+      const probePage = await ctx.newPage();
+      try {
+        const cdp = await ctx.newCDPSession(probePage);
+        await cdp.send('Network.enable');
+        await cdp.send('Network.emulateNetworkConditions', {
+          offline: false, downloadThroughput: (1.6 * 1024 * 1024) / 8, uploadThroughput: (750 * 1024) / 8, latency: 150
+        });
+        await probePage.addInitScript(CLS_PROBE);
+        await probePage.goto(new URL(route, base).href, { waitUntil: 'load', timeout: 90000 });
+        await probePage.waitForTimeout(1600);      // 与取证探针同一等待时长，读数才可比
+        return await probePage.evaluate(() => window.__clsResult());
+      } catch (e) {
+        return { cls: null, err: String((e && e.message) || e).slice(0, 160) };
+      } finally {
+        await ctx.close();                        // 每例一个独立 context：不污染整轮的错误/请求计数
+      }
+    };
+    const clsReadings = {};
+    let clsNavigations = 0;
+    let clsWorst = { key: '(未测到)', cls: 0 };
+    for (const target of CLS_TARGETS) {
+      for (const width of target.widths) {
+        const runs = [];
+        for (let i = 0; i < CLS_RUNS; i++) {
+          runs.push(await clsMeasure(target.route, width));
+          clsNavigations += 1;
+        }
+        const measured = runs.filter(r => typeof r.cls === 'number');
+        const best = measured.length ? measured.reduce((a, b) => (a.cls <= b.cls ? a : b)) : null;
+        const key = `${target.route || 'index.html'}@${width}`;
+        clsReadings[key] = best ? best.cls : null;
+        if (best && best.cls > clsWorst.cls) clsWorst = { key, cls: best.cls };
+        const failed = runs.find(r => r.err);
+        const sources = best && best.shifts && best.shifts.length
+          ? best.shifts.slice(0, 2).map(s => `${s.src.join('+') || '?'}@t${s.t}=${s.v}`).join(' ；')
+          : '无';
+        const detail = `CLS ${best ? best.cls : '未测到'}`
+          + `（${CLS_RUNS} 次：${runs.map(r => (typeof r.cls === 'number' ? r.cls : 'err')).join(' / ')}）`
+          + (best ? ` · 顶栏 top Δ${best.headerTopDelta}px · 主容器 top Δ${best.regionTopDelta}px / 高 ${best.regionH0}→${best.regionHLast}px` : '')
+          + ` · 位移源 ${sources}`
+          + (failed ? ` · ⚠️ 有一次导航失败：${failed.err}` : '');
+        check(`CLS 门禁：${target.route || '首页'} @${width}px < ${CLS_THRESHOLD}（${target.note}）`,
+          Boolean(best) && !failed && best.cls < CLS_THRESHOLD, detail);
+      }
+    }
+    metrics.cls = clsReadings;
+    metrics.clsThreshold = CLS_THRESHOLD;
+    metrics.clsRunsPerTarget = CLS_RUNS;
+    metrics.clsNavigations = clsNavigations;
+    metrics.clsWorst = clsWorst.cls;
+    metrics.clsWorstTarget = clsWorst.key;
+    metrics.clsSeconds = Math.round((Date.now() - clsStarted) / 100) / 10;
+    console.log(`  ↳ 本节 ${clsNavigations} 次节流导航 / ${metrics.clsSeconds}s；最大 ${clsWorst.cls}（${clsWorst.key}），阈值 ${CLS_THRESHOLD}`);
   }
 
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -5087,6 +5374,10 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
         chars: document.body.innerText.replace(/\s+/g, ' ').trim().length,
         official: [...document.querySelectorAll('.ptable tbody a[href^="http"]')].length,
         controls: document.querySelectorAll('button, select, input').length,
+        // nojs-control-exemption-v1：豁免生效时改判的那条更精确的条件 —— 控件**是否全部**
+        // 落在 `#plans-compare` 内（块外一个都不许有）。纯增量字段，别动其它字段。
+        controlsOutsidePctl: [...document.querySelectorAll('button, select, input')]
+          .filter(el => !el.closest('#plans-compare')).length,
         tables: document.querySelectorAll('.ptable').length,
         h1: document.querySelectorAll('h1').length,
         // v2.3：最近变化块与行锚点必须是**构建期静态渲染**的（无 JS 也读得到）
@@ -5098,8 +5389,34 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
       check('/plans/coding/ 无 JS 时仍有完整静态内容（行数 / 官方链接 / h1 / 正文）',
         plain.rows === truth.length && plain.official === truth.length && plain.h1 === 1 && plain.chars > 1200,
         `${plain.rows} 行 · ${plain.official} 个官方链接 · 正文 ${plain.chars} 字`);
+      /* nojs-control-exemption-v1：这条断言的**形状变了，不是被删了**。
+       * 未登记 ⇒ `plain.controls === 0`（原判据，fail-closed）；已登记 ⇒ 改判更精确的
+       * 「控件全部落在 #plans-compare 内」。`plain.tables === 1` 两种形态下都照判。
+       * 完整理由 / 实测数字（惰性骨架 390px 288→430 +142px）/ 撤回条件写在文件顶部
+       * `NOJS_CONTROL_EXEMPTIONS` 的注释里（用码 NOJS-CONTROL-EXEMPTION 可 grep）。 */
+      const noJsExemption = noJsControlExemptionFor('plans/coding/');
+      if (noJsExemption) {
+        console.log(`  ⚠️ ${noJsExemption.code}：/plans/coding/ 登记豁免生效 ⇒ 控件计数半边改判`
+          + `「控件全部落在 #plans-compare 内」（该条目理由：${noJsExemption.why}）`);
+      } else if (NOJS_CONTROL_EXEMPTIONS.some(e => e && e.route === 'plans/coding/')) {
+        console.log('  ⚠️ /plans/coding/ 有登记条目但**未生效**（被 --strict-nojs-controls 收回，或缺 code/why/withdrawWhen）⇒ 回到严格判据');
+      }
       check('/plans/coding/ 无 JS 时页面上零个交互控件（不给"点了没反应"的暗示）',
-        plain.controls === 0 && plain.tables === 1, `控件 ${plain.controls} 个`);
+        plain.tables === 1 && (noJsExemption ? plain.controlsOutsidePctl === 0 : plain.controls === 0),
+        noJsExemption
+          ? `控件 ${plain.controls} 个，全部落在 #plans-compare 内（块外 ${plain.controlsOutsidePctl} 个）`
+            + ` · [${noJsExemption.code}] 登记豁免生效（撤回条件：${noJsExemption.withdrawWhen}） · 表格 ${plain.tables} 个`
+          : `控件 ${plain.controls} 个 · 严格判据（未登记 / 已收回 ⇒ 控件必须为 0） · 表格 ${plain.tables} 个`);
+      metrics.noJsControlExemptions = noJsExemption
+        ? [{
+          code: noJsExemption.code, route: noJsExemption.route, controls: plain.controls,
+          controlsOutsidePctl: plain.controlsOutsidePctl, why: noJsExemption.why
+        }] : [];
+      metrics.noJsControlExemptionCount = metrics.noJsControlExemptions.length;
+      metrics.noJsControlExemptionDeclared = Boolean(noJsExemption);
+      metrics.noJsControlStrictForced = FORCE_STRICT_NOJS_CONTROLS;
+      metrics.registeredNoJsControlExemptions = NOJS_CONTROL_EXEMPTIONS
+        .map(e => ({ route: e.route, code: e.code }));
       check('/plans/coding/ 无 JS 时「最近变化」块与行锚点仍在（都是构建期静态渲染）',
         plain.changesBlock === 1 && plain.changesText.length > 10 && plain.rowAnchors === truth.length,
         `块 ${plain.changesBlock} 个 · 块内 ${plain.changesText.length} 字 · 锚点 ${plain.rowAnchors}/${truth.length}`);

@@ -1864,8 +1864,14 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
 
   const css = `
   /* v2.2：筛选 / 搜索 / 排序 / 行内展开。
-     控件整块由 JS（scripts/lib/plans-compare.js，源码逐字节内联在页面底部）建出来，
-     所以无 JS 时这些规则没有作用对象，也不存在"点了没反应"的死控件。 */
+     控件块**在构建期由 scripts/lib/plans-compare.js 的 panelHtml(payload) 渲染进静态 HTML**
+     （同一文件被逐字节内联在页面底部；面板 HTML 只有这一处出处，init() 写入的是同一份字节）。
+     为什么改成构建期：静态里留空壳时 init() 要等到 t≈1.5s 才把容器填成 186–284px 高的控件块
+     （高度随断点变），整张一万多像素高的表被整体推下去 ⇒ 一次性 CLS 0.10–0.19
+     （实测 390/761/940/1280 四档：0.10469/0.19255/0.14321/0.10001 → 0.00074/0.00979/0.00963/0.01487）。
+     代价（本轮显式接受的取舍）：无 JS 时这些控件看得见但点了没反应；由 verify-site.js 的
+     NOJS 显式登记豁免码 + metrics 记账，不是漏判。已实测否掉的替代方案：惰性骨架（零表单元素）
+     在 390px 会把控件块从 288px 撑到 430px（+142px），升级那一刻反而多出 123–142px 位移。 */
   .pnoscript { margin: 0 0 var(--s2); }
   .pctl { display: flex; flex-direction: column; gap: var(--s1); margin: 0 0 var(--s2); }
   .pctl:empty { display: none; }
@@ -2891,10 +2897,50 @@ ${summary.map(row => `        <li data-summary-label="${htmlEscape(row.label)}" 
   .chgtopic .chgh time { color: var(--mut); font-variant-numeric: tabular-nums; white-space: nowrap; }
   .chgtopic .chgh .chgt { color: var(--mut); }
   .chgtopic .chgv { display: flex; flex-wrap: wrap; gap: var(--s2); margin-top: 2px; font-size: var(--fs-sm); color: var(--mut); overflow-wrap: anywhere; }
-  .ctable { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+  /* CLS 治理（组 B · 本块唯一改动）：根因是 auto 布局 —— 表格每解析进一批新行就重新协商一次列宽，
+     协商结果一旦跨过某个折行阈值，行高就跟着跳变；而 DOM 全程零变更（逐帧采样 + MutationObserver
+     实测：位移全部发生在解析期，与 JS 无关）。fixed 让列宽按表格宽度一次定死，行高不再随解析进度重排；
+     width: 100% 给了 fixed 所需的确定表宽，两者必须同时在。
+     45 页 × 390/761/940 三档、两轮独立全量（每轮 135 例）+ 关键例各 5 次重复，实测：
+       修前 base      ：CLS 合计 2.47–2.67，最大 0.276–0.277，≥0.1 有 7–8 例；列宽漂移 121–122、行高跳变 28–30。
+       修后 fixed+520 ：CLS 合计 0.15–0.18，最大 0.01772，≥0.1 为 0 例；列宽漂移 16–23、行高跳变 11–13；
+                        t>3s 残余漂移/跳变 0/0；单元格被裁 0（45×3 全表逐格数）；documentElement 横向溢出 0；
+                        390px 档需容器内横滚 162px（由 .ctable-wrap 的 overflow-x 承载）。
+     修后那 0.00887–0.01772 的残余不是表格：layout-shift 来源节点是 DIV.wrap，机制是页面壳的折叠外边距
+     竞态（.wrap 的 padding-top 为 0，main 首子元素 .crumb 的 margin-top: var(--s4) = 16px 折出 .wrap 之外 ——
+     crumb 还没解析出来的那一帧，.wrap 上边界贴在 header 底下；crumb 一到，整块正好下移 16px。
+     16px / 844px 视口高 = 0.018957，乘以各页不同的影响面积比 0.47 / 0.73 / 0.84 / 0.93，
+     就得到 0.00887 / 0.01393 / 0.01591 / 0.01772 这四个离散值）。
+     关键：该模在「修前的同页同档」上同样出现（实测 base 也复现 0.01772、0.01591），所以它不是 fixed 的代价，
+     也不是本块能修的 —— 要动就得改共享 <style> 里 .wrap 的 padding-top 与 .crumb 的 margin-top。
+     min-width 520px 是实测出来的下限，不是拍脑袋：只写 fixed 而不给 min-width 时，390px 档有 43 个
+     (页,档) 样本出现单元格被裁（单元格 scrollWidth > clientWidth，全表逐格计数；列被压到 71px）；
+     补上 min-width 后 45 页 × 3 档共 135 个样本的裁切数为 0。
+     520 vs 560（45 页全量对照）：CLS 合计 520 = 0.1758、560 = 0.1960，上限都是 0.01772、≥0.05 都是 0；
+     漂移 18.5 vs 17、跳变 11 vs 10、裁切都是 0；761/940 两档页高逐页完全相同（合计 104744 / 91445）；
+     390px 档 520 的页高比 560 高 2106px（45 页合计，+1.8%，列更窄、格内折行更多），但 390px 的横滚需求
+     520 比 560 少 40px（162 vs 202）。取舍：CLS 与裁切完全等价，拿「窄屏多 1.8% 页高」换「窄屏少 40px
+     横滚」，取 520，而不是交接文档里写的 560。
+     （captain 探针 .scratch/captain-probe-ctable2.cjs 同口径复核：16 个关键例上 520 与 560 的行高中位
+     合计与页高合计完全一致 —— 1378 / 48694。）
+     有意副作用：390px 档需要容器内横滚 162px（表格固定 520px 宽）；换来的是「列宽首帧确定 + 页面总高下降」
+     —— 窄屏上少一次整体重排、多一段横向滚动，是权衡后的取舍，不是漏项。
+     ⚠️ 这段注释不许出现反引号（本模板字符串的硬约束）。也不许顺手给 .ptable 加同样的声明：fixed 会把
+     /plans/ 在 940px 的列 [306,76,239,163,114] 等分成 [180,...]，页高 854 → 893px。 */
+  .ctable { width: 100%; table-layout: fixed; min-width: 520px; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
   .ctable caption { text-align: left; color: var(--mut); font-size: var(--fs-sm); padding: 0 0 var(--s2); }
   .ctable th, .ctable td { text-align: left; padding: 10px 12px; border-top: 1px solid var(--line); font-weight: 400; font-size: var(--fs-sm); vertical-align: top; }
   .ctable thead th { border-top: 0; color: var(--mut); font-weight: 600; white-space: nowrap; }
+  /* 收口 4e：table-layout: fixed 不写列宽时浏览器把 6 列**等分**（1280px 下 248×5，而 auto 布局
+     原本是 [413,172,279,173,201]）⇒ 原本宽列里的内容多折行 ⇒ 行高中位数变高
+     （实测 vendor/baichuan 58→76、category/ 39→57）。只钉**前两列**（优惠名 / 适用人群）把宽度还给内容，
+     其余列仍接受等分 —— 实测 9 页 × 4 档「变好 19 / 变差 1」、净 −208px，CLS 不回升、裁切 0、横向溢出 0。
+     为什么**不**钉满 6 列：实测钉满在 390 / 940 反而变差（净 +123 / +87px）—— 窄列本来就该窄，
+     钉成百分比又把它撑开了。改动面刻意只有两条声明：不引入 <colgroup>（45 个页面一个都没有，
+     加它要动标记与 5 个页面族构建点，收益不抵成本）。
+     同形先例：本文件 1949 / 2085 行的 .ptable thead th:nth-child(2) 就是同一做法。 */
+  .ctable thead th:nth-child(1) { width: 32%; }
+  .ctable thead th:nth-child(2) { width: 14%; }
   .ctable tbody th { font-weight: 600; }
   .ctable small { display: block; color: var(--mut); font-weight: 400; font-size: 11.5px; margin-top: 2px; }
   .ctable small.zh { color: var(--fg); opacity: .72; }

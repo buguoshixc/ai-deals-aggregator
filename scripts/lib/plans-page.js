@@ -1047,11 +1047,23 @@ ${planChangesBlock}
       ${noteIn(opts)({ kind: 'noscript-hint', slot: 'main-snote', classes: 'snote pnoscript', declaredBy: NOTES_DECLARED_BY }, `<p class="snote pnoscript"><noscript>筛选、搜索与排序需要 JavaScript；未启用时，下面这张表就是全部 ${rows.length} 条套餐。</noscript></p>`)}
 
       <!--
-        控件容器：**静态 HTML 里是空的**。整块由 scripts/lib/plans-compare.js 建出来，
-        因此无 JS 时页面上一个"点了没反应"的筛选控件都不存在（与首页 G11 同一条纪律）。
-        数据载荷与逐行详情模板都在表格下面，同样只在有 JS 时才被读走。
+        控件容器：**构建期就把控件块渲染进来**（plansCompare.panelHtml(payload)，与 JS 在
+        init() 里写入的是同一个模板的同一份字节 ⇒ 首次写入幂等）。
+        为什么必须预渲染：静态里留空壳时，init() 要等到 t≈1.5s 才把容器填成 186–284px 高的控件块
+        （高度随断点变），整张一万多像素高的表被整体推下去 ⇒ 一次性 CLS 0.10–0.19
+        （实测 390/761/940/1280 四档）。预渲染后首帧就占住终值高度。
+        必须是**同一个 payload**：这里用的就是下面 #plans-compare-data 里那一份 ——
+        两份对不上时 init() 会整块重建，位移原样回来（assertCompareHonesty() 逐字节守这条）。
+        代价是**已裁定的取舍**（不是漏判）：无 JS 时这些控件可见但不可交互。首页 G11「无 JS 不给
+        可点暗示」这条纪律在本页因此缩到「控件块之外」；本页的无 JS 形态由 verify-site.js 的
+        NOJS **显式登记豁免码 + metrics** 记账（与 judge-control-downgrade-guard-v1 同形：
+        豁免默认即红、必须显式声明、每条可 grep）。
+        已实测否掉的替代方案（写在这里，免得下一个人重新提）：**预渲染非表单惰性骨架**（零表单
+        元素，init() 再原地升级）—— <span> 比 <button> 每个高 3px，升级那一刻控件块在 390px 会从
+        288px 撑到 430px（+142px），比修前更差；要让它成立还得补一条「span 与 button 逐像素等高」
+        的 CSS，那是更脆的新约束。
       -->
-      <div class="pctl" id="plans-compare" role="group" aria-label="筛选与排序"></div>
+      <div class="pctl" id="plans-compare" role="group" aria-label="筛选与排序">${plansCompare.panelHtml(payload)}</div>
 ${unitSortable ? '' : `      ${noteIn(opts)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">${escapeHtml(NO_UNIT_SORT_NOTE)}</p>`)}\n`}
       <div class="ptable-wrap">
       <table class="ptable">
@@ -1327,13 +1339,75 @@ function assertCompareHonesty(html, plans, opts = {}) {
     }
   }
 
-  // ⑦ 预渲染的标记里**一个控件都不能有**（无 JS 时的死控件）。与首页 G11 同一条纪律：
-  //    载荷与模板是惰性的，控件整块由 JS 建 —— 所以这里连 `<button` 都不该出现。
-  const deadControls = ['<button', '<select', '<input', 'data-facet=', 'data-sort=', 'data-reset'];
-  for (const token of deadControls) {
-    if (markup.includes(token)) problems.push(`预渲染 HTML 里出现了交互控件「${token}」（无 JS 时是死控件）`);
+  // ⑦ 预渲染的交互控件**只允许出现在 `#plans-compare` 里**，且那一块的内容必须与 JS 将要
+  //    写入的字节完全相同。
+  //
+  //    v2.5 起控件块改成**构建期渲染**（消掉「空壳容器 → t≈1.5s 才被填成 186–284px」那一次
+  //    把整张表推下去的位移 0.10–0.19），所以旧口径「预渲染标记里零控件」在本页不再成立；
+  //    代价是**已裁定的取舍**：无 JS 时这些控件可见但不可交互，由 `verify-site.js` 的 NOJS
+  //    显式登记豁免码 + metrics 记账（不是漏判）。
+  //    保留下来的两条仍然承重：
+  //      ① 页面其余部分依旧一个控件都不许有 —— 首页 G11「无 JS 不给可点暗示」这条纪律
+  //         在本页缩到「控件块之外」；
+  //      ② 静态面板必须与 `panelHtml(payload)` **逐字节相同**：差一个字节，`init()` 的
+  //         `host.innerHTML = …` 就会整块重建 DOM，控件块高度会二次协商，位移原样回来。
+  //         这一条同时钉住了「预渲染用的是同一个 payload」——`payload` 是从页面里的
+  //         `#plans-compare-data` 解析出来的那一份。
+  const panel = panelOf(markup);
+  if (!panel) {
+    problems.push('预渲染 HTML 里找不到 #plans-compare 容器（控件块没有在构建期渲染出来）');
+  } else {
+    const expectedPanel = plansCompare.panelHtml(payload);
+    if (panel.inner !== expectedPanel) {
+      problems.push('预渲染的 #plans-compare 内容与 panelHtml(payload) 不是同一份字节'
+        + `（静态 ${panel.inner.length} 字符 / 模板 ${expectedPanel.length} 字符）`
+        + '⇒ init() 会整块重建，控件块高度二次协商');
+    }
+    const outside = markup.slice(0, panel.start) + markup.slice(panel.end);
+    // 只要扫到这一组就算「控件」：前三个是标签，后三个是 JS 认控件的语义标记
+    // （少了 `data-*` 会漏掉「长得不像控件、但 JS 会把它当控件」的写法）。
+    const deadControls = ['<button', '<select', '<input', 'data-facet=', 'data-sort=', 'data-reset'];
+    for (const token of deadControls) {
+      if (outside.includes(token)) {
+        problems.push(`预渲染 HTML 里 #plans-compare 之外出现了交互控件「${token}」（无 JS 时是死控件）`);
+      }
+    }
   }
   return problems;
+}
+
+/**
+ * 取 `#plans-compare` 容器：返回 `{ inner, start, end }`（`inner` = 标签内容），找不到返回 `null`。
+ *
+ * 为什么要配平 `<div>` 深度而不是一个正则收尾：面板自己的 `.pcrow` 也是 `<div>`，
+ * `<div class="pctl"[^>]*>[\s\S]*?</div>` 会在**第一个** `</div>`（第一个 `.pcrow` 的）就停住，
+ * 于是大半个面板被留在「容器之外」——上面那两条断言（面板内允许控件 / 面板外不许控件）
+ * 会同时给出错误答案，而且**都是假的绿**。
+ *
+ * 只允许在 `markupOnly()` 之后的标记上调用：`<script>` 源码里有 `<div class="pcrow">`
+ * 这类字面量，不摘脚本会被算进深度。
+ */
+function panelOf(html) {
+  const text = String(html || '');
+  const open = text.indexOf('<div class="pctl" id="plans-compare"');
+  if (open < 0) return null;
+  const tagEnd = text.indexOf('>', open);
+  if (tagEnd < 0) return null;
+  const divRe = /<\/?div\b[^>]*>/gi;
+  divRe.lastIndex = tagEnd + 1;
+  let depth = 1;
+  let match;
+  while ((match = divRe.exec(text)) !== null) {
+    if (match[0].charAt(1) === '/') {
+      depth -= 1;
+      if (depth === 0) {
+        return { inner: text.slice(tagEnd + 1, match.index), start: open, end: divRe.lastIndex };
+      }
+    } else {
+      depth += 1;
+    }
+  }
+  return null;
 }
 
 /**
@@ -1583,6 +1657,8 @@ module.exports = {
   assertPlanDealsBlock,
   rowHtmlById,
   cellText,
+  /** v2.5：`#plans-compare` 容器的切片（预渲染后断言要看面板内 / 面板外两半） */
+  panelOf,
   // v2.3 变化展示：句子只有一处实现，页面 / 时间线 / /changes/ / 订阅源共用
   priceTextOf,
   quotaValueTextOf,
