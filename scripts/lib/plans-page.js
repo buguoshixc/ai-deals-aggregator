@@ -116,6 +116,12 @@ const PLANS_NOTES = [
   //   整条删掉等于顺手丢掉两件读者用得上的事 —— census §7 的删除纪律是「外科式，不是把元素删掉」。
   // 删后整条仍是完整句子：「表中每条都链到该平台的官方定价页，本站只做收录与整理。」
   '表中每条都链到该平台的官方定价页，本站只做收录与整理。',
+  // v3.1（2026-10-13）收录判据。紧跟上一条是刻意的：上一条说「每条都链到官方定价页」是
+  // **事实**，这一条说「能不能指到官方定价页」是**收录判据** —— 读者因此能自己解释缺席
+  // （社区所说的「中转站」），而不是把它读成「我们漏了」。
+  // 文案本体不写在这里：唯一出处是 `planSchema.PLAN_WORDING.inclusionNote`，
+  // 页面与 `assertPageHonesty()` 引用同一个常量（改一处两处同时变，不可能分家）。
+  planSchema.PLAN_WORDING.inclusionNote,
   '「最近更新」是我们最后一次人工对照官方页的日期，不是官方承诺不变的日期。',
   // v2.2：筛选 / 搜索 / 排序 / 展开 —— 四条口径。为什么必须写在页面上：这些控件会改变
   // 读者看到的子集，而"筛掉的为什么被筛掉"如果不说，筛选就变成了替读者做判断。
@@ -1428,6 +1434,20 @@ function assertPageHonesty(html, plans, opts = {}) {
   // ① 口径文案必须在页面上（题面 §四 点名要求）
   if (!text.includes(escapeHtml(planSchema.PLAN_WORDING.nominalUnitPriceNote))) {
     problems.push('缺少「名义 Token 单价只用于粗略比较」的口径说明');
+  }
+
+  // ①b v3.1：**收录判据**必须在页面上，而且要写在「口径与说明」那张清单里。
+  //     为什么必须是清单内、而不是「整页文本里出现过」：判据属于那一节（H16 说的就是这一节），
+  //     只查整页文本的话，把它挪到页脚或正文别处仍然会绿 —— 一条能被搬到任何地方的断言，
+  //     下一轮就会有人把它搬走而没人知道。挪出清单的负例有牙（`plans-selftest` ⑫）。
+  //     比较用 `renderNote()`：与渲染 `<li>` 走的是同一个函数（文案里允许 `**…**` 加粗），
+  //     所以「断言与页面分家」这件事在这一条上不可能发生。
+  const inclusionMarkup = renderNote(planSchema.PLAN_WORDING.inclusionNote);
+  const notesList = (text.match(/<ul class="plist">[\s\S]*?<\/ul>/) || [])[0] || '';
+  if (!notesList) {
+    problems.push('页面缺少「口径与说明」清单（<ul class="plist">）—— 收录判据必须写在里面');
+  } else if (!notesList.includes(inclusionMarkup)) {
+    problems.push('缺少收录判据的说明（能指到该产品自己的官方定价页）—— 它必须写在「口径与说明」清单里');
   }
 
   // ② 结论性词汇一律不许出现
