@@ -19,6 +19,14 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '..', '..');
 const history = require('../lib/history');
+// 「今天」只能有一个口径：北京时间（`lib/schema.js` 的 `todayCN()`，全站统一 +8 小时、无夏令时）。
+// ⚠️ 2026-10-13 实测（不是推断）：这里原先写的是**未位移的 UTC 日期**，于是北京时间
+//    00:00–08:00 这段窗口里（UTC 还停在昨天）采集刚写下的「数据日期 = 今天（北京）」在这条
+//    断言眼里成了**未来日期**：`✗ 真实历史与真实数据一致 —— 事件 #19: at 是未来日期（2026-10-13）`
+//    —— run 38307590467（04:57 CST 的定时采集）整条链停在门禁前、数据没入库。
+//    同一条链上的 `history-verify.js` 用的是 `todayCN()`：两个读者对「今天」的口径必须一致。
+//    这条口径另有一条结构不变量守着（`scripts/test/fitness.js` ⑤）。
+const { todayCN } = require('../lib/schema');
 
 let passed = 0;
 const failures = [];
@@ -364,11 +372,17 @@ section('⑩ 真实数据不变量');
 
 {
   const loaded = history.load();
+  // 「今天」的口径不是形式问题：2026-10-13 那次事故就发生在**UTC 与北京不在同一天**的那 8 小时里。
+  // 这里把那个瞬间钉住（`16:30Z` = 北京次日 00:30）—— 用的是生产上那个函数，不是重写一遍算术。
+  check('「今天」= 北京时间：UTC 16:30 之后就已经是次日（这条断言是那次事故留下的钩子）',
+    todayCN(new Date('2026-10-13T16:30:00Z')) === '2026-10-14'
+    && todayCN(new Date('2026-10-13T15:59:00Z')) === '2026-10-13',
+    `16:30Z → ${todayCN(new Date('2026-10-13T16:30:00Z'))} · 15:59Z → ${todayCN(new Date('2026-10-13T15:59:00Z'))}`);
   check('scripts/data/deal-history.json 存在且可解析', !loaded.missing && !loaded.broken);
   if (!loaded.missing && !loaded.broken) {
     const deals = JSON.parse(fs.readFileSync(path.join(ROOT, 'deals.json'), 'utf8')).deals;
     const bytes = fs.statSync(loaded.file).size;
-    const problems = history.verifyStore(loaded.store, deals, { today: new Date().toISOString().slice(0, 10), bytes });
+    const problems = history.verifyStore(loaded.store, deals, { today: todayCN(), bytes });
     check('真实历史与真实数据一致', problems.length === 0, problems.slice(0, 3).join('；'));
     check('真实文件在上限内', bytes <= history.LIMITS.fileBytes);
   }

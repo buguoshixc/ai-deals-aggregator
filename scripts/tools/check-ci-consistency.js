@@ -148,9 +148,11 @@ const GATE_STEP_NAMES = [
   'Install dependencies',
   // architecture-modernization-v1 新增两步：都是**不需要数据也不需要 dist** 的结构/纪律门禁，
   // 因此排在数据门禁之前（红的时候是「骨架坏了」而不是「数据不对」，最快定位）。
-  //   · Architecture fitness —— 4 条结构不变量（依赖方向 / renderer 纯度 / 唯一 document 出口 /
-  //     分层表完整性）；选这 4 条的标准见 scripts/test/fitness.js 头注释（刻意不收「无循环依赖」
-  //     与「布局族声明」，避免同一不变量重复证明）。
+  //   · Architecture fitness —— 5 条结构不变量（依赖方向 / renderer 纯度 / 唯一 document 出口 /
+  //     分层表完整性 / 时间口径）；选这 5 条的标准见 scripts/test/fitness.js 头注释（刻意不收
+  //     「无循环依赖」与「布局族声明」，避免同一不变量重复证明）。
+  //     第 5 条（时间口径：不许把未位移的 UTC 当前时间当「今天」）是 2026-10-13 事后加的：
+  //     北京时间 00:00–08:00 的定时采集曾因为这一点把整条链红在门禁前。
   //   · Evidence policy —— Tier-3 过程产物不许进 Git，只拦基线之后新进的（grandfather 1,283 个放行）。
   // 两步都不新增断言项数（本文件的断言数不变），但**必须**登记进 GATE_STEP_NAMES 与
   // GATE_STEP_RUN —— 断言 (8) 会逐个比对步骤序列与 run 体，漏登记即红。
