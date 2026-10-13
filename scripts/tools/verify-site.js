@@ -8441,7 +8441,8 @@ function noJsControlExemptionFor(route) {
 
       // ---- ⑨ 说明清单 × DOM 跨源对账（notes-manifest-v1）--------------------------------
       //
-      // 闭合 `NEXT-STEPS` §0.1 里那条 P1「判据只认 `.snote` 这个类名（换名 / 换容器即隐形）」。
+      // 闭合 `NEXT-STEPS.md` 里 `secondary-page-layout-unification` 一节「剩余事项」第 4 条那条 P1
+      //「判据只认 `.snote` 这个类名（换名 / 换容器即隐形）」。
       // 清单（`NOTES_MANIFEST_PATH`，即 `<产物目录>.notes.ndjson`）是**意图侧**：构建期在内容构造点
       // 登记「这一页打算输出几条说明、每条的槽位与完整 class token 集合」；这里是**渲染侧**：
       // 真浏览器 DOM 里数出来。两侧按 `route × 槽位 × 签名` 逐条对账，不等 ⇒ 红，消息点名
