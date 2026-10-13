@@ -283,11 +283,25 @@
     .search input { border: 0; outline: 0; background: 0; flex: 1; padding: 8px 0; font: inherit; font-size: 13px; color: var(--ink); }
     .search input::placeholder { color: var(--mut); }
 
+    /* 顶栏首帧就必须占住 `.seg` 的位置，否则整条顶栏会**先矮一行、再被脚本撑高**：
+       `body.js` 由本文件末尾的内联脚本在**解析到那一刻**才加上，而 `.seg` 默认 `display:none`。
+       于是 390px 实测的顶栏高度轨迹是 102 → 135 → 148px —— 135→148 那一次把导航、筛选条、
+       统计条整体推下去（实测位移 0.17168），这是首页 CLS 里最大的一项。
+       触发者是**脚本迟点亮**，不是文本流式排版 —— 所以缺的不是 `min-height` / `font-display`
+       那一类，而是「让 `.seg` 从首帧就落在它最终布局里的那个位置」。
+       ① 为什么 `display:flex` 可以**无条件**：`.seg` 的几何**与 JS 状态无关**（宽/高/圆角/间距
+          一个不差），脚本只决定它**可见不可见**。所以这里既不需要媒体查询锁高，也不需要 `:has()`
+          —— 本仓 `:has()` 使用数为 0，不为这一条引入新依赖。
+       ② 为什么必须配 `visibility` + `body.js` 门控：只写 `display:flex` 会让这块在无 JS 时
+          也是**可点**的，违反下面那条既有纪律；`visibility:hidden` 既不显示也**不进 Tab 序**
+          （可聚焦性随之消失），由 `body.js` 把它切成 `visible`。
+       ③ 失效方式：把 `display` 退回 `.seg { display: none }`，390px 的 CLS 立刻回到 0.18；
+          只加 `display:flex` 而漏掉 `visibility`，无 JS 访客会看到一个点了没反应的切换器。 */
     .seg {
-      display: none; border: 1px solid var(--line); border-radius: var(--r-sm); overflow: hidden; flex: none;
+      display: flex; visibility: hidden; border: 1px solid var(--line); border-radius: var(--r-sm); overflow: hidden; flex: none;
     }
-    /* 没有 JS 时不给可点的暗示：主题切换依赖脚本，纯静态时整块隐藏 */
-    body.js .seg { display: flex; }
+    /* 没有 JS 时不给可点的暗示：主题切换依赖脚本，纯静态时整块隐藏（可点性由下面这条门控） */
+    body.js .seg { visibility: visible; }
     .seg button {
       font: inherit; font-size: var(--fs-sm); color: var(--ink2); background: var(--card); border: 0;
       border-left: 1px solid var(--line); padding: 6px 12px; cursor: pointer;
@@ -386,13 +400,53 @@
     .fsep { width: 1px; height: 16px; background: var(--line); flex: none; margin: 0 var(--s1); }
 
     /* ---------- 结果条 ---------- */
-    .wrap { max-width: 1420px; margin: 0 auto; padding: 0 20px 60px; }
+    /* 让 `.wrap` 成为 BFC（`display: flow-root`）—— 一条声明消掉「折叠外边距」那一族位移
+       （实测四个模：0.00887 / 0.01393 / 0.01591 / 0.01772，来源节点都是 `DIV.wrap`）。
+       机制：`.wrap` 的首个内容元素（子页的 `.crumb`、首页的 `.rbar`）带 16px 上外边距，
+       它会**折出** `.wrap`（`.wrap` 原本既无上 padding 也无边框，挡不住折叠）⇒ 静止态所有盒子的位置
+       **已经**把这 16px 算进去了；而解析期该元素尚未出现的那一帧没有这 16px，它一到整块下移 16px
+       （实测位移来源 `DIV.wrap y55→71`，`vendor/aws@390` 型 0.01211）。
+       ① 为什么不是「把 margin 改成 padding」：那会**搬运**这 16px、改变静止态。实测两处破功 ——
+          首页 ≥761px 变成 16+16=32（`docH 6657→6673`、`.rbar` 及以下整体下移 16px）；
+          子页 ≤760px 那 16px 直接消失（`docH 1530→1514`，因为 `:1106` 那条窄屏
+          `.wrap { padding: 0 16px 50px; }` 是**简写**、把上 padding 也写成了 0）。
+          `flow-root` **不搬运**，只改变那 16px 属于谁：`.wrap` 自身 top −16 / height +16 / **底边不变**，
+          而 `.crumb` / `.rbar` / `main#main` / 主数据容器的 `{t,l,w,h}` 与 `docH`、横向溢出**逐项不变**。
+       ② 一条声明就够了：`:1106` 那条窄屏 `.wrap` 与 BFC 无关，flow-root 在**任何断点**都生效，
+          不需要再同步一处媒体查询（也不需要给首页补「抵消」补丁 —— 没有东西需要抵消）。
+       ③ 失效方式：删掉这条声明，`.wrap` 顶边会在解析期振荡 `{55,71}`，
+          `vendor/aws@390` 这类页面回到 0.01211 型位移（来源节点 `DIV.wrap y55→71`）。 */
+    .wrap { max-width: 1420px; margin: 0 auto; padding: 0 20px 60px; display: flow-root; }
     .rbar {
       display: flex; justify-content: space-between; align-items: center; gap: 14px;
       margin: 16px 0 10px; font-size: 12.5px; color: var(--mut); flex-wrap: wrap;
     }
     .rbar b { color: var(--ink); }
     .rright { display: flex; align-items: center; gap: 10px; }
+
+    /* 结果条在 761–800px 只放得下**两个**控件，801–1180px 又刚好放得下三个：
+       两种排法下 `.rbar` 的高度必须**与 JS 状态无关**。这里把 `.rright` 摊成整行、
+       三个控件在行内换行，于是 761–1180px 一律是「`#stats` 一行 + 三个控件一行」。
+       为什么必须有这条 —— 它是「761–800px 的 CLS 0.19」唯一的成因。
+         · `.seg`（视图切换）默认 `display:none`（见上方 `.seg` / `body.js .seg` 两条），
+           由本文件末尾那个内联脚本走到 `document.body.classList.add('js')` 时才点亮。
+           于是「结果条只有两个控件」的骨架先被排版、再被点亮，`#viewSeg` 多出 99px。
+         · 761–800px 实测：`.rbar` 可用 721–760px，而一行需要
+           `#stats` 298px + 列间距 14px + `.rright` 449px（分类 86 + 排序 244 + 视图 99 + 两个 10px 间隙）
+           = **761px**。点亮瞬间 `.rright` 从 340px 涨到 449px，挤不下就整块掉到第二行，
+           `.rbar` 由 32px 变 65px（+33px），`.hubline` / `#dealsList` / `footer` 全体下移 33px
+           —— 实测 761px CLS 0.18515、780px 0.19404、800px 0.20338 都是这一条。
+         · 临界宽度是**精确的 801px**（实测 800px 需要 761px、只有 760px；801px 需要 761px、有 761px），
+           所以任何「只在 761–800px 生效」的媒体查询都是在赌字体渲染：中文 12.5px 下差 1px 就翻车。
+           这里取到 1180px，与 `.grid` 降两列（≤1180px）和上面 761–940px 顶栏那条同一个量级，
+           并且顺带让 941–1180px 的结果条也稳定在 65px（JS 点亮与否都一样）——**没有一个宽度会因此跳动**。
+         · 为什么不是 `overflow:hidden` 之类：那只是把位移藏起来。这里换的是**排法本身**
+           （行内换行 + 右对齐），控件的尺寸、可见性、可点区域一个都没动。
+         · 失效方式：把这条删掉，761px 的 CLS 立刻回到 0.185；把 `flex-wrap` 去掉、只留
+           `width:100%`，掉到第二行的变成 `.sortbox`+`#viewSeg`，`.rbar` 照样 65px、照样跳。 */
+    @media (min-width: 761px) and (max-width: 1180px) {
+      .rright { flex-wrap: wrap; justify-content: flex-end; width: 100%; }
+    }
     .catpick select {
       font: inherit; font-size: 12px; color: var(--ink2); background: var(--card);
       border: 1px solid var(--line); border-radius: var(--r-sm); padding: 6px 8px; cursor: pointer;

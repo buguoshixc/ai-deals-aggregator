@@ -12,6 +12,11 @@
  * `init(document)` 给浏览器，`build-local.js` 把本文件的源码**逐字节内联**进页面 ——
  * 内联的那一份与 `require` 的那一份在结构上不可能是两个版本。
  *
+ * v2.5 起 `panelHtml(payload)` 还多了一个调用方：**构建期**。控件块不再由 `init()` 在
+ * t≈1.5s 才填进静态里的空壳容器（那一次填充会把整张表推下去，CLS 0.10–0.19），
+ * 而是和载荷一起写进静态 HTML；`init()` 写入的是同一份字节，因此首次写入是幂等的。
+ * 模板只有这一处出处 —— 预渲染的那一份与浏览器里的那一份不可能分家。
+ *
  * ## 纪律（与 `lib/plans-page.js` 同一条）
  *
  * 纯函数不读盘、不联网、不看时钟、不写盘；**不做价值判断**（不评分、不排名、不推荐）。
@@ -288,6 +293,12 @@
       CORE_VERSION, FILTER_DIMENSIONS, SORT_KEYS, MODEL_NONE_KEY, PRICE_LADDER,
       escapeHtml, normalize, queryTokens, emptyState, defaultDirOf, bucketOf,
       priceBucketsOf, currencyRankOf, matches, filterRows, sortRows, countFor, activeCount, isDefault, sortsOf,
+      // `panelHtml` 进导出表是为**构建期预渲染**（v2.5）：`lib/plans-page.js` 在构建期调它把
+      // 控件块渲染进静态 HTML，浏览器侧 `init()` 写入的是同一个函数的同一份输出。
+      // 于是首帧就占住终值高度，不再有「空壳容器 → t≈1.5s 才被填成 186–284px」那一次
+      // 把整张表推下去的位移（实测 390/761/940/1280 四档 0.10–0.19）。
+      // 函数体一个字不改：页面底部内联的那一份必须与本文件逐字节相同（构建期有断言守着）。
+      panelHtml,
       init
     };
   }

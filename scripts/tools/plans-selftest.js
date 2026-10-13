@@ -1322,10 +1322,25 @@ const compare = require('../lib/plans-compare');
     templates.length === plans.length && plans.every(plan => templates.includes(plan.id)),
     `${templates.length} 个 / ${plans.length} 条`);
 
-  // 无 JS 时的死控件：预渲染的标记里一个控件都不能有
+  // 无 JS 时的死控件：v2.5 起控件块**构建期就渲染进静态 HTML**（这是 CLS 修复本身），
+  // 所以判据从「预渲染标记里零控件」改成下面三条 —— 不是松绑，而是把「零控件」这条
+  // 纪律缩到「控件块之外」，再用两条新断言补回它丢掉的那部分承重面：
+  //   ① 面板真的在静态标记里（首帧就占住终值高度，这是本轮的修复判据本身）；
+  //   ② 静态面板与 `panelHtml(payload)` **逐字节相同**（差一个字节 init() 就整块重建 ⇒ 位移回来）；
+  //   ③ 面板之外仍然一个控件都不许有（首页 G11 那条纪律的原样保留）。
   const markup = page.markupOnly(html);
-  check('预渲染标记里零交互控件（无 JS 时不给可点暗示）',
-    !/<button|<select|<input|data-facet=|data-sort=|data-reset/.test(markup));
+  const panel = page.panelOf(markup);
+  const outside = panel ? markup.slice(0, panel.start) + markup.slice(panel.end) : markup;
+  const controlTokens = /<button|<select|<input|data-facet=|data-sort=|data-reset/;
+  check('构建期预渲染：控件块已经在静态标记里渲染出来（首帧即终值高度）',
+    Boolean(panel) && /data-facet=/.test(panel.inner) && /data-sort=/.test(panel.inner) && /data-reset/.test(panel.inner),
+    panel ? `面板 ${panel.inner.length} 字符 / 页面 ${html.length} 字符` : '找不到 #plans-compare');
+  check('静态面板与 panelHtml(payload) 逐字节相同（init() 首次写入幂等 ⇒ 没有第二次位移）',
+    Boolean(panel) && panel.inner === compare.panelHtml(payload),
+    panel ? `静态 ${panel.inner.length} 字符 vs 模板 ${compare.panelHtml(payload).length} 字符` : '找不到 #plans-compare');
+  check('预渲染标记里 #plans-compare 之外零交互控件（无 JS 时不给可点暗示）',
+    !controlTokens.test(outside),
+    (outside.match(/<button|<select|<input|data-facet=|data-sort=|data-reset/g) || []).join(' ') || '零控件');
   check('<noscript> 明确说出"没有 JS 时看到的就是全部"', /<noscript>[\s\S]*全部 \d+ 条套餐/.test(html));
 }
 
@@ -1499,6 +1514,14 @@ section('⑮ 本阶段的牙：这些断言必须真的会红');
       plans);
     check('【牙】预渲染标记里塞进筛选控件 → 变红',
       problems.some(p => p.includes('死控件')), problems.slice(0, 2).join(' | '));
+  }
+  // 牙 5b：静态面板与 `panelHtml(payload)` 差一个字节（init() 会 `innerHTML = …` 整块重建，
+  // 控件块高度二次协商 ⇒ 那 0.10–0.19 的位移原样回来）。这条新断言必须真的会红。
+  {
+    const problems = page.assertCompareHonesty(
+      html.replace('<span class="pstatus"', '<span class="pstatus" data-drift="1"'), plans);
+    check('【牙】静态面板与 panelHtml 不是同一份字节 → 变红',
+      problems.some(p => p.includes('不是同一份字节')), problems.slice(0, 2).join(' | '));
   }
   // 牙 6：把不可比较项当成 0（对照实现必须给出不同顺序）
   {
