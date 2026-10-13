@@ -1362,12 +1362,18 @@ function assertPageHonesty(html, plans, opts = {}) {
     problems.push('缺少「名义 Token 单价只用于粗略比较」的口径说明');
   }
 
-  // ①b v3.1：**收录判据**必须在页面上。它回答的是「为什么没有 XX」（社区所说的「中转站」），
-  //     而不是「哪家便宜」—— 判据不写出来，缺席就只能被读成漏收。
+  // ①b v3.1：**收录判据**必须在页面上，而且要写在「口径与说明」那张清单里。
+  //     为什么必须是清单内、而不是「整页文本里出现过」：判据属于那一节（H16 说的就是这一节），
+  //     只查整页文本的话，把它挪到页脚或正文别处仍然会绿 —— 一条能被搬到任何地方的断言，
+  //     下一轮就会有人把它搬走而没人知道。挪出清单的负例有牙（`plans-selftest` ⑫）。
   //     比较用 `renderNote()`：与渲染 `<li>` 走的是同一个函数（文案里允许 `**…**` 加粗），
   //     所以「断言与页面分家」这件事在这一条上不可能发生。
-  if (!text.includes(renderNote(planSchema.PLAN_WORDING.inclusionNote))) {
-    problems.push('缺少收录判据的说明（能指到该产品自己的官方定价页）');
+  const inclusionMarkup = renderNote(planSchema.PLAN_WORDING.inclusionNote);
+  const notesList = (text.match(/<ul class="plist">[\s\S]*?<\/ul>/) || [])[0] || '';
+  if (!notesList) {
+    problems.push('页面缺少「口径与说明」清单（<ul class="plist">）—— 收录判据必须写在里面');
+  } else if (!notesList.includes(inclusionMarkup)) {
+    problems.push('缺少收录判据的说明（能指到该产品自己的官方定价页）—— 它必须写在「口径与说明」清单里');
   }
 
   // ② 结论性词汇一律不许出现

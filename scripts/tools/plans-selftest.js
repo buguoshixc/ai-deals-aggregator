@@ -1218,16 +1218,36 @@ section('⑫ 套餐页：页面上的数字必须是数据里的数字');
       page.assertPageHonesty(broken, plans).some(problem => problem.includes('口径')),
       page.assertPageHonesty(broken, plans).slice(0, 2).join(' | '));
   }
-  // 【牙】把收录判据删掉 → 必须变红（v3.1）。判据在页面上只有一处，删掉不会有人替它说话；
-  // 替换用的是判据尾句（逐字、不含加粗标记 ⇒ 在 HTML 里是原样出现的），
-  // 同时断言「替换真的命中了」—— 否则文案一改，这条牙会变成永远为真的假绿。
+  // 【牙】把收录判据删掉 → 必须变红（v3.1）。判据在页面上只有一处，删掉不会有人替它说话。
+  // 替换锚点**从常量派生**，不再抄一份字面量：判据文案里只有一处 `**…**`，`split('**')` 之后
+  // 第 1 段与第 2 段在 HTML 里都是**连续**文本（加粗处被渲染成 `<b>…</b>`，跨不过去）——
+  // 于是锚点与文案永远同源；加粗标记的形状一变，`parts.length !== 3` 会让这条牙**自己变红**。
   {
-    const tail = '这不是对它好不好的评价，而是我们给不出可核对的出处。';
-    const broken = html.replace(tail, '');
+    const parts = planSchema.PLAN_WORDING.inclusionNote.split('**');
+    const anchor = parts.length === 3 ? parts[2] : null;
+    const broken = anchor ? html.replace(anchor, '') : html;
     check('【牙】删掉收录判据 → 页面断言必须变红',
-      broken !== html && page.assertPageHonesty(broken, plans).some(problem => problem.includes('收录判据')),
-      broken === html ? '替换没有命中任何文本（判据文案改过？）'
-        : page.assertPageHonesty(broken, plans).slice(0, 2).join(' | '));
+      Boolean(anchor) && broken !== html && page.assertPageHonesty(broken, plans).some(problem => problem.includes('收录判据')),
+      !anchor ? '判据文案的加粗标记形状变了（预期恰好一处 **…**）'
+        : broken === html ? '替换没有命中任何文本（判据文案改过？）'
+          : page.assertPageHonesty(broken, plans).slice(0, 2).join(' | '));
+  }
+  // 【牙】把收录判据**挪出口径清单**（句子还在页面上，只是不在「口径与说明」里）→ 必须变红。
+  // 这条牙钉的是 ①b 的「必须写在清单里」那半句：只查整页文本的版本会在这里假绿 ——
+  // 也就是「判据被搬到页脚仍然通过」，那等于 H16 的那半句没有判据。
+  {
+    const plainAnchor = planSchema.PLAN_WORDING.inclusionNote.split('**')[2]
+      || planSchema.PLAN_WORDING.inclusionNote;
+    const at = html.indexOf(plainAnchor);
+    const start = at >= 0 ? html.lastIndexOf('<li>', at) : -1;
+    const end = at >= 0 ? html.indexOf('</li>', at) : -1;
+    const li = start >= 0 && end > start ? html.slice(start, end + '</li>'.length) : null;
+    const moved = li ? html.replace(li, '') + li : html;
+    check('【牙】收录判据被挪出口径清单（句子仍在页面上）→ 页面断言必须变红',
+      Boolean(li) && moved !== html && page.assertPageHonesty(moved, plans)
+        .some(problem => problem.includes('收录判据')),
+      !li ? '找不到判据那一条 <li>（文案或渲染改了？）'
+        : page.assertPageHonesty(moved, plans).slice(0, 2).join(' | '));
   }
   // 【牙】往数据里塞一个结论性词汇 → 数据层断言必须变红
   {
