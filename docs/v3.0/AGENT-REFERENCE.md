@@ -138,7 +138,7 @@
 
 ### 2.5 红线（不做）
 
-`api-plans.json` 的 `modelKey` 不重写 · `plans.json`/`deals.json` 字段集不动 · 不做成本计算器 ·
+`api-plans.json` 的 `modelKey` 不重写 · `plans.json`/`deals.json` 字段集不动 · 允许成本计算但禁止判断（见 [SCHEMA-v3.1](../SCHEMA-v3.1.md)） ·
 不做跨币种/跨单位换算 · 不把 credits 折成 tokens · 不做推荐/排行榜/星级 · 不加账号/评论/广告/App ·
 不做 `provider × model × variant` 组合页 · 不为每条历史 event 建 SEO 页 · AI 只能出候选不能写生产事实。
 

@@ -79,6 +79,7 @@ const LAYERS = {
       'selftest:health',
       'selftest:plans',
       'selftest:api-plans',
+      'selftest:api-cost',
       'selftest:model-registry',
       'selftest:plan-history',
       'selftest:deal-plan-links',

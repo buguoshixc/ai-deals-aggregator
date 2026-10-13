@@ -1394,7 +1394,7 @@
            （v1.5 的密度账）。厂商名单由构建期按落地页计划注入，源码里不留第二份清单。
            v2.1：套餐对比页也挂在这一行末尾 —— 它与「按厂商 / 分类浏览」是同一类东西
            （长期在售的产品能力），而不是「今天的优惠」。 -->
-      <p class="catnav" aria-label="按厂商、分类与套餐浏览">按厂商 / 分类浏览：<a href="__VENDOR_HREF__">厂商优惠</a> · <a href="__CATEGORY_HREF__">分类优惠</a> · <a href="__MODELS_HREF__">模型资料</a> · <a href="__PLANSHUB_HREF__">套餐与 API 计费</a> · <a href="__ARCHIVE_HREF__">历史档案</a> · <a href="__PLANS_HREF__">套餐对比</a> · <a href="__APIPLAN_HREF__">API 计费对比</a><!--PRERENDER:vendorline--></p>
+      <p class="catnav" aria-label="按厂商、分类与套餐浏览">按厂商 / 分类浏览：<a href="__VENDOR_HREF__">厂商优惠</a> · <a href="__CATEGORY_HREF__">分类优惠</a> · <a href="__MODELS_HREF__">模型资料</a> · <a href="__PLANSHUB_HREF__">套餐与 API 计费</a> · <a href="__ARCHIVE_HREF__">历史档案</a> · <a href="__PLANS_HREF__">套餐对比</a> · <a href="__APIPLAN_HREF__">API 计费对比</a> · <a href="__APICOST_HREF__">API 成本计算器</a><!--PRERENDER:vendorline--></p>
       <!-- ⚠️ t4：页脚的三枚入口在这一轮里删干净了；同一行末尾的 vendorline 预渲染标记必须留着 ——
            它不是链接，而是构建期注入点（厂商名单由 replaceMarker() 灌进来），删了就抛
            「index.html 缺少预渲染标记」。配套删掉的还有：

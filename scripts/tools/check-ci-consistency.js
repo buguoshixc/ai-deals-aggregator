@@ -224,6 +224,7 @@ const GATE_STEP_NAMES = [
   // "输入价与输出价不得互换""改名不得制造假新增但必须被检测"这些承诺只在这一步被验证；
   // 另外两条（可重建性、日志一致性）红的含义与 plans 那两条同构，只是换了一份数据。
   'API-plans self-test (data + page)',
+  'API-cost self-test (calculator logic + teeth)',
   'API-plans reproducibility (curated → api-plans.json, byte-compare)',
   'API-plan-history verify (log consistent with api-plans.json)',
   // v3.0 新增：六个新页面家族与索引层的离线自测。它们红的含义各自独立 ——
@@ -366,6 +367,8 @@ const GATE_STEP_RUN = {
     "node scripts/tools/deal-plan-links-selftest.js",
   "API-plans self-test (data + page)":
     "node scripts/tools/api-plans-selftest.js",
+  "API-cost self-test (calculator logic + teeth)":
+    "node scripts/tools/api-cost-selftest.js",
   "API-plans reproducibility (curated → api-plans.json, byte-compare)":
     "node scripts/tools/check-api-plans-reproducible.js",
   "API-plan-history verify (log consistent with api-plans.json)":

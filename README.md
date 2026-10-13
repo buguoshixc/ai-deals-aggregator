@@ -36,7 +36,7 @@ v3.0（`v3.0-ai-deals-knowledge-base`）把站点从「优惠 + 套餐 + API 价
    页面 / Feed / 自测 / 门禁全部调用它。
 2. **数字可重算**：页面上的每个计数都带 `data-*` 标记，构建期**从盘上现读**再对账。
 3. **「没查到」与「没有」是两句不同的话**：`null` / `unknown` / `unavailable` 各说各的。
-4. **不替用户做判断**：不排序、不推荐、不折价、不做成本计算器；只把事实整理到足以让用户自己判断。
+4. **不替用户做判断**：不排序、不推荐、不折价、不出"谁更便宜"；只把事实整理到足以让用户自己判断。允许按官方单价计算成本（见 [API 成本计算器](tools/api-cost/)），但计算是工具不是判断。
 
 新增契约见 [`docs/SCHEMA-v3.0.md`](docs/SCHEMA-v3.0.md)（v3.0 只写新增/改动，既有契约引用旧文档）。
 交付报告与阶段台账见 [`research/v3.0-ai-deals-knowledge-base-report.md`](research/v3.0-ai-deals-knowledge-base-report.md)。

@@ -59,6 +59,8 @@ const planHistory = require('../lib/plan-history');
 const apiPlanSchema = require('../lib/api-plan-schema');
 const apiPlanHistory = require('../lib/api-plan-history');
 const apiPlansPage = require('../lib/api-plans-page');
+// v3.1：API 成本计算器（/tools/api-cost/）。算法在 lib/api-cost.js，正文渲染在 lib/api-cost-page.js。
+const apiCostPage = require('../lib/api-cost-page');
 // v3.0：`/plans/` 统一资料入口（AI 套餐与 API 计费资料库）。正文渲染同样住在 lib 里，
 // 因为它要能被离线自测直接调用；这一页**不复制** /plans/coding/ 与 /plans/api/ 的表，
 // 只给计数、口径、变化与仍然有效的关联优惠（变化与关系都复用既有判据，见该文件头注释）。
@@ -115,6 +117,13 @@ const analytics = require('../lib/analytics');
  */
 function plansCompareSource() {
   return fs.readFileSync(path.join(__dirname, '..', 'lib', 'plans-compare.js'), 'utf8');
+}
+
+/**
+ * API 成本计算器的交互逻辑**源码**（逐字节内联进页面，与 plans-compare 同一套路）。
+ */
+function apiCostSource() {
+  return fs.readFileSync(path.join(__dirname, '..', 'lib', 'api-cost.js'), 'utf8');
 }
 
 const ROOT = path.join(__dirname, '..', '..');
@@ -712,7 +721,9 @@ const ROUTE_HREFS = [
   // 先替换 `__PLANS_HREF__` 会把 `__APIPLANS_HREF__` 打碎成 `plans/coding/` + 尾巴，
   // 于是新占位符**永远替换不掉**，症状是"每一个输出都残留一个占位符"（117 个文件同时报错）。
   // 下面的 `assertRouteMarkersDisjoint()` 把这条约束变成构建期硬失败，避免下一个人踩同一坑。
-  ['__APIPLAN_HREF__', 'plans/api/']
+  ['__APIPLAN_HREF__', 'plans/api/'],
+  // v3.1：API 成本计算器。`__APICOST_HREF__` 不与任何既有占位符互为子串。
+  ['__APICOST_HREF__', 'tools/api-cost/']
 ];
 
 /**
@@ -2094,6 +2105,62 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
     jsonLdHtml: jsonLdBlocks,
     bodyHtml: body,
     where: 'renderApiPlansPage'
+  });
+}
+
+/* ------------------------------------------------------------------ */
+/* API 成本计算器（/tools/api-cost/，v3.1）                              */
+/* ------------------------------------------------------------------ */
+
+/**
+ * API 成本计算器页。
+ *
+ * 与 /plans/api/ 同一套「独立静态路由」的做法，但**有交互脚本**：
+ * 用户填表单选模型、输入 token 数，页面按官方单价实时算成本。
+ * 交互逻辑逐字节内联（与 plans-compare.js 同一套路）。
+ */
+function renderApiCostPage(apiStore, indexHtml, context) {
+  const prefix = '../../';
+  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS);
+
+  const pageUrl = `${SITE_URL}${apiCostPage.API_COST_ROUTE}`;
+  const plans = apiStore.plans || [];
+
+  const body = apiCostPage.apiCostPageBody({ plans: plans, updatedAt: apiStore.updatedAt }, {
+    note: context.note || null,
+    prefix: prefix
+  });
+
+  const costScript = `<script>
+/* scripts/lib/api-cost.js —— 逐字节内联（离线自测 require 的也是同一份） */
+${apiCostSource().replace(/\n$/, '')}
+</script>`;
+
+  const breadcrumbLd = `<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "${htmlEscape(SITE_NAME)}", "item": "${SITE_URL}"},
+    {"@type": "ListItem", "position": 2, "name": "${htmlEscape(apiCostPage.API_COST_HEADING)}", "item": "${pageUrl}"}
+  ]
+}
+</script>`;
+
+  return shell.renderWidePageShell({
+    kind: 'tool',
+    route: apiCostPage.API_COST_ROUTE,
+    prefix: prefix,
+    parts: parts,
+    title: `${htmlEscape(apiCostPage.API_COST_HEADING)} · ${htmlEscape(SITE_NAME)}`,
+    description: htmlEscape(apiCostPage.API_COST_DESCRIPTION),
+    canonicalUrl: pageUrl,
+    faviconHref: `${prefix}favicon.svg`,
+    logoCssHref: `${prefix}logos.css`,
+    extraTailHtml: costScript,
+    jsonLdHtml: breadcrumbLd,
+    bodyHtml: body,
+    where: 'renderApiCostPage'
   });
 }
 
@@ -3681,6 +3748,22 @@ function assemble() {
   console.log(`  API 计费页: /plans/api/（${apiPlansStore.count} 条记录 · ${apiPlansPage.apiRowsOf(apiPlansStore.plans).length} 行` +
     ` · 页面 ${(apiPlansHtml.length / 1024).toFixed(1)} KB）`);
 
+  // ---- v3.1：API 成本计算器 (/tools/api-cost/) ----------------------------------------
+  const apiCostDir = path.join(OUT, 'tools', 'api-cost');
+  fs.mkdirSync(apiCostDir, { recursive: true });
+  const apiCostHtml = renderApiCostPage(apiPlansStore, html, {
+    note: noteDeclarerFor(apiCostPage.API_COST_ROUTE)
+  });
+  notePage(apiCostPage.API_COST_ROUTE, { kind: 'tool' });
+  fs.writeFileSync(path.join(apiCostDir, 'index.html'), apiCostHtml, 'utf8');
+  {
+    const costProblems = apiCostPage.assertPageHonesty(apiCostHtml);
+    if (costProblems.length) {
+      throw new Error(`API 成本计算器的诚实性断言未通过（${costProblems.length} 处）：\n  - ${costProblems.slice(0, 5).join('\n  - ')}`);
+    }
+  }
+  console.log(`  API 成本计算器: /tools/api-cost/（页面 ${(apiCostHtml.length / 1024).toFixed(1)} KB）`);
+
   // ---- v3.0 Stage B：/plans/ 统一资料入口 ------------------------------------------------
   //
   // 定位是**资料入口**，不是第三张重复大表：Coding 块与 API 块只给计数、口径与入口，
@@ -3980,6 +4063,7 @@ function assemble() {
     `${SITE_URL}status/`, `${SITE_URL}changes/`, `${SITE_URL}feeds/`, `${SITE_URL}${plansHubPage.PLANS_HUB_ROUTE}`,
     `${SITE_URL}${plansPage.PLANS_ROUTE}`,
     `${SITE_URL}${apiPlansPage.API_PLANS_ROUTE}`,
+    `${SITE_URL}${apiCostPage.API_COST_ROUTE}`,
     // v3.0 Stage D5/D6：模型索引无条件进 sitemap；详情页**只有过门槛的**才进
     // （未过门槛的不生成页面，进 sitemap 就是一条死链 —— §8 第 19 条牙）。
     `${SITE_URL}${modelsPage.MODELS_INDEX_ROUTE}`,
@@ -4069,6 +4153,12 @@ function assemble() {
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>`;
+  const apiCostUrl = `  <url>
+    <loc>${SITE_URL}${apiCostPage.API_COST_ROUTE}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>`;
 
   fs.writeFileSync(path.join(OUT, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -4086,6 +4176,7 @@ ${modelsIndexUrl}
 ${archiveIndexUrl}
 ${plansUrl}
 ${apiPlansUrl}
+${apiCostUrl}
 ${dealUrls}
 ${modelUrls}
 ${archiveDetailUrls}
@@ -4194,6 +4285,7 @@ ${archiveDetailUrls}
       plansHubPage.PLANS_HUB_ROUTE,
       plansPage.PLANS_ROUTE,
       apiPlansPage.API_PLANS_ROUTE,
+      apiCostPage.API_COST_ROUTE,
       modelsPage.MODELS_INDEX_ROUTE,
       ...gatedModels.map(model => modelsPage.modelHrefOf(model)),
       archiveLib.ARCHIVE_INDEX_ROUTE,
@@ -6188,6 +6280,8 @@ function selfCheck(built) {
       [`${plansPage.PLANS_ROUTE}index.html`, '../../'],
       // v2.5：API 计费页同样是两层深路由，深度写错的话这一页的页头/页脚内链全是 404。
       [`${apiPlansPage.API_PLANS_ROUTE}index.html`, '../../'],
+      // v3.1：API 成本计算器同样是两层深路由。
+      [`${apiCostPage.API_COST_ROUTE}index.html`, '../../'],
       ...built.collectionPages.map(page => [`${page.slug}/index.html`, '../']),
       // v1.2 遗留的扫描盲区：按需求页是**两层**路由，却一直没进这张表 ——
       // 于是「某一层页脚的相对前缀写错」在那 10 个页面上不会被这条断言照到。
@@ -6830,7 +6924,7 @@ function selfCheck(built) {
   // 而且条数不再手写公式 —— 直接与构建期生成的那份 `sitemapEntries` 逐条对账。
   const indexableDirectories = built.directoryPages.filter(page => page.indexable);
   const expectedLocs = dealEntries.length + 1 /* 首页 */ + indexableDirectories.length + 1 /* 状态页 */
-    + 1 /* 变化雷达页 */ + 1 /* 资料入口页 */ + 1 /* 套餐对比页 */ + 1 /* API 计费页 */
+    + 1 /* 变化雷达页 */ + 1 /* 资料入口页 */ + 1 /* 套餐对比页 */ + 1 /* API 计费页 */ + 1 /* API 成本计算器 */
     + 1 /* 模型资料索引 */ + built.modelDetailCount /* 模型详情页 */
     + 1 /* 档案索引 */ + built.archiveDetailCount /* 档案详情页 */;
     // t4：公式里去掉「订阅中心 +1」与「数据文档页 +1」—— 那两页随订阅层与数据出口子系统下架。
@@ -6838,7 +6932,7 @@ function selfCheck(built) {
     fail(`sitemap ${sitemapLocs.length} 条 ≠ 首页 1 + 可索引落地页 ${indexableDirectories.length}` +
       `（分类页 ${built.collectionPages.length} + 按需求页/别名 ${built.needPages.length} 中可索引的` +
       ` + 分类落地页 ${built.categoryPages.length} + 厂商落地页 ${built.vendorPages.length}` +
-      ` + 枢纽 ${built.hubPages.length}）+ 状态页 1 + 变化雷达页 1 + 资料入口页 1 + 套餐对比页 1 + API 计费页 1` +
+      ` + 枢纽 ${built.hubPages.length}）+ 状态页 1 + 变化雷达页 1 + 资料入口页 1 + 套餐对比页 1 + API 计费页 1 + API 成本计算器 1` +
       ` + 模型索引 1 + 模型详情页 ${built.modelDetailCount} + 档案索引 1 + 档案详情页 ${built.archiveDetailCount} + 详情页 ${dealEntries.length}`);
   } else {
     const notListed = dealEntries.filter(deal => !sitemapLocs.some(loc => loc.endsWith(`/deal/${encodeURIComponent(deal.id)}/`)));
@@ -6866,6 +6960,7 @@ function selfCheck(built) {
     }
     else if (!sitemapLocs.includes(`${SITE_URL}${plansPage.PLANS_ROUTE}`)) fail(`sitemap 漏了套餐对比页 ${plansPage.PLANS_ROUTE}`);
     else if (!sitemapLocs.includes(`${SITE_URL}${apiPlansPage.API_PLANS_ROUTE}`)) fail(`sitemap 漏了 API 计费页 ${apiPlansPage.API_PLANS_ROUTE}`);
+    else if (!sitemapLocs.includes(`${SITE_URL}${apiCostPage.API_COST_ROUTE}`)) fail(`sitemap 漏了 API 成本计算器 ${apiCostPage.API_COST_ROUTE}`);
     else console.log(`  ✓ sitemap: ${sitemapLocs.length} 条（首页 + ${built.collectionPages.length} 个分类页 + ` +
       `${built.needPages.length} 条按需求/别名页中可索引的部分 + ${built.categoryPages.length} 个分类落地页 + ` +
       `${built.vendorPages.length} 个厂商落地页 + ${built.hubPages.length} 个枢纽页 + 状态页 + 变化雷达页 + ` +
@@ -7352,6 +7447,11 @@ function selfCheck(built) {
         expectItemList: true,
         checkItemListMembers: false,
         count: JSON.parse(fs.readFileSync(path.join(ROOT, 'api-plans.json'), 'utf8')).count
+      }),
+      // v3.1：API 成本计算器。工具页，不是 ItemList 页面。
+      readPage(`${apiCostPage.API_COST_ROUTE}`, {
+        kind: 'tool',
+        expectItemList: false
       })
     ].filter(Boolean);
     const dealDescriptors = dealEntries.map(deal => readPage(`deal/${encodeURIComponent(deal.id)}/`, {
