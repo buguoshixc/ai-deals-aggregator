@@ -5,11 +5,15 @@
  * 它演练的是这一层自己的承诺：
  *   · 页面上的每个数字都能由输入数据重算出来；
  *   · 当前相关优惠**只**来自显式关系，且已结束的关联结构性地拿不到"当前"标记；
- *   · 变化块复用既有日志与措辞，不写第二套判据；
+ *   · 变化块复用既有日志与措辞，不写第二套判据，且**与 `/plans/coding/` 上是同一个块**
+ *     （同一个基准日、同一批事件、同一句「另有 N 条」）；
  *   · page-kinds 是"路由 → kind / 下限 / ItemList / sitemap priority"的唯一声明，
  *     构建期规则层与独立门禁都读它，但**各自从 dist 解析**（执行路径没有合并）。
  *
  * 牙是**实跑**的：污染 → 断言必须变红 → 复原后必须回到绿。
+ * ⚠️ 变化块那几条牙跑在**夹具**上（`FIXTURE_AT`），不用当天产物当夹具：变化窗口合法地为空的日子
+ *    （最近没有变化 ≠ 出错了）产物里一条深链都没有，替换就成了 no-op —— 牙会静默变绿。
+ *    2026-10-12 起采集链连红 4 轮报的正是这条牙：它自己的前提没了，却报成产物有问题。
  */
 
 'use strict';
@@ -20,6 +24,11 @@ const path = require('path');
 const hub = require('../lib/plans-hub-page');
 const pageKinds = require('../lib/page-kinds');
 const providers = require('../lib/providers');
+// 夹具与牙要用到写入内核与变化块渲染器（**同一份实现**，不在这里手搓形状）：
+// `planHistory.record()` 造合成日志，`plansPage.planChangesBlockHtml()` 造「锚错日子那一版」的块。
+const planHistory = require('../lib/plan-history');
+const planChanges = require('../lib/plan-changes');
+const plansPage = require('../lib/plans-page');
 
 const ROOT = path.join(__dirname, '..', '..');
 const SITE_URL = 'https://buguoshixc.github.io/ai-deals-aggregator/';
@@ -111,6 +120,97 @@ function fullPage(options = {}) {
   return html + jsonLd;
 }
 
+/* ------------------------------------------------------------------ */
+/* 变化块的两条判据（两页对账 + 夹具）                                   */
+/* ------------------------------------------------------------------ */
+//
+// ⚠️ 背景（2026-10-13 实测，不是推断）：这一页原先把**关系层**基准日（`max(deals, plans)`，
+// 跟着 deals.json 每天走）当成 Coding 变化窗口的基准日，于是
+//   · 同一个块在两页上给出两个数（本地实测：`/plans/` 上「另有 2 条更早的变化」，
+//     `/plans/coding/` 上「另有 30 条更早的变化」）；
+//   · deals 的数据日再往前走 7 天，窗口就整个空了：块变成「当前没有观测到套餐变化」，
+//     而日志里那 35 条事件、`/plans/coding/` 上那 5 条都还在。
+// 采集链从 2026-10-12 起连红 4 轮就是它（门禁报的是下面那条深链牙 —— 牙在空块上成了 no-op）。
+// 判据本身在 `lib/plans-hub-page.js` 的 `codingAsOf`；这里守的是**产物上看得见的结果**。
+
+/** 从一整页里取出套餐变化块（`#plan-changes`；两页各只有一块） */
+function changesBlockOf(html) {
+  return (String(html || '').match(/<section class="pchanges" id="plan-changes"[\s\S]*?<\/section>/) || [])[0] || '';
+}
+
+/**
+ * 两个变化块是不是**同一件事**。
+ *
+ * 比的是事实而不是形式：同一个 `planId` 的链接在两页上形式不同（资料入口必须跨页
+ * `../plans/coding/#plan-<id>`，`/plans/coding/` 上是页内锚点 `#plan-<id>`），
+ * 所以先把链接形式归一，再逐字比对整块 —— 事件、顺序、措辞、块尾那句「另有 N 条更早的变化」
+ * 与空态都必须一致。**空态也是结论**：一边空、一边列出 5 条，同样是红的。
+ */
+function changesBlockProblems(hubBlock, codingBlock) {
+  const problems = [];
+  if (!hubBlock) problems.push('资料入口页里没有 #plan-changes 块');
+  if (!codingBlock) problems.push('/plans/coding/ 里没有 #plan-changes 块');
+  if (problems.length) return problems;
+
+  // 首尾缩进是"从整页里抠出来"的产物（块函数自己会带缩进与结尾换行），先归一再比。
+  const canon = block => String(block).trim()
+    .replace(/href="(?:\.\.\/)+plans\/coding\/#plan-/g, 'href="#plan-')
+    .replace(/href="(?:\.\.\/)+changes\/#plans"/g, 'href="changes/#plans"');
+  const idsOf = block => [...String(block).matchAll(/#plan-([0-9a-f]{12})/g)].map(m => m[1]);
+  const noteOf = block => (String(block).match(/另有 (\d+) 条更早的变化/) || [])[1] || null;
+  const emptyOf = block => /<p class="pchnone">/.test(String(block));
+
+  const hubIds = idsOf(hubBlock);
+  const codingIds = idsOf(codingBlock);
+  if (hubIds.join(',') !== codingIds.join(',')) {
+    problems.push(`两页的变化不是同一批：入口 ${hubIds.length} 条[${hubIds.slice(0, 3).join(' ')}]`
+      + ` vs /plans/coding/ ${codingIds.length} 条[${codingIds.slice(0, 3).join(' ')}]`);
+  }
+  if (noteOf(hubBlock) !== noteOf(codingBlock)) {
+    problems.push(`「另有 N 条更早的变化」不一致：入口「${noteOf(hubBlock) ?? '（无此行）'}」`
+      + ` vs /plans/coding/「${noteOf(codingBlock) ?? '（无此行）'}」`);
+  }
+  if (emptyOf(hubBlock) !== emptyOf(codingBlock)) {
+    problems.push('一页是「没有观测到变化」的空态、另一页列出了变化');
+  }
+  if (canon(hubBlock) !== canon(codingBlock)) {
+    problems.push('链接形式归一之后两页的块仍然不是逐字相同（事件顺序 / 措辞 / 起算日有一处漂了）');
+  }
+  return problems;
+}
+
+/* ------------------------------------------------------------------ */
+/* 夹具：一份**合成**的套餐变化日志（让牙不依赖「今天恰好有变化」）        */
+/* ------------------------------------------------------------------ */
+//
+// 为什么必须有夹具：变化窗口的基准日是 plans 自己的数据日，窗口里有没有事件由数据决定 ——
+// 「产物里有跨页深链」在真实数据上**可能合法地为空**（最近没有变化 ≠ 出错了）。
+// 牙若拿当天产物当夹具，那种日子就会静默退化成 no-op。
+//
+// 夹具的两半都走**唯一实现**：日志由 `planHistory.record()` 从空基线录入（全部 created），
+// plans 记录是真实记录的克隆（只把 `lastSeen` 挪到夹具日 ⇒ 这一页的「数据最近核对」= 夹具日，
+// 与窗口的基准日同一件事）。夹具一变，下面的断言会跟着红，不会悄悄退化成"永远绿"。
+const FIXTURE_AT = '2026-10-01';
+const fixturePlans = plans.map(plan => ({ ...plan, lastSeen: FIXTURE_AT }));
+const fixtureRecorded = (() => {
+  const seeded = planHistory.emptyStore({ at: FIXTURE_AT });
+  seeded.baseline = planHistory.baselineOf([], { at: FIXTURE_AT });
+  return planHistory.record(seeded, {
+    previous: [],
+    next: fixturePlans,
+    at: FIXTURE_AT,
+    runAt: `${FIXTURE_AT}T00:00:00.000Z`,
+    labels: new Map(fixturePlans.map(plan => [plan.id, { title: plan.planName, vendor: plan.provider }]))
+  });
+})();
+const fixtureStore = fixtureRecorded.store;
+// 关系层基准日**故意**推到 2030 年：那是另一个数据集的日子，不许拿来开变化窗口。
+const fixtureCtx = {
+  ...ctx, plans: fixturePlans, planHistoryStore: fixtureStore, deals: [], dealLinks: null, asOf: '2030-01-01'
+};
+/** 跨页深链的形状（资料入口这一页**只许**有这一种 `#plan-` 链接：页内锚点在这页上没有落点） */
+const DEEP_LINK_RE = /href="\.\.\/plans\/coding\/#plan-[0-9a-f]{12}"/g;
+
 /* ================================================================== */
 section('① 真实数据：页面与断言');
 /* ================================================================== */
@@ -143,6 +243,42 @@ check('两个子页各有一个 data-child 行（ItemList 靠它对账）',
   (page.match(/data-child="/g) || []).length === 2);
 check('ItemList 声明数 == 元素数 == data-child 行数',
   hub.assertItemListHonesty(page, ctx).length === 0, hub.assertItemListHonesty(page, ctx).join('；'));
+
+/* ================================================================== */
+section('①b 变化窗口的基准日 = plans 自己的数据日（2026-10-12 起采集链连红 4 轮的真缺陷）');
+/* ================================================================== */
+
+{
+  const plansDataDate = String(readJson('plans.json').updatedAt || '').slice(0, 10);
+
+  // 前提（也是 lib 里 `codingAsOf` 的依据）：页面上的「数据最近核对」恒等于 plans.json 的
+  // `updatedAt` —— `plan-schema` 的 `canonicalUpdatedAt` 强制「全部 lastSeen 的最大值」，
+  // 不一致时 `validate.js` 直接报错。这条红了说明 schema 的恒等式没了：去看门禁，别改断言。
+  check('前提：页面上的「数据最近核对」= plans.json 的 updatedAt（schema 强制的恒等式）',
+    view.coding.updatedAt === plansDataDate, `${view.coding.updatedAt} vs ${plansDataDate}`);
+
+  check(`真实数据：Coding 变化窗口锚在 plans 的数据日（${plansDataDate}），不是关系层基准日（ctx.asOf=${ctx.asOf}）`,
+    view.codingRadar.asOf === plansDataDate,
+    `雷达基准日 ${view.codingRadar.asOf} · 「数据最近核对」${view.coding.updatedAt}`);
+
+  check(`夹具：合成日志 = ${fixturePlans.length} 条 created（走唯一写入内核，零 problems）`,
+    fixtureRecorded.problems.length === 0
+    && fixtureStore.events.length === fixturePlans.length
+    && fixtureStore.events.every(event => event.type === 'created'),
+    `${fixtureStore.events.length} 条 · problems：${fixtureRecorded.problems.join('；') || '（无）'}`);
+
+  const fixtureView = hub.plansHubView(fixtureCtx);
+  check('夹具：关系层基准日推到 2030 年，Coding 雷达的基准日仍然是夹具的 plans 数据日',
+    fixtureView.codingRadar.asOf === FIXTURE_AT, `雷达基准日 ${fixtureView.codingRadar.asOf}`);
+
+  const fixturePage = fullPage({ ctx: fixtureCtx });
+  const fixtureDeep = (fixturePage.match(DEEP_LINK_RE) || []).length;
+  check('夹具：变化块渲染出跨页深链，且一个页内 `#plan-` 锚点都没有（深链牙的前提；与当天数据无关）',
+    fixtureDeep > 0 && !/href="#plan-/.test(fixturePage), `深链 ${fixtureDeep} 条`);
+  check('夹具页面自己通过诚实性断言（夹具不是脏的，断言不是恒红）',
+    hub.assertPageHonesty(fixturePage, fixtureCtx).length === 0,
+    hub.assertPageHonesty(fixturePage, fixtureCtx).slice(0, 2).join('；'));
+}
 
 /* ================================================================== */
 section('② 结论性词汇与计数：两条牙');
@@ -346,7 +482,9 @@ function distProblems(distDir, overrides = {}) {
   return problems;
 }
 
-if (requireDistFiles('dist 现场 /plans/', [path.join('plans', 'index.html'), 'sitemap.xml', 'index.html'])) {
+//
+// `plans/coding/index.html` 也是必需的：⑤b 要把这一页的变化块与它逐条对账（同一个块的 owner）。
+if (requireDistFiles('dist 现场 /plans/', [path.join('plans', 'index.html'), path.join('plans', 'coding', 'index.html'), 'sitemap.xml', 'index.html'])) {
   const problems = distProblems(DIST);
   check('dist 现场：sitemap 成员 / 自指 canonical / 唯一 h1 / 面包屑 / ItemList / 无孤儿',
     problems.length === 0, problems.slice(0, 3).join('；'));
@@ -377,11 +515,60 @@ if (requireDistFiles('dist 现场 /plans/', [path.join('plans', 'index.html'), '
     withTable !== hubHtml && distProblems(DIST, { hubHtml: withTable })
       .some(p => p.includes('大表')));
 
-  // 牙：把变化块里的深链改回页内死锚点 → 必须变红
-  const deadLinked = hubHtml.replace(/href="\.\.\/plans\/coding\/#plan-[0-9a-f]{12}"/, 'href="#plan-deadbeef0000"');
+  // 牙：把变化块里的深链改回页内死锚点 → 必须变红。
+  //
+  // ⚠️ 污染的是**夹具块**（同一个渲染器产出），不是当天产物里的那一块：变化窗口合法地为空的日子
+  //    （最近没有变化 ≠ 出错了）产物里一条 `#plan-` 链接都没有，替换就成了 no-op ——
+  //    这条牙 2026-10-12 就是这么静默失效的（它报红，报的却是"自己没前提了"）。
+  //    夹具块拼进**真实产物**再污染，所以下面两条测的仍然是真产物上的那套检查。
+  const fixtureBlock = changesBlockOf(hub.renderPlansHubPage(fixtureCtx));
+  const spliced = hubHtml.replace(/<section class="pchanges" id="plan-changes"[\s\S]*?<\/section>/, fixtureBlock);
+  const splicedDeep = (spliced.match(DEEP_LINK_RE) || []).length;
+  const deadLinked = spliced.replace(DEEP_LINK_RE, 'href="#plan-deadbeef0000"');
+  const splicedProblems = distProblems(DIST, { hubHtml: spliced });
+  check('夹具块拼进真实产物后产物检查仍然零问题（夹具块自己是干净的）',
+    spliced !== hubHtml && splicedDeep > 0 && splicedProblems.length === 0,
+    splicedProblems.slice(0, 2).join('；'));
   check('【牙】变化行的深链被换成页内死锚点 → 变红',
-    deadLinked !== hubHtml && distProblems(DIST, { hubHtml: deadLinked })
-      .some(p => p.includes('页内锚点没有落点')));
+    splicedDeep > 0 && deadLinked !== spliced
+    && distProblems(DIST, { hubHtml: deadLinked }).some(p => p.includes('页内锚点没有落点')),
+    splicedDeep === 0 ? '夹具块里一条跨页深链都没有（夹具坏了，不是产物坏了）' : '');
+
+  // ⑤b 变化块：`/plans/` 与 `/plans/coding/` 必须是**同一个块**。
+  // 这是 2026-10-12 起采集链连红 4 轮的真缺陷的产物级 owner：入口页把变化窗口锚在关系层基准日上，
+  // 于是同一个块在两页上给出两批事件 + 两个「另有 N 条」，窗口空掉之后还会一边说
+  // 「当前没有观测到套餐变化」、一边列出 5 条。
+  const codingPageHtml = fs.readFileSync(path.join(DIST, 'plans', 'coding', 'index.html'), 'utf8');
+  const agreement = changesBlockProblems(changesBlockOf(hubHtml), changesBlockOf(codingPageHtml));
+  check('变化块与 /plans/coding/ 是同一个块（同 planId 顺序 · 同一个「另有 N 条」· 链接形式归一后逐字相同）',
+    agreement.length === 0, agreement.slice(0, 2).join('；'));
+
+  // 牙：三种走样都必须红 —— 第一种就是 2026-10-12 的**回归形状**
+  //（把同一份日志锚到另一个数据日 ⇒ 窗口空掉 ⇒ 一边 5 条、一边「没有观测到变化」）。
+  const adriftRadar = planChanges.buildPlanRadar({
+    plans: fixturePlans, store: fixtureStore, asOf: '2030-01-01', availability: 'ok'
+  });
+  const adriftBlock = plansPage.planChangesBlockHtml(adriftRadar, {
+    prefix: '../',
+    planHref: item => (item.planId ? `../plans/coding/#plan-${item.planId}` : null)
+  });
+  const driftShapes = [
+    ['块被锚到别的数据日（回归形状）', adriftBlock],
+    ['深链不是同一批', fixtureBlock.replace(/#plan-[0-9a-f]{12}/, '#plan-deadbeef0000')],
+    ['「另有 N 条」不同', fixtureBlock.replace(/另有 \d+ 条更早的变化/, '另有 999 条更早的变化')]
+  ];
+  const missed = driftShapes
+    .filter(([, block]) => changesBlockProblems(block, fixtureBlock).length === 0)
+    .map(([what]) => what);
+  // 三种污染都作用在夹具块上，所以夹具块必须是**有事件的那一版**（有深链、有「另有 N」）：
+  // 空态块上"改一个 planId / 改 N"都是 no-op，那样红的是夹具、不是对账。
+  const fixtureBlockReady = (fixtureBlock.match(DEEP_LINK_RE) || []).length > 0
+    && /另有 \d+ 条更早的变化/.test(fixtureBlock);
+  check('【牙】两页对账的三种走样都会红（锚错数据日 / 深链不同 / 「另有 N」不同）',
+    fixtureBlockReady && missed.length === 0,
+    fixtureBlockReady
+      ? `没抓住：${missed.join('、')}`
+      : '基准用的夹具块是空态（没有深链 / 没有「另有 N」）—— 夹具坏了（见 ①b 那两条），不是对账没牙');
 }
 // 缺产物不在这里「跳过并计 ✓」：requireDistFiles() 要么已记红，要么是显式 OPTIONAL DIAGNOSTIC。
 

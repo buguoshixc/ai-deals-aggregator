@@ -3,7 +3,7 @@
 /**
  * Architecture Fitness Tests —— 少而高价值的**结构不变量**门禁（本轮新增）。
  *
- * ## 为什么只有 4 条
+ * ## 为什么只有 5 条
  *
  * 架构门禁的价值密度差别极大：一条能抓住「今天还成立、明天会被顺手破坏」的边界，胜过
  * 二十条恒真的形式检查。所以本文件的收录标准是**三条同时成立**：
@@ -20,7 +20,7 @@
  *     `PUBLIC_FILES` / `GENERATED_FILES` / `dataDocs` 注册表内），owner 已是构建自检；
  *   · 「每个测试都被门禁跑到」——owner 是 `check-ci-consistency.js` 的断言 (17)/(19)。
  *
- * ## 4 条各守什么
+ * ## 5 条各守什么
  *
  *   ① **依赖方向**：`scripts/lib/**` 不得 require `scripts/{build,tools,ai}/**`。
  *      今天 0 违规；一旦破坏，domain 层就会被构建脚本反向绑死（那是本轮之前最怕的形态）。
@@ -31,6 +31,10 @@
  *      本轮之前是 9 处（9 个页面族各拼一份完整文档）；这条门禁保证它不会回到 9 处。
  *   ④ **分层表完整性**：`scripts/test/layers.js` 不得有幽灵条目、每个 `selftest:*` 恰好属于一层、
  *      同一 script 不出现在两层。
+ *   ⑤ **时间口径**：不许把**未位移的 UTC 当前时间**当「今天」（全站只有 `todayCN()` 一个口径）。
+ *      加它的依据是 2026-10-13 的实测事故：`history-selftest.js` 里那一句让**北京时间
+ *      00:00–08:00** 的定时采集整条红在门禁前（数据不入库），而同一条链上的 `history-verify.js`
+ *      用的是 `todayCN()` —— 两个读者对「今天」的口径不一致，且只在跨日窗口里露出来。
  */
 const fs = require('fs');
 const path = require('path');
@@ -138,6 +142,51 @@ const read = f => fs.readFileSync(f, 'utf8');
     (phantom.length || unclassified.length)
       ? `幽灵条目 ${phantom.length}：${phantom.slice(0, 4).join(', ') || '无'}；未分层 ${unclassified.length}：${unclassified.slice(0, 4).join(', ') || '无'}`
       : `${declared.length} 个 script 分在 ${Object.keys(layers.LAYERS).length} 层，${selftests.length} 个 selftest:* 全部已分层`);
+}
+
+// ---------------------------------------------------------------- ⑤ 时间口径（今天 = 北京时间）
+
+{
+  // 判据（源码级，刻意窄）：**未位移的当前时间**不许直接当「今天」用。
+  //   全站的日期口径只有一处：`lib/schema.js` 的 `todayCN()`（+8 小时、无夏令时）。
+  //   要拦的形态就是 `new Date()` 紧跟 `.toISOString().slice(0, 10)` —— 那是 **UTC 日期**。
+  //   刻意**不拦**的两类（判不准就不写成牙，否则这条会变成噪声）：
+  //     · 固定锚点的日期算术（`new Date(t + n * 86400000)…`）—— 它算的是某个已知时刻的前后
+  //       n 天，与「今天是几号」无关；
+  //     · 已经做过 +8 小时位移的写法（`new Date(Date.now() + 8 * 3600 * 1000)…`）。
+  //
+  // 为什么它值得占一条结构不变量（2026-10-13 实测，不是推断）：`history-selftest.js` 里就是
+  // 这一句，于是**北京时间 00:00–08:00** 这段窗口里（UTC 还停在昨天）采集刚写下的
+  // 「数据日期 = 今天（北京）」被判成**未来日期** ⇒ 定时采集链整条停在门禁前、数据不入库
+  // （run 38307590467，04:57 CST）。同一条链上的 `history-verify.js` 用的是 `todayCN()` ——
+  // 两个读者对「今天」的口径必须一致。
+  const UTC_TODAY = /new Date\(\s*\)\s*\.toISOString\(\s*\)\s*\.slice\(\s*0\s*,\s*10\s*\)/;
+  // 适用范围自检（正反例成对）：扫描器先过一遍样本，避免它退化成「永远不命中」。
+  // ⚠️ 样本用**拼接**写：本文件自己也在扫描射程内，字面量会把这条不变量变成自伤。
+  const TAIL = '.toISOString().slice(0, 10)';   // 只出现片段，不出现完整形态
+  const SAMPLES = [
+    [`const today = new Date()${TAIL};`, true],
+    ['const today = todayCN();', false],
+    [`const today = new Date(Date.now() + 8 * 3600 * 1000)${TAIL};`, false],
+    [`const day = new Date(base - n * 86400000)${TAIL};`, false]
+  ];
+  const sampleMissed = SAMPLES.filter(([text, hit]) => UTC_TODAY.test(text) !== hit).map(([text]) => text);
+
+  const offenders = [];
+  for (const f of SCRIPTS) {
+    const name = rel(f);
+    read(f).split(/\r?\n/).forEach((line, i) => {
+      if (/^(\/\/|\*|\/\*)/.test(line.trim())) return;   // 注释里的说明（含本文件举的反例）
+      if (UTC_TODAY.test(line)) offenders.push(`${name}:${i + 1}`);
+    });
+  }
+  check('⑤ 时间口径：不许把未位移的 UTC 当前时间当「今天」（全站只有 todayCN() 一个口径）',
+    sampleMissed.length === 0 && offenders.length === 0,
+    sampleMissed.length
+      ? `扫描器自检不通过（正反例没分开）：${sampleMissed.join('；')}`
+      : (offenders.length
+        ? `${offenders.length} 处：${offenders.slice(0, 4).join('；')}`
+        : `扫了 ${SCRIPTS.length} 个脚本 · 0 处 · 正反例自检 4/4（北京 00:00–08:00 那一段正是它拦下的）`));
 }
 
 const failed = results.filter(r => !r.ok);
