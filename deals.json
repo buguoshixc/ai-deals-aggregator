@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-10-14T02:57:47+08:00",
+  "updatedAt": "2026-10-14T11:40:59+08:00",
   "count": 154,
   "deals": [
     {
@@ -3049,32 +3049,6 @@
       }
     },
     {
-      "id": "a67c07bf4993",
-      "title": "Ankon AI",
-      "vendor": "Ankon AI",
-      "url": "https://ankonai.com/",
-      "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/ankon-ai-kos341",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "视频",
-      "description": "Turns topics, scripts, or PDFs into narrated whiteboard videos.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-10-14",
-      "verified": false,
-      "verifiedAt": null,
-      "zh": {
-        "description": "把选题、脚本或 PDF 变成带解说的白板动画视频。"
-      }
-    },
-    {
       "id": "ec17511a4284",
       "title": "Copilot 3D",
       "vendor": "Copilot 3D",
@@ -3098,6 +3072,32 @@
       "verifiedAt": null,
       "zh": {
         "description": "把 2D 图片转成 3D 模型。"
+      }
+    },
+    {
+      "id": "a67c07bf4993",
+      "title": "Ankon AI",
+      "vendor": "Ankon AI",
+      "url": "https://ankonai.com/",
+      "source": "Futuretools",
+      "sourceUrl": "https://futuretools.io/tools/ankon-ai-kos341",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "视频",
+      "description": "Turns topics, scripts, or PDFs into narrated whiteboard videos.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-10-14",
+      "verified": false,
+      "verifiedAt": null,
+      "zh": {
+        "description": "把选题、脚本或 PDF 变成带解说的白板动画视频。"
       }
     },
     {
@@ -3202,32 +3202,6 @@
       "verifiedAt": null,
       "zh": {
         "description": "从长视频中剪出片段的工具。"
-      }
-    },
-    {
-      "id": "9fdccd9de525",
-      "title": "Humva",
-      "vendor": "Humva",
-      "url": "https://www.humva.com/",
-      "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/humva",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "图像绘画",
-      "description": "A tool to create videos from text or voice using digital avatars.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-10-14",
-      "verified": false,
-      "verifiedAt": null,
-      "zh": {
-        "description": "用数字人把文字或语音做成视频。"
       }
     },
     {
@@ -3433,6 +3407,32 @@
       "verifiedAt": null,
       "zh": {
         "description": "一款 macOS 应用，可生成视频通话用的 AI 虚拟形象，并实时同步用户的嗓音。"
+      }
+    },
+    {
+      "id": "9fdccd9de525",
+      "title": "Humva",
+      "vendor": "Humva",
+      "url": "https://www.humva.com/",
+      "source": "Futuretools",
+      "sourceUrl": "https://futuretools.io/tools/humva",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "图像绘画",
+      "description": "A tool to create videos from text or voice using digital avatars.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-10-14",
+      "verified": false,
+      "verifiedAt": null,
+      "zh": {
+        "description": "用数字人把文字或语音做成视频。"
       }
     },
     {
