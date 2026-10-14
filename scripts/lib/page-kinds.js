@@ -224,6 +224,14 @@ const KIND_TABLE = {
     textFloor: floor(600),
     itemList: { expect: false, checkRows: true, checkMembers: false, marker: 'item' },
     sitemap: { priority: '0.6', changefreq: 'monthly' }
+  },
+  // v3.1：API 成本计算器。工具页，有交互控件，不是 ItemList 页。
+  tool: {
+    label: '工具页',
+    layout: 'wide',
+    textFloor: floor(400),
+    itemList: { expect: false, checkRows: false, checkMembers: false, marker: 'item' },
+    sitemap: { priority: '0.7', changefreq: 'monthly' }
   }
 };
 
@@ -242,7 +250,8 @@ const FIXED_ROUTE_KINDS = {
   'plans/coding/': 'plans',
   'plans/api/': 'plans',
   'models/': 'models-index',
-  'archive/': 'archive-index'
+  'archive/': 'archive-index',
+  'tools/api-cost/': 'tool'
 };
 
 /**

@@ -127,6 +127,12 @@ const ROUTE_RULES = [
     trackable: true,
     kind: 'changes',
     why: '变化雷达页：判断版本发布前后趋势变化时的关键观察点'
+  },
+  {
+    re: /^tools\/api-cost\/$/,
+    trackable: true,
+    kind: 'tool',
+    why: 'API 成本计算器：判断这一工具页是否有用户使用'
   }
 ];
 

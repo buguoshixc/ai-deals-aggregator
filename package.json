@@ -53,6 +53,7 @@
     "api-plans:rebuild": "node scripts/tools/rebuild-api-plans.js",
     "check:api-plans:reproducible": "node scripts/tools/check-api-plans-reproducible.js",
     "selftest:api-plans": "node scripts/tools/api-plans-selftest.js",
+    "selftest:api-cost": "node scripts/tools/api-cost-selftest.js",
     "baseline:api-plan-history": "node scripts/tools/api-plan-history-baseline.js",
     "check:api-plan-history": "node scripts/tools/check-api-plan-history.js",
     "report:api-model-renames": "node scripts/tools/api-model-rename-report.js",

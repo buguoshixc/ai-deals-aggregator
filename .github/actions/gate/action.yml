@@ -265,6 +265,11 @@ runs:
       shell: bash
       run: node scripts/tools/api-plans-selftest.js
 
+    # v3.1 新增：API 成本计算器自测（108 条逐条对账 + 2 条牙，L2 层，零依赖）。
+    - name: API-cost self-test (calculator logic + teeth)
+      shell: bash
+      run: node scripts/tools/api-cost-selftest.js
+
     # v2.5 新增：api-plans.json 可重建性（人工来源层 → 派生文件，逐字节）。
     # 与 plans 那一条红的含义相同：问的是「有没有人手改了派生产物 / 改了来源层却忘了重建」。
     - name: API-plans reproducibility (curated → api-plans.json, byte-compare)

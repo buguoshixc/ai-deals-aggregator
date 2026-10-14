@@ -5764,6 +5764,159 @@ function noJsControlExemptionFor(route) {
       `JS 错误 ${errors.length - errorsBeforeApi} 个 · 外部请求 ${externalRequests.length - externalBeforeApi} 个`);
   }
 
+  /* ------------------------------------------------------------------ */
+  /* API 成本计算器（/tools/api-cost/，v3.1）                            */
+  /* ------------------------------------------------------------------ */
+
+  console.log('\n=== 20b) API 成本计算器（/tools/api-cost/）===');
+  {
+    const costRoute = 'tools/api-cost/';
+    const errorsBeforeCost = errors.length;
+    const externalBeforeCost = externalRequests.length;
+    await page.goto(new URL(costRoute, base).href, { waitUntil: 'load' });
+    const cp = await page.evaluate(() => ({
+      h1: (document.querySelector('h1') || {}).textContent || '',
+      h1Count: document.querySelectorAll('h1').length,
+      canonicalPath: (() => { try { return new URL((document.querySelector('link[rel="canonical"]') || {}).href).pathname; } catch (e) { return ''; } })(),
+      controls: document.querySelectorAll('main select, main input, main textarea').length,
+      noscriptHint: (() => { const p = document.querySelector('.snote.pnoscript noscript'); return p ? p.textContent.trim().slice(0, 30) : ''; })(),
+      examplePresent: Boolean(document.querySelector('.cost-example')),
+      exampleLabeled: (() => { const h2 = document.querySelector('.cost-example h2'); return h2 ? h2.textContent.includes('示例') : false; })(),
+      dataPayload: Boolean(document.getElementById('api-cost-data')),
+      inlinedScript: (() => { const s = [...document.querySelectorAll('script:not([type])')]; return s.some(el => el.textContent.includes('computeCost')); })(),
+      resultsContainer: Boolean(document.querySelector('[data-api-cost-results]')),
+      footerLink: [...document.querySelectorAll('footer a')].some(a => (a.getAttribute('href') || '').endsWith('tools/api-cost/')),
+      crossToApi: [...document.querySelectorAll('a[href$="plans/api/"]')].length,
+      text: document.body ? document.body.innerText.replace(/\s+/g, ' ').trim() : ''
+    }));
+
+    check('/tools/api-cost/ 能打开且恰好一个 h1',
+      cp.h1Count === 1 && cp.text.length > 200 && /成本/.test(cp.h1),
+      `h1 ${cp.h1Count} 个 · 正文 ${cp.text.length} 字 · 「${cp.h1.trim()}」`);
+    check('/tools/api-cost/ canonical 自指',
+      cp.canonicalPath.endsWith('/tools/api-cost/'), cp.canonicalPath);
+    check('/tools/api-cost/ 有预渲染示例且标明是示例',
+      cp.examplePresent && cp.exampleLabeled,
+      `example ${cp.examplePresent ? '在' : '缺'} · labeled ${cp.exampleLabeled}`);
+    check('/tools/api-cost/ 有内嵌数据载荷（#api-cost-data）',
+      cp.dataPayload, '缺 #api-cost-data');
+    check('/tools/api-cost/ 有内联脚本（含 computeCost）',
+      cp.inlinedScript, '未内联或不含 computeCost');
+    check('/tools/api-cost/ 有结果容器（[data-api-cost-results]）',
+      cp.resultsContainer, '缺结果容器');
+    check('/tools/api-cost/ 页脚有指向本页的入口', cp.footerLink);
+    check('/tools/api-cost/ 与 /plans/api/ 双向可达（有指向 API 计费对比表的链接）',
+      cp.crossToApi > 0, `${cp.crossToApi} 个`);
+    check('/tools/api-cost/ 写着「计算工具」与「不是官方报价」',
+      cp.text.includes('计算工具') && cp.text.includes('不是官方报价'),
+      `计算工具: ${cp.text.includes('计算工具')} · 不是官方报价: ${cp.text.includes('不是官方报价')}`);
+    check('/tools/api-cost/ 写着「缺维度不回退」口径',
+      cp.text.includes('不回退'),
+      `text includes 不回退: ${cp.text.includes('不回退')}`);
+    check('/tools/api-cost/ 写着「credits」与「不进计算器」口径',
+      cp.text.includes('credits') && cp.text.includes('不进计算器'),
+      `credits: ${cp.text.includes('credits')} · 不进计算器: ${cp.text.includes('不进计算器')}`);
+    check('/tools/api-cost/ 页面上没有结论性词汇',
+      !['性价比', '最划算', '最超值', '最值得买', '值得买', '排行榜', '排行',
+        '综合评分', '星级', '推荐指数', 'TOP 1', 'TOP1', '第一名', '最优选'].some(word => cp.text.includes(word)));
+    check('/tools/api-cost/ 有表单控件（计算器需要用户输入）',
+      cp.controls > 0, `${cp.controls} 个`);
+    check('/tools/api-cost/ 无 JS 时有 .pnoscript 提示',
+      cp.noscriptHint.length > 0, `noscript hint: "${cp.noscriptHint}..."`);
+
+    // 窄屏：不产生页面级横向溢出
+    for (const width of [390, 761, 940, 1280]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(new URL(costRoute, base).href, { waitUntil: 'load' });
+      const mobile = await page.evaluate(() => ({
+        overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth
+      }));
+      check(`/tools/api-cost/ ${width}px 不产生页面级横向溢出`,
+        mobile.overflow <= 0, `溢出 ${mobile.overflow}px`);
+    }
+    await page.setViewportSize({ width: 1440, height: 900 });
+
+    // 交互后仍无溢出：填满输入并出结果
+    await page.goto(new URL(costRoute, base).href, { waitUntil: 'load' });
+    await page.evaluate(() => {
+      const inp = document.querySelector('[data-input-tokens]');
+      const out = document.querySelector('[data-output-tokens]');
+      if (inp) inp.value = '1000000';
+      if (out) out.value = '500000';
+      if (inp) inp.dispatchEvent(new Event('input', { bubbles: true }));
+      if (out) out.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    await page.waitForTimeout(200);
+    const afterInteract = await page.evaluate(() => ({
+      overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      hasResults: document.querySelector('[data-api-cost-results]') &&
+        document.querySelector('[data-api-cost-results]').innerHTML.trim().length > 0
+    }));
+    check('/tools/api-cost/ 填满输入并出结果后仍无溢出',
+      afterInteract.overflow <= 0, `溢出 ${afterInteract.overflow}px`);
+    check('/tools/api-cost/ 填满输入后结果区域有内容',
+      afterInteract.hasResults, '结果区域为空');
+
+    // 结果随输入变化的可断言性
+    const paidModelKey = await page.evaluate(() => {
+      try {
+        const data = JSON.parse(document.getElementById('api-cost-data').textContent);
+        for (const plan of data.plans) {
+          if (plan.channel !== 'standard') continue;
+          for (const model of plan.models) {
+            if ((model.variant || 'standard') === 'standard' && model.rates && model.rates.input > 0) {
+              return model.modelKey;
+            }
+          }
+        }
+      } catch (e) {}
+      return null;
+    });
+    if (paidModelKey) {
+      await page.evaluate(key => {
+        const sel = document.querySelector('[data-model]');
+        if (sel) { sel.value = key; sel.dispatchEvent(new Event('change', { bubbles: true })); }
+        const inp = document.querySelector('[data-input-tokens]');
+        const out = document.querySelector('[data-output-tokens]');
+        if (inp) { inp.value = '1000000'; inp.dispatchEvent(new Event('input', { bubbles: true })); }
+        if (out) { out.value = '500000'; out.dispatchEvent(new Event('input', { bubbles: true })); }
+      }, paidModelKey);
+      await page.waitForTimeout(300);
+      const result1paid = await page.evaluate(() => {
+        const r = document.querySelector('[data-api-cost-results]');
+        return r ? r.innerText.trim().slice(0, 100) : '';
+      });
+      await page.evaluate(() => {
+        const inp = document.querySelector('[data-input-tokens]');
+        if (inp) { inp.value = '2000000'; inp.dispatchEvent(new Event('input', { bubbles: true })); }
+      });
+      await page.waitForTimeout(300);
+      const result2paid = await page.evaluate(() => {
+        const r = document.querySelector('[data-api-cost-results]');
+        return r ? r.innerText.trim().slice(0, 100) : '';
+      });
+      check('/tools/api-cost/ 改 token 数后结果按单价成比例变化',
+        result1paid !== result2paid && result2paid.length > 0,
+        `result1="${result1paid.slice(0, 40)}..." · result2="${result2paid.slice(0, 40)}..."`);
+    } else {
+      check('/tools/api-cost/ 改 token 数后结果按单价成比例变化（无付费模型可测，标记失败）',
+        false, '当前数据无 standard+standard 且 input>0 的模型，无法验证结果随输入变化');
+    }
+
+    // sitemap 成员
+    const sitemapHitCost = await page.evaluate(`(async () => {
+      const r = await fetch(${JSON.stringify(new URL('sitemap.xml', base).href)});
+      return { status: r.status, body: await r.text() };
+    })()`).catch(() => null);
+    check('/tools/api-cost/ 在 sitemap 里',
+      Boolean(sitemapHitCost) && sitemapHitCost.status === 200 && sitemapHitCost.body.includes('tools/api-cost/'),
+      sitemapHitCost ? `HTTP ${sitemapHitCost.status}` : '读取失败');
+
+    check('/tools/api-cost/ 没有 JS 错误、没有外部请求',
+      errors.length === errorsBeforeCost && externalRequests.length === externalBeforeCost,
+      `JS 错误 ${errors.length - errorsBeforeCost} 个 · 外部请求 ${externalRequests.length - externalBeforeCost} 个`);
+  }
+
   /* ================================================================== */
   /* v3.0 Stage I：四个资料库页面家族的真浏览器验收（§21–§25）             */
   /* ================================================================== */

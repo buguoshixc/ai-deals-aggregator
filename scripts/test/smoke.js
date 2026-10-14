@@ -40,6 +40,7 @@ const ROUTES = [
   ['changes/', '变化页'],
   ['plans/coding/', '套餐对比页'],
   ['plans/api/', 'API 计费页'],
+  ['tools/api-cost/', 'API 成本计算器'],
   ['models/', '模型资料索引'],
   ['vendor/', '厂商枢纽'],
   ['archive/', '历史档案']

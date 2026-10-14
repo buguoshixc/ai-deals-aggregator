@@ -1681,7 +1681,7 @@ AI 推荐
 模型能力排行榜
 AA 分数
 Benchmark 排名
-API Cost Calculator
+~~API Cost Calculator~~ （v3.1 起允许，见 [SCHEMA-v3.1](../SCHEMA-v3.1.md)）
 跨币种自动比较
 credits → tokens
 用户画像
