@@ -257,8 +257,11 @@
 - `deals.json.updatedAt` 带**真实时刻**，而 plans/api/links/history 的 `updatedAt` 都是**日期规范化**的
   ⇒ Manifest 必须显式区分两种时间形状，不能假装统一。
 - 公开 JSON 已在线上可访问：`/deals.json` `/plans.json` `/api-plans.json` `/deal-plan-links.json`
-  `/deal-history.json`（全部 200）；`dist/plans.json` 与 `dist/api-plans.json` 与源**逐字节相同**；
+  `/deal-history.json`（全部 200）；`dist/plans.json` 与源**逐字节相同**；
   `dist/deals.json` 因构建期注入 `collections/needs/sourceFacts/relatedPlans` 而更大。
+  ⚠️ **`dist/api-plans.json` 不存在**（t4 起与 `plans.json` 一样不再发布数据文件到产物；实测
+  `Get-ChildItem dist -Recurse -File | ? Name -like '*api-plan*'` = 0 个），线上可取的那一份是根目录的
+  `/api-plans.json` —— 构建期对账读的也是它，别按产物路径去找。
 - 仓库**没有 LICENSE / COPYING 文件** ⇒ 数据许可证在报告里列为"需项目所有者决定"，**不要擅自决定**。
 
 ---

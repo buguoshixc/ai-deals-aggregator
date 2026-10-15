@@ -5799,11 +5799,11 @@ function noJsControlExemptionFor(route) {
       cp.examplePresent && cp.exampleLabeled,
       `example ${cp.examplePresent ? '在' : '缺'} · labeled ${cp.exampleLabeled}`);
     check('/tools/api-cost/ 有内嵌数据载荷（#api-cost-data）',
-      cp.dataPayload, '缺 #api-cost-data');
+      cp.dataPayload, `#api-cost-data ${cp.dataPayload ? '在' : '缺'}`);
     check('/tools/api-cost/ 有内联脚本（含 computeCost）',
-      cp.inlinedScript, '未内联或不含 computeCost');
+      cp.inlinedScript, `computeCost ${cp.inlinedScript ? '在' : '缺'}`);
     check('/tools/api-cost/ 有结果容器（[data-api-cost-results]）',
-      cp.resultsContainer, '缺结果容器');
+      cp.resultsContainer, `[data-api-cost-results] ${cp.resultsContainer ? '在' : '缺'}`);
     check('/tools/api-cost/ 页脚有指向本页的入口', cp.footerLink);
     check('/tools/api-cost/ 与 /plans/api/ 双向可达（有指向 API 计费对比表的链接）',
       cp.crossToApi > 0, `${cp.crossToApi} 个`);

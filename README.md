@@ -80,7 +80,7 @@ node scripts/serve.js --dir=dist       # 预览发布产物（预渲染后的 in
 （bash 是 `\`、PowerShell 是反引号），写成多行会让其中一边复制过去跑不起来。
 
 ```bash
-npm run test:strict && npm run check:reproducible && npm run plans:rebuild --dry-run && npm run check:plans:reproducible && npm run check:history && npm run migrate:audience:verify && npm run check:zh && npm run selftest:zh && npm run selftest:expiry && npm run selftest:text && npm run selftest:health && npm run selftest:provenance && npm run selftest:history && npm run selftest:changes && npm run selftest:audience && npm run selftest:app-token && npm run selftest:plans && npm run build && npm run check:ci
+npm run test:strict && npm run check:reproducible && npm run plans:rebuild --dry-run && npm run check:plans:reproducible && npm run check:history && npm run migrate:audience:verify && npm run check:zh && npm run selftest:zh && npm run selftest:expiry && npm run selftest:text && npm run selftest:health && npm run selftest:provenance && npm run selftest:history && npm run selftest:changes && npm run selftest:audience && npm run selftest:app-token && npm run selftest:api-cost && npm run selftest:plans && npm run build && npm run check:ci
 ```
 
 > `migrate:audience:verify` **不需要参数**：它默认跑 `scripts/data/fixtures/` 下那对合成夹具
@@ -134,10 +134,17 @@ node scripts/tools/render-source.js <url> --diag --wait=文案1|文案2   # 渲�
 | `/deal/<id>/` | 每条优惠一个静态页（80 页） | ✅ |
 | `/plans/coding/` | **AI Coding 套餐对比**（v2.2：9 条套餐一张表，可筛选 / 搜索 / 排序 / 逐行展开溯源；只列事实不排名） | ✅ |
 | `/plans/api/` | **API / Token 计费对比**（v2.5：7 条计费记录 / 37 个模型计价条目 / 5 家平台，11 列预渲染静态表；只列事实，零控件） | ✅ |
+| `/tools/api-cost/` | **API 成本计算器**（v3.1：按已收录官方单价计算 token 用量成本；不排序 / 不推荐 / 不跨币种 / 不折算 credits） | ✅ |
 | `/changes/` `/feeds/` `/status/` | 变化雷达 / 订阅中心 / 数据源状态 | ✅ |
 | `/feed/**`、`feed.xml`、`feed.json` | 24 份订阅 × 2 种格式 = 48 个文件 | 资源，不进 sitemap |
 
 **合计 115 个 HTML 页**（112 条可索引 + 3 条 noindex 别名），sitemap **112 条**，dist **227 个文件**。
+
+> 📌 **v3.1 追加**：`/tools/api-cost/` **已进 sitemap**（`dist/sitemap.xml` 实测 `<changefreq>monthly</changefreq>` /
+> `<priority>0.7</priority>`，与 [`docs/SCHEMA-v3.1.md`](docs/SCHEMA-v3.1.md) §5 的 `sitemap: 0.7/monthly` 同源）。
+> 它是 **API 计费数据的下游**：只按 `/plans/api/` 已收录的官方单价换算 token 用量，不复算、不新增数据源；
+> 两页**双向可达** —— `/tools/api-cost/` 正文有「查看 API 计费对比表 →」，`/plans/api/` 正文点名这个计算器，
+> 页脚导航两边都在；`verify-site.js` §20b 用「与 `/plans/api/` 双向可达」这条断言守着这个方向。
 
 > ⚠️ 上表是 **v1.7 的 URL 地图快照**（v2.x 的行随后追加，标题未改），其中 `/vendor/<slug>/` 的 9 页、
 > `/plans/coding/` 的 9 条套餐、`/plans/api/` 的 7 条记录、`/feed/**` 的 24 份订阅与「合计」一行

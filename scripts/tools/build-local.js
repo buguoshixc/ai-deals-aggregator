@@ -5190,12 +5190,40 @@ function selfCheck(built) {
     }
   }
 
+  // ---- v3.1：API 成本计算器（/tools/api-cost/）从磁盘回读再跑一遍诚实性断言 --------
+  //
+  // 与套餐页 / API 计费页同一个理由：写盘时信一次不够，读者拿到的是**盘上的字节**。
+  // v3.1 上线时这一页只在写盘那一刻对**内存 HTML** 跑过 assertPageHonesty（见上面
+  // renderApiCostPage 之后那一段），写盘之后没有再验一次 —— 于是「写进去的字节被改坏」
+  // 这类错误没有人守。这里补上，判据与内存那次**同一份**，不新造口径。
+  //
+  // 口径说明（刻意与兄弟页一致）：
+  //   · 这里**只**再跑一遍诚实性断言（禁词 + credits 正则 + 硬承诺口径 + 结果分区措辞），
+  //     不再跑第二遍渲染对账 —— 后者由 L2 的 `selftest:api-cost` 用同一份字节覆盖。
+  //   · 每一页被断言两次（内存 / 磁盘）不是冗余：两次之间隔着 fs.writeFileSync，
+  //     而回读这一份才是发布出去的那份。
+  {
+    const apiCostPageFile = path.join(OUT, apiCostPage.API_COST_ROUTE, 'index.html');
+    if (!fs.existsSync(apiCostPageFile)) fail(`缺少 ${apiCostPage.API_COST_ROUTE}index.html`);
+    else {
+      const diskHtml = fs.readFileSync(apiCostPageFile, 'utf8');
+      const costProblems = apiCostPage.assertPageHonesty(diskHtml);
+      if (costProblems.length) {
+        fail(`API 成本计算器（磁盘回读）未通过诚实性断言：${costProblems.slice(0, 3).join('、')}`);
+      } else {
+        console.log(`  ✓ API 成本计算器（磁盘回读）: 诚实性断言复跑通过（禁词 ${apiCostPage.FORBIDDEN_CLAIM_WORDS.length} 个 + credits 正则 + 硬承诺口径）`);
+      }
+    }
+  }
+
   // ---- v3.0 Stage B：/plans/ 资料入口页（从磁盘回读对账）--------------------------------
   //
   // 与两个对比页同一条纪律：写盘时信一次不够，读者拿到的是盘上的字节。
-  // 回读时带的上下文必须是**盘上的那一份数据**（dist/plans.json + dist/api-plans.json +
+  // 回读时带的上下文必须是**盘上的那一份数据**（仓库根的 plans.json + api-plans.json +
   // 盘上的两份日志），而不是构建期的内存对象 —— 否则「盘上的日志与页面上的计数不一致」
   // 这类错误在自检里看不出来。
+  // ⚠️ 这里**不是** dist/api-plans.json：t4 起产物里不再发布 api-plans.json（同 plans.json 的处置），
+  // 所以只能回到仓库根读那一份（下面两行 readFileSync 就是它）。
   {
     const hubFile = path.join(OUT, plansHubPage.PLANS_HUB_ROUTE, 'index.html');
     if (!fs.existsSync(hubFile)) fail(`缺少 ${plansHubPage.PLANS_HUB_ROUTE}index.html`);
@@ -7345,7 +7373,7 @@ function selfCheck(built) {
       fail(`厂商资料页未通过诚实性断言（${problems.length} 处）：${problems.slice(0, 3).join('、')}`);
     } else {
       console.log(`  ✓ 厂商资料页: ${vendorEntries.length} 页 · slug 唯一且已登记 · 无 /provider/ 并行路由` +
-        ` · API 计数与 dist/api-plans.json 逐个对账 · 资料区块五节齐`);
+        ` · API 计数按 api-plans 数据现算后与页面 data-vendor-count 逐个对账 · 资料区块五节齐`);
     }
   }
 
