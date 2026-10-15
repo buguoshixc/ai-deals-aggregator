@@ -583,22 +583,31 @@ function noJsControlExemptionFor(route) {
   check('顶栏汇总已填充', /\d+\s*条优惠/.test(rendered.topStat), rendered.topStat);
   console.log(`     logo key: ${rendered.tileKeys.length} 个 → ${rendered.tileKeys.join(' ')}`);
 
-  /* 顶栏那一枚「AI Coding 套餐对比」入口：v2.2 上线后按用户反馈**挪位 + 把名字写全
-     + 改成实心品牌色药丸**。这一版改的就是位置 / 名字 / 实心这三件事本身，
+  /* 顶栏那几枚产品能力入口（v2.2 起一枚、v2.5 两枚、v3.1 三枚）：v2.2 上线后按用户反馈
+     **挪位 + 把名字写全 + 改成实心品牌色药丸**。这一版改的就是位置 / 名字 / 实心这三件事本身，
      所以断言也必须是这三件事 ——"入口还在页面上"那种断言在这一版毫无信息量（它一直在）。
      名字是否"写全"由 §19 拿套餐页自己的 h1 对账（那个 h1 才是文案的唯一出处）；
-     实心与否则比对页面自己的 `--brand`（不写死色值，暗色主题换了令牌也不会假红）。 */
+     实心与否则比对页面自己的 `--brand`（不写死色值，暗色主题换了令牌也不会假红）。
+
+     ⚠️ v3.1：入口从一枚变三枚（第三枚「成本计算器」在 ≥1160px 出现、第二枚文案缩短）。
+     这条几何断言因此**按"一簇"判**而不是只判第一枚：只要**最左到最右**这一整簇落在
+     切换器右缘与汇总条左缘之间就够了 —— 判据强度不变（不是"至少有一枚在"），
+     覆盖面从 1 枚扩到 n 枚。药丸的**可见性**（哪一档出现几枚）由下面的逐档表守着。 */
   topPlansEntry = await page.evaluate(() => {
     const box = el => (el ? el.getBoundingClientRect() : null);
     const nav = document.querySelector('.plansnav');
+    const show = el => Boolean(el) && getComputedStyle(el).display !== 'none' && el.getBoundingClientRect().width > 0;
+    const pills = Array.from(document.querySelectorAll('.plansnav')).filter(show);
     const seg = document.querySelector('#themeSeg');
     const stat = document.querySelector('.topstat');
     const style = nav ? getComputedStyle(nav) : null;
     return {
       text: nav ? nav.textContent.trim() : '(没有 .plansnav)',
       href: nav ? nav.getAttribute('href') || '' : '',
-      navL: nav ? Math.round(box(nav).left) : null,
-      navR: nav ? Math.round(box(nav).right) : null,
+      visiblePills: pills.length,
+      pillTexts: pills.map(el => el.textContent.trim()),
+      navL: pills.length ? Math.round(Math.min.apply(null, pills.map(el => box(el).left))) : null,
+      navR: pills.length ? Math.round(Math.max.apply(null, pills.map(el => box(el).right))) : null,
       segR: seg ? Math.round(box(seg).right) : null,
       statL: stat ? Math.round(box(stat).left) : null,
       bg: style ? style.backgroundColor : '',
@@ -608,9 +617,10 @@ function noJsControlExemptionFor(route) {
       onAccent: getComputedStyle(document.documentElement).getPropertyValue('--on-accent').trim()
     };
   });
-  check('首页顶栏的套餐对比入口在配色切换器**右边**（几何判定，不是"还在页面上"）',
+  check('首页顶栏的入口整簇在配色切换器**右边**且不越过汇总条（几何判定，不是"还在页面上"）',
+    topPlansEntry.visiblePills > 0 &&
     topPlansEntry.navL >= topPlansEntry.segR && topPlansEntry.navR <= topPlansEntry.statL,
-    `入口 ${topPlansEntry.navL}-${topPlansEntry.navR}px · 切换器右缘 ${topPlansEntry.segR}px · 汇总条左缘 ${topPlansEntry.statL}px`);
+    `${topPlansEntry.visiblePills} 枚 ${topPlansEntry.navL}-${topPlansEntry.navR}px（${topPlansEntry.pillTexts.join(' / ')}） · 切换器右缘 ${topPlansEntry.segR}px · 汇总条左缘 ${topPlansEntry.statL}px`);
 
   /* 实心药丸：填充必须**逐字等于页面自己的 `--brand`**（不是"看着像蓝色"），
      文字色必须等于 `--on-accent` —— 后者在令牌里本来就算过对比度（5.12:1 / 6.85:1），
@@ -641,8 +651,19 @@ function noJsControlExemptionFor(route) {
      实测（v3.1，Edge）：941px = 198px、**1100px = 196px**（最窄）、1140px = 200px（间距回到 18px 的那一档）。
      也就是说旧表把两个"最紧的档"都漏在扫描面之外 —— 判据（180px 门槛 + 零溢出 + 入口在视口内）
      一个字没动，补的是**覆盖**。（历史读数供对照：加图标前实测 941px = 216.33px，
-     与本仓 index.html 注释里写的 216px 一致；旧注释里的 218px 是更早一版的读数，已按实测更正。） */
-  for (const width of [761, 820, 900, 940, 941, 1100, 1140]) {
+     与本仓 index.html 注释里写的 216px 一致；旧注释里的 218px 是更早一版的读数，已按实测更正。）
+
+     ⚠️ v3.1 二次追记：加入**第三枚**药丸「成本计算器」后，断点从 1100px 抬到 **1160px**
+     （两枚的文案同时缩短）。于是"最紧的一档"又换了地方 —— 这正是上面那条警告说的失效方式，
+     所以档位表**必须跟着断点走**，把新断点的两侧都钉住：
+       1159px ⇒ 跨断点**前**（可见药丸 1 枚），搜索框回到 386px
+       1160px ⇒ 跨断点**后**（3 枚），这一档就是全表最紧：页面级溢出 **1px**（= 既有容差）
+       1161px ⇒ 1px 之外的第一档，用来证明 1160 不是靠一个孤立的容差侥幸过的
+       1199px ⇒ used == inner（slack 0），搜索框 198px
+       1232px ⇒ 「写全称」方案才会用到的宽度（缩短方案在这里早已宽裕），留作对照锚点
+     实测（v3.1 + 第三枚，Edge，缩短文案）：这三档的搜索框都 >= 180px、页面级溢出 <= 1px、
+     `header.top` 高度与加第三枚之前**逐档相同**（59/104/135/148/222 五组）。 */
+  for (const width of [761, 820, 900, 940, 941, 1100, 1140, 1159, 1160, 1161, 1199, 1232]) {
     await page.setViewportSize({ width, height: 900 });
     await page.waitForTimeout(150);
     const band = await page.evaluate(() => {
