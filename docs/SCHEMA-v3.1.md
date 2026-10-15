@@ -57,6 +57,16 @@ cost = rate × tokens / divisor × requests
 | `mediaRates` 非空（非 token 口径） | 8 | `isComputable()` → `reason: 'non-token-pricing'` |
 | `rates.input === null`（如 gpt-live-1） | 1 | `isComputable()` → `reason: 'no-input-price'` |
 
+补一条实测：`rates.output === null` 的**也是** `openai/gpt-live-1` —— 与 `rates.input === null` 是**同一条**（不是两条），
+所以「有 input 价」与「有 output 价」各是 **107/108**，不是 108/108。
+
+复现（仓库根，逐项读数 `模型数 / 有 input 价 / 有 output 价 / mediaRates 非空 / input===null 的 key / output===null 的 key`）：
+
+```bash
+node -e "const m=require('./api-plans.json').plans.flatMap(p=>p.models);console.log(m.length, m.filter(x=>x.rates.input!==null).length, m.filter(x=>x.rates.output!==null).length, m.filter(x=>x.mediaRates&&x.mediaRates.length).length, m.filter(x=>x.rates.input===null).map(x=>x.modelKey).join(','), m.filter(x=>x.rates.output===null).map(x=>x.modelKey).join(','))"
+# ⇒ 108 107 107 8 gpt-live-1 gpt-live-1
+```
+
 ---
 
 ## 4. 模块结构
@@ -65,7 +75,7 @@ cost = rate × tokens / divisor × requests
 |---|---|
 | `scripts/lib/api-cost.js` | 算法模块（纯函数 + `init(document)` + `module.exports`） |
 | `scripts/lib/api-cost-page.js` | 页面渲染（正文 HTML + 预渲染示例 + 诚实性断言） |
-| `scripts/tools/api-cost-selftest.js` | 离线自测（108 条逐条对账 + 2 条牙） |
+| `scripts/tools/api-cost-selftest.js` | 离线自测（**108 条模型逐条对账** + 2 条牙；实跑 **1748 项通过 / 0 失败**。108 是模型条数，不是断言项数） |
 | `scripts/tools/build-local.js` | 构建期页面组装（内联脚本 + 路由注册 + sitemap） |
 
 ### 双宿主模式
@@ -89,12 +99,19 @@ cost = rate × tokens / divisor × requests
 | `build-local.js` pageRoutes | `apiCostPage.API_COST_ROUTE` |
 | `build-local.js` routeOutputs | `[tools/api-cost/index.html, ../../]` |
 | `build-local.js` expectedLocs | +1（API 成本计算器） |
-| `verify-site.js` §20b 浏览器断言 | h1/canonical/控件/示例/内联脚本/四档宽度/交互后溢出/结果随输入变化/sitemap |
+| `verify-site.js` §20b 浏览器断言 | h1/canonical/控件/示例/内联脚本/四档宽度/交互后溢出/结果随输入变化/sitemap（实跑 **23 项**，复现命令见本节末） |
 | `gate/action.yml` | `API-cost self-test` 步骤 |
 | `check-ci-consistency.js` | GATE_STEP_NAMES + GATE_STEP_RUN |
 | `layers.js` L2.scripts | `selftest:api-cost` |
 | `package.json` scripts | `"selftest:api-cost"` |
 | `smoke.js` ROUTES | `['tools/api-cost/', 'API 成本计算器']` |
+
+实跑读数的复现命令（仓库根）：
+
+- §4 的自测项数：`npm run selftest:api-cost` ⇒ 末行 `=== API 成本计算器演练：1748 项通过，0 项失败 ===`。
+- 本节 §20b 的断言项数（**别用 `npm run verify:baseline`**，那会覆盖回归基线）：
+  `node scripts/tools/verify-site.js --json=research/_raw/verify-report.json`，再
+  `node -e "const r=require('./research/_raw/verify-report.json');console.log(r.checks.filter(c=>c.name.startsWith('/tools/api-cost/')).length)"` ⇒ `23`。
 
 ---
 
