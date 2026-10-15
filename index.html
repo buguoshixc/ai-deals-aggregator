@@ -265,16 +265,49 @@
     .plansnav:hover { background: var(--brand-ink); border-color: var(--brand-ink); }
     /* 焦点环用 --brand：药丸本身已经是品牌色，深色主题下 --brand 是浅蓝，在深底上看得见 */
     .plansnav:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
-    /* v2.5：第二枚药丸（API / Token 计费对比）。
+    /* v2.5：第二枚药丸（API 计费对比）。
        ⚠️ 顶栏是**不折行**的 flex 行，而上面那一条注释已经把 761–1920px 的宽度账算过一遍
-       （第一枚药丸加了约 80px）。再加一枚会让 761–1100px 这段产生页面级横向溢出 ——
+       （第一枚药丸加了约 80px）。再加一枚会让窄屏这段产生页面级横向溢出 ——
        所以它**只在放得下的宽度出现**：窄屏时入口仍在页脚「按厂商 / 分类浏览」那一行，
        不会出现"点了没反应"或"被裁掉一半"的形态。
        ⚠️ 这段注释会被构建期逐字抽进每一个页面，所以这里**不能写出路由占位符的字面量**：
        占位符只在页脚被按输出深度解析，写进 CSS 注释会让它原样出现在所有输出里，
-       而产物自检的扫描面正是「占位符形态的残留」。 */
-    .plansnav-api { display: none; }
-    @media (min-width: 1100px) { .plansnav-api { display: inline-block; } }
+       而产物自检的扫描面正是「占位符形态的残留」。
+
+       v3.1 追记：第三枚药丸「成本计算器」上线，断点由 1100px 抬到 **1160px**，
+       并且两枚的文案都**缩短**了。三件事都是真浏览器逐档量出来的：
+
+       · **为什么必须缩短文案**：顶栏每一档都只剩 **1px** 余量（实测 1920/1440/1280/1140/1100/941
+         逐档 slack=1），唯一弹性项是 `.search`，下限 180px。把搜索框钉在 180px 再逐档线性扫描
+         「首个零溢出的宽度」，三种文案策略的答案是：
+           全称「API / Token 计费对比」+「API 成本计算器」(149+115) ⇒ **1232px**
+           缩短「API 计费对比」+「成本计算器」(102+91)          ⇒ **1120px**  ← 本版采用
+           混合「API / Token 计费对比」+「成本计算器」(149+91)  ⇒ 1210px
+         全称方案会让 1100–1231px 这**一整段**三种入口都不在顶栏，缩短方案把它压到 1120px。
+         代价如实写在这里：药丸文字不再与目标页 h1 逐字相同（点进去仍是全名，`title` 也保留
+         完整含义）—— 这是拿"药丸与 h1 同名"的旧约定换来的宽度，不是疏忽。
+
+       · **为什么断点取 1240 而不是 1120（也不是 1160）**：
+         ① 先算"装得下"的理论下限：非搜索项合计 **835px**（品牌 143 + 切换器 172 + 汇总条 157
+            + 图标 30 + 三枚药丸 140+102+91），加 6 个 18px 间距与 180px 搜索框下限、再加两侧 40px
+            内边距 ⇒ 视口 ≥ **1163px** 才装得下。1120 只对"12px 间距区"成立，而 ≥1140px 间距是 18px。
+         ② 但 **1163 是"刚好"，不是"安全"**：本顶栏的宽度账里，中文文案在 Linux 字体下的实测量
+            与 Windows 差 **约 29px**（CI 首次跑 v3.1 时实测：断点 1160 在 1163/1160 两档分别溢出
+            7px / 8px，而本机同两档溢出 0px / 1px）。这正是本仓反复记过的那条教训 ——
+            **贴着临界值的档不能写进判据**（见 `verify-site.js` 内页图标那段的同款说明）。
+            所以取 1163 + 29 ≈ **1192** 作为"任何平台都装得下"的下限。
+         ③ 再往上取一个**整百**数作为断点：**1240**。实测（Windows/Edge）1240 档搜索框 239px；
+            即便叠加那 29px 跨平台字体差仍余 210px > 180px 下限，留出约 **30px** 余量。
+            代价如实写在这里：1120–1239px 这 120px 宽的一段里，三枚入口都在页脚而不在顶栏 ——
+            这是拿"入口出现的早一点"换"CI 与本机不会各绿一次"的取舍。
+
+       · **为什么不需要再开一条间距档**：缩短方案的 1120px 落在既有 `@media (min-width:1140px)`
+         的 18px 间距区**以内**，所以本次改动**没有**新增间距边界（`max-width:1139px` 那条不动）。
+         ⚠️ 1239px 处搜索框会从 440px 掉到 239px（跨过断点、两枚药丸出现）。这是**既有现象的
+         延续**、不是新引入的回归：本顶栏在 1099→1100px 处本来就有更大的跳变（356 → 196px）。
+         写在这里，免得下一个人把它当成回归去查。 */
+    .plansnav-api, .plansnav-cost { display: none; }
+    @media (min-width: 1240px) { .plansnav-api, .plansnav-cost { display: inline-block; } }
 
     .search {
       flex: 1; max-width: 440px; display: flex; align-items: center; gap: var(--s2);
@@ -1303,13 +1336,22 @@
         <button type="button" data-theme-value="light" aria-pressed="false">浅色</button>
         <button type="button" data-theme-value="dark" aria-pressed="false">深色</button>
       </div>
-      <!-- 套餐对比入口：紧跟配色切换器（DOM 顺序 = 视觉顺序 = Tab 顺序），
-           名字与 /plans/coding/ 的 h1 逐字一致（`PLANS_HEADING`）。
-           v2.5：API / Token 计费入口紧跟在它后面 —— 两者是**并列**的产品能力
-           （一个回答"月付多少钱"，一个回答"每百万 token 多少钱"），
-           名字同样与 /plans/api/ 的 h1 逐字一致（`API_PLANS_HEADING`）。 -->
+      <!-- 三枚产品能力入口：紧跟配色切换器（DOM 顺序 = 视觉顺序 = Tab 顺序）。
+           第一枚「AI Coding 套餐对比」的名字与 /plans/coding/ 的 h1 逐字一致（`PLANS_HEADING`）。
+           v2.5：第二枚「API 计费对比」紧跟在它后面 —— 前两枚是**并列**的产品能力
+           （一个回答"月付多少钱"，一个回答"每百万 token 多少钱"）。
+           v3.1：第三枚「成本计算器」是**下游**（拿 /plans/api/ 已收录的官方单价算 token 用量成本），
+           所以排在 API 计费那一枚**之后**，DOM 顺序本身就是"先看价、再估算"。
+
+           ⚠️ 第二、三枚的文案是**缩短过的**，与目标页 h1 **不**逐字相同（h1 分别是
+           「API / Token 计费对比」与「API 成本计算器」）。这是**刻意的取舍**，不是疏忽：
+           顶栏每档只剩 1px 余量，写全称要 1232px 才放得下三枚（缩短后 1120px）。
+           完整含义由 `title` 与目标页 h1 共同承担 —— 推导与逐档实测写在上面
+           `.plansnav-api` 那段注释里，改文案前请先读它。
+           第一枚保持全称：它是唯一一枚从 320px 起就一直可见的，宽度账里有它的位置。 -->
       <a class="plansnav" href="__PLANS_HREF__" title="对比各平台长期在售的 AI Coding 套餐">AI Coding 套餐对比</a>
-      <a class="plansnav plansnav-api" href="__APIPLAN_HREF__" title="对比各平台按量计费的 API / Token 官方单价">API / Token 计费对比</a>
+      <a class="plansnav plansnav-api" href="__APIPLAN_HREF__" title="对比各平台按量计费的 API / Token 官方单价">API 计费对比</a>
+      <a class="plansnav plansnav-cost" href="__APICOST_HREF__" title="按已收录官方单价计算 token 用量成本（不排序 / 不推荐 / 不跨币种 / 不折算 credits）">成本计算器</a>
       <div class="topstat" id="topStat"><!--PRERENDER:topstat--></div>
       <!-- GitHub 图标入口。这一段是**共享片段**：lib/page-shell.js 按下面那对标记把它抽进
            9 个页面族与全部详情页的页头（抽不到即抛错），所以改文案 / 换图形 / 改地址只改这一处。
