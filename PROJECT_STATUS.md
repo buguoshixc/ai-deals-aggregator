@@ -1,6 +1,30 @@
 # AI 优惠聚合器 — 项目状态
 
-**最后更新**：2026-10-09（最新一节 **secondary-page-residue-v2：扫描面外 8 类小字容器 + 上一轮 47 行「待确认」收口**，分支 `secondary-page-residue-v2`，**未提交 / 未发布**）
+**最后更新**：2026-10-14（最新一节 **PR #117 合并收口：API 成本计算器 `/tools/api-cost/`**，merge commit `ce0ed1c`；上一节 **secondary-page-residue-v2** 已由 PR #108 合并 —— squash `2b1f0aa`）
+
+---
+
+## PR #117 合并收口（2026-10-14）
+
+> **一句话现状**：PR #117（API 成本计算器 `/tools/api-cost/`）已**真实合并**进 master —— merge commit `ce0ed1c`，
+> 第一亲 `259767d` · 第二亲 `d624f332` · tree `afcbab5`；PR 状态 `MERGED`（`2026-10-14T14:39:12Z`）。
+> **数据层零改动**；发布链 run `38582437066` **success**，线上 `/tools/api-cost/` 实测 **HTTP 200**（新页已可访问）。
+
+| 维度 | 实测 |
+|---|---|
+| 落地身份 | merge commit `ce0ed1c`（PR #117 `MERGED`，`mergedAt` `2026-10-14T14:39:12Z` = 北京 22:39:12）· 第一亲 `259767d`（2026-10-14 11:52 CST 数据提交）· 第二亲 `d624f332`（PR head，含碰撞修复）· tree `afcbab5` |
+| 落地路径 | **只走 PR 事件**：`master-gate` ruleset（id `24126623`）要求 `pull_request` 规则 + required status check `gate`；直接 push master 实测被拒（`Required status check "gate" is failing`） |
+| 合并规模 | **23 文件 / +2811 −17**（`git diff --shortstat 259767d ce0ed1c`，docs-editor 实测；与 GitHub PR 计数 `changed_files=23` / `additions=2811` / `deletions=17` 逐项相同）。⚠️ 早先转述的「27 文件 / +3045 −251」对不上，以本行为准 |
+| 数据层 | **零改动**：`git diff --name-status 259767d ce0ed1c -- '*.json'` 只有 `package.json` 一行（M）；`deals.json` **260303** 字节、`scripts/data/source-health.json` **4563** 字节，两个提交上同字节数 |
+| 本次最值得记的技术发现 | PR 的分支**从未在「合并后」状态上跑过门禁**：原 head `ed0963c` 的 PR 事件 run `38425413005` 真红（`failure`），红点是 `api-plans-selftest` 的【牙·代码面】（该牙扫 `scripts/**`）—— PR 新增的 `scripts/tools/api-cost-selftest.js` 自己重抄了一遍换算公式（`model.rates.input * 1000000 / divisor`） |
+| 修法（不是放松红线） | 期望值改为从**逐维度结果**派生（`expectedTotal = Σ result.dimensions[d].cost`，只加 `cost` 非 `null` 的维度）⇒ 断言更强（「聚合有没有漏加 / 多加」）；换算算术只剩 `scripts/lib/api-cost.js` 的 `UNIT_DIVISORS` 一处。`selftest:api-plans` **175/1 → 176/0** |
+| CI（全部实测） | PR 事件 run `38579971946`（`pull_request` @ `d624f332`，check 名 `gate`）**success** · 合并后 master push 的 gate run `38582436894`（@ `ce0ed1c`）**success**（2026-10-14 22:51:32 CST 完成）· 发布链 run `38582437066`（Deploy to GitHub Pages @ `ce0ed1c`）**success**（22:52:43 CST 完成） |
+| 线上（实测） | `/tools/api-cost/`：22:53 CST **HTTP 404**（发布传播间隙）→ 22:58 CST 复测 **HTTP 200**（返回新版计算器页）⇒ 以 22:58 这次为准：这一版**已经上线** |
+| 本地门禁 · 本轮由 docs-editor 复跑（exit 0） | `check:ci` **39/0** · `selftest:api-plans` **176/0** · `selftest:api-cost` **1748/0** · `gate:layers` fitness **5/0** |
+| 本地门禁 · **队长在合并树 `afcbab5` 上跑，本轮未复跑** | `verify-site` **914/0**（基线 891，新增 23 条来自 `/tools/api-cost/`）· `verify:regress` **920/0** · `verify:seo` **18/0** · `selftest:plans` 267/0 · `model-registry` 148/0 · `audience` 206/0 · `provenance` 132/0 · `changes` 120/0 · `history` 62/0 · `health` 72/0 · `expiry` 94/0 · `text` 46/0 · `app-token` 67/0 · `zh` 15/0 · `plan-history` 132/0 · `deal-plan-links` 80/0 · `npm run build` 自检通过（185 页 × 3 槽位对账；snote 声明 202 = 产物 202）。**真浏览器两项（`verify` / `verify:regress`）没有独立重跑** |
+| 现行数据（2026-10-14 · `node` 直读数据文件，docs-editor 实测） | deals **154**（`type` deal 80 / tool 74）· plans **44** · api-plans **24**（**108** 条计价条目 = 各记录 `models` 引用合计 / **21** 个 provider）· models **51**。文件头部 134/23/13/44 是 **2026-10-04** 的旧值，别与本行混用 |
+| 标签更正（本轮一并做） | 下面 §0.5 的 `secondary-page-residue-v2` **不是「未提交 / 未发布」**：已由 **PR #108** 合并（squash `2b1f0aa`）。⚠️ 早先记的「PR #107 / `f091ac4`」不对 —— `f091ac4` 里没有 `scripts/data/residue-guard.json` |
+| **没跑**（如实） | `npm run gate`（全量）· 线上冒烟 |
 
 ---
 
@@ -15,7 +39,7 @@
 
 | 维度 | 实测 |
 |---|---|
-| 基线 / 分支 | `.worktrees/secondary-page-residue-v2` @ `f091ac4` · 分支 `secondary-page-residue-v2` · **未提交 / 未发布** |
+| 基线 / 分支 | `.worktrees/secondary-page-residue-v2` @ `f091ac4` · 分支 `secondary-page-residue-v2` · **已合并：PR #108**（squash `2b1f0aa`，2026-10-09 16:58 CST） |
 | 处置面 | 86 组（8 类容器）+ §8 七组；去重后 **92 个独立裁定对象** ⇒ **实删 5 · 保留 87 · 挂起 0** |
 | 删除面 | ① `.dsrc-note` 尾半句 ×80 页（49 → 37 字）② `.ddesc`「（无头浏览器渲染后提取）」×17 页（**改真源**：`headless.js` 3 处 + `deals.json` 17 条）③ 页族导语/口径的重复半句 4 处 ④ `plan-history.js` 上一轮漏删的尾句 ⑤ `/models/` 题注末句（−30 字） |
 | 保留面 | 由**承重机制**决定，不按口味：既有断言钉住 **2 组 / 82 次** · 数据面依赖 **29 组 / 29 次**（含 `.fdesc` 25 条 = Feed description 槽位）· C 类数据语义 **45 组 / 71 次** · D 类交互/结构槽位 **6 组 / 73 次**（合计 82 组 / 255 次）；§8 的 6 组由页面族下限（`main-snote ≥ 2` / `≥ 4`）与题注牙 + 表格 a11y 名钉住 |

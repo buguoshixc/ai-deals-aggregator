@@ -6,13 +6,72 @@
 > 结果见 `research/quality-closure/` 的 `RECLASSIFIED_FINDINGS.md`（99 条旧 finding 逐条落到九类）·
 > `FIXED_FINDINGS.md`（独立复核）· `MUTATION_RESULTS.md`（21 例变异）· `source-revalidation.md`（来源回访）。
 >
-> **现行数字（2026-10-04 重算，命令见 `RECLASSIFIED_FINDINGS.md` §0.2）**：
+> **快照**：2026-10-04 重算（命令见 `RECLASSIFIED_FINDINGS.md` §0.2）。这一整块是**当时值**，不是常量：
 > deals **134**（deal 80 / tool 54）· plans **23** · api-plans **13** 条 / **67** 个计价条目 / **10** provider ·
 > models **44** · registry 映射 **64**（API 55 + Coding 9）· gaps 声明 **10** ·
 > Feed **24 份（×2 = 48 文件）** · HTML 页 **173** / sitemap **170** / dist **290** 文件 ·
 > 门禁断言 **36** · 三份变化日志事件 deal 0 / plan 14 / api 6。
 
-## 0. 本轮：修好采集链连红 —— 变化窗口的基准日锚错数据集（2026-10-13 · **未提交**）
+## 合并收口：PR #117 —— API 成本计算器 `/tools/api-cost/` 上线（2026-10-14）
+
+> **一句话**：PR #117 已**真实合并**进 master —— GitHub merge commit `ce0ed1c`（PR 状态 `MERGED`，
+> `mergedAt` `2026-10-14T14:39:12Z` = 北京 22:39:12）· 第一亲 `259767d`（11:52 CST 数据提交）·
+> 第二亲 `d624f332`（PR head，含本轮那条牙的修复）· tree `afcbab5`。**数据层零改动**：
+> `git diff --name-status 259767d ce0ed1c -- '*.json'` 只有 `package.json` 一行（M），
+> `deals.json`（260303 字节）与 `scripts/data/source-health.json`（4563 字节）在两个提交上**同字节数**。
+> ⚠️ 本轮**没有**走「本地造 merge commit + push master」：`master-gate` ruleset（id `24126623`）要求
+> `pull_request` 规则 + required status check `gate`，直接 push master 实测被拒
+> （`Required status check "gate" is failing`）—— **可行路径只有 PR 事件**。
+
+### 已完成（可复核）
+
+1. **根因（实测，不是推断）**：PR 的分支**从未在「合并后」状态上跑过门禁**。原 head `ed0963c` 在 PR 事件上
+   **真红**（run `38425413005`，`failure`），红点就是 `api-plans-selftest` 的【牙·代码面】—— 该牙扫
+   `scripts/**`（整个脚本面），而 PR 新增的 `scripts/tools/api-cost-selftest.js` **自己在算期望值时重抄了
+   一遍换算公式**（`model.rates.input * 1000000 / divisor`），首跑就被自己的红线点名。
+2. **修法（不是放松红线）**：期望值改为从**逐维度结果**派生 —— `expectedTotal = Σ result.dimensions[d].cost`
+   （只加 `cost` 非 `null` 的维度）。断言因此**更强**：从「我抄的公式对不对」变成「库里的聚合有没有漏加 /
+   多加」；换算算术此后只存在于 `scripts/lib/api-cost.js` 的 `UNIT_DIVISORS` 一处。
+   `selftest:api-plans` **175/1 → 176/0**，`selftest:api-cost` 仍 **1748/0**。
+3. **合并规模（实测）**：`git diff --shortstat 259767d ce0ed1c` = **23 文件 / +2811 −17**，与 GitHub PR #117
+   的计数器逐项相同（`changed_files=23` · `additions=2811` · `deletions=17`）。
+   ⚠️ 早先转述的「27 文件 / +3045 −251」**对不上**（那个数不是落地面），以本节实测为准。
+4. **两处假标签（本轮更正，都自己核过）**：本文件 `## 0.` 的 2026-10-13 工作已由 **PR #118** 合并
+   （merge commit `28377f8`；`dfb6f3a` / `fa03aa4` 都在它的第二亲 `64954c0` 里）；`## 0.2` 的
+   `secondary-page-residue-v2` 实为 **PR #108**（squash `2b1f0aa`）。
+   ⚠️ 早先记的「PR #107 / `f091ac4`」**不对**：`f091ac4` 里根本没有 `scripts/data/residue-guard.json`。
+   另两处（`## 0.3` / `## 0.4`）一并核实后更正为 **PR #106**（squash `9854e48`）与
+   **PR #45 + #46**（merge commit `9251e83` / `e09f4a4`）。
+5. **CI / 线上实况（都是实测）**：PR 事件 run `38579971946`（`pull_request` @ `d624f332`，check 名 `gate`）**success**；
+   合并后 master push 的 gate run `38582436894`（@ `ce0ed1c`）**success**（22:51:32 CST 完成）；
+   发布链 run `38582437066`（Deploy to GitHub Pages @ `ce0ed1c`）**success**（22:52:43 CST 完成）。
+   线上 `/tools/api-cost/`：22:53 CST 实测 **HTTP 404**（发布传播间隙），22:58 CST 复测 **HTTP 200**
+   （返回的正是新的计算器页）—— **以 22:58 这次为准：线上已经有这一版**。
+
+### 读数来源（如实：哪些是本轮亲测，哪些不是）
+
+- **docs-editor 本轮亲测**：合并身份（`ce0ed1c` / 两亲 / tree `afcbab5`）· `*.json` 变更面 · 两个数据文件字节数 ·
+  `--shortstat` **23 / +2811 −17** · GitHub PR 计数器 · 上述 3 个 run 的结论与时刻（那条【牙·代码面】的红点原文抄自
+  run `38425413005` 的失败日志）· 线上 404 → 200 两次实测 ·
+  **四个我复跑的本地门禁**：`check:ci` **39/0** · `selftest:api-plans` **176/0** · `selftest:api-cost` **1748/0** ·
+  `gate:layers` fitness **5/0** · 现行数据条数（见下）。
+- **未由我重跑、原样引用**（队长在合并树 `afcbab5` 上跑出的本地读数）：`verify-site` **914 项 / 0 失败**
+  （基线 891，新增 23 条来自 `/tools/api-cost/`）· `verify:regress` **920 / 0** · `verify:seo` **18 / 0** ·
+  `selftest:plans` 267/0 · `model-registry` 148/0 · `audience` 206/0 · `provenance` 132/0 · `changes` 120/0 ·
+  `history` 62/0 · `health` 72/0 · `expiry` 94/0 · `text` 46/0 · `app-token` 67/0 · `zh` 15/0 ·
+  `plan-history` 132/0 · `deal-plan-links` 80/0 · `npm run build` 自检通过（185 页 × 3 槽位对账；
+  snote 声明 202 = 产物 202）。**真浏览器那两项（`verify` / `verify:regress`）我没有独立重跑。**
+- **都没跑**：`npm run gate`（全量）· 线上冒烟。
+
+### 现行数据（2026-10-14 · `node` 直读数据文件 · 实测）
+
+deals **154**（`type` deal 80 / tool 74）· plans **44** · api-plans **24**（**108** 条计价条目 = 各记录 `models`
+引用合计 / **21** 个 provider）· models **51**。文件头部那一整块读数（deals / tool / plans / api-plans / 计价条目 / provider / models /
+registry / gaps / Feed / HTML / sitemap / dist / 门禁断言 / 变化日志）**全部**是 **2026-10-04** 的快照值、**不是常量**（口径见 `RECLASSIFIED_FINDINGS.md` §0.2），**不要**与本节的现行值混用。
+
+---
+
+## 0. 本轮：修好采集链连红 —— 变化窗口的基准日锚错数据集（2026-10-13 · **已合并**：PR #118，merge commit `28377f8`）
 
 > **一句话**：定时采集链 `Collect AI Deals` 从 2026-10-12 01:24 CST 起**连红 4 轮**、数据两天没入库。
 > 逐轮读日志后是**三个不同的原因**（门禁在第一条红处就停，每轮只露一层）：译文超期（已由 PR #114 解除，
@@ -145,7 +204,7 @@
 2. **页面上的收录判据只覆盖了「出处」这一半**：什么样的**额度口径**可以被放进同一张表，目前只写在裁决记录里，
    页面上还没有一句话。**触发条件**：真收录第一条第三方聚合订阅之前必须补上。
 
-## 0.2 上一轮：`secondary-page-residue-v2` —— 扫描面外 8 类小字容器 + 上一轮 47 行「待确认」收口（2026-10-09 · **未提交 / 未发布**）
+## 0.2 上一轮：`secondary-page-residue-v2` —— 扫描面外 8 类小字容器 + 上一轮 47 行「待确认」收口（2026-10-09 · **已合并**：PR #108，squash commit `2b1f0aa`）
 
 > **一句话**：上一轮报告 §8 那 **7 组「待用户确认」**与**扫描面之外**的 8 类小字容器
 > （`.dsrc-note` / `.ddesc` / `.fdesc` / `.chgnote` / `.pchnote` / `.pftdesc` / `.chgmeta` / `.hint`，
@@ -195,7 +254,7 @@
    （`verify.yml` 的 gate 调用行已是 **39**）；本轮只在 `docs/BUILD.md` 就地登记、未改口径
    （改它要连同 `verify.yml` 那行注释一起留痕）。
 
-## 0.3 上一轮：`secondary-page-residue-v1` —— 二级页残留小字清除（2026-10-09 · **未提交 / 未发布**）
+## 0.3 上一轮：`secondary-page-residue-v1` —— 二级页残留小字清除（2026-10-09 · **已合并**：PR #106，squash commit `9854e48`）
 
 > **一句话**：三个别名页（`/need/student-only/`、`/need/free-api/`、`/need/dev-credits/`）顶上的
 > `<p class="snote aliasnote">`（161 / 139 / 159 字）与题注里的长句（62 / 63 / 64 字）**整条删除**；
@@ -244,7 +303,7 @@
 3. **`/status/` 与 `/feeds/` 的 keep/undecided 项**（133 字那条、32 字那条、21 字那条、
    42 条 `共 N 条。` 题注等）由 B 的 census 判**保留**，本轮一个都没动。
 
-## 0.4 上一轮：`secondary-page-layout-unification` —— 二级页布局统一（2026-10-06 · **未提交 / 未发布**）
+## 0.4 上一轮：`secondary-page-layout-unification` —— 二级页布局统一（2026-10-06 · **已合并**：PR #45 + #46，merge commit `9251e83` / `e09f4a4`）
 
 > **一句话**：全站「页面级说明」（`.snote`）原本**同一条规则 8 份副本、两种取值**（4 个页面壳压成 `70ch` ≈ **452.81px**，另 4 个壳不压），
 > 现在收成**唯一一处定义**（`index.html` 共享 `<style>`）；同时建立**机器可读的布局族声明**
