@@ -40,6 +40,25 @@ function run() {
 const badLines = out => out.split('\n').filter(l => l.includes('✗') || l.includes('❌')).map(l => l.trim());
 const zhLine = out => (out.split('\n').find(l => l.includes('中文译文: ')) || '').trim();
 
+/**
+ * 读**产物**里的一份文件；读不到就报「构建没把产物交出来」，而不是让 `readFileSync` 抛裸 ENOENT。
+ *
+ * 为什么要有它（2026-10-16 的真实事故）：本演练好几个用例都是「先 run() 一次构建，再从 `dist/`
+ * 回读产物」。构建**失败**时产物根本不会就位（构建是「装进暂存目录 → 自检全过 → 才就位」，
+ * 见 build-local.js 末尾），于是裸 ENOENT 会把真正的原因埋掉 —— 采集链那四轮（run 55–58）的
+ * 日志末尾就只剩一段 `Error: ENOENT: … dist/assets/data/offers.json` 的栈，而构建自己明明打印过
+ * `✗ .chgnote 在产物里只有 3 次 < 下限 14`。**判据红的时候，第一个看见的人必须能直接读到原因。**
+ * 调用点的 `record()` 会把构建的 ✗/❌ 行一并打出来，这里只保证错误信息指向「构建失败」这件事。
+ */
+function readProduct(rel) {
+  const file = path.join(ROOT, rel);
+  if (!fs.existsSync(file)) {
+    throw new Error(`产物里没有 ${rel} —— 构建没有把产物交出来（构建失败时产物不会就位：`
+      + '先看上面那次构建自己打印的 ✗/❌ 行，那才是原因）');
+  }
+  return fs.readFileSync(file, 'utf8');
+}
+
 /** 跑一次译文漂移门禁（zh-todo --check）：它不构建，只回答「有没有要人处理的事」 */
 function runCheck() {
   const r = spawnSync(process.execPath, [path.join(ROOT, 'scripts', 'tools', 'zh-todo.js'), '--check'],
@@ -125,11 +144,22 @@ try {
   //（仓库根的 `deals.json` 仍是数据真值，但**不再进产物**）。
   // ⚠️ 这里**必须继续读产物**、不能改读仓库根：这一条的语义是「覆盖层撤掉一条译文后，
   // **产物**里也必须消失」——读源文件就证明不了构建真的把译文拿掉了。
-  const distZh = JSON.parse(fs.readFileSync(path.join(ROOT, 'dist', 'assets', 'data', 'offers.json'), 'utf8'));
-  const stillThere = distZh.deals.some(d => d.id === onlyOne && d.zh && d.zh.description);
+  // ⚠️ 产物读不到时**记录本用例失败并继续**，不许把整个自测崩掉：
+  //    本演练是「构建真的会红吗」的取证工具，构建红了正是它最该跑完的时候 ——
+  //    崩在中途会让后面六条用例一条都不出结果，而报告里只剩一段 ENOENT 栈。
+  let distZh = null;
+  let distZhError = '';
+  try {
+    distZh = JSON.parse(readProduct('dist/assets/data/offers.json'));
+  } catch (error) {
+    distZhError = error.message;
+  }
+  const stillThere = distZh
+    ? distZh.deals.some(d => d.id === onlyOne && d.zh && d.zh.description)
+    : false;
   record('覆盖层删掉译文 → 产物同步消失',
     r4.code === 0 && !stillThere,
-    r4.code === 0 ? (stillThere ? '产物里还留着旧译文' : '产物已同步') : '构建失败', r4);
+    r4.code === 0 ? (stillThere ? '产物里还留着旧译文' : '产物已同步') : `构建失败（${distZhError || '产物未就位'}）`, r4);
 
   // ⑥ 整条译文从覆盖层撤回（deals.json 里还留着上次贴上的 zh）
   //    → 构建照旧放行（英文原文还在，发布不该被卡），但译文门禁必须报红。
@@ -140,12 +170,20 @@ try {
   delete withdrawn.byId[onlyOne];
   write(withdrawn);
   const r5 = run();
-  // 同 ④ 的口径：读**产物**（`assets/data/offers.json`），不读仓库根。
-  const unmanagedZh = JSON.parse(fs.readFileSync(path.join(ROOT, 'dist', 'assets', 'data', 'offers.json'), 'utf8'))
-    .deals.some(d => d.id === onlyOne && d.zh && Object.keys(d.zh).length);
+  // 同 ④ 的口径：读**产物**（`assets/data/offers.json`），不读仓库根。同 ④ 的失败处理。
+  let unmanagedZh = false;
+  let unmanagedError = '';
+  try {
+    unmanagedZh = JSON.parse(readProduct('dist/assets/data/offers.json'))
+      .deals.some(d => d.id === onlyOne && d.zh && Object.keys(d.zh).length);
+  } catch (error) {
+    unmanagedError = error.message;
+  }
   record('撤回整条译文 → 构建放行但产物里的旧译文被标为覆盖层管不到',
     r5.code === 0 && unmanagedZh && /不在覆盖层里/.test(r5.out),
-    r5.code === 0 ? (unmanagedZh ? '已按管不到告警' : '产物里没有旧译文（case ④ 的残留？）') : '构建失败', r5);
+    r5.code === 0
+      ? (unmanagedZh ? '已按管不到告警' : '产物里没有旧译文（case ④ 的残留？）')
+      : `构建失败（${unmanagedError || '产物未就位'}）`, r5);
 
   const r5b = runCheck();
   record('撤回整条译文 → check:zh 非零退出（unmanaged 计入漂移）',
