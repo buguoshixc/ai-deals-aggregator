@@ -4407,12 +4407,24 @@ function listArtifactFiles(dir) {
  *   退役必须**两处同步**（本处 `RESIDUE_CONTAINER_CLASSES` 与登记表的 `containerFloors`），
  *   否则下面的 `tabulated !== declared` 一致性检查会红 —— 那条检查本身就是防「静默缩表」的。
  *
+ *   ⚠️ **第二次退役：`.chgnote`（2026-10-16，现役 6 类）** —— 与 `.fdesc` **不是同一类问题**，
+ *   别把两次退役的理由混起来读。`.chgnote` 的容器还在、渲染器一行没动，红的是**条数**：
+ *   它数的是 `/changes/` 上「创建 / 重新出现」事件行的生命周期说明行，而那个窗口的基准日是
+ *   `deals.json` 的 `updatedAt`（数据日）——**每天跟着往前滚**。数据日前进一天，「最近 7 天」里
+ *   就有创建事件滚出去：实测同一份 `deal-history.json`、只把数据日从 10-14 推到 10-16，
+ *   条数从 **16 掉到 1**，而阈值型下限 14 的 25% 余量吸收不了这种正常的窗口轮换 ⇒
+ *   采集链每轮红在「产物自检」，`Commit and push` 被 skip，数据两天没能入库。
+ *   阈值型下限的前提是「**数据量静态快照**」（登记表 `_why` 里那条边界自己写明了），
+ *   对 `.chgnote` 不成立 ⇒ 它换成**关系式**（见下面 `relationReadings` 的 `chgnote` 那条：
+ *   `chgnote ≥ /changes/ 上 created/restored 事件行数`）。判据**更紧**了，不是放宽：
+ *   原来只在 16→14 以下才红，现在每一行事件都必须有它自己的说明行，一行都不许少。
+ *
  *   ① **删掉不许回流** —— 本轮与上一轮**被删掉的每一段文案**（登记在
  *      `scripts/data/residue-guard.json` 的 `deletedCopy`），在**整篇产物**里
  *      （HTML 剥离 `<script>` / `<style>` / HTML 注释之后）出现次数必须为 **0**。
  *      它不看容器、不看类名、不看页面结构 —— 只要那段字面重新出现在读者的渲染路径上就红。
- *   ② **扫描面不许收缩** —— 7 类容器（原 8 类，见上方退役说明）在产物里的**存在性下限**
- *      （同一份登记的 `containerFloors`）。
+ *   ② **扫描面不许收缩** —— 6 类容器（原 8 类，见上方两条退役说明）在产物里的**存在性下限**
+ *      （同一份登记的 `containerFloors`）。`.chgnote` 不在下限表里，它由下面的关系式守。
  *      ① 的判据形态是「这些字面都不出现」，而「把承重容器整族删掉 / 改名」会让**两件事同时发生**：
  *      容器没了、① 也不再命中它 —— ① 自己**证不了**扫描面还在。下限就是补这一刀的。
  *
@@ -4472,10 +4484,31 @@ const RESIDUE_MIN_LIVE_LITERALS = 40;
  * 比例值写在登记表里（可评审），硬下限写在判据里（改它必须动代码）。
  */
 const RESIDUE_MIN_FLOOR_RATIO_HARD = 0.5;
-/** 小字容器扫描面（现役 7 类；原 8 类 —— `.fdesc` 随 `/feeds/` 族在「去数据暴露」那一轮退役，
- *  见本段上方说明与 `residue-guard.json` 的 `_retiredFloors`）—— 与 census 的扫描面逐字一致
- *  （改这里 = 改扫描面，必须同时改登记表的下限表） */
-const RESIDUE_CONTAINER_CLASSES = ['dsrc-note', 'ddesc', 'chgnote', 'pchnote', 'pftdesc', 'chgmeta', 'hint'];
+/** 小字容器扫描面（现役 6 类；原 8 类）—— 与 census 的扫描面逐字一致
+ *  （改这里 = 改扫描面，必须**两处同步**改登记表：`containerFloors` 摘掉这一条、
+ *   `_retiredFloors` 补上它并写清退役理由，否则下面的 `tabulated !== declared` 会红）。
+ *
+ *  两次退役，理由**不同**，不许混为一谈：
+ *   · `.fdesc`（2026-10-09，随 `/feeds/` 族在「去数据暴露」那一轮下架）—— 容器从此**不可能**
+ *     出现 ⇒ 地板永远无法满足。这是「容器存在性」这一类。
+ *   · `.chgnote`（2026-10-16）—— 容器还在、渲染器没动，但它的条数**跟着滚动窗口走**：
+ *     采集日每前进一天，「最近 7 天」里就有创建事件滚出去 ⇒ 条数可以从 16 掉到 1。
+ *     阈值型下限的前提是「数据量静态快照」（见登记表 `_why` 里那条边界），对它不成立。
+ *     它换成了**关系式** `chgnote ≥ created/restored 事件行数`（下面 relationReadings），
+ *     判据反而更紧：原来只在 16→14 以下才红，现在每一行都必须有它自己的说明行。 */
+const RESIDUE_CONTAINER_CLASSES = ['dsrc-note', 'ddesc', 'pchnote', 'pftdesc', 'chgmeta', 'hint'];
+/**
+ * 关系式**只用关系式守**的容器类（不在下限表里，但必须照样逐文件计数）。
+ *
+ * ⚠️ 为什么必须有这一条：计数表是从「扫描面声明」播种的（`new Map(…map(cls => [cls, 0]))`），
+ * 而计数循环也只遍历它 —— 把 `.chgnote` 从声明里摘掉，它就会从**计数**里一起消失，
+ * 于是关系式拿到 `counts.get('chgnote') ?? 0` = 0，判据静默退化成「0 ≥ 0」而构建**照样绿**。
+ * 那正是这条纪律最该避免的失效形态（判据还在、但什么也不判）。
+ * 下面的 `counted ⊇ declared` 断言把这个旁路钉死：谁往声明里加类却忘了加计数，构建当场红。
+ */
+const RESIDUE_RELATION_ONLY_CLASSES = ['chgnote'];
+/** 真正**逐文件计数**的容器类 = 声明表 ∪ 关系式专用类（下面有 `counted ⊇ declared` 断言） */
+const RESIDUE_COUNTED_CONTAINER_CLASSES = [...RESIDUE_CONTAINER_CLASSES, ...RESIDUE_RELATION_ONLY_CLASSES];
 /** 共享页脚的锚点（唯一出处是 index.html；与 `lib/page-shell.js` 抽页脚用的是同一对标记） */
 const SHARED_FOOTER_RE = /<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/;
 /** 每一页的页脚区间（**正面断言**的作用域：页脚保留句必须每页都在） */
@@ -4647,7 +4680,8 @@ function loadResidueGuard() {
 }
 
 /**
- * 产物扫描：① 被删文案不许回流 ② 7 类容器（原 8 类，见上方退役说明）的存在性下限。
+ * 产物扫描：① 被删文案不许回流 ② 6 类容器（原 8 类，见上方两条退役说明）的存在性下限
+ * ③ 关系式：`.chgnote ≥ /changes/ 上 created/restored 事件行数`（窗口派生，基准量从产物现算）。
  *
  * 只读 `dir`，不写任何东西 —— 所以同一个函数既能被构建期（对暂存目录）调用，
  * 也能被 `scripts/tools/check-residue.js` 对着**任意一份产物副本**调用（变异演练用）。
@@ -4677,6 +4711,16 @@ function scanResidue(dir) {
   if (tabulated !== declared) {
     problems.push(`容器下限表与扫描面声明不一致（表里：${tabulated || '空'}；扫描面声明：${declared}）——`
       + '少一类 = 那一类的反空洞守卫消失');
+  }
+  // 声明表 ⊆ 计数表：**判据不许静默变成空转**。
+  // 计数表是从声明表播种的，所以「摘掉一个类」会同时把它从计数里摘掉 —— 关系式于是拿到 0，
+  // 判据还在、却什么也不判（`.chgnote` 那条一旦这样退化，窗口再怎么轮换都不会红）。
+  // 这条断言把那个旁路钉死在构建期：往声明里加类必须同时进计数表。
+  const uncounted = RESIDUE_CONTAINER_CLASSES.filter(cls => !RESIDUE_COUNTED_CONTAINER_CLASSES.includes(cls));
+  if (uncounted.length) {
+    problems.push(`扫描面声明里有 ${uncounted.length} 类不在逐文件计数表里：${uncounted.join('、')} ——`
+      + '计数表由声明表 ∪ RESIDUE_RELATION_ONLY_CLASSES 组成（见 build-local.js），'
+      + '漏掉的那一类在关系式里恒为 0，判据会静默变成「0 ≥ 0」');
   }
 
   // ---- 下限自守（t10 / F6）：`floor >= measured × floorRatio`，且比例自身不得低于硬下限 ----
@@ -4807,7 +4851,7 @@ function scanResidue(dir) {
 
   // ---- 逐文件扫描 ----
   const files = listArtifactFiles(dir);
-  const counts = new Map(RESIDUE_CONTAINER_CLASSES.map(cls => [cls, 0]));
+  const counts = new Map(RESIDUE_COUNTED_CONTAINER_CLASSES.map(cls => [cls, 0]));
   const hits = new Map([...literals.keys()].map(lit => [lit, {
     lit, total: 0, faces: { raw: 0 }, violations: []
   }]));
@@ -4840,13 +4884,14 @@ function scanResidue(dir) {
       }
       // 页脚保留句：每一页的页脚区间里都必须在（t10 / F1 的正面断言，不依赖任何名单）
       if (footerRegions.some(([a, b]) => text.slice(a, b).includes(FOOTER_KEPT_SENTENCE))) footerKeptPages += 1;
-      // 7 类容器计数：**class token 级**（不是 `class="dsrc-note"` 精确串）——
+      // 6 类声明容器 + 关系式专用类（`.chgnote`）计数：**class token 级**（不是
+      // `class="dsrc-note"` 精确串）——
       // 后者照不到多 class 形状，而「换个类名就静默失去覆盖」正是本文件反复记录的那类失效。
       // t10 / F7：取值前先做**实体解码** —— `class="ddes&#99;"` 在浏览器里就是 `ddesc`，
       // 不解码就会把它算漏（t6 实测 20 处这样的改名仍能骗过阈值下限）。
       for (const m of text.matchAll(/class="([^"]*)"/g)) {
         const tokens = decodeEntitiesToFixpoint(m[1]).split(/\s+/);
-        for (const cls of RESIDUE_CONTAINER_CLASSES) {
+        for (const cls of RESIDUE_COUNTED_CONTAINER_CLASSES) {
           if (tokens.includes(cls)) counts.set(cls, counts.get(cls) + 1);
         }
       }
@@ -4949,18 +4994,63 @@ function scanResidue(dir) {
   // 关系式（t6 F7）：阈值型下限的 25% 余量允许「静默消失 20 处」（实测 `.ddesc` 20 处仍 60/60 绿），
   // 关系式把余量收成 0 —— 且**不动任何现有下限**（两条并存，谁严谁生效）。
   // 基准量从**产物现算**（详情页数），所以数据收缩时它自己跟着走，不是又一张静态快照。
+  //
+  // v3.2（2026-10-16）：第三条关系式 `.chgnote` —— 它数的是 `/changes/` 上「创建 / 重新出现」
+  // 事件行的那条生命周期说明行。它的条数**跟着滚动窗口走**（基准日是数据日 `updatedAt`，每天
+  // 往前滚），阈值型下限对它不成立：实测同一份历史日志、只把数据日 10-14 → 10-16，条数 16 → 1，
+  // 于是采集链每轮红在产物自检、`Commit and push` 被 skip、数据两天没能入库（run 55–58）。
+  // 换成关系式之后余量同样收成 0，基准量由产物**自己**给出。
+  //
+  // ⚠️ 基准量的口径必须**可证**，不是「看起来差不多」：渲染器（index.html 的 `changesRowHtml`）
+  // 只在 `created` / `restored` 两种分支上**无条件**产出 `.chgnote`（`endingSoon` 出 `.chgnew`、
+  // `ended` 出 `.chgold`，其余事件只在 `origin === 'derived'` 时出）。所以基准量取
+  // 「`created` / `restored` 两个分栏里的行数」：每一行都**保证**带一条说明行 ⇒ `≥` 成立。
+  // 刻意**不**把 `changed` 分栏里的行算进来（那里的行只有一部分带说明行，混进来会假红），
+  // 也刻意**不**去动渲染器补一个 `data-origin` —— 那会同时改到 `markChangesRows()` 的
+  // 行标记正则（它按 `<li class="chgi" data-kind="…" data-deal-id="…">` 精确形态匹配，
+  // 多一个属性就静默标不上，ItemList 对账当场红）。判据的价值在可证，不在把话说过头。
+  const changesPageRel = path.join(dir, 'changes', 'index.html');
+  const hasChangesPage = fs.existsSync(changesPageRel);
+  const changesPageHtml = hasChangesPage ? fs.readFileSync(changesPageRel, 'utf8') : '';
+  if (!hasChangesPage) {
+    // `/changes/` 是「变化雷达」的**唯一**页面。它不在产物里 ⇒ `.chgnote` 的关系式失去基准量，
+    // 而它的缺页本身有别的步骤在守（构建期缺页会红）—— 这里只把「判据没做」如实说出来，
+    // 不让它静默退化成「要求 0 ≥ 0」。
+    problems.push('关系式 .chgnote 无从判：产物里没有 changes/index.html（变化雷达的唯一页面）——'
+      + '缺少基准量时这条判据会静默变成「0 ≥ 0」，必须红而不是照绿');
+  }
+  /** 取一个分栏的 `<section class="chgsec" id="…">…</section>` 区间（只认优惠雷达自己的分栏） */
+  const changesSectionSlice = id => {
+    const re = new RegExp(`<section class="chgsec" id="${id}">([\\s\\S]*?)</section>`);
+    const m = changesPageHtml.match(re);
+    return m ? m[1] : '';
+  };
+  let changesLifecycleRows = 0;
+  const changesLifecycleBySection = [];
+  for (const id of ['created', 'restored']) {
+    const body = changesSectionSlice(id);
+    const n = (body.match(/<li class="chgi"[^>]*>/g) || []).length;
+    changesLifecycleBySection.push(`${id} ${n}`);
+    changesLifecycleRows += n;
+  }
   const relationReadings = [];
   for (const rel of [
-    { cls: 'ddesc', factor: 1, op: '>=', why: '每张详情页一条来源行（`.ddesc` 就是那 17 页唯一的来源说明）' },
-    { cls: 'dsrc-note', factor: 2, op: '>=', why: '每张详情页两条说明（来源块免责句 + 变更记录说明）' }
+    { cls: 'ddesc', factor: 1, op: '>=', why: '每张详情页一条来源行（`.ddesc` 就是那 17 页唯一的来源说明）', base: dealPageRels.length, baseName: '详情页数' },
+    { cls: 'dsrc-note', factor: 2, op: '>=', why: '每张详情页两条说明（来源块免责句 + 变更记录说明）', base: dealPageRels.length, baseName: '详情页数' },
+    { cls: 'chgnote', factor: 1, op: '>=', why: '`/changes/` 的「今日新增」与「重新出现」两个分栏里，每一行都由渲染器**无条件**产出一条生命周期说明行（`created` / `restored` 两个分支）', base: changesLifecycleRows, baseName: 'changes 生命周期事件行', baseDetail: changesLifecycleBySection.join(' + ') }
   ]) {
     const got = counts.get(rel.cls) || 0;
-    const expect = rel.factor * dealPageRels.length;
-    relationReadings.push(`.${rel.cls} ${got} ${rel.op} ${rel.factor}×详情页数(${dealPageRels.length})=${expect}`);
+    const expect = rel.factor * rel.base;
+    const detail = rel.baseDetail ? `${rel.base} = ${rel.baseDetail}` : String(rel.base);
+    relationReadings.push(`.${rel.cls} ${got} ${rel.op} ${rel.factor}×${rel.baseName}(${detail})=${expect}`);
     if (!(got >= expect)) {
-      problems.push(`关系式不成立：.${rel.cls} 在产物里 ${got} 次，但要求 ${rel.op} ${rel.factor} × 详情页数`
-        + `（${dealPageRels.length}）= ${expect} —— ${rel.why}。`
-        + '这是 t6 F7 要求的关系式：它把阈值型下限的 25% 余量收成 0（数据收缩时基准量跟着产物走，不是静态快照）');
+      problems.push(`关系式不成立：.${rel.cls} 在产物里 ${got} 次，但要求 ${rel.op} ${rel.factor} × ${rel.baseName}`
+        + `（${rel.base}）= ${expect} —— ${rel.why}。`
+        + '关系式的取用理由：它把阈值型下限的 25% 余量收成 0（数据收缩时基准量跟着产物走，不是静态快照）。'
+        + (rel.cls === 'chgnote'
+          ? '这一条取代了原先的阈值型下限 14（登记表 `_retiredFloors` 有退役记录）：那个数字是窗口里'
+            + '恰好有一批创建事件时的快照，数据日每前进一天就会有事件滚出「最近 7 天」，它必然假红。'
+          : ''));
     }
   }
 
@@ -7770,7 +7860,8 @@ function main() {
 module.exports = { scanResidue, loadResidueGuard, countOccurrences, residueStrip,
   normalizeForCompare, decodeEntitiesToFixpoint, decodeJsonUnicodeEscapes, isRenderedLiteral,
   RESIDUE_GUARD_FILE, RESIDUE_MIN_ENTRIES, RESIDUE_MIN_LIVE_LITERALS, RESIDUE_MIN_FLOOR_RATIO_HARD,
-  RESIDUE_MIN_NORM_NEEDLE, RESIDUE_CONTAINER_CLASSES, FOOTER_KEPT_SENTENCE };
+  RESIDUE_MIN_NORM_NEEDLE, RESIDUE_CONTAINER_CLASSES, FOOTER_KEPT_SENTENCE,
+  RESIDUE_RELATION_ONLY_CLASSES, RESIDUE_COUNTED_CONTAINER_CLASSES };
 
 if (require.main === module) {
   try {
