@@ -5882,6 +5882,218 @@ function noJsControlExemptionFor(route) {
     check('/tools/api-cost/ 填满输入后结果区域有内容',
       afterInteract.hasResults, '结果区域为空');
 
+    // ---- v3.1 追记：这一页的**排版事实**（页面级 CSS 曾整个漏掉，而当时全部门禁都是绿的）----
+    //
+    // 漏掉的症状不是「不好看」，是四条能逐条量出来的排版事实：
+    //   ① h1 与 `.meta` 各占一行（没有 `.stop`）；
+    //   ② 表单控件是 UA 默认样式（没有 `.cost-ctl`，`<fieldset>` 还带着 UA 边框）；
+    //   ③ 三格控件各按「标签几个字 + UA 默认尺寸」自己定宽定高，左边缘对不齐；
+    //   ④ 示例表的 caption 被挤成两行（表没有 `width: 100%`，表宽跟着内容走）。
+    // 旧判据只判**内容**（有没有示例、有没有控件、有没有出结果），所以四条一条都照不到。
+    // 下面这几条盯的就是它们：判的是**现场几何与计算样式**，不是「某个类名在不在源码里」。
+    await page.goto(new URL(costRoute, base).href, { waitUntil: 'load' });
+    const costLayout = await page.evaluate(() => {
+      const box = el => { const r = el.getBoundingClientRect(); return { top: r.top, left: r.left, right: r.right, bottom: r.bottom, width: r.width, height: r.height }; };
+      const cs = (el, prop) => getComputedStyle(el)[prop];
+      const h1 = document.querySelector('#api-cost h1');
+      const meta = document.querySelector('#api-cost .stop .meta');
+      // 可见控件按「顶边」归组成行 —— 判据因此不依赖「第几个 .cost-grid」，
+      // 将来把缓存那三格挪位置、或把折叠块默认展开，都不会误报。
+      //
+      // ⚠️ 「可见」**不能**用 `width > 0` 判：Chromium 里**关着的 details 内容仍然有布局盒**
+      //    （实测：`details.open === false`，但那三个缓存输入框的 rect 宽 440.7px、`offsetParent` 也在）
+      //    —— 用宽度过滤会把折叠块里的三格算成「第三行」，实测就是这么误报的（控制台读数
+      //    `控件行 3 格@161 · 3 格@232 · 3 格@330.5`）。`checkVisibility()` 认 `content-visibility`，
+      //    才是「真的画出来了」；再叠一条 `closest` 兜底（别的引擎上语义一致）。
+      const isRendered = el => {
+        const rendered = typeof el.checkVisibility === 'function'
+          ? el.checkVisibility({ checkVisibilityCSS: true, contentVisibilityAuto: true, visibilityProperty: true, opacityProperty: false })
+          : el.getBoundingClientRect().width > 0;
+        return rendered && !el.closest('details:not([open])');
+      };
+      const visibleCtls = [...document.querySelectorAll('.cost-form select, .cost-form input')]
+        .filter(isRendered)
+        .map(el => {
+          const r = el.getBoundingClientRect();
+          return { tag: el.tagName.toLowerCase(), top: r.top, left: r.left, width: +r.width.toFixed(2), height: +r.height.toFixed(2) };
+        });
+      const ctlRows = [];
+      for (const c of visibleCtls) {
+        const row = ctlRows.find(r => Math.abs(r.top - c.top) <= 1);
+        if (row) row.items.push(c); else ctlRows.push({ top: c.top, items: [c] });
+      }
+      ctlRows.sort((a, b) => a.top - b.top);
+      const ctl = document.querySelector('[data-model]');
+      const fs = document.querySelector('.cost-form fieldset');
+      const panel = document.querySelector('.cost-panel');
+      const example = document.querySelector('.cost-example');
+      const exampleTable = example ? example.querySelector('table') : null;
+      const capLines = (() => {
+        // caption 的「行数」：按字迹矩形归并（与 §22c 同一口径），不是按盒高猜
+        const cap = exampleTable ? exampleTable.querySelector('caption') : null;
+        if (!cap) return -1;
+        const range = document.createRange();
+        range.selectNodeContents(cap);
+        const rects = [...range.getClientRects()].filter(r => r.width > 0 && r.height > 0);
+        const tops = [];
+        for (const r of rects) if (!tops.some(t => Math.abs(t - r.top) < 3)) tops.push(r.top);
+        return tops.length;
+      })();
+      return {
+        h1Box: h1 ? box(h1) : null,
+        metaBox: meta ? box(meta) : null,
+        h1Size: h1 ? cs(h1, 'fontSize') : '',
+        ctlRows: ctlRows.map(r => ({ top: +r.top.toFixed(2), items: r.items })),
+        selectWidths: visibleCtls.filter(c => c.tag === 'select').map(c => c.width),
+        selectTops: visibleCtls.filter(c => c.tag === 'select').map(c => +c.top.toFixed(2)),
+        selectLefts: visibleCtls.filter(c => c.tag === 'select').map(c => +c.left.toFixed(2)),
+        inputWidths: visibleCtls.filter(c => c.tag === 'input').map(c => c.width),
+        inputTops: visibleCtls.filter(c => c.tag === 'input').map(c => +c.top.toFixed(2)),
+        inputLefts: visibleCtls.filter(c => c.tag === 'input').map(c => +c.left.toFixed(2)),
+        ctlRadius: ctl ? cs(ctl, 'borderTopLeftRadius') : '',
+        ctlPadding: ctl ? cs(ctl, 'paddingTop') : '',
+        ctlFont: ctl ? cs(ctl, 'fontSize') : '',
+        fieldsetBorder: fs ? cs(fs, 'borderTopWidth') : '',
+        panel: panel ? { radius: cs(panel, 'borderTopLeftRadius'), border: cs(panel, 'borderTopWidth'), width: +panel.getBoundingClientRect().width.toFixed(2) } : null,
+        exampleTableWidth: exampleTable ? +exampleTable.getBoundingClientRect().width.toFixed(2) : 0,
+        mainWidth: +document.querySelector('main').getBoundingClientRect().width.toFixed(2),
+        capLines: capLines,
+        capOverflow: exampleTable && exampleTable.querySelector('caption')
+          ? exampleTable.querySelector('caption').scrollWidth - exampleTable.querySelector('caption').clientWidth : 0,
+        // 刚加载完、一个 token 都还没填时结果区长什么样（下面那条「空态不写免费」判的就是它）
+        idleResultText: (() => {
+          const r = document.querySelector('[data-api-cost-results]');
+          return r ? r.innerText.replace(/\s+/g, ' ').trim() : '';
+        })(),
+        idleInputValue: (() => {
+          const i = document.querySelector('[data-input-tokens]');
+          return i ? i.value : '';
+        })()
+      };
+    });
+
+    const scalar = n => Math.round(n * 100) / 100;
+    const sameWidthList = (list, tol = 1) => list.length > 1 && list.every(w => Math.abs(w - list[0]) <= tol);
+    const spread = list => scalar(Math.max(...list) - Math.min(...list));
+    // 逐行判「排开了没有」：一行三格 + 顶边齐平 + 格宽相同 + 左边缘递增。
+    // 三件事缺一件都能被「各自按内容定宽」这种排法绕过（改前正是：331 / 173px 两行两套宽）。
+    const ctlRowProblems = row => {
+      const problems = [];
+      if (row.items.length !== 3) problems.push(`${row.items.length} 格`);
+      const tops = row.items.map(i => i.top);
+      const widths = row.items.map(i => i.width);
+      const lefts = row.items.map(i => i.left);
+      if (spread(tops) > 1) problems.push(`顶边极差 ${spread(tops)}px`);
+      if (!sameWidthList(widths)) problems.push(`格宽 ${widths.join('/')}`);
+      if (!lefts.every((l, i) => i === 0 || l > lefts[i - 1])) problems.push(`左边缘 ${lefts.map(scalar).join('/')}`);
+      return problems;
+    };
+    const ctlFirstTwo = costLayout.ctlRows.slice(0, 2);
+    const ctlRowIssues = ctlFirstTwo.flatMap((row, i) => ctlRowProblems(row).map(p => `第${i + 1}行：${p}`));
+
+    check('/tools/api-cost/ 前两行控件各三格：同行顶边齐平、格宽相同、左边缘递增',
+      ctlFirstTwo.length === 2 && ctlRowIssues.length === 0
+      && ctlFirstTwo[0].items.every(i => i.tag === 'select')
+      && ctlFirstTwo[1].items.every(i => i.tag === 'input'),
+      `控件行 ${costLayout.ctlRows.map(r => `${r.items.length} 格@${r.top}`).join(' · ')}`
+      + ` · 下拉宽 ${costLayout.selectWidths.join('/')} · 输入宽 ${costLayout.inputWidths.join('/')}`
+      + (ctlRowIssues.length ? ` · 违规：${ctlRowIssues.join('；')}` : ''));
+
+    check('/tools/api-cost/ 标题与版本信息在同一行（h1 与 .meta 的竖直区间重叠）',
+      Boolean(costLayout.h1Box && costLayout.metaBox)
+      && costLayout.metaBox.top < costLayout.h1Box.bottom
+      && costLayout.metaBox.bottom > costLayout.h1Box.top,
+      costLayout.h1Box && costLayout.metaBox
+        ? `h1 ${scalar(costLayout.h1Box.top)}..${scalar(costLayout.h1Box.bottom)} · .meta ${scalar(costLayout.metaBox.top)}..${scalar(costLayout.metaBox.bottom)} · h1 ${costLayout.h1Size}`
+        : 'h1 或 .meta 缺失');
+    check('/tools/api-cost/ 页面级 CSS 生效（控件不再是 UA 默认样式：圆角/内边距/字号 + 面板 + fieldset 无边框）',
+      costLayout.ctlRadius === '6px' && costLayout.ctlPadding === '8px' && costLayout.ctlFont === '13px'
+      && Boolean(costLayout.panel) && costLayout.panel.border === '1px' && costLayout.panel.radius === '10px'
+      && costLayout.fieldsetBorder === '0px',
+      `控件 radius ${costLayout.ctlRadius} / padding-top ${costLayout.ctlPadding} / font ${costLayout.ctlFont}`
+      + ` · 面板 ${costLayout.panel ? `${costLayout.panel.border} 边 ${costLayout.panel.radius} 圆角` : '缺失'}`
+      + ` · fieldset 上边框 ${costLayout.fieldsetBorder}`);
+    check('/tools/api-cost/ 示例表满宽（= 列宽）且题注只占一行（表宽跟着内容走时 caption 会被挤成两行）',
+      costLayout.exampleTableWidth > 0
+      && Math.abs(costLayout.exampleTableWidth - costLayout.mainWidth) <= 1
+      && costLayout.capLines === 1 && costLayout.capOverflow <= 0,
+      `表宽 ${costLayout.exampleTableWidth} vs 列宽 ${costLayout.mainWidth} · caption ${costLayout.capLines} 行 · 自溢出 ${costLayout.capOverflow}px`);
+    // 空态：刚进页面时一个 token 都没填 ⇒ 结果区既不能是空的，也不能写「免费」。
+    // 为什么这条重要：不填用量时 total 恰好是 0，而 0 在这套口径里读作「官方免费」——
+    // 旧版一进页面就写「免费」，等于把「没输入」说成了「不要钱」（与本页红线 2 同一类错）。
+    check('/tools/api-cost/ 没填用量时结果区不写「免费」（空态是一句要输入的话，不是一个 0）',
+      costLayout.idleResultText.length > 0 && !costLayout.idleResultText.includes('免费'),
+      `空态「${costLayout.idleResultText.slice(0, 40)}」 · 输入框初值「${costLayout.idleInputValue}」`);
+
+    // ---- v3.1 追记：两张表共用同一份列模型（维度 / 单价 / tokens / 成本），且数字按列对齐 ----
+    await page.evaluate(() => {
+      const inp = document.querySelector('[data-input-tokens]');
+      const out = document.querySelector('[data-output-tokens]');
+      if (inp) { inp.value = '1000000'; inp.dispatchEvent(new Event('input', { bubbles: true })); }
+      if (out) { out.value = '500000'; out.dispatchEvent(new Event('input', { bubbles: true })); }
+    });
+    await page.waitForTimeout(200);
+    const costTables = await page.evaluate(() => {
+      const shape = table => {
+        if (!table) return null;
+        const headers = [...table.querySelectorAll('thead th')].map(th => th.textContent.trim());
+        const firstRow = table.querySelector('tbody tr');
+        const rowHeads = [...table.querySelectorAll('tbody th')].map(th => th.textContent.trim());
+        const cells = firstRow ? [...firstRow.children] : [];
+        return {
+          headers: headers,
+          rowHeads: rowHeads,
+          firstRowRight: cells.length ? +cells[cells.length - 1].getBoundingClientRect().right.toFixed(2) : 0,
+          headerRight: (() => { const ths = [...table.querySelectorAll('thead th')]; return ths.length ? +ths[ths.length - 1].getBoundingClientRect().right.toFixed(2) : 0; })(),
+          numAlign: cells.length ? cells.slice(1).map(td => getComputedStyle(td).textAlign).join('/') : '',
+          numCells: firstRow ? firstRow.querySelectorAll('.num').length : 0,
+          colRightEdges: (() => {
+            const rows = [...table.querySelectorAll('tbody tr')];
+            const cols = [];
+            for (const row of rows) {
+              [...row.children].forEach((cell, i) => {
+                const right = +cell.getBoundingClientRect().right.toFixed(2);
+                cols[i] = cols[i] === undefined ? right : (Math.abs(cols[i] - right) <= 0.51 ? cols[i] : NaN);
+              });
+            }
+            return cols.map(v => (Number.isNaN(v) ? 'NaN' : v));
+          })()
+        };
+      };
+      const exampleTable = document.querySelector('.cost-example table');
+      const resultTable = document.querySelector('[data-api-cost-results] table');
+      return {
+        example: shape(exampleTable),
+        result: shape(resultTable),
+        resultText: (document.querySelector('[data-api-cost-results]').innerText || ''),
+        tableTexts: [exampleTable, resultTable].filter(Boolean).map(t => t.innerText)
+      };
+    });
+    const EXPECT_COST_HEADERS = ['维度', '单价', 'tokens', '成本'];
+    check('/tools/api-cost/ 示例表与结果表用同一份列模型（维度 / 单价 / tokens / 成本）',
+      Boolean(costTables.example && costTables.result)
+      && EXPECT_COST_HEADERS.every((h, i) => costTables.example.headers[i] === h && costTables.result.headers[i] === h),
+      costTables.example && costTables.result
+        ? `示例 [${costTables.example.headers.join(' ')}] · 结果 [${costTables.result.headers.join(' ')}]`
+        : `示例表 ${costTables.example ? '在' : '缺'} · 结果表 ${costTables.result ? '在' : '缺'}`);
+    check('/tools/api-cost/ 结果表逐维度成行（缺价的维度也占一行，不写 null）',
+      Boolean(costTables.result)
+      && costTables.result.rowHeads.length === 5
+      && ['input', 'output', 'cachedInput', 'cacheWrite', 'cacheWriteLong'].every((d, i) => costTables.result.rowHeads[i] === d)
+      && costTables.tableTexts.every(t => !/null/.test(t)),
+      costTables.result ? `${costTables.result.rowHeads.length} 行 [${costTables.result.rowHeads.join(' ')}] · 表内出现 null ${costTables.tableTexts.some(t => /null/.test(t))}` : '结果表缺失');
+    check('/tools/api-cost/ 两张表的数字列右对齐、逐列右边缘对齐（数字能按位读）',
+      Boolean(costTables.example && costTables.result)
+      && costTables.example.numAlign === 'right/right/right' && costTables.result.numAlign === 'right/right/right'
+      && costTables.example.colRightEdges.every(v => typeof v === 'number')
+      && costTables.result.colRightEdges.every(v => typeof v === 'number')
+      && Math.abs(costTables.example.colRightEdges[3] - costTables.example.headerRight) <= 1
+      && Math.abs(costTables.result.colRightEdges[3] - costTables.result.headerRight) <= 1,
+      costTables.example && costTables.result
+        ? `示例 align ${costTables.example.numAlign} 右缘 ${costTables.example.colRightEdges.join('/')}（表头 ${costTables.example.headerRight}）`
+        + ` · 结果 align ${costTables.result.numAlign} 右缘 ${costTables.result.colRightEdges.join('/')}（表头 ${costTables.result.headerRight}）`
+        : '表缺失');
+
     // 结果随输入变化的可断言性
     const paidModelKey = await page.evaluate(() => {
       try {
@@ -8552,6 +8764,34 @@ function noJsControlExemptionFor(route) {
       // 新判据只有一件事：**目录页家族的全部页面（含别名页）首屏页面级说明 = 0 条**。
       // 这也顺带修掉了旧版的覆盖面漏洞：旧判据第三段只算 `aliasRoutes` 的子集，任何**别名表里
       // 没有的**目录页悄悄长出首屏说明它都不管；现在整个 `directoryRoutes` 逐页都在判。
+      // ## ③b 与 ③c 共用的一把尺子：这一页的 kind 到底怎么读
+      //
+      // 两把尺子取并集 —— 页面描述符的 `meta.kind` 与说明清单里的 `pageKind`，任一命中即算。
+      // 为什么必须两把（这是对抗复核 F2 修对一次、又修错一次的地方，两次都记在 ③b 的注释里）：
+      //   · 只看 `meta.kind` ⇒ 别名页的 kind 是 `need`，`'alias'` 成了永不命中的死元素；
+      //   · 只读清单 pageKind ⇒ 别名页当场掉出射程（45 → 42 页）。
+      // 声明提到块外，是因为 ③c（工具页首屏）用的是**同一把尺子**，而不是另抄一份。
+      const kindByRoute = new Map();
+      let manifestKindRead = false;
+      try {
+        const manifestFile = NOTES_MANIFEST_PATH;
+        if (fs.existsSync(manifestFile)) {
+          for (const line of fs.readFileSync(manifestFile, 'utf8').split('\n')) {
+            if (!line.trim()) continue;
+            const row = JSON.parse(line);
+            if (row && row.kind === 'page') kindByRoute.set(row.route, row.pageKind);
+          }
+          manifestKindRead = kindByRoute.size > 0;
+        }
+      } catch (error) {
+        // 清单坏了由 ⑨ 报红（那里是本清单的 owner）。这里**不静默缩小射程**：
+        // `kindByRoute` 空 ⇒ 退回只用 `meta.kind`（别名仍靠 `need` 前缀进集合），
+        // 且 ③b 的读数里把这件事打印出来。
+      }
+      const kindsOf = meta => {
+        const fromManifest = kindByRoute.get(meta.route);
+        return [meta.kind, fromManifest].filter(Boolean);
+      };
       {
         // ## 射程怎么算：**两把尺子取并集**（对抗复核 F2 修对了一次，又修错了一次，两次都记在这里）
         //
@@ -8575,27 +8815,6 @@ function noJsControlExemptionFor(route) {
         //   ⚠️ t5（决策 D4）：清单的路径从 `<产物目录>/_notes.ndjson` 改成 `<产物目录>.notes.ndjson`
         //   （写点搬到产物目录的兄弟文件）—— 清单不再是一个"可以按 URL 下载到"的产物文件。
         const DIRECTORY_KINDS = new Set(['collection', 'need', 'category', 'vendor', 'hub', 'alias']);
-        const kindByRoute = new Map();
-        let manifestKindRead = false;
-        try {
-          const manifestFile = NOTES_MANIFEST_PATH;
-          if (fs.existsSync(manifestFile)) {
-            for (const line of fs.readFileSync(manifestFile, 'utf8').split('\n')) {
-              if (!line.trim()) continue;
-              const row = JSON.parse(line);
-              if (row && row.kind === 'page') kindByRoute.set(row.route, row.pageKind);
-            }
-            manifestKindRead = kindByRoute.size > 0;
-          }
-        } catch (error) {
-          // 清单坏了由 ⑨ 报红（那里是本清单的 owner）。这里**不静默缩小射程**：
-          // `kindByRoute` 空 ⇒ 退回只用 `meta.kind`（别名仍靠 `need` 前缀进集合），
-          // 且下面把这件事打印出来。
-        }
-        const kindsOf = meta => {
-          const fromManifest = kindByRoute.get(meta.route);
-          return [meta.kind, fromManifest].filter(Boolean);
-        };
         const isDirectoryMeta = meta => kindsOf(meta).some(kind => DIRECTORY_KINDS.has(kind));
         const directoryRoutes = wideMeta.filter(isDirectoryMeta).map(meta => meta.route);
         const aliasRoutes = wideMeta.filter(meta => kindsOf(meta).includes('alias')).map(meta => meta.route);
@@ -8615,6 +8834,33 @@ function noJsControlExemptionFor(route) {
           + ` · kind 来源：${manifestKindRead ? 'meta.kind ∪ 清单 pageKind' : '⚠️ 清单读不到，只用 meta.kind（别名靠 need 前缀进集合）'}`
           + (aliasMissing.length ? ` · ⚠️ 未进射程的别名页：${aliasMissing.join(' ')}` : '')
           + `（其它宽页的导语不在本规则射程内：${wideMeta.length - directoryRoutes.length} 页）`);
+      }
+
+      // ---- ③c 工具页的首屏**同样不许有页面级说明**（v3.1 追记 · 与 ③b 同源、射程不同）----
+      //
+      // 为什么要单独一条：③b 的射程是目录页家族（collection / need / category / vendor / hub / alias），
+      // 工具页不在里面 —— 而 `/tools/api-cost/` 这一轮的改动恰好就是**把六条口径从首屏移到结果与示例之后**
+      // （改前：控件块顶边 y=590，读者要滚过六条口径 + 一张示例表才看得到输入框）。
+      // 只改布局而不立判据的后果是**覆盖面悄悄缩小**：那六条说明从 `introIndexes` 里出去了，
+      // `note-intro-long`（③b 的另一半）在这一页就没有对象可判。
+      // 所以把这一页的新排序**变成断言**：工具页的首屏区必须一条说明都没有。
+      // 判据用的是同一个量（`introIndexes` = 顶边落在首个数据区之前的 `.snote`），口径不新造。
+      //
+      // ⚠️ 与 ③b 的差别只有一处、且是有意的：③b 判「目录页家族 0 条」，这一条判「工具页 0 条」，
+      //    两条都不给例外。工具页将来不止一页时，这条自动扩面（射程按 kind 现算，不写死路由）。
+      {
+        const toolRoutes = wideMeta.filter(meta => kindsOf(meta).includes('tool')).map(meta => meta.route);
+        const toolIntroNoteRoutes = toolRoutes.filter(route => {
+          const geometry = wideGeometry.get(`${WIDE_DESKTOP}|${route}`);
+          return Boolean(geometry && geometry.introIndexes && geometry.introIndexes.length);
+        });
+        check(`§22c @${WIDE_DESKTOP} 工具页（${toolRoutes.length} 页）首屏**没有**任何页面级说明`
+          + `（首屏 = h1 之后到第一个数据区之前，控件与结果属于主体，不算说明）`,
+          toolRoutes.length > 0 && toolIntroNoteRoutes.length === 0,
+          toolRoutes.length
+            ? `工具页：${toolRoutes.join(' ')} · 有首屏说明的 ${toolIntroNoteRoutes.length} 条`
+              + `${toolIntroNoteRoutes.length ? `：${toolIntroNoteRoutes.join(' ')}` : ''}`
+            : '⚠️ 一页工具页都没有 ⇒ 射程为空，判红（不是「跳过」）');
       }
 
       // ---- ⑨ 说明清单 × DOM 跨源对账（notes-manifest-v1）--------------------------------
