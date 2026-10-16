@@ -312,5 +312,77 @@ check('FORBIDDEN_CLAIM_WORDS \u4ece plans-page.js \u5bfc\u5165',
   `count=${costLib.FORBIDDEN_CLAIM_WORDS.length}`);
 
 /* ================================================================== */
+section('\u2466 \u7ed3\u679c\u8868\u6e32\u67d3\uff08breakdownTable / rateText\uff09\u2014\u2014 \u7f3a\u7ef4\u5ea6\u5360\u4f4d\u4e0e\u300c\u2014\u300d\u7684\u53e3\u5f84');
+/* ================================================================== */
+//
+// \u8fd9\u4e00\u8282\u76ef\u7684\u662f**\u6e32\u67d3\u5c42**\u7684\u4e24\u4ef6\u4e8b\uff08\u4e24\u5f20\u8868\u5171\u7528\u540c\u4e00\u4efd\u5217\u6a21\u578b\uff09\uff1a
+//   \u00b7 \u7f3a\u4ef7\u7684\u7ef4\u5ea6**\u7167\u6837\u5360\u4e00\u884c**\uff08\u5c11\u4e00\u884c\u4f1a\u8bfb\u6210\u300c\u8fd9\u4e2a\u7ef4\u5ea6\u4e0d\u5b58\u5728\u300d\uff09\uff1b
+//   \u00b7 \u7f3a\u4ef7\u5199\u300c\u2014\u300d\uff0c**\u4e0d\u80fd\u628a null \u5370\u5728\u9875\u9762\u4e0a**\uff0c\u4e5f\u4e0d\u80fd\u5199\u6210 0
+//     \uff080 \u662f\u5b98\u65b9\u660e\u8bf4\u514d\u8d39\u2014\u2014\u89c1\u7ea2\u7ebf 2\uff0c\u4e24\u8005\u5728\u9875\u9762\u4e0a\u5fc5\u987b\u770b\u5f97\u51fa\u5dee\u522b\uff09\u3002
+
+/** \u628a breakdownTable \u7684 HTML \u62c6\u6210 { \u7ef4\u5ea6: [\u5355\u4ef7, tokens, \u6210\u672c] } */
+function parseBreakdownRows(html) {
+  const rows = {};
+  const rowRe = /<tr><th scope="row">([^<]+)<\/th>([\s\S]*?)<\/tr>/g;
+  let m;
+  while ((m = rowRe.exec(html)) !== null) {
+    const cells = [...m[2].matchAll(/<td class="num">([\s\S]*?)<\/td>/g)].map(c => c[1]);
+    rows[m[1]] = cells;
+  }
+  return rows;
+}
+
+{
+  const entry = allModels.find(e => e.model.rates.input !== null && e.model.rates.input !== undefined && e.model.rates.cachedInput === null);
+  check('\u627e\u5230 cachedInput=null \u7684\u6a21\u578b\uff08\u7f3a\u4ef7\u5360\u4f4d\u7684\u524d\u63d0\u6761\u4ef6\uff09', !!entry,
+    entry ? '' : '\u6ca1\u6709 cachedInput=null \u7684\u6a21\u578b');
+
+  if (entry) {
+    const inputs = { inputTokens: 1000000, outputTokens: 500000, cachedInputTokens: 200000, requests: 1 };
+    const result = computeCost(entry.plan, entry.model, inputs);
+    const html = costLib.breakdownTable(result, { className: 'cost-tbl cost-breakdown' });
+    const rows = parseBreakdownRows(html);
+    const dims = costLib.TOKEN_DIMENSIONS;
+
+    check('\u4e94\u4e2a\u7ef4\u5ea6\u9010\u4e2a\u6210\u884c\u4e14\u987a\u5e8f\u56fa\u5b9a\uff08\u7f3a\u4ef7\u7684\u4e5f\u5360\u4e00\u884c\uff09',
+      dims.every((d, i) => Object.keys(rows)[i] === d),
+      `\u884c\uff1a${Object.keys(rows).join(' ')}`);
+
+    check('\u7f3a\u4ef7\u7ef4\u5ea6\u7684\u5355\u4ef7\u5199\u300c\u2014\u300d\uff08\u4e0d\u662f null\u3001\u4e5f\u4e0d\u662f 0\uff09',
+      rows.cachedInput && rows.cachedInput[0] === '\u2014',
+      `cachedInput \u5355\u4ef7\u5355\u5143\u683c\u5199\u7684\u662f\u300c${rows.cachedInput ? rows.cachedInput[0] : '(缺失)'}\u300d`);
+
+    check('\u6574\u5f20\u8868\u91cc\u4e0d\u51fa\u73b0 null \u5b57\u6837',
+      !/null/.test(html),
+      html.includes('null') ? '\u8868\u91cc\u6709\u5b57\u9762\u91cf null' : '');
+
+    check('\u6bcf\u884c\u90fd\u6709 3 \u4e2a class="num" \u5355\u5143\u683c\uff08\u6570\u5b57\u53f3\u5bf9\u9f50\u7684\u524d\u63d0\uff09',
+      Object.values(rows).every(cells => cells.length === 3),
+      Object.entries(rows).map(([d, c]) => `${d}:${c.length}`).join(' '));
+
+    check('\u9898\u6ce8\u540c\u65f6\u7ed9\u51fa\u6a21\u578b / \u5e01\u79cd / \u5355\u4f4d\uff08\u5355\u4f4d\u4e0e\u6570\u5b57\u540c\u65f6\u51fa\u73b0\u662f\u786c\u627f\u8bfa 2\uff09',
+      /<caption>[^<]*\u6a21\u578b\uff1a/.test(html) && html.includes('\u5e01\u79cd\uff1a') && html.includes('\u5355\u4f4d\uff1a'),
+      (html.match(/<caption>([\s\S]*?)<\/caption>/) || ['', '(无题注)'])[1].slice(0, 60));
+
+    /* ---- \u7259\uff1a\u628a\u300c\u7f3a\u4ef7\u300d\u6539\u6210\u300c0 \u4ef7\u300d\uff0c\u6e32\u67d3\u51fa\u6765\u7684\u4e1c\u897f\u5fc5\u987b\u53d8 ---- */
+    const zeroModel = JSON.parse(JSON.stringify(entry.model));
+    zeroModel.rates.cachedInput = 0; // \u4eba\u4e3a\u628a\u300c\u6ca1\u6709\u8fd9\u4e00\u6863\u7684\u4ef7\u300d\u6539\u6210\u300c\u5b98\u65b9\u514d\u8d39\u300d
+    const zeroHtml = costLib.breakdownTable(computeCost(entry.plan, zeroModel, inputs), {});
+    const zeroRows = parseBreakdownRows(zeroHtml);
+    check('\u3014\u7259\u3015\u628a cachedInput \u7684 null \u6539\u6210 0 \u540e\uff0c\u5355\u4ef7\u4ece\u300c\u2014\u300d\u53d8\u6210\u300c0\u300d\uff08\u8bc1\u660e\u4e0a\u9762\u4e24\u6761\u4e0d\u662f\u6052\u7eff\uff09',
+      rows.cachedInput[0] === '\u2014' && zeroRows.cachedInput[0] === '0',
+      `\u6539\u524d\u300c${rows.cachedInput[0]}\u300d \u2192 \u6539\u540e\u300c${zeroRows.cachedInput[0]}\u300d`);
+    check('\u3014\u7259\u3015\u6539\u6210 0 \u4ef7\u540e\u8be5\u884c\u6210\u672c\u5199\u300c\u514d\u8d39\u300d\u800c\u4e0d\u662f\u300c\u2014\u300d',
+      zeroRows.cachedInput[2] === '\u514d\u8d39' && rows.cachedInput[2] === '\u8be5\u7ef4\u5ea6\u65e0\u5df2\u6536\u5f55\u5355\u4ef7',
+      `\u6539\u524d\u300c${rows.cachedInput[2]}\u300d \u2192 \u6539\u540e\u300c${zeroRows.cachedInput[2]}\u300d`);
+
+    check('rateText\uff1anull/undefined \u2192 \u300c\u2014\u300d\u30010 \u2192 \u300c0\u300d\u3001\u5176\u4f59\u539f\u6837',
+      costLib.rateText(null) === '\u2014' && costLib.rateText(undefined) === '\u2014'
+      && costLib.rateText(0) === '0' && costLib.rateText(2.5) === '2.5',
+      `null\u2192${costLib.rateText(null)} · 0\u2192${costLib.rateText(0)} · 2.5\u2192${costLib.rateText(2.5)}`);
+  }
+}
+
+/* ================================================================== */
 console.log(`\n=== API \u6210\u672c\u8ba1\u7b97\u5668\u6f14\u7ec3\uff1a${passed} \u9879\u901a\u8fc7\uff0c${failures.length} \u9879\u5931\u8d25 ===`);
 process.exit(failures.length > 0 ? 1 : 0);

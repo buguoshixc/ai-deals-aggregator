@@ -294,6 +294,62 @@
   }
 
   /**
+   * 单价的显示文本。
+   *
+   * `null` 是「没有那一档的价」，要写成「—」而**不是** `null` 两个字，也不是 0 ——
+   * 0 是官方明说免费（见红线 2），两者在页面上必须看得出差别。
+   */
+  function rateText(rate) {
+    if (rate === null || rate === undefined) return '\u2014';
+    return String(rate);
+  }
+
+  /**
+   * 结果表的题注：模型 / 变体 / 币种 / 单位。四个量都来自**同一次计算的结果对象**。
+   */
+  function resultCaption(result) {
+    var bits = [];
+    if (result.modelName) bits.push('\u6a21\u578b\uff1a' + result.modelName);
+    if (result.variant) bits.push('\u53d8\u4f53\uff1a' + result.variant);
+    if (result.currency) bits.push('\u5e01\u79cd\uff1a' + result.currency);
+    if (result.unit) bits.push('\u5355\u4f4d\uff1a' + unitLabel(result.unit));
+    return bits.join(' \u00b7 ');
+  }
+
+  /**
+   * 维度明细表（维度 / 单价 / tokens / 成本）。
+   *
+   * **一份实现、两个宿主**：构建期为静态示例调它，浏览器里为实时结果调它 ——
+   * 两张表的列模型、数字格式与「缺维度写 —」的口径因此不可能分家。
+   *
+   * 缺价的维度**照样占一行**（单价与成本都写「—」）：少一行会让读者以为
+   * 「这个维度不存在」，多一行「—」才是在说「这一档我们没有收录价」。
+   *
+   * @param {object} result — computeCost 的返回值
+   * @param {object} [opts] — { className } 附加类名（两处宿主只有外观容器不同）
+   */
+  function breakdownTable(result, opts) {
+    var className = (opts && opts.className) || 'cost-breakdown';
+    var html = '<table class="' + escapeText(className) + '">'
+      + '<caption>' + escapeText(resultCaption(result)) + '</caption>'
+      + '<thead><tr><th>\u7ef4\u5ea6</th>'
+      + '<th class="num">\u5355\u4ef7</th>'
+      + '<th class="num">tokens</th>'
+      + '<th class="num">\u6210\u672c</th></tr></thead><tbody>';
+    var dims = (result && result.dimensions) || {};
+    for (var i = 0; i < TOKEN_DIMENSIONS.length; i++) {
+      var dim = TOKEN_DIMENSIONS[i];
+      var d = dims[dim];
+      if (!d) continue;
+      html += '<tr><th scope="row">' + escapeText(dim) + '</th>'
+        + '<td class="num">' + escapeText(rateText(d.rate)) + '</td>'
+        + '<td class="num">' + escapeText(formatNumber(d.tokens)) + '</td>'
+        + '<td class="num">' + escapeText(formatDimension(dim, d)) + '</td></tr>';
+    }
+    return html + '</tbody></table>';
+  }
+
+  /**
    * 格式化总计结果。
    */
   function formatTotal(result) {
@@ -377,6 +433,18 @@
       };
 
       var result = computeCost(match.plan, match.model, cleanInputs);
+
+      // 一个 token 都没填：不显示「免费」（见 renderEmpty 的注释）。
+      var anyTokens = cleanInputs.inputTokens > 0
+        || cleanInputs.outputTokens > 0
+        || (cleanInputs.cachedInputTokens || 0) > 0
+        || (cleanInputs.cacheWriteTokens || 0) > 0
+        || (cleanInputs.cacheWriteLongTokens || 0) > 0;
+      if (!anyTokens) {
+        renderEmpty(resultsContainer);
+        return;
+      }
+
       renderResult(resultsContainer, result);
     }
 
@@ -404,20 +472,16 @@
   }
 
   function renderResult(container, result) {
-    // 里程碑 4 完善：生成结果 HTML
     var html = '<div class="cost-result">';
     if (!result.computable) {
-      html += '<p class="cost-uncomputable">\u8be5\u6a21\u578b\u65e0\u6cd5\u8ba1\u7b97\uff1a' + escapeText(result.reason) + '</p>';
+      html += '<p class="cost-msg cost-uncomputable">\u8be5\u6a21\u578b\u65e0\u6cd5\u8ba1\u7b97\uff1a' + escapeText(result.reason) + '</p>';
     } else {
-      html += '<p class="cost-total">' + escapeText(formatTotal(result)) + '</p>';
-      html += '<table class="cost-breakdown"><tbody>';
-      for (var i = 0; i < TOKEN_DIMENSIONS.length; i++) {
-        var dim = TOKEN_DIMENSIONS[i];
-        var d = result.dimensions[dim];
-        if (!d) continue;
-        html += '<tr><th>' + escapeText(dim) + '</th><td>' + escapeText(formatDimension(dim, d)) + '</td></tr>';
-      }
-      html += '</tbody></table>';
+      html += '<p class="cost-sum">'
+        + '<span class="cost-sum-lab">\u5408\u8ba1</span>'
+        + '<span class="cost-sum-val">' + escapeText(formatTotal(result)) + '</span>'
+        + '<span class="cost-sum-note">\u8bf7\u6c42\u6570 ' + escapeText(String(result.requests || 1)) + '</span>'
+        + '</p>';
+      html += '<div class="ptable-wrap">' + breakdownTable(result, { className: 'cost-tbl cost-breakdown' }) + '</div>';
       html += '<p class="cost-source">\u8ba1\u7b97\u503c\uff0c\u975e\u5b98\u65b9\u62a5\u4ef7\u3002\u5355\u4ef7\u6765\u6e90\uff1a'
         + escapeText(result.planId || '') + ' \u00b7 \u6838\u5bf9\u65e5\u671f\uff1a' + escapeText(result.lastSeen || '\u2014') + '</p>';
     }
@@ -425,12 +489,23 @@
     container.innerHTML = html;
   }
 
+  /**
+   * 还没填用量时的占位。
+   *
+   * 为什么需要它：不填 tokens 时 total 恰好是 0，而 0 在这套口径里读作「官方免费」——
+   * 直接把 0 显示成「免费」是把「没输入」说成了「不要钱」，与本模块红线 2
+   * （0 与 null 是两句不同的话）是同一类错。所以**先用一句话要输入**，算出 0 才说免费。
+   */
+  function renderEmpty(container) {
+    container.innerHTML = '<p class="cost-msg cost-idle">\u5728\u4e0a\u9762\u586b\u5165 token \u7528\u91cf\uff0c\u8fd9\u91cc\u663e\u793a\u6309\u5df2\u6536\u5f55\u5b98\u65b9\u5355\u4ef7\u7b97\u51fa\u7684\u6210\u672c\u3002</p>';
+  }
+
   function renderNoMatch(container) {
-    container.innerHTML = '<p class="cost-no-match">\u8bf7\u9009\u62e9\u6a21\u578b\u4e0e\u6863\u4f4d</p>';
+    container.innerHTML = '<p class="cost-msg cost-no-match">\u8bf7\u9009\u62e9\u6a21\u578b\u4e0e\u6863\u4f4d</p>';
   }
 
   function renderError(container, errors) {
-    container.innerHTML = '<p class="cost-error">\u8f93\u5165\u65e0\u6548\uff1a' + escapeText(errors.join('\uff0c')) + '</p>';
+    container.innerHTML = '<p class="cost-msg cost-error">\u8f93\u5165\u65e0\u6548\uff1a' + escapeText(errors.join('\uff0c')) + '</p>';
   }
 
   function escapeText(s) {
@@ -451,6 +526,9 @@
       formatNumber: formatNumber,
       formatDimension: formatDimension,
       formatTotal: formatTotal,
+      rateText: rateText,
+      resultCaption: resultCaption,
+      breakdownTable: breakdownTable,
       currencyLabel: currencyLabel,
       unitLabel: unitLabel,
       init: init,
