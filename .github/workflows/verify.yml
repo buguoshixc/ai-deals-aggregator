@@ -145,6 +145,14 @@ jobs:
       #    项数**仍然是 39**：被删的是门禁**步骤**（由 GATE_STEP_NAMES / GATE_STEP_RUN /
       #    GATE_ARTIFACT_STEPS 三处逐条对账），不是 check-ci 自己的断言项；数字没变，
       #    实跑确认过了，**不要凭感觉改这一行**。
+      #    2026-10-16（v3.2 订阅出口回归 · 用户显式授权部分反转）：门禁**加回两步** ——
+      #    `Feed self-test`（L2，紧挨 `Assemble site` 之前）与
+      #    `Feed reproducibility (build twice, byte-compare)`（L3，紧挨 `Residue guard` 之后，
+      #    因此同样排在 `Assemble site` 之后 —— 它比对的是**产物**）。
+      #    项数**仍然是 39**：恢复的同样是门禁**步骤**（三处逐条对账同上），不是 check-ci 的
+      #    断言项 —— 「多了一道闸门」与「改了闸门口径」刻意不同源，前者不该动这个数字。
+      #    恢复的范围只有订阅出口：`Data-docs self-test` **没有**回来（数据出口依旧下架）。
+      #    这一步的绿由 t5 的构建接线（订阅产物落盘）保证；数字未动，**不要凭感觉改这一行**。
       - name: CI consistency (action / runner / node-version / engines drift)
         run: node scripts/tools/check-ci-consistency.js --expect-checks=39
 

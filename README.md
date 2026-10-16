@@ -21,7 +21,7 @@ v3.0（`v3.0-ai-deals-knowledge-base`）把站点从「优惠 + 套餐 + API 价
 | `/vendor/<slug>/` | 这一家厂商的全部资料（优惠 / 套餐 / API / 模型 / 变化 / 订阅） | 既有数据的显式 join |
 | `/archive/` | 消失过的东西去哪了（**资料消失 ≠ 资料删除**） | 三份变化日志重放 |
 | `/docs/data/` | 这些数据怎么用、能不能引用 | `/data/index.json` 清单 |
-| `/feed/plans/api/changes.xml|json` | API 价格变化可以订阅 | `api-plan-history.json` |
+| `/feed.xml` `/feed.json` | 站根两份订阅产物（Atom 1.0 / JSON Feed 1.1）—— v3.2 部分反转后**只此两份**（见下面「订阅」一节） | 构建期生成，唯一表 = `scripts/lib/feed.js` 的 `FEED_FILES` |
 
 > **端点命名易踩坑（审计 P3-28，2026-10-04 补文档说明；未新增任何页面/路由）**：
 > ① Manifest 的**真实地址是 `/data/index.json`**（目录 + 文件名），`/data-index.json` 在线上是 404；
@@ -64,7 +64,8 @@ npm run collect:dry     # 只采集并打印报告，不写盘
 npm run collect         # 全量采集并写入 deals.json
 npm test                # 数据 + 前端静态校验（零依赖，可直接跑）
 npm run test:strict     # 额外校验内容质量指标
-npm run build           # 校验 → 组装并预渲染 dist/ → 产物自检
+npm run build           # 校验 → 组装并预渲染 dist/ → 产物自检（**覆盖共享发布目录 dist/**）
+npm run build:dev       # 同上，但产物落 dist.dev/ —— 多会话/并行作业时用这个，别覆盖 dist/
 npm run verify          # 真浏览器验收（密度/裁切/hover/筛选/弹层/移动端）
 npm run verify:shots    # 同上，并把截图写到 mockups/.preview/
 npm run selftest:seo    # v1.7 SEO 门禁演练：27 个检查码逐个定向篡改，每个都必须会响
@@ -78,10 +79,18 @@ node scripts/serve.js --dir=dist       # 预览发布产物（预渲染后的 in
 跑一遍 CI 会跑的全部静态门禁（`npm run verify` 需要浏览器，单列）。
 下面刻意写成**一行**：`&&` 在 bash 与 PowerShell 7 里都能用，而换行续行符两边不一样
 （bash 是 `\`、PowerShell 是反引号），写成多行会让其中一边复制过去跑不起来。
+> ⚠️ **Windows PowerShell 5.1 不支持 `&&`**（那是解析错误，不是命令失败）。那种 shell 下用
+> `cmd /c "…"` 跑这一行；先确认版本：`$PSVersionTable.PSVersion`。
 
 ```bash
-npm run test:strict && npm run check:reproducible && npm run plans:rebuild --dry-run && npm run check:plans:reproducible && npm run check:history && npm run migrate:audience:verify && npm run check:zh && npm run selftest:zh && npm run selftest:expiry && npm run selftest:text && npm run selftest:health && npm run selftest:provenance && npm run selftest:history && npm run selftest:changes && npm run selftest:audience && npm run selftest:app-token && npm run selftest:api-cost && npm run selftest:plans && npm run build && npm run check:ci
+npm run test:strict && npm run check:reproducible && npm run plans:rebuild --dry-run && npm run check:plans:reproducible && npm run check:history && npm run migrate:audience:verify && npm run check:zh && npm run selftest:zh && npm run selftest:expiry && npm run selftest:text && npm run selftest:health && npm run selftest:provenance && npm run selftest:history && npm run selftest:changes && npm run selftest:audience && npm run selftest:app-token && npm run selftest:api-cost && npm run selftest:plans && npm run build && npm run check:feed:reproducible && npm run check:ci
 ```
+
+> ⚠️ 这一行里面的 `npm run build` **写的就是共享发布目录 `dist/`**，而且它在 CI 语境下是对的 ——
+> `deploy.yml` 的 build 作业跑完直接上传 `dist/`。但**多会话/并行作业**时它会整体换掉别人
+> 正在用的 `dist/`（v3.2 收口期间发生过两次，取证见
+> [`research/v3.2-feed-and-changes-report.md`](research/v3.2-feed-and-changes-report.md)）。
+> 那种场合只把这**一处**换成 `npm run build:dev`（产物落 `dist.dev/`），其余步骤一字不改。
 
 > `migrate:audience:verify` **不需要参数**：它默认跑 `scripts/data/fixtures/` 下那对合成夹具
 > （9 条记录逐分支覆盖）。要比对一次真实的 `migrate.js --audience`，成对传
@@ -135,8 +144,8 @@ node scripts/tools/render-source.js <url> --diag --wait=文案1|文案2   # 渲�
 | `/plans/coding/` | **AI Coding 套餐对比**（v2.2：9 条套餐一张表，可筛选 / 搜索 / 排序 / 逐行展开溯源；只列事实不排名） | ✅ |
 | `/plans/api/` | **API / Token 计费对比**（v2.5：7 条计费记录 / 37 个模型计价条目 / 5 家平台，11 列预渲染静态表；只列事实，零控件） | ✅ |
 | `/tools/api-cost/` | **API 成本计算器**（v3.1：按已收录官方单价计算 token 用量成本；不排序 / 不推荐 / 不跨币种 / 不折算 credits） | ✅ |
-| `/changes/` `/feeds/` `/status/` | 变化雷达 / 订阅中心 / 数据源状态 | ✅ |
-| `/feed/**`、`feed.xml`、`feed.json` | 24 份订阅 × 2 种格式 = 48 个文件 | 资源，不进 sitemap |
+| `/changes/` `/status/` | 变化雷达 / 数据源状态（`/feeds/` 订阅中心已于 2026-10 下架，v3.2 **未**恢复） | ✅ |
+| `feed.xml` `feed.json` | 站根 **2 份**订阅产物（v3.2；**不是页面**，不进 sitemap） | 资源，不进 sitemap |
 
 **合计 115 个 HTML 页**（112 条可索引 + 3 条 noindex 别名），sitemap **112 条**，dist **227 个文件**。
 
@@ -147,8 +156,10 @@ node scripts/tools/render-source.js <url> --diag --wait=文案1|文案2   # 渲�
 > 页脚导航两边都在；`verify-site.js` §20b 用「与 `/plans/api/` 双向可达」这条断言守着这个方向。
 
 > ⚠️ 上表是 **v1.7 的 URL 地图快照**（v2.x 的行随后追加，标题未改），其中 `/vendor/<slug>/` 的 9 页、
-> `/plans/coding/` 的 9 条套餐、`/plans/api/` 的 7 条记录、`/feed/**` 的 24 份订阅与「合计」一行
-> **都已经不是当前值**。v3.0 实测：**dist 173 个 HTML 页 / 170 条可索引 / sitemap 170 条 / 290 个文件**，
+> `/plans/coding/` 的 9 条套餐、`/plans/api/` 的 7 条记录、`/feed/**` 的 24 份分源订阅、`/docs/data/`
+> 与 `/feeds/` 两个页面族、以及「合计」一行 **都已经不是当前值**。
+> （v3.2 已把订阅两行改成现役形态：**只恢复站根 `feed.xml` / `feed.json` 两份**，
+> 25 份分源 Feed 与 `/feeds/` 页族不恢复；数据文件出口仍是一份都不发。）v3.0 实测：**dist 173 个 HTML 页 / 170 条可索引 / sitemap 170 条 / 290 个文件**，
 > 厂商页 **19**、套餐 **23** 条、API 计费 **13 条 / 67 个计价条目**、订阅 **24 份（×2 = 48 文件）**。
 > （订阅一行按 **2026-10-04 重算**：`Get-ChildItem -Recurse -File dist/feed` = 48 文件 = 24 份 Feed，含 T12 新增的
 > 5 个 `category-*`；`/feeds/` 页列出 48 个地址。旧文写「25 份（×2 = 50 文件）」是 v3.0 当时读数。）
@@ -349,7 +360,8 @@ scripts/data/api-plan-history.json    # 追加式变化日志（与 plans/deals 
 
 > **本阶段刻意不做**：模型能力排行榜 / AA 分数 / benchmark / 综合推荐 / 成本模拟器 /
 > 跨币种跨单位换算 / credits→token 折算；`/plans/api/` 也没有筛选排序控件（v1 是预渲染静态表）。
-> 专属订阅源与 `/changes/` 分栏是**独立的下一次改动**（`feeds.js` 的注册表当前是单条 spec）。
+> 专属订阅源与 `/changes/` 分栏从未上线：`scripts/lib/feeds.js` 的注册表已随 2026-10 的订阅层
+> 下架删除；v3.2 只恢复了**站根两份**订阅产物与首页 / `/changes/` 两处声明，没有分源 Feed。
 
 ## 目录结构
 
@@ -1082,20 +1094,55 @@ npm run ai:selftest && npm run fixture:test   # 边界自检与解析器契约�
 
 ## 自动化与部署
 
-**门禁的步骤实现只有一处**：`.github/actions/gate/action.yml`（复合 action，**27 步**）——
-`npm ci → validate --strict → 可重建性门禁 → 历史门禁 → 迁移验收比对 → 译文门禁 → 译文演练
-→ 活动期限演练 → 文本清洗演练 → 健康演练 → 信息来源演练 → 历史记录演练 → 变化雷达演练
-→ 订阅演练 → SEO 演练 → 受众字段演练 → 采集机器人身份演练 → AI 层边界自检 → 采集器 fixture 回放
-→ 组装产物 → 订阅可复现（连构两次逐字节比对）→ SEO 独立验收（只读 dist/）→ 准备浏览器
-→ 浏览器可用性判定 → 真浏览器验收 → 回归比对 → 结论`。
+**门禁的步骤实现只有一处**：`.github/actions/gate/action.yml`（复合 action，**53 步**）——
+下面这条链**读自 action.yml 本身**（步骤名与顺序的唯一出处；`check-ci-consistency.js` 的
+`GATE_STEP_NAMES` 与它**同名同序、各 53 条**，`npm run check:ci` 的 (10) 号判据钉的就是这件事）：
+
+```
+Install dependencies → Architecture fitness (structure invariants) → Evidence policy (Tier-3 interception)
+→ Validate data (strict) → Reproducibility gate (no value without a source)
+→ History verify (log consistent with deals.json) → Migration verifier (audience provenance backfill)
+→ Translation gate (drift blocks, pending ages out) → Translation self-test → Expiry self-test
+→ Text / cleanText self-test → Source-health self-test → Provenance self-test → Deal-history self-test
+→ Change-radar self-test → SEO self-test → Audience self-test
+→ Roles-note self-test (official_urls note vs live wording) → App-token self-test → AI layer self-test
+→ Collector fixtures (offline replay) → Plans self-test (data + page) → Plan-history self-test
+→ Deal-plan-links self-test → API-plans self-test (data + page)
+→ API-cost self-test (calculator logic + teeth)
+→ API-plans reproducibility (curated → api-plans.json, byte-compare)
+→ API-plan-history verify (log consistent with api-plans.json)
+→ Model-registry self-test (identity + explicit mapping)
+→ Models reproducibility (registry → models.json, byte-compare)
+→ Model-registry links check (explicit mapping only, no similarity)
+→ Coverage report (gap list consistent with data)
+→ Coverage-targets self-test (intent layer + seven derived states)
+→ Model-role vocabulary self-test (registry ↔ freshness contract)
+→ Freshness self-test (catalogStatus branches)
+→ Freshness threshold sensitivity (±90 days, baseline invariants)
+→ **Feed self-test** → Assemble site (same path as deploy.yml)
+→ Models-page self-test (index + detail pages) → Plans-hub self-test (/plans/)
+→ Vendor-pages self-test (/vendor/) → Archive self-test (/archive/, synthetic ended/restored fixtures)
+→ Analytics self-test (bootstrap count / production guard / provider)
+→ Residue guard (deleted copy must not return; container floors)
+→ **Feed reproducibility (build twice, byte-compare)**
+→ Plans reproducibility (curated → plans.json, byte-compare)
+→ Plan-history verify (log consistent with plans.json) → SEO verification (independent, from dist/)
+→ Prepare browser for the real-browser gate → Browser availability decision (never silent)
+→ Real-browser acceptance (verify-site.js) → Regression verify (baseline compare) → Gate conclusion
+```
+
 三条 workflow 共用它，没有第二套测试链。
 （v2.0 的 `ai-maintenance.yml` **刻意不共用**：它不在采集/发布链上，只跑离线自检与候选生成 ——
 让"可选能力"挤进门禁，等于把 AI 的可用性变成站点的可用性。）
 
 > 步骤的**顺序与数量**是一份冻结契约（`check-ci-consistency.js` 的 `GATE_STEP_NAMES`）：
 > 谁把真浏览器验收、回归比对或译文门禁从门禁里拿掉，`npm run check:ci` 立刻红。
-> 所以上面这句「27 步」不是抄来的，是被断言钉住的（v2.0 的两步 —— AI 层边界自检与采集器
-> fixture 回放 —— 两者都离线、零依赖、不读任何 API key）。
+> 所以上面这句「53 步」不是抄来的，是被断言钉住的 —— v3.2 新增的两步是 `Feed self-test`
+> （紧挨 `Assemble site` 之前）与 `Feed reproducibility (build twice, byte-compare)`
+> （紧挨 `Residue guard` 之后）；两步都**不新增断言项数**（`--expect-checks=39` 未动）。
+> 历史口径：v2.0 时代是 27 步（见 `research/v2.0-ai-assisted-maintenance-report.md` §「门禁步骤 27 步」），
+> 之后各轮陆续加步；2026-10-16 实测 = **53 步**（`T7` 的 `08-check-ci.log` 原句：
+> `✓ (10) gate 复合 action 存在且步骤名序列等于冻结清单 — 共 53 步`）。
 
 - `.github/workflows/verify.yml`（**必需检查名 `gate`**）：`pull_request` / `push`(master) /
   手动。步骤是 checkout → setup-node → 一致性门禁（单行 `run:`，`--expect-checks=N` 是项数的
@@ -1222,10 +1269,34 @@ App 页面下载的私钥是 **PKCS#1**（`-----BEGIN RSA PRIVATE KEY-----`，�
 | 人工策展优惠（`scripts/data/curated_*.json`） | **人工** | 由人修改并推送，无自动更新 |
 | 采集器选择器 / 别名表 | **人工** | 对方站点改版导致零产出时需要人修 |
 
-## 订阅（v1.6）
+## 订阅（v1.6 · 2026-10 整族下架 · **v3.2 部分恢复**）
 
-**不需要账号、没有邮件列表、没有推送服务**：订阅就是一批构建期生成的静态文件，
-把地址粘进任意 RSS / JSON Feed 阅读器即可。全部入口在 **`/feeds/`（订阅中心）**。
+**不需要账号、没有邮件列表、没有推送服务**：订阅就是构建期生成的静态文件，
+把地址粘进任意 RSS / JSON Feed 阅读器即可。**现役入口只有站根两份**：
+
+| 类别 | 路径 | 回答 |
+|---|---|---|
+| 站点级订阅源（**现役**） | `/feed.xml`（Atom 1.0）· `/feed.json`（JSON Feed 1.1） | 本站最近发生的变化（套餐日志 / API 计费日志两支；优惠支今天 0 条，见下） |
+
+> ✅ **v3.2 部分反转（2026-10-16，用户显式授权）**：只恢复**站根两份订阅产物**与**两处声明**。
+> - 文件名 / MIME 的**唯一表**是 `scripts/lib/feed.js` 的 `FEED_FILES`（页面与构建期都从它现取，
+>   全仓不写第二份字面量）。
+> - 声明面：**首页**与 **`/changes/`** 各两条 `rel="alternate"`；**其余 183 页仍是 0 条** ——
+>   这一条没有被放宽：`verify-site.js` 的 `subscriptionDeclarationProblem()` 是**声明制**
+>   （未登记路由「带 `type` 的声明必须 0 条」逐字不变；登记路由要求条数 == 登记条数、type 集合
+>   不重不漏、href 逐路径命中、落点在产物里真实存在且非空、`dir` 缺失即 fail-closed）。
+> - 人类入口：页脚恢复一枚普通 `<a>`「订阅源」（**不是按钮**，无 JS 也能点；相对路径按输出深度解析，
+>   实测 185/185 页落在正确前缀上）。
+> - 产物侧：`lib/published-assets.js` 从「任何 `feed*` 基名判红」改成**逐路径登记**
+>   （`ALLOWED_PATHS` 里点名 `feed.xml` / `feed.json`；未登记仍是红，登记表读不到 ⇒ 退化到「一律判红」）。
+> - 可复现：`npm run check:feed:reproducible`（隔离目录连构两次、逐文件 SHA-256 + 聚合指纹 +
+>   两条墙钟探针）已进门禁链与上面的门禁一行式。
+>
+> ⛔ **不恢复**（边界）：`/feeds/` 订阅中心页族、25 份分源 Feed（`feed/**`）、`scripts/lib/feeds.js`、
+> 以及**任何数据文件出口** —— 除首页自己那份 `assets/data/offers.json` 之外仍是 0 份
+> （`feed.json` 走 `ALLOWED_PATHS` 逐路径登记，**不进** `ALLOWED_DATA` 那份「面向读者的数据集」清单）。
+
+### 历史口径（v1.6 原文，已不适用；保留作史述）
 
 | 类别 | 路径 | 回答 |
 |---|---|---|
@@ -1246,8 +1317,11 @@ App 页面下载的私钥是 **PKCS#1**（`-----BEGIN RSA PRIVATE KEY-----`，�
 
 > ⚠️ 2026-10 收口：**订阅层与数据出口整族下架** —— `scripts/lib/feeds.js`、
 > `scripts/lib/data-docs.js`、`/feeds/` 与 `/docs/data/` 两个页面族、全部 Feed 与数据文件
-> （除首页自己那份 `assets/data/offers.json`）都已删除；上面几段是历史口径，不再是现役行为。
-> 本节原先列的三条命令（`selftest:feeds` / `check:feeds:reproducible` / `report:feeds`）随之删除。
+> （除首页自己那份 `assets/data/offers.json`）都已删除。本节原先列的三条命令
+> （`selftest:feeds` / `check:feeds:reproducible` / `report:feeds`）随之删除。
+> **v3.2（2026-10-16，用户显式授权）只把站根两份订阅产物与两处声明请了回来**（见本节开头）；
+> 上面两张表（优惠 Feed / 变化 Feed 及其路径）仍是**历史口径**、不再适用，
+> `/feeds/` 页族与数据出口**没有**恢复。
 
 ## 隐私声明
 

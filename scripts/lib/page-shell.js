@@ -16,8 +16,9 @@
  * ## 它拥有什么 / 不拥有什么
  *
  * 拥有（**文档脚手架**）：DOCTYPE / html / head 基础 meta / title / description / robots /
- * canonical / hreflang / OG+Twitter / 主题色 / favicon / 共享 `<style>` / 页面级 `<style>` 槽位 /
- * JSON-LD 槽位 / 订阅发现槽位 / 共享页头标记（含 v3.1 那枚 GitHub 图标入口） / `<div class="wrap">` / `<main>` /
+ * canonical / hreflang / 订阅声明槽位（`feedTagsHtml`，**默认空串** ⇒ 不传的页面族产物逐字节不变） /
+ * OG+Twitter / 主题色 / favicon / 共享 `<style>` / 页面级 `<style>` 槽位 /
+ * JSON-LD 槽位 / 共享页头标记（含 v3.1 那枚 GitHub 图标入口） / `<div class="wrap">` / `<main>` /
  * 共享页脚（含 `finalizePage` 的路由占位符解析与统计注入）/ 页面级 `<script>` 槽位 / 收尾标签。
  *
  * **不拥有**（刻意留给调用方，避免这一层重新做业务判断）：
@@ -224,7 +225,11 @@ function docStart(spec) {
     robots = '', hreflang = [], og = null,
     faviconHref, logoCssHref = '',
     extraCss = '', jsonLdHtml = '',
-    headerExtra = '', mainClass, expectLayout, where = kind
+    headerExtra = '', mainClass, expectLayout, where = kind,
+    // v3.2：订阅声明槽位。**一段已经拼好的** `<link rel="alternate" …>` HTML（多行、行间 `\n`、
+    // **不带**尾换行），非空时本函数在它后面补恰好一个 `\n`；默认空串 ⇒ 输出与今天逐字节相同。
+    // 取值来源只有一处：`scripts/lib/feed.js` 的 `FEED_FILES`（调用方按 SITE_URL 现算绝对 URL）。
+    feedTagsHtml = ''
   } = spec;
 
   // ① 布局族：唯一出处是 page-kinds.js；查不到即硬失败（不回落成某个默认族）
@@ -257,6 +262,17 @@ function docStart(spec) {
   }
 
   const hreflangHtml = hreflang.map(x => `<link rel="alternate" hreflang="${x.hreflang}" href="${x.href}">`).join('\n');
+  // 订阅声明槽位：只做**形状**校验（是不是字符串 / 有没有带尾换行），不做语义判断 ——
+  // 「哪几个路由可以声明、要几条、MIME 合不合法」是产物验收那一侧的判据（`tools/verify-site.js`
+  // 的 `subscriptionDeclarationProblem()`），这一层只看输入形态，免得同一个判断出现两处实现。
+  if (typeof feedTagsHtml !== 'string') {
+    throw new Error(`页面壳：${where} 的 feedTagsHtml 必须是已经拼好的 HTML 字符串`
+      + `（route=${route}；实得 ${typeof feedTagsHtml}）—— 空串表示这一页不声明订阅源`);
+  }
+  if (feedTagsHtml.endsWith('\n')) {
+    throw new Error(`页面壳：${where} 的 feedTagsHtml 不许带尾换行（route=${route}）——`
+      + '本函数会在非空时补恰好一个换行，尾巴上再带一个就会在 <head> 里多出一行空白');
+  }
   const robotsHtml = robots ? `<meta name="robots" content="${robots}">\n` : '';
   const ogHtml = ogBlockHtml(og);
   const logoCssHtml = logoCssHref ? `<link rel="stylesheet" href="${logoCssHref}">\n` : '';
@@ -273,7 +289,7 @@ function docStart(spec) {
 <title>${title}</title>
 <meta name="description" content="${description}">
 ${robotsHtml}<link rel="canonical" href="${canonicalUrl}">
-${hreflangHtml}${hreflangHtml ? '\n' : ''}${ogHtml}${ogHtml ? '\n' : ''}<meta name="color-scheme" content="light dark">
+${hreflangHtml}${hreflangHtml ? '\n' : ''}${feedTagsHtml}${feedTagsHtml ? '\n' : ''}${ogHtml}${ogHtml ? '\n' : ''}<meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="${faviconHref}" type="image/svg+xml">

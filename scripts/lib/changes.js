@@ -321,6 +321,45 @@ function itemListRecords(radar) {
 }
 
 /* ------------------------------------------------------------------ */
+/* 「什么算可链接的优惠」—— **唯一判据**                                   */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 一条记录有没有**静态详情页**。这是全仓唯一的判据，两个消费者共用它：
+ *   · `buildRadar()` 的 `identityOf()`（决定变化条目的 `href` 是否有值 ⇒ 能不能进 ItemList）；
+ *   · `linkableDealIdsOf()`（给**没有** records 的消费者用 —— 订阅出口只拿到事件，拿不到
+ *     `deals.json`，所以必须由调用方把这份集合喂进去）。
+ *
+ * ⚠️ 这不是「什么样的记录值得展示」，而是**产物里有没有那个页面**：详情页只对
+ * `type === 'deal'` 的记录生成（`build-local.js` 的 `deals.filter(deal => deal.type === 'deal')`
+ * 那一支），`type === 'tool'` 的记录（实测 154 条里有 74 条）**没有** `deal/<id>/` 这一页。
+ * 对它们发链接就是死链 —— 这条纪律的两处表述见 `changes.js` 的 `identityOf()` 与
+ * `feed.js` 的 `urlOf()`，判据本体只在这里。
+ *
+ * 判据保持与 v1.5 起逐字相同的表达式（`Boolean(deal && deal.type === 'deal')`）：
+ * 抽出函数只是为了让第二处消费者不必再写一遍，**不是**顺手收紧语义。
+ */
+function isLinkableDeal(deal) {
+  return Boolean(deal && deal.type === 'deal');
+}
+
+/**
+ * 可链接记录的 id 集合（`Set<string>`）—— `isLinkableDeal()` 的**物化**，不是第二条判据：
+ * 记录连 `id` 都没有就进不了 id 集合（没 id 的记录本来也无从构造 `deal/<id>/`）。
+ *
+ * 为什么要有它：订阅出口的入参是「三支事件日志 + 各自的剖面」，**没有** records，
+ * 判不了记录类型。让它自己猜（或让它去读 `deals.json`）都会破坏「判据只有一处 / 纯函数层不读盘」，
+ * 所以由调用方（`build-local.js`）把 `linkableDealIdsOf(payload.deals)` 现算出来喂进去。
+ * 缺这份集合时 `feed.js` 对 deal 来源**抛错**（fail-closed）—— 猜着发 `deal/<id>/`
+ * 正是上一轮漏出去的那 19 条死链。
+ */
+function linkableDealIdsOf(deals) {
+  const ids = new Set();
+  for (const deal of deals || []) if (isLinkableDeal(deal) && deal.id) ids.add(deal.id);
+  return ids;
+}
+
+/* ------------------------------------------------------------------ */
 /* 主入口                                                               */
 /* ------------------------------------------------------------------ */
 
@@ -347,7 +386,9 @@ function buildRadar({ deals = [], store = null, asOf = null, availability = 'ok'
   const byId = new Map();
   for (const deal of deals || []) if (deal && deal.id) byId.set(deal.id, deal);
 
-  const scope = (deals || []).filter(deal => deal && deal.type === 'deal');
+  // coverage 数与「可链接的优惠」是同一批记录（有详情页的那些）—— 走同一个谓词，
+  // 免得「什么算优惠」在覆盖率与链接两处各漂各的（表达式与 v1.5 起完全等价）。
+  const scope = (deals || []).filter(deal => isLinkableDeal(deal));
   const withDeadline = scope.filter(deal => DATE_RE.test(String(deal.expiresAt || '')));
   const coverage = { dealsTotal: scope.length, dealsWithExpiresAt: withDeadline.length };
 
@@ -377,8 +418,8 @@ function buildRadar({ deals = [], store = null, asOf = null, availability = 'ok'
     const title = (deal && deal.title) || (label && label.title) || null;
     const vendor = (deal && deal.vendor) || (label && label.vendor) || '';
     // 只有 `type === 'deal'` 的记录才有静态详情页（见 build-local 的 writeDetailPages），
-    // 给工具条目或已离开数据集的条目挂链接就是造死链。
-    const linkable = Boolean(deal && deal.type === 'deal');
+    // 给工具条目或已离开数据集的条目挂链接就是造死链。判据 = `isLinkableDeal()`（唯一一处）。
+    const linkable = isLinkableDeal(deal);
     return {
       title: title ? String(title) : null,
       vendor: vendor ? String(vendor) : '',
@@ -664,6 +705,19 @@ module.exports = {
   isCosmetic,
   daysBetween,
   addDays,
+  // v3.2-feed-and-changes：排序器加进导出（**函数体一字不改**）。
+  // 唯一读者 = `scripts/lib/feed.js` 的 `buildFeedEntries()` —— 订阅流的全序排序必须与
+  // 变化雷达的分栏排序是**同一份比较器**，否则「同一天、同一批事件」在页面与订阅里
+  // 可能排出两个顺序（两份实现各看都对）。feed 条目正好有 `at` 与 `id` 两个键，
+  // `field` / `type` 缺席时按空串参与 tiebreak，所以这是一次零适配的复用。
+  // 判据：`scripts/tools/feed-selftest.js`（打乱输入 ⇒ 输出顺序一致）＋既有的
+  // `scripts/tools/changes-selftest.js`（必须仍全绿）。
+  compareByRecency,
+  // v3.2-feed-and-changes t13：「什么算可链接的优惠」的唯一判据（详情页存在性）。
+  // 读者 = `scripts/lib/feed.js`（deal 来源的 `linkableIds`；缺它即抛错）与
+  // `scripts/lib/changes.js` 自己的 `identityOf()`。判据本体只有一个 `isLinkableDeal()`
+  // （不导出：外部消费者要的是物化后的 id 集合，不是这条布尔式）。
+  linkableDealIdsOf,
   buildRadar,
   renderOrderOf,
   itemListRecords,

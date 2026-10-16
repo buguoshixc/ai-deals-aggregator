@@ -52,6 +52,15 @@
  * 留着只会得到「找不到文件」这种离原因很远的红。删 script 与删文件**必须同批**：
  * `check-ci-consistency.js` 的反向登记断言（磁盘上每个 `*-selftest.js` 都要能被某条
  * npm script 跑到）会抓半删状态。
+ *
+ * v3.2（本轮，**真话版**）：用户显式授权**部分反转**那次下架，恢复的是订阅出口这一支，
+ * 而且只恢复两步 —— `selftest:feed`（回到 L2：纯函数 + 仓库数据，不需要 dist）与
+ * `check:feed:reproducible`（回到 L3：连续隔离构建后逐字节比对产物）。
+ * 仍然**没有**恢复的：`selftest:data-docs`（数据出口 `/docs/data/` + `/data/index.json`
+ * 那一族依旧下架 —— 本轮的授权范围是订阅出口，不是数据暴露）。
+ * 恢复的方式与当年删除的方式对称：script、分层、门禁步骤（`action.yml`）、
+ * `check-ci-consistency.js` 的三张表**同批**改，一处不落；`--expect-checks` 保持 39
+ * （新增的是门禁**步骤**，不是 check-ci 的**断言**）。
  */
 const LAYERS = {
   L1: {
@@ -76,6 +85,10 @@ const LAYERS = {
       'selftest:provenance',
       'selftest:history',
       'selftest:changes',
+      // v3.2 订阅出口（用户显式授权部分反转「去数据暴露」那一轮）：
+      // 它演练的是 feed 的**纯函数**层（构造 / 排序 / 身份 / 两种渲染），不读 dist/、不写产物，
+      // 所以按本表自己的判据（「它需要什么才能跑」）它就是 L2。
+      'selftest:feed',
       'selftest:health',
       'selftest:plans',
       'selftest:api-plans',
@@ -106,6 +119,9 @@ const LAYERS = {
       'selftest:vendor',
       'selftest:archive',
       'selftest:analytics',
+      // v3.2 订阅出口：连续 N 次 `build-local.js --out=dist.qc-*` 之后逐字节比对 feed 产物 ——
+      // 判据是**产物**（所以它需要 dist/，判据与门禁里那条 L3 步骤逐字同源）。
+      'check:feed:reproducible',
       'verify:seo'
     ]
   },

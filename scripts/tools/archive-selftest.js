@@ -417,7 +417,22 @@ section('⑦′ 详情页的相对引用：每条都必须解析到真实目标�
   //   ③ 把每条相对引用按页面路由**解析**一遍，落点必须是已声明的路由或静态文件
   //      （判据来自 `page-kinds.js` 的声明表与路由模式，不复制渲染层的前缀算式）。
   const seo = require('../lib/seo');
-  const STATIC_FILES = new Set(['favicon.svg', 'assets/data/offers.json', 'robots.txt', 'og-image.png', 'sitemap.xml']);
+  // 静态文件登记表（**逐路径**）：产物根下那几个不是页面、但页面会**相对引用**到的文件。
+  //
+  // v3.2 新增两个**订阅产物**（名字取自 `FEED_FILES` 唯一表 —— 本文件不写第二份文件名 /
+  // MIME 字面量）：页脚那条订阅入口在产物里**每一页都有**（见 build-local 的
+  // 「页脚订阅入口逐层对账」），在 3 层详情页里长成 `../../../feed.xml`，必须解析得到，
+  // 否则下面 ③ 会把它点成死链。
+  //
+  // ⚠️ 如实记录（t6 实测）：夹具页由 `archive.js` 渲染，**本身不带站点页脚**，所以只加登记
+  // 而不动夹具时，这条登记在 ③ 的解析面里是**空的**（加不加都不红 —— 一颗打空气的牙）。
+  // 下面的 `footerAnchorOf()` 按产物里的真实形状给夹具补上那条锚，登记才**承重**：
+  // 去掉登记 ⇒ `archive/… → feed.xml` 当场点名变红；加回来 ⇒ 回绿（读数见 t6 证据）。
+  const { FEED_FILES } = require('../lib/feed');
+  const FEED_FILE_NAMES = FEED_FILES.map(([file]) => file);
+  /** 页脚那条订阅入口指向的文件 = Atom 那一份（`__FEED_HREF__` 登记的就是它） */
+  const FOOTER_FEED_FILE = (FEED_FILES.find(([, type]) => String(type).includes('xml')) || FEED_FILES[0])[0];
+  const STATIC_FILES = new Set(['favicon.svg', 'assets/data/offers.json', 'robots.txt', 'og-image.png', 'sitemap.xml', ...FEED_FILE_NAMES]);
   const declaredRoutes = new Set(Object.keys(pageKinds.FIXED_ROUTE_KINDS));
   // `/vendor/` 与 `/category/` 是**枢纽页**（kind='hub'，由落地页计划按数据生成），
   // 因此不在固定路由声明表里；它们是真实存在的页面（产物里 `vendor/index.html` /
@@ -465,12 +480,17 @@ section('⑦′ 详情页的相对引用：每条都必须解析到真实目标�
   check('索引页前缀同样由唯一实现给出（archive/ ⇒ ../）',
     archiveLib.routePrefixOf(archiveLib.ARCHIVE_INDEX_ROUTE) === '../');
 
+  // 页脚那条订阅入口的锚（形状 = 产物里的样子：`<前缀>` + `feed.xml`；文案不参与判据，
+  // 所以这里不复制页脚渲染器的中文措辞）。加它的理由见上面 STATIC_FILES 处的说明：
+  // 夹具不带站点页脚时，「订阅产物算不算静态文件」这条登记是空的。
+  const footerAnchorOf = prefix => `\n<p class="catnav"><a href="${prefix}${FOOTER_FEED_FILE}">订阅源</a></p>`;
   const pages = [
-    { route: archiveLib.ARCHIVE_INDEX_ROUTE, prefix: '../', html: archiveLib.renderArchiveIndex(archivesForIndex, { prefix: '../' }) },
+    { route: archiveLib.ARCHIVE_INDEX_ROUTE, prefix: '../', html: archiveLib.renderArchiveIndex(archivesForIndex, { prefix: '../' }) + footerAnchorOf('../') },
     ...fixtureEntries.map(entry => ({
       route: archiveLib.archiveEntryRoute(entry),
       prefix: archiveLib.archiveEntryPrefix(entry),
       html: archiveLib.renderArchiveEntry(entry, { prefix: archiveLib.archiveEntryPrefix(entry) })
+        + footerAnchorOf(archiveLib.archiveEntryPrefix(entry))
     }))
   ];
 

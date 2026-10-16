@@ -808,13 +808,21 @@ function summaryValues(rows) {
  */
 function topicChangesOf(radar, dealIds, options = {}) {
   const sectionOrder = options.sectionOrder || ['created', 'changed', 'endingSoon', 'ended', 'restored'];
-  const ids = dealIds instanceof Set ? dealIds : new Set(dealIds || []);
+  // `dealIds === null` ⇒ **不按 id 过滤**（取该分栏的全部条目）。
+  // 为什么必须显式分流：`new Set(dealIds || [])` 会把 null 退化成「空集 ⇒ 一条都不出」，
+  // 而首页折叠线以下那一块要的正是「不限定某批条目」这一档（契约第 9.1 条，v3.2 新增语义）。
+  // 其余入参（数组 / Set）行为与今天**逐字节一致** —— 五个既有调用点一行都不用改。
+  const ids = dealIds === null ? null : (dealIds instanceof Set ? dealIds : new Set(dealIds || []));
+  // `options.excludeIds`：在 id 过滤**之后**再减掉一批 id。首页用它排除**首屏条带里已经出现过**
+  // 的条目，于是新块与条带在结构上不可能重复展示同一件事。不传 ⇒ 空集 ⇒ 行为与今天逐字节一致。
+  const excludeIds = options.excludeIds instanceof Set ? options.excludeIds : new Set(options.excludeIds || []);
   if (!radar) return { availability: 'unavailable', asOf: null, startedAt: null, sections: [], totals: 0 };
   const sections = [];
   let totals = 0;
   for (const key of sectionOrder) {
     const bucket = (radar.sections && radar.sections[key]) || { items: [] };
-    const items = (bucket.items || []).filter(item => item && ids.has(item.id));
+    const items = (bucket.items || [])
+      .filter(item => item && (ids === null || ids.has(item.id)) && !excludeIds.has(item.id));
     if (!items.length) continue;
     totals += items.length;
     sections.push({ key, items });
