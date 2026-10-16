@@ -359,6 +359,8 @@ deals.json                    线上数据（优惠 / 福利）
 plans.json                    v2.1：AI Coding 套餐数据（见「数据契约（plans.json v1）」）
 api-plans.json                v2.5：API / Token 计费数据（见「API / Token 计费（v2.5）」）
 robots.txt                    放行搜索引擎与 AI 爬虫（GEO）
+BingSiteAuth.xml              Bing Webmaster Tools 站点归属验证文件（由 Bing 生成，构建期**原样**拷到站点根；
+                              改一个字节就验不过 —— 登记在 build-local.js 的 PUBLIC_FILES）
 assets/logos/
   manifest.json               厂商 logo 登记表（名称/来源/取图方式/质量）
   *.png *.svg                 从厂商官网下载的原始文件（见 assets/logos/README.md）

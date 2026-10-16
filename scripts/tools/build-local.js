@@ -236,8 +236,13 @@ const NOTES_MANIFEST_PATH = path.join(path.dirname(FINAL_OUT), `${path.basename(
  * 不走拷贝），判据在 `lib/published-assets.js`。
  * 失效方式：谁把某份 JSON 加回这张清单 ⇒ 构建自检的产物资产门禁当场红（点名路径），
  * 而不是让它悄悄上线 —— 这正是那条门禁存在的理由。
+ *
+ * ⚠️ 2026-10-16 加 `BingSiteAuth.xml`：Bing Webmaster Tools 的**站点归属验证**文件（由 Bing 生成，
+ * 内容只有一条 `<user>` 令牌），必须原样落在站点根才验得过 —— 所以它走这张表的**原样拷贝**，
+ * 而不是构建期生成：任何"顺手格式化一下"的改动都会让 Bing 那边验不过。
+ * 它与 `robots.txt` 同属「站对外的运维约定」，不是数据文件（登记理由见 `lib/published-assets.js`）。
  */
-const PUBLIC_FILES = ['index.html', 'favicon.svg', 'robots.txt', '.nojekyll'];
+const PUBLIC_FILES = ['index.html', 'favicon.svg', 'robots.txt', '.nojekyll', 'BingSiteAuth.xml'];
 /**
  * 构建期生成、不走源码拷贝的产物（**同样一份数据文件都没有**）。
  *
