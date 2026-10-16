@@ -98,7 +98,7 @@ console.log('\n--- 索引策略 ---');
 console.log('  可索引（进 sitemap）：首页 · 分类页 3 · 按需求页 7 · 分类落地页 ' + stats.byKind.category +
   ' · 厂商落地页 ' + stats.byKind.vendor + ' · 枢纽 ' + (stats.byKind.hub || 0) + ' · 详情页 · 状态页 · 变化雷达页');
 console.log('  noindex（不进 sitemap）：' + Object.keys(aliases).join(' · '));
-console.log('  非页面资源（从不进 sitemap）：.nojekyll · favicon.svg · logos.css · og-image.png · robots.txt · sitemap.xml · logos/** · assets/data/offers.json');
+console.log('  非页面资源（从不进 sitemap）：.nojekyll · favicon.svg · logos.css · og-image.png · robots.txt · sitemap.xml · BingSiteAuth.xml · logos/** · assets/data/offers.json');
 
 console.log('\n--- slug 契约 ---');
 console.log(`  厂商 slug（${Object.keys(site.VENDOR_SLUGS).length} 条，键是规范显示名）：`);

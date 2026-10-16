@@ -38,7 +38,12 @@ const ALLOWED_PATHS = [
   ['logos.css', '厂商 logo 的样式表：与 logos/ 同批生成，页面用它渲染 data-logo 图形'],
   ['og-image.png', '社交分享图（构建期由 lib/og-image.js 生成，被 og:image 引用）'],
   ['robots.txt', '抓取策略（声明 sitemap 地址，是站点对外的运维约定而不是数据）'],
-  ['sitemap.xml', '站点地图（构建期按页面集合生成，搜索引擎读它）']
+  ['sitemap.xml', '站点地图（构建期按页面集合生成，搜索引擎读它）'],
+  // Bing Webmaster Tools 的**站点归属验证**文件（2026-10-16 加）。它与上面两条同属
+  // 「站对外的运维约定」那一类：没有页面引用它、它也不进 sitemap，但**必须**能在站点根
+  // 被原样 GET 到 —— Bing 抓的就是这个路径下的这份内容，改一个字节就验不过。
+  ['BingSiteAuth.xml', 'Bing Webmaster Tools 的站点归属验证文件（Bing 生成，内容只有一条 <user> 令牌）：'
+    + '搜索引擎的运维约定而不是数据，也没有任何页面引用它']
 ];
 
 /** 允许出现在产物里的**目录前缀**（同样逐条写理由；前缀以 `/` 结尾，只匹配目录内的文件）。 */
