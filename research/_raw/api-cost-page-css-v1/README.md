@@ -17,7 +17,17 @@
 | `geometry-before.json` / `geometry-after.json` | 逐档（390/761/940/1280/1440）现场几何：控件盒与计算样式、两张表的列右缘、页高、横向溢出 | `node .scratch/apicost/shots.mjs <tag>`（在对应的工作树里跑，见下） |
 | `verify-report-dist-929-0.json` | 要推的那棵树：`verify-site.js --compare=… --json=…` **929 项 / 0 失败**（`/tools/api-cost/` 前缀 31 条；`--compare` 6 条） | `node scripts/tools/verify-site.js --compare=research/_raw/ours-baseline/verify.json --json=<文件>` |
 | `verify-report-mutant-929-5.json` | **变异牙**：产物里第二个 `<style>`（含 `.cost-panel`，4775 字节）整块删掉、其余字节原样 ⇒ **929 项 / 失败 5 项**：红的正好是 5 条依赖页面 CSS 的判据，**旧那 23 条一条都不红** | `node .scratch/apicost/make-mutant.mjs <产物目录> <副本目录>`（把 `<产物>.notes.ndjson` 复制成 `<副本>.notes.ndjson`）→ `node scripts/tools/verify-site.js --dir=<副本> …` |
+| `live-gate-1440.json` | **上线之后**把这一轮的判据指到**线上 URL**上原样重跑：**9 项 / 0 失败**（§20b 8 条 + §22c ③c 1 条；判据代码与 `verify-site.js` 逐字同构），含控件行左边缘 `47 / 499.66 / 952.33`、示例表 1380 = 列宽、caption 1 行、空态不含「免费」、两表同列模型、数字列右对齐等逐条读数 | `node .scratch/apicost/live-gate.mjs`（默认打 `https://buguoshixc.github.io/ai-deals-aggregator/tools/api-cost/`，`LIVE_URL=` 可换） |
 | `README.md` | 本文件 | — |
+
+> **订正（2026-10-16，推送后自查）**：`docs/DESIGN-RULES.md` 那一节的「症状」表，第一版把**改后**控件行的
+> 左边缘写成 `47 / 534.8 / 1022.5`。其中后两个数抄自本目录**之外**的中间态文件
+> `.scratch/apicost/after/geometry.json`（那是当时还没定稿的**两列结果表**的
+> `breakdownRows[].tdBox.x`），不是控件行读数；而且它与同一格里的「宽各 440.66px」**算术不相容**
+> （3×440.66 + 2×47 ≈ 1416 ≠ 面板内容宽 1346）。已订正为 **`47 / 499.66 / 952.33`**，
+> 依据是本目录的 `geometry-after.json`（`selectBox.x = 47`、宽 `440.7`）、@1440 本地构建、
+> 以及 `live-gate-1440.json`（线上页）。**原值不会有任何门禁拦下** —— 这正是它值得记一笔的原因：
+> 两个文件同名同形（都 1844 行）、只差数字，抄错时静默通过。
 
 想看逐条判据（含 detail 读数）：
 
