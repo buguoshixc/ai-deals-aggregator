@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-10-17T00:12:14+08:00",
+  "updatedAt": "2026-10-17T23:04:28+08:00",
   "count": 156,
   "deals": [
     {
@@ -3150,32 +3150,6 @@
       "verifiedAt": null
     },
     {
-      "id": "bf08e4fbd5ac",
-      "title": "Star By Face",
-      "vendor": "Star By",
-      "url": "https://starbyface.com/",
-      "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/star-by-face",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "图像绘画",
-      "description": "A tool to find celebrity look-alike suggestions based on your photo.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-10-17",
-      "verified": false,
-      "verifiedAt": null,
-      "zh": {
-        "description": "上传照片，找出与你相像的名人。"
-      }
-    },
-    {
       "id": "f9720295b45d",
       "title": "AutoDraw",
       "vendor": "AutoDraw",
@@ -3199,6 +3173,32 @@
       "verifiedAt": null,
       "zh": {
         "description": "画画版的自动纠错。"
+      }
+    },
+    {
+      "id": "bf08e4fbd5ac",
+      "title": "Star By Face",
+      "vendor": "Star By",
+      "url": "https://starbyface.com/",
+      "source": "Futuretools",
+      "sourceUrl": "https://futuretools.io/tools/star-by-face",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "图像绘画",
+      "description": "A tool to find celebrity look-alike suggestions based on your photo.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-10-17",
+      "verified": false,
+      "verifiedAt": null,
+      "zh": {
+        "description": "上传照片，找出与你相像的名人。"
       }
     },
     {
