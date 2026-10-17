@@ -72,6 +72,12 @@ const RESIDUE_FILE = path.join(ROOT, 'scripts', 'data', 'residue-guard.json');
 /** 真实数据（L2 = 需要仓库数据）：可链接性的判据只在真实记录上才有意义 */
 const REAL_DEALS_FILE = path.join(ROOT, 'deals.json');
 const REAL_DEAL_HISTORY_FILE = path.join(ROOT, 'scripts', 'data', 'deal-history.json');
+/**
+ * 断言 ③ 的**名字只写一份**：它同时被 `runJudgements()` 的判据表和 `牙-5` 的 `expectRed` 消费，
+ * 各写一份字面量 ⇒ 改名时一边改了另一边没改 ⇒ 那颗牙会静默地「期望一个永远不会出现的红」。
+ */
+const JUDGEMENT_REAL_DEAL_NAME =
+  '③ 真实数据：入选集合 == 有详情页记录的事件集合（随数据走，不写死条数）';
 /** 「不许各写一份字面量」的扫描面（契约第 1.4 条）——唯一豁免 = feed.js 自己（它就是那张表） */
 const SINGLE_SOURCE_SCAN = [
   'scripts/tools/verify-site.js',
@@ -528,12 +534,7 @@ function realDealReading(mod) {
   const deals = JSON.parse(fs.readFileSync(REAL_DEALS_FILE, 'utf8')).deals;
   const store = JSON.parse(fs.readFileSync(REAL_DEAL_HISTORY_FILE, 'utf8'));
   const linkableIds = changes.linkableDealIdsOf(deals);
-  const byId = new Map(deals.map(deal => [deal.id, deal]));
   const events = historyCore.eventsOf(store);
-  const withPage = events.filter(event => {
-    const record = byId.get(event.id);
-    return Boolean(record && record.type === 'deal');
-  });
   const run = buildWithStats(mod, {
     sources: [{
       kind: 'deal', profile: history.PROFILE, store, titleOf: () => '', linkableIds
@@ -544,58 +545,60 @@ function realDealReading(mod) {
     deals,
     linkableIds,
     events,
-    withPage,
     entries: run.entries,
     stats: run.stats,
     selectedKeys,
-    dropped: events.length - run.entries.length,
-    toolEvents: events.length - withPage.length,
-    byId
+    // 按记录字段**独立**重算一遍「哪些记录有详情页」，供判据①对账（见断言 ③ 的注释）。
+    // 这里刻意只看 type==='deal'，不看 linkableIds —— 否则就是拿实现检验实现，分歧永远测不出来。
+    recordDerivedIds: new Set(deals
+      .filter(record => record && record.id && record.type === 'deal')
+      .map(record => record.id))
   };
 }
 
 /**
  * 断言 ③（真实数据 · 这次漏检的直接补牙）：真实 `deals.json` + `deal-history.json` 下
- * deal 支必须 `kept === 0` 且 `dropped.notLinkable === 20`（工具类记录 20/20 没有详情页）。
- * 这条判据**随数据走**（不写死 20/0 的语义）：它要求「入选集合 == 真的有页面的记录的事件集合」，
- * 今天那个集合是空的 ⇒ 入选 0；明天真出现一条 deal 记录的事件，它会要求那一条**必须**入选。
+ * deal 支只许发「记录真有详情页」的事件。判定按 `linkableIds` 走，
+ * **不写死任何条数** —— 事件条数、工具类占比每天都可能变，
+ * 今天 22 条事件恰好一条都不该发，明天出现一条有页面的事件，它就必须被发出来。
  *
  * ⚠️ 这里**故意**按记录字段独立重算一遍「哪些记录有详情页」：
- * 判据本体在 `changes.js` 的 `isLinkableDeal()`（唯一一处），而测试必须能与实现分歧 ——
- * 所以两个方向都判：① 那份 `Set` 必须等于按记录字段重算出来的 id 集合（判据没过松 / 过严）；
- * ② 入选集合必须等于「真的有页面的记录」的事件集合（判据被正确消费）。
+ * 判据本体在 `changes.js` 的 `linkableDealIdsOf()`（唯一一处），而测试必须能与实现分歧 ——
+ * 所以两个方向都判：
+ *   ① 那份 `Set` 必须等于按记录字段重算出来的 id 集合（判据本身没过松 / 过严）；
+ *   ② 入选集合必须等于「有页面记录的事件」集合（判据被正确消费：不该发的发了 = 死链，该发的没发 = 漏发）。
  */
 function judgeRealDataDealLinkability(mod) {
   const reading = realDealReading(mod);
-  const recordDerivedIds = new Set(reading.deals
-    .filter(record => record && record.id && record.type === 'deal')
-    .map(record => record.id));
-  const setMatchesRecords = recordDerivedIds.size === reading.linkableIds.size
-    && [...recordDerivedIds].every(id => reading.linkableIds.has(id));
-  const linkableKeys = new Set(reading.linkableIds);
+  const linkableKeys = reading.linkableIds;
+  // 该发的事件：筛选条件**只**引用 linkableIds —— 若写成 `linkableIds.has(e.id) && <同一字段>`，
+  // 判据①一旦变红这里会跟着空掉，这颗牙就被静默拔掉了。
+  const mustSelect = reading.events.filter(event => linkableKeys.has(event.id));
+  const mustSelectKeys = mustSelect.map(event => event.id).slice().sort().join(',');
+  const selectedMatchMustSelect = reading.selectedKeys.slice().sort().join(',') === mustSelectKeys;
   const selectedAllLinkable = reading.selectedKeys.every(key => linkableKeys.has(key));
-  const selectedMatchEventsWithPage = reading.selectedKeys.slice().sort().join(',')
-    === reading.withPage.map(event => event.id).slice().sort().join(',');
+  // 反向：kept 与入选集合必须对得上（防「边入选边丢弃」的记账错位）。
+  const keptMatchesSelection = reading.stats.kept === reading.selectedKeys.length;
+  // 判据①：Set 与按记录字段重算一一对应。
+  const setMatchesRecords = reading.recordDerivedIds.size === linkableKeys.size
+    && [...reading.recordDerivedIds].every(id => linkableKeys.has(id));
   const accountsClosed = reading.stats.kept + droppedTotalOf(reading.stats)
     + reading.stats.truncated === reading.stats.considered;
+  // 被丢的每条都必须真的没有详情页（既没有 deal 型记录，或那份 Set 里没有它）。
   const droppedAllUnlinkable = reading.events
     .filter(event => !reading.selectedKeys.includes(event.id))
-    .every(event => {
-      const record = reading.byId.get(event.id);
-      return !(record && record.type === 'deal');
-    });
+    .every(event => !linkableKeys.has(event.id));
   return {
-    ok: reading.events.length > 0 && setMatchesRecords && selectedAllLinkable
-      && selectedMatchEventsWithPage && accountsClosed && droppedAllUnlinkable
-      && reading.stats.kept === reading.withPage.length
-      && reading.stats.dropped.notLinkable === reading.toolEvents
-      && reading.stats.dropped.notLinkable === 20,
-    detail: `真实 deals.json ${reading.deals.length} 条（有详情页 ${reading.linkableIds.size} 条 · 工具类 `
-      + `${reading.deals.length - reading.linkableIds.size} 条）· deal-history ${reading.events.length} 条事件`
-      + `（工具类记录 ${reading.toolEvents}/${reading.events.length}）⇒ ${statsLine(reading.stats)}`
-      + ` · 判据集合 == 按记录字段重算 ${setMatchesRecords} · 入选逐条有详情页 ${selectedAllLinkable}`
-      + ` · 入选集合 == 有页面记录的事件集合 ${selectedMatchEventsWithPage}`
-      + ` · 被丢的逐条确实不可链接 ${droppedAllUnlinkable}`
+    ok: reading.events.length > 0 && setMatchesRecords && selectedMatchMustSelect
+      && selectedAllLinkable && keptMatchesSelection && accountsClosed && droppedAllUnlinkable,
+    detail: `真实 deals.json ${reading.deals.length} 条（有详情页 ${linkableKeys.size} 条 · 无详情页 `
+      + `${reading.deals.length - linkableKeys.size} 条）· deal-history ${reading.events.length} 条事件`
+      + `（指向无详情页记录 ${reading.events.length - mustSelect.length}/${reading.events.length}`
+      + ` ⇒ 该发 ${mustSelect.length} 条）⇒ ${statsLine(reading.stats)}`
+      + ` · 判据集合 == 按记录字段重算 ${setMatchesRecords}`
+      + ` · 入选集合 == 该发集合 ${selectedMatchMustSelect} · 入选逐条有详情页 ${selectedAllLinkable}`
+      + ` · kept == 入选条数 ${keptMatchesSelection}`
+      + ` · 被丢的逐条确实没有详情页 ${droppedAllUnlinkable}`
   };
 }
 
@@ -887,7 +890,7 @@ const JUDGEMENTS = [
   { name: '排除规则（算不出 url / at 非法 ⇒ 丢弃；未知 kind ⇒ 抛错）', run: judgeExclusions },
   { name: '① deal 可链接门（缺集合 / 非 Set ⇒ 抛错，不许靠猜发 deal/<id>/）', run: judgeDealLinkableGate },
   { name: '② stats.dropped.notLinkable 定向（集合排除某 id ⇒ 恰好 +1 且该条不在 entries）', run: judgeNotLinkableBucket },
-  { name: '③ 真实数据：deal 支 kept === 0 · dropped.notLinkable === 20（20/20 是工具类）', run: judgeRealDataDealLinkability },
+  { name: JUDGEMENT_REAL_DEAL_NAME, run: judgeRealDataDealLinkability },
   { name: '④ stats 恒等式（超上限夹具：kept + Σdropped + truncated === considered）', run: judgeStatsIdentity },
   { name: '⑤ 三类丢弃各一例（notLinkable / noUrl / invalidAt 定向，无静默丢弃）', run: judgeDropBuckets },
   { name: '返回形状 { entries, stats }（两个渲染器仍只吃 entries 数组）', run: judgeReturnShape },
@@ -1320,10 +1323,7 @@ const TEETH = [
     what: '旧实现回归：不可链接的 deal 事件照样发 deal/<key>/（把可链接门关掉 ⇒ 死链回来）',
     anchor: '      if (kind === \'deal\' && !linkableIds.has(key)) { stats.dropped.notLinkable += 1; continue; }',
     replacement: '      if (false) { stats.dropped.notLinkable += 1; continue; }   // 【变异体·t13 旧实现】',
-    expectRed: [
-      '③ 真实数据：deal 支 kept === 0 · dropped.notLinkable === 20（20/20 是工具类）',
-      '② stats.dropped.notLinkable 定向（集合排除某 id ⇒ 恰好 +1 且该条不在 entries）'
-    ]
+    expectRed: [JUDGEMENT_REAL_DEAL_NAME, '② stats.dropped.notLinkable 定向（集合排除某 id ⇒ 恰好 +1 且该条不在 entries）']
   }
 ];
 
@@ -1402,9 +1402,9 @@ section('④ 读数（本次实跑）');
   console.log(`  上限读数：${many.length} 条事件 ⇒ 产出 ${cut.entries.length} 条（FEED_MAX_ITEMS = ${feed.FEED_MAX_ITEMS}）`
     + ` · ${statsLine(cut.stats)}`);
   console.log(`  deal 可链接门读数（t13）：缺集合 / 非 Set ⇒ 抛错 · 集合排除 ⇒ stats.dropped.notLinkable +1 · 空集合 ⇒ 0 条`);
-  console.log(`  真实数据读数（t13 补牙）：deals.json ${real.deals.length} 条（type=deal ${real.linkableIds.size} · 工具类 `
-    + `${real.deals.length - real.linkableIds.size}）· deal-history ${real.events.length} 条事件指向工具类记录 `
-    + `${real.toolEvents}/${real.events.length} ⇒ ${statsLine(real.stats)}`
+  console.log(`  真实数据读数（t13 补牙）：deals.json ${real.deals.length} 条（有详情页 ${real.linkableIds.size} · 无详情页 `
+    + `${real.deals.length - real.linkableIds.size}）· deal-history ${real.events.length} 条事件指向无详情页记录 `
+    + `${real.events.filter(event => !real.linkableIds.has(event.id)).length}/${real.events.length} ⇒ ${statsLine(real.stats)}`
     + `（不可链接反例：${real.events.filter(event => !real.selectedKeys.includes(event.id)).slice(0, 3).map(event => event.id).join(' / ')}）`);
   console.log(`  唯一表读数：${feed.FEED_FILES.map(([file, type]) => `${file} → ${type}`).join(' · ')}`
     + ` · 扫描 4 个读写方找这 4 个名字的带引号形态（${needles.length} 个名字）⇒ 0 处`);
