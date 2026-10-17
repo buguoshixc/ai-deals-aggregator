@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-14T03:40:59.424Z",
+  "updatedAt": "2026-10-16T16:12:14.683Z",
   "note": "每个来源保留两代页面结构摘要（不含页面正文）。用于 AI 诊断与人工排查；`npm run selftest:ai` 守着体积上限。",
   "sources": [
     {
       "source": "aitools",
       "name": "aitools.fyi",
-      "updatedAt": "2026-10-14T03:40:59.424Z",
+      "updatedAt": "2026-10-16T16:12:14.683Z",
       "current": {
-        "capturedAt": "2026-10-14T03:40:59.424Z",
+        "capturedAt": "2026-10-16T16:12:14.683Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
             "url": "https://aitools.fyi/",
-            "capturedAt": "2026-10-14T03:40:09.790Z",
+            "capturedAt": "2026-10-16T16:11:06.548Z",
             "httpStatus": 200,
             "bytes": 328114,
             "htmlSha256": "e662828a7377866d",
@@ -115,13 +115,13 @@
         ]
       },
       "previous": {
-        "capturedAt": "2026-10-13T18:57:47.683Z",
+        "capturedAt": "2026-10-16T15:53:34.657Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
             "url": "https://aitools.fyi/",
-            "capturedAt": "2026-10-13T18:57:07.499Z",
+            "capturedAt": "2026-10-16T15:52:25.710Z",
             "httpStatus": 200,
             "bytes": 328114,
             "htmlSha256": "e662828a7377866d",
@@ -225,18 +225,18 @@
     {
       "source": "cn_aliyun",
       "name": "阿里云百炼",
-      "updatedAt": "2026-10-14T03:40:59.424Z",
+      "updatedAt": "2026-10-16T16:12:14.683Z",
       "current": {
-        "capturedAt": "2026-10-14T03:40:59.424Z",
+        "capturedAt": "2026-10-16T16:12:14.683Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
             "url": "https://help.aliyun.com/zh/model-studio/new-free-quota",
-            "capturedAt": "2026-10-14T03:40:07.663Z",
+            "capturedAt": "2026-10-16T16:11:04.380Z",
             "httpStatus": 200,
-            "bytes": 71065,
-            "htmlSha256": "c7fc18865c3002aa",
+            "bytes": 71745,
+            "htmlSha256": "5c44e364cdaa1bb8",
             "titleSha256": "645631f20b7050a3",
             "markers": {
               "login": false,
@@ -255,7 +255,7 @@
               "listItem": 38,
               "heading": 34,
               "heading1": 1,
-              "link": 132,
+              "link": 134,
               "form": 0,
               "input": 2,
               "script": 23,
@@ -264,15 +264,15 @@
             "shape": {
               "hasDataTable": false,
               "hasCards": false,
-              "scriptToTextRatio": 3.19
+              "scriptToTextRatio": 3.17
             },
-            "textLength": 6495,
-            "textSha256": "c2c08940fcdc6cb0",
+            "textLength": 6651,
+            "textSha256": "80062814bc2bfb16",
             "keywordHits": {
-              "免费额度": 95,
+              "免费额度": 89,
               "新用户": 0,
               "有效期": 9,
-              "模型": 107
+              "模型": 99
             },
             "selectorHits": {
               "table": 0,
@@ -337,16 +337,16 @@
         ]
       },
       "previous": {
-        "capturedAt": "2026-10-13T18:57:47.683Z",
+        "capturedAt": "2026-10-16T15:53:34.657Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
             "url": "https://help.aliyun.com/zh/model-studio/new-free-quota",
-            "capturedAt": "2026-10-13T18:57:05.293Z",
+            "capturedAt": "2026-10-16T15:52:23.245Z",
             "httpStatus": 200,
-            "bytes": 71065,
-            "htmlSha256": "e6af68a99abd5366",
+            "bytes": 71745,
+            "htmlSha256": "07f04cc12fde42be",
             "titleSha256": "645631f20b7050a3",
             "markers": {
               "login": false,
@@ -365,7 +365,7 @@
               "listItem": 38,
               "heading": 34,
               "heading1": 1,
-              "link": 132,
+              "link": 134,
               "form": 0,
               "input": 2,
               "script": 23,
@@ -374,15 +374,15 @@
             "shape": {
               "hasDataTable": false,
               "hasCards": false,
-              "scriptToTextRatio": 3.19
+              "scriptToTextRatio": 3.17
             },
-            "textLength": 6495,
-            "textSha256": "c2c08940fcdc6cb0",
+            "textLength": 6651,
+            "textSha256": "80062814bc2bfb16",
             "keywordHits": {
-              "免费额度": 95,
+              "免费额度": 89,
               "新用户": 0,
               "有效期": 9,
-              "模型": 107
+              "模型": 99
             },
             "selectorHits": {
               "table": 0,
@@ -450,18 +450,18 @@
     {
       "source": "cn_qianfan",
       "name": "百度千帆",
-      "updatedAt": "2026-10-14T03:40:59.424Z",
+      "updatedAt": "2026-10-16T16:12:14.683Z",
       "current": {
-        "capturedAt": "2026-10-14T03:40:59.424Z",
+        "capturedAt": "2026-10-16T16:12:14.683Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
             "url": "https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg",
-            "capturedAt": "2026-10-14T03:40:05.782Z",
+            "capturedAt": "2026-10-16T16:11:02.449Z",
             "httpStatus": 200,
-            "bytes": 288126,
-            "htmlSha256": "62fe6827c9286514",
+            "bytes": 288114,
+            "htmlSha256": "5497f9319a7811f9",
             "titleSha256": "b6d7bbe6c415ad35",
             "markers": {
               "login": false,
@@ -492,7 +492,7 @@
               "scriptToTextRatio": 0.06
             },
             "textLength": 13115,
-            "textSha256": "99180eaa6cbc2831",
+            "textSha256": "a7eb4efc86587b90",
             "keywordHits": {
               "免费": 4,
               "赠送": 1,
@@ -515,7 +515,7 @@
               },
               {
                 "name": "level-3",
-                "count": 348
+                "count": 346
               },
               {
                 "name": "level-5",
@@ -535,7 +535,7 @@
               },
               {
                 "name": "level-2",
-                "count": 252
+                "count": 254
               },
               {
                 "name": "level-4",
@@ -562,16 +562,16 @@
         ]
       },
       "previous": {
-        "capturedAt": "2026-10-13T18:57:47.683Z",
+        "capturedAt": "2026-10-16T15:53:34.657Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
             "url": "https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg",
-            "capturedAt": "2026-10-13T18:57:02.812Z",
+            "capturedAt": "2026-10-16T15:52:21.490Z",
             "httpStatus": 200,
-            "bytes": 288126,
-            "htmlSha256": "62fe6827c9286514",
+            "bytes": 288114,
+            "htmlSha256": "5497f9319a7811f9",
             "titleSha256": "b6d7bbe6c415ad35",
             "markers": {
               "login": false,
@@ -602,7 +602,7 @@
               "scriptToTextRatio": 0.06
             },
             "textLength": 13115,
-            "textSha256": "99180eaa6cbc2831",
+            "textSha256": "a7eb4efc86587b90",
             "keywordHits": {
               "免费": 4,
               "赠送": 1,
@@ -625,7 +625,7 @@
               },
               {
                 "name": "level-3",
-                "count": 348
+                "count": 346
               },
               {
                 "name": "level-5",
@@ -645,7 +645,7 @@
               },
               {
                 "name": "level-2",
-                "count": 252
+                "count": 254
               },
               {
                 "name": "level-4",
@@ -675,18 +675,18 @@
     {
       "source": "cn_volc_ark",
       "name": "火山方舟",
-      "updatedAt": "2026-10-14T03:40:59.424Z",
+      "updatedAt": "2026-10-16T16:12:14.683Z",
       "current": {
-        "capturedAt": "2026-10-14T03:40:59.424Z",
+        "capturedAt": "2026-10-16T16:12:14.683Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
             "url": "https://www.volcengine.com/product/ark",
-            "capturedAt": "2026-10-14T03:40:58.869Z",
+            "capturedAt": "2026-10-16T16:12:14.136Z",
             "httpStatus": null,
-            "bytes": 2435077,
-            "htmlSha256": "82039f69391872dd",
+            "bytes": 2434645,
+            "htmlSha256": "14f824df0f65ba9e",
             "titleSha256": "e08d1beecacc59dd",
             "markers": {
               "login": false,
@@ -708,13 +708,13 @@
               "link": 198,
               "form": 0,
               "input": 2,
-              "script": 40,
-              "div": 2058
+              "script": 41,
+              "div": 2056
             },
             "shape": {
               "hasDataTable": true,
               "hasCards": true,
-              "scriptToTextRatio": 13.69
+              "scriptToTextRatio": 13.7
             },
             "textLength": 12472,
             "textSha256": "2de124253d9cf470",
@@ -727,7 +727,7 @@
             "selectorHits": {
               "table": 22,
               "table tr": 54,
-              "div": 2058
+              "div": 2056
             },
             "regexHits": {
               "free-word": 15
@@ -786,16 +786,16 @@
         ]
       },
       "previous": {
-        "capturedAt": "2026-10-13T18:57:47.683Z",
+        "capturedAt": "2026-10-16T15:53:34.657Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
             "url": "https://www.volcengine.com/product/ark",
-            "capturedAt": "2026-10-13T18:57:47.028Z",
+            "capturedAt": "2026-10-16T15:53:34.071Z",
             "httpStatus": null,
-            "bytes": 2434236,
-            "htmlSha256": "b12e4d41a28069b7",
+            "bytes": 2434543,
+            "htmlSha256": "d11bfaf7b73e0bb4",
             "titleSha256": "e08d1beecacc59dd",
             "markers": {
               "login": false,
@@ -817,13 +817,13 @@
               "link": 198,
               "form": 0,
               "input": 2,
-              "script": 40,
+              "script": 41,
               "div": 2056
             },
             "shape": {
               "hasDataTable": true,
               "hasCards": true,
-              "scriptToTextRatio": 13.69
+              "scriptToTextRatio": 13.7
             },
             "textLength": 12472,
             "textSha256": "2de124253d9cf470",
@@ -898,18 +898,18 @@
     {
       "source": "cn_zhipu",
       "name": "智谱AI",
-      "updatedAt": "2026-10-14T03:40:59.424Z",
+      "updatedAt": "2026-10-16T16:12:14.683Z",
       "current": {
-        "capturedAt": "2026-10-14T03:40:59.424Z",
+        "capturedAt": "2026-10-16T16:12:14.683Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
             "url": "https://docs.bigmodel.cn/cn/guide/start/model-overview",
-            "capturedAt": "2026-10-14T03:40:08.628Z",
+            "capturedAt": "2026-10-16T16:11:05.591Z",
             "httpStatus": 200,
-            "bytes": 859220,
-            "htmlSha256": "14c46b026ed943a7",
+            "bytes": 857775,
+            "htmlSha256": "3dc903223b402e43",
             "titleSha256": "1eb5be638a21ce44",
             "markers": {
               "login": false,
@@ -925,25 +925,25 @@
               "tr": 48,
               "td": 156,
               "card": 3,
-              "listItem": 39,
+              "listItem": 37,
               "heading": 18,
               "heading1": 1,
-              "link": 95,
+              "link": 93,
               "form": 0,
               "input": 0,
               "script": 132,
-              "div": 204
+              "div": 200
             },
             "shape": {
               "hasDataTable": true,
               "hasCards": true,
               "scriptToTextRatio": 99
             },
-            "textLength": 3164,
-            "textSha256": "9c6b80efdd3f4609",
+            "textLength": 3156,
+            "textSha256": "65f8bcbc96599ef6",
             "keywordHits": {
               "免费": 8,
-              "模型": 70,
+              "模型": 68,
               "额度": 0
             },
             "selectorHits": {
@@ -957,47 +957,47 @@
             "topClasses": [
               {
                 "name": "flex",
-                "count": 186
+                "count": 180
               },
               {
                 "name": "min-w-0",
-                "count": 116
+                "count": 110
               },
               {
                 "name": "items-center",
-                "count": 99
+                "count": 97
               },
               {
                 "name": "break-words",
-                "count": 65
-              },
-              {
-                "name": "w-full",
-                "count": 63
-              },
-              {
-                "name": "flex-1",
                 "count": 61
               },
               {
-                "name": "items-start",
-                "count": 59
+                "name": "w-full",
+                "count": 61
+              },
+              {
+                "name": "flex-1",
+                "count": 57
               },
               {
                 "name": "relative",
-                "count": 58
+                "count": 56
               },
               {
-                "name": "hyphens-auto",
+                "name": "items-start",
                 "count": 55
               },
               {
                 "name": "dark:text-gray-400",
-                "count": 54
+                "count": 52
+              },
+              {
+                "name": "hyphens-auto",
+                "count": 51
               },
               {
                 "name": "group",
-                "count": 51
+                "count": 49
               },
               {
                 "name": "link",
@@ -1008,16 +1008,16 @@
         ]
       },
       "previous": {
-        "capturedAt": "2026-10-13T18:57:47.683Z",
+        "capturedAt": "2026-10-16T15:53:34.657Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
             "url": "https://docs.bigmodel.cn/cn/guide/start/model-overview",
-            "capturedAt": "2026-10-13T18:57:06.708Z",
+            "capturedAt": "2026-10-16T15:52:24.558Z",
             "httpStatus": 200,
-            "bytes": 859220,
-            "htmlSha256": "14c46b026ed943a7",
+            "bytes": 857775,
+            "htmlSha256": "3dc903223b402e43",
             "titleSha256": "1eb5be638a21ce44",
             "markers": {
               "login": false,
@@ -1033,25 +1033,25 @@
               "tr": 48,
               "td": 156,
               "card": 3,
-              "listItem": 39,
+              "listItem": 37,
               "heading": 18,
               "heading1": 1,
-              "link": 95,
+              "link": 93,
               "form": 0,
               "input": 0,
               "script": 132,
-              "div": 204
+              "div": 200
             },
             "shape": {
               "hasDataTable": true,
               "hasCards": true,
               "scriptToTextRatio": 99
             },
-            "textLength": 3164,
-            "textSha256": "9c6b80efdd3f4609",
+            "textLength": 3156,
+            "textSha256": "65f8bcbc96599ef6",
             "keywordHits": {
               "免费": 8,
-              "模型": 70,
+              "模型": 68,
               "额度": 0
             },
             "selectorHits": {
@@ -1065,47 +1065,47 @@
             "topClasses": [
               {
                 "name": "flex",
-                "count": 186
+                "count": 180
               },
               {
                 "name": "min-w-0",
-                "count": 116
+                "count": 110
               },
               {
                 "name": "items-center",
-                "count": 99
+                "count": 97
               },
               {
                 "name": "break-words",
-                "count": 65
-              },
-              {
-                "name": "w-full",
-                "count": 63
-              },
-              {
-                "name": "flex-1",
                 "count": 61
               },
               {
-                "name": "items-start",
-                "count": 59
+                "name": "w-full",
+                "count": 61
+              },
+              {
+                "name": "flex-1",
+                "count": 57
               },
               {
                 "name": "relative",
-                "count": 58
+                "count": 56
               },
               {
-                "name": "hyphens-auto",
+                "name": "items-start",
                 "count": 55
               },
               {
                 "name": "dark:text-gray-400",
-                "count": 54
+                "count": 52
+              },
+              {
+                "name": "hyphens-auto",
+                "count": 51
               },
               {
                 "name": "group",
-                "count": 51
+                "count": 49
               },
               {
                 "name": "link",
@@ -1119,18 +1119,18 @@
     {
       "source": "cn_zhipu_pricing",
       "name": "智谱AI活动页",
-      "updatedAt": "2026-10-14T03:40:59.424Z",
+      "updatedAt": "2026-10-16T16:12:14.683Z",
       "current": {
-        "capturedAt": "2026-10-14T03:40:59.424Z",
+        "capturedAt": "2026-10-16T16:12:14.683Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
             "url": "https://bigmodel.cn/pricing",
-            "capturedAt": "2026-10-14T03:40:50.223Z",
+            "capturedAt": "2026-10-16T16:12:04.844Z",
             "httpStatus": null,
-            "bytes": 697714,
-            "htmlSha256": "86021aca10078083",
+            "bytes": 713158,
+            "htmlSha256": "f95ad75673c5789e",
             "titleSha256": "5e48a507d22998aa",
             "markers": {
               "login": false,
@@ -1153,15 +1153,15 @@
               "form": 0,
               "input": 1,
               "script": 28,
-              "div": 303
+              "div": 308
             },
             "shape": {
               "hasDataTable": true,
               "hasCards": true,
               "scriptToTextRatio": 0.13
             },
-            "textLength": 3257,
-            "textSha256": "77297705c5e33f6e",
+            "textLength": 3268,
+            "textSha256": "edbe2e52e3c777b8",
             "keywordHits": {
               "免费": 21,
               "Tokens": 18,
@@ -1179,7 +1179,7 @@
             "topClasses": [
               {
                 "name": "flex",
-                "count": 101
+                "count": 102
               },
               {
                 "name": "fs16",
@@ -1230,16 +1230,16 @@
         ]
       },
       "previous": {
-        "capturedAt": "2026-10-13T18:57:47.683Z",
+        "capturedAt": "2026-10-16T15:53:34.657Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
             "url": "https://bigmodel.cn/pricing",
-            "capturedAt": "2026-10-13T18:57:38.219Z",
+            "capturedAt": "2026-10-16T15:53:23.383Z",
             "httpStatus": null,
-            "bytes": 697162,
-            "htmlSha256": "ad210beef3ada973",
+            "bytes": 713161,
+            "htmlSha256": "e9ebf7ffc2570038",
             "titleSha256": "5e48a507d22998aa",
             "markers": {
               "login": false,
@@ -1262,15 +1262,15 @@
               "form": 0,
               "input": 1,
               "script": 28,
-              "div": 301
+              "div": 308
             },
             "shape": {
               "hasDataTable": true,
               "hasCards": true,
               "scriptToTextRatio": 0.13
             },
-            "textLength": 3232,
-            "textSha256": "5a99bda1b3881b46",
+            "textLength": 3268,
+            "textSha256": "edbe2e52e3c777b8",
             "keywordHits": {
               "免费": 21,
               "Tokens": 18,
@@ -1288,7 +1288,7 @@
             "topClasses": [
               {
                 "name": "flex",
-                "count": 101
+                "count": 102
               },
               {
                 "name": "fs16",
@@ -1342,25 +1342,25 @@
     {
       "source": "futurepedia",
       "name": "Futurepedia",
-      "updatedAt": "2026-10-14T03:40:59.424Z",
+      "updatedAt": "2026-10-16T16:12:14.683Z",
       "current": null,
       "previous": null
     },
     {
       "source": "futuretools",
       "name": "Futuretools",
-      "updatedAt": "2026-10-14T03:40:59.424Z",
+      "updatedAt": "2026-10-16T16:12:14.683Z",
       "current": {
-        "capturedAt": "2026-10-14T03:40:59.424Z",
-        "itemCount": 38,
+        "capturedAt": "2026-10-16T16:12:14.683Z",
+        "itemCount": 39,
         "items": [
           {
             "v": 1,
             "url": "https://www.futuretools.io/",
-            "capturedAt": "2026-10-14T03:40:13.206Z",
+            "capturedAt": "2026-10-16T16:11:10.128Z",
             "httpStatus": 200,
-            "bytes": 443778,
-            "htmlSha256": "7292808f6697c171",
+            "bytes": 444425,
+            "htmlSha256": "dcb431d7ec211f47",
             "titleSha256": "e042c9a77d0f9e16",
             "markers": {
               "login": false,
@@ -1388,10 +1388,10 @@
             "shape": {
               "hasDataTable": false,
               "hasCards": true,
-              "scriptToTextRatio": 17.1
+              "scriptToTextRatio": 17.93
             },
-            "textLength": 10329,
-            "textSha256": "41f18b923025db6d",
+            "textLength": 9872,
+            "textSha256": "7ee106bfb1a1df35",
             "keywordHits": {
               "free": 0,
               "deal": 0,
@@ -1431,11 +1431,11 @@
               },
               {
                 "name": "items-center",
-                "count": 116
+                "count": 118
               },
               {
                 "name": "border",
-                "count": 102
+                "count": 101
               },
               {
                 "name": "font-semibold",
@@ -1458,10 +1458,10 @@
           {
             "v": 1,
             "url": "https://futuretools.io/tools/cliphi-w0gfbv",
-            "capturedAt": "2026-10-14T03:40:13.516Z",
+            "capturedAt": "2026-10-16T16:11:10.466Z",
             "httpStatus": 200,
             "bytes": 93800,
-            "htmlSha256": "0fc2cb0be0d98a6e",
+            "htmlSha256": "a7d3079e02a703d7",
             "titleSha256": "fb85ca5dc8045183",
             "markers": {
               "login": true,
@@ -1492,7 +1492,7 @@
               "scriptToTextRatio": 27.67
             },
             "textLength": 1768,
-            "textSha256": "6a2b3d609412971f",
+            "textSha256": "2057aaf678e42e2a",
             "keywordHits": {
               "free": 2,
               "deal": 0,
@@ -1558,112 +1558,11 @@
           },
           {
             "v": 1,
-            "url": "https://futuretools.io/tools/chatgpt-openai",
-            "capturedAt": "2026-10-14T03:40:13.578Z",
-            "httpStatus": 200,
-            "bytes": 94937,
-            "htmlSha256": "e5904807f43bedc3",
-            "titleSha256": "10442441aa54ac92",
-            "markers": {
-              "login": true,
-              "captcha": false,
-              "cloudflare": false,
-              "errorPage": false,
-              "consentOnly": false,
-              "spaShell": false,
-              "noDataTable": true
-            },
-            "counts": {
-              "table": 0,
-              "tr": 0,
-              "td": 0,
-              "card": 12,
-              "listItem": 27,
-              "heading": 13,
-              "heading1": 1,
-              "link": 46,
-              "form": 2,
-              "input": 4,
-              "script": 42,
-              "div": 92
-            },
-            "shape": {
-              "hasDataTable": false,
-              "hasCards": true,
-              "scriptToTextRatio": 22.49
-            },
-            "textLength": 2262,
-            "textSha256": "583e319c97df246c",
-            "keywordHits": {
-              "free": 6,
-              "deal": 0,
-              "discount": 0
-            },
-            "selectorHits": {
-              "a[href^=\"/tools/\"]": 0,
-              "a[href^=\"/go/\"]": 2
-            },
-            "regexHits": {
-              "deal-word": 12
-            },
-            "topClasses": [
-              {
-                "name": "transition-colors",
-                "count": 55
-              },
-              {
-                "name": "text-muted-foreground",
-                "count": 53
-              },
-              {
-                "name": "text-sm",
-                "count": 49
-              },
-              {
-                "name": "flex",
-                "count": 42
-              },
-              {
-                "name": "items-center",
-                "count": 42
-              },
-              {
-                "name": "font-medium",
-                "count": 34
-              },
-              {
-                "name": "rounded-lg",
-                "count": 31
-              },
-              {
-                "name": "px-3",
-                "count": 28
-              },
-              {
-                "name": "border",
-                "count": 24
-              },
-              {
-                "name": "hover:text-primary",
-                "count": 24
-              },
-              {
-                "name": "py-2",
-                "count": 21
-              },
-              {
-                "name": "relative",
-                "count": 21
-              }
-            ]
-          },
-          {
-            "v": 1,
             "url": "https://futuretools.io/tools/ankon-ai-kos341",
-            "capturedAt": "2026-10-14T03:40:13.593Z",
+            "capturedAt": "2026-10-16T16:11:10.479Z",
             "httpStatus": 200,
-            "bytes": 92165,
-            "htmlSha256": "b35ba59798e49c4e",
+            "bytes": 90890,
+            "htmlSha256": "29a730d56eafa497",
             "titleSha256": "764b0b5720ab2507",
             "markers": {
               "login": true,
@@ -1685,224 +1584,16 @@
               "link": 47,
               "form": 2,
               "input": 4,
-              "script": 45,
-              "div": 85
-            },
-            "shape": {
-              "hasDataTable": false,
-              "hasCards": true,
-              "scriptToTextRatio": 25.23
-            },
-            "textLength": 1928,
-            "textSha256": "f8227af10f12781d",
-            "keywordHits": {
-              "free": 2,
-              "deal": 0,
-              "discount": 0
-            },
-            "selectorHits": {
-              "a[href^=\"/tools/\"]": 0,
-              "a[href^=\"/go/\"]": 2
-            },
-            "regexHits": {
-              "deal-word": 4
-            },
-            "topClasses": [
-              {
-                "name": "transition-colors",
-                "count": 56
-              },
-              {
-                "name": "text-muted-foreground",
-                "count": 52
-              },
-              {
-                "name": "text-sm",
-                "count": 47
-              },
-              {
-                "name": "flex",
-                "count": 41
-              },
-              {
-                "name": "items-center",
-                "count": 40
-              },
-              {
-                "name": "font-medium",
-                "count": 34
-              },
-              {
-                "name": "rounded-lg",
-                "count": 30
-              },
-              {
-                "name": "px-3",
-                "count": 28
-              },
-              {
-                "name": "hover:text-primary",
-                "count": 25
-              },
-              {
-                "name": "border",
-                "count": 20
-              },
-              {
-                "name": "gap-2",
-                "count": 20
-              },
-              {
-                "name": "py-2",
-                "count": 20
-              }
-            ]
-          }
-        ]
-      },
-      "previous": {
-        "capturedAt": "2026-10-13T18:57:47.683Z",
-        "itemCount": 38,
-        "items": [
-          {
-            "v": 1,
-            "url": "https://www.futuretools.io/",
-            "capturedAt": "2026-10-13T18:57:10.949Z",
-            "httpStatus": 200,
-            "bytes": 440077,
-            "htmlSha256": "9f05cdb1fba8bc4f",
-            "titleSha256": "e042c9a77d0f9e16",
-            "markers": {
-              "login": false,
-              "captcha": false,
-              "cloudflare": false,
-              "errorPage": false,
-              "consentOnly": false,
-              "spaShell": false,
-              "noDataTable": true
-            },
-            "counts": {
-              "table": 0,
-              "tr": 0,
-              "td": 0,
-              "card": 37,
-              "listItem": 25,
-              "heading": 24,
-              "heading1": 1,
-              "link": 102,
-              "form": 2,
-              "input": 4,
-              "script": 92,
-              "div": 227
-            },
-            "shape": {
-              "hasDataTable": false,
-              "hasCards": true,
-              "scriptToTextRatio": 17.04
-            },
-            "textLength": 10231,
-            "textSha256": "13eaa74bff38d286",
-            "keywordHits": {
-              "free": 0,
-              "deal": 0,
-              "discount": 0
-            },
-            "selectorHits": {
-              "a[href^=\"/tools/\"]": 40,
-              "a[href^=\"/go/\"]": 1
-            },
-            "regexHits": {
-              "deal-word": 14
-            },
-            "topClasses": [
-              {
-                "name": "transition-colors",
-                "count": 186
-              },
-              {
-                "name": "flex",
-                "count": 161
-              },
-              {
-                "name": "text-sm",
-                "count": 157
-              },
-              {
-                "name": "shrink-0",
-                "count": 147
-              },
-              {
-                "name": "group-hover:text-primary",
-                "count": 140
-              },
-              {
-                "name": "text-muted-foreground",
-                "count": 121
-              },
-              {
-                "name": "items-center",
-                "count": 112
-              },
-              {
-                "name": "border",
-                "count": 102
-              },
-              {
-                "name": "font-semibold",
-                "count": 97
-              },
-              {
-                "name": "rounded-lg",
-                "count": 95
-              },
-              {
-                "name": "font-display",
-                "count": 82
-              },
-              {
-                "name": "overflow-hidden",
-                "count": 82
-              }
-            ]
-          },
-          {
-            "v": 1,
-            "url": "https://futuretools.io/tools/ankon-ai-kos341",
-            "capturedAt": "2026-10-13T18:57:11.170Z",
-            "httpStatus": 200,
-            "bytes": 90933,
-            "htmlSha256": "e047a04ab1079d28",
-            "titleSha256": "764b0b5720ab2507",
-            "markers": {
-              "login": true,
-              "captcha": false,
-              "cloudflare": false,
-              "errorPage": false,
-              "consentOnly": false,
-              "spaShell": false,
-              "noDataTable": true
-            },
-            "counts": {
-              "table": 0,
-              "tr": 0,
-              "td": 0,
-              "card": 13,
-              "listItem": 27,
-              "heading": 11,
-              "heading1": 1,
-              "link": 47,
-              "form": 2,
-              "input": 4,
-              "script": 41,
+              "script": 40,
               "div": 83
             },
             "shape": {
               "hasDataTable": false,
               "hasCards": true,
-              "scriptToTextRatio": 24.98
+              "scriptToTextRatio": 24.97
             },
             "textLength": 1905,
-            "textSha256": "df277a2fbb42f48c",
+            "textSha256": "393fdf8d558b91c2",
             "keywordHits": {
               "free": 2,
               "deal": 0,
@@ -1969,10 +1660,10 @@
           {
             "v": 1,
             "url": "https://futuretools.io/tools/copilot-3d",
-            "capturedAt": "2026-10-13T18:57:11.208Z",
+            "capturedAt": "2026-10-16T16:11:10.513Z",
             "httpStatus": 200,
-            "bytes": 89226,
-            "htmlSha256": "4c4df7c50c1bb299",
+            "bytes": 90501,
+            "htmlSha256": "0cc3e6fc99c45bcc",
             "titleSha256": "cd6ae293a0ddc97f",
             "markers": {
               "login": true,
@@ -1994,16 +1685,16 @@
               "link": 46,
               "form": 2,
               "input": 4,
-              "script": 40,
-              "div": 86
+              "script": 45,
+              "div": 88
             },
             "shape": {
               "hasDataTable": false,
               "hasCards": true,
-              "scriptToTextRatio": 20.56
+              "scriptToTextRatio": 20.79
             },
-            "textLength": 2384,
-            "textSha256": "e423138d290f8076",
+            "textLength": 2409,
+            "textSha256": "60b813224773c566",
             "keywordHits": {
               "free": 5,
               "deal": 0,
@@ -2066,14 +1757,121 @@
                 "count": 20
               }
             ]
+          }
+        ]
+      },
+      "previous": {
+        "capturedAt": "2026-10-16T15:53:34.657Z",
+        "itemCount": 39,
+        "items": [
+          {
+            "v": 1,
+            "url": "https://www.futuretools.io/",
+            "capturedAt": "2026-10-16T15:52:28.859Z",
+            "httpStatus": 200,
+            "bytes": 444421,
+            "htmlSha256": "a7a6a70ab05b9127",
+            "titleSha256": "e042c9a77d0f9e16",
+            "markers": {
+              "login": false,
+              "captcha": false,
+              "cloudflare": false,
+              "errorPage": false,
+              "consentOnly": false,
+              "spaShell": false,
+              "noDataTable": true
+            },
+            "counts": {
+              "table": 0,
+              "tr": 0,
+              "td": 0,
+              "card": 37,
+              "listItem": 25,
+              "heading": 24,
+              "heading1": 1,
+              "link": 102,
+              "form": 2,
+              "input": 4,
+              "script": 92,
+              "div": 227
+            },
+            "shape": {
+              "hasDataTable": false,
+              "hasCards": true,
+              "scriptToTextRatio": 17.94
+            },
+            "textLength": 9870,
+            "textSha256": "79a014e90771889e",
+            "keywordHits": {
+              "free": 0,
+              "deal": 0,
+              "discount": 0
+            },
+            "selectorHits": {
+              "a[href^=\"/tools/\"]": 40,
+              "a[href^=\"/go/\"]": 1
+            },
+            "regexHits": {
+              "deal-word": 10
+            },
+            "topClasses": [
+              {
+                "name": "transition-colors",
+                "count": 186
+              },
+              {
+                "name": "flex",
+                "count": 161
+              },
+              {
+                "name": "text-sm",
+                "count": 157
+              },
+              {
+                "name": "shrink-0",
+                "count": 147
+              },
+              {
+                "name": "group-hover:text-primary",
+                "count": 140
+              },
+              {
+                "name": "text-muted-foreground",
+                "count": 121
+              },
+              {
+                "name": "items-center",
+                "count": 118
+              },
+              {
+                "name": "border",
+                "count": 101
+              },
+              {
+                "name": "font-semibold",
+                "count": 97
+              },
+              {
+                "name": "rounded-lg",
+                "count": 95
+              },
+              {
+                "name": "font-display",
+                "count": 82
+              },
+              {
+                "name": "overflow-hidden",
+                "count": 82
+              }
+            ]
           },
           {
             "v": 1,
             "url": "https://futuretools.io/tools/cliphi-w0gfbv",
-            "capturedAt": "2026-10-13T18:57:11.251Z",
+            "capturedAt": "2026-10-16T15:52:29.152Z",
             "httpStatus": 200,
-            "bytes": 92568,
-            "htmlSha256": "0d45212299231294",
+            "bytes": 93800,
+            "htmlSha256": "6cffd3afa3ca6339",
             "titleSha256": "fb85ca5dc8045183",
             "markers": {
               "login": true,
@@ -2095,16 +1893,16 @@
               "link": 47,
               "form": 2,
               "input": 4,
-              "script": 40,
-              "div": 86
+              "script": 44,
+              "div": 88
             },
             "shape": {
               "hasDataTable": false,
               "hasCards": true,
-              "scriptToTextRatio": 27.4
+              "scriptToTextRatio": 27.67
             },
-            "textLength": 1747,
-            "textSha256": "3b5539cc435c754b",
+            "textLength": 1768,
+            "textSha256": "2057aaf678e42e2a",
             "keywordHits": {
               "free": 2,
               "deal": 0,
@@ -2167,6 +1965,208 @@
                 "count": 20
               }
             ]
+          },
+          {
+            "v": 1,
+            "url": "https://futuretools.io/tools/sync-so",
+            "capturedAt": "2026-10-16T15:52:29.344Z",
+            "httpStatus": 200,
+            "bytes": 93675,
+            "htmlSha256": "f9aa415476e7eba5",
+            "titleSha256": "afee718d9b58bc06",
+            "markers": {
+              "login": true,
+              "captcha": false,
+              "cloudflare": false,
+              "errorPage": false,
+              "consentOnly": false,
+              "spaShell": false,
+              "noDataTable": true
+            },
+            "counts": {
+              "table": 0,
+              "tr": 0,
+              "td": 0,
+              "card": 13,
+              "listItem": 27,
+              "heading": 11,
+              "heading1": 1,
+              "link": 47,
+              "form": 2,
+              "input": 4,
+              "script": 44,
+              "div": 88
+            },
+            "shape": {
+              "hasDataTable": false,
+              "hasCards": true,
+              "scriptToTextRatio": 26.24
+            },
+            "textLength": 1865,
+            "textSha256": "5e2d6b8720f7674d",
+            "keywordHits": {
+              "free": 2,
+              "deal": 0,
+              "discount": 0
+            },
+            "selectorHits": {
+              "a[href^=\"/tools/\"]": 0,
+              "a[href^=\"/go/\"]": 2
+            },
+            "regexHits": {
+              "deal-word": 4
+            },
+            "topClasses": [
+              {
+                "name": "transition-colors",
+                "count": 56
+              },
+              {
+                "name": "text-muted-foreground",
+                "count": 52
+              },
+              {
+                "name": "text-sm",
+                "count": 47
+              },
+              {
+                "name": "flex",
+                "count": 43
+              },
+              {
+                "name": "items-center",
+                "count": 42
+              },
+              {
+                "name": "font-medium",
+                "count": 34
+              },
+              {
+                "name": "rounded-lg",
+                "count": 30
+              },
+              {
+                "name": "px-3",
+                "count": 28
+              },
+              {
+                "name": "hover:text-primary",
+                "count": 25
+              },
+              {
+                "name": "border",
+                "count": 21
+              },
+              {
+                "name": "gap-2",
+                "count": 20
+              },
+              {
+                "name": "py-2",
+                "count": 20
+              }
+            ]
+          },
+          {
+            "v": 1,
+            "url": "https://futuretools.io/tools/ankon-ai-kos341",
+            "capturedAt": "2026-10-16T15:52:29.388Z",
+            "httpStatus": 200,
+            "bytes": 90933,
+            "htmlSha256": "85a9ed9512702b37",
+            "titleSha256": "764b0b5720ab2507",
+            "markers": {
+              "login": true,
+              "captcha": false,
+              "cloudflare": false,
+              "errorPage": false,
+              "consentOnly": false,
+              "spaShell": false,
+              "noDataTable": true
+            },
+            "counts": {
+              "table": 0,
+              "tr": 0,
+              "td": 0,
+              "card": 13,
+              "listItem": 27,
+              "heading": 11,
+              "heading1": 1,
+              "link": 47,
+              "form": 2,
+              "input": 4,
+              "script": 41,
+              "div": 83
+            },
+            "shape": {
+              "hasDataTable": false,
+              "hasCards": true,
+              "scriptToTextRatio": 24.98
+            },
+            "textLength": 1905,
+            "textSha256": "393fdf8d558b91c2",
+            "keywordHits": {
+              "free": 2,
+              "deal": 0,
+              "discount": 0
+            },
+            "selectorHits": {
+              "a[href^=\"/tools/\"]": 0,
+              "a[href^=\"/go/\"]": 2
+            },
+            "regexHits": {
+              "deal-word": 4
+            },
+            "topClasses": [
+              {
+                "name": "transition-colors",
+                "count": 56
+              },
+              {
+                "name": "text-muted-foreground",
+                "count": 52
+              },
+              {
+                "name": "text-sm",
+                "count": 47
+              },
+              {
+                "name": "flex",
+                "count": 41
+              },
+              {
+                "name": "items-center",
+                "count": 40
+              },
+              {
+                "name": "font-medium",
+                "count": 34
+              },
+              {
+                "name": "rounded-lg",
+                "count": 30
+              },
+              {
+                "name": "px-3",
+                "count": 28
+              },
+              {
+                "name": "hover:text-primary",
+                "count": 25
+              },
+              {
+                "name": "border",
+                "count": 20
+              },
+              {
+                "name": "gap-2",
+                "count": 20
+              },
+              {
+                "name": "py-2",
+                "count": 20
+              }
+            ]
           }
         ]
       }
@@ -2174,18 +2174,18 @@
     {
       "source": "layer3labs",
       "name": "Layer3Labs",
-      "updatedAt": "2026-10-14T03:40:59.424Z",
+      "updatedAt": "2026-10-16T16:12:14.683Z",
       "current": {
-        "capturedAt": "2026-10-14T03:40:59.424Z",
+        "capturedAt": "2026-10-16T16:12:14.683Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
             "url": "https://www.layer3labs.io/ai-discounts",
-            "capturedAt": "2026-10-14T03:40:09.129Z",
+            "capturedAt": "2026-10-16T16:11:05.928Z",
             "httpStatus": 200,
-            "bytes": 54042,
-            "htmlSha256": "4ed9487097c1017b",
+            "bytes": 54225,
+            "htmlSha256": "5d74f584e06fe371",
             "titleSha256": "c0d54efbb51eb330",
             "markers": {
               "login": false,
@@ -2204,19 +2204,19 @@
               "listItem": 54,
               "heading": 17,
               "heading1": 1,
-              "link": 127,
+              "link": 128,
               "form": 0,
               "input": 0,
               "script": 19,
-              "div": 67
+              "div": 68
             },
             "shape": {
               "hasDataTable": true,
               "hasCards": true,
               "scriptToTextRatio": 0.41
             },
-            "textLength": 17217,
-            "textSha256": "a4c05868ca48e0cc",
+            "textLength": 17274,
+            "textSha256": "6560f73d02da5d06",
             "keywordHits": {
               "Provider": 4,
               "discount": 25,
@@ -2227,7 +2227,7 @@
               "table": 2,
               "table tr": 20,
               "table td": 80,
-              "a[href^=\"http\"]": 32
+              "a[href^=\"http\"]": 33
             },
             "regexHits": {
               "deal-table-header": 1
@@ -2286,16 +2286,16 @@
         ]
       },
       "previous": {
-        "capturedAt": "2026-10-13T18:57:47.683Z",
+        "capturedAt": "2026-10-16T15:53:34.657Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
             "url": "https://www.layer3labs.io/ai-discounts",
-            "capturedAt": "2026-10-13T18:57:07.013Z",
+            "capturedAt": "2026-10-16T15:52:25.109Z",
             "httpStatus": 200,
-            "bytes": 54042,
-            "htmlSha256": "521069a1e87a952b",
+            "bytes": 54225,
+            "htmlSha256": "5d74f584e06fe371",
             "titleSha256": "c0d54efbb51eb330",
             "markers": {
               "login": false,
@@ -2314,19 +2314,19 @@
               "listItem": 54,
               "heading": 17,
               "heading1": 1,
-              "link": 127,
+              "link": 128,
               "form": 0,
               "input": 0,
               "script": 19,
-              "div": 67
+              "div": 68
             },
             "shape": {
               "hasDataTable": true,
               "hasCards": true,
               "scriptToTextRatio": 0.41
             },
-            "textLength": 17217,
-            "textSha256": "a4c05868ca48e0cc",
+            "textLength": 17274,
+            "textSha256": "6560f73d02da5d06",
             "keywordHits": {
               "Provider": 4,
               "discount": 25,
@@ -2337,7 +2337,7 @@
               "table": 2,
               "table tr": 20,
               "table td": 80,
-              "a[href^=\"http\"]": 32
+              "a[href^=\"http\"]": 33
             },
             "regexHits": {
               "deal-table-header": 1

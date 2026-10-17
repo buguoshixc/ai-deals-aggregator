@@ -1,0 +1,213 @@
+{
+  "url": "https://buguoshixc.github.io/ai-deals-aggregator/tools/api-cost/",
+  "at": "2026-10-16T10:11:55.964Z",
+  "checks": 9,
+  "failed": 0,
+  "results": [
+    {
+      "name": "/tools/api-cost/ 前两行控件各三格：同行顶边齐平、格宽相同、左边缘递增",
+      "ok": true,
+      "evidence": "控件行 3 格@161 · 3 格@232 · 下拉宽 440.66/440.67/440.66 · 输入宽 440.66/440.67/440.66"
+    },
+    {
+      "name": "/tools/api-cost/ 标题与版本信息在同一行（h1 与 .meta 的竖直区间重叠）",
+      "ok": true,
+      "evidence": "h1 59..87.5 · .meta 59..88 · h1 19px"
+    },
+    {
+      "name": "/tools/api-cost/ 页面级 CSS 生效（控件不再是 UA 默认样式：圆角/内边距/字号 + 面板 + fieldset 无边框）",
+      "ok": true,
+      "evidence": "控件 radius 6px / padding-top 8px / font 13px · 面板 1px 边 10px 圆角 · fieldset 上边框 0px"
+    },
+    {
+      "name": "/tools/api-cost/ 示例表满宽（= 列宽）且题注只占一行（表宽跟着内容走时 caption 会被挤成两行）",
+      "ok": true,
+      "evidence": "表宽 1380 vs 列宽 1380 · caption 1 行 · 自溢出 0px"
+    },
+    {
+      "name": "/tools/api-cost/ 没填用量时结果区不写「免费」（空态是一句要输入的话，不是一个 0）",
+      "ok": true,
+      "evidence": "空态「在上面填入 token 用量，这里显示按已收录官方单价算出的成本。」 · 输入框初值「」"
+    },
+    {
+      "name": "/tools/api-cost/ 示例表与结果表用同一份列模型（维度 / 单价 / tokens / 成本）",
+      "ok": true,
+      "evidence": "示例 [维度 单价 tokens 成本] · 结果 [维度 单价 tokens 成本]"
+    },
+    {
+      "name": "/tools/api-cost/ 结果表逐维度成行（缺价的维度也占一行，不写 null）",
+      "ok": true,
+      "evidence": "5 行 [input output cachedInput cacheWrite cacheWriteLong] · 表内出现 null false"
+    },
+    {
+      "name": "/tools/api-cost/ 两张表的数字列右对齐、逐列右边缘对齐（数字能按位读）",
+      "ok": true,
+      "evidence": "示例 align right/right/right 右缘 1199.08/1247.08/1337.11/1409.5（表头 1409.5） · 结果 align right/right/right 右缘 1196.02/1244.02/1334.05/1393（表头 1393）"
+    },
+    {
+      "name": "§22c @1440 工具页（1 页）首屏**没有**任何页面级说明",
+      "ok": true,
+      "evidence": "数据区 .ptable@431 · 整页 .snote 7 条 · 首屏 0 条"
+    }
+  ],
+  "costLayout": {
+    "h1Box": {
+      "top": 59,
+      "left": 30,
+      "right": 161.296875,
+      "bottom": 87.5,
+      "width": 131.296875,
+      "height": 28.5
+    },
+    "metaBox": {
+      "top": 59,
+      "left": 169.296875,
+      "right": 283.765625,
+      "bottom": 88,
+      "width": 114.46875,
+      "height": 29
+    },
+    "h1Size": "19px",
+    "ctlRows": [
+      {
+        "top": 161,
+        "items": [
+          {
+            "tag": "select",
+            "top": 161,
+            "left": 47,
+            "width": 440.66,
+            "height": 37
+          },
+          {
+            "tag": "select",
+            "top": 161,
+            "left": 499.65625,
+            "width": 440.67,
+            "height": 37
+          },
+          {
+            "tag": "select",
+            "top": 161,
+            "left": 952.328125,
+            "width": 440.66,
+            "height": 37
+          }
+        ]
+      },
+      {
+        "top": 232,
+        "items": [
+          {
+            "tag": "input",
+            "top": 232,
+            "left": 47,
+            "width": 440.66,
+            "height": 37.5
+          },
+          {
+            "tag": "input",
+            "top": 232,
+            "left": 499.65625,
+            "width": 440.67,
+            "height": 37.5
+          },
+          {
+            "tag": "input",
+            "top": 232,
+            "left": 952.328125,
+            "width": 440.66,
+            "height": 37.5
+          }
+        ]
+      }
+    ],
+    "selectWidths": [
+      440.66,
+      440.67,
+      440.66
+    ],
+    "inputWidths": [
+      440.66,
+      440.67,
+      440.66
+    ],
+    "ctlRadius": "6px",
+    "ctlPadding": "8px",
+    "ctlFont": "13px",
+    "fieldsetBorder": "0px",
+    "panel": {
+      "radius": "10px",
+      "border": "1px",
+      "width": 1380
+    },
+    "exampleTableWidth": 1380,
+    "mainWidth": 1380,
+    "capLines": 1,
+    "capOverflow": 0,
+    "idleResultText": "在上面填入 token 用量，这里显示按已收录官方单价算出的成本。",
+    "idleInputValue": ""
+  },
+  "intro": {
+    "regionSel": ".ptable",
+    "regionTop": 431.390625,
+    "noteCount": 7,
+    "introIndexes": []
+  },
+  "costTables": {
+    "example": {
+      "headers": [
+        "维度",
+        "单价",
+        "tokens",
+        "成本"
+      ],
+      "rowHeads": [
+        "input",
+        "output",
+        "cachedInput",
+        "cacheWrite",
+        "cacheWriteLong"
+      ],
+      "firstRowRight": 1409.5,
+      "headerRight": 1409.5,
+      "numAlign": "right/right/right",
+      "numCells": 3,
+      "colRightEdges": [
+        1199.08,
+        1247.08,
+        1337.11,
+        1409.5
+      ]
+    },
+    "result": {
+      "headers": [
+        "维度",
+        "单价",
+        "tokens",
+        "成本"
+      ],
+      "rowHeads": [
+        "input",
+        "output",
+        "cachedInput",
+        "cacheWrite",
+        "cacheWriteLong"
+      ],
+      "firstRowRight": 1393,
+      "headerRight": 1393,
+      "numAlign": "right/right/right",
+      "numCells": 3,
+      "colRightEdges": [
+        1196.02,
+        1244.02,
+        1334.05,
+        1393
+      ]
+    },
+    "tableTexts": [
+      "模型：360zhinao/360zhinao-pro · 变体：standard · 币种：CNY · 单位：/ 每 100 万 tokens\n维度\t单价\ttokens\t成本\ninput\t2\t1,000,000.00\t2.0000\noutput\t5\t500,000.00\t2.5000\ncachedInput\t0.2\t200,000.00\t0.040000\ncacheWrite\t2.5\t0\t—\ncacheWriteLong\t—\t0\t—",
+      "模型：360zhinao/360zhinao-pro · 变体：standard · 币种：CNY · 单位：/ 每 100 万 tokens\n维度\t单价\ttokens\t成本\ninput\t2\t1,000,000.00\t2.0000\noutput\t5\t500,000.00\t2.5000\ncachedInput\t0.2\t0\t—\ncacheWrite\t2.5\t0\t—\ncacheWriteLong\t—\t0\t—"
+    ]
+  }
+}
