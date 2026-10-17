@@ -25,6 +25,12 @@
   <link rel="canonical" href="__SITE_URL__">
   <link rel="alternate" hreflang="zh-CN" href="__SITE_URL__">
   <link rel="alternate" hreflang="x-default" href="__SITE_URL__">
+<link rel="alternate" type="application/atom+xml" href="__SITE_URL__feed.xml">
+<link rel="alternate" type="application/feed+json" href="__SITE_URL__feed.json">
+  <!-- 上面两行顶格写（不缩进）不是排版疏漏：它们必须逐字节等于 FEED_FILES 的派生形态
+       —— 那张唯一表 map 出标签再 join('\n')，所以两行之间只有一个换行、行首不留空白；
+       生成文档里的 canonical / hreflang 同样是顶格的（docStart 用同一个 join 拼出来）。
+       判据在 scripts/tools/feed-selftest.js 的骨架单源牙（契约第 1.4 条）—— 改这两行 = 改唯一表。 -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="AI 优惠聚合器">
   <meta property="og:url" content="__SITE_URL__">
@@ -631,6 +637,23 @@
     .radar .rmore { flex: none; color: var(--brand); text-decoration: none; white-space: nowrap; }
     .radar .rmore:hover { text-decoration: underline; text-underline-offset: 2px; }
     .radar .rmore:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+    /* ---------- 最近变化（首页折叠线以下 · 与上方的变化雷达同一族） ----------
+       这一区块的 9 条规则的唯一出处在这里：共享样式表由 page-shell.js 抽给全部页面族，
+       所以目录页与首页共用同一份，页面级样式里不再复制第二份（并存 = 两份会各自漂移的样式）。
+       视觉权重刻意低于优惠表格：一条 hairline + 小标题 + 紧凑列表，不做卡片、不加底色；
+       颜色全部走 token，亮色 / data-theme="dark" / 跟随系统三态自动成立（无硬编码白色）。
+       ⚠️ 这 9 行从 build-local.js 的页面级样式段逐字节搬来（连原来的两空格缩进一起），
+       比对判据按逐字节做 —— 不要顺手改成四空格，也不要在这里再加第二份同名规则。 */
+  .chgtopic { margin: var(--s4) 0 0; border-top: 1px solid var(--line); padding-top: var(--s3); }
+  .chgtopic-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s2); flex-wrap: wrap; }
+  .chgtopic-head h2 { font-size: 15px; margin: 0; }
+  .chgtopic-all { font-size: var(--fs-sm); }
+  .chgtopic .chglist { list-style: none; margin: var(--s2) 0 0; padding: 0; display: grid; gap: 10px; }
+  .chgtopic .chgh { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px var(--s2); font-size: var(--fs-sm); }
+  .chgtopic .chgh time { color: var(--mut); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .chgtopic .chgh .chgt { color: var(--mut); }
+  .chgtopic .chgv { display: flex; flex-wrap: wrap; gap: var(--s2); margin-top: 2px; font-size: var(--fs-sm); color: var(--mut); overflow-wrap: anywhere; }
 
     /* ---------- 网格 ---------- */
     .grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: min-content; gap: 12px; }
@@ -1437,6 +1460,8 @@
       <div class="loading">加载数据中…</div>
     </div>
 
+    <!--PRERENDER:changestopic-->
+
     <section class="faq" aria-labelledby="faqTitle">
       <h2 id="faqTitle">常见问题</h2>
       <details>
@@ -1517,7 +1542,7 @@
             ⚠️ 写这一带注释的纪律（t3 真的踩过）：不许出现 HTML 注释的定界串（尖括号 + 叹号 +
             两个连字符那种，以及它的闭合形态），也不许复述被删掉的那几个字 —— 注释本身是共享
             页脚的一部分，会逐字进每一个页面。 -->
-      <p>数据每日自动更新 · 最后更新：<span id="lastUpdated">--</span> · <a href="__STATUS_HREF__">数据源状态</a></p>
+      <p>数据每日自动更新 · 最后更新：<span id="lastUpdated">--</span> · <a href="__STATUS_HREF__">数据源状态</a> · <a href="__FEED_HREF__" title="订阅本站更新（Atom / JSON Feed · 每日两次）">订阅源</a></p>
       <p>优惠信息来自各厂商官方页面与公开折扣页，最终以官方页面为准。发现过期信息欢迎提交修正。</p>
       <p>本站不收录付费推广位，排序与推荐理由不出售。</p>
       <p>厂商 logo 版权归各厂商所有，仅作标识用途。</p>

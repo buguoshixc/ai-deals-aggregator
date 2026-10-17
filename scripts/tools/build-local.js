@@ -37,6 +37,14 @@ const health = require('../lib/health');
 const audience = require('../lib/audience');
 const provenance = require('../lib/provenance');
 const history = require('../lib/history');
+// v3.2：订阅产物（Atom 1.0 + JSON Feed 1.1）。唯一表 `FEED_FILES`、条目构造 `buildFeedEntries`、
+// 两个渲染器全在 `lib/feed.js` 里；本文件**不写第二份文件名 / MIME 字面量** ——
+// 契约第 1.4 条那台机器牙扫的就是这个文件的**代码**（`'feed.xml'` 这类字面量一处就红，见 feed-selftest）。
+const feed = require('../lib/feed');
+// v3.2：引文「元自称」清单（逐字 / 一字不差 / verbatim …）的**唯一出处**。构建期自检用它把两个订阅
+// 产物也纳入扫描面；清单本身不在这里复制一份 —— validate.js 只在作为脚本跑时才执行 main()，
+// require 它拿到的就是那份判据导出（`provenance-selftest` 用的也是它）。
+const validate = require('../validate');
 const changes = require('../lib/changes');
 // t4：订阅层（`lib/feeds.js`）从本文件**彻底摘掉**了 —— 注册表、Feed 落盘、/feeds/ 页面、
 // 订阅发现标签、订阅自检全部随订阅子系统下架一起删除。文件本身还在（`verify-site.js` 的
@@ -244,10 +252,17 @@ const NOTES_MANIFEST_PATH = path.join(path.dirname(FINAL_OUT), `${path.basename(
  */
 const PUBLIC_FILES = ['index.html', 'favicon.svg', 'robots.txt', '.nojekyll', 'BingSiteAuth.xml'];
 /**
- * 构建期生成、不走源码拷贝的产物（**同样一份数据文件都没有**）。
+ * 构建期生成、不走源码拷贝的产物（**页面之外只有这些**）。
  *
- * ⚠️ t4 起只剩这三个：`logos.css`（厂商 logo 样式表）、`sitemap.xml`、`og-image.png`。
- * 删掉的项与理由：`feed.xml` / `feed.json` / `icon.png`（订阅子系统整体下架）、
+ * ⚠️ 今天共五项：`logos.css`（厂商 logo 样式表）、`sitemap.xml`、`og-image.png`，
+ * 加上**两条订阅产物**（`feed.FEED_FILES` 的两条 —— Atom 1.0 与 JSON Feed 1.1，落产物根）。
+ * 订阅产物由下面的 `assemble()` 紧跟 sitemap 之后落盘，本表是「声明了就必须存在」的那台机器牙的
+ * 消费者（自检逐项 `fs.existsSync`）。
+ *
+ * ⚠️ 两条订阅产物的文件名**从 `FEED_FILES` 现取**，不在这张表里写第二份字面量（契约第 1.4 条）。
+ *
+ * 删掉的项与理由（史述，别读成"以后可以加回来"）：`icon.png`（订阅层整体下架的那一轮删的：
+ * 一张只被 RSS 引用的点阵图；v3.2 请回来的订阅出口只要两个文本产物，不需要它）、
  * `source-health.json`（它是运维观测数据，"给读者一份可下载的 JSON"这条面撤了；
  * `/status/` 页面本身保留，页面与断言改读仓库根那份真值 —— 见自检里的注释）、
  * `data/index.json`（Dataset Manifest，数据出口子系统下架）。
@@ -256,7 +271,11 @@ const PUBLIC_FILES = ['index.html', 'favicon.svg', 'robots.txt', '.nojekyll', 'B
  * （`NOTES_MANIFEST_PATH`），而下面「声明文件必须存在于 OUT」的循环会逐个
  * `fs.existsSync(path.join(OUT, file))` —— 留着它必然红。这也是"清单真的搬走了"的**牙**。
  */
-const GENERATED_FILES = ['logos.css', 'sitemap.xml', 'og-image.png'];
+const GENERATED_FILES = [
+  'logos.css', 'sitemap.xml', 'og-image.png',
+  // v3.2：订阅产物（两条）。由唯一表现取 ⇒ 这张表与 `FEED_FILES` 不可能分家。
+  ...feed.FEED_FILES.map(([file]) => file)
+];
 
 /**
  * 首页数据资产在产物里的路径（t3：`deals.json` → `assets/data/offers.json`）。
@@ -729,7 +748,15 @@ const ROUTE_HREFS = [
   // 下面的 `assertRouteMarkersDisjoint()` 把这条约束变成构建期硬失败，避免下一个人踩同一坑。
   ['__APIPLAN_HREF__', 'plans/api/'],
   // v3.1：API 成本计算器。`__APICOST_HREF__` 不与任何既有占位符互为子串。
-  ['__APICOST_HREF__', 'tools/api-cost/']
+  ['__APICOST_HREF__', 'tools/api-cost/'],
+  // v3.2：页脚的人类可点订阅入口（`index.html` 共享页脚第 3 个 `<p>` 末尾那枚「订阅源」）。
+  //
+  // 目标路径**从 `FEED_FILES` 现取**（第一份 = Atom 那一份），不在这里写第二份文件名字面量：
+  // 契约第 1.4 条的单源牙扫本文件的**代码**，写死一个文件名会当场变红（feed-selftest 那条
+  // 「唯一表单源：4 个读写方里没有第二份文件名 / MIME 字面量」）。
+  // 这一步同时让下面「页脚路由链接」的**正向**断言自动要求每一种深度都出现
+  // `href="<prefix>feed.xml"`：漏一层、页脚那枚链接被悄悄删掉，都会当场红。
+  ['__FEED_HREF__', feed.FEED_FILES[0][0]]
 ];
 
 /**
@@ -893,7 +920,11 @@ const PRERENDER_MARKERS = [
   'PRERENDER:deals', 'PRERENDER:facets', 'PRERENDER:topstat',
   'PRERENDER:stats', 'PRERENDER:categories', 'PRERENDER:needs', 'PRERENDER:changes', 'PRERENDER:jsonld',
   // v1.7：页脚那一行的「少量厂商入口」（由落地页计划生成，见 renderVendorLine）
-  'PRERENDER:vendorline'
+  'PRERENDER:vendorline',
+  // v3.2：首页**折叠线以下**的「最近变化」区块（`#dealsList` 收口与 FAQ 之间）。
+  // 它必须留在 `#dealsList` **之后** —— 放到网格之前会把首屏完整可见卡片从 6 张打下去
+  //（`verify-site.js` 的「首屏完整可见卡片 ≥ 6」是实测阈值，不是估计）。
+  'PRERENDER:changestopic'
 ];
 
 function runValidate() {
@@ -1717,6 +1748,12 @@ ${body}`;
     description: htmlEscape(PAGE_DESCRIPTION),
     canonicalUrl: pageUrl,
     faviconHref: '../favicon.svg',
+    // v3.2：这一页的**订阅声明**（两条，绝对 URL）。契约第 2.3 条的固定形态：文件名与 MIME 都从
+    // `FEED_FILES` 现取（本文件里 0 个文件名 / MIME 字面量），href 一律 `SITE_URL` 开头。
+    // 页壳（`docStart`）把它插在 hreflang 之后、OG 之前；**不传**该参数的页面族产物逐字节不变。
+    feedTagsHtml: feed.FEED_FILES
+      .map(([file, type]) => `<link rel="alternate" type="${type}" href="${SITE_URL}${file}">`)
+      .join('\n'),
     extraCss: `  /* 只用首页已有的设计变量，不新建一套视觉语言。
      列表式（不是宽表）：手机上自然换行、不产生横向滚动 —— 与目录页的表格相反，
      这里每行都有一段可能很长的原文（原值 → 新值），表格会把手机变成横向滚动条。 */
@@ -1783,8 +1820,11 @@ ${body}`;
  * 套餐对比页只有**一条**路由 `/plans/coding/`，它不分页也不需要门槛 ——
  * 硬把它塞进那张家族表，会为了「统一」而引入一条永远只有一个成员的注册表。
  * 所以它走的是 `/status/` `/changes/` `/feeds/` 那一条既有路径：**独立静态页**。
- * 代价是下面四张清单（sitemap 计数、`pageRoutes`、页脚深度扫描、订阅声明扫描）
- * 都要显式加上它 —— 而这正是「新增一条路由是一个决定，不是一次手滑」的落点。
+ * 代价是三张清单（sitemap 计数、`pageRoutes`、页脚深度扫描）都要显式加上它 ——
+ * 而这正是「新增一条路由是一个决定，不是一次手滑」的落点。
+ * ⚠️ v3.2：原先还有第四张「订阅声明扫描」，它**已经不是清单**了：那个块的扫描面是产物里
+ * **全部 .html**，新加一族默认就落在「0 条带 type 的声明」那一侧，不必登记；要声明订阅源
+ * 则必须先成为那两个登记路由（首页 / `/changes/`）之一，而那是一次显式的契约改动。
  *
  * ## 页面正文不在这里
  *
@@ -1842,8 +1882,11 @@ const PLANS_TABLE_CSS = `  /* 只用首页已有的设计变量，不新建一�
  * 套餐对比页只有**一条**路由 `/plans/coding/`，它不分页也不需要门槛 ——
  * 硬把它塞进那张家族表，会为了「统一」而引入一条永远只有一个成员的注册表。
  * 所以它走的是 `/status/` `/changes/` `/feeds/` 那一条既有路径：**独立静态页**。
- * 代价是下面四张清单（sitemap 计数、`pageRoutes`、页脚深度扫描、订阅声明扫描）
- * 都要显式加上它 —— 而这正是「新增一条路由是一个决定，不是一次手滑」的落点。
+ * 代价是三张清单（sitemap 计数、`pageRoutes`、页脚深度扫描）都要显式加上它 ——
+ * 而这正是「新增一条路由是一个决定，不是一次手滑」的落点。
+ * ⚠️ v3.2：原先还有第四张「订阅声明扫描」，它**已经不是清单**了：那个块的扫描面是产物里
+ * **全部 .html**，新加一族默认就落在「0 条带 type 的声明」那一侧，不必登记；要声明订阅源
+ * 则必须先成为那两个登记路由（首页 / `/changes/`）之一，而那是一次显式的契约改动。
  *
  * ## 页面正文不在这里
  *
@@ -3058,16 +3101,10 @@ ${summary.map(row => `        <li data-summary-label="${htmlEscape(row.label)}" 
      零变化与日志不可用都整块不渲染）。视觉权重刻意**低于**优惠表格：一条 hairline +
      小标题 + 紧凑列表，不做卡片、不做大号标题、不加底色。
      颜色全部走 token ⇒ 亮色 / data-theme="dark" / 跟随系统三态自动成立（无硬编码白色）。
-     ⚠️ 这里也不许出现反引号，也不许写 .snote 规则（同上面那两条硬约束）。 */
-  .chgtopic { margin: var(--s4) 0 0; border-top: 1px solid var(--line); padding-top: var(--s3); }
-  .chgtopic-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s2); flex-wrap: wrap; }
-  .chgtopic-head h2 { font-size: 15px; margin: 0; }
-  .chgtopic-all { font-size: var(--fs-sm); }
-  .chgtopic .chglist { list-style: none; margin: var(--s2) 0 0; padding: 0; display: grid; gap: 10px; }
-  .chgtopic .chgh { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px var(--s2); font-size: var(--fs-sm); }
-  .chgtopic .chgh time { color: var(--mut); font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .chgtopic .chgh .chgt { color: var(--mut); }
-  .chgtopic .chgv { display: flex; flex-wrap: wrap; gap: var(--s2); margin-top: 2px; font-size: var(--fs-sm); color: var(--mut); overflow-wrap: anywhere; }
+     ⚠️ 这里也不许出现反引号，也不许写 .snote 规则（同上面那两条硬约束）。
+     v3.2（t5）：这一块的 9 条规则**已搬到 index.html 的共享 <style>**（那一份由 loadShellParts()
+     抽给**全部页面族**，所以目录页仍然拿得到），本文件里不再保留副本 —— 与 .detail-main / .snote
+     同一条纪律：「一处定义、全站生效」；两处并存就是两份会各自漂移的样式。 */
   /* CLS 治理（组 B · 本块唯一改动）：根因是 auto 布局 —— 表格每解析进一批新行就重新协商一次列宽，
      协商结果一旦跨过某个折行阈值，行高就跟着跳变；而 DOM 全程零变更（逐帧采样 + MutationObserver
      实测：位移全部发生在解析期，与 JS 无关）。fixed 让列宽按表格宽度一次定死，行高不再随解析进度重排；
@@ -3615,11 +3652,11 @@ function assemble() {
       (dealLinksCheck.stats.editorial ? ` · 人工判断 ${dealLinksCheck.stats.editorial} 条` : ''));
   }
 
-  // t4：这里原先是 Feed 的 `feedBundle`（`feeds.buildFeeds()`：把三份日志与注册表翻译成
-  // RSS 2.0 与 JSON Feed）。订阅子系统整体下架，这个 bundle 与它的全部消费者
-  //（首页订阅发现注入、每页的 rel="alternate" 标签、Feed 落盘、/feeds/ 页面、订阅自检）
-  // 一起删除。删掉它之后"页面声明的订阅源"这个概念在产物里不再存在 ——
-  // 这也是 `lib/seo.js` 删掉 `feed-declared` 检查码的原因。
+  // t4 删掉的 Feed 层（`feeds.buildFeeds()`：把三份日志与**整张注册表**翻译成 RSS 2.0 与 JSON Feed）
+  // **没有**整块回来：v3.2 请回来的是**站点级的两条产物**（`feed.FEED_FILES`），它们由
+  // `lib/feed.js` 直接从三支日志的事件流构造，不经过任何「每页一份 Feed」的注册表 ——
+  // 所以今天「页面声明的订阅源」只有两个路由（首页与 `/changes/`），不是每族一份。
+  // 落盘在下面 `assemble()` 里紧跟 sitemap 之后（那一段写明了内容来源与三条纪律）。
 
   // 首页数据资产（t3：`assets/data/offers.json`）。`dist/assets/` 本来不存在（仓库里的 `assets/`
   // 只有 `assets/logos/` 这个源目录），所以**必须先建目录**再写 —— 少了这一行就是 ENOENT。
@@ -3663,9 +3700,26 @@ function assemble() {
   // 变化雷达条带（v1.5）：同样一行静态导航，紧跟按需求入口行。它与 /changes/ 页
   // 共用 RENDER-CORE 的渲染函数，读的是上面算好的同一份 radar。
   html = replaceMarker(html, '<!--PRERENDER:changes-->', renderCore.changesStripHtml(radar));
-  // t4：这里原先是「订阅发现」（首页 <head> 里由 Feed 注册表现场生成 8 条 rel="alternate"）。
-  // 订阅子系统整体下架之后首页不再声明任何 Feed，这个注入点与 index.html 里的标记一起删掉了。
-  console.log(`  筛选条 / 汇总 / 分类选项 / 按需求入口 / 变化雷达: 已填充`);
+  // v3.2：首页折叠线以下的「最近变化」区块 —— 复用 `/changes/` 与目录页那**同一个**渲染器
+  //（RENDER-CORE 的 `changesTopicHtml`，一个字都没改；`TOPIC_CHANGES_MAX` 保持 3），
+  // 数据视图由 `landing.topicChangesOf()` 给出（契约第 9.2 条的固定调用形态）：
+  //   · `dealIds === null` ⇒ 不按 id 过滤（取「最近 7 天变化」这一栏的全部条目）；
+  //   · `excludeIds` = **已在首屏条带里出现过**的条目 ⇒ 新块与条带结构上不可能重复同一件事。
+  // 0 条可选时 `changesTopicHtml` 自己返回空串（H14 条件模块：不留标题、不留空态、不留空容器）。
+  const homeTopic = landing.topicChangesOf(radar, null, {
+    sectionOrder: ['changed'],
+    excludeIds: new Set(radar.home.items.map(item => item.id))
+  });
+  const homeTopicHtml = renderCore.changesTopicHtml(homeTopic, '');
+  html = replaceMarker(html, '<!--PRERENDER:changestopic-->', homeTopicHtml);
+  // t4 撤掉的「订阅发现」（首页 <head> 里现场生成一串 `rel="alternate"`）**没有**回来：
+  // v3.2 的订阅声明面只有两条，而且它们写在 `index.html` 的骨架里（由 `FEED_FILES` 派生、
+  // 走 `__SITE_URL__` 占位符），不在这个注入点里 —— 这里只填正文块。
+  console.log('  筛选条 / 汇总 / 分类选项 / 按需求入口 / 变化雷达: 已填充');
+  console.log(`  最近变化块（折叠线以下）: ${homeTopicHtml
+    ? `${(homeTopicHtml.match(/data-topic-shown="(\d+)"/) || [])[1] || '?'} 行 / 可用 ${homeTopic.totals} 条`
+      + `（首屏条带已占 ${radar.home.items.length} 条，本块不重复它们）`
+    : '整块不渲染（0 条可选 —— 条件模块的既有行为）'}`);
 
   // 站点绝对地址：源码里不硬编码第二份 URL
   const urlSlots = html.split('__SITE_URL__').length - 1;
@@ -3686,9 +3740,24 @@ function assemble() {
   // 所以 9 家厂商页在**每一种**页面上都有入链。
   html = replaceMarker(html, '<!--PRERENDER:vendorline-->', renderVendorLine(PLAN));
 
-  // 标记必须全部消失——残留意味着某个替换静默失败了
+  // 标记必须全部消失——残留意味着某个替换静默失败了。
+  //
+  // ⚠️ v3.2 修的一条**归因**缺陷：原先这里用裸子串 `html.includes(marker)`，而
+  // `PRERENDER:changestopic` **包含** `PRERENDER:changes` ⇒ 真凶是 `changestopic` 却报成 `changes`
+  //（ui / guards / gate 三方都被这条误导过）。现在按**完整注释字面**匹配 `<!--PRERENDER:<name>-->`。
+  // 这**不是**放松：残留仍然当场抛错，而且下面还有一条兜底把「写坏形态的残留」也拦住。
   for (const marker of PRERENDER_MARKERS) {
-    if (html.includes(marker)) throw new Error(`预渲染标记未被替换: ${marker}`);
+    if (html.includes(`<!--${marker}-->`)) throw new Error(`预渲染标记未被替换: ${marker}`);
+  }
+  {
+    // 兜底（判的是另一件事）：任何形态的 `PRERENDER:` 残留也判红 —— 上面那条只点得出
+    // **登记过的**完整标记名，而"标记被写坏"（少一个 `--`、多一个空格）或"出现一个没登记的
+    // 新标记"正是它照不到的那两类。产物层还有一条更粗的 `/PRERENDER:/`（index.html 的整体扫描）。
+    const leftover = html.match(/<!--PRERENDER:[^>]*-->/);
+    if (leftover) {
+      throw new Error(`骨架里残留了未登记的预渲染标记 ${leftover[0]}`
+        + '（PRERENDER_MARKERS 里没有它，或它的替换被删掉了）');
+    }
   }
 
   // 页脚的「数据源状态」链接：站内相对路径在不同深度下不一样
@@ -3875,7 +3944,7 @@ function assemble() {
     ` · 名义 Token 单价可计算 ${plansComputable} 条 · 页面 ${(plansHtml.length / 1024).toFixed(1)} KB）`);
   console.log(`  套餐变化: ${planHistoryAvailability === 'ok' ? '可用' : '不可用（无变化日志）'} · 基准日 ${planRadar.asOf || '未知'}` +
     ` · 今日新增 ${planRadarStats.totals.created} · 最近 ${planRadarStats.totals.changed} · 不再收录 ${planRadarStats.totals.ended}` +
-    ` · 重新出现 ${planRadarStats.totals.restored} · 元信息（不上块 / 不进订阅）${planRadarStats.totals.meta} · 最近变化块 ${planRadarStats.homeCount} 项`);
+    ` · 重新出现 ${planRadarStats.totals.restored} · 元信息（不上「最近变化」块 / 仍进订阅出口）${planRadarStats.totals.meta} · 最近变化块 ${planRadarStats.homeCount} 项`);
 
   // ---- v2.5：API / Token 计费对比页 ----------------------------------------------------
   const apiPlansDir = path.join(OUT, 'plans', 'api');
@@ -3885,7 +3954,9 @@ function assemble() {
     providerTable,
     apiPlanHistoryStore,
     dealLinks: dealLinksView,
-    // v3.0 Stage H4：这一页要在 <head> 里声明自己那份订阅源 —— 从注册表取，不写死 id。
+    // v3.0 Stage H4 当年给这一页写过一份**专属**订阅源（API 价格变化那一份）；t4 撤掉了它，
+    // v3.2 也没有请回来 —— 订阅声明面只开给首页与 `/changes/` 两个路由，这一页是 0 条，
+    // 由自检里的「订阅声明面」块统一对账（判据本体在 tools/verify-site.js）。
   });
   notePage(apiPlansPage.API_PLANS_ROUTE, { kind: 'api-plans' });
   fs.writeFileSync(path.join(apiPlansDir, 'index.html'), apiPlansHtml, 'utf8');
@@ -4333,10 +4404,172 @@ ${archiveDetailUrls}
 </urlset>
 `, 'utf8');
 
-  // t4：订阅产物（25 个 Feed × 2 种格式）、厂商 Feed 的跳过/未登记警告、以及 /feeds/ 订阅中心
-  // 页面本身，全部随订阅子系统整体下架一起删除。这一段的坏法从来不是「页面看起来不对」：
-  // Feed 是**可下载的订阅产物**，页面只是它们的目录 —— 页面删了而文件还在，那道门就没人守了。
-  // 现在这两件事由 lib/published-assets.js 的产物资产门禁兜底（feed* 一个都不许发布）。
+  /* ---- v3.2：订阅产物（Atom 1.0 + JSON Feed 1.1）---------------------------------------
+   *
+   * 落盘方式与 sitemap.xml / logos.css / og-image.png **完全同款**：`fs.writeFileSync(path.join(OUT, …))`，
+   * 按 `FEED_FILES` 遍历写两条。**不新增中央写盘 helper** —— 这两条进 `GENERATED_FILES`，
+   * 而那张表是「声明了就必须存在于 OUT」那台机器牙的消费者。
+   *
+   * 内容来源 = **三支历史日志的事件流**（不是页面、也不是雷达视图：雷达有窗口与每栏上限，
+   * 而订阅出口要的是「日志里发生过的事」）。三条纪律：
+   *
+   *   ① **只收算得出 permalink 的事件**（与 `changes.js`「不给已离开数据集的条目发死链」同一条）：
+   *      · 优惠事件 ⇒ 仅当 `deals.json` 里该 id 存在且**可链接**（判据本体 = `changes.linkableDealIdsOf()`，
+   *        feed 侧只消费它物化后的集合，不在这里重写「什么算可链接」）；
+   *      · 套餐 / API 事件 ⇒ `plans/coding/#plan-<planId>` / `plans/api/#plan-<planId>`
+   *       （锚点由那两页自己保证存在：构建期有锚点断言，feed 侧只消费「url 算得出就算」）。
+   *      算不出的逐条丢弃（bucket 记在 `stats.dropped` 里），构建日志如实打印。
+   *   ② 文案「谁 · 发生了什么」**只取既有措辞**，本文件里 0 条中文事件措辞：
+   *      · 套餐 ⇒ `plansPage.planChangeSentenceOf()`（docstring 原文：「订阅源与 `title` 属性共用」）；
+   *      · API  ⇒ `apiPlansPage.apiPlanChangeTextOf()`（docstring 原文：「`/changes/` 的 API 分栏与
+   *        `feed/plans/api/changes.*` 的正文都读它」）；两者的「谁」由 titleOf 注入的记录标题承担。
+   *      · 优惠 ⇒ 不传 `textOf`，用 `feed.js` 的默认句（它读 `history.HISTORY_WORDING` +
+   *        `profile.fieldLabels` —— 同样是既有表，不是第二份措辞）。
+   *   ③ 时间一律来自**数据**：条目 `at` = 事件自己的日期；`meta.updatedAt` =
+   *      `String(payload.updatedAt).slice(0, 10)`（与 sitemap 的 lastmod、雷达的 asOf 同一口径）。
+   *      **不看时钟** —— 产物里不许出现「构建发生在几点几分」这种字节。
+   *
+   * 可用性（三支各自判断，口径 = `load()` 的 `missing` / `broken`）：
+   *   · 某支**缺失** ⇒ 该支计 0 并如实打印（少一整支，日志里看得见）；
+   *   · 某支**损坏** ⇒ fail-closed 停构建（坏日志被当成空日志继续，会把整段历史静默洗掉）；
+   *   · 三支**全部**不可用 ⇒ 0 条 ⇒ **构建失败**（「空 feed 不算通过」，不许发一份空的订阅产物）。
+   */
+  // 渲染器的 `meta`（契约第 5.5 条冻结的 5 个键；`selfPath` 按每一份产物现填）。
+  // `updatedAt` 只可能在「0 条」时被用到，而 0 条在这里是构建失败 ⇒ 它存在的意义是让
+  // 「条目的日期」与「数据日期」在键表里各有其位，不是给渲染器编一个日期。
+  const feedMetaBase = {
+    siteUrl: SITE_URL,
+    siteName: SITE_NAME,
+    siteDescription: SITE_DESCRIPTION,
+    updatedAt: lastmod
+  };
+  /**
+   * 三支订阅来源的**唯一登记表**：`kind` / 显示名 / 日志真值文件 / 加载结果 / 事件取法。
+   *
+   * ⚠️ **「哪一支用哪份日志」只有这一处决定**：下面 `feedSources` 的 `store`、可用性读数、
+   * 以及「损坏 ⇒ fail-closed」那条检查全部读这张表。第一轮变异实测出来的教训（值得留在这里）：
+   * 把 `store` 在 `feedSources` 里另写一遍（哪怕写的是同一个变量）时，「某支缺失」这条变异
+   * 只在**读数**上成立、条目构造仍读真值 —— 于是日志写着"缺失（计 0 条事件）"而 `considered`
+   * 仍是 73。那正是本仓最忌讳的形状：**看起来像读数，其实那个分支没生效**。
+   */
+  const feedBranches = [
+    { kind: 'deal', label: '优惠', file: history.HISTORY_FILE, load: historyStore, eventsOf: history.eventsOf },
+    { kind: 'plan', label: '套餐', file: planHistory.PLAN_HISTORY_FILE, load: planHistoryLoad, eventsOf: planHistory.eventsOf },
+    { kind: 'apiPlan', label: 'API 计费', file: apiPlanHistory.API_PLAN_HISTORY_FILE, load: apiPlanHistoryLoad, eventsOf: apiPlanHistory.eventsOf }
+  ];
+  const feedBranchOf = kind => {
+    const branch = feedBranches.find(item => item.kind === kind);
+    // feed.js 的 `kind` 集合是冻结的三个；这里查不到就是两边登记表分家了 —— 静默跳过等于
+    // 让某支日志悄悄退出订阅出口，所以抛错（与 feed.js 对未知 kind 的 fail-closed 同一条）。
+    if (!branch) throw new Error(`订阅出口：登记表里没有 ${JSON.stringify(kind)} 这一支`);
+    return branch;
+  };
+  {
+    const broken = feedBranches.filter(branch => branch.load.broken);
+    if (broken.length) {
+      throw new Error(`订阅出口：${broken.map(b => `${b.label}日志（${path.relative(ROOT, b.file)}）`).join(' / ')}`
+        + ` 解析失败（${broken.map(b => b.load.broken).join(' / ')}）—— 损坏的日志**不许**当成空日志继续：`
+        + '那会把整段历史静默洗掉，而订阅产物看起来仍然是一份「正常」的 feed');
+    }
+  }
+  const dealRecords = Array.isArray(payload.deals) ? payload.deals : [];
+  const feedDealById = new Map(dealRecords.map(deal => [deal.id, deal]));
+  const feedPlansById = new Map(plansStore.plans.map(plan => [plan.id, plan]));
+  const feedApiPlansById = new Map(apiPlansStore.plans.map(plan => [plan.id, plan]));
+  const feedSources = [
+    {
+      kind: 'deal',
+      profile: history.PROFILE,
+      store: feedBranchOf('deal').load.store,
+      titleOf: event => (feedDealById.get(event && event.id) || {}).title || '',
+      // 契约 E3/E4：可链接集合**必须**传（不传 feed.js 当场抛错）—— 它是「哪条记录真的有
+      // `deal/<id>/` 详情页」的唯一判据，靠猜就会发死链（t13 修的就是这条）。
+      linkableIds: changes.linkableDealIdsOf(dealRecords)
+    },
+    {
+      kind: 'plan',
+      profile: planHistory.PROFILE,
+      store: feedBranchOf('plan').load.store,
+      titleOf: event => (feedPlansById.get(event && event.planId) || {}).planName || '',
+      // 「谁」的那一半问 radar 自己的 `identityOf` 要（`RADAR_SOURCES` 是对外导出的一张表）：
+      // 页面上的套餐名 / 平台显示名与订阅源里**不可能分家**，本文件也不重算一遍身份。
+      textOf: event => plansPage.planChangeSentenceOf(
+        Object.assign({}, event, planChanges.RADAR_SOURCES.plans.identityOf(event.planId, event, feedPlansById)),
+        { providerTable, plansById: feedPlansById }
+      )
+    },
+    {
+      kind: 'apiPlan',
+      profile: apiPlanHistory.API_PROFILE,
+      store: feedBranchOf('apiPlan').load.store,
+      titleOf: event => (feedApiPlansById.get(event && event.planId) || {}).planName || '',
+      textOf: event => apiPlansPage.apiPlanChangeTextOf(event)
+    }
+  ];
+  const { entries: feedEntries, stats: feedStats } = feed.buildFeedEntries({
+    sources: feedSources,
+    max: feed.FEED_MAX_ITEMS
+  });
+  /**
+   * 每支的「入选条数」= 这一支**单独**构造出来的条目 id 集合 ∩ 合并结果。
+   *
+   * 为什么绕这一下：合并后的 `entries` 里没有「这条来自哪支日志」这个字段（条目形状是冻结的 5 个键），
+   * 而从 `url` 形态反推等于在本文件里再拼一份 url 模板（那是 feed.js 的内部表）。
+   * 单独构造是**同一支纯函数的又一次调用**（同输入同输出、不读盘、不看时钟），不是第二份实现。
+   */
+  const feedKeptOf = source => {
+    const { entries } = feed.buildFeedEntries({ sources: [source], max: Number.MAX_SAFE_INTEGER });
+    const own = new Set(entries.map(entry => entry.id));
+    return feedEntries.filter(entry => own.has(entry.id)).length;
+  };
+  const feedBranchReadings = feedBranches.map(branch => {
+    const source = feedSources.find(item => item.kind === branch.kind);
+    const events = branch.eventsOf(branch.load.store);
+    return {
+      kind: branch.kind,
+      label: branch.label,
+      missing: Boolean(branch.load.missing),
+      events: events.length,
+      eventDates: events.map(event => String((event && event.at) || '')),
+      kept: feedKeptOf(source)
+    };
+  });
+  // 日志里**出现过**的日期集合 + 数据日期：自检用它判「产物里的每个日期都来自数据」
+  //（也就是「没有构建时刻混进来」）。数据日期的出处 = `payload.updatedAt` 的日期。
+  const feedDataDates = [...new Set([
+    ...feedBranchReadings.flatMap(reading => reading.eventDates),
+    lastmod
+  ])].sort();
+  for (const reading of feedBranchReadings) {
+    console.log(`    · ${reading.label}日志 ${reading.missing
+      ? '缺失（计 0 条事件）'
+      : `${reading.events} 条事件`} · 入选 ${reading.kept} 条`);
+  }
+  console.log(`  feed 条目 ${feedStats.kept} 条（来源事件 ${feedStats.considered} 条 · `
+    + `丢弃 ${feedStats.dropped.notLinkable + feedStats.dropped.noUrl + feedStats.dropped.invalidAt + feedStats.dropped.duplicate} 条`
+    + `（notLinkable ${feedStats.dropped.notLinkable} / noUrl ${feedStats.dropped.noUrl} / invalidAt ${feedStats.dropped.invalidAt}`
+    + ` / duplicate ${feedStats.dropped.duplicate}） · 上限截断 ${feedStats.truncated} 条）`);
+  if (!feedEntries.length) {
+    throw new Error('订阅出口：0 条条目 —— 三支历史日志全部不可用（'
+      + feedBranchReadings.map(reading => `${reading.label}${reading.missing ? '缺失' : `${reading.events} 条事件`}`).join(' / ')
+      + '）。「空 feed 不算通过」：一份没有条目的订阅产物，订阅者拿到的是一个空列表，'
+      + '而那与「本站没有什么可订阅」是两句不同的话。构建停在这里。');
+  }
+  {
+    // 两条产物各配一个渲染器，顺序 = `FEED_FILES` 的**冻结顺序**（契约第 1.1 条：Atom 在前）。
+    // 文件名一律从表里取；数量对不上就抛错 —— 将来加第三种格式时"忘了补渲染器"不许静默少写一条。
+    const renderers = [feed.renderAtom, feed.renderJsonFeed];
+    if (renderers.length !== feed.FEED_FILES.length) {
+      throw new Error(`订阅出口：FEED_FILES 有 ${feed.FEED_FILES.length} 条而渲染器只有 ${renderers.length} 个`);
+    }
+    const metaOf = selfPath => ({ ...feedMetaBase, selfPath });
+    feed.FEED_FILES.forEach(([file], index) => {
+      fs.writeFileSync(path.join(OUT, file), renderers[index](feedEntries, metaOf(file)), 'utf8');
+    });
+    console.log(`  订阅产物: ${feed.FEED_FILES.map(([file]) =>
+      `${file} ${(fs.statSync(path.join(OUT, file)).size / 1024).toFixed(1)} KB`).join(' · ')}`
+      + `（条目 ${feedEntries.length} 条 · 数据日期 ${lastmod}）`);
+  }
 
   // 数据源状态：把采集写入的心跳文件发布出去（机器可读），并生成一页可读的 /status/。
   // 文件缺失（还没跑过一次成功采集）时生成「暂无数据」页，而不是让构建失败——
@@ -4376,6 +4609,19 @@ ${archiveDetailUrls}
     pageDescriptors,
     sitemapEntries,
     lastmod,
+    // v3.2：订阅产物交给自检做**磁盘回读**断言（结构 / URL 真实性 / 日期 / 禁词 / 元自称）。
+    // 这里带下去的只有「构建期才知道的读数」三样：
+    //   · `stats`    = `buildFeedEntries` 的账目（自检拿它对账「产物里的条目数」与「账目闭合」）；
+    //   · `branches` = 每支的事件数 / 入选条数（自检拿它对账三支读数的加法）；
+    //   · `dates`    = 日志里出现过的日期 ∪ 数据日期（自检拿它判「产物里的日期都来自数据」）。
+    // 条目内容本身**不带**下去：自检要判的是**盘上的字节**，不是内存里那份（否则对账了自己）。
+    feed: {
+      stats: feedStats,
+      branches: feedBranchReadings,
+      entryCount: feedEntries.length,
+      updatedAt: lastmod,
+      dates: feedDataDates
+    },
     // v1.5：变化雷达交给自检做**回读对账**（条带 ↔ 数据 ↔ 页面三方）。把 radar 与
     // 基准日一并带下去，自检因此不必重算一遍判据 —— 重算就等于把判据写了两遍。
     radar,
@@ -5228,6 +5474,184 @@ function selfCheck(built) {
     if (!ok) failed++;
   }
 
+  /* ---- v3.2：订阅产物（Atom 1.0 + JSON Feed 1.1）的结构性自检 ----------------------------
+   *
+   * 为什么用正则而不是 XML 解析器：Node 没有内置 XML parser，而契约第 15 条**不许**为这件事
+   * 加运行时依赖。要判的也不是"这篇 XML 在某个实现眼里合法"，而是**我们发出的每一种标签都
+   * 开闭配平、每条 entry 的四个必备件都在** —— 那是结构性断言，正则够用，而且它照的正是
+   * 「渲染器漏了一截」这一类坏法。
+   *
+   * 五组判据（扫描面 = 刚写下的两个文件的**磁盘字节**）：
+   *   ① XML 声明 / 不许 DOCTYPE / 根元素唯一为冻结形态 / 每种标签开闭配平 / 每条 entry 有
+   *      `<id>` `<title>` `<updated>` `<link href>`；
+   *   ② 两个格式的条目数**恒等**，且与构建期账目一致（同一次 `entries` 渲染出来的）；
+   *   ③ 每条链接（XML 的 `href` + JSON 的 item `url`）都是 `SITE_URL` 开头的绝对 URL，
+   *      去掉前缀后的路径在产物里**真实存在且非空**；带 `#fragment` 的还要在那一页里找得到
+   *      同名锚点 ——「不发死链」是订阅出口的硬纪律（t13 修的就是死链那一类）；
+   *   ④ 全部时间形态都是冻结的 `T00:00:00+08:00`，且日期取值 ⊆ 日志里出现过的日期 ∪ 数据日期
+   *      （构建期**不看时钟** ⇒ 产物里不该出现第五种日期）；
+   *   ⑤ 两个文件纳入**禁词**（`plansPage.FORBIDDEN_CLAIM_WORDS`）与**元自称**
+   *      （`scripts/validate.js` 的 `QUOTE_SELF_CLAIM_PATTERNS`，唯一出处）的扫描面。
+   */
+  {
+    const feedProblems = [];
+    const texts = new Map();
+    for (const [file] of feed.FEED_FILES) {
+      const abs = path.join(OUT, file);
+      if (!fs.existsSync(abs)) { feedProblems.push(`缺少产物 ${file}`); continue; }
+      const bytes = fs.readFileSync(abs);
+      if (!bytes.length) { feedProblems.push(`${file} 是 0 字节（空 feed 不算通过）`); continue; }
+      texts.set(file, bytes.toString('utf8'));
+    }
+    const xmlFile = [...texts.keys()].find(file => texts.get(file).startsWith('<?xml'));
+    const jsonFile = [...texts.keys()].find(file => texts.get(file).startsWith('{'));
+    if (!xmlFile) feedProblems.push(`没有一份订阅产物是 XML 形态（Atom 预期以 <?xml 开头）：${[...texts.keys()].join(' / ') || '（一条都没读到）'}`);
+    if (!jsonFile) feedProblems.push(`没有一份订阅产物是 JSON 形态（JSON Feed 预期以 { 开头）：${[...texts.keys()].join(' / ') || '（一条都没读到）'}`);
+
+    let xmlEntryCount = null;
+    const hrefs = [];
+    if (xmlFile) {
+      const xml = texts.get(xmlFile);
+      const where = `订阅产物 ${xmlFile}`;
+      if (!xml.startsWith('<?xml version="1.0" encoding="utf-8"?>\n')) {
+        feedProblems.push(`${where} 第一行不是冻结的 XML 声明`);
+      }
+      if (/<!DOCTYPE/.test(xml)) {
+        feedProblems.push(`${where} 出现 DOCTYPE（全仓唯一的 document 出口是 lib/page-shell.js）`);
+      }
+      if (!xml.includes('<feed xmlns="http://www.w3.org/2005/Atom"')) {
+        feedProblems.push(`${where} 根元素不是冻结形态 <feed xmlns="http://www.w3.org/2005/Atom" …>`);
+      }
+      const rootStarts = (xml.match(/<feed(?=[\s/>])/g) || []).length;
+      const rootCloses = (xml.match(/<\/feed>/g) || []).length;
+      if (rootStarts !== 1 || rootCloses !== 1) {
+        feedProblems.push(`${where} 根元素不唯一（<feed ${rootStarts} 个 / </feed> ${rootCloses} 个）`);
+      }
+      // 标签配平：起 = 自闭合 + 收（渲染器发出的全部标签，见契约第 5.3 条的骨架）
+      for (const tag of ['feed', 'title', 'subtitle', 'id', 'updated', 'link', 'author', 'name', 'entry', 'summary']) {
+        const starts = (xml.match(new RegExp(`<${tag}(?=[\\s/>])`, 'g')) || []).length;
+        const selfClosing = (xml.match(new RegExp(`<${tag}(?=[\\s/>])[^>]*/>`, 'g')) || []).length;
+        const closes = (xml.match(new RegExp(`</${tag}>`, 'g')) || []).length;
+        if (starts !== selfClosing + closes) {
+          feedProblems.push(`${where} 标签 <${tag}> 开闭不配平（起 ${starts} / 自闭 ${selfClosing} / 收 ${closes}）`);
+        }
+      }
+      // 每一条 entry 的四个必备件
+      const blocks = [...xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)].map(match => match[1]);
+      xmlEntryCount = blocks.length;
+      if (!blocks.length) feedProblems.push(`${where} 一条 <entry> 都没有（空 feed 不算通过）`);
+      blocks.forEach((block, index) => {
+        const missing = ['<id>', '<title>', '<updated>'].filter(tag => !block.includes(tag));
+        if (!/<link\b[^>]*\bhref="[^"]+"/.test(block)) missing.push('<link href>');
+        if (missing.length) feedProblems.push(`${where} 第 ${index + 1} 条 entry 缺少 ${missing.join(' / ')}`);
+      });
+      for (const match of xml.matchAll(/\bhref="([^"]*)"/g)) hrefs.push(match[1]);
+    }
+
+    let jsonItemCount = null;
+    if (jsonFile) {
+      const where = `订阅产物 ${jsonFile}`;
+      let box = null;
+      try {
+        box = JSON.parse(texts.get(jsonFile));
+      } catch (error) {
+        feedProblems.push(`${where} 不是合法 JSON：${error.message}`);
+      }
+      if (box) {
+        if (typeof box.version !== 'string' || !box.version) feedProblems.push(`${where} 缺 version`);
+        if (!Array.isArray(box.items)) {
+          feedProblems.push(`${where} 缺 items 数组`);
+        } else {
+          jsonItemCount = box.items.length;
+          if (!jsonItemCount) feedProblems.push(`${where} items 为空（空 feed 不算通过）`);
+          box.items.forEach((item, index) => {
+            const missing = ['id', 'url', 'title', 'date_published', 'date_modified']
+              .filter(key => typeof (item || {})[key] !== 'string' || item[key] === '');
+            if (missing.length) feedProblems.push(`${where} 第 ${index + 1} 条 item 缺少 ${missing.join(' / ')}`);
+            if (item && typeof item.url === 'string') hrefs.push(item.url);
+          });
+        }
+      }
+    }
+
+    // ② 条目数恒等 + 与构建期账目一致
+    if (xmlEntryCount !== null && jsonItemCount !== null && xmlEntryCount !== jsonItemCount) {
+      feedProblems.push(`两个格式的条目数不相等（XML ${xmlEntryCount} / JSON ${jsonItemCount}）——`
+        + '它们由同一次 entries 渲染，不相等说明有一侧被改写或漏渲染');
+    }
+    if (built.feed && xmlEntryCount !== null && xmlEntryCount !== built.feed.entryCount) {
+      feedProblems.push(`产物里 ${xmlEntryCount} 条 ≠ 构建期账目 ${built.feed.entryCount} 条`);
+    }
+
+    // ③ 链接：绝对 URL + 落点真实存在（含锚点）
+    for (const href of hrefs) {
+      if (!href.startsWith(SITE_URL)) {
+        feedProblems.push(`链接不是 SITE_URL 开头的绝对 URL：${href}`);
+        continue;
+      }
+      const rel = href.slice(SITE_URL.length);
+      const hashAt = rel.indexOf('#');
+      const pathPart = hashAt === -1 ? rel : rel.slice(0, hashAt);
+      const fragment = hashAt === -1 ? '' : rel.slice(hashAt + 1);
+      const relFile = pathPart === '' ? 'index.html' : (pathPart.endsWith('/') ? `${pathPart}index.html` : pathPart);
+      const abs = path.join(OUT, relFile);
+      if (!fs.existsSync(abs) || !fs.statSync(abs).size) {
+        feedProblems.push(`链接落点不存在（${href} → ${relFile}）`);
+        continue;
+      }
+      // 锚点也要有落点：`plans/*/#plan-<id>` 这类深链，页面里找不到同名 id 就是「点不动的死链」，
+      // 而那种链接在浏览器里只是安静地停在页首 —— 正是订阅出口最该挡住的一类。
+      if (fragment && !fs.readFileSync(abs, 'utf8').includes(`id="${fragment}"`)) {
+        feedProblems.push(`链接锚点没有落点（${href} → ${relFile} 里找不到 id="${fragment}"）`);
+      }
+    }
+
+    // ④ 时间形态与日期取值
+    const allowedDates = new Set((built.feed && built.feed.dates) || []);
+    const stamps = [...texts.values()]
+      .flatMap(text => [...text.matchAll(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}/g)].map(match => match[0]));
+    if (!stamps.length) feedProblems.push('两个产物里一个时间字段都没有');
+    const wrongForm = [...new Set(stamps.filter(stamp => !stamp.endsWith('T00:00:00+08:00')))];
+    if (wrongForm.length) {
+      feedProblems.push(`时间形态不是冻结的 T00:00:00+08:00：${wrongForm.slice(0, 3).join(' / ')}`
+        + '（有东西把「现在几点」写进产物了？构建期不看时钟）');
+    }
+    const outside = [...new Set(stamps.map(stamp => stamp.slice(0, 10)))].filter(date => !allowedDates.has(date));
+    if (outside.length) {
+      feedProblems.push(`日期不在数据日期集合里：${outside.slice(0, 3).join(' / ')}`
+        + `（允许 ${allowedDates.size} 个：${[...allowedDates].join(' / ')}）`);
+    }
+
+    // ⑤ 禁词 / 元自称（两份清单都从唯一出处 require，不在这里复制一份）
+    const forbidden = [];
+    for (const [file, text] of texts) {
+      const hits = plansPage.FORBIDDEN_CLAIM_WORDS.filter(word => text.includes(word));
+      if (hits.length) forbidden.push(`${file}：${hits.join('、')}`);
+    }
+    if (forbidden.length) {
+      feedProblems.push(`订阅产物出现结论性词汇（查了 ${plansPage.FORBIDDEN_CLAIM_WORDS.length} 个词）：${forbidden.join('；')}`);
+    }
+    const selfClaims = [];
+    for (const [file, text] of texts) {
+      const hits = validate.QUOTE_SELF_CLAIM_PATTERNS.filter(pattern => pattern.re.test(text));
+      if (hits.length) selfClaims.push(`${file}：${hits.map(pattern => pattern.label).join('、')}`);
+    }
+    if (selfClaims.length) {
+      feedProblems.push(`订阅产物出现元自称（查了 ${validate.QUOTE_SELF_CLAIM_PATTERNS.length} 条模式）：${selfClaims.join('；')}`);
+    }
+
+    if (feedProblems.length) {
+      fail(`订阅产物未通过结构性自检（${feedProblems.length} 处）：${feedProblems.slice(0, 4).join('；')}`
+        + `${feedProblems.length > 4 ? ` 等 ${feedProblems.length} 处` : ''}`);
+    } else {
+      console.log(`  ✓ 订阅产物: ${[...texts.keys()].join(' / ')} —— XML 声明 + 根元素唯一 + 标签配平`
+        + ` + 每条 entry 四件齐 · 两格式条目数恒等（${xmlEntryCount}）`
+        + ` · 链接 ${hrefs.length} 条全部绝对且落点真实存在（锚点逐条核对）+ 时间全部 T00:00:00+08:00`
+        + ` · 日期 ⊆ 数据日期（${allowedDates.size} 个）· 无结论性词汇（${plansPage.FORBIDDEN_CLAIM_WORDS.length} 词）`
+        + ` · 无元自称（${validate.QUOTE_SELF_CLAIM_PATTERNS.length} 条模式）`);
+    }
+  }
+
   // ---- 密钥扫描（v2.0）----
   // 为什么放在"产物自检"而不是某个 AI 脚本里：**发布出去的那一份**才是最后一道防线。
   // 候选文件、缓存、账本都在 gitignore 的 .ai-cache/ 里，但一个手滑把 key 拼进
@@ -5642,7 +6066,10 @@ function selfCheck(built) {
     else {
       const summary = publishedAssets.summarizePublishedFiles(OUT);
       console.log(`  ✓ 产物资产: ${summary.total} 个文件（页面 ${summary.pages} / 非页面 ${summary.nonPages}`
-        + ` · 数据资源 ${summary.data} 份 —— 只有首页那一份）· 无未登记文件 · 无 *.ndjson · 无订阅产物`);
+        + ` · 数据资源 ${summary.data} 份 —— 只有首页那一份）· 无未登记文件 · 无 *.ndjson`
+        // v3.2：这句原先写的是「无订阅产物」—— 本轮它成了假话（订阅出口回来了）。
+        // 如实版：两条订阅产物**逐路径登记**在 ALLOWED_PATHS 里（不是数据面清单，见 lib/published-assets.js）。
+        + ` · 订阅产物 ${feed.FEED_FILES.length} 份（已逐路径登记：${feed.FEED_FILES.map(([file]) => file).join(' / ')}）`);
     }
   }
 
@@ -6117,8 +6544,12 @@ function selfCheck(built) {
       const page = fs.readFileSync(pageFile, 'utf8');
       const noScript = page.replace(/<script[\s\S]*?<\/script>/gi, '');
       if (!page.includes(`<link rel="canonical" href="${SITE_URL}changes/">`)) problems.push('changes/ 的 canonical 不是自指');
-      // t4：这里原先断言 /changes/ 声明了「变化」订阅源（feed/changes.xml|json）。订阅子系统整体下架、
-      // 产物里不再有 Feed（判据在 lib/published-assets.js），这条断言失去了对象，随之删除。
+      // t4 删掉了「这一页声明了变化 Feed（`feed/changes.xml|json`）」那条断言 —— 它守的是**按变化流
+      // 一份**的那一族订阅源，而 v3.2 请回来的是**站点级两条**（`feed.FEED_FILES`）。
+      // ⚠️ 这不是"声明面没人管了"：构建期由上面的「订阅声明面」块对账（扫描面 = 全部 .html，
+      // 路由 / 条数 / type 集合 / 绝对 URL），产物验收那一侧是 `tools/verify-site.js` 的
+      // `subscriptionDeclarationProblem()`（唯一判据：href 落点真实存在且非空 + 条数 + type 集合
+      // 不重不漏 + 保留 hreflang 那半边）。
       if (/__[A-Z_]+_HREF__/.test(page)) problems.push('changes/ 残留路由占位符');
       let ldTypes = [];
       try {
@@ -6247,9 +6678,9 @@ function selfCheck(built) {
       for (const [href, label] of [['#deals', '优惠变化'], ['#plans', '套餐变化'], ['#api-plans', 'API 价格变化']]) {
         if (!page.includes(`href="${href}"`)) problems.push(`changes/ 的锚点导航缺少「${label}」（${href}）`);
       }
-      // t4：这里原先断言 /changes/ 声明了「套餐变化」订阅源（feed/plans/coding/changes.*）。
-      // 订阅子系统整体下架、页面不再声明任何 Feed，这条断言随之删除（判据改由产物资产门禁兜底：
-      // 只要产物里还剩一个 feed 前缀的文件，lib/published-assets.js 就当场红）。
+      // t4 删掉了「这一页声明了套餐变化 Feed（`feed/plans/coding/changes.*`）」那条断言：
+      // 按变化流一份的那一族没有回来，v3.2 请回来的是站点级两条（见上面 /changes/ 那一处的注释：
+      // 构建期由「订阅声明面」块对账，产物验收由 verify-site 的声明制判据判）。
       if (!noScript.includes(planW.PLAN_CHANGES_LABELS.sectionTitle)) problems.push('changes/ 缺少「套餐变化」分栏标题');
       const planBlock = (noScript.match(/<section class="chgsec pchanges" id="plans">[\s\S]*?<\/section>/) || [])[0] || '';
       if (!planBlock) problems.push('changes/ 缺少套餐变化块');
@@ -6582,6 +7013,75 @@ function selfCheck(built) {
         `${leftovers.length > 6 ? ` 等 ${leftovers.length} 处` : ''}`);
     } else {
       console.log(`  ✓ 页脚路由链接: ${ROUTE_HREFS.length} 条路由 × ${routeOutputs.length} 个输出，深度前缀与去占位逐项对账`);
+    }
+
+    /* ---- v3.2：订阅声明面（构建期自检侧）-----------------------------------------------
+     *
+     * **唯一判据**是 `tools/verify-site.js` 的 `subscriptionDeclarationProblem()`（门禁 L4 逐页族跑：
+     * 判 href 的落点是否真实存在且非空、type 集合、条数、以及"剩下的 alternate 必须带 hreflang"
+     * 那半边）。这里**不复制**那条判据，只做构建期的**路由 / 条数 / 前缀**对账 —— fail-fast：
+     * 产物还在暂存目录里就拦住，不必等到 L4。
+     *
+     * 冻结事实的出处 = 契约第 2.1 条：允许声明的路由只有首页 `''` 与 `changes/`，各 2 条；
+     * 其余页面族（含 `deal/<id>/` 详情页那两条 hreflang）**0 条**带 `type` 的声明。
+     * 条数与 type 一律从 `FEED_FILES` 现取 —— 本文件里没有第二个文件名 / MIME 字面量。
+     *
+     * 扫描面 = **产物里全部 .html**（不写一张"哪些页面族有声明"的清单：那种清单漏一族就静默失效，
+     * 而"多出一族偷偷声明"正是这一面要拦的事）。
+     */
+    {
+      const declProblems = [];
+      const allowedRoutes = new Set(['', 'changes/']);
+      const feedTypes = feed.FEED_FILES.map(([, type]) => type);
+      const htmlFiles = listArtifactFiles(OUT).filter(file => file.endsWith('.html'));
+      const seenRoutes = new Set();
+      const declared = [];
+      for (const file of htmlFiles) {
+        const route = file.replace(/index\.html$/, '');
+        const page = fs.readFileSync(path.join(OUT, file), 'utf8');
+        // 「带 type 的 rel=alternate」= 这一行同时有 rel="alternate" 与某个订阅 MIME 的 type
+        const lines = page.split(/\r?\n/).filter(line => /<link\b/.test(line) && /rel="alternate"/.test(line)
+          && feedTypes.some(type => line.includes(`type="${type}"`)));
+        if (!allowedRoutes.has(route)) {
+          if (lines.length) {
+            declProblems.push(`${route || '/'} 声明了 ${lines.length} 条订阅源（这一族必须是 0 条）`);
+          }
+          continue;
+        }
+        seenRoutes.add(route);
+        declared.push({ route, lines });
+      }
+      for (const route of allowedRoutes) {
+        if (!seenRoutes.has(route)) {
+          // 首页与 /changes/ 都必须在扫描面里：少了哪一个，"这一族 0 条"的结论就自动成立，
+          // 而那种"因为没扫到所以合格"正是扫描面收缩型失效（本仓踩过的老坑）。
+          declProblems.push(`扫描面里没有 ${route || '/'} 这一页（声明面因此无从对账）`);
+        }
+      }
+      for (const { route, lines } of declared) {
+        const label = route || '/';
+        const types = lines.map(line => (line.match(/\btype="([^"]+)"/) || [])[1]);
+        if (lines.length !== feedTypes.length) {
+          declProblems.push(`${label} 的订阅声明 ${lines.length} 条 ≠ FEED_FILES 的 ${feedTypes.length} 条`);
+        }
+        const missing = feedTypes.filter(type => !types.includes(type));
+        const extra = types.filter(type => !feedTypes.includes(type));
+        if (missing.length || extra.length) {
+          declProblems.push(`${label} 的声明 type 不是 FEED_FILES 那一组`
+            + `（缺 ${missing.join(' / ') || '无'} · 多 ${extra.join(' / ') || '无'}）`);
+        }
+        for (const line of lines) {
+          const href = (line.match(/\bhref="([^"]*)"/) || [])[1] || '';
+          if (!href.startsWith(SITE_URL)) declProblems.push(`${label} 的订阅声明不是 SITE_URL 开头的绝对 URL：${href}`);
+        }
+      }
+      if (declProblems.length) {
+        fail(`订阅声明面不对（${declProblems.length} 处）：${declProblems.slice(0, 4).join('；')}`
+          + `${declProblems.length > 4 ? ` 等 ${declProblems.length} 处` : ''}`);
+      } else {
+        console.log(`  ✓ 订阅声明: 只有 ${[...allowedRoutes].map(route => route || '首页').join(' 与 ')}`
+          + ` 各 ${feedTypes.length} 条（type 不重不漏、href 绝对）· 其余 ${htmlFiles.length - declared.length} 页 0 条`);
+      }
     }
 
     // v3.1：页头那枚 GitHub 图标入口的**全站正向断言**（上面那条的表只覆盖「进过深度表」的页面族，
@@ -7242,8 +7742,9 @@ function selfCheck(built) {
   // 与 /status/ 同一套机制（读回产物 + 与机器可读的那份对账），但断言更硬：
   //   · 表格里的详情页链接集合 == dist/assets/data/offers.json 里 `collections` 筛出来的 id 集合
   //   · 每个分类页都要有 canonical 自指、要有三段 JSON-LD（含 BreadcrumbList）
-  //     （原先还有「要声明两个 feed」一条，已随订阅层下架删除 —— 订阅声明的判据现在在
-  //      产物资产门禁与 verify-site 的「0 条带 type 的 rel="alternate"」那一侧，不在本块）
+  //     （原先还有「要声明两个 feed」一条：v3.2 的声明面只开给首页与 /changes/ 两个路由，
+  //      目录页这一族**仍然是 0 条** —— 那 0 条由上面的「订阅声明面」块统一对账，
+  //      判据本体在 tools/verify-site.js 的 subscriptionDeclarationProblem()，不在本块）
   //   · 无 JS 可读：表格是构建期写的，正文长度必须够
   // 为什么 jsonld 要有断言：`/status/` 那页恰恰是「有五条约定里的两条」——
   // 没有断言的三条，写漏了不会有任何东西红（子代理核查结论）。新路由不重复那个模式。
@@ -7299,11 +7800,9 @@ function selfCheck(built) {
       if (!body.includes(`<link rel="canonical" href="${page.url}">`)) problems.push(`${page.route} canonical 不是自指`);
       if (!page.indexable && !/name="robots"[^>]*noindex/.test(body)) problems.push(`${page.route} 是别名页却没有 noindex`);
       if (page.indexable && /name="robots"[^>]*noindex/.test(body)) problems.push(`${page.route} 可索引却带了 noindex`);
-      // t4：这里原先有两条订阅声明断言（每页必须声明两个根 Feed / 有专属 Feed 的页面必须声明它）。
-      // 订阅子系统整体下架之后页面不再声明任何 Feed，这两条一起删除。
-      // ⚠️ 它们守的是「读者找得到订阅入口」；现在"入口"这件事本身被撤了，所以判据不是被放松，
-      // 而是失去了对象 —— 取而代之的是产物资产门禁：产物里只要还剩一个 feed 前缀的文件，
-      // `lib/published-assets.js` 就当场红（文件在 = 读者仍能下载到，比"页面少列一行"更早、更硬）。
+      // t4 删掉了两条订阅声明断言（每页必须声明两个根 Feed / 有专属 Feed 的页面必须声明它）。
+      // v3.2 的声明面**只开给两个路由**（首页与 `/changes/`），这一块扫的是目录页 —— 它们仍然是 0 条，
+      // 由自检里的「订阅声明面」块统一对账（扫描面 = 全部 .html；判据本体在 `tools/verify-site.js`）。
       let ldTypes = [];
       try {
         ldTypes = [...body.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)]
@@ -7460,8 +7959,9 @@ function selfCheck(built) {
     else {
       const collectionSummary = built.collectionPages.map(p => `/${p.slug}/ ${p.count} 条`).join(' · ');
       const needSummary = built.needPages.map(p => `/${p.route} ${p.count} 条`).join(' · ');
-      // 「双 feed」那一项随订阅层下架删除：这一块从不检查订阅声明（产物里带 type 的声明恒为 0），
-      // 所以这里也不再把它写成一条被验过的约定 —— 日志只说这一块**真的**对过账的东西。
+      // 「双 feed」那一项是 t4 删掉的：这一块从不检查订阅声明（v3.2 的声明面只开给首页与
+      // `/changes/`，目录页这一族的带 type 声明恒为 0），所以这里也不把它写成一条被验过的约定 ——
+      // 日志只说这一块**真的**对过账的东西（那 0 条由上面「订阅声明面」块统一对账）。
       console.log(`  ✓ 分类页: ${collectionSummary}（逐条 id 对账 · canonical · 三段 JSON-LD · 预渲染正文）`);
       console.log(`  ✓ 按需求页: ${needSummary}（同上 + 命中依据列 · 内链前缀 ${'../../'} · 首页入口数字对齐）`);
     }
@@ -7570,12 +8070,16 @@ function selfCheck(built) {
     }
   }
 
-  // t4：这里原先有三块订阅自检（整张注册表三方对账 / 订阅发现 rel=alternate / 订阅中心页五条约定）。
-  // 它们随订阅子系统整体下架一起删除 —— 没有 Feed、没有订阅声明、没有订阅中心页，就没有可对账的对象。
-  // ⚠️ 删掉的是什么级别的牙，值得写下来：那三块原本能抓住「页面少列一条 Feed」「某页漏了 rel=alternate」
-  // 「hidden 的 Feed 仍留产物文件」这类**产出与总览分家**的事故。它们的替代者是产物资产门禁：
-  // 只要还有一个 feed 前缀的文件留在产物里，`lib/published-assets.js` 就当场红
-  //（比"页面少列一行"更早、也更硬：文件在，读者就能下载到）。
+  // t4 删掉的**三块**订阅自检，v3.2 只请回来一块半 —— 逐条写清，免得下一个人以为漏了：
+  //   ① 「整张注册表三方对账」（每页声明了哪些 Feed ↔ 注册表 ↔ 产物文件）**不回来**：
+  //      注册表本身（每页一份 Feed 那一层）没有请回来，今天只有两张固定的站点级产物。
+  //   ② 「订阅发现 rel=alternate」**部分回来、且换了位置**：构建期由上面的「订阅声明面」块对账
+  //      （扫描面 = 产物里全部 .html；路由 / 条数 / type 集合 / 绝对 URL），产物验收那一侧是
+  //      `tools/verify-site.js` 的 `subscriptionDeclarationProblem()` —— 后者才是**唯一判据**
+  //      （它还判 href 落点是否真实存在且非空、以及「剩下的 alternate 必须带 hreflang」那半边）。
+  //   ③ 「订阅中心页五条约定」**不回来**：`/feeds/` 那一族没有被请回来。
+  // 产物文件那一侧仍然由产物资产门禁守：`lib/published-assets.js` 是**逐路径登记制**，
+  // 只有登记过的那两条订阅产物放行，其余任何 `feed*` 基名照旧判红（文件在 = 读者能下载到）。
 
   // FAQ 可见文案与 FAQPage 必须逐字一致。
   //

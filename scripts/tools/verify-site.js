@@ -38,42 +38,209 @@ const ROOT = path.join(__dirname, '..', '..');
  */
 const readRoot = rel => JSON.parse(fs.readFileSync(path.join(ROOT, rel), 'utf8'));
 
-/**
- * 「这一页有没有**订阅声明**」的**唯一判据**（t6：从 T5 的 6 条同形断言里抽出来）。
+/*
+ * 订阅声明判据（v3.2 起改成**声明制**）—— 「这一页的**订阅声明**合不合契约」的**唯一判据**
+ * （t6 从 T5 的 6 条同形断言里抽出）。签名与逐条判据见下面 `function
+ * subscriptionDeclarationProblem(links, spec)` 的 JSDoc。
  *
  * `rel="alternate"` 在 HTML 里有两种语义完全不同的用法，数总量会把它们混为一谈：
- *   ① **订阅声明**（Feed）：必带 `type="application/rss+xml"` 或 `application/feed+json`；
+ *   ① **订阅声明**（Feed）：带 `type`，取值只能是 `scripts/lib/feed.js` 的 `FEED_FILES`
+ *      登记的那几个 MIME（**唯一出处**，本文件不许抄第二份字面量）；
  *   ② **语言/地区声明**：带 `hreflang`（`index.html:26-27` 与每个 deal 详情页各 2 枚，
  *      由 `page-shell.js:241` 的 hreflang 槽位注入；`build-local.js:6268` 的首页自检
  *      反过来**要求**它存在：`if (!/hreflang="x-default"/.test(html)) fail('缺少 hreflang')`）。
  *
- * 本轮要消灭的是 ①。判据刻意做成**双侧**，而且不是可有可无的对称：
- *   · ① 带 `type` 的必须 0 条；
- *   · ② 剩下的每一条都**必须带 `hreflang`** —— 只做 ① 的话，把订阅声明的 `type` 抹掉
- *     （`<link rel="alternate" href="feed.xml">`）就能骗过它；② 正好堵这条路。
+ * ## t6 → v3.2：整族禁令 → 声明制（**经用户显式授权的部分反转**，净效果更严）
  *
- * 为什么必须抽成一份：原先 6 个页面族各写一遍裸选择器计数，而其中**首页那一条永远不可能为真**
- * （它把 2 枚 hreflang 语言声明也数进去了）—— 一条永远红的断言不提供任何保护，只会掩盖真问题。
- * 抽成一份之后，「哪些页面族该有 hreflang」这件事不再影响这条判据：语言声明一律放行，
- * 订阅声明一律判红。
+ * t6（上一轮「去数据暴露」）的契约是 ①**必须 0 条**：订阅子系统整体下架，页面不该再声明任何订阅源。
+ * v3.2 恢复订阅出口之后，这里改成**声明制** —— 放行的四条必须**同时**成立：
+ *   ① 该页在 `FEED_DECLARABLE_ROUTES`（唯一注册表：首页 `''` 与 `/changes/`）内；
+ *   ② 每一条的 `type` 都在 `FEED_FILES` 的取值集合内；
+ *   ③ 每一条的 `href` 按该页深度解析后**落在 `FEED_FILES` 登记的文件名上**，且该文件在产物目录里
+ *      **真实存在且非空**（`fs.statSync(...).size > 0`，产物目录 = 调用方传的 `spec.dir`，即 `DIR`）；
+ *   ④ 声明条数 == `FEED_FILES.length`，且 `type` 集合**恰好**覆盖登记取值（不重不漏）。
+ * **未登记的路由**仍然走 t6 那条老判据（带 `type` 的必须 0 条，措辞与语义逐字不变）。
+ *
+ * 比 t6 更严的地方（不是更松）：
+ *   · ✅ **新增③**：今天完全不检查「声明的订阅源到底存不存在」—— 声明一条 404 的订阅源，
+ *     页面看着一切正常、订阅者点开是空，此前没有任何断言会响；
+ *   · ✅ 登记路由上「一条都不声明」也判红（`FEED_FILES` 有 N 条就必须声明 N 条），
+ *     t6 只要求「不多」，不要求「不少」；
+ *   · ✅ `type` 必须逐值命中登记表，且两条不许写成同一个 MIME（集合比对，不重不漏）；
+ *   · ✅ 除登记的那两个路由外，其余页面族一条都别想声明 —— 豁免是**逐路由**登记，没有通配。
+ *
+ * ## 判据仍然是**双侧**的（这一半不许删）
+ *   · 带 `type` 的：登记路由上必须「恰好是登记的那几条」，未登记路由上必须 0 条；
+ *   · 剩下的每一条都**必须带 `hreflang`** —— 只做上一半的话，把订阅声明的 `type` 抹掉
+ *     （只留 `href` 的 `<link rel="alternate">`）就能骗过它；这一半正好堵这条路。
+ *
+ * ## 登记表读不出来时（fail-closed）
+ * `FEED_FILES` 读不到（`scripts/lib/feed.js` 尚未落地 / 导出形状非法 / 是空数组）时，登记的
+ * 路由上返回的是一条**问题**而不是 `null`：判定失去依据时不许放行。同一件事的另一面是
+ * 「忘了传 `spec`」也只能判红（`spec = {}` 时 route 退化成首页、dir 为空 ⇒ 登记路由的红），
+ * 不会因为参数缺失而静默通过。
+ */
+/* ------------------------------------------------------------------ */
+/* 订阅声明注册表 + `FEED_FILES` 的唯一读取点（v3.2 声明制）              */
+/* ------------------------------------------------------------------ */
+
+/**
+ * **允许声明订阅源的路由注册表**（唯一一份；6 个调用点只传 `spec.route`，不许各写一份）。
+ * 本轮只有首页与 `/changes/` 声明订阅源；**每个路由声明几条**由 `FEED_FILES.length` 现算
+ * （见 `subscriptionDeclarationProblem`），不写死数字 —— 登记表加一条，判据自动跟着走。
+ *
+ * 为什么必须是一张表而不是「凡路由皆可声明」：未登记的路由要走 t6 那条「0 条带 type」的老判据，
+ * 于是「新页面顺手加一条订阅声明」这件事在一个可评审的登记表前停住，而不是静默生效。
+ */
+const FEED_DECLARABLE_ROUTES = ['', 'changes/'];
+
+// 站点常量（`SITE_URL`）的**唯一出处** = `lib/site.js`：声明制要把绝对 `href` 解析回站根相对路径，
+// 不在这里写第二份生产域名（写死的话，换域名时这条判据会静默判错页 —— 而它恰恰是订阅入口的守卫）。
+const { SITE_URL } = require('../lib/site');
+
+/**
+ * 订阅产物登记表 `FEED_FILES` 的**唯一读取点**（唯一出处 = `scripts/lib/feed.js` 的导出）。
+ * @returns {{files: Array<[string,string]>, problem: string|null}} problem 非空 ⇒ 登记制无法成立
+ */
+function readFeedFiles() {
+  let feedLib;
+  try {
+    feedLib = require('../lib/feed');
+  } catch (error) {
+    return { files: [], problem: '读不到订阅产物登记表 scripts/lib/feed.js 的 FEED_FILES'
+      + `（${(error && error.code) || (error && error.message) || error}）—— fail-closed：`
+      + '判定失去依据时，登记路由上的订阅声明一律判红' };
+  }
+  const files = Array.isArray(feedLib.FEED_FILES) ? feedLib.FEED_FILES : null;
+  if (!files || !files.length) {
+    return { files: [], problem: 'scripts/lib/feed.js 的 FEED_FILES 不是非空数组 —— fail-closed：'
+      + '判定失去依据时，登记路由上的订阅声明一律判红' };
+  }
+  for (const item of files) {
+    if (!Array.isArray(item) || typeof item[0] !== 'string' || !item[0]
+      || typeof item[1] !== 'string' || !item[1]) {
+      return { files: [], problem: `scripts/lib/feed.js 的 FEED_FILES 条目形状非法（${JSON.stringify(item)}）`
+        + '—— fail-closed：判定失去依据时，登记路由上的订阅声明一律判红' };
+    }
+  }
+  return { files, problem: null };
+}
+
+/**
+ * 把一条声明的 `href` 解析成**站根相对路径**（产物里的相对路径）。
+ *
+ * 与页脚 `__FEED_HREF__` 的解析规则同源：绝对 URL 去掉 `SITE_URL` 前缀；相对路径按该页目录
+ * 深度补 `../`（首页 0 层、`/changes/` 1 层 —— 与 `finalizePage()` 的输出深度一致）。
+ * 解析不出站内路径（别的 origin / 空 href / `javascript:` 之类）⇒ 返回 problem，由调用点判红。
+ *
+ * @returns {{rel: string, problem: string|null}}
+ */
+function declaredFeedPath(href, route) {
+  const raw = String(href || '').trim();
+  if (!raw) return { rel: '', problem: '有一条订阅声明没有 href' };
+  if (raw.startsWith(SITE_URL)) return { rel: raw.slice(SITE_URL.length), problem: null };
+  if (/^[a-z][a-z0-9+.-]*:/i.test(raw)) {
+    return { rel: '', problem: `href 不是本站地址（应以 ${SITE_URL} 开头）：${raw}` };
+  }
+  const depth = String(route || '').split('/').filter(Boolean).length;
+  return { rel: `${'../'.repeat(depth)}${raw.replace(/^\.\//, '').replace(/^\/+/, '')}`, problem: null };
+}
+
+/**
+ * 「剩下的 alternate 必须全部带 hreflang」那一半的共用措辞（t6 逐字保留）。
+ *
+ * ⚠️ 判定式 = **既不带 `type` 也不带 `hreflang`**，两个条件缺一不可：t6 里这条只在
+ * 「0 条带 type」通过之后才跑，那时「没有 hreflang」就等于「两个都没有」；声明制下带 `type`
+ * 的登记声明本身就没有 `hreflang`，只按「没有 hreflang」过滤会把**合法的订阅声明**误判成
+ * 混进来的裸 alternate（实测踩过：目标态产物上一开始就是这样被误判成红的）。
+ */
+function unclassifiedAlternateProblem(list) {
+  const unclassified = list.filter(link => String(link.type || '').trim() === ''
+    && String(link.hreflang || '').trim() === '');
+  if (!unclassified.length) return null;
+  return `${unclassified.length} 条 rel="alternate" 既不带 type 也不带 hreflang —— `
+    + `既不是订阅声明、也不是语言声明，判据不放行（抹掉 type 想混进来，会被这一条抓住）：`
+    + unclassified.map(link => link.href || '(无 href)').join(' · ');
+}
+
+/**
+ * 订阅声明判据的**唯一实现**（登记制 / 双侧 / fail-closed 的完整论证见上方那段长注释）。
+ * 6 个页面族一律调用它，**不写内联副本**。
  *
  * @param {Array<{type?:string,hreflang?:string,href?:string}>} links 页面上的全部 `link[rel="alternate"]`
- * @returns {string|null} null = 通过；否则是一句可读的问题描述（直接当 check 的 detail）
+ * @param {{route?:string,dir?:string}} [spec] 见上方长注释：`route` = 站根相对路由（首页 `''`），
+ *        `dir` = 正在验收的产物目录（verify-site.js 里一律传既有的 `DIR`）
+ * @returns {string|null} null = 通过；否则是一句可读的问题描述（**点名 href / type / 产物路径**）
  */
-function subscriptionDeclarationProblem(links) {
+function subscriptionDeclarationProblem(links, spec = {}) {
   const list = (Array.isArray(links) ? links : []).map(link => link || {});
+  const route = String(spec.route || '');
+  const dir = spec.dir ? String(spec.dir) : '';
   const typed = list.filter(link => String(link.type || '').trim() !== '');
-  if (typed.length) {
-    return `仍声明了 ${typed.length} 条订阅源（带 type 的 rel="alternate"）：`
-      + typed.map(link => `${link.href || '(无 href)'}[${link.type}]`).join(' · ');
+  const where = route || '(首页)';
+
+  // ---- 未登记的路由：t6 原判据逐字不变（带 type 的必须 0 条）----
+  if (!FEED_DECLARABLE_ROUTES.includes(route)) {
+    if (typed.length) {
+      return `路由 ${where} 不在订阅声明注册表`
+        + `[${FEED_DECLARABLE_ROUTES.map(r => r || '(首页)').join(', ')}] 内，`
+        + `却声明了 ${typed.length} 条订阅源（带 type 的 rel="alternate"）：`
+        + typed.map(link => `${link.href || '(无 href)'}[${link.type}]`).join(' · ');
+    }
+    return unclassifiedAlternateProblem(list);
   }
-  const unclassified = list.filter(link => String(link.hreflang || '').trim() === '');
-  if (unclassified.length) {
-    return `${unclassified.length} 条 rel="alternate" 既不带 type 也不带 hreflang —— `
-      + `既不是订阅声明、也不是语言声明，判据不放行（抹掉 type 想混进来，会被这一条抓住）：`
-      + unclassified.map(link => link.href || '(无 href)').join(' · ');
+
+  // ---- 登记的路由：先看登记表读不读得到 ----
+  const registry = readFeedFiles();
+  if (registry.problem) return `${where} ${registry.problem}`;
+  const files = registry.files;
+  const allowedTypes = new Set(files.map(([, type]) => type));
+  const allowedFiles = new Set(files.map(([file]) => file));
+
+  if (typed.length !== files.length) {
+    return `${where} 应声明 ${files.length} 条订阅源（= FEED_FILES 的登记条数），`
+      + `实际 ${typed.length} 条：`
+      + (typed.length
+        ? typed.map(link => `${link.href || '(无 href)'}[${link.type}]`).join(' · ')
+        : '(一条都没有 —— 订阅出口不存在了，构建期就必须知道)');
   }
-  return null;
+
+  const seenTypes = new Set();
+  for (const link of typed) {
+    const type = String(link.type || '').trim();
+    const href = String(link.href || '').trim();
+    if (!allowedTypes.has(type)) {
+      return `${where} 的订阅声明 type 不在登记表内：${href || '(无 href)'}[${type}] —— `
+        + `允许的 type 只有 [${[...allowedTypes].join(' / ')}]（唯一出处 scripts/lib/feed.js 的 FEED_FILES）`;
+    }
+    const parsed = declaredFeedPath(href, route);
+    if (parsed.problem) return `${where} ${parsed.problem}`;
+    if (!allowedFiles.has(parsed.rel)) {
+      return `${where} 的订阅声明 href=${href || '(无 href)'} 解析后落在 ${parsed.rel || '(空路径)'}，`
+        + `不在登记表 [${[...allowedFiles].join(' / ')}] 上（逐路径命中，没有前缀豁免）`;
+    }
+    if (!dir) {
+      return `${where} 的订阅声明无法核对产物：调用点没有传 spec.dir（产物目录）——`
+        + ' fail-closed：读不到产物就不放行「声明的订阅源真的存在」这一条';
+    }
+    let size = -1;
+    try { size = fs.statSync(path.join(dir, parsed.rel)).size; } catch (error) { size = -1; }
+    if (size <= 0) {
+      return `${where} 声明的订阅源 ${href} 指向产物里的 ${parsed.rel}，`
+        + `但 ${path.relative(ROOT, path.join(dir, parsed.rel))} 不存在或是空文件（size=${size}）——`
+        + ' 声明必须指向**真实存在且非空**的订阅产物（订阅者点开不能是 404 / 空）';
+    }
+    seenTypes.add(type);
+  }
+
+  // 不重不漏：N 条声明的 type 集合必须**恰好**覆盖登记表的 N 个取值。
+  if (seenTypes.size !== allowedTypes.size) {
+    return `${where} 的 ${typed.length} 条订阅声明 type 集合 = [${[...seenTypes].join(', ')}]，`
+      + `登记表要求恰好 [${[...allowedTypes].join(', ')}]（不重不漏，两条写成同一个 MIME 也算红）`;
+  }
+
+  // 另一半：剩下的 alternate 必须全部带 hreflang（登记路由上同样照判）。
+  return unclassifiedAlternateProblem(list);
 }
 const landingsLib = require('../lib/landing');
 // 首页专题导航卡（v1.8）的**唯一来源**：卡数 / 标题 / href / 落地页 h1 全部按注册表现算，
@@ -108,9 +275,12 @@ const WIDE_DESKTOP = 1440;                 // 桌面档一（全站逐条）
  * + 它自己的那一对）」，曾是 landing 族「声明几条订阅源」三条断言的判据来源 ——
  * 那套机制随订阅层整族下架**已删除**（`lib/feeds.js` 与全部 Feed 产物都不在了），
  * 这个函数也一起删掉。
- * 【现役契约】页面**一条订阅声明都不许有**：各页面族各自断言「0 条带 `type` 的
- * `rel="alternate"`」，首页另加一条「剩下的 alternate 必须**全部**是 hreflang 语言声明、
- * 且恰好 2 条」——见 §14 那两条 check（那里写清了为什么不能只数裸选择器）。
+ * 【现役契约】（t6 立，v3.2 改内容）订阅声明走**唯一判据** `subscriptionDeclarationProblem()`：
+ * **未登记的路由**（目录页 / 需求页 / `/status/` / 分类页 / 厂商页）仍断言「0 条带 `type` 的
+ * `rel="alternate"`」；**登记的路由**（首页与 `/changes/`）断言「恰好 = `FEED_FILES` 登记的那几条，
+ * 且 href 指向产物里真实存在且非空」；两类都另判「剩下的 alternate 必须全部是 hreflang 语言声明」。
+ * 首页另有一条本页事实断言「恰好 2 条 hreflang」——见 §14 那两条 check
+ * （那里写清了为什么不能只数裸选择器，以及为什么这一半不许删）。
  * `landingsLib` 本身仍在别处使用（枢纽路由等），所以只删 `void landingsLib;` 那一行。
  */
 
@@ -1978,24 +2148,43 @@ function noJsControlExemptionFor(route) {
   // icon/favicon/`<image>`/`atom:self`、以及每个 feed 条目 URL 对应的详情页存在。
   // 订阅层整体下架后这些文件一个都不再产出（探针只会拿到 404）。
   //
-  // t6（队长授权的契约例外，判据**变严不变松**）：T5 在这里写的是「0 条 rel="alternate"」——
+  // t6（当时的队长授权，判据**变严不变松**）：T5 在这里写的是「0 条 rel="alternate"」——
   // 那个判定对**首页**永远不可能为真：它把「订阅声明」与「hreflang 语言声明」数在了一起。
-  // 现在改用顶部的共享判据 `subscriptionDeclarationProblem()`（双侧：0 条带 `type` 的订阅声明，
+  // 于是改用顶部的共享判据 `subscriptionDeclarationProblem()`（双侧：0 条带 `type` 的订阅声明，
   // 且剩下的每一条都必须是 hreflang 语言声明），首页额外保留一条**本页事实**断言：
   // `index.html:26-27` 恰好两枚 `hreflang`（`zh-CN` / `x-default`），由 `build-local.js:6268`
   // 的首页自检反过来要求其存在。
+  // ⚠️ 上面那句「0 条带 `type`」是 **t6 的历史形态**，v3.2 已改成声明制（见下）。共享判据仍然只有
+  //    一处实现、首页仍然只有两条 check —— 改的是判据的**内容**，不是它的份数。
+  // v3.2（**用户显式授权的部分反转**，判据**变严不变松**）：订阅出口回归后，首页**必须**声明
+  // `FEED_FILES` 登记的那几条订阅源。t6 那条「0 条带 type 的订阅声明」变成**声明制**：
+  // 判定本体仍在顶部的共享实现 `subscriptionDeclarationProblem(links, { route, dir })` ——
+  // 该页在登记路由内 / type 命中登记表 / href 解析后指向产物里**真实存在且非空**的文件 /
+  // 条数 == FEED_FILES.length 且 type 不重不漏；剩下的每一条 alternate 仍必须带 hreflang。
+  // 首页额外保留一条**本页事实**断言：`index.html:26-27` 恰好两枚 `hreflang`（`zh-CN` / `x-default`，
+  // 由 `build-local.js:6268` 的首页自检反过来要求其存在），**外加**登记的那几条订阅声明 ——
+  // 且首页上不许有第三种 alternate（每条非 hreflang 的都必须是已登记声明）。
   const homeAlternates = await page.evaluate(() =>
     [...document.querySelectorAll('link[rel="alternate"]')].map(l => ({
       href: l.getAttribute('href') || '',
       type: l.getAttribute('type') || '',
       hreflang: l.getAttribute('hreflang') || ''
     })));
-  const homeSubProblem = subscriptionDeclarationProblem(homeAlternates);
-  check('首页不再声明任何订阅源（0 条带 type 的 rel="alternate"；语言声明不算订阅）',
-    homeSubProblem === null, homeSubProblem || `alternate ${homeAlternates.length} 条，全部是 hreflang 语言声明`);
-  check('首页剩下的 rel="alternate" 恰好是 2 条 hreflang 语言声明（index.html:26-27），不是被抹掉 type 的订阅声明',
-    homeAlternates.length === 2 && homeAlternates.every(l => l.hreflang !== ''),
-    `${homeAlternates.length} 条：[${homeAlternates.map(l => `${l.hreflang || '(无 hreflang)'}${l.type ? `/${l.type}` : ''}`).join(', ')}]`);
+  const homeFeedRegistry = readFeedFiles();
+  const homeHreflang = homeAlternates.filter(l => String(l.hreflang || '').trim() !== '');
+  const homeTyped = homeAlternates.filter(l => String(l.type || '').trim() !== '');
+  const homeSubProblem = subscriptionDeclarationProblem(homeAlternates, { route: '', dir: DIR });
+  check('首页的订阅声明符合登记制（恰好是 FEED_FILES 登记的那几条，且指向产物里真实存在且非空的文件）',
+    homeSubProblem === null,
+    homeSubProblem || `订阅声明 ${homeTyped.length} 条，全部命中登记表：`
+      + homeTyped.map(l => `${l.href}[${l.type}]`).join(' · '));
+  check('首页 rel="alternate" = 恰好 2 条 hreflang 语言声明（index.html:26-27）+ FEED_FILES 登记的每一条订阅声明各一条（每条非 hreflang 的都是已登记声明）',
+    homeHreflang.length === 2 && homeFeedRegistry.problem === null &&
+    homeTyped.length === homeFeedRegistry.files.length &&
+    homeAlternates.length === homeHreflang.length + homeTyped.length,
+    `${homeAlternates.length} 条：[${homeAlternates.map(l => `${l.hreflang || '(无 hreflang)'}${l.type ? `/${l.type}` : ''}`).join(', ')}]`
+    + ` · hreflang ${homeHreflang.length} 条 · 已登记订阅声明 ${homeTyped.length}/${homeFeedRegistry.files.length} 条`
+    + `${homeFeedRegistry.problem ? ` · ${homeFeedRegistry.problem}` : ''}`);
 
   const ldTypes = await page.evaluate(() => [...document.querySelectorAll('script[type="application/ld+json"]')]
     .map(s => { try { return JSON.parse(s.textContent)['@type']; } catch (e) { return 'PARSE_ERROR'; } }));
@@ -2011,7 +2200,8 @@ function noJsControlExemptionFor(route) {
   // 这一节的六条断言（页面存在 / canonical / 恰好 2 条 alternate / JSON-LD 集合 /
   // `li.frow >= 18` / listed >= 36 且逐文件存在 / 空变化流的起算日）全部失去被测对象。
   // 同节「RSS 与 JSON 的条目 id 相等」那条口径属于 `feeds.js` 的序列化契约，随该模块一起退场；
-  // **页面侧**的新契约（任何页面都不再声明 alternate）改在每个页面族里各自断言。
+  // **页面侧**的新契约改在每个页面族里各自断言（v3.2 起是声明制：未登记路由 0 条、
+  // 登记路由恰好 FEED_FILES 那几条且产物里真实存在 —— 见顶部 subscriptionDeclarationProblem）。
 
   console.log('\n=== 15) 独立详情页 ===');
   // 这一节要从首页取样 —— 显式回首页，而不是依赖「上一步恰好还在首页」（那种隐式依赖一改顺序就炸）。
@@ -2515,7 +2705,10 @@ function noJsControlExemptionFor(route) {
     // 「必须 0 条订阅声明」在任何注册表形态下都成立，而且对「哪天溜回来一条」敏感 —— 比旧断言更严。
     // t6：判据改用顶部的共享实现 `subscriptionDeclarationProblem()`（双侧：带 type 的必须 0 条，
     // 剩下的必须全部是 hreflang 语言声明）—— 标签也改成说「订阅声明」，不再说裸选择器。
-    const collectionSubProblem = subscriptionDeclarationProblem(info.alternates);
+    // v3.2：判据升级成**声明制**，但本族（目录页）**不在** `FEED_DECLARABLE_ROUTES` 里 ⟹
+    // 语义与 t5/t6 逐字相同：带 `type` 的订阅声明必须 0 条（这一族的调用形态只多一个 spec）。
+    const collectionSubProblem = subscriptionDeclarationProblem(info.alternates,
+      { route: `${route.slug}/`, dir: DIR });
     check(`/${route.slug}/ 不再声明任何订阅源 + 恰好三段 JSON-LD（CollectionPage / BreadcrumbList / ItemList）`,
       collectionSubProblem === null && JSON.stringify(info.ldTypes.slice().sort()) === JSON.stringify(COLLECTION_LD),
       `${collectionSubProblem || `订阅声明 0 条（alternate 合计 ${info.alternates.length} 条，全部是 hreflang）`}`
@@ -2828,7 +3021,8 @@ function noJsControlExemptionFor(route) {
         `${missing.length ? ` · 漏 ${missing.length}` : ''}${extra.length ? ` · 多 ${extra.length}` : ''}`);
       // t5：与 collection 族同一条新契约 —— 0 条订阅声明，而不是「等于注册表算出的条数」。
       // t6：判据走顶部共享实现（双侧：带 type 的 0 条 + 剩下的必须是 hreflang 语言声明）。
-      const needSubProblem = subscriptionDeclarationProblem(info.alternates);
+      const needSubProblem = subscriptionDeclarationProblem(info.alternates,
+        { route: `need/${slug}/`, dir: DIR });
       check(`/need/${slug}/ canonical 自指 + 不再声明任何订阅源 + 三段 JSON-LD`,
         info.canonical.endsWith(`/need/${slug}/`) && needSubProblem === null &&
         JSON.stringify(info.ldTypes.slice().sort()) === JSON.stringify(['BreadcrumbList', 'CollectionPage', 'ItemList']),
@@ -3368,7 +3562,7 @@ function noJsControlExemptionFor(route) {
     // t5：订阅层下架后这一页**不该有任何订阅声明**（原判据是「恰好两个」）。
     // t6：判据走顶部共享实现（双侧：带 type 的 0 条 + 剩下的必须是 hreflang 语言声明）。
     const STATUS_LD = ['BreadcrumbList', 'WebPage'];
-    const statusSubProblem = subscriptionDeclarationProblem(st.alternates);
+    const statusSubProblem = subscriptionDeclarationProblem(st.alternates, { route: 'status/', dir: DIR });
     check('/status/ 补齐约定：0 条订阅声明 + 恰好两段 JSON-LD（WebPage + BreadcrumbList）',
       statusSubProblem === null && JSON.stringify(st.ldTypes.slice().sort()) === JSON.stringify(STATUS_LD),
       `${statusSubProblem || `订阅声明 0 条（alternate 合计 ${st.alternates.length} 条，全部是 hreflang）`}`
@@ -4403,10 +4597,15 @@ function noJsControlExemptionFor(route) {
   // 逐条正则匹配 `feed/changes.(xml|json)` 与每条变化流的路径）。订阅层整体下架 ⇒
   // 页面不该再声明任何订阅源。新契约下的等价牙齿就在下面（t6 起走顶部共享判据：
   // 双侧 —— 带 type 的必须 0 条、剩下的必须全部是 hreflang 语言声明）。
-  const changesSubProblem = subscriptionDeclarationProblem(changesPage.alternates);
-  check('/changes/ 不再声明任何订阅源（订阅层已整体下架）',
+  // v3.2（**用户显式授权的部分反转**）：判据升级成**声明制**，而 `/changes/` 是**登记路由**之一 ⟹
+  // 这一页现在**必须**声明 `FEED_FILES` 登记的那两条（少一条 / 多一条 / type 写错 / href 指向
+  // 产物里不存在或空的文件，全部判红）—— 这正是「订阅出口回归」在页面侧的牙齿，
+  // 比 t6 的「0 条」更严：它还要求声明**真的能打开**（产物里存在且非空）。
+  const changesSubProblem = subscriptionDeclarationProblem(changesPage.alternates, { route: 'changes/', dir: DIR });
+  check('/changes/ 的订阅声明符合登记制（= FEED_FILES 登记的那两条，且指向产物里真实存在且非空的文件）',
     changesSubProblem === null,
-    changesSubProblem || `订阅声明 0 条（alternate 合计 ${changesPage.alternates.length} 条，全部是 hreflang）`);
+    changesSubProblem || `订阅声明 ${changesPage.alternates.filter(l => l.type).length} 条，全部命中登记表：`
+      + changesPage.alternates.filter(l => l.type).map(l => `${l.href}[${l.type}]`).join(' · '));
   check('/changes/ 的内链都带输出深度前缀（../deal/…）', changesPage.wrongPrefix === 0,
     changesPage.wrongPrefix ? `${changesPage.wrongPrefix} 条前缀错误` : `抽查 ${changesPage.links.length} 条`);
 
@@ -4678,7 +4877,8 @@ function noJsControlExemptionFor(route) {
         // t5：与 collection / need 两族同一条新契约 —— 分类页与厂商页也**一个订阅源都不许声明**。
         // 旧断言是「恰好 4 个」（根 Feed 对 + 它自己那一对），判据来自已下架的订阅注册表。
         // t6：判据走顶部共享实现（双侧：带 type 的 0 条 + 剩下的必须是 hreflang 语言声明）。
-        const landingSubProblem = subscriptionDeclarationProblem(info.alternates);
+        const landingSubProblem = subscriptionDeclarationProblem(info.alternates,
+          { route: sample.route, dir: DIR });
         check(`${sample.label} /${sample.route} 有数据摘要块且不再声明任何订阅源`,
           info.summaryRows >= 1 && landingSubProblem === null,
           `摘要 ${info.summaryRows} 行 · ${landingSubProblem || `订阅声明 0 条（alternate 合计 ${info.alternates.length} 条，全部是 hreflang）`}`);

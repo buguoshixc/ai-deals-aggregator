@@ -34,7 +34,7 @@
 | 历史（三支） | `scripts/data/{deal,plan,api-plan}-history.json` | 变化雷达、归档、`*verify` 门禁 |
 | 来源健康 | `scripts/data/source-health.json` → `source-health.json` | `/status/` |
 | 页面类型声明 | `scripts/lib/page-kinds.js`（**代码即声明**） | 构建期、SEO 门禁、页壳 |
-| 站点常量 | `scripts/lib/feeds.js` 的 `SITE_URL` / `SITE_NAME` / `SITE_DESCRIPTION` | 全站（**唯一出处**） |
+| 站点常量 | `scripts/lib/site.js` 的 `SITE_URL` / `SITE_NAME` / `SITE_DESCRIPTION` | 全站（**唯一出处**；原先住在订阅层的 `feeds.js`，该文件已随 2026-10 的订阅层下架删除 —— 见 §4） |
 | 共享样式 | `index.html` 的**单个** `<style>`（57,692 B） | 每个页面的基础样式 |
 | 路由占位符表 | `scripts/tools/build-local.js` 的 `ROUTE_HREFS` | 页壳的 `resolveRouteHrefs()` |
 | 统计范围 | `scripts/lib/analytics-routes.js` 的 `ROUTE_RULES` | 页壳的 `finalizePage()` |
@@ -108,12 +108,13 @@ dist/**（暂存目录全部自检通过后，原子替换到位）
 
 **拥有**（文档脚手架）：DOCTYPE、`<head>` 基础 meta、title/description/robots/canonical/hreflang、
 OG+Twitter、主题色、favicon、共享 `<style>`、页面级 `<style>` 槽位、JSON-LD 槽位、
-订阅发现槽位、共享页头标记、`<div class="wrap">`、`<main>`、共享页脚 + `finalizePage()`、
-页面脚本槽位、收尾标签。
+订阅发现槽位（**v3.2 起重新成立**：页壳恢复了可选的 `feedTagsHtml` 参数）、共享页头标记、
+`<div class="wrap">`、`<main>`、共享页脚 + `finalizePage()`、页面脚本槽位、收尾标签。
 
 **不拥有**（刻意留给调用方）：标题/描述/canonical 的**计算与转义**；
 `feedTagsHtml` / `jsonLdHtml` / `headerExtra` / `extraCss` / `extraScript` / `extraTailHtml`
-一律是**预渲染好的字符串** —— 订阅标签有 6 种取法、JSON-LD 每页段数不同，这些语义留在各自页面模块里。
+一律是**预渲染好的字符串** —— 订阅标签只有首页与 `/changes/` 这两个可声明路由传值（其余页面族不传
+⇒ 默认空串、产物逐字节不变），JSON-LD 每页段数不同，这些语义留在各自页面模块里。
 
 ### 3.3 CSS 的分层（同一条规则只有一个正式来源）
 
@@ -137,12 +138,40 @@ OG+Twitter、主题色、favicon、共享 `<style>`、页面级 `<style>` 槽位
 早先这一节写的是「Feed 怎么生成」：注册表在 `scripts/lib/feeds.js`、构建期产出 25 个 Feed ×
 2 种格式 = 50 个文件、`/feeds/` 订阅中心页、每页 `<head>` 的 `rel="alternate"` 订阅发现。
 
-本轮把面向读者的数据暴露整体收口 —— **这些都不再存在**：
+### 4.1 本轮部分反转：站根两份订阅产物回来了（v3.2，2026-10-16，用户显式授权）
 
-- **订阅层整族删除**：`scripts/lib/feeds.js`（86 KB）已删除；`/feeds/` 页面、`feed.xml` /
-  `feed.json` / `feed/**`（各 25 份 × 2 格式）、每页的订阅声明与页脚订阅入口全部下架。
-  判据侧：`verify-site.js` 的每个页面族都断言 **0 条 `rel="alternate"`**（比旧断言更严：
-  对「哪天溜回来一条」敏感）。
+**谁授权**：`FEATURE-PROMPT-feed-and-changes.md`（v3.2 任务书）由用户显式授权**部分反转**上一轮
+「去数据暴露」的裁决；反转面被逐路径钉死 —— 多一份文件、多一族页面、多一处声明都会判红。
+
+**反转了什么（只有两件）**：
+
+- **产物面**：站根恢复 `feed.xml`（Atom 1.0）与 `feed.json`（JSON Feed 1.1）。文件名 / MIME 的
+  唯一表 = `scripts/lib/feed.js` 的 `FEED_FILES`；构建期落盘并进 `build-local.js` 的
+  `GENERATED_FILES` 白名单。条目来自**三支变化日志**（plan / api-plan 两支今天有入选；优惠支 0 条
+  —— 20 条事件全挂 `type:"tool"` 记录、没有详情页 ⇒ 按既有纪律不发死链）。
+- **声明面**：**首页**与 **`/changes/`** 各两条 `rel="alternate"`；页脚恢复一枚人类可点的
+  「订阅源」链接（普通 `<a>`、相对路径按输出深度解析，无 JS 也能点）。
+
+**边界（没有反转的）**：
+
+- **不恢复** `/feeds/` 订阅中心页族、不恢复 25 份分源 Feed（`feed/**`）、不恢复 `scripts/lib/feeds.js`。
+- **不恢复任何数据文件出口**：除首页自己那份 `assets/data/offers.json` 之外仍是 0 份
+  （`feed.json` 是订阅产物，走 `ALLOWED_PATHS` 逐路径登记，**不进** `ALLOWED_DATA`）。
+- **判据更严，不是更松**：`lib/published-assets.js` 由「任何 `feed*` 基名判红」改成**逐路径登记**
+  （未登记仍是红；登记表读不到 ⇒ 退化到「一律判红」的更严形态）；`verify-site.js` 由「0 条带 `type`
+  的 `rel="alternate"`」改成**声明制**（`FEED_DECLARABLE_ROUTES = ['', 'changes/']`；**未登记路由
+  逐字保留原判据**；登记路由要求条数 == `FEED_FILES` 条数、type 集合不重不漏、href 逐路径命中、
+  落点在产物里真实存在且非空、`spec.dir` 缺失即 fail-closed；剩下的 `alternate` 仍必须带 `hreflang`）。
+
+### 4.2 2026-10 收口后仍然有效的状态
+
+本轮把面向读者的数据暴露整体收口 —— **除上面那两件之外，这些都不再存在**：
+
+- **订阅层整族删除**：`scripts/lib/feeds.js`（86 KB）已删除；`/feeds/` 页面、25 份分源
+  `feed/**`（各 × 2 格式）、每页的订阅声明与页脚订阅入口全部下架（v3.2 只把站根两份与
+  首页 / `/changes/` 两处声明请了回来，见 §4.1）。
+  判据侧：`verify-site.js` 的每个页面族都断言 **0 条带 `type` 的 `rel="alternate"`**（比旧断言更严：
+  对「哪天溜回来一条」敏感）；只有登记过的两个路由例外，而例外本身比原判据多五条约束。
 - **站点常量没有跟着陪葬**：`SITE_URL` / `SITE_NAME` / `SITE_DESCRIPTION` / `xmlEscape` /
   `VENDOR_SLUGS` / `VENDOR_THRESHOLDS` 搬到 `scripts/lib/site.js`（它们从来不是订阅专属）。
 - **数据文件不再进产物**：除首页自己那份 `assets/data/offers.json`（不被任何页面文本/链接提及）
@@ -234,7 +263,7 @@ dist/**
 | 改全站样式 | `index.html` 的共享 `<style>`（**一处**） |
 | 改某族页面样式 | 该族的 `extraCss` |
 | 新增一个采集源 | `scripts/collectors/*` + `collectors/index.js` 注册表 + fixture 回放 |
-| 新增一个 Feed | `lib/feeds.js` 的注册表 |
+| 新增一个 Feed | `scripts/lib/feed.js` 的 `FEED_FILES`（**唯一表**：文件名 + MIME）；同时登记**两处** —— `lib/published-assets.js` 的 `ALLOWED_PATHS`（逐路径）与 `verify-site.js` 的 `FEED_DECLARABLE_ROUTES`（可声明路由）；产物路径另需进 `build-local.js` 的 `GENERATED_FILES` |
 | 改 SEO 判据 | `lib/seo.js`（构建期）+ `page-kinds.js`（声明）；独立门禁 `seo-verify.js` 各自从 dist 解析 |
 | 改某页的正文 | 该族的 `lib/*-page.js`（离线自测可直接调用） |
 | 改二级数据页**用户可见的说明** | 注册表的 `userIntro`（顶部、0~1 句）/ `userNotes`（底部折叠）—— **不要**改回 `why`，`selftest:audience` 有一条「旧字段回流即红」 |

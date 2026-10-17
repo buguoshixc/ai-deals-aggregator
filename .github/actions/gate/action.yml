@@ -354,6 +354,18 @@ runs:
       shell: bash
       run: node scripts/tools/model-freshness-sensitivity.js
 
+    # v3.2 新增：订阅出口自测（**L2** —— 需要仓库数据，**不需要 dist/**，所以排在构建之前）。
+    #
+    # 为什么必须有它：这一层守着 feed 的五条承诺 —— 唯一表（文件名与 MIME 只有
+    # `FEED_FILES` 一处）、不发死链（算不出 url / `at` 非法的事件逐条不进 feed）、
+    # 全序确定（复用 `changes.compareByRecency`）、身份稳定且**碰撞即停**、
+    # 两种渲染都不看时钟（时间一律由数据的日期派生）。
+    # 判断标准与前面每一支相同：**它红的时候没有别的步骤会替它红** —— 构建期那一遍跑的是
+    # 真数据，验不到「某条规则其实永远不会响」；这一支还带 5 颗变异牙（实跑变红 → 逐字节还原）。
+    - name: Feed self-test
+      shell: bash
+      run: node scripts/tools/feed-selftest.js
+
     # 发布产物由 build-local.js 组装（与 deploy.yml 完全同一条路径），
     # 失败即拦：能装出坏产物就不该合并、更不该发布。
     - name: Assemble site (same path as deploy.yml)
@@ -412,18 +424,44 @@ runs:
     # 的唯一入口（adversary 靠它做对抗复核，见
     # research/_raw/secondary-page-residue-v2/mutation/README.md）；
     # 把它拿掉，判据还在，但**没人能在不重建的前提下证伪它**。
-    # ⚠️ 合并说明：本条之前原有一支 `Feeds reproducibility`（真实构建两次、逐字节比对
-    # Feed 产物），它随「去数据暴露」那一轮整体下架一并删除 —— 合并 origin/master 时按
-    # 「保留对方的 Residue guard、丢弃 Feeds 那一支」解决冲突（Feed 产物已不存在，留着只会红）。
+    # ⚠️ 历史记录（**tombstone 改真话**，v3.2）：本条之前原有一支 `Feeds reproducibility`
+    # （真实构建两次、逐字节比对 Feed 产物），它随「去数据暴露」那一轮整体下架一并删除
+    # （合并 origin/master 时按「保留对方的 Residue guard、丢弃 Feeds 那一支」解决冲突）。
+    # **本轮用户显式授权部分反转那次裁决**：订阅出口回来，于是它对应的那一步也回来 ——
+    # 就在下面（`Feed reproducibility (build twice, byte-compare)`），位置紧挨本条之后、
+    # 与契约第 11B 条逐字一致（同样排在 Assemble site 之后：它比对的是**产物**）。
+    # 反转的是「订阅出口」这一支，不是「去数据暴露」那一整族：`/docs/data/` 与
+    # `/data/index.json` 依旧下架，`Data-docs self-test` 依旧不回来。
     - name: Residue guard (deleted copy must not return; container floors)
       shell: bash
       run: node scripts/tools/check-residue.js --dir=dist
 
+    # v3.2 新增（= 恢复历史上被删的 `Feeds reproducibility` 对应的那一步）：
+    # **订阅产物的可复现门禁** —— 连续 N 次隔离构建（`--out=dist.qc-feed-repro`，
+    # 绝不覆盖共享 `dist/`），逐文件 SHA-256 + 聚合指纹比对，并与 `--dir=dist` 那份
+    # 参考产物逐字节对账。
+    #
+    # 为什么必须有它：`Feed self-test` 只在**纯函数**层证明「同输入必同输出」，
+    # 证明不了「构建脚本没有把时钟 / 绝对路径 / 运行次数写进产物」。这一支用真实构建来证，
+    # 并附带两条独立的墙钟探针（时间字段必须是 `${数据日期}T00:00:00+08:00`；最大日期必须是
+    # 由仓库数据**现算**出来的那一天，且不得晚于 `deals.json` 的数据日期）。
+    # 红的时候没有别的步骤会替它红：产物级对账（SEO）只看条目集合，不看字节是否稳定。
+    # ⚠️ fail-closed：参考产物里缺 feed 文件 ⇒ 非 0（只有显式 `--allow-missing-dist` 才退化成
+    # 「只做自比对」并打印 OPTIONAL DIAGNOSTIC）—— 静默退化会让 CI 少掉一半判据而全绿。
+    # ⚠️ 它**必须**带 `--dir=dist` 且排在 `Assemble site` 之后：(17) 会逐项查这两件事。
+    # ⚠️ 新增的是门禁**步骤**，不是 `check-ci-consistency.js` 的**断言** ——
+    # 所以 verify.yml 的 `--expect-checks` 仍然是 **39**（新增步骤不改变断言项数）。
+    - name: Feed reproducibility (build twice, byte-compare)
+      shell: bash
+      run: node scripts/tools/check-feed-reproducible.js --dir=dist
+
     # v2.1 新增：plans.json 可重建性 —— 盘上那份必须等于人工来源层产出的那一份（逐字节）。
     # 它问的是「有没有人手改了派生产物 / 改了来源层却忘了重建」。
-    # （t2 删掉了原先那句「与上一条红的含义不同：Feeds 那条问的是构建产物里有没有被塞进时钟」——
-    #  被引用的 `Feeds reproducibility` 步骤随订阅层整体下架一起删除，留着一句指向不存在步骤的
-    #  对照只会让下一个人去找一个已经不存在的门禁。）
+    # （历史记录，v3.2 改真话：这里原先写的对照句指向 `Feeds reproducibility`，而它当时
+    #  已随订阅层整体下架删除；本轮用户显式授权部分反转，那一步以
+    #  `Feed reproducibility (build twice, byte-compare)` 的名字在原位置恢复（见上方 Residue
+    #  guard 之后）。两者红的含义仍然不同：上面那条问「**产物**连不连字节稳定」，
+    #  这一条问「盘上这份**派生数据**是不是来源层产出的那一份」。）
     - name: Plans reproducibility (curated → plans.json, byte-compare)
       shell: bash
       run: node scripts/tools/check-plans-reproducible.js

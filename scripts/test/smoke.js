@@ -22,6 +22,10 @@ const http = require('http');
 // 站点常量（SITE_URL）的唯一出处：t2 起从订阅层的 `feeds.js` 改指 `site.js`
 // （订阅层整体下架，常量不能跟着陪葬；这个脚本只用它的 SITE_URL 拼线上地址）。
 const { SITE_URL } = require('../lib/site');
+// 订阅文件名与 MIME 的唯一出处（`FEED_FILES`）—— 本文件**不写第二份文件名 / MIME 字面量**，
+// 与 `feed-selftest` 的「4 个读写方扫描」是同一条纪律（那份扫描面里没有本文件，
+// 但「唯一表」这件事不该靠「有没有被扫到」来决定）。
+const { FEED_FILES } = require('../lib/feed');
 
 const arg = name => (process.argv.find(a => a.startsWith(`--${name}=`)) || '').slice(name.length + 3);
 
@@ -110,6 +114,53 @@ const check = (name, ok, detail) => { results.push({ name, ok: !!ok, detail }); 
       check(`${label}  /${route}`, problems.length === 0, problems.length ? problems.join('；') : `${title.slice(0, 40)}`);
     } catch (e) {
       check(`${label}  /${route}`, false, e.message);
+    }
+  }
+
+  /* ── 订阅产物探针（v3.2 新增；**刻意不进 ROUTES**）─────────────────────────────
+   *
+   * 为什么不能当页面走 ROUTES：那一条链路的判据是 title / canonical 自指 / JSON-LD 可解析 /
+   * 无残留占位符 —— 一份 Atom 文档四样都没有，必然全红；而「feed 不是页面」恰恰是它该有的样子。
+   *
+   * 为什么要有这条探针：订阅产物是「**整族缺席**」型发布事故的典型 —— 文件没进产物、
+   * 或部署漏掉了根目录下的那两个文件，而**所有页面、sitemap、canonical 全都正常**，
+   * 只有订阅者拿到 404 / 一个空文档 / 一份被中间层改过的 HTML 错误页。
+   * 所以这里只问三件事：HTTP 200、响应体非空、文档里带着**该格式**的预期标记；
+   * 失败必须**点名是哪一个文件**（订阅者遇到的是哪一个，就修哪一个）。
+   *
+   * 标记为什么在本文件里独立写出（而不是从 feed.js 的渲染器取）：这是对**线上那一份**的
+   * 外部验收 —— 判据要与生成侧不同源，否则「两边一起错」也能过；Atom 的根元素命名空间与
+   * JSON Feed 的版本串是协议常量，不是本仓的「唯一表」（唯一表是文件名与 MIME，见上）。
+   * -------------------------------------------------------------------------- */
+  for (const [file, type] of FEED_FILES) {
+    const label = `订阅产物 ${file}`;
+    const url = `${ORIGIN}/${file}`;
+    try {
+      const { status, body } = await fetchText(url);
+      const problems = [];
+      if (status !== 200) problems.push(`HTTP ${status}`);
+      if (!body.trim()) problems.push('响应体是空的');
+      // 只有在真的拿到一份文档时才看格式标记：404 / 空响应体下那份错误页会让
+      // 「不是 Atom / 不是 JSON」这类判据变成噪声，把第一原因（HTTP 404）淹在后面。
+      if (!problems.length) {
+        if (String(type).includes('xml')) {
+          if (!/^<\?xml\b/.test(body.trim())) problems.push('缺 XML 声明（<?xml … ?>）');
+          if (!/<feed\b[^>]*xmlns="http:\/\/www\.w3\.org\/2005\/Atom"/.test(body)) problems.push('不是 Atom 文档（缺 <feed xmlns="…/2005/Atom">）');
+        } else {
+          let parsed = null;
+          try { parsed = JSON.parse(body); } catch (e) { problems.push(`不是合法 JSON（${e.message.slice(0, 40)}）`); }
+          if (parsed) {
+            if (String(parsed.version || '') !== 'https://jsonfeed.org/version/1.1') {
+              problems.push(`不是 JSON Feed 1.1（version=${JSON.stringify(parsed.version)}）`);
+            }
+            if (!Array.isArray(parsed.items)) problems.push('缺 items 数组');
+          }
+        }
+      }
+      check(`${label}  /${file}`, problems.length === 0,
+        problems.length ? problems.join('；') : `${Buffer.byteLength(body, 'utf8')} 字节 · ${type}`);
+    } catch (e) {
+      check(`${label}  /${file}`, false, e.message);
     }
   }
 

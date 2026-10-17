@@ -254,6 +254,13 @@ const GATE_STEP_NAMES = [
   'Model-role vocabulary self-test (registry ↔ freshness contract)',
   'Freshness self-test (catalogStatus branches)',
   'Freshness threshold sensitivity (±90 days, baseline invariants)',
+  // v3.2 新增（订阅出口回归）：feed 的**纯函数层**自测（唯一表 / 不发死链 / 全序排序 /
+  // 身份稳定与碰撞即停 / 两种渲染都不看时钟）。它需要仓库数据但**不需要 dist/**，
+  // 所以按本仓的分层判据（layers.js：层的判据是「它需要什么才能跑」）它是 L2，
+  // 位置也与 L2 步骤群一致 —— 紧挨 `Assemble site` 之前。
+  // 登记制：新步骤必须同批改三处（action.yml 的步骤、本清单、GATE_STEP_RUN 指纹），
+  // 另外 npm 的 `selftest:feed` 也要登记（(17)/(19) 双向核对脚本名）。
+  'Feed self-test',
   'Assemble site (same path as deploy.yml)',
   // v3.0 P2-26 / §10.9：**产物依赖的五个页面自测排在构建之后**（顺序即前置）。
   // 原先它们排在 Assemble site 之前，而 CI 的干净检出里 `dist/` 根本不存在（dist/ 是
@@ -270,6 +277,14 @@ const GATE_STEP_NAMES = [
   // （Feed 产物不再存在）。删步骤必须**同批**改三处：action.yml 的步骤、这里的
   // GATE_STEP_NAMES、以及下面的 GATE_STEP_RUN / GATE_ARTIFACT_STEPS ——
   // 只改一处会被断言 (10) 与 (17) 逐条点出来。
+  // v3.2（**tombstone 改真话**）：用户显式授权**部分反转**那次裁决 —— 订阅出口回来，
+  // 于是恢复**两步**：`Feed self-test`（L2，见上，紧挨 Assemble site 之前）与
+  // `Feed reproducibility (build twice, byte-compare)`（L3，紧挨下面这条 Residue guard 之后）。
+  // 恢复的范围只有订阅出口：`Data-docs self-test` **不回来**（`/docs/data/` 与
+  // `/data/index.json` 依旧下架），所以这次的「恢复」不是把 t2 的全部删除动作撤销。
+  // **`--expect-checks` 仍然是 39**：新增的是门禁**步骤**（步骤序列由 (10) 逐项比对），
+  // 不是 `check-ci-consistency.js` 自己的**断言**（项数由 FROZEN_ASSERTION_NAMES 与
+  // verify.yml 那行调用钉住）—— 两件事刻意不同源，混起来会让「加了一道门」变成「改了口径」。
   // private-analytics-v1 新增：私有站点分析（Cloudflare Web Analytics）的独立门禁。
   // 它同样依赖产物（读 dist/ 现场推导路由与 bootstrap 数），所以也排在 Assemble site 之后，
   // 并在下面的 GATE_ARTIFACT_STEPS 里被逐项钉住「显式 --dir=dist」。
@@ -280,13 +295,25 @@ const GATE_STEP_NAMES = [
   // 这一条问「**已经删掉的文案有没有回到产物里**，以及承重容器有没有整族消失让断言静默失效」。
   // ⚠️ 它**必须**带 `--dir=dist`：不带的话工具会自己找产物，「找错了产物仍然绿」是本仓库
   // 反复踩过的坑（§10.9 那一族）。谁把这一步挪到 Assemble site 之前或去掉 `--dir`，(10)/(17) 立刻红。
-  // （合并说明：本条之前原有 `Feeds reproducibility` 一支，随「去数据暴露」整体下架删除；
-  //  原注释里「上面那条问构建产物有没有被塞进时钟」的对照句也一并删，免得指向不存在的步骤。）
+  // （历史记录，v3.2 改真话：本条之前原有 `Feeds reproducibility` 一支，随「去数据暴露」整体
+  //  下架删除；**本轮用户显式授权部分反转**，它以 `Feed reproducibility (build twice, byte-compare)`
+  //  的名字在**同一个位置**恢复（紧挨本条之后）——「上面那条问构建产物有没有被塞进时钟」这句
+  //  对照句也随之重新成立，于是它回到下面的 GATE_STEP_RUN 与 GATE_ARTIFACT_STEPS 里。）
   'Residue guard (deleted copy must not return; container floors)',
+  // v3.2 新增（= 恢复被删的 `Feeds reproducibility`）：**订阅产物的可复现门禁**。
+  // 连续 N 次隔离构建（`--out=dist.qc-feed-repro`，绝不覆盖共享 dist/）后逐文件 SHA-256 +
+  // 聚合指纹比对，再与 `--dir` 那份参考产物逐字节对账；另含两条墙钟探针。
+  // 它与紧邻那两条红的含义都不同：Residue guard 问「产物里有没有回来一段已删文案」，
+  // Plans reproducibility 问「盘上这份派生数据是不是来源层产出的」，
+  // 这一条问「**产物连不连字节稳定**（有没有把时钟 / 路径 / 运行次数写进去）」。
+  // ⚠️ 它与下面五个页面自测一样是**产物依赖步骤**：必须显式 `--dir=dist` 且排在
+  // `Assemble site` 之后 —— 由 (17) 的 GATE_ARTIFACT_STEPS 逐项钉住。
+  'Feed reproducibility (build twice, byte-compare)',
   // v2.1 新增：plans.json 可重建性 —— 盘上那份必须等于人工来源层产出的那一份（逐字节）。
   // 它问「有没有人手改了派生产物 / 改了来源层却忘了重建」。
-  // （原先这里还写着「与上一条红的含义不同：Feeds 那条问…」——那条 `Feeds reproducibility`
-  //  随订阅层下架一起删了，指向它的对照句也一并删，免得引用一个不存在的步骤。）
+  // （历史记录，v3.2 改真话：原先这里写着「与上一条红的含义不同：Feeds 那条问…」，
+  //  而当时那条已被删除、对照句也一并删掉；本轮那一步以 `Feed reproducibility
+  //  (build twice, byte-compare)` 的名字在原位置恢复，于是这句对照句重新成立。）
   'Plans reproducibility (curated → plans.json, byte-compare)',
   // v2.3 新增：套餐变化日志与当前 plans.json 的一致性（基线 + 事件重放必须等于今天的数据）。
   // 与上一条红的含义不同：前者问「文件是不是来源层产出的」，这一条问「这份数据是怎么变过来的」。
@@ -391,6 +418,8 @@ const GATE_STEP_RUN = {
     "node scripts/tools/model-freshness-selftest.js",
   "Freshness threshold sensitivity (±90 days, baseline invariants)":
     "node scripts/tools/model-freshness-sensitivity.js",
+  "Feed self-test":
+    "node scripts/tools/feed-selftest.js",
   "Assemble site (same path as deploy.yml)":
     "node scripts/tools/build-local.js",
   "Models-page self-test (index + detail pages)":
@@ -405,6 +434,8 @@ const GATE_STEP_RUN = {
     "node scripts/tools/analytics-selftest.js --dir=dist",
   "Residue guard (deleted copy must not return; container floors)":
     "node scripts/tools/check-residue.js --dir=dist",
+  "Feed reproducibility (build twice, byte-compare)":
+    "node scripts/tools/check-feed-reproducible.js --dir=dist",
   "Plans reproducibility (curated → plans.json, byte-compare)":
     "node scripts/tools/check-plans-reproducible.js",
   "Plan-history verify (log consistent with plans.json)":
@@ -535,7 +566,12 @@ const GATE_ARTIFACT_STEPS = [
   // 剥离 script/style/注释后判，非 HTML 原样判），因此也必须显式 `--dir=dist` 且排在构建之后。
   // （原注释里的「304 个产物文件 / 186 个 HTML」是「去数据暴露」那一轮之前的读数：该轮删掉了
   //  `/feeds/` 与 `/docs/data/` 两族页面与 63 份数据 / 订阅产物，计数随之变化。）
-  ['Residue guard (deleted copy must not return; container floors)', 'check-residue.js']
+  ['Residue guard (deleted copy must not return; container floors)', 'check-residue.js'],
+  // v3.2 新增（= 恢复被删的 `Feeds reproducibility`）：订阅产物的可复现门禁也是**产物依赖**
+  // 步骤 —— 它连续隔离构建若干次（`--out=dist.qc-feed-repro`），再与 `--dir` 指向的那份
+  // 参考产物逐字节对账，所以必须显式给出 `--dir=dist` 且排在「Assemble site」之后。
+  // 不带 `--dir` 的话工具会退到默认值，「找错了产物仍然绿」是本仓反复踩过的坑（§10.9 那一族）。
+  ['Feed reproducibility (build twice, byte-compare)', 'check-feed-reproducible.js']
 ];
 /** 它们的前置：这一步必须先出现 */
 const GATE_BUILD_STEP = 'Assemble site (same path as deploy.yml)';
