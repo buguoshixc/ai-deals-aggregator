@@ -2168,6 +2168,21 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
  * 与 /plans/api/ 同一套「独立静态路由」的做法，但**有交互脚本**：
  * 用户填表单选模型、输入 token 数，页面按官方单价实时算成本。
  * 交互逻辑逐字节内联（与 plans-compare.js 同一套路）。
+ *
+ * ## 这一页 v3.1 上线时漏了「页面级 CSS」，这里是补上的那一份
+ *
+ * 漏掉的症状（不是审美问题，是排版事实）：`<select>/<input>/<fieldset>` 全是 UA 默认样式；
+ * 示例表没有 `.ptable` 的 `width: 100%`，表宽自适应内容 ⇒ `<caption>` 被挤成两行
+ * （「…· 币」/「种：CNY…」）；`.stop` 不存在 ⇒ h1 与 meta 各占一行。
+ * 构建期自检与静态检查**全都是绿的** —— 它们判内容，不判「这一页到底有没有自己的样式」，
+ * 所以 `verify-site.js` §20b 现在多了一条「页面级 CSS 生效」的断言（见那里的注释）。
+ *
+ * ## 布局约定（页内 CSS 的两条硬边界）
+ *
+ *   · 六条 `.snote` 口径说明保持 `#api-cost` 的**直接子节点、满宽** —— §22c 的
+ *     note-narrow / note-ink-narrow / note-axis 判的就是这件事，别把它们挪进带内边距的卡片；
+ *   · `table.ptable`（静态示例）是 §22c 认的「主数据区」锚点，它的宽度决定那六条说明的
+ *     判定基线（`column = min(主数据区宽, 列宽)`）⇒ 它必须满宽，且必须留在说明**之前**。
  */
 function renderApiCostPage(apiStore, indexHtml, context) {
   const prefix = '../../';
@@ -2197,6 +2212,88 @@ ${apiCostSource().replace(/\n$/, '')}
 }
 </script>`;
 
+  // 只用首页已有的设计变量，不新建一套视觉语言（每条声明都能在 index.html 的 :root 里找到出处）。
+  // ⚠️ 这段是 JS 模板字符串：里面**不许出现反引号**（一个反引号会把整页样式静默截断）。
+  // ⚠️ 注释里也不要写折叠标签的字面量：构建期的「作者正文无 Markdown 记号」按那个字面量取扫描窗口。
+  const costCss = `  /* 标题行：h1 与版本文案同一行（旧版这两件各占一行，因为没有 .stop 可用） */
+  .stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
+  .stop h1 { font-size: 19px; margin: 0; }
+  .stop .meta { color: var(--mut); font-size: var(--fs-sm); }
+  .ph2 { font-size: 15px; margin: var(--s4) 0 var(--s2); }
+
+  /* 计算器面板：控件区与结果区同属一张卡，两者之间只用发丝线分隔 */
+  .cost-panel { border: 1px solid var(--line); border-radius: var(--r); background: var(--card); padding: var(--s3) var(--s4); margin: 0 0 var(--s4); }
+  .cost-form { margin: 0; }
+  .cost-fs { margin: 0; border: 0; padding: 0; min-width: 0; }
+  .cost-legend { padding: 0; margin: 0 0 var(--s3); color: var(--mut); font-size: var(--fs-sm); font-weight: 600; }
+  /* 三列栅格：同一个 .cost-grid 里的控件因此**左边缘对齐、宽度相同** ——
+     旧版是 inline-flex 的标签串，控件宽度随「标签有几个字」和 UA 默认尺寸各自为政。 */
+  .cost-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s3); }
+  .cost-grid + .cost-grid { margin-top: var(--s3); }
+  .cost-field { display: grid; gap: var(--s1); min-width: 0; }
+  .cost-lab { color: var(--mut); font-size: var(--fs-sm); }
+  /* 控件取 --bg：面板本身已经是 --card，「凹进去」的一格才看得出是输入框（暗色下同样成立） */
+  .cost-ctl {
+    width: 100%; min-width: 0; font: inherit; font-size: var(--fs-md); color: var(--ink);
+    background: var(--bg); border: 1px solid var(--line); border-radius: var(--r-sm);
+    padding: var(--s2) var(--s3);
+  }
+  .cost-ctl:hover { border-color: var(--mut-deco); }
+  .cost-ctl:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 2px rgba(59, 91, 253, .15); }
+  .cost-num { font-variant-numeric: tabular-nums; }
+  .cost-adv { margin-top: var(--s3); border-top: 1px solid var(--line2); padding-top: var(--s2); }
+  .cost-adv > summary { cursor: pointer; font-size: var(--fs-sm); color: var(--ink2); }
+  .cost-adv[open] > summary { margin-bottom: var(--s2); }
+
+  /* 结果区：没内容时不占位（无 JS 时这里是空的，不给读者看一条空的横线） */
+  .cost-results { margin-top: var(--s3); border-top: 1px solid var(--line); padding-top: var(--s3); }
+  .cost-results:empty { display: none; }
+  .cost-sum { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin: 0 0 var(--s2); }
+  .cost-sum-lab { color: var(--mut); font-size: var(--fs-sm); }
+  .cost-sum-val { color: var(--ink); font-size: var(--fs-lg); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .cost-sum-note { color: var(--mut); font-size: var(--fs-sm); }
+  .cost-msg { margin: 0; color: var(--mut); font-size: var(--fs-sm); }
+  .cost-error { color: var(--warn); }
+
+  /* 两张表（静态示例 / 本次计算）共用同一份列模型与同一套单元格声明。
+     数字右对齐 + tabular-nums 是「两行数字能按位对齐」的唯一办法；
+     与 /plans/api/ 的 .ptable 同一观感，两处刻意的差异：
+       · 内边距走 --s2/--s3（E3：间距取 4 的倍数；兄弟页的 9px 11px 是历史取值）；
+       · 不设 td 的 min-width（这张表只有 4 列，窄屏让列内折行即可，不必被列下限顶出容器）。 */
+  .ptable-wrap { overflow-x: auto; }
+  .ptable { width: 100%; background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+  .cost-tbl { width: 100%; border-collapse: collapse; }
+  .cost-tbl caption { text-align: left; color: var(--mut); font-size: var(--fs-sm); padding: var(--s3) var(--s3) 0; }
+  .cost-tbl th, .cost-tbl td {
+    text-align: left; padding: var(--s2) var(--s3); border-top: 1px solid var(--line2);
+    font-weight: 400; font-size: var(--fs-sm); vertical-align: top;
+  }
+  .cost-tbl thead th { border-top: 0; color: var(--mut); font-weight: 600; white-space: nowrap; }
+  .cost-tbl tbody th { font-weight: 600; white-space: nowrap; }
+  /* 数值列只占内容宽，余量全给第一列：一行里那三个数因此挨在一起看得完，
+     而不是被平摊到 1400px 的两端（宽度仍满宽，不违反「与主数据区同轴」）。 */
+  .cost-tbl thead th:first-child, .cost-tbl tbody th { width: 100%; }
+  .cost-tbl .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  .cost-example { margin: 0 0 var(--s4); }
+  /* 结果区里的那张表已经在面板内，题注不再缩进一格：它要与上面的「合计」同一条左边缘 */
+  .cost-breakdown caption { padding-left: 0; padding-right: 0; }
+  .cost-fix { margin: var(--s1) 0 0; color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; }
+  .cost-total-row { display: flex; align-items: baseline; gap: var(--s2); margin: var(--s2) 0 0; }
+  .cost-total-lab { color: var(--mut); font-size: var(--fs-sm); }
+  .cost-total-val { color: var(--ink); font-size: var(--fs-lg); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .cost-source { margin: var(--s1) 0 0; color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; }
+  .pnoscript { margin: 0 0 var(--s2); }
+
+  /* 窄屏：栅格塌成一列（三格并排会各自只剩 ~100px），长维度名允许折行而不是把页面顶宽 */
+  @media (max-width: 760px) {
+    .cost-panel { padding: var(--s3); }
+    .cost-grid { grid-template-columns: minmax(0, 1fr); }
+    .cost-tbl caption { padding: var(--s3) var(--s2) 0; }
+    .cost-tbl th, .cost-tbl td { padding: var(--s2); }
+    .cost-tbl tbody th { white-space: normal; overflow-wrap: anywhere; }
+  }`;
+
   return shell.renderWidePageShell({
     kind: 'tool',
     route: apiCostPage.API_COST_ROUTE,
@@ -2207,6 +2304,7 @@ ${apiCostSource().replace(/\n$/, '')}
     canonicalUrl: pageUrl,
     faviconHref: `${prefix}favicon.svg`,
     logoCssHref: `${prefix}logos.css`,
+    extraCss: costCss,
     extraTailHtml: costScript,
     jsonLdHtml: breadcrumbLd,
     bodyHtml: body,
