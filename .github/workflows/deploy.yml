@@ -93,6 +93,13 @@ jobs:
     # 这一行是**逐字冻结**的：check-ci-consistency.js 的断言 (7b) 会比对它的完整文本。
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     needs: prepublish
+    # IndexNow 的 payload 在本 job 算出、由 deploy job 发出 —— 为什么拆成两处，
+    # 见下面「Compute IndexNow payload」那一步的注释（发布链的 uses 集合是冻结的，
+    # deploy job 里不能加 checkout，所以它跑不了仓库里的脚本）。
+    outputs:
+      indexnow_count: ${{ steps.indexnow.outputs.count }}
+      indexnow_payload: ${{ steps.indexnow.outputs.payload }}
+      indexnow_day: ${{ steps.indexnow.outputs.day }}
     # 钉死 runner 版本而不是浮动标签：镜像换代（2026-10-19 起 latest 迁 Ubuntu 26）
     # 不跟着漂，与 collect.yml / probe-sources.yml 一致。
     runs-on: ubuntu-24.04
@@ -114,6 +121,21 @@ jobs:
       - name: Validate data and assemble site
         run: node scripts/tools/build-local.js
 
+      # IndexNow：算出「本次要通知搜索引擎哪些 URL」——判据是 sitemap 里 `<lastmod>` 等于今天的那些
+      # （`lastmod` 是**数据日**，不是构建时刻：没有新数据的那天它不前进，于是这里算出 0 条、一次都不发）。
+      #
+      # 为什么**算**在这里、而**发**在 deploy job：
+      #   · 发送必须在站点**已经上线之后**，否则爬虫可能拿到旧内容 —— 而「站点上线」只发生在
+      #     deploy job 的 deploy-pages 之后；
+      #   · 但 deploy job 里**不能** checkout：发布链的 `uses:` 集合是**冻结**的
+      #     （check-ci-consistency 的断言 (2) 是多重集比对，再加一个 actions/checkout 立刻红），
+      #     所以那个 job 的 runner 上没有仓库、跑不了 scripts/ 下的任何东西。
+      # 于是分工是：这里用**仓库里的唯一实现**算出 payload，作为 job output 交给 deploy 去发 ——
+      # 判据只有一份实现，deploy 那一步只负责转发一个字符串。
+      - name: Compute IndexNow payload (delta from the sitemap)
+        id: indexnow
+        run: node scripts/tools/indexnow-payload.js --dir=dist --github-output="$GITHUB_OUTPUT"
+
       - name: Setup Pages
         uses: actions/configure-pages@v6
 
@@ -133,3 +155,42 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
+
+      # IndexNow：把 build job 算好的 payload 发给 api.indexnow.org（发布链的最后一步）。
+      #
+      # 为什么放在这里：它跑在 deploy-pages **之后**，站点已经在线 —— 爬虫拿到的是新内容，
+      # 而不是"通知已经发了、东西还没上线"。
+      #
+      # 为什么它**刻意不判死**：走到这里发布已经完成了。通知失败的后果是"晚一点被发现"，
+      # 不是"线上是坏的" —— 所以失败只记 warning + Summary 原文，**不** exit 1。
+      # 这与门禁里「浏览器不可用」那一步是同一条思路：失败必须**可见**，
+      # 但判死的标准是"产物坏了没有"，不是"每一步顺不顺"。
+      # 没有变更（count == 0）时整步跳过：空 urlList 是非法请求，发出去只会换回 400。
+      - name: Notify IndexNow (best effort, after the site is live)
+        if: needs.build.outputs.indexnow_count != '0' && needs.build.outputs.indexnow_count != ''
+        env:
+          INDEXNOW_PAYLOAD: ${{ needs.build.outputs.indexnow_payload }}
+        run: |
+          set -uo pipefail
+          BODY_FILE="$(mktemp)"
+          STATUS=$(curl -sS -o "$BODY_FILE" -w '%{http_code}' \
+            -X POST 'https://api.indexnow.org/indexnow' \
+            -H 'Content-Type: application/json; charset=utf-8' \
+            -d "$INDEXNOW_PAYLOAD" || echo '000')
+          BODY="$(head -c 300 "$BODY_FILE" 2>/dev/null || true)"
+          rm -f "$BODY_FILE"
+          echo "IndexNow 响应 HTTP $STATUS $BODY"
+          {
+            echo ""
+            echo "### IndexNow 通知（在发布**完成之后**执行）"
+            echo ""
+            echo "- 提交 URL：${{ needs.build.outputs.indexnow_count }} 条"
+            echo "- 判据日：${{ needs.build.outputs.indexnow_day }}"
+            echo "- 端点响应：\`HTTP $STATUS\`"
+            echo "- 这一步失败**不判死**：发布本身已经成功，这里只做记录"
+          } >> "$GITHUB_STEP_SUMMARY"
+          case "$STATUS" in
+            200|202) echo "IndexNow 已接收"; exit 0 ;;
+          esac
+          echo "::warning title=IndexNow 通知未成功::HTTP $STATUS $BODY（发布本身已成功，线上不受影响）"
+          exit 0

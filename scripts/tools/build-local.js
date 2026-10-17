@@ -115,6 +115,11 @@ const dealPlanLinks = require('../lib/deal-plan-links');
 // 本文件只在产物自检里用 `analytics.stripBootstrap()` 对磁盘上的真实字节做对账 ——
 // 所以这里**不再** require `analytics-routes`：路由→统计范围的判据只有一个消费者，就是页壳。
 const analytics = require('../lib/analytics');
+// v3.3：IndexNow（主动告诉搜索引擎「哪些 URL 刚刚变了」）。
+// 它的密钥文件必须能在站点根被原样 GET 到，所以它进产物；而**文件名与 keyLocation 的唯一出处**
+// 是 `lib/indexnow.js` —— 本文件与 `lib/published-assets.js` 都只调 `keyFileName()`，
+// 不许写第二份字面量（与 `FEED_FILES` 那条纪律同款，由 indexnow-selftest 的字面量扫描牙复核）。
+const indexnow = require('../lib/indexnow');
 
 /**
  * 套餐对比页的交互逻辑**源码**（逐字节内联进页面）。
@@ -274,7 +279,10 @@ const PUBLIC_FILES = ['index.html', 'favicon.svg', 'robots.txt', '.nojekyll', 'B
 const GENERATED_FILES = [
   'logos.css', 'sitemap.xml', 'og-image.png',
   // v3.2：订阅产物（两条）。由唯一表现取 ⇒ 这张表与 `FEED_FILES` 不可能分家。
-  ...feed.FEED_FILES.map(([file]) => file)
+  ...feed.FEED_FILES.map(([file]) => file),
+  // v3.3：IndexNow 密钥文件（`<key>.txt`，内容就是密钥本身）。
+  // 同样从唯一表现取名字 —— 这张表里不许出现第二份 `<key>.txt` 字面量。
+  indexnow.keyFileName()
 ];
 
 /**
@@ -4403,6 +4411,21 @@ ${modelUrls}
 ${archiveDetailUrls}
 </urlset>
 `, 'utf8');
+
+  /* ---- v3.3：IndexNow 密钥文件（`<key>.txt`）-------------------------------------------
+   *
+   * 它就是**一个密钥**，没有别的内容：文件名 = 密钥，内容 = 密钥（**不带结尾换行**）。
+   * 参与引擎抓这个路径来证明「提交者确实控制着这台主机上的这个子目录」，所以它必须在站点根
+   * 被逐字节原样 GET 到 —— 任何"顺手格式化一下/补个换行"都会让验证失败（自测里有牙盯着这一点）。
+   *
+   * 为什么由构建期写出，而不是像 BingSiteAuth.xml 那样从仓库根原样拷贝：
+   * 后者的令牌是 **Bing 生成的**，仓库根那份就是真值；而这里的密钥真值在 `lib/indexnow.js`，
+   * 再往仓库根放一份字面量文件只会让「线上那份文件到底等于哪个密钥」变成两处真值 ——
+   * 而这两处一旦漂移，症状是 Bing 那边静静地 403，页面与构建全绿。
+   * 落盘方式与 sitemap.xml / logos.css / og-image.png 同款（`fs.writeFileSync` 直写 OUT），
+   * 并登记进 `GENERATED_FILES` —— 那张表是「声明了就必须存在于 OUT」那台机器牙的消费者。
+   * ---------------------------------------------------------------------------------- */
+  fs.writeFileSync(path.join(OUT, indexnow.keyFileName()), indexnow.keyFileContent(), 'utf8');
 
   /* ---- v3.2：订阅产物（Atom 1.0 + JSON Feed 1.1）---------------------------------------
    *
