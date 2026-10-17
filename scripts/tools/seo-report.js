@@ -12,6 +12,8 @@
 
 const fs = require('fs');
 const path = require('path');
+// v3.3：非页面资源清单不再手写 —— 从产物登记表现取（见下面那一行的注释）。
+const publishedAssets = require('../lib/published-assets');
 
 const ROOT = path.join(__dirname, '..', '..');
 const landing = require('../lib/landing');
@@ -98,7 +100,17 @@ console.log('\n--- 索引策略 ---');
 console.log('  可索引（进 sitemap）：首页 · 分类页 3 · 按需求页 7 · 分类落地页 ' + stats.byKind.category +
   ' · 厂商落地页 ' + stats.byKind.vendor + ' · 枢纽 ' + (stats.byKind.hub || 0) + ' · 详情页 · 状态页 · 变化雷达页');
 console.log('  noindex（不进 sitemap）：' + Object.keys(aliases).join(' · '));
-console.log('  非页面资源（从不进 sitemap）：.nojekyll · favicon.svg · logos.css · og-image.png · robots.txt · sitemap.xml · BingSiteAuth.xml · logos/** · assets/data/offers.json');
+// v3.3：这一行改成**从产物登记表现取**，不再手写第二份清单 —— 上一版是手写的，于是
+// `BingSiteAuth.xml`（2026-10-16 加）与 IndexNow 密钥文件（v3.3 加）每加一个都要记得回来改一次，
+// 而忘改的后果是「报告在撒谎」而不是「门禁变红」（`report:seo` 刻意不在 CI 里）。
+// 判据与产物门禁同源：`lib/published-assets.js` 的三张表就是「产物里允许有哪些非 HTML 文件」的唯一出处
+// （顺带修掉一处既有的漏项：两条订阅产物一直没被这一行列出来）。
+console.log('  非页面资源（从不进 sitemap）：'
+  + [
+    ...publishedAssets.ALLOWED_PATHS.map(([p]) => p),
+    ...publishedAssets.ALLOWED_PREFIX.map(([p]) => `${p}**`),
+    ...publishedAssets.ALLOWED_DATA.map(([p]) => p)
+  ].join(' · '));
 
 console.log('\n--- slug 契约 ---');
 console.log(`  厂商 slug（${Object.keys(site.VENDOR_SLUGS).length} 条，键是规范显示名）：`);

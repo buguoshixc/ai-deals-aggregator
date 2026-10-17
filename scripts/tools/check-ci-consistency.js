@@ -261,6 +261,13 @@ const GATE_STEP_NAMES = [
   // 登记制：新步骤必须同批改三处（action.yml 的步骤、本清单、GATE_STEP_RUN 指纹），
   // 另外 npm 的 `selftest:feed` 也要登记（(17)/(19) 双向核对脚本名）。
   'Feed self-test',
+  // v3.3 新增（IndexNow）：判据本体是纯函数（日期由调用方注入），不读产物、不联网，所以是 **L2**，
+  // 位置与 L2 步骤群一致 —— 紧挨 `Assemble site` 之前。
+  // 登记制：新步骤必须同批改三处（action.yml 的步骤、本清单、GATE_STEP_RUN 指纹），
+  // 另外 npm 的 `selftest:indexnow` 也要登记（(17)/(19) 双向核对脚本名）。
+  // ⚠️ **发送**那一步不在这里、也不在门禁里：它在 `deploy.yml` 的 deploy job（站点上线之后），
+  //    而且刻意不判死 —— 通知失败不该把一次成功的发布标成失败。
+  'IndexNow self-test',
   'Assemble site (same path as deploy.yml)',
   // v3.0 P2-26 / §10.9：**产物依赖的五个页面自测排在构建之后**（顺序即前置）。
   // 原先它们排在 Assemble site 之前，而 CI 的干净检出里 `dist/` 根本不存在（dist/ 是
@@ -420,6 +427,9 @@ const GATE_STEP_RUN = {
     "node scripts/tools/model-freshness-sensitivity.js",
   "Feed self-test":
     "node scripts/tools/feed-selftest.js",
+  // v3.3：IndexNow 的 L2 步骤（纯函数判据，不读产物）—— 与上面那条同形。
+  "IndexNow self-test":
+    "node scripts/tools/indexnow-selftest.js",
   "Assemble site (same path as deploy.yml)":
     "node scripts/tools/build-local.js",
   "Models-page self-test (index + detail pages)":

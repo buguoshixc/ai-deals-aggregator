@@ -89,6 +89,10 @@ const LAYERS = {
       // 它演练的是 feed 的**纯函数**层（构造 / 排序 / 身份 / 两种渲染），不读 dist/、不写产物，
       // 所以按本表自己的判据（「它需要什么才能跑」）它就是 L2。
       'selftest:feed',
+      // v3.3 IndexNow：判据是「sitemap 里哪些 URL 的 <lastmod> 等于今天」与 payload 的组装规则，
+      // 全部是对**注入输入**的纯函数演练（不读 dist/、不联网、不看时钟 —— 日期由调用方注入）。
+      // 发送那一步在 deploy.yml 里，本表按「它需要什么才能跑」判：它什么都不需要，所以是 L2。
+      'selftest:indexnow',
       'selftest:health',
       'selftest:plans',
       'selftest:api-plans',

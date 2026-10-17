@@ -366,6 +366,19 @@ runs:
       shell: bash
       run: node scripts/tools/feed-selftest.js
 
+    # v3.3 新增：IndexNow 自测（**L2** —— 判据本体是纯函数、日期由调用方注入，不读产物、不联网）。
+    #
+    # 为什么必须有它：这一层守的是「把哪些 URL 报给搜索引擎」这条判据本身 ——
+    # 协议约束（密钥 8–128 位、密钥文件内容逐字节等于密钥、keyLocation 决定的作用域）、
+    # 「等于判据日才算变了」、以及**空输入与坏输入一律抛错**（把"读不到产物"当成
+    # "今天没有变更"，会让整条通知链路静默停摆，而页面与构建全绿）。
+    # 这些承诺只在这一步被验证；发送那一步在 `deploy.yml` 里，而且它**刻意不判死**
+    # （发布已经完成，通知失败只是"晚一点被发现"，不是"线上是坏的"）。
+    # 另含 8 颗变异牙（改坏实现 → 实跑同一套判据 → 断言预期的那条真的变红 → 逐字节还原 → 判据回绿）。
+    - name: IndexNow self-test
+      shell: bash
+      run: node scripts/tools/indexnow-selftest.js
+
     # 发布产物由 build-local.js 组装（与 deploy.yml 完全同一条路径），
     # 失败即拦：能装出坏产物就不该合并、更不该发布。
     - name: Assemble site (same path as deploy.yml)

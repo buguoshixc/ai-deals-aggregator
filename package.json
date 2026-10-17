@@ -41,6 +41,7 @@
     "selftest:changes": "node scripts/tools/changes-selftest.js",
     "report:changes": "node scripts/tools/changes-report.js",
     "selftest:feed": "node scripts/tools/feed-selftest.js",
+    "selftest:indexnow": "node scripts/tools/indexnow-selftest.js",
     "check:feed:reproducible": "node scripts/tools/check-feed-reproducible.js",
     "selftest:health": "node scripts/tools/health-selftest.js",
     "selftest:app-token": "node scripts/tools/app-token-selftest.js",
