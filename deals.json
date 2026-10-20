@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-10-20T02:26:03+08:00",
+  "updatedAt": "2026-10-20T11:33:25+08:00",
   "count": 156,
   "deals": [
     {
@@ -3251,32 +3251,6 @@
       }
     },
     {
-      "id": "bf08e4fbd5ac",
-      "title": "Star By Face",
-      "vendor": "Star By",
-      "url": "https://starbyface.com/",
-      "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/star-by-face",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "图像绘画",
-      "description": "A tool to find celebrity look-alike suggestions based on your photo.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-10-20",
-      "verified": false,
-      "verifiedAt": null,
-      "zh": {
-        "description": "上传照片，找出与你相像的名人。"
-      }
-    },
-    {
       "id": "7f3607d92aa5",
       "title": "Genmo Mochi-1",
       "vendor": "Genmo Mochi",
@@ -4719,6 +4693,32 @@
             "derived": "stated"
           }
         }
+      }
+    },
+    {
+      "id": "bf08e4fbd5ac",
+      "title": "Star By Face",
+      "vendor": "Star By",
+      "url": "https://starbyface.com/",
+      "source": "Futuretools",
+      "sourceUrl": "https://futuretools.io/tools/star-by-face",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "图像绘画",
+      "description": "A tool to find celebrity look-alike suggestions based on your photo.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-10-20",
+      "verified": false,
+      "verifiedAt": null,
+      "zh": {
+        "description": "上传照片，找出与你相像的名人。"
       }
     },
     {
