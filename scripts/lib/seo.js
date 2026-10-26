@@ -22,7 +22,9 @@ const pageKinds = require('./page-kinds');
 
 const PROBLEM_CODES = [
   'gate-threshold', 'gate-pinned-missing', 'gate-pinned-empty',
-  'alias-target-exists', 'alias-item-set', 'alias-indexable',
+  // v1.8：`alias-indexable` 退役（旧语义是「别名页必须 noindex」，与本轮策略相反），
+  // 换成 `alias-canonical`（别名页必须可抓取，且 canonical 指向正本、不进 sitemap）。
+  'alias-target-exists', 'alias-item-set', 'alias-canonical',
   'slug-shape', 'slug-unique',
   'title-unique', 'title-length', 'desc-nonempty', 'desc-unique',
   'canonical-self', 'canonical-unique', 'h1-count', 'robots-policy',
@@ -396,28 +398,48 @@ function validate(pages, opts = {}) {
     const h1 = h1Count(html);
     const text = visibleText(html);
     const expectedUrl = `${siteUrl}${route}`;
+    /**
+     * 别名页的 canonical 契约（v1.8-seo-answer-pages）。
+     *
+     * 旧策略是 `noindex, follow` + **自指** canonical。这两句话自相矛盾：noindex 赢，
+     * canonical 白写；对读者与爬虫都是噪声。GitHub Pages 发不出 301，canonical 是这台 host
+     * 上唯一能把「旧地址」的权重归并到正本的信号 —— 所以本轮把别名改成
+     * **可抓取、不进 noindex、canonical 指向正本、不进 sitemap**。
+     *
+     * 描述符用 `canonicalRoute` 显式声明 canonical 的目标路由（缺省 = 自指）。
+     * `independent` =「这一页作为独立 URL 被索引」：不进 noindex **且** canonical 自指。
+     * 标题/描述唯一性、sitemap 成员资格、重复条目集合这三条只对独立页面成立 ——
+     * 别名页与目标页共用标题与条目集合是刻意的（它就是同一主题的旧地址）。
+     */
+    const expectedCanonical = page.canonicalRoute ? `${siteUrl}${page.canonicalRoute}` : expectedUrl;
+    const independent = page.indexable && canonical === expectedUrl;
 
     if (!title) fail('title-length', route, '页面没有 <title>');
     else if (title.length > 80) fail('title-length', route, `标题 ${title.length} 字符，超过 80：${title}`);
-    // 唯一性只在**可索引**页面之间要求：别名页（noindex）与目标页共用标题是刻意的
+    // 唯一性只在**独立可索引**页面之间要求：别名页与目标页共用标题是刻意的
     // ——它就是「同一主题的旧地址」，标题不同反而会让读者以为进错了页。
-    if (title && page.indexable) {
+    if (title && independent) {
       if (titleSeen.has(title)) fail('title-unique', route, `标题与 ${titleSeen.get(title)} 逐字相同：${title}`);
       else titleSeen.set(title, route);
     }
 
     if (!description) fail('desc-nonempty', route, '没有 meta description');
-    else if (page.indexable) {
+    else if (independent) {
       if (descSeen.has(description)) fail('desc-unique', route, `description 与 ${descSeen.get(description)} 逐字相同`);
       else descSeen.set(description, route);
     }
 
     if (!canonical) fail('canonical-self', route, '没有 canonical');
-    else if (canonical !== expectedUrl) fail('canonical-self', route, `canonical 是 ${canonical}，自指应为 ${expectedUrl}`);
-    if (canonical && page.indexable) {
-      // 唯一性口径：**可索引页面之间**不许共用 canonical。自指检查在上一行，
+    else if (canonical !== expectedCanonical) {
+      fail('canonical-self', route, page.canonicalRoute
+        ? `canonical 是 ${canonical}，别名页应指向正本 ${expectedCanonical}（不走 noindex 收口）`
+        : `canonical 是 ${canonical}，自指应为 ${expectedUrl}`);
+    }
+    if (canonical && page.indexable && !page.canonicalRoute) {
+      // 唯一性口径：**独立可索引页面之间**不许共用 canonical。自指检查在上一行，
       // 但两者都要有 —— 自指只能保证「每个页面说自己是自己」，
       // 而「两个页面说自己是同一个地址」是一种自指检查照不到的重复（Tooth Test #1）。
+      // 登记过的别名页**跳过**这一条：它与正本共用 canonical 是本轮策略本身。
       if (canonicalSeen.has(canonical)) fail('canonical-unique', route, `canonical 与 ${canonicalSeen.get(canonical)} 相同：${canonical}`);
       else canonicalSeen.set(canonical, route);
     }
@@ -432,12 +454,19 @@ function validate(pages, opts = {}) {
         : `策略表判它可索引，但页面带了 robots=${robots}`);
     }
 
-    // sitemap 与索引策略必须一致
+    // sitemap 与索引策略必须一致：**sitemap = 独立可索引页面的集合**。
+    // canonical 收口到别处的别名页可以被抓取、可以传递链接权重，但**不该进 sitemap**
+    // （sitemap 是「请索引这些独立 URL」的声明，与 canonical 指向别处直接冲突）。
     const inSitemap = sitemap.has(route);
     if (page.inSitemap !== undefined && page.inSitemap !== inSitemap) {
       fail('sitemap-policy', route, `描述符声明 inSitemap=${page.inSitemap}，实际 sitemap ${inSitemap ? '有' : '没有'}这一条`);
     }
-    if (page.indexable && !inSitemap) fail('sitemap-policy', route, '可索引页不在 sitemap 里');
+    if (independent && !inSitemap) fail('sitemap-policy', route, '独立可索引页不在 sitemap 里');
+    if (page.indexable && !independent && inSitemap) {
+      fail('sitemap-policy', route, page.canonicalRoute
+        ? `canonical 收口到 ${page.canonicalRoute} 的别名页不该进 sitemap`
+        : '可索引页的 canonical 不自指，却仍出现在 sitemap 里');
+    }
     if (!page.indexable && inSitemap) fail('sitemap-policy', route, '不可索引页出现在 sitemap 里');
 
     if (text.length < textFloor(page.kind, page.count)) {
@@ -546,10 +575,12 @@ function validate(pages, opts = {}) {
   }
 
   // ---- 跨页：重复条目集合、孤儿页、别名 ----
-  // 跨页：**集合页之间**的条目集合不允许逐条相同（详情页天然只有一条，不参与这条）。
+  // 跨页：**独立可索引的集合页之间**的条目集合不允许逐条相同（详情页天然只有一条，不参与这条）。
+  // 别名页被 `canonicalRoute` 排除：它与正本共用条目集合是本轮策略本身（canonical 收口）。
   const COLLECTION_KINDS = ['collection', 'need', 'category', 'vendor', 'alias', 'hub'];
   for (const page of list) {
     if (!page.indexable) continue;
+    if (page.canonicalRoute) continue;
     if (!COLLECTION_KINDS.includes(page.kind)) continue;
     const key = (page.itemIds || []).slice().sort().join(',');
     if (!key) continue;
@@ -579,11 +610,24 @@ function validate(pages, opts = {}) {
     const target = byRoute.get(alias.target);
     if (!page) { fail('alias-target-exists', route, '别名表登记了这一路由，但页面没有生成'); continue; }
     if (!target) { fail('alias-target-exists', route, `别名目标是 ${alias.target}，但它不在生成的页面里`); continue; }
-    if (!target.indexable) fail('alias-target-exists', route, `别名目标 ${alias.target} 自己就是别名页（别名链必须只有 1 跳）`);
+    if (!target.indexable || target.canonicalRoute) {
+      fail('alias-target-exists', route, `别名目标 ${alias.target} 自己就是 noindex / 别名页（别名链必须只有 1 跳）`);
+    }
+    /**
+     * v1.8-seo-answer-pages：别名页的新契约（逐条）：
+     *   ① 可抓取（不 noindex —— 由 `robots-policy` 独立守着）；
+     *   ② canonical 指向正本（`canonicalRoute` === alias.target，`canonical-self` 独立守着 URL 面）；
+     *   ③ 不进 sitemap（由 `sitemap-policy` 独立守着）；
+     *   ④ 条目集合与正本逐条相同（下面这条）。
+     * 本检查码只判「描述符有没有声明对的 canonical 目标」——
+     * 它是这条策略在**规则层**的显式落点：声明缺失或指错，页面上的 canonical 再对也红。
+     */
+    if (page.canonicalRoute !== alias.target) {
+      fail('alias-canonical', route, `别名页的 canonical 目标是 ${page.canonicalRoute || '（自指）'}，应指向正本 ${alias.target}（noindex 收口已退役）`);
+    }
     const a = (page.itemIds || []).slice().sort().join(',');
     const b = (target.itemIds || []).slice().sort().join(',');
     if (a !== b) fail('alias-item-set', route, `别名页与目标页的条目集合不同（本页 ${(page.itemIds || []).length} 条 / 目标 ${(target.itemIds || []).length} 条）`);
-    if (page.indexable) fail('alias-indexable', route, '别名页必须是 noindex');
   }
 
   // ---- 门槛（只有构建期能查：它知道谁被跳过） ----
@@ -653,6 +697,8 @@ function validate(pages, opts = {}) {
     pages: list.length,
     indexable: list.filter(page => page.indexable).length,
     noindex: list.filter(page => !page.indexable).length,
+    // v1.8：canonical 收口到正本、不进 sitemap 的别名页数（与 noindex 分开报，口径不混）
+    canonicalAliases: list.filter(page => Boolean(page.canonicalRoute)).length,
     dealPages: list.filter(page => page.route.startsWith('deal/')).length,
     landingPages: list.filter(page => !page.route.startsWith('deal/')).length,
     vendorPages: list.filter(page => page.kind === 'vendor').length,
@@ -684,6 +730,11 @@ function recomputeSummary(page, ctx) {
   const out = { 当前条目: ids.length };
   const noCard = items.filter(deal => deal.claimRequirements && deal.claimRequirements.creditCardRequired === false).length;
   if (noCard) out['无需信用卡'] = noCard;
+  // v1.8-seo-answer-pages：答案页门槛速查表用到的「实名认证」总数（与页面上的聚合同源）。
+  // 只数**明确为 true** 的条目；「没写」不等于「不需要」—— 与三态口径同一条纪律。
+  const needIdentity = items.filter(deal => deal.eligibilityDetail
+    && deal.eligibilityDetail.identityVerificationRequired === true).length;
+  if (needIdentity) out['需实名认证'] = needIdentity;
   const china = items.filter(deal => deal.availability && deal.availability.chinaUsable === true).length;
   if (china) out['确认中国大陆可申请'] = china;
   const freeApi = items.filter(deal => Array.isArray(deal.benefitType) && deal.benefitType.includes('free_api')).length;

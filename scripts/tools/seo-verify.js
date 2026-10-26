@@ -16,7 +16,7 @@
  *   · 可索引性 ← 页面自己的 `<meta name="robots">`（不读任何注册表）；
  *   · 条目集合 ← 产物里的 `assets/data/offers.json` + 厂商归一 + 页面类型判据，重新算一遍，
  *     再与页面上的 `data-item` 标记**逐个 id 对账**；
- *   · sitemap 成员 ← 解析 sitemap.xml，与「非 noindex 的页面集合」比；
+ *   · sitemap 成员 ← 解析 sitemap.xml，与「独立可索引页面（不 noindex 且 canonical 自指）的集合」比；
  *   · Feed 清单 ← 磁盘上真实存在的 feed 文件（订阅层下架后恒为空集）。
  *
  * 规则本身仍调用 `lib/seo.js`（规则只有一份），而**计划在这里重新推导一遍** ——
@@ -275,6 +275,10 @@ for (const route of routes) {
     html,
     kind,
     indexable,
+    // v1.8-seo-answer-pages：别名页的 canonical 目标是正本。规则层用这个字段
+    // 判「独立可索引」（canonical 自指）与 sitemap 成员资格，并核对页面上的 canonical。
+    // 独立性来源是 `landing-aliases.json`（与构建期同一份表），不是本工具重算一份「谁指向谁」。
+    canonicalRoute: aliases[route] ? aliases[route].target : undefined,
     inSitemap: undefined, // 由 sitemap-policy 断言（下面按 sitemap 现场算）
     itemIds,
     childRoutes,
@@ -568,20 +572,28 @@ const ownVisibleText = html => unescapeHtml(
 /* ------------------------------------------------------------------ */
 
 {
-  const indexableRoutes = descriptors.filter(page => page.indexable).map(page => page.route);
+  // v1.8-seo-answer-pages：sitemap = **独立可索引**页面（不 noindex 且 canonical 自指）的集合。
+  // 别名页去掉 noindex 后仍不进 sitemap（canonical 指向正本）⇒ 判据不能再用
+  // 「非 noindex」代替「独立」—— 两个独立事实必须分开现场读。
+  const canonicalOfHtml = html => (seo.canonicalOf(html) || '').trim();
+  const independentPages = descriptors.filter(page => page.indexable
+    && canonicalOfHtml(page.html) === `${site.SITE_URL}${page.route}`);
+  const independentRoutes = independentPages.map(page => page.route);
   const sitemapRoutes = sitemap.map(url => url.slice(site.SITE_URL.length));
-  const notInSitemap = indexableRoutes.filter(route => !sitemapRoutes.includes(route));
-  const extraInSitemap = sitemapRoutes.filter(route => !indexableRoutes.includes(route));
-  check('sitemap 成员 == 非 noindex 页面的集合（现场按 robots meta 判定）',
+  const notInSitemap = independentRoutes.filter(route => !sitemapRoutes.includes(route));
+  const extraInSitemap = sitemapRoutes.filter(route => !independentRoutes.includes(route));
+  check('sitemap 成员 == 独立可索引页面的集合（现场按 robots + canonical 自指判定）',
     notInSitemap.length === 0 && extraInSitemap.length === 0,
     `漏 ${notInSitemap.slice(0, 3).join(',')} / 多 ${extraInSitemap.slice(0, 3).join(',')}`);
 }
 
 {
+  // v1.8：别名页不再 noindex。产物里允许出现的 noindex 页面必须来自策略表
+  // （今天 = 0 条；将来若出现，必须由 `page-kinds.js` 的声明解释，而不是悄悄多出来）。
   const noindexPages = descriptors.filter(page => !page.indexable);
-  check(`noindex 页面 ${noindexPages.length} 条，且都出现在别名表或策略里`,
-    noindexPages.every(page => Boolean(aliases[page.route]) || page.kind === 'hub'),
-    noindexPages.filter(page => !aliases[page.route]).map(page => page.route).join(', '));
+  check(`noindex 页面 ${noindexPages.length} 条（v1.8 起别名页用 canonical 收口，不再 noindex）`,
+    noindexPages.length === 0,
+    noindexPages.map(page => page.route).join(', '));
 }
 
 {

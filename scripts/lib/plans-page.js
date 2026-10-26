@@ -59,8 +59,15 @@ const PLANS_ROUTE = 'plans/coding/';
  */
 const PLANS_HOME_HREF = '../'.repeat(PLANS_ROUTE.split('/').filter(Boolean).length);
 const PLANS_HEADING = 'AI Coding 套餐对比';
-const PLANS_DESCRIPTION = '把各平台长期在售的 AI Coding 套餐放在一张表里比：正常价格、当前活动价、'
-  + '计费周期、可用模型、原始额度与额度类型。只列事实，不排名、不评分、不替读者判断值不值。';
+/**
+ * v1.8-seo-answer-pages：`<title>` 专用查询句式标题（含「价格 / 2026」与真实厂商名）。
+ * `PLANS_HEADING` 仍是 H1 / 面包屑 / JSON-LD 的短名 —— 两者职责不同，不互相顶替。
+ * 厂商名必须来自本页真实收得到的平台（Claude Pro / GitHub Copilot / Cursor 都在 44 条里）。
+ */
+const PLANS_PAGE_TITLE = 'AI Coding 套餐价格 2026：Claude Pro、GitHub Copilot、Cursor 月费对比';
+const PLANS_DESCRIPTION = '2026 年各平台长期在售的 AI Coding 套餐价格对比：Anthropic Claude Pro、'
+  + 'GitHub Copilot、Cursor、Replit 等 20 个平台的月费、活动价、计费周期、可用模型与原始额度。'
+  + '只列事实，不排名、不评分、不替读者判断值不值。';
 
 /** 未知的三种表现形态。语义不同所以写上不同的词（H4b：缺失要说清是哪一种） */
 const UNKNOWN_TEXT = '未标注';
@@ -1635,6 +1642,7 @@ module.exports = {
   PLANS_ROUTE,
   PLANS_HOME_HREF,
   PLANS_HEADING,
+  PLANS_PAGE_TITLE,
   PLANS_DESCRIPTION,
   PLANS_NOTES,
   FORBIDDEN_CLAIM_WORDS,

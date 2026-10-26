@@ -62,6 +62,7 @@ const pad = (text, width) => String(text).padEnd(width, ' ');
 
 console.log(`\n=== 落地页报告（数据更新 ${asOf}）===`);
 console.log(`页面 ${stats.total} 个：可索引 ${stats.indexable} · noindex ${stats.noindex}` +
+  ` · canonical 收口的别名 ${stats.canonicalAliases}` +
   `（${Object.entries(stats.byKind).map(([kind, n]) => `${kind} ${n}`).join(' · ')}）`);
 console.log(`门槛：厂商 有效优惠 ≥ ${site.VENDOR_THRESHOLDS.minDeals} 条 或 历史事件 ≥ ${site.VENDOR_THRESHOLDS.minEvents} 条` +
   ` · 分类 有效优惠 ≥ ${landing.CATEGORY_MIN_DEALS} 条（且有人工文案）`);
@@ -71,7 +72,7 @@ console.log(`${pad('路由', 30)}${pad('类型', 12)}${pad('条数', 8)}${pad('�
 for (const page of plan.pages) {
   const count = page.kind === 'hub' ? `${(page.children || []).length} 入口` : `${landing.itemsOf(page, payload.deals, { vendorKeyOf }).length} 条`;
   console.log(`${pad(page.route, 30)}${pad(page.kind, 12)}${pad(count, 8)}` +
-    `${pad(page.indexable ? '是' : 'noindex', 10)}${pad(page.indexable ? '是' : '—', 9)}${pinned.has(page.route) ? '是' : ''}`);
+    `${pad(page.indexable ? '是' : 'noindex', 10)}${pad(page.indexable && !page.canonicalRoute ? '是' : '—', 9)}${pinned.has(page.route) ? '是' : ''}`);
 }
 
 console.log('\n--- 没有成页的主题与原因 ---');
@@ -99,7 +100,7 @@ console.log('\n--- 索引策略 ---');
 //    数据文件整族下架后，产物里的非 HTML 文件只剩下面这些 + 首页自己那份数据资源。
 console.log('  可索引（进 sitemap）：首页 · 分类页 3 · 按需求页 7 · 分类落地页 ' + stats.byKind.category +
   ' · 厂商落地页 ' + stats.byKind.vendor + ' · 枢纽 ' + (stats.byKind.hub || 0) + ' · 详情页 · 状态页 · 变化雷达页');
-console.log('  noindex（不进 sitemap）：' + Object.keys(aliases).join(' · '));
+console.log('  canonical 收口到正本（可抓取、不进 sitemap）：' + Object.keys(aliases).join(' · '));
 // v3.3：这一行改成**从产物登记表现取**，不再手写第二份清单 —— 上一版是手写的，于是
 // `BingSiteAuth.xml`（2026-10-16 加）与 IndexNow 密钥文件（v3.3 加）每加一个都要记得回来改一次，
 // 而忘改的后果是「报告在撒谎」而不是「门禁变红」（`report:seo` 刻意不在 CI 里）。

@@ -13,6 +13,10 @@
  * （牙与断言共用同一支判据，所以「注入没生效」也是一条会红的失败）。
  *
  * 另外三节是注册表层的不变量：门槛函数的分支、slug 表、钉住/别名/排除表的一致性。
+ *
+ * v1.8-seo-answer-pages：别名页的索引策略从 `noindex, follow` + 自指 canonical 改为
+ * 「可抓取 + canonical 指向正本 + 不进 sitemap」。规则层因此新增 `alias-canonical`
+ * （旧的 `alias-indexable` 退役），本文件的夹具与真实数据断言同批更新。
  */
 
 const fs = require('fs');
@@ -123,7 +127,9 @@ function cleanPages() {
       title: '分类页标题', desc: '分类页描述', rows: ['aaa', 'bbb'],
       listUrls: [`${SITE}deal/aaa/`, `${SITE}deal/bbb/`],
       summary: [{ label: '当前条目', value: 2 }],
-      links: ['vendor/acme/', '']
+      // v1.8：别名页去掉 noindex 后也是「可索引页」，孤儿判据照样要它有一条入链
+      // （真实产物的三个别名页各有 183 个入链来源；夹具里给一条，判据本身不放松）。
+      links: ['vendor/acme/', 'need/old/', '']
     }),
     mk('vendor/acme/', { kind: 'vendor', slug: 'acme', itemIds: ['ccc'], count: 1, pinned: true }, {
       title: '厂商页标题', desc: '厂商页描述', rows: ['ccc'],
@@ -131,8 +137,10 @@ function cleanPages() {
       summary: [{ label: '当前条目', value: 1 }],
       links: ['category/api/', '']
     }),
-    mk('need/old/', { kind: 'alias', slug: 'old', indexable: false, inSitemap: false, aliasOf: 'category/api/', itemIds: ['aaa', 'bbb'], count: 2, pinned: true }, {
-      title: '旧地址标题', desc: '旧地址描述', robots: 'noindex, follow', rows: ['aaa', 'bbb'],
+    // v1.8-seo-answer-pages：别名页不再 noindex —— 可抓取、canonical 指向正本、不进 sitemap。
+    // 描述符的 `canonicalRoute` 是「canonical 目标」的唯一声明，页面 HTML 必须照它渲染。
+    mk('need/old/', { kind: 'alias', slug: 'old', indexable: true, canonicalRoute: 'category/api/', inSitemap: false, aliasOf: 'category/api/', itemIds: ['aaa', 'bbb'], count: 2, pinned: true }, {
+      title: '旧地址标题', desc: '旧地址描述', canonical: `${SITE}category/api/`, rows: ['aaa', 'bbb'],
       listUrls: [`${SITE}deal/aaa/`, `${SITE}deal/bbb/`],
       summary: [{ label: '当前条目', value: 2 }],
       links: ['category/api/', '']
@@ -237,11 +245,12 @@ section('二、每一条检查码都必须真的会响（逐个定向篡改）')
     pages[3].itemIds = ['aaa'];
     return run(pages);
   }]);
-  fixtures.push(['alias-indexable', () => {
+  fixtures.push(['alias-canonical', () => {
+    // v1.8：别名页的 canonical 必须指向正本（描述符 `canonicalRoute` 声明 + 页面 URL 两层）。
+    // 把声明改成另一条路由 ⇒ 规则层必须响（页面上的 canonical 仍然指向旧正本，但
+    // 「谁是正本」这一件事由声明唯一决定；声明指错就是策略错误，不是渲染错误）。
     const pages = cleanPages();
-    pages[3].indexable = true;
-    pages[3].inSitemap = true;
-    pages[3].html = pageHtml({ route: 'need/old/', title: '旧地址标题', canonical: `${SITE}need/old/`, desc: '旧地址描述', rows: ['aaa', 'bbb'], listUrls: [`${SITE}deal/aaa/`, `${SITE}deal/bbb/`], links: ['category/api/', ''], summary: [{ label: '当前条目', value: 2 }] });
+    pages[3].canonicalRoute = 'vendor/acme/';
     return run(pages);
   }]);
 
@@ -526,12 +535,15 @@ section('四、注册表与产物的一致性（用真实数据）');
     const pinned = new Set(landing.loadPinned().map(row => row.route));
     return Object.keys(landing.loadAliases()).every(route => pinned.has(route));
   })());
-  check('别名目标都能在计划里找到且可索引', (() => {
+  check('别名目标都能在计划里找到且独立可索引（别名页可抓取、canonical 指向正本）', (() => {
     const byRoute = new Map(plan.pages.map(page => [page.route, page]));
     return Object.entries(landing.loadAliases()).every(([route, alias]) => {
       const target = byRoute.get(alias.target);
       const page = byRoute.get(route);
-      return Boolean(page && target && target.indexable && !page.indexable);
+      // v1.8：目标必须独立可索引（不是别人的别名）；别名页必须可抓取（不再 noindex）
+      // 且 canonical 目标恰好等于目标路由。
+      return Boolean(page && target && target.indexable && !target.canonicalRoute
+        && page.indexable && page.canonicalRoute === alias.target);
     });
   })());
   check('别名页的条目集合与目标页逐条相同（用真实数据重算一遍）', (() => {
@@ -543,10 +555,12 @@ section('四、注册表与产物的一致性（用真实数据）');
       return ids(page) === ids(target);
     });
   })());
-  check('没有任何两个可索引集合页的条目集合逐条相同（用真实数据重算一遍）', (() => {
+  check('没有任何两个独立可索引集合页的条目集合逐条相同（用真实数据重算一遍）', (() => {
     const seen = new Map();
     for (const page of plan.pages) {
       if (!page.indexable) continue;
+      // v1.8：别名页的条目集合故意与正本相同，canonical 已收口 ⇒ 不参与这条重复判据。
+      if (page.canonicalRoute) continue;
       if (!['collection', 'need', 'category', 'vendor', 'hub'].includes(page.kind)) continue;
       const ids = landing.itemsOf(page, payload.deals, { vendorKeyOf }).map(deal => deal.id).sort().join(',');
       if (!ids) continue;

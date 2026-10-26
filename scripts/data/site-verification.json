@@ -1,0 +1,19 @@
+{
+  "_note": "站点归属验证 token 的**唯一出处**（v1.8-seo-answer-pages）。GSC 的 google-site-verification 与百度搜索资源平台的 baidu-site-verification 都只能由站点主账号登录后台生成，所以 token 不进代码、只进这张配置表；构建期按本表在首页 <head> 生成两个 meta（未配置则整块不输出）。⚠️ token 是**公开校验值**，不是密钥——它必须出现在 HTML 里才算验证通过，所以提交进仓库是正确的（与 BingSiteAuth.xml 同一条理由）。改 token 只改这一个文件，然后 `npm run build` 重新发布即可。操作清单见 docs/marketing/seo-verification-runbook.md。",
+  "google": {
+    "metaName": "google-site-verification",
+    "provider": "Google Search Console",
+    "property": "https://buguoshixc.github.io/ai-deals-aggregator/",
+    "propertyType": "URL 前缀属性（URL-prefix）",
+    "token": null,
+    "acquiredAt": null
+  },
+  "baidu": {
+    "metaName": "baidu-site-verification",
+    "provider": "百度搜索资源平台",
+    "property": "https://buguoshixc.github.io/ai-deals-aggregator/",
+    "token": null,
+    "verificationMethod": "HTML 标签（meta）",
+    "acquiredAt": null
+  }
+}

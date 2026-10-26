@@ -369,9 +369,22 @@ const COLLECTION_PAGES = [
   {
     slug: 'free-api',
     title: '免费 API',
+    /**
+     * v1.8-seo-answer-pages：`pageTitle` 是 `<title>` 专用（查询句式，含「免费 / 2026」与真实厂商名）。
+     * `title` 仍是面包屑/JSON-LD 用的短名，`heading` 仍是页面 H1 —— 三者职责不同，不互相顶替。
+     * 厂商名必须来自本页真实收得到的平台（百度千帆 / 智谱 / 阿里云百炼都在 /free-api/ 的 45 条里）。
+     */
+    pageTitle: '免费 API 有哪些？2026 百度千帆、智谱、阿里云百炼免费额度对比',
     heading: '可以免费调用的 API',
     predicate: 'freeApi',
-    description: '可以免费调用的 AI API：福利类型标注为「免费 API」的条目，含国内大模型平台的新用户免费额度与国外平台的试用额度。',
+    description: '2026 年还能免费调用哪些 AI API？百度千帆、智谱 GLM、阿里云百炼、火山方舟等平台的免费额度与免费模型，逐条标注实名、账号与地区门槛，数字可回查官方页。',
+    /**
+     * v1.8-seo-answer-pages：`thresholdSummary` 让这一页额外输出「各平台门槛速查表」
+     * （实名 / 限流 / 商用 / 地区）。它是**页面渲染开关**，不参与条目归属判据 ——
+     * 收哪些条目仍然只由 `predicate` 决定。目前只有 /free-api/ 打开：
+     * 它是本轮的答案页 1，接「免费 API / 免费额度」查询组。
+     */
+    thresholdSummary: true,
     // 「与 /developer/ 不互斥」是分类边界 → 已由渲染层共享的 page-notes 承担；
     // 「免费」的四种形态同样属于分类边界 → 底部折叠（首屏不再有说明，H13）。
     // 判据实现（benefitType 含 free_api）见 docs/DESIGN-RULES.md 的口径归档。
@@ -541,10 +554,11 @@ const NEED_PAGES = [
     icon: '🏫',
     homeDescription: '凭学校邮箱可领的教育版与额度',
     heading: '凭教育身份可以领取的 AI 优惠',
+    pageTitle: '学生与教育邮箱免费 AI 怎么领？2026 GitHub、Notion、Figma 教育版对比',
     depth: 2,
     predicate: 'eduIdentity',
     criteria: 'audience 含 education 或 educator，或 eligibilityDetail.educationEmailRequired 为 true',
-    description: '凭教育身份可领取的 AI 优惠：面向学生与教师的教育版、教育邮箱验证后可领的订阅与额度。',
+    description: '2026 年凭学生身份或教育邮箱能领哪些 AI 优惠：GitHub Copilot、Notion 教育版、Figma 教育版、Microsoft 365 教育版与 Perplexity 学生价，逐条标注认证方式与地区限制。',
     // 「比学生专享更窄」是读者最容易误读的一件事（数字小 ≠ 领不到）→ 底部折叠；
     // K-12 与地区限制属于「点进去才知道」的信息 → 同处折叠。
     userNotes: [
@@ -669,10 +683,11 @@ const NEED_PAGES = [
     icon: '🧠',
     homeDescription: '可以零成本调用的模型清单',
     heading: '可以免费使用的模型',
+    pageTitle: '免费大模型 API 有哪些？2026 智谱 GLM-4.7-Flash、硅基流动免费模型清单',
     depth: 2,
     predicate: 'freeModel',
     criteria: 'benefitType 含 free_model',
-    description: '可以免费使用的 AI 模型：福利类型标注为「免费模型」的条目，含开源模型免费推理与限时免费模型。',
+    description: '2026 年可以免费使用的 AI 模型：智谱 GLM-4.7-Flash、硅基流动免费模型专区、魔搭 API-Inference 等，逐条标注免费范围、限流与是否需要实名。',
     // 「免费的是模型本身，不是额度」是与「完全免费 / 免费 Tokens」区分开来的一句 → 底部折叠。
     userNotes: [
       '免费的是模型调用本身，不是账户里的额度。',

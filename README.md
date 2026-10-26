@@ -5,9 +5,12 @@
 
 - 线上地址：https://buguoshixc.github.io/ai-deals-aggregator/
 - 数据文件：`deals.json`（v2 契约，见下文）· `plans.json`（v1 契约 —— **AI Coding 套餐**，
-  与优惠分开建模，见 [数据契约（plans.json v1）](#数据契约plansjson-v1)）
-- v3.0 起还发布：`api-plans.json`（API 计费）· `models.json`（模型身份索引）·
-  `model-registry-links.json`（模型 ↔ 计费条目的显式关系）· `data/index.json`（数据集清单 Manifest）
+  与优惠分开建模，见 [数据契约（plans.json v1）](#数据契约plansjson-v1)）·
+  `api-plans.json`（API 计费）· `models.json`（模型身份索引）·
+  `model-registry-links.json`（模型 ↔ 计费条目的显式关系）。
+  数据真值在**公开仓库**里维护，站点**不发布数据文件镜像**（避免线上副本与仓库副本两份真值）。
+- 许可（v1.8 起分开授权）：**代码 MIT**（[`LICENSE`](LICENSE)）· **数据 CC BY 4.0**
+  （[`LICENSE-DATA`](LICENSE-DATA)）。引用方式与数据日期见站内 `/docs/data/`。
 
 ## v3.0：从「三个页面集合」到「结构化资料库」
 
@@ -20,15 +23,18 @@ v3.0（`v3.0-ai-deals-knowledge-base`）把站点从「优惠 + 套餐 + API 价
 | `/models/` 与 `/models/<slug>/` | 这个模型在本站都有哪些事实（计价条目 / 套餐 / 优惠 / 变化） | `models.json` + 关系层 + 三份真值 |
 | `/vendor/<slug>/` | 这一家厂商的全部资料（优惠 / 套餐 / API / 模型 / 变化 / 订阅） | 既有数据的显式 join |
 | `/archive/` | 消失过的东西去哪了（**资料消失 ≠ 资料删除**） | 三份变化日志重放 |
-| `/docs/data/` | 这些数据怎么用、能不能引用 | `/data/index.json` 清单 |
+| `/docs/data/` | 这些数据怎么用、什么许可、怎么引用（数据日期 / schema / 记录数由构建期从真实文件现算） | 仓库根 `deals.json` / `plans.json` / `api-plans.json` / `models.json` + 三份变化日志 |
 | `/feed.xml` `/feed.json` | 站根两份订阅产物（Atom 1.0 / JSON Feed 1.1）—— v3.2 部分反转后**只此两份**（见下面「订阅」一节） | 构建期生成，唯一表 = `scripts/lib/feed.js` 的 `FEED_FILES` |
 
-> **端点命名易踩坑（审计 P3-28，2026-10-04 补文档说明；未新增任何页面/路由）**：
-> ① Manifest 的**真实地址是 `/data/index.json`**（目录 + 文件名），`/data-index.json` 在线上是 404；
-> ② `model-registry-gaps.json` **不发布**（它是**双侧**处置登记 —— Coding 侧 `planId + modelName`、
-> API 侧 `apiPlanId + modelKey`，属关系层补充，只存在于 `scripts/data/`），
-> 因此线上取 `/model-registry-gaps.json` 一定 404 —— 这是**有意不发布**，不是缺文件。
-> 已发布的数据端点以 `/data/index.json` 的 `datasets[].url` 为准（构建期 `assertArtifactCoverage` 双向对账）。
+> **数据面口径（t4 → v1.8 的两次裁定，别读成"文档过期"）**：
+> ① t4「去数据暴露」把面向读者的数据文件与 Manifest 整族下架：产物里**不发布** `deals.json` /
+>    `plans.json` / `api-plans.json` / `data/index.json` 这类下载面；唯一的数据资源是首页应用自己的
+>    `assets/data/offers.json`（构建期写出，页面不提及它）。
+> ② v1.8（`v1.8-seo-answer-pages`）按用户要求把**数据集许可与引用**做回来，但**不恢复下载面**：
+>    `/docs/data/` 只说明「有哪些数据 / 许可 / 引用格式 / 字段口径」，数据真值在公开仓库里；
+>    数据按 CC BY 4.0、代码按 MIT 分开授权（见根目录 `LICENSE-DATA` 与 `LICENSE`）。
+> ③ `model-registry-gaps.json` **不发布**（双侧处置登记，只在 `scripts/data/` 里），线上取它一定 404，
+>    这是**有意不发布**，不是缺文件。
 
 四条 v3.0 才有的纪律（都有可失败断言盯着）：
 
@@ -55,6 +61,30 @@ v3.0（`v3.0-ai-deals-knowledge-base`）把站点从「优惠 + 套餐 + API 价
    （见「预渲染与 SEO/GEO」）。
 8. **不卖排序**。不收录付费推广位；如将来引入推广，必须带 `rel="sponsored"` 与显式标注，
    且排序、价格说明与推荐理由永不出售。
+
+## v1.8：两个答案页 + 别名收口 + 数据可引用（2026-10-26）
+
+`v1.8-seo-answer-pages` 是一轮**纯增长/SEO 收口**（不新增页面类型、不加功能、不换域名、不做外链）：
+
+1. **别名页信号修正**：`/need/student-only/`、`/need/free-api/`、`/need/dev-credits/` 从
+   `noindex,follow` + 自指 canonical 改成**可抓取 + canonical 指向正本 + 不进 sitemap**
+   （GitHub Pages 发不出 301，canonical 是唯一可用的权重归并信号）。契约见
+   [`docs/SCHEMA-v1.7.md`](docs/SCHEMA-v1.7.md) §5.1，判据在 `scripts/lib/seo.js`
+   （`alias-canonical` / `canonical-self` / `sitemap-policy`）。
+2. **五个意图页的 `<title>` / description 改成查询句式**（含「免费 / 价格 / 2026」与真实厂商名）：
+   `/free-api/`、`/need/free-model/`、`/need/edu-identity/`、`/plans/api/`、`/plans/coding/`。
+3. **两个答案页**：`/free-api/` 与 `/plans/api/` 各加一张「各平台门槛速查」表
+   （实名 / 限流 / 商用 / 地区，数字全部由数据现算）+「最后核对」日期 + 数据修正 issue 入口。
+   「不可商用」这一维本站数据没有结构化字段，页面如实显示「数据未收录」（不写成允许商用）。
+4. **数据可引用**：数据 CC BY 4.0 / 代码 MIT 分开授权；`/docs/data/` 页给出数据集清单
+   （schema / 记录数 / 数据日期现算）、引用格式与字段口径。
+5. **站点归属验证的注入机制**：GSC 的 `google-site-verification` 与百度的
+   `baidu-site-verification` 只在首页 `<head>` 的注入点生成，token 唯一出处是
+   `scripts/data/site-verification.json`（未配置就不输出，绝不生成假 token）。
+   操作清单见 [`docs/marketing/seo-verification-runbook.md`](docs/marketing/seo-verification-runbook.md)。
+
+实施报告与渠道取证：[`research/seo-growth-v1-report.md`](research/seo-growth-v1-report.md) ·
+[`research/seo-growth-v1-channel-evidence.md`](research/seo-growth-v1-channel-evidence.md)。
 
 ## 快速开始
 

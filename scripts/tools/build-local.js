@@ -120,6 +120,15 @@ const analytics = require('../lib/analytics');
 // 是 `lib/indexnow.js` —— 本文件与 `lib/published-assets.js` 都只调 `keyFileName()`，
 // 不许写第二份字面量（与 `FEED_FILES` 那条纪律同款，由 indexnow-selftest 的字面量扫描牙复核）。
 const indexnow = require('../lib/indexnow');
+// v1.8-seo-answer-pages：站点归属验证（GSC / 百度）的 token 唯一出处与注入实现。
+// 本文件只调用，不读第二份 token、不手写 meta 名 —— 与 indexnow / FEED_FILES 同一条纪律。
+const siteVerification = require('../lib/site-verification');
+// v1.8-seo-answer-pages：答案页「门槛速查」的判据层（三态聚合 / 限流 / 商用 / 地区 / 免费额度）。
+// 目录页（/free-api/）与 API 计费页（/plans/api/）共用这一份 —— 两个页面族各写一套口径必然分家。
+const thresholdSummary = require('../lib/threshold-summary');
+// v1.8-seo-answer-pages：`/docs/data/` 数据文档与引用页（部分反转 t4 的去数据暴露）。
+// 它**不发布数据文件**，只说明数据集许可 / 引用格式 / 字段口径（数据真值留在公开仓库）。
+const dataDocsPage = require('../lib/data-docs-page');
 
 /**
  * 套餐对比页的交互逻辑**源码**（逐字节内联进页面）。
@@ -308,6 +317,28 @@ const OFFERS_ARTIFACT = 'assets/data/offers.json';
 // 失效方式：改回从 feeds 取，等于把「站点常量」的出处留在随订阅层一起下架的那个文件里 ——
 // 正是这次搬家要避免的事。
 const { SITE_URL, SITE_NAME, SITE_DESCRIPTION, xmlEscape } = site;
+
+/**
+ * 仓库地址（纠错 issue 链接的**唯一出处**）—— 从 `index.html` 的 RENDER-CORE 里现读
+ * `const REPO_URL = '…'`，本文件**不写第二份 URL 字面量**（与 SITE_URL 同一条纪律：
+ * 站点级常量只有一个出处，改地址只改一处）。
+ *
+ * 为什么要这个：v1.8 的两个答案页（/free-api/、/plans/api/）都要求「报错入口」——
+ * 读者发现表格数字与官方页不一致时，最省事的落点是预填标题与正文的 GitHub Issue
+ * （站内详情页早就有 `reportUrl(deal)` 这个先例，只是它在浏览器 RENDER-CORE 里跑）。
+ * 构建期生成静态页面需要同一个仓库地址，因此从同一份源码里读。
+ */
+const REPO_URL = (() => {
+  const match = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8')
+    .match(/const REPO_URL = '([^']+)'/);
+  if (!match) throw new Error('index.html 里找不到 `const REPO_URL = …`（纠错入口的仓库地址唯一出处）');
+  return match[1];
+})();
+
+/** 预填标题的纠错 issue 链接（数据修正类，label 与详情页同源：data-fix） */
+function reportIssueUrl(topic) {
+  return `${REPO_URL}/issues/new?title=${encodeURIComponent(`[信息修正] ${topic}`)}&labels=data-fix`;
+}
 
 /* ------------------------------------------------------------------ */
 /* 页面级说明的**构建期意图清单**（notes-manifest-v1）                    */
@@ -764,7 +795,11 @@ const ROUTE_HREFS = [
   // 「唯一表单源：4 个读写方里没有第二份文件名 / MIME 字面量」）。
   // 这一步同时让下面「页脚路由链接」的**正向**断言自动要求每一种深度都出现
   // `href="<prefix>feed.xml"`：漏一层、页脚那枚链接被悄悄删掉，都会当场红。
-  ['__FEED_HREF__', feed.FEED_FILES[0][0]]
+  ['__FEED_HREF__', feed.FEED_FILES[0][0]],
+  // v1.8-seo-answer-pages：数据文档与引用页（/docs/data/）。它是「可引用数据集」这个钩子的
+  // 唯一站内入口，挂在页脚「按厂商 / 分类浏览」那一行末尾 —— 与 t4 删掉的「开放数据」入口
+  // 不是同一件事：这一页不发布数据文件，只给许可与引用格式。
+  ['__DATADOCS_HREF__', 'docs/data/']
 ];
 
 /**
@@ -2042,7 +2077,9 @@ ${plansCompareSource()}
     route: plansPage.PLANS_ROUTE,
     prefix: prefix,
     parts,
-    title: `${htmlEscape(plansPage.PLANS_HEADING)} · ${htmlEscape(SITE_NAME)}`,
+    // v1.8-seo-answer-pages：<title> 用查询句式（含「价格 / 2026」+ 厂商名），
+    // H1 / 面包屑 / JSON-LD 仍用短名 PLANS_HEADING。两者职责不同，不互相顶替。
+    title: `${htmlEscape(plansPage.PLANS_PAGE_TITLE)} · ${htmlEscape(SITE_NAME)}`,
     description: htmlEscape(plansPage.PLANS_DESCRIPTION),
     canonicalUrl: pageUrl,
     faviconHref: `${prefix}favicon.svg`,
@@ -2093,6 +2130,10 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
     providerTable,
     historyStore: context.apiPlanHistoryStore || null,
     dealLinks: context.dealLinks || null,
+    // v1.8-seo-answer-pages：门槛速查表的实名认证列由 deals join（api-plans 没有该字段），
+    // 以及表下的数据修正 issue 入口。两个字段不传时该表仍成立（实名列显示「数据未收录」）。
+    deals: context.deals || [],
+    reportUrl: context.reportUrl || '',
     prefix
   });
 
@@ -2101,7 +2142,8 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
     route: apiPlansPage.API_PLANS_ROUTE,
     prefix: prefix,
     parts,
-    title: `${htmlEscape(apiPlansPage.API_PLANS_HEADING)} · ${htmlEscape(SITE_NAME)}`,
+    // v1.8-seo-answer-pages：<title> 用查询句式（含「价格 / 2026」+ 厂商名），H1 / 面包屑仍用短名。
+    title: `${htmlEscape(apiPlansPage.API_PLANS_PAGE_TITLE)} · ${htmlEscape(SITE_NAME)}`,
     description: htmlEscape(apiPlansPage.API_PLANS_DESCRIPTION),
     canonicalUrl: pageUrl,
     faviconHref: `${prefix}favicon.svg`,
@@ -2124,6 +2166,19 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
   .ptable .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
   .ptable a { color: var(--brand); }
   .pvname { margin-left: 2px; }
+  /* v1.8-seo-answer-pages：/plans/api/ 的门槛速查表（答案页 2 的「先回答能不能用」层）。
+     刻意**不复用 .ptable**：.ptable 的 tbody tr 被产物验收按「价格行」逐行读取
+     （108 行 / 11 列），把汇总表混进去会改变那一层的读数。 */
+  .ttable-wrap { overflow-x: auto; }
+  .ttable { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; min-width: 720px; }
+  .ttable caption { text-align: left; color: var(--mut); font-size: var(--fs-sm); padding: 0 0 var(--s2); }
+  .ttable th, .ttable td { text-align: left; padding: 9px 11px; border-top: 1px solid var(--line); font-weight: 400; font-size: var(--fs-sm); vertical-align: top; }
+  .ttable thead th { border-top: 0; color: var(--mut); font-weight: 600; white-space: nowrap; }
+  .ttable tbody th { font-weight: 600; white-space: nowrap; }
+  .ttable small { display: block; color: var(--mut); font-weight: 400; font-size: 11.5px; margin-top: 2px; }
+  .answernote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s2); max-width: none; }
+  .ansfoot { color: var(--mut); font-size: var(--fs-sm); margin: var(--s2) 0 0; }
+  .ansfoot a { color: var(--brand); }
   /* 平台列里的 logo 用**首页那一套** class="lg"（图形来自 logos.css）：
      只把尺寸与那套"叠放"用的负外边距收掉，其余（圆角 / 描边 / 白底）保持品牌图形的既有观感。
      ⚠️ 这段文字在 JS 模板字符串里，所以**不许出现反引号**：[点号] + [lg] 那种写法会把模板提前截断，
@@ -2513,6 +2568,34 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
 }
 
 /**
+ * `/docs/data/` 数据文档与引用页的页面级样式（只在这一个路由上拼进 `<style>`）。
+ * 类名一律 `.dd-*`：刻意不复用 `.snote` / `.pnote` / `.vsnote`（三类说明容器各有
+ * notes-manifest 判据），也不复用 `.ctable`（那是目录页的表格原语）。
+ */
+const DATA_DOCS_CSS = `  /* v1.8-seo-answer-pages：/docs/data/（数据文档与引用页） */
+  .stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
+  .stop h1 { font-size: 19px; margin: 0; }
+  .stop .meta { color: var(--mut); font-size: var(--fs-sm); }
+  .dd-h2 { font-size: 15px; margin: var(--s4) 0 var(--s2); }
+  .dd-intro { color: var(--mut); font-size: var(--fs-sm); line-height: 1.75; margin: 0 0 var(--s2); max-width: none; }
+  .dd-p { color: var(--ink2); font-size: var(--fs-sm); line-height: 1.75; margin: 0 0 var(--s1); }
+  .dd-list { margin: 0 0 var(--s2); padding-left: 1.15em; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; max-width: none; }
+  .dd-list b { color: var(--ink2); }
+  .dd-list code, .dd-cite code { font-size: 12px; overflow-wrap: anywhere; }
+  .dd-cite { margin: 0 0 var(--s2); padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--card); color: var(--ink2); font-size: var(--fs-sm); overflow-wrap: anywhere; }
+  .dd-table-wrap { overflow-x: auto; }
+  .dd-table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+  .dd-table caption { text-align: left; color: var(--mut); font-size: var(--fs-sm); padding: 0 0 var(--s2); }
+  .dd-table th, .dd-table td { text-align: left; padding: 9px 11px; border-top: 1px solid var(--line); font-weight: 400; font-size: var(--fs-sm); vertical-align: top; }
+  .dd-table thead th { border-top: 0; color: var(--mut); font-weight: 600; white-space: nowrap; }
+  .dd-table tbody th { font-weight: 600; white-space: nowrap; }
+  .dd-table small { display: block; color: var(--mut); font-weight: 400; font-size: 11.5px; margin-top: 2px; }
+  .dd-table a { color: var(--brand); }
+  .dd-foot { color: var(--mut); font-size: var(--fs-sm); margin: var(--s3) 0 0; }
+  .dd-foot a { color: var(--brand); }
+`;
+
+/**
  * `/archive/` 与档案详情页的样式（只用首页已有的设计变量）。纯追加：只在这两种页面上拼进 `<style>`。
  */
 const ARCHIVE_PAGE_CSS = `  /* v3.0 Stage F：历史档案。 */
@@ -2608,8 +2691,15 @@ function vendorHrefFor(developer, providerTable, directoryPages) {
  */
 function renderDirectoryPage(spec, deals, indexHtml, context) {
   const prefix = '../'.repeat(spec.depth || 1);
-  /** 该页自身的绝对地址。按需求页在 `/need/<slug>/`，所以**不能**由 slug 直接拼站根地址 */
-  const pageUrl = `${SITE_URL}${spec.route || `${spec.slug}/`}`;
+  /**
+   * 该页**被索引/收口指向**的绝对地址。按需求页在 `/need/<slug>/`，所以**不能**由 slug 直接拼站根地址。
+   *
+   * v1.8-seo-answer-pages：别名页的 canonical 指向正本（`spec.canonicalRoute`），
+   * 页面自身仍从本站址提供服务；canonical 与 JSON-LD 的 `url` 都用正本地址。
+   * `canonicalRoute` 是唯一声明（`landing-aliases.json` → `landing.planLandingPages()`），
+   * 这里不写第二份「哪个别名指向谁」的判断。
+   */
+  const pageUrl = `${SITE_URL}${spec.canonicalRoute || spec.route || `${spec.slug}/`}`;
   const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS);
 
   // v1.7：页面类型。`hub` 列子页面、`alias` 是 noindex 的旧地址，其余列条目。
@@ -3023,6 +3113,78 @@ ${summary.map(row => `        <li data-summary-label="${htmlEscape(row.label)}" 
       </ul>`
     : '';
 
+  /**
+   * v1.8-seo-answer-pages：**答案页的门槛速查表**（只有 spec.thresholdSummary 的页面输出，
+   * 当前是 /free-api/）。回答顺序是「先总览、后逐条」：读者先看某个平台卡在哪道门槛，
+   * 再决定要不要往下读 45 行明细。
+   *
+   * 四个维度的口径**全部来自 `lib/threshold-summary.js`**（唯一实现），本函数只做分组与拼表：
+   *   · 实名认证 —— deals 的三态字段聚合（需要 n 条 / 不需要 m 条 / 尚未确认 k 条）；
+   *   · 限流     —— 按平台 join `api-plans.json` 的 limits / rate_limit，没有则「数据未收录」；
+   *   · 商用限制 —— 数据里没有「可否商用」字段 ⇒ 明写「不可商用：数据未收录」（不写成允许）；
+   *   · 地区     —— deals 的 chinaUsable / regionRestriction。
+   *
+   * ⚠️ 行上**不许**带 `data-item`：/free-api/ 的 ItemList 声明的是 45 条优惠，
+   * SEO 门禁按 `data-item` 数行（`itemlist-arity`）。这张汇总表的行不是优惠条目，
+   * 带上标记会把「声明 45 / 行 57」变成一条假红。
+   */
+  const thresholdTableHtml = (() => {
+    if (!spec.thresholdSummary) return '';
+    const apiPlanList = Array.isArray(context.apiPlans) ? context.apiPlans : [];
+    const providerTable = context.providerTable || null;
+    const providerKeyByName = new Map();
+    if (providerTable) {
+      for (const [key, entry] of Object.entries(providerTable)) {
+        if (entry && entry.name) providerKeyByName.set(entry.name, key);
+      }
+    }
+    const plansByProvider = new Map();
+    for (const plan of apiPlanList) {
+      const list = plansByProvider.get(plan.provider) || [];
+      list.push(plan);
+      plansByProvider.set(plan.provider, list);
+    }
+    const groups = new Map();
+    for (const deal of deals) {
+      const name = VENDOR_KEY_OF(deal) || deal.vendor || '未标注';
+      const list = groups.get(name) || [];
+      list.push(deal);
+      groups.set(name, list);
+    }
+    const rows = [...groups.entries()]
+      .sort((a, b) => (b[1].length - a[1].length) || String(a[0]).localeCompare(String(b[0]), 'zh'))
+      .map(([name, items]) => {
+        const providerKey = providerKeyByName.get(name);
+        const plansOfVendor = providerKey ? (plansByProvider.get(providerKey) || []) : [];
+        const identity = thresholdSummary.triSummary(items,
+          deal => deal.eligibilityDetail && deal.eligibilityDetail.identityVerificationRequired);
+        const cells = [
+          `<th scope="row">${htmlEscape(name)}<small>${items.length} 条免费 API</small></th>`,
+          htmlEscape(identity),
+          htmlEscape(thresholdSummary.limitsSummary(plansOfVendor)),
+          htmlEscape(thresholdSummary.useRestrictionsSummary(plansOfVendor)),
+          htmlEscape(thresholdSummary.dealRegionSummary(items))
+        ].map((cell, index) => (index === 0 ? cell : `<td>${cell}</td>`)).join('');
+        return `        <tr>${cells}</tr>`;
+      }).join('\n');
+    return `
+      <h2 class="ph2" id="thresholds">各平台门槛速查：实名、限流、商用与地区</h2>
+      <p class="answernote">按平台汇总本页条目，先回答「能不能真的用上」。<b>「数据未收录」</b>表示官方页没有给出、或本站还没有结构化收录该维度 —— <b>不等于</b>没有限制，也不等于允许商用。同一格的数字都能在 <code>deals.json</code> / <code>api-plans.json</code> 里找到出处；发现不一致请走表下的报错入口。</p>
+      <div class="ctable-wrap">
+      <p class="atable-caption">按平台汇总 · 共 ${groups.size} 个平台 · 最后核对 ${htmlEscape(String(context.lastmod || ''))}</p>
+      <table class="ctable atable">
+        <thead>
+          <tr><th scope="col">平台 / 条目数</th><th scope="col">实名认证</th><th scope="col">限流（官方公布）</th><th scope="col">商用 / 公平使用</th><th scope="col">中国大陆可用</th></tr>
+        </thead>
+        <tbody>
+${rows}
+        </tbody>
+      </table>
+      </div>
+      <p class="ansfoot">这一行的数字与官方页不一致？<a href="${htmlEscape(context.reportUrl || reportIssueUrl('免费 API 门槛速查'))}">提一个数据修正 issue</a>（预填标题与正文，不需要表单服务）。</p>
+`;
+  })();
+
   // 最近变化（v1.7）：判据不在模板里，`landing.topicChangesOf()` 已经把本页条目的事件挑出来。
   const topicHtml = context.topic
     ? context.renderCore.changesTopicHtml(context.topic, prefix)
@@ -3163,16 +3325,35 @@ ${summary.map(row => `        <li data-summary-label="${htmlEscape(row.label)}" 
   .ctable .none { color: var(--mut); }
   .ctable-wrap { overflow-x: auto; }
   @media (max-width: 760px) { .ctable th, .ctable td { padding: 8px 9px; } }
+  /* v1.8-seo-answer-pages：答案页的门槛速查表（只有 /free-api/ 输出）。
+     复用 .ctable 的表格原语（边框 / 圆角 / fixed 布局），只把列宽改回内容优先：
+     这张表 5 列、第二列起都是短句，固定 32%/14% 会把「实名 / 限流」压成多行。
+     标题 .ph2 与 .answernote / .ansfoot 是本页新增元素；三种都不属于 .snote / .pnote /
+     .vsnote 三类说明容器（它们各有维护口径与几何判据），不要复用那三个类名。 */
+  .ph2 { font-size: 15px; margin: var(--s4) 0 var(--s2); }
+  .answernote { color: var(--mut); font-size: var(--fs-sm); line-height: 1.7; margin: 0 0 var(--s2); max-width: none; }
+  .ansfoot { color: var(--mut); font-size: var(--fs-sm); margin: var(--s2) 0 0; }
+  .ansfoot a { color: var(--brand); }
+  .atable-caption { color: var(--mut); font-size: var(--fs-sm); margin: 0 0 var(--s2); }
+  .atable thead th:nth-child(1) { width: 18%; }
+  .atable thead th:nth-child(2) { width: 16%; }
+  .atable thead th:nth-child(3) { width: 20%; }
+  .atable thead th:nth-child(4) { width: 26%; }
+  .atable thead th:nth-child(5) { width: 20%; }
+  .atable tbody th small { font-weight: 400; }
 ${extraCss}`;
   return `${shell.docStart({
     kind,
     route: spec.route || `${spec.slug}/`,
     prefix,
     parts,
-    title: `${htmlEscape(spec.heading)} · ${htmlEscape(SITE_NAME)}`,
+    title: `${htmlEscape(spec.pageTitle || spec.heading)} · ${htmlEscape(SITE_NAME)}`,
     description: htmlEscape(spec.description),
     canonicalUrl: pageUrl,
-    robots: isAlias ? 'noindex, follow' : 'index, follow, max-image-preview:large',
+    // v1.8-seo-answer-pages：目录页家族（含别名页）**一律不 noindex**。
+    // 别名页改用 canonical 指向正本收口（见 pageUrl 的注释），sitemap 成员资格另由
+    // 「canonical 是否自指」判（`lib/seo.js` 的 sitemap-policy），不靠 robots。
+    robots: 'index, follow, max-image-preview:large',
     faviconHref: `${prefix}favicon.svg`,
     extraCss: pageCss,
     jsonLdHtml: jsonLdBlocks,
@@ -3184,9 +3365,11 @@ ${extraCss}`;
 
       <div class="cstop">
         <h1>${htmlEscape(spec.heading)}</h1>
-        <span class="meta">共 ${isHub ? childList.length : deals.length} ${isHub ? '个入口' : '条'} · 数据更新 ${htmlEscape(String(context.lastmod || ''))}</span>
+        <span class="meta">共 ${isHub ? childList.length : deals.length} ${isHub ? '个入口' : '条'} · 数据更新 ${htmlEscape(String(context.lastmod || ''))}${
+  spec.thresholdSummary ? ` · 最后核对 ${htmlEscape(String(context.lastmod || ''))}` : ''}</span>
       </div>
 ${summaryHtml}
+${thresholdTableHtml}
 
       <div class="ctable-wrap">
       <table class="ctable">
@@ -3600,7 +3783,7 @@ function assemble() {
     throw new Error(`落地页计划有问题（${PLAN.problems.length} 处）：\n${PLAN.problems.map(line => `  - ${line}`).join('\n')}`);
   }
   console.log(`  落地页计划: ${landing.statsOf(DIRECTORY_PAGES).indexable} 条可索引 + ` +
-    `${landing.statsOf(DIRECTORY_PAGES).noindex} 条别名`);
+    `${landing.statsOf(DIRECTORY_PAGES).canonicalAliases} 条 canonical 别名（不进 sitemap）`);
   for (const row of PLAN.skipped) {
     console.log(`    跳过 ${row.kind}/${row.key}${row.route ? ` (${row.route})` : ''}：` +
       `count=${row.count}${row.eventCount !== undefined ? ` events=${row.eventCount}` : ''} · ${row.reason}` +
@@ -3734,6 +3917,13 @@ function assemble() {
   html = html.split('__SITE_URL__').join(SITE_URL);
   console.log(`  站点地址替换: ${urlSlots} 处`);
 
+  // v1.8-seo-answer-pages：站点归属验证 meta（GSC / 百度搜索资源平台）。
+  // 注入块落在 `index.html` 的 `<head>` 里（`<!-- SEO:VERIFICATION:START/END -->`），
+  // token 的唯一出处是 `scripts/data/site-verification.json`。未配置时输出空块
+  // （只剩标记），**绝不生成占位 token** —— 假 token 的后果是「以为提交了、其实一直验不过」。
+  html = siteVerification.inject(html, siteVerification.readConfig());
+  console.log(`  站点归属验证: ${siteVerification.summary(siteVerification.readConfig())}`);
+
   // FAQ 结构化数据：以页面可见文案为唯一来源
   const faqItems = extractFaq(html);
   console.log(`  FAQ 解析: ${faqItems.length} 条`);
@@ -3823,6 +4013,14 @@ function assemble() {
     // 标题只是把页面名再念一遍（prompt §11）。
     const page = renderDirectoryPage(spec, matched, html, {
       lastmod, summary, topic, plan: PLAN, renderCore,
+      // v1.8-seo-answer-pages：答案页（/free-api/）的门槛速查表需要
+      //   · apiPlans  —— 按平台 join 限流 / 商用限制（deals 数据里没有这些字段）；
+      //   · providerTable —— 厂商规范名 → provider key 的唯一映射（不按名字猜）；
+      //   · reportUrl —— 预填标题的数据修正 issue 入口（与详情页同一类落点）。
+      // 非答案页不读这三个字段，产物与改动前逐字节相同。
+      apiPlans: apiPlansStore.plans,
+      providerTable,
+      reportUrl: reportIssueUrl(`${spec.heading} 数据`),
       // v3.0 Stage E：厂商页的资料区块（官方入口 / Coding 套餐 / API 计费 / 模型 / 最近变化）。
       //
       // `hasTopicChanges`：资料区块里那句「优惠变化见本页上方的「最近变化」块」必须只在
@@ -3854,6 +4052,9 @@ function assemble() {
       kind: spec.kind, slug: spec.slug, key: spec.key, title: spec.title || spec.label,
       count: pageCount, url: `${SITE_URL}${spec.route}`, route: spec.route,
       indexable: spec.indexable, aliasOf: spec.aliasOf || null, pinned: Boolean(spec.pinned),
+      // v1.8：别名页的 canonical 目标路由（唯一声明来自 landing 计划；这里只透传）。
+      // 产物自检按它核对页面上的 canonical，SEO 描述符也按它判「是否独立可索引」。
+      canonicalRoute: spec.canonicalRoute || null,
       itemIds: matched.map(deal => deal.id),
       childRoutes: spec.kind === 'hub' ? (spec.children || []).map(child => child.route) : [],
       // 钉住但跌破门槛的厂商页会照常生成，而它的 Feed 不会（Feed 门槛是另一道），
@@ -3880,7 +4081,7 @@ function assemble() {
   console.log(`  分类落地页: ${categoryPages.map(p => `/${p.route} ${p.count} 条`).join(' · ') || '（无）'}`);
   console.log(`  厂商落地页: ${vendorPages.map(p => `/${p.route} ${p.count} 条`).join(' · ') || '（无）'}`);
   console.log(`  枢纽页: ${hubPages.map(p => `/${p.route} ${p.count} 个入口`).join(' · ') || '（无）'}` +
-    ` · 别名页: ${aliasPages.length} 条（noindex，不进 sitemap）`);
+    ` · 别名页: ${aliasPages.length} 条（canonical 指向正本、不进 sitemap、不 noindex）`);
 
   // 变化雷达页（/changes/，v1.5）：与首页条带同一份 radar、同一套渲染函数。
   //
@@ -3962,9 +4163,10 @@ function assemble() {
     providerTable,
     apiPlanHistoryStore,
     dealLinks: dealLinksView,
-    // v3.0 Stage H4 当年给这一页写过一份**专属**订阅源（API 价格变化那一份）；t4 撤掉了它，
-    // v3.2 也没有请回来 —— 订阅声明面只开给首页与 `/changes/` 两个路由，这一页是 0 条，
-    // 由自检里的「订阅声明面」块统一对账（判据本体在 tools/verify-site.js）。
+    // v1.8-seo-answer-pages：答案页的「各平台门槛速查」需要优惠数据做实名 join
+    // （api-plans 本身没有实名认证字段），以及一个预填标题的报错入口。
+    deals: payload.deals,
+    reportUrl: reportIssueUrl('API 计费数据'),
   });
   notePage(apiPlansPage.API_PLANS_ROUTE, { kind: 'api-plans' });
   fs.writeFileSync(path.join(apiPlansDir, 'index.html'), apiPlansHtml, 'utf8');
@@ -4242,6 +4444,64 @@ function assemble() {
       ` · 页面 ${(indexHtml.length / 1024).toFixed(1)} KB）`);
   }
 
+  // ---- v1.8-seo-answer-pages：/docs/data/ 数据文档与引用页（**部分反转** t4 的去数据暴露）----
+  //
+  // t4 当年把「面向读者的数据文件 / JSON 暴露」整族下架（连同 /docs/data/ 与 data/index.json）。
+  // 本轮用户显式要求把**数据集许可与包装**做回来，范围刻意窄：
+  //   · 产物里仍然没有数据文件（published-assets 的逐路径登记制不变）；
+  //   · 数据真值留在公开仓库；这一页说明「有哪些数据 / 什么许可 / 怎么引用 / 字段口径」；
+  //   · 数字全部从真实文件现算（schemaVersion / count / updatedAt），不在页面里写死；
+  //   · 站点地址与仓库地址分别来自 SITE_URL 与 index.html 的 REPO_URL，本文件不写第二份 URL。
+  {
+    const docsRoute = dataDocsPage.DATA_DOCS_ROUTE;
+    const datasets = dataDocsPage.DATASETS.map(entry => {
+      const file = path.join(ROOT, entry.file);
+      if (!fs.existsSync(file)) throw new Error(`数据文档页：数据集 ${entry.file} 不存在（清单与真实文件必须一一对应）`);
+      const doc = JSON.parse(fs.readFileSync(file, 'utf8'));
+      if (doc[entry.schemaField] === undefined || doc[entry.countField] === undefined) {
+        throw new Error(`数据文档页：${entry.file} 缺 ${entry.schemaField} / ${entry.countField}（引用者需要这两个数）`);
+      }
+      return Object.assign({}, entry, {
+        schemaVersion: doc[entry.schemaField],
+        count: doc[entry.countField],
+        updatedAt: doc[entry.updatedAtField]
+      });
+    });
+    const historyLogs = dataDocsPage.HISTORY_LOGS.map(entry => {
+      const file = path.join(ROOT, entry.file);
+      if (!fs.existsSync(file)) throw new Error(`数据文档页：变化日志 ${entry.file} 不存在`);
+      const doc = JSON.parse(fs.readFileSync(file, 'utf8'));
+      return Object.assign({}, entry, {
+        startedAt: doc.startedAt,
+        count: Array.isArray(doc.events) ? doc.events.length : 0
+      });
+    });
+    const renderedDocs = dataDocsPage.renderDataDocsPage({
+      datasets,
+      historyLogs,
+      asOf: lastmod,
+      siteUrl: SITE_URL,
+      repoUrl: REPO_URL,
+      reportUrl: reportIssueUrl('数据文档与引用')
+    });
+    const docsHtml = renderStaticPage({
+      kind: 'data-docs',
+      route: docsRoute,
+      title: dataDocsPage.DATA_DOCS_HEADING,
+      description: dataDocsPage.DATA_DOCS_DESCRIPTION,
+      body: renderedDocs.body,
+      jsonLd: renderedDocs.jsonLd,
+      // /docs/data/ 是两层路由 ⇒ 前缀 '../../'（写死 '../' 会让页脚与面包屑全部 404）。
+      prefix: '../../',
+      extraCss: DATA_DOCS_CSS
+    }, html);
+    notePage(docsRoute, { kind: 'data-docs' });
+    fs.mkdirSync(path.join(OUT, docsRoute), { recursive: true });
+    fs.writeFileSync(path.join(OUT, docsRoute, 'index.html'), docsHtml, 'utf8');
+    console.log(`  数据文档页: /${docsRoute}（${datasets.length} 份数据集 · ${historyLogs.length} 份变化日志`
+      + ` · 数据日期 ${lastmod} · 页面 ${(docsHtml.length / 1024).toFixed(1)} KB）`);
+  }
+
   // ---- t4：数据出口子系统整体下架（原 v3.0 Stage G：Data Docs / 数据出口）----
   //
   // 这里原先是一整块数据出口设施：注册表形状断言、`buildManifestFromRegistry()`、
@@ -4274,25 +4534,29 @@ function assemble() {
   // v1.2 起分类页与按需求页共用这一段（同一个 directoryPages 列表），
   // 所以「新增一条路由忘了进 sitemap」在结构上不可能 —— 条数断言还会逐个对账。
   //
-  // v1.7 起：**只有可索引的页面进 sitemap**（别名页是 noindex，进 sitemap 等于自相矛盾），
+  // v1.7 起：**只有独立可索引的页面进 sitemap**（sitemap = 「请索引这些独立 URL」的声明）。
+  // v1.8-seo-answer-pages：别名页不再 noindex，改为 canonical 指向正本 ⇒ 它们**仍然不进 sitemap**
+  // ——成员资格判据从「不是 noindex」升级为「canonical 自指」。
   // 优先级按类型声明，而不是统统 0.9 —— 声明要与实际用途一致（这条口径与状态页 0.3、
   // 订阅中心 0.6 是同一条）。
   // v3.0：优先级不再手写第二张表 —— 它就是 `lib/page-kinds.js` 里的声明
   // （`sitemap.priority`），构建期与独立门禁读同一份。取值与 v1.7 起的表**逐字相同**
   // （collection/need/category 0.9 · vendor/hub 0.8），所以这次是纯收敛、不是改判据。
-  const directoryUrls = directoryPages
-    .filter(page => page.indexable)
+  const independentDirectoryPages = directoryPages.filter(page => page.indexable && !page.canonicalRoute);
+  const directoryUrls = independentDirectoryPages
     .map(page => `  <url>
     <loc>${page.url}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>${pageKinds.sitemapMeta(page.kind).changefreq}</changefreq>
     <priority>${pageKinds.sitemapMeta(page.kind).priority}</priority>
   </url>`).join('\n');
-  const sitemapEntries = [SITE_URL, ...directoryPages.filter(page => page.indexable).map(page => page.url),
+  const sitemapEntries = [SITE_URL, ...independentDirectoryPages.map(page => page.url),
     `${SITE_URL}status/`, `${SITE_URL}changes/`, `${SITE_URL}feeds/`, `${SITE_URL}${plansHubPage.PLANS_HUB_ROUTE}`,
     `${SITE_URL}${plansPage.PLANS_ROUTE}`,
     `${SITE_URL}${apiPlansPage.API_PLANS_ROUTE}`,
     `${SITE_URL}${apiCostPage.API_COST_ROUTE}`,
+    // v1.8-seo-answer-pages：数据文档与引用页（不进「落地页家族」，是独立固定路由）
+    `${SITE_URL}${dataDocsPage.DATA_DOCS_ROUTE}`,
     // v3.0 Stage D5/D6：模型索引无条件进 sitemap；详情页**只有过门槛的**才进
     // （未过门槛的不生成页面，进 sitemap 就是一条死链 —— §8 第 19 条牙）。
     `${SITE_URL}${modelsPage.MODELS_INDEX_ROUTE}`,
@@ -4388,6 +4652,14 @@ function assemble() {
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>`;
+  // v1.8-seo-answer-pages：/docs/data/ 数据文档与引用页。priority / changefreq 从
+  // `page-kinds.js` 的 data-docs 声明取（0.6 monthly —— 给要引用数据的人，不是找优惠的人）。
+  const dataDocsUrl = `  <url>
+    <loc>${SITE_URL}${dataDocsPage.DATA_DOCS_ROUTE}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>${pageKinds.sitemapMeta('data-docs').changefreq}</changefreq>
+    <priority>${pageKinds.sitemapMeta('data-docs').priority}</priority>
+  </url>`;
 
   fs.writeFileSync(path.join(OUT, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -4406,6 +4678,7 @@ ${archiveIndexUrl}
 ${plansUrl}
 ${apiPlansUrl}
 ${apiCostUrl}
+${dataDocsUrl}
 ${dealUrls}
 ${modelUrls}
 ${archiveDetailUrls}
@@ -7608,6 +7881,23 @@ function selfCheck(built) {
     }
   }
 
+  // ---- 站点归属验证 meta（v1.8-seo-answer-pages）----
+  // 配置了 token ⇒ 首页 head 里必须恰好出现一次；没配置 ⇒ 一次都不许出现。
+  // 两种方向都判，是因为「注入静默失效」与「假 token 上线」是两种不同的线上事故。
+  {
+    const homeHtml = fs.readFileSync(path.join(OUT, 'index.html'), 'utf8');
+    const config = siteVerification.readConfig();
+    const problems = [];
+    for (const key of siteVerification.PROVIDERS) {
+      const entry = config[key];
+      const count = homeHtml.split(`name="${entry.metaName}"`).length - 1;
+      if (entry.token && count !== 1) problems.push(`${entry.metaName} 应恰好出现 1 次（实得 ${count}）`);
+      if (!entry.token && count !== 0) problems.push(`${entry.metaName} 未配置 token 却出现在首页（${count} 次）`);
+    }
+    if (problems.length) fail(`站点归属验证 meta: ${problems.join('；')}`);
+    else console.log(`  ✓ 站点归属验证 meta: ${siteVerification.summary(config)}（首页 head 回读对账）`);
+  }
+
   const cardCount = (markup.match(/<article class="g /g) || []).length;
   if (cardCount < MIN_PRERENDERED_CARDS) {
     fail(`预渲染卡片 ${cardCount} 条 < ${MIN_PRERENDERED_CARDS}`);
@@ -7711,20 +8001,25 @@ function selfCheck(built) {
   //
   // 每一项都写成自述的：数字对不上时，报错信息里的分项就是排查路径。
   // v1.5：再加一项「变化雷达页」。v1.6：再加一项「订阅中心」。
-  // v1.7：sitemap 只收**可索引**的页面（别名页是 noindex，进 sitemap 等于自相矛盾），
+  // v1.7：sitemap 只收**独立可索引**的页面；v1.8 起别名页不再 noindex 而是 canonical 指向正本，
+  // 但它们**仍然不进 sitemap**（sitemap 是「请索引这些独立 URL」的声明）⇒ 这里按
+  // `independent`（可索引 && canonical 自指）过滤，条数口径与 sitemap 生成端同一份。
   // 而且条数不再手写公式 —— 直接与构建期生成的那份 `sitemapEntries` 逐条对账。
-  const indexableDirectories = built.directoryPages.filter(page => page.indexable);
+  const indexableDirectories = built.directoryPages.filter(page => page.indexable && !page.canonicalRoute);
   const expectedLocs = dealEntries.length + 1 /* 首页 */ + indexableDirectories.length + 1 /* 状态页 */
     + 1 /* 变化雷达页 */ + 1 /* 资料入口页 */ + 1 /* 套餐对比页 */ + 1 /* API 计费页 */ + 1 /* API 成本计算器 */
     + 1 /* 模型资料索引 */ + built.modelDetailCount /* 模型详情页 */
-    + 1 /* 档案索引 */ + built.archiveDetailCount /* 档案详情页 */;
+    + 1 /* 档案索引 */ + built.archiveDetailCount /* 档案详情页 */
+    + 1 /* 数据文档与引用页 */;
     // t4：公式里去掉「订阅中心 +1」与「数据文档页 +1」—— 那两页随订阅层与数据出口子系统下架。
+    // v1.8：数据文档页以**更窄的定位**回来（不发布数据文件，只给许可与引用），公式加回它。
   if (sitemapLocs.length !== expectedLocs) {
     fail(`sitemap ${sitemapLocs.length} 条 ≠ 首页 1 + 可索引落地页 ${indexableDirectories.length}` +
       `（分类页 ${built.collectionPages.length} + 按需求页/别名 ${built.needPages.length} 中可索引的` +
       ` + 分类落地页 ${built.categoryPages.length} + 厂商落地页 ${built.vendorPages.length}` +
       ` + 枢纽 ${built.hubPages.length}）+ 状态页 1 + 变化雷达页 1 + 资料入口页 1 + 套餐对比页 1 + API 计费页 1 + API 成本计算器 1` +
-      ` + 模型索引 1 + 模型详情页 ${built.modelDetailCount} + 档案索引 1 + 档案详情页 ${built.archiveDetailCount} + 详情页 ${dealEntries.length}`);
+      ` + 模型索引 1 + 模型详情页 ${built.modelDetailCount} + 档案索引 1 + 档案详情页 ${built.archiveDetailCount}` +
+      ` + 数据文档与引用页 1 + 详情页 ${dealEntries.length}`);
   } else {
     const notListed = dealEntries.filter(deal => !sitemapLocs.some(loc => loc.endsWith(`/deal/${encodeURIComponent(deal.id)}/`)));
     const directoriesNotListed = indexableDirectories.filter(page => !sitemapLocs.includes(page.url));
@@ -7753,11 +8048,11 @@ function selfCheck(built) {
     else if (!sitemapLocs.includes(`${SITE_URL}${apiPlansPage.API_PLANS_ROUTE}`)) fail(`sitemap 漏了 API 计费页 ${apiPlansPage.API_PLANS_ROUTE}`);
     else if (!sitemapLocs.includes(`${SITE_URL}${apiCostPage.API_COST_ROUTE}`)) fail(`sitemap 漏了 API 成本计算器 ${apiCostPage.API_COST_ROUTE}`);
     else console.log(`  ✓ sitemap: ${sitemapLocs.length} 条（首页 + ${built.collectionPages.length} 个分类页 + ` +
-      `${built.needPages.length} 条按需求/别名页中可索引的部分 + ${built.categoryPages.length} 个分类落地页 + ` +
+      `按需求页中独立可索引的部分 + ${built.categoryPages.length} 个分类落地页 + ` +
       `${built.vendorPages.length} 个厂商落地页 + ${built.hubPages.length} 个枢纽页 + 状态页 + 变化雷达页 + ` +
       `资料入口页 + 套餐对比页 + API 计费页 + 模型索引 + ${built.modelDetailCount} 个模型详情页 + ` +
       `档案索引 + ${built.archiveDetailCount} 个档案详情页 + ` +
-      `${dealEntries.length} 个详情页；${built.aliasPages.length} 条别名页已排除）`);
+      `${dealEntries.length} 个详情页；${built.aliasPages.length} 条别名页按 canonical 收口、不进 sitemap）`);
   }
 
   // 分类页：**逐条回读对账**，而不是「文件存在就算过」。
@@ -7819,10 +8114,16 @@ function selfCheck(built) {
         problems.push(`${page.route} 的详情页内链前缀应为 ${prefix}，实得 ${[...new Set(wrongPrefix)].join(' / ')}`);
       }
 
-      // ② 该有的元信息一个都不能少
-      if (!body.includes(`<link rel="canonical" href="${page.url}">`)) problems.push(`${page.route} canonical 不是自指`);
-      if (!page.indexable && !/name="robots"[^>]*noindex/.test(body)) problems.push(`${page.route} 是别名页却没有 noindex`);
+      // ② 该有的元信息一个都不能少（v1.8：canonical 的期望值由 `canonicalRoute` 决定 ——
+      // 别名页指向正本、其余自指；noindex 只允许出现在「策略判 noindex」的页面上，
+      // 而目录页家族今天一条都没有）。这两条与 `lib/seo.js` 的 canonical-self / robots-policy
+      // 同源不同实现：这里从**刚写下的字符串**回读，那边从**整站描述符**判。
+      const expectedCanonical = page.canonicalRoute ? `${SITE_URL}${page.canonicalRoute}` : page.url;
+      if (!body.includes(`<link rel="canonical" href="${expectedCanonical}">`)) {
+        problems.push(`${page.route} canonical 不是 ${expectedCanonical}${page.canonicalRoute ? '（别名应以正本为 canonical）' : '（自指）'}`);
+      }
       if (page.indexable && /name="robots"[^>]*noindex/.test(body)) problems.push(`${page.route} 可索引却带了 noindex`);
+      if (!page.indexable && !/name="robots"[^>]*noindex/.test(body)) problems.push(`${page.route} 是 noindex 页面却没有 noindex`);
       // t4 删掉了两条订阅声明断言（每页必须声明两个根 Feed / 有专属 Feed 的页面必须声明它）。
       // v3.2 的声明面**只开给两个路由**（首页与 `/changes/`），这一块扫的是目录页 —— 它们仍然是 0 条，
       // 由自检里的「订阅声明面」块统一对账（扫描面 = 全部 .html；判据本体在 `tools/verify-site.js`）。
@@ -7877,7 +8178,11 @@ function selfCheck(built) {
       // ⚠️ 先把 `<script>` 摘掉再取 tbody（本文件自己的纪律：数标记先摘 script）——
       //    不摘的话，将来某个内联脚本里出现 `<tbody>…</tbody>` 就会让这条断言永远为真。
       const bodyNoScript = body.replace(/<script[\s\S]*?<\/script>/gi, '');
-      const tbody = (bodyNoScript.match(/<tbody>([\s\S]*?)<\/tbody>/) || [])[1] || '';
+      // v1.8-seo-answer-pages：/free-api/ 的正文里现在有**两张**表（门槛速查 + 逐条明细），
+      // 主表（含 data-item 行与详情链接）始终在最后 ⇒ 取最后一个 <tbody>，而不是第一个。
+      // 只取第一个会把汇总表当成主表，报出「一个详情页链接都没有」这种假红。
+      const tbodyMatches = [...bodyNoScript.matchAll(/<tbody>([\s\S]*?)<\/tbody>/g)];
+      const tbody = tbodyMatches.length ? tbodyMatches[tbodyMatches.length - 1][1] : '';
       if (page.count > 0 && page.kind === 'hub' && !tbody.includes(`href="${prefix}`)) {
         problems.push(`${page.route} <tbody> 里一个子页链接都没有（表格没渲染出来）`);
       }
@@ -8247,6 +8552,14 @@ function selfCheck(built) {
       readPage(`${apiCostPage.API_COST_ROUTE}`, {
         kind: 'tool',
         expectItemList: false
+      }),
+      // v1.8-seo-answer-pages：/docs/data/ 数据文档与引用页（固定路由、无 ItemList）。
+      // 它的页面族/布局/下限由 `page-kinds.js` 的 data-docs 声明；这里只告诉 SEO 规则层
+      // 「它是一条独立可索引页面」（canonical 自指 + 进 sitemap）。
+      readPage(`${dataDocsPage.DATA_DOCS_ROUTE}`, {
+        kind: 'data-docs',
+        expectItemList: false,
+        count: 0
       })
     ].filter(Boolean);
     const dealDescriptors = dealEntries.map(deal => readPage(`deal/${encodeURIComponent(deal.id)}/`, {
@@ -8273,6 +8586,9 @@ function selfCheck(built) {
     const directoryDescriptors = built.directoryPages.map(page => readPage(page.route, {
       kind: page.kind,
       indexable: page.indexable,
+      // v1.8：canonical 目标（别名页 = 正本；其余 = 自指）。规则层据此判
+      // 「独立可索引」与 sitemap 成员资格，并核对页面上的 canonical 是否指向它。
+      canonicalRoute: page.canonicalRoute,
       inSitemap: sitemapSet.has(page.route),
       itemIds: page.itemIds,
       childRoutes: page.childRoutes,
@@ -8330,7 +8646,8 @@ function selfCheck(built) {
     } else {
       const s = result.stats;
       console.log(`  ✓ SEO 安全门禁: ${seo.PROBLEM_CODES.length} 个检查码 × ${s.pages} 个页面全过` +
-        `（可索引 ${s.indexable} · 别名 ${s.noindex} · 详情页 ${s.dealPages} · 落地页 ${s.landingPages} · ` +
+        `（可索引 ${s.indexable} · noindex ${s.noindex} · canonical 别名 ${s.canonicalAliases} · ` +
+        `详情页 ${s.dealPages} · 落地页 ${s.landingPages} · ` +
         `厂商页 ${s.vendorPages} · 分类页 ${s.categoryPages} · sitemap ${s.sitemapEntries} · ` +
         `孤儿 ${s.orphans} · 重复 canonical ${s.duplicateCanonical} · 无效内链 ${s.invalidLinks}）`);
     }
