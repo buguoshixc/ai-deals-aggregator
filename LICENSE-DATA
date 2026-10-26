@@ -1,0 +1,45 @@
+# 数据许可 —— CC BY 4.0（与代码的 MIT 许可分开）
+
+本仓库中的**数据文件**按 **知识共享 署名 4.0 国际许可协议（Creative Commons Attribution
+4.0 International，CC BY 4.0）** 发布。许可协议全文：
+<https://creativecommons.org/licenses/by/4.0/legalcode>（中文摘要：
+<https://creativecommons.org/licenses/by/4.0/deed.zh>）。
+
+> 代码（`scripts/**`、页面模板、构建与测试脚本）**不**适用本许可，按仓库根的 `LICENSE`
+> （MIT）发布。两套许可刻意分开：引用数据的人只需要遵守 CC BY 4.0，复用代码的人遵守 MIT。
+
+## 覆盖范围（哪些文件算「数据」）
+
+- `deals.json` —— 优惠条目（含资格门槛、福利类型、地区可用性、来源与引文）；
+- `plans.json` —— AI Coding 套餐数据；
+- `api-plans.json` —— API / Token 计费数据；
+- `models.json` —— 模型身份索引；
+- `scripts/data/deal-history.json`、`scripts/data/plan-history.json`、
+  `scripts/data/api-plan-history.json` —— 三份变化日志（一次性基线 + 追加事件）；
+- `model-registry-links.json`、`scripts/data/deal-plan-links.json` —— 显式关系层。
+
+页面渲染出的 HTML 属于本站的**呈现**；其中的事实性内容来自上述数据，引用时按下方规则署名即可。
+
+## 署名规则（CC BY 4.0 的「BY」）
+
+引用或再分发上述数据时，请注明：
+
+1. **来源**：「AI 优惠聚合器」；
+2. **数据日期**：所引用数据文件里的 `updatedAt`（历史日志用 `startedAt` 与事件日期）；
+3. **改动说明**（如有）：注明你做过筛选、聚合或字段变换；
+4. 如方便，附上本站给出的引用格式（见站内 `/docs/data/` 页），方便他人复核原始口径。
+
+> 数据日期是**我们最后一次观测 / 核对的时间**，不是厂商承诺不变的日期；
+> 事实本身（价格、额度、门槛）以厂商官方页面为准。
+
+## 不属于本许可的内容
+
+- 厂商名称、商标与 logo：归各厂商所有，本仓库只作来源署名与识别用途；
+- 厂商官方页面上的文案原文：版权归各厂商，本仓库只在证据字段里做**最小必要摘录**
+  （`quote` + `sourceUrl` + `capturedAt`），不构成转载授权；
+- 页面视觉设计与品牌元素：代码许可（MIT）覆盖实现，商标与品牌识别不属于数据许可范围。
+
+## 免责
+
+数据按「现状」提供，不附带任何明示或默示担保。额度、价格与资格政策随时可能变化；
+**下单 / 开通 / 使用前请以厂商官方页面为准**。本仓库不构成购买建议。

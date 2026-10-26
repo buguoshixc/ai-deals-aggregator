@@ -97,6 +97,9 @@ const FEED_DECLARABLE_ROUTES = ['', 'changes/'];
 // 站点常量（`SITE_URL`）的**唯一出处** = `lib/site.js`：声明制要把绝对 `href` 解析回站根相对路径，
 // 不在这里写第二份生产域名（写死的话，换域名时这条判据会静默判错页 —— 而它恰恰是订阅入口的守卫）。
 const { SITE_URL } = require('../lib/site');
+// v1.8-seo-answer-pages：§17 的 `/need/*/` 逐页检查要按 `landing-aliases.json` 判
+// 「这一页该自指 canonical 还是指向正本」—— 不写死哪三条是别名。
+const landing = require('../lib/landing');
 
 /**
  * 订阅产物登记表 `FEED_FILES` 的**唯一读取点**（唯一出处 = `scripts/lib/feed.js` 的导出）。
@@ -3023,10 +3026,15 @@ function noJsControlExemptionFor(route) {
       // t6：判据走顶部共享实现（双侧：带 type 的 0 条 + 剩下的必须是 hreflang 语言声明）。
       const needSubProblem = subscriptionDeclarationProblem(info.alternates,
         { route: `need/${slug}/`, dir: DIR });
-      check(`/need/${slug}/ canonical 自指 + 不再声明任何订阅源 + 三段 JSON-LD`,
-        info.canonical.endsWith(`/need/${slug}/`) && needSubProblem === null &&
+      // v1.8-seo-answer-pages：三条别名页不再自指 canonical，改为指向正本（不再 noindex 收口）。
+      // 这里按 `landing-aliases.json` 现场判「该自指还是该指向正本」，不写死哪三条是别名。
+      const aliasRow = landing.loadAliases()[`need/${slug}/`] || null;
+      const aliasTarget = aliasRow ? aliasRow.target : null;
+      const expectedCanonicalSuffix = aliasTarget ? `/${aliasTarget}` : `/need/${slug}/`;
+      check(`/need/${slug}/ canonical ${aliasTarget ? '指向正本' : '自指'} + 不再声明任何订阅源 + 三段 JSON-LD`,
+        info.canonical.endsWith(expectedCanonicalSuffix) && needSubProblem === null &&
         JSON.stringify(info.ldTypes.slice().sort()) === JSON.stringify(['BreadcrumbList', 'CollectionPage', 'ItemList']),
-        `${info.canonical} · ${needSubProblem || `订阅声明 0 条（alternate 合计 ${info.alternates.length} 条，全部是 hreflang）`}`
+        `${info.canonical}（期望以 ${expectedCanonicalSuffix} 结尾） · ${needSubProblem || `订阅声明 0 条（alternate 合计 ${info.alternates.length} 条，全部是 hreflang）`}`
         + ` · JSON-LD [${info.ldTypes.join(', ')}]`);
       check(`/need/${slug}/ 有「为什么在这一页」一列且写了依据`,
         info.headers.includes('为什么在这一页') && info.bodyHasEvidence,
@@ -4821,12 +4829,11 @@ function noJsControlExemptionFor(route) {
       { route: 'vendor/zhipu/', kind: 'vendor', label: '厂商落地页' },
       { route: 'category/', kind: 'hub', label: '分类枢纽页' },
       { route: 'vendor/', kind: 'hub', label: '厂商枢纽页' },
-      // 别名页样本：本轮（`secondary-page-residue-v1`）由 `need/student-only/` 换成
-      // `need/free-api/`。**不是为了换而换**：本节的断言全是「别名这条路由在真浏览器里的
-      // 索引策略 / canonical / 行数对账」，三条别名路由逐条等价，换成哪一条都不改变覆盖面；
-      // 换的目的是让 `need/student-only/` 这个字面量在换壳后**不再出现**（换壳记录在
-      // `WIDE_MUTATION_TARGETS` 那一段注释里，那里的字面量是有意的历史记录）。
-      { route: 'need/free-api/', kind: 'alias', label: '别名页' }
+      // 别名页样本：v1.8-seo-answer-pages 起别名页**不再 noindex**，改为可抓取 +
+      // canonical 指向正本 + 不进 sitemap（GitHub Pages 发不出 301，canonical 是唯一归并信号）。
+      // 本节因此对它断言的是「canonical 指向正本、robots 不含 noindex、sitemap 里没有它」，
+      // 而不是旧的「robots 是 noindex」。
+      { route: 'need/free-api/', kind: 'alias', label: '别名页', canonicalRoute: 'free-api/', inSitemap: false }
     ];
     for (const sample of samples) {
       const errorsBefore = errors.length;
@@ -4855,20 +4862,21 @@ function noJsControlExemptionFor(route) {
           text: document.body ? document.body.innerText.replace(/\s+/g, ' ').trim().length : 0
         };
       });
-      const wantIndexable = sample.kind !== 'alias';
+      const expectedCanonicalRoute = sample.canonicalRoute || sample.route;
+      const wantInSitemap = sample.inSitemap !== undefined ? sample.inSitemap : true;
       check(`${sample.label} /${sample.route} 打开且只有一个 h1`,
         info.h1 === 1 && info.text > 400, `h1=${info.h1} · 正文 ${info.text} 字 · 「${info.title.slice(0, 20)}」`);
-      check(`${sample.label} /${sample.route} canonical 自指`,
-        info.canonicalPath.endsWith(`/${sample.route}`), info.canonical);
+      check(`${sample.label} /${sample.route} canonical 指向${sample.canonicalRoute ? '正本' : '自指'}`,
+        info.canonicalPath.endsWith(`/${expectedCanonicalRoute}`), info.canonical);
       check(`${sample.label} /${sample.route} ItemList 声明数 == 可见行数`,
         info.declared === info.declaredItems && info.declared === info.rows,
         `声明 ${info.declared} / 元素 ${info.declaredItems} / 行 ${info.rows}`);
-      check(`${sample.label} /${sample.route} robots 与索引策略一致`,
-        /noindex/.test(info.robots) !== wantIndexable, info.robots);
+      check(`${sample.label} /${sample.route} robots 不含 noindex（v1.8：别名页改 canonical 收口）`,
+        !/noindex/.test(info.robots), info.robots);
       if (fs.existsSync(sitemapFile)) {
         const inSitemap = sitemapText.includes(`<loc>`) && sitemapText.split('<loc>').some(chunk => chunk.startsWith(`https://buguoshixc.github.io/ai-deals-aggregator/${sample.route}`));
         check(`${sample.label} /${sample.route} 的 sitemap 成员资格与索引策略一致`,
-          inSitemap === wantIndexable, `sitemap ${inSitemap ? '有' : '无'}`);
+          inSitemap === wantInSitemap, `sitemap ${inSitemap ? '有' : '无'}（期望 ${wantInSitemap ? '有' : '无'}）`);
       }
       if (sample.kind === 'category' || sample.kind === 'vendor') {
         const parent = sample.kind === 'category' ? 'category/' : 'vendor/';
@@ -6586,11 +6594,13 @@ function noJsControlExemptionFor(route) {
       check('/plans/ 的计数与仓库根数据逐个对账（套餐数 / 计费记录 / 模型计价条目）',
         summaryMatches, JSON.stringify(hubTruth));
     }
-    // t5 改写：原来这一条还要求页面互链「数据文档」（`/docs/data/`）—— 数据出口整族下架，
-    // 那两个字面量不再允许出现在读者面上，所以判据从「含三个词」变成「含前两个、且**不含**第三个」。
-    // 这不是放宽：旧判据对「哪天数据文档的入口又溜回来」本来也无感，新判据正好补上那一半。
-    check('/plans/ 互链到模型资料 / 历史档案，且不再出现「数据文档」入口（枢纽页互链）',
-      data.text.includes('模型资料索引') && data.text.includes('历史档案') && !data.text.includes('数据文档'));
+    // v1.8-seo-answer-pages：数据文档页以**更窄的定位**回归（不发布数据文件，只给许可与引用；
+    // 页脚入口文案是「数据与引用」）。旧的「页面不许出现『数据文档』入口」判据随之改写：
+    // 仍然禁止旧 Manifest / 下载面回流（`data/index.json`），但允许新的引用入口存在 ——
+    // 入口文案与路由由构建期页脚片段统一给出（唯一出处是 index.html + ROUTE_HREFS）。
+    check('/plans/ 互链到模型资料 / 历史档案，且有「数据与引用」入口、旧数据下载面不回流（枢纽页互链）',
+      data.text.includes('模型资料索引') && data.text.includes('历史档案')
+      && data.text.includes('数据与引用') && !data.text.includes('data/index.json'));
   }
 
   /* ------------------------------------------------------------------ */

@@ -7,6 +7,13 @@
   <meta name="description" content="聚合国内外 AI 大模型的真实优惠：新用户免费额度、免费模型、学生/教师/非营利折扣、限时促销。全部指向厂商官方页，数据每日自动更新并校验。">
   <meta name="keywords" content="AI优惠,大模型免费额度,API折扣,AI打折,学生优惠,免费试用">
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+  <!-- SEO:VERIFICATION:START -->
+  <!-- 站点归属验证 meta（Google Search Console / 百度搜索资源平台）的注入块。
+       token 的唯一出处是 scripts/data/site-verification.json（由站点主账号后台生成）；
+       构建期按配置在这里生成 <meta name="…-site-verification" content="…">，
+       未配置时整块不输出 —— 这里**不许**出现任何占位 token 或第二份 token 字面量。
+       操作清单（含 10 个重点 URL 与第 3/6 周观测判据）见 docs/marketing/seo-verification-runbook.md。 -->
+  <!-- SEO:VERIFICATION:END -->
   <!-- 双主题声明：亮色为默认，暗色跟随系统或在页面上手动指定（见 <html data-theme>）。
        依据：vercel 是同类标杆里唯一显式声明双主题的站（color-scheme="dark light"）。 -->
   <meta name="color-scheme" content="light dark">
@@ -1515,7 +1522,7 @@
            （v1.5 的密度账）。厂商名单由构建期按落地页计划注入，源码里不留第二份清单。
            v2.1：套餐对比页也挂在这一行末尾 —— 它与「按厂商 / 分类浏览」是同一类东西
            （长期在售的产品能力），而不是「今天的优惠」。 -->
-      <p class="catnav" aria-label="按厂商、分类与套餐浏览">按厂商 / 分类浏览：<a href="__VENDOR_HREF__">厂商优惠</a> · <a href="__CATEGORY_HREF__">分类优惠</a> · <a href="__MODELS_HREF__">模型资料</a> · <a href="__PLANSHUB_HREF__">套餐与 API 计费</a> · <a href="__ARCHIVE_HREF__">历史档案</a> · <a href="__PLANS_HREF__">套餐对比</a> · <a href="__APIPLAN_HREF__">API 计费对比</a> · <a href="__APICOST_HREF__">API 成本计算器</a><!--PRERENDER:vendorline--></p>
+      <p class="catnav" aria-label="按厂商、分类与套餐浏览">按厂商 / 分类浏览：<a href="__VENDOR_HREF__">厂商优惠</a> · <a href="__CATEGORY_HREF__">分类优惠</a> · <a href="__MODELS_HREF__">模型资料</a> · <a href="__PLANSHUB_HREF__">套餐与 API 计费</a> · <a href="__ARCHIVE_HREF__">历史档案</a> · <a href="__PLANS_HREF__">套餐对比</a> · <a href="__APIPLAN_HREF__">API 计费对比</a> · <a href="__APICOST_HREF__">API 成本计算器</a> · <a href="__DATADOCS_HREF__">数据与引用</a><!--PRERENDER:vendorline--></p>
       <!-- ⚠️ t4：页脚的三枚入口在这一轮里删干净了；同一行末尾的 vendorline 预渲染标记必须留着 ——
            它不是链接，而是构建期注入点（厂商名单由 replaceMarker() 灌进来），删了就抛
            「index.html 缺少预渲染标记」。配套删掉的还有：

@@ -379,6 +379,34 @@
         "description": "An endless AI-generated TV channel steered by live chat votes."
       },
       "description": "一个由直播间投票实时操控、永不结束的 AI 生成电视频道。"
+    },
+    "5791cccec315": {
+      "_title": "ProposAI",
+      "src": {
+        "description": "AI tool that drafts tender responses from your evidence library."
+      },
+      "description": "一款 AI 工具：基于你的证据资料库起草投标应答文档。"
+    },
+    "5e3897face03": {
+      "_title": "Arena AI",
+      "src": {
+        "description": "Compare AI models side-by-side via blind voting and leaderboard."
+      },
+      "description": "通过盲测投票与排行榜，把多个 AI 模型放在一起对比。"
+    },
+    "2608e4a555a7": {
+      "_title": "Atypica AI",
+      "src": {
+        "description": "Simulates consumer responses to business decisions using AI personas."
+      },
+      "description": "用 AI 人设模拟消费者对商业决策的反应。"
+    },
+    "60317b771abf": {
+      "_title": "AutoPod",
+      "src": {
+        "description": "A set of plugins for Adobe Premiere Pro to automate editing videos, podcasts and show production."
+      },
+      "description": "一套 Adobe Premiere Pro 插件，用于自动化剪辑视频、播客与节目制作。"
     }
   }
 }

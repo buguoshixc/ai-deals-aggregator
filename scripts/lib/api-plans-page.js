@@ -30,6 +30,10 @@
 const apiSchema = require('./api-plan-schema');
 const providersLib = require('./providers');
 const plansPage = require('./plans-page');
+// v1.8-seo-answer-pages：答案页「门槛速查」的判据层（与 /free-api/ 共用同一份实现）。
+// 本页的限流 / 商用口径来自 api-plans 的 limits / restrictions；实名认证从 deals join
+// （api-plans 数据里没有这一维），join 键走 providers.json 的归一表，不按名字猜。
+const thresholdSummary = require('./threshold-summary');
 
 /**
  * 说明登记（notes-manifest-residual-v1）：`.snote` 构造点不再直接写进页面 —— 每个构造点在
@@ -47,8 +51,14 @@ const noteIn = source => {
 
 const API_PLANS_ROUTE = 'plans/api/';
 const API_PLANS_HEADING = 'API / Token 计费对比';
-const API_PLANS_DESCRIPTION = '把各平台按量计费（API / Token）的官方价格放在一张表里比：'
-  + '输入价、输出价、缓存命中价、其他计费维度（缓存写入 / 推理 / 非 token 计费）、免费额度与 credits。'
+/**
+ * v1.8-seo-answer-pages：`<title>` 专用查询句式标题（含「价格 / 2026」与真实厂商名）。
+ * `API_PLANS_HEADING` 仍是 H1 / 面包屑 / JSON-LD 的短名 —— 两者职责不同，不互相顶替。
+ * 厂商名必须来自本页真实收得到的平台（DeepSeek / 智谱 / 阿里云百炼都在 24 条计费记录里）。
+ */
+const API_PLANS_PAGE_TITLE = 'API 价格对比 2026：DeepSeek、智谱、阿里云百炼每百万 Token 单价';
+const API_PLANS_DESCRIPTION = '2026 年各平台 API 按量计费价格对比：DeepSeek、智谱、阿里云百炼、'
+  + 'Anthropic、OpenAI 等 21 家平台的输入价、输出价、缓存命中价、免费额度与官方公布的限流口径。'
   + '只列事实，不排名、不评分、不替读者判断值不值。';
 
 const UNKNOWN_TEXT = plansPage.UNKNOWN_TEXT;
@@ -620,6 +630,74 @@ function shortValue(value) {
  * @param {object[]} plans   `api-plans.json` 的 `plans`（规范序）
  * @param {object}   opts    { providerTable, prefix }
  */
+/**
+ * v1.8-seo-answer-pages：`/plans/api/` 的「各平台门槛速查」表。
+ *
+ * 为什么放在价格表**之前**：价格表回答「多少钱」，但读者真实的第一问是「能不能开通 / 要不要
+ * 实名 / 有没有限流 / 能不能商用」。先给答案（按平台一行），再给 108 行逐模型单价 ——
+ * 这在 2.5 的页面结构里原本缺的就是这一层。
+ *
+ * 数据来源（每一格都能回查）：
+ *   · 免费额度 / 限流 / 商用与公平使用 / 地区：`api-plans.json` 的 `freeTier` / `limits` /
+ *     `restrictions` / `region`；
+ *   · 实名认证：`deals.json` 的 `eligibilityDetail.identityVerificationRequired`，按
+ *     `providers.json` 归一后的 provider key join（**同一家**才计数）；
+ *   · 「不可商用」在本站数据里没有结构化字段 ⇒ 明写「数据未收录」（见 threshold-summary.js 的注释）。
+ *
+ * ⚠️ 行上**不许**带 `data-item`：价格表的 ItemList 声明的是 108 个模型计价条目，
+ * `seo.js` 的 `itemlist-arity` 按 `data-item` 数行；汇总表带上标记会变成「声明 108 / 行 130」。
+ *
+ * @param {object[]} plans `api-plans.json` 的 plans
+ * @param {object} opts `{ providerTable, deals, reportUrl, updatedAt }`
+ * @returns {string}
+ */
+function providerThresholdTableHtml(plans, opts = {}) {
+  const list = Array.isArray(plans) ? plans : [];
+  if (!list.length) return '';
+  const providerTable = opts.providerTable || null;
+  const deals = Array.isArray(opts.deals) ? opts.deals : [];
+  const updatedAt = escapeHtml(String(opts.updatedAt || ''));
+  const providers = [...new Set(list.map(plan => plan.provider))];
+  const dealsOf = provider => deals.filter(deal => {
+    const resolved = providersLib.resolveProvider(String(deal.vendor || ''), providerTable);
+    return Boolean(resolved && resolved.key === provider);
+  });
+  const rows = providers.map(provider => {
+    const records = list.filter(plan => plan.provider === provider);
+    const vendorDeals = dealsOf(provider);
+    const lastSeen = records.map(plan => plan.lastSeen).filter(Boolean).sort().pop() || UNKNOWN_TEXT;
+    const identity = thresholdSummary.triSummary(vendorDeals,
+      deal => deal.eligibilityDetail && deal.eligibilityDetail.identityVerificationRequired);
+    const cells = [
+      `<th scope="row">${escapeHtml(providerNameOf(provider, providerTable))}<small>${String(provider)}</small></th>`,
+      `${records.length} 条`,
+      thresholdSummary.freeTierSummary(records),
+      identity,
+      thresholdSummary.limitsSummary(records),
+      thresholdSummary.useRestrictionsSummary(records),
+      thresholdSummary.planRegionSummary(records),
+      escapeHtml(lastSeen)
+    ].map((cell, index) => (index === 0 ? cell : `<td>${escapeHtml(cell)}</td>`)).join('');
+    return `        <tr>${cells}</tr>`;
+  }).join('\n');
+  const reportUrl = opts.reportUrl || '';
+  return `
+      <h2 class="ph2" id="provider-thresholds">各平台门槛速查：实名、限流、商用与地区</h2>
+      <p class="answernote">先回答「能不能开通、卡在哪」，再往下看逐模型单价。<b>「数据未收录」</b>表示官方页没有给出、或本站还没有结构化收录该维度 —— <b>不等于</b>没有限制，也不等于允许商用。实名认证一列来自本站优惠条目（<code>deals.json</code>）的资格字段；其余来自 <code>api-plans.json</code>。</p>
+      <div class="ttable-wrap">
+      <table class="ttable">
+        <caption>按平台汇总 · 共 ${providers.length} 个平台 · 最后核对 ${updatedAt}</caption>
+        <thead>
+          <tr><th scope="col">平台</th><th scope="col">计费记录</th><th scope="col">免费额度</th><th scope="col">实名认证</th><th scope="col">限流（官方公布）</th><th scope="col">商用 / 公平使用</th><th scope="col">地区</th><th scope="col">最近核对</th></tr>
+        </thead>
+        <tbody>
+${rows}
+        </tbody>
+      </table>
+      </div>
+${reportUrl ? `      <p class="ansfoot">这一行的数字与官方页不一致？<a href="${escapeHtml(reportUrl)}">提一个数据修正 issue</a>（预填标题与正文，不需要表单服务）。</p>\n` : ''}`;
+}
+
 function apiPlansPageBody(plans, opts = {}) {
   const prefix = opts.prefix || '';
   const providerTable = opts.providerTable || null;
@@ -634,7 +712,7 @@ function apiPlansPageBody(plans, opts = {}) {
 
       <div class="stop">
         <h1>${escapeHtml(API_PLANS_HEADING)}</h1>
-        <span class="meta">${plans.length} 条计费记录 · ${providers.length} 个平台 · ${rows.length} 个模型计价条目 · 最近核对 ${escapeHtml(updatedAt)}</span>
+        <span class="meta">${plans.length} 条计费记录 · ${providers.length} 个平台 · ${rows.length} 个模型计价条目 · 最后核对 ${escapeHtml(updatedAt)}</span>
       </div>
 
       ${noteIn(opts)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">${escapeHtml(API_PLANS_DESCRIPTION)}</p>`)}
@@ -643,6 +721,8 @@ function apiPlansPageBody(plans, opts = {}) {
       <ul class="plist">
 ${notes}
       </ul>
+
+${providerThresholdTableHtml(plans, { ...opts, updatedAt })}
 
       <div class="ptable-wrap">
       <table class="ptable">
@@ -793,8 +873,10 @@ function assertPageHonesty(html, plans, opts = {}) {
   }
   if (!html.includes('口径与说明')) problems.push('缺少口径与说明段落');
 
-  // 表头列数
-  const headHtml = (html.match(/<thead>[\s\S]*?<\/thead>/) || [''])[0];
+  // 表头列数（v1.8：页面在价格表之前新增了「各平台门槛速查」表，它有自己的 8 列；
+  // 这条判据必须锚定**价格表**（.ptable），否则会拿汇总表的表头去比 11 列列模型）。
+  const priceTableHtml = (html.match(/<div class="ptable-wrap">[\s\S]*?<\/table>/) || [''])[0];
+  const headHtml = (priceTableHtml.match(/<thead>[\s\S]*?<\/thead>/) || [''])[0];
   const thCount = (headHtml.match(/<th[\s>]/g) || []).length;
   if (thCount !== API_PLANS_COLUMNS.length) {
     problems.push(`表头 ${thCount} 列 ≠ 列模型 ${API_PLANS_COLUMNS.length} 列`);
@@ -995,6 +1077,7 @@ function assertHistoryHonesty(plans, store) {
 module.exports = {
   API_PLANS_ROUTE,
   API_PLANS_HEADING,
+  API_PLANS_PAGE_TITLE,
   API_PLANS_DESCRIPTION,
   API_PLANS_COLUMNS,
   API_PLANS_NOTES,

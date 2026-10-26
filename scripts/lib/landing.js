@@ -454,15 +454,27 @@ function planLandingPages(options = {}) {
       problems.push(`别名 ${spec.route} 的目标 ${alias.target} 不在本次生成的页面里`);
       continue;
     }
+    /**
+     * v1.8-seo-answer-pages：别名页**不再 noindex**。
+     *
+     * GitHub Pages 没有服务器 rewrite，canonical 是唯一能做的权重归并信号；
+     * `noindex + 自指 canonical` 是两句话打架（noindex 赢，canonical 白写）。
+     * 新契约：别名页可抓取、不进 noindex、**canonical 指向正本**、不进 sitemap。
+     * 描述符里的 `canonicalRoute` 是 canonical 目标的**唯一声明**，页面渲染端与门禁都读它。
+     * `indexable: true` 表示「不是 noindex」（robots 面）；「是不是独立可索引 URL」
+     * 由 `canonicalRoute` 是否存在决定（见 `lib/seo.js` 的 `independent`）。
+     */
     pages.push(Object.assign({}, spec, {
-      kind: 'alias', key: spec.slug, indexable: false, aliasOf: alias.target, aliasReason: alias.reason,
+      kind: 'alias', key: spec.slug, indexable: true, canonicalRoute: alias.target,
+      aliasOf: alias.target, aliasReason: alias.reason,
       match: target.match, count: target.count
     }));
   }
 
-  // ② 分类页：人工允许表 ∩ 门槛 ∩ 「集合不与任何 indexable 页完全相同」
+  // ② 分类页：人工允许表 ∩ 门槛 ∩ 「集合不与任何独立可索引页完全相同」
+  // 别名页的条目集合故意与正本逐条相同，不参与「是否已有页面覆盖同一集合」的判据。
   const categoryPages = [];
-  const indexableItemKeys = new Map(pages.filter(page => page.indexable)
+  const indexableItemKeys = new Map(pages.filter(page => page.indexable && !page.canonicalRoute)
     .map(page => [itemKeyOf(itemsOf(page, deals, { vendorKeyOf }).map(deal => deal.id)), page.route]));
 
   for (const spec of CATEGORY_PAGES) {
@@ -746,6 +758,18 @@ function summaryOf(spec, items, ctx = {}) {
     });
   }
 
+  // v1.8-seo-answer-pages：答案页（/free-api/）的门槛速查表把「实名认证」当第一道门槛。
+  // 这里只数**明确为 true** 的条目 —— 与 `seo.recomputeSummary()` 的独立重算逐字同源，
+  // 「没写」不并进「不需要」（三态纪律）。
+  const needIdentity = list.filter(deal => deal.eligibilityDetail
+    && deal.eligibilityDetail.identityVerificationRequired === true);
+  if (needIdentity.length) {
+    rows.push({
+      label: '需实名认证', value: needIdentity.length, unit: '条',
+      source: 'eligibilityDetail.identityVerificationRequired === true（来源明说需要实名）'
+    });
+  }
+
   const chinaUsable = list.filter(deal => deal.availability && deal.availability.chinaUsable === true);
   if (chinaUsable.length) {
     rows.push({
@@ -848,6 +872,8 @@ function statsOf(pages) {
     total: list.length,
     indexable: list.filter(page => page.indexable).length,
     noindex: list.filter(page => !page.indexable).length,
+    // v1.8：canonical 收口到正本的别名页（可抓取、不进 sitemap）。与 noindex 分开计数。
+    canonicalAliases: list.filter(page => Boolean(page.canonicalRoute)).length,
     byKind
   };
 }

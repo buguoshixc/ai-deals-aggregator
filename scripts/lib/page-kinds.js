@@ -167,7 +167,11 @@ const KIND_TABLE = {
     itemList: { expect: true, checkRows: true, checkMembers: false, marker: 'item' },
     sitemap: { priority: '0.9', changefreq: 'weekly' }
   },
-  // v2.4 的别名页：noindex，不进 sitemap（priority 保留声明，但 `noindex` 页面不写进去）。
+  // v2.4 的别名页。v1.8-seo-answer-pages 改判：**不再 noindex**，改为
+  // 「可抓取 + canonical 指向正本 + 不进 sitemap」——GitHub Pages 发不出 301，
+  // canonical 是唯一可用的权重归并信号；`noindex + 自指 canonical` 两句话打架。
+  // sitemap 里仍然一条都不能有（成员资格由 canonical 是否自指判，见 lib/seo.js），
+  // priority 保留为 0.0 只是「它在 sitemap 里没有位置」的声明。
   alias: {
     label: '别名页',
     layout: 'wide',
@@ -225,6 +229,17 @@ const KIND_TABLE = {
     itemList: { expect: false, checkRows: true, checkMembers: false, marker: 'item' },
     sitemap: { priority: '0.6', changefreq: 'monthly' }
   },
+  // v1.8-seo-answer-pages：`/docs/data/` 数据文档页（部分反转 t4 的去数据暴露）。
+  // 它不发布数据文件，只说明数据集许可 / 引用格式 / 字段口径 —— 是「给要引用数据的人」的入口，
+  // 因此 priority 0.6 与订阅中心同级（不是读者找优惠的入口）。没有 ItemList：它不列条目。
+  // ⚠️ 页面上刻意没有 `.snote` / `.pnote` / `.vsnote` 三类说明容器（notes-manifest 的判据面）。
+  'data-docs': {
+    label: '数据文档页',
+    layout: 'wide',
+    textFloor: floor(600),
+    itemList: { expect: false, checkRows: false, checkMembers: false, marker: 'item' },
+    sitemap: { priority: '0.6', changefreq: 'monthly' }
+  },
   // v3.1：API 成本计算器。工具页，有交互控件，不是 ItemList 页。
   tool: {
     label: '工具页',
@@ -251,6 +266,7 @@ const FIXED_ROUTE_KINDS = {
   'plans/api/': 'plans',
   'models/': 'models-index',
   'archive/': 'archive-index',
+  'docs/data/': 'data-docs',
   'tools/api-cost/': 'tool'
 };
 

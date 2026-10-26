@@ -21,14 +21,19 @@
 |---|---|---|---|
 | `collection` | `/student/` `/developer/` `/free-api/` | 3 | 按人群/福利类型切（v1.1） |
 | `need` | `/need/<slug>/` | 7 | 按需求切（v1.2） |
-| `alias` | `/need/<slug>/` | 3 | **noindex 的旧地址**（见 §5） |
+| `alias` | `/need/<slug>/` | 3 | **canonical 指向正本的旧地址**（可抓取、不进 noindex；见 §5.1） |
 | `category` | `/category/<slug>/` | 5 | 按数据里的 `category` 枚举切（v1.7 新增） |
 | `vendor` | `/vendor/<slug>/` | 9 | 按**规范厂商名**切（v1.7 新增） |
 | `hub` | `/vendor/` `/category/` | 2 | 子页目录，同时是面包屑的父级（v1.7 新增） |
 | `deal` | `/deal/<id>/` | 80 | 每条优惠一页（v1.0） |
 | 工具页 | `/changes/` `/status/` `/feeds/` | 3 | 变化雷达 / 数据源状态 / 订阅中心 |
 
-**合计 113 个 HTML 页，其中 110 条可索引、3 条 noindex。**
+**合计 185 个 HTML 页（2026-10-17 构建实测）：182 条独立可索引（canonical 自指、进 sitemap）、
+3 条别名页（可抓取、canonical 指向正本、不进 sitemap、不 noindex —— v1.8 改判，见 §5.1）。**
+
+> 本文件是 v1.7 的契约。v1.8-seo-answer-pages（2026-10-26）只改了 §5.1 的别名索引策略：
+> `noindex, follow` + 自指 canonical 退役，换成「可抓取 + canonical 指向正本 + 不进 sitemap」。
+> 上表的页面数量随数据增长会变，**以构建日志为准**；类型与索引口径是本文件要钉住的部分。
 
 ---
 
@@ -57,7 +62,7 @@
 | `vendor` | 当前有效优惠 ≥ **2** 条 **或** 历史变更事件 ≥ **3** 条（**复用 `feeds.VENDOR_THRESHOLDS`**） | 9 | 不生成；日志与报告给出条数与原因 |
 | `category` | 当前有效优惠 ≥ **4** 条，且在人工允许表 `CATEGORY_PAGES` 里，且条目集合与任何可索引集合页**不完全相同** | 5 | 同上 |
 | `hub` | 子页 ≥ 1（永不出空目录页） | 2 | 不生成 |
-| `alias` | 目标页存在且可索引 | 3 | 构建失败 |
+| `alias` | 目标页存在且**独立可索引**（不是别人的别名） | 3 | 构建失败 |
 | `need` | 条目数 ≥ 1（v1.2 起的既有口径） | 7 | 不生成（空入口页对读者没有价值） |
 
 **门槛常量不许写死成「看起来差不多」的数字**：厂商那一档刻意与订阅门槛共用同一个常量，
@@ -85,17 +90,31 @@
 | `/changes/` | ✅ | ✅ | 0.8 daily |
 | `/feeds/` | ✅ | ✅ | 0.6 weekly |
 | `/status/` | ✅（显式登记：公开透明度页，已被索引，撤销无收益） | ✅ | 0.3 daily |
-| **`alias`** | ⛔ `noindex, follow`（自指 canonical） | ⛔ | — |
+| **`alias`** | ✅ 可抓取（**不 noindex**）· canonical **指向正本** | ⛔（成员资格按 canonical 自指判，别名一律不收） | — |
 | 非页面资源（`feed/**`、`deals.json`、`deal-history.json`、`source-health.json`、`logos/**`、`og-image.png`、`icon.png`） | 不适用 | ⛔ | — |
 
-断言：**sitemap 集合 === 非 noindex 页面的集合**（无多、无漏）；`noindex` 出现 ⇔ 策略判 noindex。
+断言：**sitemap 集合 === 独立可索引页面的集合**（`indexable && canonical 自指`，无多、无漏）；
+**`noindex` 页面数 = 0**（v1.8 起别名页不再用 noindex 收口）；`canonical` 指向别处的页面不进 sitemap。
 
 ### 5.1 别名（近义 URL 收口）
 
 `scripts/data/landing-aliases.json`：`旧路由 → {target, reason}`。GitHub Pages 没有服务器 rewrite，
-所以旧路由**保留一个真实静态页**：`noindex,follow` + 自指 canonical + 不进 sitemap。
-规则：目标必须存在且可索引（别名链最长 1 跳）；别名页的条目集合必须与目标页**逐条相同**
-（它必须是同一主题的旧地址，而不是另一个主题）；**页面上不再有任何说明文字**。
+所以旧路由**保留一个真实静态页**，用 canonical 把信号归并到正本：**可抓取（不 noindex）
++ `canonical` 指向正本 + 不进 sitemap**（v1.8-seo-answer-pages 改判，旧策略
+`noindex, follow` + 自指 canonical 退役 —— 那两句话自相矛盾：noindex 赢、canonical 白写）。
+规则：目标必须存在且**独立可索引**（不是别人的别名，别名链最长 1 跳）；别名页的条目集合
+必须与目标页**逐条相同**（它必须是同一主题的旧地址，而不是另一个主题）；
+**页面上不再有任何说明文字**。
+
+**实现与判据（v1.8）**：
+- `landing.planLandingPages()` 给别名页描述符 `indexable: true` + `canonicalRoute: target`；
+- 页面渲染端按 `canonicalRoute` 输出 canonical / JSON-LD 的 `url`，robots 输出
+  `index, follow, max-image-preview:large`（不再有 `noindex`）；
+- `seo.js` 的 `canonical-self` 按 `canonicalRoute` 判期望值；`alias-canonical` 判描述符是否
+  指向正本；`sitemap-policy` 判「独立可索引页进 sitemap、canonical 收口页不进」；
+  `duplicate-item-set` / `title-unique` / `desc-unique` 只在独立页面之间成立；
+- 独立门禁 `tools/seo-verify.js` 现场读 robots + canonical 自指关系，重算 sitemap 成员集合，
+  不信任构建期的描述符。
 
 > **本轮删掉的一条旧契约（`secondary-page-residue-v1`，2026-10-09）**：这里原先还写着
 > 「**页面上给出到目标页的可见链接**」。它随三个别名页顶上的 `<p class="snote aliasnote">`

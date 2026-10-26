@@ -133,6 +133,12 @@ const ROUTE_RULES = [
     trackable: true,
     kind: 'tool',
     why: 'API 成本计算器：判断这一工具页是否有用户使用'
+  },
+  {
+    re: /^docs\/data\/$/,
+    trackable: true,
+    kind: 'data-docs',
+    why: '数据文档与引用页：判断「可引用数据集」这个钩子有没有被外部人真的打开过'
   }
 ];
 
