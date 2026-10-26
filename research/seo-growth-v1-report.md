@@ -130,7 +130,7 @@ sitemap 183 条里不含它们；SEO 门禁 `可索引 185 · noindex 0 · canon
 
 ---
 
-## 3. 门禁与证据（本地实测）
+## 3. 门禁与证据（本地 + CI）
 
 | 门禁 | 结果 |
 |---|---|
@@ -140,6 +140,8 @@ sitemap 183 条里不含它们；SEO 门禁 `可索引 185 · noindex 0 · canon
 | `npm run verify:seo`（独立解析产物） | ✅ 18 项 0 失败（sitemap 成员 = 独立可索引页面集合；noindex 0 条） |
 | `npm run verify`（真浏览器套件，本地） | ✅ 929 项 0 失败（修复 3 条按旧别名策略写的断言后复跑） |
 | `npm run report:seo` | ✅ 报告口径更新（noindex → 「canonical 收口的别名」） |
+| PR #128 CI `gate`（head `1fda65c`） | ✅ `conclusion=success`（含 L1–L3 与 `check:zh`；本机旧数据下 `check:zh` 的 3 条超期是数据漂移误报，PR 分支用远端数据复跑 = 0 待译） |
+| Deploy run [`40351821627`](https://github.com/buguoshixc/ai-deals-aggregator/actions/runs/40351821627) | ✅ `prepublish`（12m33s）→ `build`（20s）→ `deploy`（12s）全部 success；15:41:39Z → 15:54:54Z |
 
 产物级事实（构建日志/产物回读）：
 - 三个别名页：可抓取、canonical 指向正本、sitemap 0 条、robots 无 noindex；
@@ -152,13 +154,37 @@ sitemap 183 条里不含它们；SEO 门禁 `可索引 185 · noindex 0 · canon
 
 ## 4. 发布与线上验证
 
-- 本轮改动提交并推送到 `master` 后，`deploy.yml` 的 `prepublish`（与 PR 同一个 gate）→ `build` → `deploy`
-  会重新跑完整门禁并发布；发布后用 `npm run verify -- --url=https://buguoshixc.github.io/ai-deals-aggregator/`
-  做线上冒烟（见提交记录与 CI run 链接）。
-- 线上变更可核对点：`/need/free-api/` 的 canonical 应指向 `/free-api/`（`curl -s https://…/need/free-api/ | grep canonical`）；
-  `sitemap.xml` 应为 183 条；`/docs/data/` 应 200。
+- **PR**：[#128 feat(seo): 别名 canonical 收口 + 两个答案页 + 数据许可（v1.8-seo-answer-pages）](https://github.com/buguoshixc/ai-deals-aggregator/pull/128)
+  - 分支 `feat/seo-v1.8-answer-pages`；提交 `84ae99f`（26 个文件，2,550+/116−）+ `1fda65c`（i18n）。
+  - 背景：本机 `github.com:443` 不可达（本地代理 127.0.0.1:7890 未运行），`api.github.com` 可达 ⇒
+    提交经 GitHub Data API 创建；远端 master 此前已被 7 个数据采集提交从 `84c4bcb` 推进到 `341e5e3`
+    （只动 `deals.json` / `scripts/data/*`，与本轮 26 个文件零重叠），新提交以 `341e5e3` 为父 —— 采集数据全部保留。
+  - `1fda65c` 补齐 4 条待译简介：远端数据 10-14~10-21 新增，超过 `zh-todo --check` 的 7 天宽限期 ⇒
+    CI gate 在 Translation sync check 处红。这是**发布阻塞项、非本轮 SEO 改动引入**；用远端 `deals.json`
+    复跑 `zh-todo --check` = 漂移 0 / 待译 0 / 超期 0 ✅。
+- **合并**：2026-10-26T15:41:36Z squash 合并，master merge commit = `d784be9`（PR 状态 MERGED，gate 绿色）。
+- **发布**：合并触发 Deploy run `40351821627`：`prepublish`（与 PR 同一 gate，重跑 L1–L3 与 i18n 检查）
+  → `build` → `deploy`，三步全部 success，15:54:54Z 结束。线上产物由 CI 重新构建（不是把本地 `dist/` 直接上传）。
+- **线上验收（部署后等待 Pages 缓存 ≥60s，28 项检查 0 失败）**：
 
-> 本报告写作时（2026-10-26 16:20）本地门禁全绿；**线上生效以推送后的 Deploy run 为准**。
+| 检查 | 实测 |
+|---|---|
+| `sitemap.xml` | 183 个 `<loc>`；收录 `/docs/data/`；**不收录**别名 `/need/free-api/` |
+| 别名 `/need/free-api/` | 200；`robots` 无 `noindex`；`canonical` = `…/free-api/` |
+| `/docs/data/` | 200；标题「数据文档与引用」；含 CC BY 4.0、「可以自由引用与再分发」、「数据日期」、`LICENSE-DATA` |
+| `/free-api/` | 标题「免费 API 有哪些？2026 百度千帆、智谱、阿里云百炼免费额度对比」；门槛速查表 `.ctable.atable`；「最后核对」+ issue 入口 |
+| `/plans/api/` | 标题「API 价格对比 2026：…每百万 Token 单价」；21 行厂商对照表 `.ptable`；「最后核对」 |
+| `/need/free-model/` · `/need/edu-identity/` · `/plans/coding/` | 标题均为查询句式（含「免费 / 学生·教育 / 价格」+ 2026） |
+| 首页验证 meta | 0 条（token 未配置，构建期按设计不输出假 token）；有「数据与引用」入口 |
+
+- 线上复核命令：
+  `curl -s https://buguoshixc.github.io/ai-deals-aggregator/need/free-api/ | grep -E 'canonical|robots'` ·
+  `curl -s https://buguoshixc.github.io/ai-deals-aggregator/sitemap.xml | grep -c '<loc>'` ·
+  `curl -sI https://buguoshixc.github.io/ai-deals-aggregator/docs/data/ | head -1`
+- 说明：本机 `github.com:443` 不可达，但 `github.io` 站点访问与 `api.github.com` 均正常 ⇒ 发布、合并、
+  线上验收全部完成；**本地 `master` 仍停在 `9c7495f`**（旧基线），网络恢复后 `git fetch && git reset --hard origin/master` 对齐即可。
+
+> 截至本报告定稿（2026-10-26 16:05 UTC / 00:05 +08），线上已生效，验收 28/28 通过。
 
 ---
 
