@@ -3148,6 +3148,40 @@
         "verified": false
       },
       "runAt": "2026-10-26T18:21:16.612Z"
+    },
+    {
+      "id": "84dfc76c38e0",
+      "at": "2026-10-28",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/genjutsu-ai-video-editor-b7f9f837",
+        "verified": false
+      },
+      "runAt": "2026-10-27T17:34:32.165Z"
+    },
+    {
+      "id": "ad748ed0cf5b",
+      "at": "2026-10-28",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "办公效率",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/any-summary",
+        "verified": false
+      },
+      "runAt": "2026-10-27T17:34:32.165Z"
     }
   ]
 }
