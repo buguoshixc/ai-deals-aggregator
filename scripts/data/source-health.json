@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-26T18:21:16.590Z",
+  "generatedAt": "2026-10-27T03:51:33.150Z",
   "sources": [
     {
       "source": "aitools",
       "name": "aitools.fyi",
       "region": "global",
       "kind": "static",
-      "lastAttemptAt": "2026-10-26T18:21:16.590Z",
-      "lastSuccessAt": "2026-10-26T18:21:16.590Z",
+      "lastAttemptAt": "2026-10-27T03:51:33.150Z",
+      "lastSuccessAt": "2026-10-27T03:51:33.150Z",
       "lastItemCount": 15,
       "previousItemCount": 15,
       "delta": 0,
@@ -17,7 +17,7 @@
       "status": "healthy",
       "reason": null,
       "lastError": null,
-      "lastDurationMs": 1456,
+      "lastDurationMs": 362,
       "headlessReady": null
     },
     {
@@ -25,8 +25,8 @@
       "name": "阿里云百炼",
       "region": "cn",
       "kind": "static",
-      "lastAttemptAt": "2026-10-26T18:21:16.590Z",
-      "lastSuccessAt": "2026-10-26T18:21:16.590Z",
+      "lastAttemptAt": "2026-10-27T03:51:33.150Z",
+      "lastSuccessAt": "2026-10-27T03:51:33.150Z",
       "lastItemCount": 1,
       "previousItemCount": 1,
       "delta": 0,
@@ -35,7 +35,7 @@
       "status": "healthy",
       "reason": null,
       "lastError": null,
-      "lastDurationMs": 2097,
+      "lastDurationMs": 2330,
       "headlessReady": null
     },
     {
@@ -43,8 +43,8 @@
       "name": "百度千帆",
       "region": "cn",
       "kind": "static",
-      "lastAttemptAt": "2026-10-26T18:21:16.590Z",
-      "lastSuccessAt": "2026-10-26T18:21:16.590Z",
+      "lastAttemptAt": "2026-10-27T03:51:33.150Z",
+      "lastSuccessAt": "2026-10-27T03:51:33.150Z",
       "lastItemCount": 17,
       "previousItemCount": 17,
       "delta": 0,
@@ -53,7 +53,7 @@
       "status": "healthy",
       "reason": null,
       "lastError": null,
-      "lastDurationMs": 2784,
+      "lastDurationMs": 3295,
       "headlessReady": null
     },
     {
@@ -61,8 +61,8 @@
       "name": "火山方舟",
       "region": "cn",
       "kind": "headless",
-      "lastAttemptAt": "2026-10-26T18:21:16.590Z",
-      "lastSuccessAt": "2026-10-26T18:21:16.590Z",
+      "lastAttemptAt": "2026-10-27T03:51:33.150Z",
+      "lastSuccessAt": "2026-10-27T03:51:33.150Z",
       "lastItemCount": 12,
       "previousItemCount": 12,
       "delta": 0,
@@ -71,7 +71,7 @@
       "status": "healthy",
       "reason": null,
       "lastError": null,
-      "lastDurationMs": 8653,
+      "lastDurationMs": 8781,
       "headlessReady": true
     },
     {
@@ -79,8 +79,8 @@
       "name": "智谱AI",
       "region": "cn",
       "kind": "static",
-      "lastAttemptAt": "2026-10-26T18:21:16.590Z",
-      "lastSuccessAt": "2026-10-26T18:21:16.590Z",
+      "lastAttemptAt": "2026-10-27T03:51:33.150Z",
+      "lastSuccessAt": "2026-10-27T03:51:33.150Z",
       "lastItemCount": 7,
       "previousItemCount": 7,
       "delta": 0,
@@ -89,7 +89,7 @@
       "status": "healthy",
       "reason": null,
       "lastError": null,
-      "lastDurationMs": 623,
+      "lastDurationMs": 792,
       "headlessReady": null
     },
     {
@@ -97,8 +97,8 @@
       "name": "智谱AI活动页",
       "region": "cn",
       "kind": "headless",
-      "lastAttemptAt": "2026-10-26T18:21:16.590Z",
-      "lastSuccessAt": "2026-10-26T18:21:16.590Z",
+      "lastAttemptAt": "2026-10-27T03:51:33.150Z",
+      "lastSuccessAt": "2026-10-27T03:51:33.150Z",
       "lastItemCount": 4,
       "previousItemCount": 4,
       "delta": 0,
@@ -107,7 +107,7 @@
       "status": "healthy",
       "reason": null,
       "lastError": null,
-      "lastDurationMs": 39630,
+      "lastDurationMs": 70019,
       "headlessReady": true
     },
     {
@@ -115,17 +115,17 @@
       "name": "Futurepedia",
       "region": "global",
       "kind": "static",
-      "lastAttemptAt": "2026-10-26T18:21:16.590Z",
+      "lastAttemptAt": "2026-10-27T03:51:33.150Z",
       "lastSuccessAt": "2026-09-30T01:36:21.446Z",
       "lastItemCount": 7,
       "previousItemCount": 7,
       "delta": 0,
-      "consecutiveFailures": 33,
+      "consecutiveFailures": 34,
       "consecutiveZero": 0,
       "status": "failed",
       "reason": "collector_error",
       "lastError": "https://www.futurepedia.io/ 抓取失败: HTTP 403",
-      "lastDurationMs": 3274,
+      "lastDurationMs": 1971,
       "headlessReady": null
     },
     {
@@ -133,17 +133,17 @@
       "name": "Futuretools",
       "region": "global",
       "kind": "static",
-      "lastAttemptAt": "2026-10-26T18:21:16.590Z",
-      "lastSuccessAt": "2026-10-26T18:21:16.590Z",
+      "lastAttemptAt": "2026-10-27T03:51:33.150Z",
+      "lastSuccessAt": "2026-10-27T03:51:33.150Z",
       "lastItemCount": 37,
-      "previousItemCount": 36,
-      "delta": 1,
+      "previousItemCount": 37,
+      "delta": 0,
       "consecutiveFailures": 0,
       "consecutiveZero": 0,
       "status": "healthy",
       "reason": null,
       "lastError": null,
-      "lastDurationMs": 5005,
+      "lastDurationMs": 3992,
       "headlessReady": null
     },
     {
@@ -151,8 +151,8 @@
       "name": "Layer3Labs",
       "region": "global",
       "kind": "static",
-      "lastAttemptAt": "2026-10-26T18:21:16.590Z",
-      "lastSuccessAt": "2026-10-26T18:21:16.590Z",
+      "lastAttemptAt": "2026-10-27T03:51:33.150Z",
+      "lastSuccessAt": "2026-10-27T03:51:33.150Z",
       "lastItemCount": 13,
       "previousItemCount": 13,
       "delta": 0,
@@ -161,7 +161,7 @@
       "status": "healthy",
       "reason": null,
       "lastError": null,
-      "lastDurationMs": 538,
+      "lastDurationMs": 394,
       "headlessReady": null
     }
   ]
