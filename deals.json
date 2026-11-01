@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-11-01T00:55:15+08:00",
+  "updatedAt": "2026-11-01T12:34:17+08:00",
   "count": 162,
   "deals": [
     {
@@ -3127,32 +3127,6 @@
       }
     },
     {
-      "id": "06bc1d631f62",
-      "title": "Sync.so",
-      "vendor": "Sync.so",
-      "url": "https://sync.so/",
-      "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/sync-so",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "视频",
-      "description": "A tool to sync lips and clone voices in videos",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-01",
-      "verified": false,
-      "verifiedAt": null,
-      "zh": {
-        "description": "为视频做口型同步与声音克隆。"
-      }
-    },
-    {
       "id": "f9720295b45d",
       "title": "AutoDraw",
       "vendor": "AutoDraw",
@@ -3179,27 +3153,30 @@
       }
     },
     {
-      "id": "3f1708dd5905",
-      "title": "Thiings",
-      "vendor": "Thiings",
-      "url": "https://www.thiings.co/things",
+      "id": "06bc1d631f62",
+      "title": "Sync.so",
+      "vendor": "Sync.so",
+      "url": "https://sync.so/",
       "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/thiings",
+      "sourceUrl": "https://futuretools.io/tools/sync-so",
       "region": "global",
       "type": "tool",
       "discountInfo": null,
       "pricingModel": null,
       "priceLine": null,
       "features": null,
-      "category": "图像绘画",
-      "description": "A tool to generate and download free AI 3D icons.",
+      "category": "视频",
+      "description": "A tool to sync lips and clone voices in videos",
       "eligibility": null,
       "validity": null,
       "expiresAt": null,
-      "firstSeen": "2026-10-27",
+      "firstSeen": "2026-09-21",
       "lastSeen": "2026-11-01",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "为视频做口型同步与声音克隆。"
+      }
     },
     {
       "id": "935d32387deb",
@@ -3239,6 +3216,29 @@
       "features": null,
       "category": "音频语音",
       "description": "AI voicemail app that answers calls and sends text summaries.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-10-27",
+      "lastSeen": "2026-11-01",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
+      "id": "3f1708dd5905",
+      "title": "Thiings",
+      "vendor": "Thiings",
+      "url": "https://www.thiings.co/things",
+      "source": "Futuretools",
+      "sourceUrl": "https://futuretools.io/tools/thiings",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "图像绘画",
+      "description": "A tool to generate and download free AI 3D icons.",
       "eligibility": null,
       "validity": null,
       "expiresAt": null,
@@ -3300,29 +3300,6 @@
       }
     },
     {
-      "id": "84dfc76c38e0",
-      "title": "Genjutsu AI Video Editor",
-      "vendor": "Genjutsu AI",
-      "url": "https://genjutsuaivideo.com/",
-      "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/genjutsu-ai-video-editor-b7f9f837",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "视频",
-      "description": "Pay-per-use video editor that swaps characters or scenes via AI.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-10-28",
-      "lastSeen": "2026-11-01",
-      "verified": false,
-      "verifiedAt": null
-    },
-    {
       "id": "2608e4a555a7",
       "title": "Atypica AI",
       "vendor": "Atypica AI",
@@ -3347,6 +3324,29 @@
       "zh": {
         "description": "用 AI 人设模拟消费者对商业决策的反应。"
       }
+    },
+    {
+      "id": "84dfc76c38e0",
+      "title": "Genjutsu AI Video Editor",
+      "vendor": "Genjutsu AI",
+      "url": "https://genjutsuaivideo.com/",
+      "source": "Futuretools",
+      "sourceUrl": "https://futuretools.io/tools/genjutsu-ai-video-editor-b7f9f837",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "视频",
+      "description": "Pay-per-use video editor that swaps characters or scenes via AI.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-10-28",
+      "lastSeen": "2026-11-01",
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "ad748ed0cf5b",
