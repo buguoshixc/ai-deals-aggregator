@@ -902,3 +902,36 @@
 | **上线路径**（2026-10-16） | ✅ 已上线 | PR **#122** → CI `Verify site (gate)` 在 `pull_request` 上 **pass（12m31s）** → 合入 `master`（merge commit **`0e088de`**，分支提交 **`90eac19`**，拿 `--first-parent` 比只有这一轮的 **13 个文件 / +53197 −82**）→ `master` 上 `Verify site (gate)` run **38883176478** `success` · `Deploy to GitHub Pages` run **38883176446**：prepublish **12m24s** / build **14s** / deploy **48s** 全绿。线上页 **HTTP 200** |
 | **线上复测：判据在线上 URL 上原样重跑**（不是「看截图觉得没问题」） | ✅ 9/9 | 用 `.scratch/apicost/live-gate.mjs` 把这一轮的判据（§20b 8 条 + §22c ③c 1 条，代码与 `verify-site.js` 逐字同构）指到 `https://buguoshixc.github.io/ai-deals-aggregator/tools/api-cost/` 上跑：**9 条全过**。读数 @1440：控件行 `3 格@161 · 3 格@232`，下拉与输入宽 **440.66 / 440.67 / 440.66**、左边缘 **47 / 499.66 / 952.33**（顶边极差 **0**）· h1 **19px** 与 `.meta` 同一行（59..87.5 / 59..88）· 控件 radius **6px** / padding-top **8px** / font **13px** · 面板 **1px 边 + 10px 圆角**、fieldset 上边框 **0px** · 示例表 **1380 = 列宽 1380**、caption **1 行**、自溢出 **0** · 空态「在上面填入 token 用量…」不含「免费」· 两表同为 `[维度 单价 tokens 成本]`、结果表 **5 行**（含两个缺价维度）、无字面量 `null`、数字列 `right/right/right` 且逐列右缘与表头一致（示例 1409.5 / 结果 1393）· §22c ③c：数据区 `.ptable`@431、整页 `.snote` **7** 条、**首屏 0 条**。原始读数：`research/_raw/api-cost-page-css-v1/live-gate-1440.json` |
 
+
+### 事实摘要 ≠ 解释段（`search-intent-v1` · 2026-11-04 · 分支 `feat/search-intent-v1`）
+
+新增一个容器族 **`.factsum`**（结构化事实行），用在两处：
+
+| 位置 | 容器 | 行 |
+|---|---|---|
+| 10 个 `/need/*`（含 3 个别名页） | `aside.factsum`，在 H1/`.meta` 之后、`.lsum` 统计条**之前** | 5 行：收录条目 · 平台分布（前两名+占比）· 实名门槛三态 · 中国大陆可用三态 · 数据日期 |
+| 12 个 `free_model` 详情页 | `section.factsum.factsum-inline`（不套第二张卡片），在面包屑之后、`.dpane` 正文之前 | 3 行：免费到什么程度 · 限制 · 怎么开始 |
+
+**它为什么不是 `.snote`。** §22c ③b 要求目录页首屏 `.snote` 条数为 0（量是 `introIndexes`）。
+`.snote` 的定义是**页面级解释段**：一句或几句讲「这一页是干什么的 / 为什么这样收」。
+`.factsum` 里一个解释句都没有 —— 全是「标签 + 一个值」，值在构建期由该页条目现算。
+所以：**`.snote` 的 frozen 规则（`index.html` 里那唯一一处定义）与 §22c 的判据
+本轮一个字符都没有改**，新增的是另一个类名、另一条断言。
+
+**三条纪律（缺一条这块就会退化成新的小字垃圾）：**
+
+1. **每个值都在构建期现算**，行上带 `data-fact-key` / `data-fact-value` 两个机器可读属性；
+   没有手写数字，没有「大概」。
+2. **重算入口唯一**：`scripts/lib/fact-summary.js`。构建期渲染（`build-local.js`）与门禁重算
+   （`verify-site.js` §22e）`require` 的是**同一个模块** —— 两处各写一份口径，
+   就会出现「页面写 12、断言按另一条公式也算出 12」的假绿。
+3. **口径句是常量** `factSummary.CALIBER`，页面渲染与断言逐字比对。改口径必须同时过断言。
+
+**位置约束（为什么不放在别处）：** 需求页上这块必须在 `.lsum` 数字条之前 —— 读者落地先看到
+「先答问题」的一段，再看到数字胶囊；放反了就是先给数、后给答案。详情页上它必须在
+`.dpane` 卡片**之外**（卡片里是条目正文），且左右内边距与 `.dbody` 的 24px 对齐，保证同一条左沿。
+
+**射程（写清楚）：** §22e 的两条断言证「页面上的数字 == `deals.json` 原始记录按同一口径算出的数字」；
+它**不证**「表里那批 id 就是这一页判据该收的集合」—— 后者由 `itemlist-arity` 与
+`lib/seo.js` 的摘要重算守着。免费模型那 3 行同样由 `fact-summary.js` 的 `freeModelRows()`
+单点产出，字段没写就如实说「官方页未写明」，不替厂商补话。

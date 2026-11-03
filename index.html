@@ -920,6 +920,24 @@
       margin-top: var(--s3); width: 100%; max-width: none; word-break: normal; overflow-wrap: anywhere;
     }
     .dpane-src a { color: var(--brand); }
+    /* ---------- 事实摘要（search-intent-v1 · W2/W3）----------
+       这是**结构化事实行**的容器：标签 + 构建期现算的值，没有一句「这一页是干什么的」。
+       它不是 `.snote`（页面级解释段）—— 上方那条 `.snote` 规则仍是全站唯一的定义点，
+       本块与它无关。边界见 docs/DESIGN-RULES.md 的「事实摘要 ≠ 解释段」。
+       放在共享 <style> 里而不是页面壳：需求页（目录页壳）与免费模型详情页（叶子页壳）
+       都要用它，两处各写一份就会出现「同一块在两族页面上长得不一样」。 */
+    .factsum { background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--brand); border-radius: var(--r); padding: var(--s2) var(--s3); margin: 0 0 var(--s3); }
+    .factsum-cap { margin: 0 0 var(--s2); color: var(--mut); font-size: var(--fs-xs); font-weight: 600; letter-spacing: .04em; }
+    .factsum-list { display: grid; gap: 2px; margin: 0; }
+    .factsum-row { display: flex; align-items: baseline; gap: var(--s2); font-size: var(--fs-sm); line-height: 1.65; }
+    .factsum-row dt { color: var(--mut); flex: 0 0 6.5em; }
+    .factsum-row dd { margin: 0; overflow-wrap: anywhere; }
+    .factsum-caliber { margin: var(--s2) 0 0; color: var(--mut); font-size: var(--fs-xs); line-height: 1.6; }
+    /* 叶子详情页里的变体：不套第二张卡片（正文已经是 .dpane 卡片），只保留行距；
+       左右内边距与 `.dbody` 的 24px 对齐，保证与正文同一条左沿。 */
+    .factsum-inline { background: none; border: 0; border-radius: 0; padding: 0 24px var(--s2); margin: 0; }
+    /* 事实摘要下面那一跳（W3 模型页 / W4）：一句链接，不另立容器。 */
+    .factsum-next { margin: var(--s2) 0 0; font-size: var(--fs-sm); }
 
     /* ---------- 详情弹层 ---------- */
     .dlg {
@@ -3439,6 +3457,13 @@
     function detailHtml(deal, opts) {
       const headingTag = (opts && opts.headingTag === 'h1') ? 'h1' : 'h2';
       /**
+       * search-intent-v1（W3）：一级标题的文本可以由调用方覆盖。
+       * 免费模型详情页要用**查询形状**（「<模型名> 免费模型」）做 h1，而这里的默认值
+       * 始终是 `deal.title` —— 首页弹层、模型页等处不传这个参数，行为逐字不变。
+       */
+      const headingText = (opts && typeof opts.headingText === 'string' && opts.headingText)
+        ? opts.headingText : deal.title;
+      /**
        * v2.4：站内相对链接的**深度前缀**。首页弹层在站根（`''`），独立详情页在
        * `/deal/<id>/`（`'../../'`）—— `detailHtml` 两边共用，所以前缀只能由调用方给。
        * 写死任意一个都会让另一边出现 404 的内链，而页面本身看起来完全正常。
@@ -3504,7 +3529,7 @@
       const kind = kindBadges(deal).map(label => '<span>' + escapeHtml(label) + '</span>').join('');
 
       return '<div class="dh">' + logoHtml(deal, true) +
-        '<' + headingTag + ' id="detailTitle">' + escapeHtml(deal.title) + '</' + headingTag + '></div>' +
+        '<' + headingTag + ' id="detailTitle">' + escapeHtml(headingText) + '</' + headingTag + '></div>' +
         '<div class="dsub">' + (vendor.name ? '<span>' + escapeHtml(vendor.name) + '</span><span>·</span>' : '') +
         (deal.category ? '<span>' + escapeHtml(deal.category) + '</span><span>·</span>' : '') +
         (deal.region ? '<span>' + escapeHtml(REGION_LABELS[deal.region] || deal.region) + '</span><span>·</span>' : '') +

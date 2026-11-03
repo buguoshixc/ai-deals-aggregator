@@ -100,6 +100,12 @@ const { SITE_URL } = require('../lib/site');
 // v1.8-seo-answer-pages：§17 的 `/need/*/` 逐页检查要按 `landing-aliases.json` 判
 // 「这一页该自指 canonical 还是指向正本」—— 不写死哪三条是别名。
 const landing = require('../lib/landing');
+// search-intent-v1（W2）：§22e 重算目录页事实摘要。**与构建期渲染 require 同一个模块**
+// （唯一实现 `lib/fact-summary.js`）—— 断言不自己写第二份口径。
+const factSummaryLib = require('../lib/fact-summary');
+// 事实摘要里的平台名走 `RENDER-CORE` 的 `vendorOf()`（与页面同一条归并），所以这里也要能从
+// 产物 `index.html` 里把那段 RENDER-CORE 载进 VM —— 与 build-local 用的是同一个 loader。
+const { load: loadRenderCore } = require('../lib/render-core');
 
 /**
  * 订阅产物登记表 `FEED_FILES` 的**唯一读取点**（唯一出处 = `scripts/lib/feed.js` 的导出）。
@@ -10341,6 +10347,104 @@ function noJsControlExemptionFor(route) {
   /* ------------------------------------------------------------------ */
   /* 厂商资料页（v3.0 Stage E）                                           */
   /* ------------------------------------------------------------------ */
+
+  console.log('\n=== 22e) 目录页事实摘要（/need/* 的回答块：存在性 + 逐字重算）===');
+  {
+    /**
+     * search-intent-v1（W2）新增的**两条**断言（只加，既有断言一条都没删、没放宽）：
+     *   ① 每个 `/need/*` 页都有 `aside.factsum`，事实行 ≥3、5 个 key 齐全、
+     *      口径句与常量 `factSummaryLib.CALIBER` **逐字相同**；
+     *   ② 每一行的值都能用 `deals.json` 的**原始记录**按同一口径重算出来，且
+     *      与页面上的 `data-fact-value`、可见 `<dd>` 三者**逐字一致**。
+     *
+     * ② 的重算入口是 `scripts/lib/fact-summary.js` —— 构建期渲染用的**同一个模块**，
+     * 所以「页面口径」与「断言口径」不可能各写一份。输入是页面上那批 `data-item` id 在
+     * `deals.json` 里的原始记录，不是页面上的字符串。
+     *
+     * ⚠️ 射程（写清楚，免得把这条当成万能）：本条证「页面上的数字 == 原始数据按同一口径算出的数字」；
+     * 它**证不了**「表里那批 id 就是这一页判据该收的集合」—— 后者由 `itemlist-arity`
+     * 与 `lib/seo.js` 的摘要重算守着，两条各守一半。
+     * ⚠️ 这里**不**碰 `.snote`：`aside.factsum` 是结构化事实行容器，不是页面级解释段。
+     * §22c ③b 的「目录页首屏 `.snote` = 0」判据原样保留、一个字符都没改。
+     */
+    const needRoot = path.join(DIR, 'need');
+    const needSlugs = fs.existsSync(needRoot)
+      ? fs.readdirSync(needRoot, { withFileTypes: true })
+        .filter(entry => entry.isDirectory() && fs.existsSync(path.join(needRoot, entry.name, 'index.html')))
+        .map(entry => entry.name).sort()
+      : [];
+    const unescapeHtml = text => String(text)
+      .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'").replace(/&amp;/g, '&');
+
+    const dealsById = new Map(((readRoot('deals.json').deals) || []).map(deal => [String(deal.id), deal]));
+    let renderCore = null;
+    try {
+      renderCore = loadRenderCore(path.join(DIR, 'index.html'));
+    } catch (error) {
+      renderCore = null; // 平台名归并失去依据时，②会逐页报红，而不是悄悄用另一种归并判绿。
+    }
+    const vendorKeyOf = deal => (renderCore
+      ? renderCore.vendorOf(deal).name
+      : String((deal && deal.vendor) || ''));
+
+    const shapeProblems = [];
+    const valueProblems = [];
+    let factRowsSeen = 0;
+    for (const slug of needSlugs) {
+      const route = `need/${slug}/`;
+      const html = fs.readFileSync(path.join(needRoot, slug, 'index.html'), 'utf8');
+      const aside = (html.match(/<aside class="factsum"[\s\S]*?<\/aside>/) || [''])[0];
+      if (!aside) {
+        shapeProblems.push(`${route} 没有 aside.factsum`);
+        continue;
+      }
+      const rows = [...aside.matchAll(/data-fact-key="([^"]+)" data-fact-value="([^"]*)"><dt>([^<]*)<\/dt><dd>([^<]*)<\/dd>/g)]
+        .map(match => ({ key: match[1], attr: unescapeHtml(match[2]), text: unescapeHtml(match[4]) }));
+      factRowsSeen += rows.length;
+      const keys = rows.map(row => row.key);
+      const missingKeys = factSummaryLib.KEYS.filter(key => !keys.includes(key));
+      if (rows.length < 3) shapeProblems.push(`${route} 事实行只有 ${rows.length} 行（下限 3）`);
+      if (missingKeys.length) shapeProblems.push(`${route} 缺 key：${missingKeys.join(',')}`);
+      const caliber = unescapeHtml((aside.match(/<p class="factsum-caliber">([^<]*)<\/p>/) || ['', ''])[1]);
+      if (caliber !== factSummaryLib.CALIBER) shapeProblems.push(`${route} 口径句与常量不一致`);
+
+      // ---- ② 逐字重算 ----
+      const ids = [...html.matchAll(/<tr data-item="([^"]*)">/g)].map(match => unescapeHtml(match[1]));
+      if (!ids.length) {
+        valueProblems.push(`${route} 没有 data-item 行，无从重算`);
+        continue;
+      }
+      const items = ids.map(id => dealsById.get(id)).filter(Boolean);
+      if (items.length !== ids.length) {
+        valueProblems.push(`${route} 有 ${ids.length - items.length} 个 id 在 deals.json 里找不到`);
+        continue;
+      }
+      const asOf = (html.match(/数据更新 ([\d-]{10})/) || ['', ''])[1];
+      for (const expected of factSummaryLib.rowsFor(items, { asOf, vendorKeyOf })) {
+        const got = rows.find(row => row.key === expected.key);
+        if (!got) {
+          valueProblems.push(`${route}#${expected.key} 页面缺这一行`);
+          continue;
+        }
+        if (got.attr !== expected.value) {
+          valueProblems.push(`${route}#${expected.key} 属性值「${got.attr}」≠ 重算「${expected.value}」`);
+        }
+        if (got.text !== expected.value) {
+          valueProblems.push(`${route}#${expected.key} 可见值「${got.text}」≠ 重算「${expected.value}」`);
+        }
+      }
+    }
+
+    check('目录页事实摘要存在性：10 个 /need/* 页各自有 ≥3 行事实、5 个 key 齐、口径句逐字等于常量',
+      needSlugs.length === 10 && shapeProblems.length === 0,
+      `${needSlugs.length} 页 · ${factRowsSeen} 行`
+      + `${shapeProblems.length ? ` · 问题：${shapeProblems.slice(0, 3).join('；')}` : ''}`);
+    check('目录页事实摘要可重算：每行值都能用 deals.json 原始记录按同一口径算出，与属性值/可见文本逐字一致',
+      valueProblems.length === 0,
+      `${factRowsSeen} 行 × ${needSlugs.length} 页`
+      + `${valueProblems.length ? ` · 问题：${valueProblems.slice(0, 3).join('；')}` : ''}`);
+  }
 
   console.log('\n=== 23) 厂商资料页（/vendor/）===');
   {

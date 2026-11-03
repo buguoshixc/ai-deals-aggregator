@@ -73,6 +73,9 @@ const apiCostPage = require('../lib/api-cost-page');
 // 因为它要能被离线自测直接调用；这一页**不复制** /plans/coding/ 与 /plans/api/ 的表，
 // 只给计数、口径、变化与仍然有效的关联优惠（变化与关系都复用既有判据，见该文件头注释）。
 const plansHubPage = require('../lib/plans-hub-page');
+// search-intent-v1（W2）：目录页事实摘要。**唯一实现**在 lib 里，门禁重算（verify-site §22e）
+// require 的是同一个模块 —— 页面口径与断言口径因此不可能各写一份。
+const factSummary = require('../lib/fact-summary');
 // v3.0 Stage D5/D6：模型资料索引与详情页（`/models/` 与 `/models/<slug>/`）。
 // 正文渲染住在 lib 里（可被离线自测直接调用）；身份 / 映射 / 派生时间线全部走
 // `lib/model-registry.js` 的同一份判据 —— 页面层不自己算 id，也不判"两个名字是不是同一个模型"。
@@ -1326,7 +1329,37 @@ function writeDetailPages(payload, indexHtml, renderCore, plan) {
     const tier = renderCore.tierOf(deal);
     const pageUrl = `${SITE_URL}deal/${encodeURIComponent(deal.id)}/`;
     // 这一页自己的页脚：路由显式给（`deal/<id>/`），分析注入因此按本页路由判定。
-    const title = `${deal.title} — 官方优惠与免费额度 | ${SITE_NAME}`;
+    /**
+     * search-intent-v1（W3）：免费模型条目的**查询形状**。
+     *
+     * 12 条 `benefitType` 含 `free_model` 的条目里，7 条标题本来就是「<模型名> 免费模型」
+     * （智谱那一批 GLM-4.x-Flash），另外 5 条是「讯飞星火 Spark Lite …免费使用」这种
+     * 带描述从句的写法 / 或聚合专区条目。后 5 条的标题里「免费模型」不是一个能直接套的
+     * 形状 —— 硬把「硅基流动 免费模型专区」改写成「…免费模型」会造出一句不成立的话
+     * （那一条收的是**专区**，不是某一个模型）。所以口径是：
+     *   · 标题已经以「免费模型」结尾 ⇒ h1/title 原样（7 条）；
+     *   · 否则 ⇒ 前面加一段**查询词前缀**「免费模型：」，h1/title 都从这两个字开始，
+     *     命中「免费模型」这个查询词，同时不改变条目本身说的是什么（5 条）。
+     * 这与「站点只做收录与整理、不替厂商改写事实」的红线一致：前缀是查询意图，
+     * 后缀仍是条目原文。
+     */
+    const isFreeModel = Array.isArray(deal.benefitType) && deal.benefitType.includes('free_model');
+    const headline = isFreeModel && !/免费模型$/.test(String(deal.title || '').trim())
+      ? `免费模型：${deal.title}`
+      : deal.title;
+    const freeRows = isFreeModel ? factSummary.freeModelRows(deal) : [];
+    // 首屏三行（免费到什么程度 / 限制 / 怎么开始）：行值全部来自条目字段，见 lib/fact-summary.js。
+    // 复用需求页那个容器（`.factsum`），叶子页用 `.factsum-inline` 变体 —— 不套第二张卡片。
+    const freeFactsHtml = freeRows.length
+      ? `      <section class="factsum factsum-inline" aria-label="免费模型要点">
+        <p class="factsum-cap">免费模型要点</p>
+        <dl class="factsum-list">
+${freeRows.map(row => `          <div class="factsum-row" data-fact-key="${htmlEscape(row.key)}" data-fact-value="${htmlEscape(row.value)}"><dt>${htmlEscape(row.label)}</dt><dd>${htmlEscape(row.value)}</dd></div>`).join('\n')}
+        </dl>
+      </section>
+`
+      : '';
+    const title = `${headline} — 官方优惠与免费额度 | ${SITE_NAME}`;
     const desc = (() => {
       // 描述：厂商 + 标题 + 优惠原文。**为什么要带标题前缀**：80 个详情页里有 17 条
       // （百度千帆那张表）的 `discountInfo` 是逐字相同的，只取 discountInfo 会让这 17 页
@@ -1392,7 +1425,7 @@ function writeDetailPages(payload, indexHtml, renderCore, plan) {
         type: 'article',
         siteName: htmlEscape(SITE_NAME),
         url: htmlEscape(pageUrl),
-        title: htmlEscape(deal.title),
+        title: htmlEscape(headline),
         description: htmlEscape(desc),
         image: `${SITE_URL}og-image.png`
       },
@@ -1407,8 +1440,8 @@ function writeDetailPages(payload, indexHtml, renderCore, plan) {
     ? `<a href="../../${categoryPage.route}">${htmlEscape(deal.category)}</a>`
     : `<span>${htmlEscape(deal.category || '全部优惠')}</span>`} › <span>${htmlEscape(deal.title)}</span>
       </nav>
-      <article class="dbody dpane" data-tier="${tier.n}">
-${renderCore.detailHtml(deal, { headingTag: 'h1', prefix: '../../' })}
+${freeFactsHtml}      <article class="dbody dpane" data-tier="${tier.n}">
+${renderCore.detailHtml(deal, { headingTag: 'h1', prefix: '../../', headingText: headline })}
       </article>
       <p class="dpane-more">
 ${vendorPage
@@ -3105,6 +3138,39 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
   //    （`seo.js` 的 `data-summary-label="X" data-summary-value="Y"` 重算、
   //    `build-local.js` 摘要自检、`verify-site.js` 的 `[data-summary-label]` 采样），
   //    所以「删掉可见文字」与「删掉机器口径」是两件事，这一点有断言守着。
+  /**
+   * search-intent-v1（W2）：**事实摘要**（`aside.factsum`）—— 只挂在 `/need/*` 这 10 页上。
+   *
+   * 为什么只有需求页：这 10 页接的是「已经有搜索需求、但还没答案」的问句式查询
+   * （「免费大模型有哪些」「不用信用卡的 AI」）。读者落地后要的不是又一张表，而是
+   * **先把事实答掉**：多少条、谁家最多、门槛卡在哪、能不能在国内用、数据是哪天的。
+   * 分类页/厂商页的读法是「按类目找」，同一块加在 106 个目录页上只会把页高整体推高
+   * （页高回归线是基线的 1.15 倍），收益与风险不成比例。
+   *
+   * 每一行都在构建期现算，行上带 `data-fact-key/value` 两个机器可读属性；门禁
+   * （`verify-site.js` §22e）拿 `deals.json` 的**原始记录**重算这 5 行并逐字比对 ——
+   * 「页面上写 17 条、表里只有 12 行」这类错误因此在门禁里就红。
+   * 口径句是 `factSummary.CALIBER` 常量，页面与断言共用同一份字面，不存在两处各写一句。
+   */
+  // 10 个 `/need/*` 页里，student-only / free-api / dev-credits 三页是钉住的**别名页**
+  // （`kind: 'alias'`，canonical 指向正本）。它们渲染的是同一张表、同一批条目，
+  // 所以同一个事实摘要也必须出现 —— 判据按**路由**取，不按 kind 取，否则这三页会漏。
+  const isNeedPage = String(spec.route || '').startsWith('need/');
+  const factRows = isNeedPage
+    ? factSummary.rowsFor(deals, { asOf: context.lastmod, vendorKeyOf: VENDOR_KEY_OF })
+    : [];
+  const factHtml = factRows.length
+    ? `
+      <aside class="factsum" aria-label="事实摘要">
+        <p class="factsum-cap">事实摘要</p>
+        <dl class="factsum-list">
+${factRows.map(row => `          <div class="factsum-row" data-fact-key="${htmlEscape(row.key)}" data-fact-value="${htmlEscape(row.value)}">` +
+    `<dt>${htmlEscape(row.label)}</dt><dd>${htmlEscape(row.value)}</dd></div>`).join('\n')}
+        </dl>
+        <p class="factsum-caliber">${htmlEscape(factSummary.CALIBER)}</p>
+      </aside>`
+    : '';
+
   const summaryHtml = summary.length
     ? `      <ul class="lsum" aria-label="当前数据摘要">
 ${summary.map(row => `        <li data-summary-label="${htmlEscape(row.label)}" data-summary-value="${htmlEscape(String(row.value))}"` +
@@ -3215,6 +3281,10 @@ ${rows}
   .lsum li { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 6px 10px; font-size: var(--fs-sm); }
   .lsum li span { color: var(--mut); }
   .lsum li b { margin: 0 2px 0 6px; }
+  /* search-intent-v1（W2）：事实摘要（.factsum）的样式定义在**共享 <style>**（index.html）里 ——
+     需求页与免费模型详情页共用同一份，页面壳里不复制第二份（与 .snote 同一条纪律）。
+     这里只留需求页独有的「表格下那一跳」。 */
+  .factnext { margin: 0 0 var(--s3); color: var(--mut); font-size: var(--fs-sm); }
   /* ⚠️ 这里**不许**再写一条 .snote 规则：页面级说明的宽度只有一处定义，
      就是 index.html 共享 <style> 里那条**冻结串**（WIDE_SNOTE_FROZEN）。
      每页多写一份的症状是 §22c 的「冻结串恰好 1 次」断言全站变红。 */
@@ -3368,6 +3438,7 @@ ${extraCss}`;
         <span class="meta">共 ${isHub ? childList.length : deals.length} ${isHub ? '个入口' : '条'} · 数据更新 ${htmlEscape(String(context.lastmod || ''))}${
   spec.thresholdSummary ? ` · 最后核对 ${htmlEscape(String(context.lastmod || ''))}` : ''}</span>
       </div>
+${factHtml}
 ${summaryHtml}
 ${thresholdTableHtml}
 
@@ -3383,6 +3454,19 @@ ${headRow}
         </tbody>
       </table>
       </div>
+${
+  /**
+   * search-intent-v1（W4）：需求页 → 计价页 / 计算器的**一句话链接**（只加链接，不改版式）。
+   *
+   * 为什么落在这里而不是事实摘要里：事实摘要回答「这一页有几条、门槛卡在哪」；
+   * 读者往下看完表才会问「那我到底要花多少钱」，那是另一跳。
+   * 锚文本用**查询词**（「每百万 tokens 多少钱」「按我的用量算一遍」），不写「点击这里」——
+   * 后者对屏幕阅读器与搜索结果摘要都没有信息量。
+   */
+  isNeedPage
+    ? `\n      <p class="factnext">要按 token 比价：<a href="${prefix}plans/api/">各平台每百万 tokens 多少钱</a> · <a href="${prefix}tools/api-cost/">按我的用量算一遍</a></p>`
+    : ''
+}
 
 ${topicHtml}
 
