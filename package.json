@@ -60,6 +60,7 @@
     "selftest:api-cost": "node scripts/tools/api-cost-selftest.js",
     "baseline:api-plan-history": "node scripts/tools/api-plan-history-baseline.js",
     "check:api-plan-history": "node scripts/tools/check-api-plan-history.js",
+    "verify:api-plans": "node scripts/tools/verify-api-plans.js",
     "report:api-model-renames": "node scripts/tools/api-model-rename-report.js",
     "models:rebuild": "node scripts/tools/rebuild-models.js",
     "check:models:reproducible": "node scripts/tools/check-models-reproducible.js",

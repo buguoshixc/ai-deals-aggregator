@@ -59,6 +59,18 @@ const API_CHANNELS = [
   'standard', 'batch', 'flex', 'priority', 'fast', 'ultrafast', 'off_peak', 'fine_tuned', 'other'
 ];
 
+/**
+ * 这条记录**怎么被核验**（运营元数据，不是厂商事实；不改任何既有字段语义）。
+ *
+ *   · `static`   —— 裸 HTTP GET 就能拿到真实价格页正文（含正常跳转后的正文），自动校验可解析；
+ *   · `headless` —— 页面是 JS 壳 / 反爬挑战，需要真浏览器渲染后才能读；
+ *   · `manual`   —— 本仓自动化拿不到或口径需人工判定（区域封锁 / 网络不可达 / 多档阶梯表），
+ *                 只能人工对照官方页复核。
+ *
+ * 它**不进** id basis，也不是历史变化事件（核验是**我们**的动作，不是厂商的变化）。
+ */
+const API_CHECK_METHODS = ['static', 'headless', 'manual'];
+
 const API_CHANNEL_LABEL = {
   standard: '标准',
   batch: '批处理',
@@ -209,7 +221,7 @@ const CREDIT_UNITS = ['credits', 'usd', 'cny'];
 const RECORD_FIELDS = [
   'id', 'kind', 'provider', 'planName', 'channel', 'officialUrl', 'source', 'sourceUrl', 'region',
   'pricing', 'models', 'freeTier', 'limits', 'credits', 'restrictions',
-  'firstSeen', 'lastSeen', 'verified', 'verifiedAt', 'evidence', 'derivedMetrics'
+  'firstSeen', 'lastSeen', 'verified', 'verifiedAt', 'checkMethod', 'lastVerifiedAt', 'evidence', 'derivedMetrics'
 ];
 
 const INPUT_FIELDS = RECORD_FIELDS.filter(field => field !== 'id' && field !== 'derivedMetrics');
@@ -1263,6 +1275,28 @@ function makeApiPlan(raw = {}, opts = {}) {
   }
   problems.push(...B.dateProblems({ firstSeen, lastSeen, verifiedAt, today }));
 
+  // 核验元数据（运营字段，不是厂商事实）：两条都可选，但出现时必须合法。
+  // 刻意**不**要求必填 —— 历史夹具 / 自测记录没有它们也应当能归一；
+  // 生产数据由 `scripts/tools/verify-api-plans.js` 维护。
+  let checkMethod = null;
+  const rawCheckMethod = raw.checkMethod;
+  if (rawCheckMethod !== null && rawCheckMethod !== undefined) {
+    if (!API_CHECK_METHODS.includes(rawCheckMethod)) {
+      problems.push(`checkMethod 非法(${JSON.stringify(rawCheckMethod)})：只接受 ${API_CHECK_METHODS.join(' / ')}`);
+    } else {
+      checkMethod = rawCheckMethod;
+    }
+  }
+  let lastVerifiedAt = null;
+  if (raw.lastVerifiedAt !== null && raw.lastVerifiedAt !== undefined) {
+    lastVerifiedAt = normalizeDate(raw.lastVerifiedAt);
+    if (!lastVerifiedAt) {
+      problems.push(`lastVerifiedAt 非法(${JSON.stringify(raw.lastVerifiedAt)})：只接受 YYYY-MM-DD`);
+    } else if (String(lastVerifiedAt) > today) {
+      problems.push(`lastVerifiedAt 是未来日期（${lastVerifiedAt}）—— 核验日期不能凭空写在未来`);
+    }
+  }
+
   // 引文：字段白名单要等模型归一完才能展开
   const evidenceFields = apiEvidenceFieldsOf({ models });
   const evidence = provenance.normalizeEvidence(raw.evidence, { today, fields: evidenceFields, max: API_EVIDENCE_MAX_ITEMS });
@@ -1296,6 +1330,8 @@ function makeApiPlan(raw = {}, opts = {}) {
     lastSeen,
     verified: true,
     verifiedAt,
+    checkMethod,
+    lastVerifiedAt,
     evidence,
     derivedMetrics: null
   };
@@ -1571,6 +1607,7 @@ module.exports = {
   API_KIND,
   API_CHANNELS,
   API_CHANNEL_LABEL,
+  API_CHECK_METHODS,
   API_UNITS,
   API_UNIT_LABEL,
   API_WORDING,

@@ -103,6 +103,18 @@ jobs:
           set -o pipefail
           node scripts/collect.js --headless 2>&1 | tee /tmp/collect.log
 
+      # 每日静态校验：只跑 `checkMethod === "static"` 的 API 计费条目（裸 GET 可读的价目表）。
+      # 价格未变 ⇒ **0 条历史事件**，只推进 lastVerifiedAt；价格变了 ⇒ 采纳新价 + 追加事件 +
+      # 同步写出 api-plans.json。单源失败默认 exit 0（只有 --strict 才非 0），不拖垮采集链；
+      # 内部不一致（schema / 历史写不进）才 fail-closed。详见脚本文件头。
+      - name: Verify static API plans (daily)
+        run: node scripts/tools/verify-api-plans.js
+
+      # 派生层安全网：verifier 已经同步写过 api-plans.json；这里再跑一次重建，
+      # 兜住「有人手改了 curated 却忘了重建」的形态（与 dev 的 npm run api-plans:rebuild 同一条命令）。
+      - name: Rebuild derived api-plans.json
+        run: node scripts/tools/rebuild-api-plans.js
+
       - name: Validate new data (strict gate)
         run: node scripts/validate.js --strict
 
@@ -192,7 +204,10 @@ jobs:
           #    不入库就永远只有"这一次"，而诊断要的恰好是"变之前 / 变之后"：
           #    「昨天 td=42、今天 td=0」这类最说明问题的证据只能靠跨运行留存。
           #    它只是**证据**：删掉它，采集/合并/构建的结果一字不变。
-          git add deals.json scripts/data/source-health.json scripts/data/zh-pending.json scripts/data/deal-history.json scripts/data/source-snapshots.json
+          #  · api-plans.json / curated_api_plans.json / api-plan-history.json（W1 起）——
+          #    verifier 写入的 lastVerifiedAt、采纳后的新价与变化事件必须与数据同批入库；
+          #    否则下一轮拿「已变的 curated」对「上一轮的历史」，check:api-plan-history 会红。
+          git add deals.json scripts/data/source-health.json scripts/data/zh-pending.json scripts/data/deal-history.json scripts/data/source-snapshots.json api-plans.json scripts/data/curated_api_plans.json scripts/data/api-plan-history.json
           if git diff --cached --quiet; then
             echo "数据无变化，跳过提交"
           else

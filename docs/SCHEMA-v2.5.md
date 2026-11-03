@@ -91,7 +91,7 @@
 ```
 id · kind · provider · planName · channel · officialUrl · source · sourceUrl · region
 pricing · models · freeTier · limits · credits · restrictions
-firstSeen · lastSeen · verified · verifiedAt · evidence · derivedMetrics
+firstSeen · lastSeen · verified · verifiedAt · checkMethod · lastVerifiedAt · evidence · derivedMetrics
 ```
 
 | 字段 | 类型 | 规则 |
@@ -113,6 +113,8 @@ firstSeen · lastSeen · verified · verifiedAt · evidence · derivedMetrics
 | `firstSeen` / `lastSeen` | `YYYY-MM-DD` | 人工写；非未来；`firstSeen ≤ lastSeen` |
 | `verified` | `true` | 每一条都是人工对照官方页核过的 |
 | `verifiedAt` | `YYYY-MM-DD` | 非未来；`verifiedAt ≤ lastSeen` |
+| `checkMethod` | enum \| null | **运营元数据**：`static` / `headless` / `manual`。可选（历史夹具可缺省为 `null`），出现时必须是三者之一。语义：裸 GET 可读 / 需浏览器渲染 / 只能人工复核；**不进 id basis、不产生变化事件**（核验是我们的动作，不是厂商的变化）。逐源实测见 [`api-plan-verification.md`](api-plan-verification.md) |
+| `lastVerifiedAt` | `YYYY-MM-DD` \| null | 最近一次**实际核验**日期；非未来。`static` 条目由 `scripts/tools/verify-api-plans.js` 每次成功后更新；`headless` / `manual` 沿用人工复核日期。同样不产生变化事件 |
 | `evidence` | array | **至少 1 条**（≤3 条 × ≤200 字）；字段白名单见 §11 |
 | `derivedMetrics` | object | §12，**永远存在且恒为 `{}`** |
 

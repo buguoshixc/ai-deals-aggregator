@@ -537,9 +537,25 @@ ${list}${truncated}
       </div>`;
   }).join('\n');
 
+  // 元信息变化（officialUrl / source / sourceUrl）**不计入四个价格分栏**，但也不能只报一个数字：
+  // 每条事件的句子必须真的出现在页面上 —— `build-local.js` 的构建期对账按
+  // `planChanges.itemsOf()`（含 `other.metadata`）逐条回读，只报计数会让「日志里的事件 = 页面渲染」失配。
+  // 这里把它们渲染为同一段说明里的明细行：不新增 `<li>`（四个分栏的行数/深链计数口径不变），
+  // 也不给这些项加跨页锚点（元信息变化不指向价格表某一行）。
+  const metaItems = (radar.other.metadata || [])
+    .map(item => {
+      const sentence = apiPlanChangeTextOf(item);
+      if (!sentence) return '';
+      const who = item.titled
+        ? `${item.vendor ? `${item.vendor} · ` : ''}${item.title}`
+        : (item.planId || '');
+      return `<span class="pchgmeta">${escapeHtml(item.at || '')}${who ? ` · ${escapeHtml(who)}` : ''} · ${escapeHtml(sentence)}</span>`;
+    })
+    .filter(Boolean);
   const metaNote = radar.totals.meta > 0
     ? `      ${noteIn(opts)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">另有 ${radar.totals.meta} 条只影响记录元信息的变化（官方定价页 / 来源类型 / 来源地址），`
-      + `不计入上面的分栏；它们仍出现在各条计费记录的变化记录里。</p>`)}\n`
+      + `不计入上面的分栏；它们仍出现在各条计费记录的变化记录里。`
+      + `${metaItems.length ? `明细：${metaItems.join('；')}` : ''}</p>`)}\n`
     : '';
 
   return `<section class="chgsec apichanges" id="api-plans">
