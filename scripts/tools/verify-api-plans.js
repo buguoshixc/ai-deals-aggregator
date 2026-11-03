@@ -22,7 +22,8 @@
  *   · **价格变了** → ① 采纳新价（同时刷新 lastSeen / verifiedAt，让事件日期与数据日期同源）
  *     ② 追加 `api-plan-history.json` 事件（形状由 `lib/api-plan-history.js` 的 `record()` 生成，
  *     不手写字段）③ 写出 `api-plans.json`（派生文件与来源层同批更新，避免两道门禁互斥）；
- *   · **校验失败** → 不改 `lastVerifiedAt`，只把失败记进 `source-health.json`；
+ *   · **校验失败** → 不改 `lastVerifiedAt`，只把失败记进 `api-plan-health.json`（形态与
+ *     `source-health.json` 相同，但**不是同一个文件**：那一份与采集器注册表逐行对账）；
  *     退出码仍为 0（只有 `--strict` 才非 0），免得上游页面一时抖动就阻断整条采集链。
  *
  * ## 确定性
@@ -47,7 +48,11 @@ const { todayCN } = require('../lib/schema');
 const ROOT = path.join(__dirname, '..', '..');
 const CURATED_FILE = path.join(ROOT, 'scripts', 'data', 'curated_api_plans.json');
 const API_PLANS_FILE = path.join(ROOT, 'api-plans.json');
-const HEALTH_FILE = path.join(ROOT, 'scripts', 'data', 'source-health.json');
+// 健康槽位写**独立文件**（`search-intent-v1` 修）：`source-health.json` 是采集器的
+// 15 个登记来源逐条健康表，`check:coverage-targets` 的 t46 会拿它和来源注册表**逐行对账**
+// （注册表几行、文件几行必须相等）。本轮新增的 7 条 API 定价源不在那份注册表里，
+// 写进去就会把「注册表 15 行 / 文件 16 行」变成一条必红的假警报 —— 形态照抄，落点分开。
+const HEALTH_FILE = path.join(ROOT, 'scripts', 'data', 'api-plan-health.json');
 
 const TODAY = todayCN();
 const NOW = new Date(`${TODAY}T00:00:00.000Z`);
@@ -513,7 +518,7 @@ function buildNextPayload(curated, providerTable) {
 }
 
 function updateHealth(attempts) {
-  const loaded = health.load();
+  const loaded = health.load(HEALTH_FILE);
   const rows = (loaded.doc && Array.isArray(loaded.doc.sources) ? loaded.doc.sources : []).map(row => ({ ...row }));
   for (const attempt of attempts) {
     const index = rows.findIndex(row => row && row.source === attempt.source);
@@ -706,7 +711,7 @@ async function main() {
     console.log(`历史事件      : ${changed.length ? `追加 ${historyEvents.length} 条（${historyEvents.map(event => `${event.type} ${event.field || ''}`).join(' / ')}）` : '0 条（价格未变必须 0 事件）'}`);
     const healthy = healthDoc.doc.sources.filter(row => healthAttempts.some(item => item.source === row.source) && row.status === 'healthy').length;
     console.log(`健康表        : ${healthAttempts.length} 条 static 来源（healthy ${healthy} · failed ${healthAttempts.length - healthy}）`);
-    if (!dryRun) console.log('写盘          : curated_api_plans.json · api-plans.json' + (changed.length ? ' · api-plan-history.json' : '') + ' · source-health.json');
+    if (!dryRun) console.log('写盘          : curated_api_plans.json · api-plans.json' + (changed.length ? ' · api-plan-history.json' : '') + ' · api-plan-health.json');
     else console.log('(dry-run，未写盘)');
   }
 
