@@ -145,3 +145,34 @@ token 为空时整块不输出、绝不会生成占位 token。提交并发布�
 - 不为了收录造「优惠码 / 邀请码」内容（站点原则禁止编码类内容）；
 - 不换域名、不做外链长期投入（GitHub Pages 发不出 301，URL 权重不可搬迁）；
 - 百度若验证不通，如实写「不可验证」，不伪造 token、不伪造提交记录。
+
+## 3. 本轮状态记录（`search-intent-v1` · W5，2026-11-04）
+
+**结论：管道已实测可用，两个 token 仍缺 —— 缺的是站点主账号登录后台这一步，不是代码。**
+
+实测（本轮在工作树内做的探针，**探针 token 已回滚，仓库里的 token 仍是 `null`**）：
+
+1. 把 `scripts/data/site-verification.json` 的 `google.token` / `baidu.token` 临时写成探针值，
+   `node scripts/tools/build-local.js --out=dist.w5`；
+2. 产物里逐字出现两条：
+
+   ```html
+   <meta name="google-site-verification" content="W5-PLUMBING-PROBE-google-token">
+   <meta name="baidu-site-verification" content="W5-PLUMBING-PROBE-baidu-token">
+   ```
+
+3. `grep -rl` 全产物只有 `index.html` 一处命中 ⇒ 只挂在首页 `<head>`，不扩散到 185 个内页；
+4. 构建自检全过；探针值随后还原（`git status` 对该文件为空）。
+
+**还缺什么（必须由站点主账号完成，代理与 CI 都做不了）：**
+
+| 步骤 | 谁来做 | 在哪做 | 完成后填哪 |
+|---|---|---|---|
+| 生成 GSC `google-site-verification` token（URL 前缀属性 `https://buguoshixc.github.io/ai-deals-aggregator/`） | 站点主账号 | <https://search.google.com/search-console> | `site-verification.json` → `google.token` + `acquiredAt` |
+| 生成百度 `baidu-site-verification` token（站点 `https://buguoshixc.github.io`） | 站点主账号 | <https://ziyuan.baidu.com> | 同上 → `baidu.token` + `acquiredAt` |
+| 提交 sitemap 并点「验证」 | 站点主账号 | 两个后台 | 后台显示「已验证」 |
+| 记录验证结果（截图/日期/属性类型） | 施工者 | 本文件第 3 节 | 追加一行读数 |
+
+**为什么本轮不代劳：** 两个 token 只能由登录后的控制台页面生成，任何自动化手段（含 CI）都拿不到；
+把它写成「已完成」就是假记录。填 token 之后**不需要改任何代码**，`npm run build` 会自己输出那两条 meta
+（上表第 2 步已实测）。
