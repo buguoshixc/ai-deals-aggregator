@@ -1117,6 +1117,46 @@ ${refs.events.slice().sort((a, b) => (a.at === b.at ? 0 : a.at < b.at ? 1 : -1))
       : `      ${noteIn(ctx)({ kind: 'page-note-empty', slot: 'main-snote', classes: 'snote mnone', declaredBy: NOTES_DECLARED_BY }, `<p class="snote mnone">API 计费日志里没有与该模型相关的事件。</p>`)}`)
     : `      ${noteIn(ctx)({ kind: 'page-note-empty', slot: 'main-snote', classes: 'snote mnone', declaredBy: NOTES_DECLARED_BY }, `<p class="snote mnone">本次构建没有拿到 API 计费日志 —— 这不表示「没有变化」。</p>`)}`;
 
+  /**
+   * search-intent-v1（W3）：模型页首屏三行 —— 回答「免费吗 / 多少钱 / 上下文多长」。
+   *
+   * 三个值全部从**本页下面那张表的同一批 rows** 算出（`apiPricingRowOf()` 的返回值），
+   * 不另取一份数据源：
+   *   · 免费与否 —— 只看 `rates === 0`（「免费」两个字由 `priceText()` 给出，这里不另判一次）；
+   *   · 各平台单价 —— 照抄表格里的价格文本与单位，**不折算、不排序成「最便宜」**（红线）；
+   *     顺序就是下表规范序，取前两条 + 其余条数，避免把十几行价格塞进首屏；
+   *   · 上下文长度 —— `models.json` 没有这个字段 ⇒ 如实写「本站未收录上下文长度」，
+   *     不拿参数规模、发布时间之类的东西凑一个数字。
+   * 没有任何计价条目时，前两行都明写「本站未收录该模型计价」（验收点名的那句话）。
+   */
+  const freeHit = rows.some(row => row.inputText === '免费' || row.outputText === '免费');
+  const factRowsOfModel = [
+    {
+      key: 'free',
+      label: '是否免费',
+      value: rows.length
+        ? (freeHit ? '有平台标价为 0（免费）' : '本站收录的计价条目里没有 0 元价')
+        : '本站未收录该模型计价'
+    },
+    {
+      key: 'prices',
+      label: '各平台单价',
+      value: rows.length
+        ? `${rows.slice(0, 2).map(row => `${row.provider}：输入 ${row.inputText} / 输出 ${row.outputText}（${row.unitText}）`).join(' · ')}`
+          + (rows.length > 2 ? ` · 共 ${rows.length} 条，逐行见下表` : '')
+        : '本站未收录该模型计价'
+    },
+    { key: 'context', label: '上下文长度', value: '本站未收录上下文长度' }
+  ];
+  const modelFactsHtml = `      <aside class="factsum" aria-label="模型要点">
+        <p class="factsum-cap">模型要点</p>
+        <dl class="factsum-list">
+${factRowsOfModel.map(row => `          <div class="factsum-row" data-fact-key="${row.key}" data-fact-value="${escapeHtml(row.value)}"><dt>${escapeHtml(row.label)}</dt><dd>${escapeHtml(row.value)}</dd></div>`).join('\n')}
+        </dl>
+        <p class="factsum-next">按你的用量算一遍：<a href="${escapeHtml(prefix)}tools/api-cost/">API 成本计算器</a> · 逐条单价见 <a href="${escapeHtml(prefix)}plans/api/">API 计费对比表</a></p>
+      </aside>
+`;
+
   return `      <nav class="crumb" aria-label="面包屑"><a href="${escapeHtml(prefix)}">首页</a> ›
         <a href="${escapeHtml(`${prefix}${MODELS_INDEX_ROUTE}`)}">${escapeHtml(MODELS_INDEX_HEADING)}</a> › <span>${escapeHtml(name)}</span></nav>
 
@@ -1126,6 +1166,7 @@ ${refs.events.slice().sort((a, b) => (a.at === b.at ? 0 : a.at < b.at ? 1 : -1))
           · 出现在 ${platformCount} 个平台的计价条目里</span>
       </div>
 
+${modelFactsHtml}
       <dl class="minfo">
         <dt>模型名称</dt><dd>${escapeHtml(name)}</dd>
         <dt>开发者</dt><dd>${escapeHtml(model.developer || UNKNOWN_TEXT)}${model.owner && model.owner !== model.developer ? `（owner：${escapeHtml(String(model.owner))}）` : ''}</dd>

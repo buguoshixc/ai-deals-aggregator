@@ -269,7 +269,7 @@ function apiCostPageBody(apiPlans, ctx) {
     + '\n'
     + '<script type="application/json" id="api-cost-data">' + JSON.stringify(payload) + '</script>'
     + '\n'
-    + '<p class="cost-footer-link"><a href="' + prefix + 'plans/api/">\u67e5\u770b API \u8ba1\u8d39\u5bf9\u6bd4\u8868 →</a></p>'
+    + '<p class="cost-footer-link">想先看免费的：<a href="' + prefix + 'need/free-tier/">免费额度</a> · <a href="' + prefix + 'need/student-only/">学生优惠</a> · <a href="' + prefix + 'need/free-model/">免费模型</a>；每一行的单价与单位在 <a href="' + prefix + 'plans/api/">API 计费对比表</a></p>'
     + '</div>'
     ;
 

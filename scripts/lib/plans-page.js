@@ -1047,6 +1047,41 @@ function plansPageBody(plans, opts = {}) {
   const dealLinksBlock = dealLinks ? `\n${planDealsBlockHtml(dealLinks, { prefix: opts.prefix || '', home, note: opts.note })}` : '';
   const dealLinksMeta = dealLinks ? ` · 当前有优惠 ${dealLinks.counts.withCurrent} 条` : '';
 
+  /**
+   * search-intent-v1（W3）：页面顶部的**校验状态**三行。
+   *
+   * Coding 套餐这一份数据没有「静态可读的官方价格页」—— 44 条记录全部靠人工打开官方页
+   * 核对（`curated_plans.json` 的 `verified` / `verifiedAt`），所以这里只能如实写「人工核对」，
+   * 不能借用 /plans/api/ 那套 `checkMethod` 措辞（那份数据才有逐条自动校验）。
+   * 两个日期必须分开说：「最近校验」= 我们看过官方页的日子；「最近一次真实变化」= 价格/额度
+   * 真的改过的日子（`plan-history.json` 里剔除 `updated` 心跳后的最新一条）。两者混写会让读者
+   * 把「昨天核对过」读成「昨天涨价了」。
+   */
+  const verifiedDays = plans.map(plan => String(plan.verifiedAt || '').slice(0, 10)).filter(Boolean).sort();
+  const lastVerifiedDay = verifiedDays.length ? verifiedDays[verifiedDays.length - 1] : UNKNOWN_TEXT;
+  const planEvents = ((opts.planHistoryStore && opts.planHistoryStore.events) || [])
+    .filter(event => event && event.type !== 'updated');
+  const lastPlanChangeDay = planEvents.map(event => String(event.at || '').slice(0, 10))
+    .filter(Boolean).sort().pop() || null;
+  const verifyRows = [
+    {
+      key: 'methods',
+      label: '校验方式',
+      value: `${plans.length} 条全部人工核对（这一份数据没有静态可读的官方源，不做每日自动校验）`
+    },
+    { key: 'lastVerifiedAt', label: '最近校验', value: lastVerifiedDay },
+    { key: 'lastChange', label: '最近一次真实变化', value: lastPlanChangeDay || '记录窗口内没有价格变化' }
+  ];
+  const verifyFactsHtml = `      <aside class="factsum" aria-label="数据校验状态">
+        <p class="factsum-cap">数据校验状态</p>
+        <dl class="factsum-list">
+${verifyRows.map(row => `          <div class="factsum-row" data-fact-key="${row.key}" data-fact-value="${escapeHtml(row.value)}"><dt>${escapeHtml(row.label)}</dt><dd>${escapeHtml(row.value)}</dd></div>`).join('\n')}
+        </dl>
+        <p class="factsum-next">按 token 用量算钱见 <a href="${escapeHtml(opts.prefix || '')}tools/api-cost/">API 成本计算器</a> · 逐条单价在 <a href="${escapeHtml(opts.prefix || '')}plans/api/">API 计费对比表</a></p>
+      </aside>
+
+`;
+
   return `      <nav class="crumb" aria-label="面包屑"><a href="${home}">首页</a> › <span>${escapeHtml(PLANS_HEADING)}</span></nav>
 
       <div class="stop">
@@ -1054,6 +1089,7 @@ function plansPageBody(plans, opts = {}) {
         <span class="meta">共 ${rows.length} 条套餐 · ${providerCount} 个平台 · 国内 ${rows.filter(r => r.regionText === '国内').length} 条${dealLinksMeta}</span>
       </div>
 
+${verifyFactsHtml}
       ${noteIn(opts)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">${escapeHtml(PLANS_DESCRIPTION)}</p>`)}
 
 ${planChangesBlock}

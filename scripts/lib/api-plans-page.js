@@ -129,6 +129,13 @@ function providerLogoOf(key, table) {
   return (entry && entry.logo) || null;
 }
 
+/**
+ * 校验方式词表（`search-intent-v1` · W1/W3）。
+ * 与数据里的 `checkMethod` 枚举一一对应：`static` = 每天裸 HTTP 自动校验，
+ * `headless` = 需要渲染/反爬绕过，`manual` = 只能人工核对。字段缺失时**不猜**，页面写「未标注」。
+ */
+const VERIFY_METHOD_LABEL = { static: '静态自动校验', headless: '无头浏览器', manual: '人工核对' };
+
 /** 价格文本：`null` → 「—」；`0` → 「免费」；其余带币种符号 */
 function priceText(value, currency) {
   if (value === null || value === undefined) return UNKNOWN_NUM;
@@ -174,6 +181,10 @@ function apiRowOf(plan, entry, { providerTable = null, first = false } = {}) {
     limits: plan.limits || null,
     officialUrl: plan.officialUrl,
     lastSeen: plan.lastSeen,
+    // search-intent-v1：每条记录自己的校验方式与校验日期（不按厂商聚合 —— 同一个厂商的
+    // 不同套餐可能是不同的校验方式，聚合会把「这条是人工核对的」写成自动）。
+    checkMethod: plan.checkMethod || null,
+    lastVerifiedAt: plan.lastVerifiedAt || null,
     first,
     anchorId: first ? `plan-${plan.id}` : null
   };
@@ -338,7 +349,9 @@ function rowHtml(row) {
         ${cell(otherRatesTextOf(row))}
         <td class="pfree">${escapeHtml(freeTierShortText(row.plan))}</td>
         <td class="pdate">${escapeHtml(row.lastSeen)}</td>
-        <td><a href="${escapeHtml(row.officialUrl)}" rel="nofollow noopener" target="_blank">官方定价页 ↗</a></td>
+        <td><a href="${escapeHtml(row.officialUrl)}" rel="nofollow noopener" target="_blank">官方定价页 ↗</a>${row.checkMethod
+    ? `<small>${escapeHtml(VERIFY_METHOD_LABEL[row.checkMethod] || row.checkMethod)} · ${escapeHtml(String(row.lastVerifiedAt || '').slice(0, 10) || UNKNOWN_TEXT)}</small>`
+    : ''}</td>
       </tr>`;
 }
 
@@ -721,6 +734,50 @@ function apiPlansPageBody(plans, opts = {}) {
   const providers = [...new Set(plans.map(plan => plan.provider))];
   const updatedAt = plans.map(plan => plan.lastSeen).filter(Boolean).sort().pop() || UNKNOWN_TEXT;
 
+  /**
+   * search-intent-v1（W3）：把「这份数据是谁在校验、多久校验一次、上一次真的变了是什么时候」
+   * 摊在页面**顶部**，而不是只留一行「最后核对」。
+   *
+   * 为什么要三行分开说：
+   *   · 「最后核对」= 我们看过官方页的日子（`lastVerifiedAt`，自动校验每天刷新）；
+   *   · 「最近一次真实变化」= 价格/额度**真的改过**的日子（`api-plan-history.json` 里
+   *     剔除 `updated` 心跳事件后的最新一条）。两个日期经常不是同一天 —— 混成一个数字，
+   *     读者会以为「昨天核对了」等于「昨天涨价了」。
+   *   · 校验方式按条计数：只有 `static` 是每日自动的，`headless` / `manual` 不是，
+   *     所以这里必须逐条数出来，不能只写「全站每日自动校验」。
+   */
+  const methodCounts = { static: 0, headless: 0, manual: 0 };
+  for (const plan of plans) {
+    if (methodCounts[plan.checkMethod] !== undefined) methodCounts[plan.checkMethod] += 1;
+  }
+  const methodTotal = methodCounts.static + methodCounts.headless + methodCounts.manual;
+  const unlabeled = Math.max(0, plans.length - methodTotal);
+  const lastVerifiedDay = plans.map(plan => String(plan.lastVerifiedAt || '').slice(0, 10))
+    .filter(Boolean).sort().pop() || UNKNOWN_TEXT;
+  const realEvents = ((opts.historyStore && opts.historyStore.events) || [])
+    .filter(event => event && event.type !== 'updated');
+  const lastRealChangeDay = realEvents.map(event => String(event.at || '').slice(0, 10))
+    .filter(Boolean).sort().pop() || null;
+  const verifyRows = [
+    {
+      key: 'methods',
+      label: '校验方式',
+      value: `静态自动校验 ${methodCounts.static} 条 · 无头浏览器 ${methodCounts.headless} 条 · 人工核对 ${methodCounts.manual} 条`
+        + `（共 ${plans.length} 条记录${unlabeled ? `，另 ${unlabeled} 条未标注` : ''}）`
+    },
+    { key: 'lastVerifiedAt', label: '最近校验', value: lastVerifiedDay },
+    { key: 'lastChange', label: '最近一次真实变化', value: lastRealChangeDay || '记录窗口内没有价格变化' }
+  ];
+  const verifyFactsHtml = `      <aside class="factsum" aria-label="数据校验状态">
+        <p class="factsum-cap">数据校验状态</p>
+        <dl class="factsum-list">
+${verifyRows.map(row => `          <div class="factsum-row" data-fact-key="${row.key}" data-fact-value="${escapeHtml(row.value)}"><dt>${escapeHtml(row.label)}</dt><dd>${escapeHtml(row.value)}</dd></div>`).join('\n')}
+        </dl>
+        <p class="factsum-next">按你的用量算一遍：<a href="${prefix}tools/api-cost/">每百万 tokens 多少钱</a> · 长期订阅比价见 <a href="${prefix}plans/coding/">Coding 套餐对比</a></p>
+      </aside>
+
+`;
+
   const notes = API_PLANS_NOTES.map(text => `        <li>${markdownish(text, prefix)}</li>`).join('\n');
   const body = rows.map(rowHtml).join('\n');
 
@@ -731,6 +788,7 @@ function apiPlansPageBody(plans, opts = {}) {
         <span class="meta">${plans.length} 条计费记录 · ${providers.length} 个平台 · ${rows.length} 个模型计价条目 · 最后核对 ${escapeHtml(updatedAt)}</span>
       </div>
 
+${verifyFactsHtml}
       ${noteIn(opts)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">${escapeHtml(API_PLANS_DESCRIPTION)}</p>`)}
 
       <h2 class="ph2" id="api-notes">口径与说明（先读这一段）</h2>
