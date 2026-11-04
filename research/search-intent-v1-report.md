@@ -2,6 +2,8 @@
 
 - 分支 `feat/search-intent-v1`（worktree），基线 `origin/master` = **`3e8699b`**
 - 日期 2026-11-04 · 施工机 Linux（Node 26.13 · Playwright chromium-1243）
+- **发布：PR #130（`gate` success 12m32s）→ merge `94283f2` → Deploy to GitHub Pages
+  success → L5 `smoke` 15 / 0**（2026-11-04 20:13–20:16 CST 实测）
 - 产出：**10 个提交**（前 7 个是主体、第 8 个是本报告初稿、第 9–10 个是收口：M11 修红 +
   本报告重测）、**27 个文件**、`git diff --shortstat 3e8699b..HEAD` 实测 **+2335 −225**
   （提交本报告收口编辑前；初稿的「25 文件 / +2000 −167」对不上仓库，更正见 §7）；新增
@@ -167,15 +169,17 @@ graduatedAt / reason），并把那条守卫从「必须在登记表里」扩成
 
 - 读数（收口轮重跑）：`合计 608.2s / 50 个脚本，失败 0` —— **50 个脚本全绿**（validate /
   全部 selftest / 译文门禁 / 产物可复现 / SEO 验收 / 覆盖意图层 / 变异牙清单 …）。
+- **CI 上同一条链（发布前实测）**：PR #130 的必需检查 `gate` **success 12m32s**；
+  master push 后的 `Verify site (gate)` **success 12m53s**；`Deploy` 的 `prepublish`
+  **success 12m32s**（同一份 `.github/actions/gate/action.yml`，本地与 CI 无第二份步骤清单）。
 - **L4 真浏览器验收（`verify-site.js`）**：**931 项 / 0 失败**（293.1s）；
   **回归比对**（`verify-site.js --compare=research/_raw/ours-baseline/verify.json`，6 条）：**0 失败**（291.6s）。
 - 收口前同一条命令是 `合计 312.9s / 49 个脚本，失败 1`（L4 931 / 1）；红点、根因与修法见
   §5 第 2 条与 §4 第 3 行 —— **只换靶页，判据一个字没改**。
-- **L5（`smoke`）没有执行，也不能在本机执行**：它请求的是**已部署**站点，而本分支尚未合并 /
-  部署（见 §5 第 1 条：无推送凭证）。用 `--url=` 指向本地 `dist/` 也过不了 —— smoke 的
-  canonical 自指断言要求请求地址与产物里的绝对 canonical 逐字相同。部署后执行 `npm run smoke`
-  即可，判据与 L1–L4 不重复（HTTP 200 / title / canonical 自指 / 无残留占位符 / JSON-LD 可解析 +
-  订阅产物三问）。
+- **L5（`smoke`）已在发布后执行**：**15 项 / 0 失败**（2026-11-04 20:16 CST；183 条 sitemap URL、
+  10 个页面族 + 模型 / 优惠详情页抽样 + 两条订阅产物 `feed.xml` 16604B · `feed.json` 20050B）。
+  它只对**已部署**站点有意义（canonical 自指断言要求请求地址与产物里的绝对 canonical 逐字相同），
+  所以不在 `npm run gate` 里，也不该拿本地 `dist/` 冒充；判据与 L1–L4 不重复。
 - 环境说明：`verify-site.js` 里的浏览器路径是 Windows Edge
   （`process.env.DSH_EDGE` 可覆盖）。本机用 Playwright 自带 chromium + 解包的
   `libnspr4 / libnss3 / libasound2`（`LD_LIBRARY_PATH`）跑通；另外**本机原本一个中文字体都没有**
@@ -196,13 +200,21 @@ graduatedAt / reason），并把那条守卫从「必须在登记表里」扩成
 
 ---
 
-## 5. 没做什么 / 没验证什么（如实）
+## 5. 边界、没做什么、没验证什么（如实；第 1 条已在发布轮完成）
 
-1. **PR / 合并 / 部署 / 线上冒烟全部没做**：这台机器没有可用的 GitHub 推送凭证
-   （收口日复核仍缺：`gh auth status` = 未登录、无 `credential.helper`、`~/.ssh` 里只有
-   `known_hosts`）。`git fetch` 可以直连（`git -c http.proxy= -c https.proxy= fetch`），
-   `git push` 报 `could not read Username for 'https://github.com'`。仓库规则 `master-gate`
-   要求 `pull_request` + 必需检查 `gate`，**直推 master 会被拒**，所以没有绕过。
+1. **（发布轮更新：已完成）PR / 合并 / 部署 / 线上冒烟（2026-11-04 晚，全部实测）**：
+   - PR **#130** → 必需检查 `gate` **success（12m32s）** → merge commit **`94283f2`**
+     （19:59:17 CST 合并）。仓库规则 `master-gate` 仍要求 `pull_request` + `gate`，
+     走的就是 PR 路径，**没有直推 master**。
+   - push master 触发两条链：`Verify site (gate)` **success（12m53s）**；
+     `Deploy to GitHub Pages` 首次在 **Setup Pages**（`actions/configure-pages@v6`）遇到一次
+     **`other side closed`** 的瞬时网络错误（build 失败、deploy 未执行），
+     `gh run rerun --failed` 后 **success**（prepublish 12m32s · build 13s · deploy 14s）。
+     —— 记在这里的原因：它不是门禁红，也不是内容问题，重跑即过；看到它别去改代码。
+   - L5 `smoke` **15 项 / 0 失败**（线上 183 条 sitemap URL；订阅产物 16604B / 20050B）。
+   - 凭证变化：本轮由站点主 `gh auth login` 授权后推送；`gh auth setup-git` 写入了
+     `credential.https://github.com.helper`（之前为空）。仓库级 `http(s).proxy=127.0.0.1:7890`
+     在本机不可达，推拉统一用 `-c http.proxy= -c https.proxy=` 直连。
 2. **收口前唯一那 1 条 verify 失败（§22c M11「承重证明」）已修掉 —— 是换靶，不是放宽**：
    红点不是产品断言，而是那条**变异自我证明的前提**。`changes/` 的 #13 说明里嵌了两个
    **块级** `<span class="pchgmeta">`（`display:block`），grid 变异下它们各自成为 70ch 轨道的
@@ -275,6 +287,7 @@ npm run smoke
    门禁 step 53 实测 291.6s，收口复跑同样 937 / 0）；
    `verify-api-plans --dry-run` 仍 **7/7**、0 变化 0 事件；`selftest:seo` 104 / 0、
    `selftest:coverage-targets` 200 / 0、`verify:seo` 18 / 0、`check:zh` 待译 0 / 超期 0。
-4. **仍未完成的只有外部阻塞项**：PR / 合并 / 部署 / 线上冒烟（推送凭证，§5 第 1 条）、
-   W5 两个站长平台 token（站点主账号，§1 W5）、17 条 headless/manual 定价源的人工复核
-   （§5 第 4 条）、发布后 14 天的接受度面板数据（§5 第 7 条）。**代码侧没有已知红点**。
+4. **仍未完成的只有外部阻塞项**：W5 两个站长平台 token（站点主账号，§1 W5）、
+   17 条 headless/manual 定价源的人工复核（§5 第 4 条）、发布后 14 天的接受度面板数据
+   （§5 第 7 条）。**代码侧与发布侧都没有已知红点**：已合并（`94283f2`）、已部署、
+   L5 **15 / 0**（读数见 §5 第 1 条与 §3.1）。
