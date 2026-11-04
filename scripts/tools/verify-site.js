@@ -9414,10 +9414,27 @@ function noJsControlExemptionFor(route) {
           what: 'F4 原型：缺陷藏在 @media (min-width:1500px) 里（@1440 档物理上看不见，只有 @1600 档咬得到）'
             + '（靶页同上换到 plans/）' },
         // ---- t14（修复轮 3）新增：两条「盒子满宽、只有排版结果变窄」的牙 ----
-        { id: 'M11', route: 'changes/', width: WIDE_DESKTOP, expect: 'note-ink-narrow', target: 'extend', expectInkEvidence: true,
+        //   ⚠️ 靶页换过一次（search-intent-v1 修红，2026-11-04，理由如实记）：
+        //   原靶页 `changes/` 的 **#13** 说明里嵌了两个 **块级** `<span class="pchgmeta">`
+        //   （`display:block`，见 `scripts/lib/api-plans-page.js`）。grid 变异下这两个 span 各自
+        //   成为 70ch 轨道的一个 grid item，内容盒被压到 **914px < 0.85 × 1380 = 1173px** ⇒ **旧判据**
+        //   （`note-narrow`：textWidth = 承载文本块内容盒的最小值）在那一页上**真的咬中了它**。
+        //   这不是判据退化（旧判据对「块级子元素被压窄」本来就有覆盖），但承重证明要的恰恰是
+        //   「旧判据看不见」的那一类 ⇒ 前提在 `changes/` 上不成立；继续留在那一页就是一条**恒红**的牙。
+        //   换到 `plans/coding/`（同一份产物、同一条变异，chromium-1243 + Noto CJK 实测）：
+        //   `note-narrow` **0 条** · `note-ink-narrow` **2 条**（#0 3 行 / 最宽 456px · #4 2 行 /
+        //   最宽 463px，两条的内容盒都还是 1380px）· 首屏说明 #0 同时越过 2 行上限 ⇒ 伴随
+        //   `note-intro-long`（**同一物理原因**：文字被排进 70ch 后行数增加，不是另一个缺陷）。
+        //   全站 186 页里只有 `plans/coding/` 与 `tools/api-cost/` 满足前提；取前者是因为被咬的
+        //   #0 有 **136 字**（约 3 倍换行余量），而 `tools/api-cost/` 最长被咬条只有 **45 字**
+        //   （字体步进抖几个百分点就会退回单行 ⇒ 牙在 CI 上静默失效 —— 与 M15 换靶时记录的是
+        //   同一种失效方式，所以不能选它）。
+        { id: 'M11', route: 'plans/coding/', width: WIDE_DESKTOP, expect: 'note-ink-narrow', target: 'extend', expectInkEvidence: true,
           rule: '.snote { display: grid; grid-template-columns: minmax(0, 70ch) 1fr; }',
           what: 't8 的 F-R2-1 原型：display:grid + minmax(0,70ch) 1fr —— 只改一条 CSS、不动标记，'
-            + '盒宽/内容盒都满宽，文字被排进 70ch 那一轨（修复轮 2 时整轮 842 项 EXIT=0 放行的那一条）' },
+            + '盒宽/内容盒都满宽，文字被排进 70ch 那一轨（修复轮 2 时整轮 842 项 EXIT=0 放行的那一条）'
+            + '（靶页由 changes/ 换到 plans/coding/：前者 #13 说明含块级子元素，变异下被 70ch 轨道压窄 ⇒ '
+            + '旧判据真的咬中它、承重前提不成立；见上方换靶记录）' },
         { id: 'M12', route: 'plans/', width: WIDE_DESKTOP, expect: 'note-hidden-text', target: 'extend', expectNoGlyph: true,
           rule: '.snote { font-size: 0; } .snote::before { content: "§22c-M12 伪元素承载正文（真实文本已不可见）";'
             + ' display: block; max-width: 70ch; font-size: var(--fs-sm); line-height: 1.7; }',
@@ -9514,8 +9531,9 @@ function noJsControlExemptionFor(route) {
         //   恒等于较矮者的全高），不再依赖字体；这条结构前提现在由承重证明**显式断言**
         //   （`note.textRuns === 1`，见 textRunCountOf 的注释），所以将来谁把靶页换回多文本节点的
         //   说明，**本机就会确定性判红**，而不是等到 CI 上以「字体不同」的形式红。
-        //   ⚠️ 该页同时是 M9a（冻结串替换成 `.snote ~ .snote { max-width: 70ch }`）与 M16
-        //   （DOM 追加 <style>）的靶页：三条牙的注入形态各不相同、各自跑在**独立的页面加载**上，
+        //   ⚠️ 该页同时是 M9a（冻结串替换成 `.snote ~ .snote { max-width: 70ch }`）、M11
+        //   （grid 变异：`display: grid; grid-template-columns: minmax(0, 70ch) 1fr`）与 M16
+        //   （DOM 追加 <style>）的靶页：四条牙的注入形态各不相同、各自跑在**独立的页面加载**上，
         //   互不干扰（与 M8/M10/M12/M1–M4 共用 `plans/` 是同一种安排）。
         { id: 'M15', route: 'plans/coding/', width: WIDE_DESKTOP, expect: 'note-ink-narrow', target: 'extend',
           expectVertical: true,
@@ -9665,7 +9683,8 @@ function noJsControlExemptionFor(route) {
           const rowsOfInk = geometry ? geometry.notes.filter(note => inkKeys.includes(wideNoteKey(mutation.route, note.index))) : [];
           const lineEvidenceOk = rowsOfInk.length > 0 && rowsOfInk.every(note => note.lineCount >= 2 && note.widestLine > 0);
           const boxStayedWide = rowsOfInk.length > 0 && rowsOfInk.every(note => note.textWidth >= WIDE_NOTE_RATIO * Math.min(geometry.region.width, geometry.main.width) - 0.01);
-          check(`§22c ${mutation.id} 承重证明：旧判据（内容盒 textWidth）**一条都没咬**，咬中的全是新的逐行字迹码`,
+          check(`§22c ${mutation.id} 承重证明：旧判据（内容盒 textWidth）**一条都没咬**，咬中的是逐行字迹码`
+            + '（首屏说明同时越过行数上限时，note-intro-long 是同一物理原因的伴随码，不是旧判据）',
             inkKeys.length > 0 && narrowKeys.length === 0 && lineEvidenceOk && boxStayedWide,
             `note-narrow ${narrowKeys.length} 条（0 = 盒子/内容盒满宽，旧口径确实看不见）· note-ink-narrow ${inkKeys.length} 条 [${inkKeys.join(', ')}]`
             + ` · 这些条的行证据：${rowsOfInk.map(note => `#${note.index} ${note.lineCount} 行 / 最宽 ${wideRound(note.widestLine)}px / 内容盒 ${wideRound(note.textWidth)}px`).join(' · ') || '（无）'}`);
