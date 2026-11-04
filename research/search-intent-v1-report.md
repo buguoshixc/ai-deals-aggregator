@@ -2,10 +2,13 @@
 
 - 分支 `feat/search-intent-v1`（worktree），基线 `origin/master` = **`3e8699b`**
 - 日期 2026-11-04 · 施工机 Linux（Node 26.13 · Playwright chromium-1243）
-- 产出：**7 个提交**、25 个文件、+2000 −167；新增 `scripts/lib/fact-summary.js`、
-  `scripts/tools/verify-api-plans.js`、`scripts/data/api-plan-health.json`
+- 产出：**10 个提交**（前 7 个是主体、第 8 个是本报告初稿、第 9–10 个是收口：M11 修红 +
+  本报告重测）、**27 个文件**、`git diff --shortstat 3e8699b..HEAD` 实测 **+2335 −225**
+  （提交本报告收口编辑前；初稿的「25 文件 / +2000 −167」对不上仓库，更正见 §7）；新增
+  `scripts/lib/fact-summary.js`、`scripts/tools/verify-api-plans.js`、`scripts/data/api-plan-health.json`
 - 边界：没有新增页面族、没有后端、数据模型只加两个字段、没有动 132 个工具页、
-  没有发布数据 JSON / MCP / llms.txt、没有修 Futurepedia、`.snote` 判据一个字符没改
+  没有发布数据 JSON / MCP / llms.txt、没有修 Futurepedia、`.snote` 判据/下限一个字符没改
+  （产物 `.snote` 因 W1 的数据变化 202 → 203，见 §1 W2 与 §7）
 
 ---
 
@@ -52,7 +55,10 @@
 - 3 个 `/need/*` 是钉住的**别名页**（student-only / free-api / dev-credits），判据按**路由前缀**
   取而不是按 `kind` 取，所以 10 页一个没漏。
 - **`.snote` 判据一个字没改**：`index.html` 里那条 frozen 规则的唯一定义点没动，
-  §22c ③b「目录页首屏 `.snote` = 0」照旧（产物 `.snote` 202 = 202）；新容器类名登记进
+  §22c ③b「目录页首屏 `.snote` = 0」照旧（产物 `.snote` **202 → 203**：W1 写入
+  `scripts/data/api-plan-history.json` 后，`changes/` 的「另有 N 条只影响记录元信息的变化」
+  从「不渲染」变成「渲染」，该页说明 14 → 15；清单仍**逐页对账一致（203 = 203）**，
+  更正见 §7 第 2 条）；新容器类名登记进
   `docs/DESIGN-RULES.md` 的「事实摘要 ≠ 解释段」一节（含三条纪律与射程）。
 - 新增断言**只有 2 条**（`verify-site.js` §22e，只加不删）：
   ① 10 页各有 ≥3 行、5 个 key 齐、口径句逐字等于常量；
@@ -141,34 +147,40 @@ graduatedAt / reason），并把那条守卫从「必须在登记表里」扩成
 
 | 项 | 读数 |
 |---|---|
-| `node scripts/tools/build-local.js` | ✅ 产物自检全过 · **186 页** · 579.7 KB · `.snote` **202 = 202**（未动）· `.pnote` 165 · `.vsnote` 125 |
-| `verify-site.js`（本轮树，装了 CJK 字体） | **931 项 / 失败 1**（§22c M11 承重证明，见 §5）；§22e 两条 **✓**（`10 页 · 50 行`） |
-| `verify-site.js`（同一棵树，**没装** CJK 字体） | 931 项 / 失败 4 —— 多出的 3 条是字体度量导致（`/models/` 320/348px、§22c M14） |
+| `node scripts/tools/build-local.js` | ✅ 产物自检全过 · **186 页** · 580.3 KB · `.snote` **203 = 203**（基线 202，+1 见 §7 第 2 条）· `.pnote` 165 · `.vsnote` 125 · sitemap 183 |
+| `verify-site.js`（本轮树，装了 CJK 字体） | **931 项 / 失败 0**（收口前是 931 / 1 —— 唯一那条 §22c M11 承重证明已在 `8c898ab` 换靶修掉，判据一字未改；见 §4 第 3 行 / §5 第 2 条）；§22e 两条 **✓**（`10 页 · 50 行`） |
+| `verify-site.js --compare`（`verify:regress` 基线） | **937 项 / 0 失败**（= 931 + 6 条回归比对；门禁 step 53 实测 291.6s，收口复跑同样 937 / 0）：覆盖条数 / 卡片数 / 首屏完整可见不减少、页高 ≤ 基线 × 1.15、外部请求不增加、JS 错误 0 |
+| `verify-site.js`（同一棵树，**没装** CJK 字体） | 初稿读数 931 项 / 失败 4 —— 多出的 3 条是字体度量导致（`/models/` 320/348px、§22c M14）；收口轮**没有**重跑无字体环境（门禁环境必须装 CJK 字体，见 §3.1 环境说明） |
 | 改动前基线（`origin/master` 产物） | **929 项 / 失败 5**（本来就有 M11 变异 + M11 承重 + M14 + 2×`/models/` 顶栏折行） |
-| 失败项是否由本轮引入 | **否**（见 §5 第 2 条：同一台机器上，改动前的产物同样红） |
-| 新增断言 | **恰好 2 条**（§22e），931 − 929 = 2 |
+| 失败项是否由本轮引入 | **否**（收口前那 1 条是 M11 牙的**承重前提**在 `changes/` 上不成立，不是产品缺陷；换靶修掉后同一棵树 931 / 0 —— 见 §5 第 2 条） |
+| 新增断言 | **恰好 2 条**（§22e），931 − 929 = 2；收口只换 M11 靶页，**没有**新增 / 删除断言 |
 | 首页页高 | **4957px**，与改动前逐像素相同（回归线 = 基线 × 1.15） |
 | `npm run check:zh` | ✅ 已贴 58 条 / 76 字段 · 漂移 0 · 待译 0 · 超期 0（修前 待译 5 / 超期 3，`origin/master` 就是红的，`6f8864f` 修） |
 | `npm run selftest:coverage-targets` | ✅ **200 / 0**（修前 199 / 1，红在 t46） |
 | `npm run selftest:seo` | ✅ **104 / 0**（修前 100 / 0；净增 4 = 1 条改写 + 3 条毕业牙） |
 | `npm run verify:seo` | ✅ **18 / 0**（修前红在「登记过期：need/ai-coding/ need/no-card/」） |
-| `verify-api-plans.js --dry-run` | ✅ 7/7 static · 价格变化 0 · 历史事件 0 · 健康 7/7 |
+| `verify-api-plans.js --dry-run` | ✅ 7/7 static · 价格变化 0 · 历史事件 0 · 健康 7/7（收口日重测仍 7/7、0 变化、0 事件） |
 | `npm run check:reproducible` | ✅ `deals.json` 值全部有源、管线幂等（手写值矛盾 0 处）；门禁 L1 的产物可复现脚本同样全绿 |
-| `npm run gate` | 见 §3.1 |
+| `npm run gate` | ✅ **608.2s / 50 个脚本，失败 0**（见 §3.1） |
 
-### 3.1 完整门禁（`npm run gate`，L1–L5）
+### 3.1 完整门禁（`npm run gate`，读 CI 的 `.github/actions/gate/action.yml`）
 
-- 读数：`合计 312.9s / 49 个脚本，失败 1` —— **48 个脚本全绿**（validate / 全部 selftest /
-  译文门禁 / 产物可复现 / SEO 验收 / 覆盖意图层 / 变异牙清单 …）。
-- **L4 真浏览器验收（`verify-site.js`）**：**931 项 / 1 失败**（290.5s）—— 唯一那 1 条是
-  §22c M11「承重证明」（一条**变异测试的自我证明**，不是产品断言），见 §5 第 2 条。
-- **L5** 因 L4 未全绿而未执行。
-- 也就是说：**本轮唯一没拿到的绿色，是一条在本机字体/内容下站不住的变异自我证明**；
-  产品断言、SEO 验收、覆盖意图层、四份数据可复现全部通过。
+- 读数（收口轮重跑）：`合计 608.2s / 50 个脚本，失败 0` —— **50 个脚本全绿**（validate /
+  全部 selftest / 译文门禁 / 产物可复现 / SEO 验收 / 覆盖意图层 / 变异牙清单 …）。
+- **L4 真浏览器验收（`verify-site.js`）**：**931 项 / 0 失败**（293.1s）；
+  **回归比对**（`verify-site.js --compare=research/_raw/ours-baseline/verify.json`，6 条）：**0 失败**（291.6s）。
+- 收口前同一条命令是 `合计 312.9s / 49 个脚本，失败 1`（L4 931 / 1）；红点、根因与修法见
+  §5 第 2 条与 §4 第 3 行 —— **只换靶页，判据一个字没改**。
+- **L5（`smoke`）没有执行，也不能在本机执行**：它请求的是**已部署**站点，而本分支尚未合并 /
+  部署（见 §5 第 1 条：无推送凭证）。用 `--url=` 指向本地 `dist/` 也过不了 —— smoke 的
+  canonical 自指断言要求请求地址与产物里的绝对 canonical 逐字相同。部署后执行 `npm run smoke`
+  即可，判据与 L1–L4 不重复（HTTP 200 / title / canonical 自指 / 无残留占位符 / JSON-LD 可解析 +
+  订阅产物三问）。
 - 环境说明：`verify-site.js` 里的浏览器路径是 Windows Edge
   （`process.env.DSH_EDGE` 可覆盖）。本机用 Playwright 自带 chromium + 解包的
   `libnspr4 / libnss3 / libasound2`（`LD_LIBRARY_PATH`）跑通；另外**本机原本一个中文字体都没有**
-  （`fc-list :lang=zh` = 0），装 Noto CJK 之后 4 条字体度量失败降到 1 条。
+  （`fc-list :lang=zh` = 0），装 Noto CJK 之后 3 条字体度量失败转绿、只剩 1 条（M11 承重证明，
+  收口轮已换靶修掉 —— 见 §5 第 2 条）。重装依赖的命令见 §6。
 
 ---
 
@@ -178,24 +190,32 @@ graduatedAt / reason），并把那条守卫从「必须在登记表里」扩成
 |---|---|---|
 | ① 存在性断言不是空跑 | 用**改动前**的产物跑同一套 verify | ✗ 红：「need/ai-coding/ 没有 aside.factsum」（10 页 · 0 行）→ 加上块之后 ✓ |
 | ② 重算断言能咬住数字 | 复制产物只改一处：`need/free-tier/` 的 `data-fact-value` 从 **60 条 → 61 条**（属性与可见 `<dd>` 同改），再跑同一套 verify | ✅ 咬住：②红并点名 `need/free-tier/#count 属性值「61 条」≠ 重算「60 条」`；同一份里 ① 仍 ✓（存在性不受影响） |
-| `.snote` 判据没被放宽 | 两次运行里 §22c ③b 都是 ✓，产物 `.snote` 计数 202 = 202 | ✓ |
+| `.snote` 判据没被放宽 | 两次运行里 §22c ③b 都是 ✓，产物 `.snote` 计数 **203 = 203**（基线 202，+1 见 §7 第 2 条） | ✓ |
 | 毕业的三条牙 | `selftest:seo` 新增：重叠 / 余量 < 150 / floor 不自洽 ⇒ 各红 | 104 项里 3 条新牙全绿 |
+| ③ **承重证明的前提本身也要有牙**（收口轮） | 2026-11-04：M11 在 `changes/` 上**恒红** —— 该页 #13 说明含两个块级 `span.pchgmeta`（`display:block`），grid 变异下它们成为 70ch 轨道的 grid item，内容盒 914px < 0.85×1380 = 1173px ⇒ **旧判据** `note-narrow` 真的咬中 ⇒「旧判据一条都没咬」前提不成立。换靶 `plans/coding/`（判据一字未改） | **换靶前** 931 项 / 1 失败（`note-narrow 1 条`，点名 `changes/#13`）；**换靶后** M11 码集 `[note-ink-narrow, note-intro-long, note-ink-narrow]`（intro-long 为同一物理原因的伴随码）、承重证明读数 `note-narrow 0 条 · note-ink-narrow 2 条 [plans/coding/#0 3 行 / 455.81px · #4 2 行 / 462.61px，内容盒都还是 1380px]` ⇒ **931 / 0** |
 
 ---
 
 ## 5. 没做什么 / 没验证什么（如实）
 
 1. **PR / 合并 / 部署 / 线上冒烟全部没做**：这台机器没有可用的 GitHub 推送凭证
-   （无 token、无 credential helper、无 SSH key、未装 `gh`）。`git fetch` 可以直连
-   （`git -c http.proxy= -c https.proxy= fetch`），`git push` 报
-   `could not read Username for 'https://github.com'`。仓库规则 `master-gate` 要求
-   `pull_request` + 必需检查 `gate`，**直推 master 会被拒**，所以没有绕过。
-2. **1 条 verify 失败（§22c M11「承重证明」）不是本轮引入**：它是一条**变异测试的自我证明**
-   （把 `.snote` 改成 70ch 网格后，要求「旧口径一条都咬不到、全靠新的逐行字迹码咬住」）。
-   本轮运行里变异后旧口径也咬到 1 条（`changes/#13`），所以这条自我证明不成立。
-   改动前的产物在同一台机器上**同样红**（那一轮是另一种红法：`note-ink-narrow` 一条都没咬）。
-   它的结论依赖页面内容与字体度量，**没有为了它改任何判据**。
-   （另外 3 条字体度量失败在装了 Noto CJK 之后已转绿：`/models/` 320px、348px、§22c M14。）
+   （收口日复核仍缺：`gh auth status` = 未登录、无 `credential.helper`、`~/.ssh` 里只有
+   `known_hosts`）。`git fetch` 可以直连（`git -c http.proxy= -c https.proxy= fetch`），
+   `git push` 报 `could not read Username for 'https://github.com'`。仓库规则 `master-gate`
+   要求 `pull_request` + 必需检查 `gate`，**直推 master 会被拒**，所以没有绕过。
+2. **收口前唯一那 1 条 verify 失败（§22c M11「承重证明」）已修掉 —— 是换靶，不是放宽**：
+   红点不是产品断言，而是那条**变异自我证明的前提**。`changes/` 的 #13 说明里嵌了两个
+   **块级** `<span class="pchgmeta">`（`display:block`），grid 变异下它们各自成为 70ch 轨道的
+   grid item ⇒ 内容盒被压到 **914px < 0.85 × 1380 = 1173px** ⇒ **旧判据**（`note-narrow`，
+   textWidth = 承载块内容盒的最小值）**真的咬中了它**。也就是说「旧判据一条都没咬」在那一页上
+   不成立 —— 这由页面结构决定，与字体无关，牙留在那里只会恒红。
+   处置（`8c898ab`）：靶页换 `plans/coding/`。全站 186 页里只有它与 `tools/api-cost/` 满足前提；
+   取前者是因为被咬的 #0 有 **136 字**（约 3 倍换行余量），后者最长被咬条只有 45 字
+   （字体步进抖几个百分点就退回单行 ⇒ 牙在 CI 上静默失效，与 M15 换靶记录同因）。
+   **判据、下限、码集一条没改**；M11 变异码集变成
+   `[note-ink-narrow, note-intro-long, note-ink-narrow]` —— `note-intro-long` 是**同一物理原因**
+   的伴随码（首屏说明被排进 70ch 后 3 行 > 2 行上限），已写进断言名字与注释。
+   （收口前那 3 条字体度量失败在装了 Noto CJK 之后已转绿：`/models/` 320px、348px、§22c M14。）
 3. **W5 的两个 token 没拿到**：只能站点主账号登录 GSC / 百度后台生成；管道实测已可用（§1 W5）。
 4. **17 条 headless / manual 的 API 定价源仍是人工**：只做了「如实标注」，没搭无头浏览器采集，
    也没逐家人工复核。它们**不在**每日自动校验里。
@@ -215,13 +235,46 @@ graduatedAt / reason），并把那条守卫从「必须在登记表里」扩成
 node scripts/tools/build-local.js
 
 # 真浏览器验收（Linux：chromium + libnspr4/libnss3/libasound2 + 中文字体）
-DSH_EDGE=$HOME/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome \
+# 本机（Ubuntu 26.04）没有这三个库；不用 root 也能补：
+mkdir -p /tmp/bdeps/debs /tmp/bdeps/root && cd /tmp/bdeps/debs
+apt-get download libnss3 libnspr4 libasound2t64
+for d in *.deb; do dpkg-deb -x "$d" /tmp/bdeps/root; done
+# 中文字体：fc-list :lang=zh 为 0 时，把 Noto CJK 放进 ~/.fonts 再 fc-cache -f
+# （缺字体时多红 3 条字体度量：/models/ 320px、348px、§22c M14）
+cd - && DSH_EDGE=$HOME/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome \
 LD_LIBRARY_PATH=/tmp/bdeps/root/usr/lib/x86_64-linux-gnu \
 node scripts/tools/verify-site.js
 
-# 完整门禁
+# 完整门禁（读 CI 的 action.yml；同一条链、同一份步骤定义）
 DSH_EDGE=... LD_LIBRARY_PATH=... npm run gate
 
 # W1 的每日校验（dry-run 不写盘）
 node scripts/tools/verify-api-plans.js --dry-run
+
+# L5（部署后才有意义）
+npm run smoke
 ```
+
+---
+
+## 7. 收口轮更正（2026-11-04 晚 · 如实）
+
+1. **计数更正**：本报告初稿写的「7 个提交、25 个文件、+2000 −167」对不上仓库实测。
+   `git diff --shortstat 3e8699b..HEAD`（提交初稿后）= **27 个文件 / +2311 −220**；
+   若按「排除 `research/`」口径则是 **25 个文件 / +2072 −190**。初稿的 +2000 −167 两个数
+   不在任何一种口径上（−167 恰是 `839a2b5` 时的删除数），**以本节实测为准**。
+   收口（M11 换靶 `8c898ab` + 本报告重测）之后：提交数 **10**、27 个文件；
+   行数见页首（提交本报告编辑前实测 **+2335 −225**）。
+2. **`.snote` 读数更正**：初稿两处写「202 = 202（未动）」。实测：基线 `3e8699b` 产物是 **202**，
+   本分支产物是 **203** —— 多的 1 条是 `changes/` 的「另有 N 条只影响记录元信息的变化」：
+   W1 写入 `scripts/data/api-plan-history.json`（2 条只影响元信息的事件）之后，这一条从
+   「不渲染」变成「渲染」（该页说明 14 → 15）。清单仍是逐页对账一致（**203 = 203**），
+   但「未动」这个说法是错的；`.snote` 的**判据与下限**本身确实一字未改。
+3. **门禁读数重测**（收口轮，同一棵树）：`npm run gate` **608.2s / 50 个脚本 / 0 失败**；
+   `verify-site.js` **931 项 / 0 失败**（293.1s）；回归比对 **937 项 / 0 失败**（= 931 + 6，
+   门禁 step 53 实测 291.6s，收口复跑同样 937 / 0）；
+   `verify-api-plans --dry-run` 仍 **7/7**、0 变化 0 事件；`selftest:seo` 104 / 0、
+   `selftest:coverage-targets` 200 / 0、`verify:seo` 18 / 0、`check:zh` 待译 0 / 超期 0。
+4. **仍未完成的只有外部阻塞项**：PR / 合并 / 部署 / 线上冒烟（推送凭证，§5 第 1 条）、
+   W5 两个站长平台 token（站点主账号，§1 W5）、17 条 headless/manual 定价源的人工复核
+   （§5 第 4 条）、发布后 14 天的接受度面板数据（§5 第 7 条）。**代码侧没有已知红点**。
