@@ -64,6 +64,8 @@
       "lastSeen": "2026-10-05",
       "verified": true,
       "verifiedAt": "2026-10-05",
+      "checkMethod": "manual",
+      "lastVerifiedAt": "2026-10-05",
       "evidence": [
         {
           "field": "pricing.unit",
@@ -272,6 +274,8 @@
       "lastSeen": "2026-10-01",
       "verified": true,
       "verifiedAt": "2026-10-01",
+      "checkMethod": "manual",
+      "lastVerifiedAt": "2026-10-01",
       "evidence": [
         {
           "field": "pricing.unit",
@@ -340,6 +344,8 @@
       "lastSeen": "2026-10-01",
       "verified": true,
       "verifiedAt": "2026-10-01",
+      "checkMethod": "manual",
+      "lastVerifiedAt": "2026-10-01",
       "evidence": [
         {
           "field": "models.deepseek-v4.1-flash",
@@ -357,9 +363,9 @@
       "provider": "anthropic",
       "planName": "Claude API 按量计费",
       "channel": "standard",
-      "officialUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
+      "officialUrl": "https://platform.claude.com/docs/en/about-claude/pricing",
       "source": "Official-Pricing",
-      "sourceUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
+      "sourceUrl": "https://platform.claude.com/docs/en/about-claude/pricing",
       "region": "global",
       "pricing": {
         "currency": "USD",
@@ -448,6 +454,8 @@
       "lastSeen": "2026-10-08",
       "verified": true,
       "verifiedAt": "2026-10-08",
+      "checkMethod": "manual",
+      "lastVerifiedAt": "2026-10-08",
       "evidence": [
         {
           "field": "models.claude-fable-5.1",
@@ -541,6 +549,8 @@
       "lastSeen": "2026-10-05",
       "verified": true,
       "verifiedAt": "2026-10-05",
+      "checkMethod": "static",
+      "lastVerifiedAt": "2026-11-04",
       "evidence": [
         {
           "field": "pricing.unit",
@@ -645,6 +655,8 @@
       "lastSeen": "2026-10-05",
       "verified": true,
       "verifiedAt": "2026-10-05",
+      "checkMethod": "manual",
+      "lastVerifiedAt": "2026-10-05",
       "evidence": [
         {
           "field": "pricing.unit",
@@ -731,6 +743,8 @@
       "lastSeen": "2026-10-04",
       "verified": true,
       "verifiedAt": "2026-10-04",
+      "checkMethod": "headless",
+      "lastVerifiedAt": "2026-10-04",
       "evidence": [
         {
           "field": "pricing.currency",
@@ -830,6 +844,8 @@
       "lastSeen": "2026-10-01",
       "verified": true,
       "verifiedAt": "2026-10-01",
+      "checkMethod": "static",
+      "lastVerifiedAt": "2026-11-04",
       "evidence": [
         {
           "field": "models.deepseek-flash",
@@ -930,6 +946,8 @@
       "lastSeen": "2026-10-01",
       "verified": true,
       "verifiedAt": "2026-10-01",
+      "checkMethod": "static",
+      "lastVerifiedAt": "2026-11-04",
       "evidence": [
         {
           "field": "limits",
@@ -1160,6 +1178,8 @@
       "lastSeen": "2026-10-04",
       "verified": true,
       "verifiedAt": "2026-10-04",
+      "checkMethod": "static",
+      "lastVerifiedAt": "2026-11-04",
       "evidence": [
         {
           "field": "pricing.currency",
@@ -1308,6 +1328,8 @@
       "lastSeen": "2026-10-01",
       "verified": true,
       "verifiedAt": "2026-10-01",
+      "checkMethod": "manual",
+      "lastVerifiedAt": "2026-10-01",
       "evidence": [
         {
           "field": "freeTier",
@@ -1466,6 +1488,8 @@
       "lastSeen": "2026-10-04",
       "verified": true,
       "verifiedAt": "2026-10-04",
+      "checkMethod": "headless",
+      "lastVerifiedAt": "2026-10-04",
       "evidence": [
         {
           "field": "pricing.currency",
@@ -1520,6 +1544,8 @@
       "lastSeen": "2026-10-05",
       "verified": true,
       "verifiedAt": "2026-10-05",
+      "checkMethod": "headless",
+      "lastVerifiedAt": "2026-10-05",
       "evidence": [
         {
           "field": "pricing.unit",
@@ -1653,6 +1679,8 @@
       "lastSeen": "2026-10-01",
       "verified": true,
       "verifiedAt": "2026-10-01",
+      "checkMethod": "manual",
+      "lastVerifiedAt": "2026-10-01",
       "evidence": [
         {
           "field": "pricing.unit",
@@ -1739,6 +1767,8 @@
       "lastSeen": "2026-10-05",
       "verified": true,
       "verifiedAt": "2026-10-05",
+      "checkMethod": "headless",
+      "lastVerifiedAt": "2026-10-05",
       "evidence": [
         {
           "field": "pricing.unit",
@@ -1922,6 +1952,8 @@
       "lastSeen": "2026-10-01",
       "verified": true,
       "verifiedAt": "2026-10-01",
+      "checkMethod": "headless",
+      "lastVerifiedAt": "2026-10-01",
       "evidence": [
         {
           "field": "models.gpt-6-astra",
@@ -2086,6 +2118,8 @@
       "lastSeen": "2026-10-01",
       "verified": true,
       "verifiedAt": "2026-10-01",
+      "checkMethod": "headless",
+      "lastVerifiedAt": "2026-10-01",
       "evidence": [
         {
           "field": "models.gpt-6-astra",
@@ -2165,6 +2199,8 @@
       "lastSeen": "2026-10-05",
       "verified": true,
       "verifiedAt": "2026-10-05",
+      "checkMethod": "static",
+      "lastVerifiedAt": "2026-11-04",
       "evidence": [
         {
           "field": "pricing.unit",
@@ -2335,6 +2371,8 @@
       "lastSeen": "2026-10-01",
       "verified": true,
       "verifiedAt": "2026-10-01",
+      "checkMethod": "static",
+      "lastVerifiedAt": "2026-11-04",
       "evidence": [
         {
           "field": "pricing.unit",
@@ -2439,6 +2477,8 @@
       "lastSeen": "2026-10-05",
       "verified": true,
       "verifiedAt": "2026-10-05",
+      "checkMethod": "manual",
+      "lastVerifiedAt": "2026-10-05",
       "evidence": [
         {
           "field": "models.step-3.5-flash",
@@ -2605,6 +2645,8 @@
       "lastSeen": "2026-10-01",
       "verified": true,
       "verifiedAt": "2026-10-01",
+      "checkMethod": "static",
+      "lastVerifiedAt": "2026-11-04",
       "evidence": [
         {
           "field": "pricing.unit",
@@ -2799,6 +2841,8 @@
       "lastSeen": "2026-10-04",
       "verified": true,
       "verifiedAt": "2026-10-04",
+      "checkMethod": "headless",
+      "lastVerifiedAt": "2026-10-04",
       "evidence": [
         {
           "field": "pricing.currency",
@@ -2935,6 +2979,8 @@
       "lastSeen": "2026-10-01",
       "verified": true,
       "verifiedAt": "2026-10-01",
+      "checkMethod": "headless",
+      "lastVerifiedAt": "2026-10-01",
       "evidence": [
         {
           "field": "pricing.unit",
@@ -3223,6 +3269,8 @@
       "lastSeen": "2026-10-01",
       "verified": true,
       "verifiedAt": "2026-10-01",
+      "checkMethod": "headless",
+      "lastVerifiedAt": "2026-10-01",
       "evidence": [
         {
           "field": "freeTier",

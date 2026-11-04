@@ -100,6 +100,12 @@ const { SITE_URL } = require('../lib/site');
 // v1.8-seo-answer-pages：§17 的 `/need/*/` 逐页检查要按 `landing-aliases.json` 判
 // 「这一页该自指 canonical 还是指向正本」—— 不写死哪三条是别名。
 const landing = require('../lib/landing');
+// search-intent-v1（W2）：§22e 重算目录页事实摘要。**与构建期渲染 require 同一个模块**
+// （唯一实现 `lib/fact-summary.js`）—— 断言不自己写第二份口径。
+const factSummaryLib = require('../lib/fact-summary');
+// 事实摘要里的平台名走 `RENDER-CORE` 的 `vendorOf()`（与页面同一条归并），所以这里也要能从
+// 产物 `index.html` 里把那段 RENDER-CORE 载进 VM —— 与 build-local 用的是同一个 loader。
+const { load: loadRenderCore } = require('../lib/render-core');
 
 /**
  * 订阅产物登记表 `FEED_FILES` 的**唯一读取点**（唯一出处 = `scripts/lib/feed.js` 的导出）。
@@ -9408,10 +9414,27 @@ function noJsControlExemptionFor(route) {
           what: 'F4 原型：缺陷藏在 @media (min-width:1500px) 里（@1440 档物理上看不见，只有 @1600 档咬得到）'
             + '（靶页同上换到 plans/）' },
         // ---- t14（修复轮 3）新增：两条「盒子满宽、只有排版结果变窄」的牙 ----
-        { id: 'M11', route: 'changes/', width: WIDE_DESKTOP, expect: 'note-ink-narrow', target: 'extend', expectInkEvidence: true,
+        //   ⚠️ 靶页换过一次（search-intent-v1 修红，2026-11-04，理由如实记）：
+        //   原靶页 `changes/` 的 **#13** 说明里嵌了两个 **块级** `<span class="pchgmeta">`
+        //   （`display:block`，见 `scripts/lib/api-plans-page.js`）。grid 变异下这两个 span 各自
+        //   成为 70ch 轨道的一个 grid item，内容盒被压到 **914px < 0.85 × 1380 = 1173px** ⇒ **旧判据**
+        //   （`note-narrow`：textWidth = 承载文本块内容盒的最小值）在那一页上**真的咬中了它**。
+        //   这不是判据退化（旧判据对「块级子元素被压窄」本来就有覆盖），但承重证明要的恰恰是
+        //   「旧判据看不见」的那一类 ⇒ 前提在 `changes/` 上不成立；继续留在那一页就是一条**恒红**的牙。
+        //   换到 `plans/coding/`（同一份产物、同一条变异，chromium-1243 + Noto CJK 实测）：
+        //   `note-narrow` **0 条** · `note-ink-narrow` **2 条**（#0 3 行 / 最宽 456px · #4 2 行 /
+        //   最宽 463px，两条的内容盒都还是 1380px）· 首屏说明 #0 同时越过 2 行上限 ⇒ 伴随
+        //   `note-intro-long`（**同一物理原因**：文字被排进 70ch 后行数增加，不是另一个缺陷）。
+        //   全站 186 页里只有 `plans/coding/` 与 `tools/api-cost/` 满足前提；取前者是因为被咬的
+        //   #0 有 **136 字**（约 3 倍换行余量），而 `tools/api-cost/` 最长被咬条只有 **45 字**
+        //   （字体步进抖几个百分点就会退回单行 ⇒ 牙在 CI 上静默失效 —— 与 M15 换靶时记录的是
+        //   同一种失效方式，所以不能选它）。
+        { id: 'M11', route: 'plans/coding/', width: WIDE_DESKTOP, expect: 'note-ink-narrow', target: 'extend', expectInkEvidence: true,
           rule: '.snote { display: grid; grid-template-columns: minmax(0, 70ch) 1fr; }',
           what: 't8 的 F-R2-1 原型：display:grid + minmax(0,70ch) 1fr —— 只改一条 CSS、不动标记，'
-            + '盒宽/内容盒都满宽，文字被排进 70ch 那一轨（修复轮 2 时整轮 842 项 EXIT=0 放行的那一条）' },
+            + '盒宽/内容盒都满宽，文字被排进 70ch 那一轨（修复轮 2 时整轮 842 项 EXIT=0 放行的那一条）'
+            + '（靶页由 changes/ 换到 plans/coding/：前者 #13 说明含块级子元素，变异下被 70ch 轨道压窄 ⇒ '
+            + '旧判据真的咬中它、承重前提不成立；见上方换靶记录）' },
         { id: 'M12', route: 'plans/', width: WIDE_DESKTOP, expect: 'note-hidden-text', target: 'extend', expectNoGlyph: true,
           rule: '.snote { font-size: 0; } .snote::before { content: "§22c-M12 伪元素承载正文（真实文本已不可见）";'
             + ' display: block; max-width: 70ch; font-size: var(--fs-sm); line-height: 1.7; }',
@@ -9508,8 +9531,9 @@ function noJsControlExemptionFor(route) {
         //   恒等于较矮者的全高），不再依赖字体；这条结构前提现在由承重证明**显式断言**
         //   （`note.textRuns === 1`，见 textRunCountOf 的注释），所以将来谁把靶页换回多文本节点的
         //   说明，**本机就会确定性判红**，而不是等到 CI 上以「字体不同」的形式红。
-        //   ⚠️ 该页同时是 M9a（冻结串替换成 `.snote ~ .snote { max-width: 70ch }`）与 M16
-        //   （DOM 追加 <style>）的靶页：三条牙的注入形态各不相同、各自跑在**独立的页面加载**上，
+        //   ⚠️ 该页同时是 M9a（冻结串替换成 `.snote ~ .snote { max-width: 70ch }`）、M11
+        //   （grid 变异：`display: grid; grid-template-columns: minmax(0, 70ch) 1fr`）与 M16
+        //   （DOM 追加 <style>）的靶页：四条牙的注入形态各不相同、各自跑在**独立的页面加载**上，
         //   互不干扰（与 M8/M10/M12/M1–M4 共用 `plans/` 是同一种安排）。
         { id: 'M15', route: 'plans/coding/', width: WIDE_DESKTOP, expect: 'note-ink-narrow', target: 'extend',
           expectVertical: true,
@@ -9659,7 +9683,8 @@ function noJsControlExemptionFor(route) {
           const rowsOfInk = geometry ? geometry.notes.filter(note => inkKeys.includes(wideNoteKey(mutation.route, note.index))) : [];
           const lineEvidenceOk = rowsOfInk.length > 0 && rowsOfInk.every(note => note.lineCount >= 2 && note.widestLine > 0);
           const boxStayedWide = rowsOfInk.length > 0 && rowsOfInk.every(note => note.textWidth >= WIDE_NOTE_RATIO * Math.min(geometry.region.width, geometry.main.width) - 0.01);
-          check(`§22c ${mutation.id} 承重证明：旧判据（内容盒 textWidth）**一条都没咬**，咬中的全是新的逐行字迹码`,
+          check(`§22c ${mutation.id} 承重证明：旧判据（内容盒 textWidth）**一条都没咬**，咬中的是逐行字迹码`
+            + '（首屏说明同时越过行数上限时，note-intro-long 是同一物理原因的伴随码，不是旧判据）',
             inkKeys.length > 0 && narrowKeys.length === 0 && lineEvidenceOk && boxStayedWide,
             `note-narrow ${narrowKeys.length} 条（0 = 盒子/内容盒满宽，旧口径确实看不见）· note-ink-narrow ${inkKeys.length} 条 [${inkKeys.join(', ')}]`
             + ` · 这些条的行证据：${rowsOfInk.map(note => `#${note.index} ${note.lineCount} 行 / 最宽 ${wideRound(note.widestLine)}px / 内容盒 ${wideRound(note.textWidth)}px`).join(' · ') || '（无）'}`);
@@ -10341,6 +10366,104 @@ function noJsControlExemptionFor(route) {
   /* ------------------------------------------------------------------ */
   /* 厂商资料页（v3.0 Stage E）                                           */
   /* ------------------------------------------------------------------ */
+
+  console.log('\n=== 22e) 目录页事实摘要（/need/* 的回答块：存在性 + 逐字重算）===');
+  {
+    /**
+     * search-intent-v1（W2）新增的**两条**断言（只加，既有断言一条都没删、没放宽）：
+     *   ① 每个 `/need/*` 页都有 `aside.factsum`，事实行 ≥3、5 个 key 齐全、
+     *      口径句与常量 `factSummaryLib.CALIBER` **逐字相同**；
+     *   ② 每一行的值都能用 `deals.json` 的**原始记录**按同一口径重算出来，且
+     *      与页面上的 `data-fact-value`、可见 `<dd>` 三者**逐字一致**。
+     *
+     * ② 的重算入口是 `scripts/lib/fact-summary.js` —— 构建期渲染用的**同一个模块**，
+     * 所以「页面口径」与「断言口径」不可能各写一份。输入是页面上那批 `data-item` id 在
+     * `deals.json` 里的原始记录，不是页面上的字符串。
+     *
+     * ⚠️ 射程（写清楚，免得把这条当成万能）：本条证「页面上的数字 == 原始数据按同一口径算出的数字」；
+     * 它**证不了**「表里那批 id 就是这一页判据该收的集合」—— 后者由 `itemlist-arity`
+     * 与 `lib/seo.js` 的摘要重算守着，两条各守一半。
+     * ⚠️ 这里**不**碰 `.snote`：`aside.factsum` 是结构化事实行容器，不是页面级解释段。
+     * §22c ③b 的「目录页首屏 `.snote` = 0」判据原样保留、一个字符都没改。
+     */
+    const needRoot = path.join(DIR, 'need');
+    const needSlugs = fs.existsSync(needRoot)
+      ? fs.readdirSync(needRoot, { withFileTypes: true })
+        .filter(entry => entry.isDirectory() && fs.existsSync(path.join(needRoot, entry.name, 'index.html')))
+        .map(entry => entry.name).sort()
+      : [];
+    const unescapeHtml = text => String(text)
+      .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'").replace(/&amp;/g, '&');
+
+    const dealsById = new Map(((readRoot('deals.json').deals) || []).map(deal => [String(deal.id), deal]));
+    let renderCore = null;
+    try {
+      renderCore = loadRenderCore(path.join(DIR, 'index.html'));
+    } catch (error) {
+      renderCore = null; // 平台名归并失去依据时，②会逐页报红，而不是悄悄用另一种归并判绿。
+    }
+    const vendorKeyOf = deal => (renderCore
+      ? renderCore.vendorOf(deal).name
+      : String((deal && deal.vendor) || ''));
+
+    const shapeProblems = [];
+    const valueProblems = [];
+    let factRowsSeen = 0;
+    for (const slug of needSlugs) {
+      const route = `need/${slug}/`;
+      const html = fs.readFileSync(path.join(needRoot, slug, 'index.html'), 'utf8');
+      const aside = (html.match(/<aside class="factsum"[\s\S]*?<\/aside>/) || [''])[0];
+      if (!aside) {
+        shapeProblems.push(`${route} 没有 aside.factsum`);
+        continue;
+      }
+      const rows = [...aside.matchAll(/data-fact-key="([^"]+)" data-fact-value="([^"]*)"><dt>([^<]*)<\/dt><dd>([^<]*)<\/dd>/g)]
+        .map(match => ({ key: match[1], attr: unescapeHtml(match[2]), text: unescapeHtml(match[4]) }));
+      factRowsSeen += rows.length;
+      const keys = rows.map(row => row.key);
+      const missingKeys = factSummaryLib.KEYS.filter(key => !keys.includes(key));
+      if (rows.length < 3) shapeProblems.push(`${route} 事实行只有 ${rows.length} 行（下限 3）`);
+      if (missingKeys.length) shapeProblems.push(`${route} 缺 key：${missingKeys.join(',')}`);
+      const caliber = unescapeHtml((aside.match(/<p class="factsum-caliber">([^<]*)<\/p>/) || ['', ''])[1]);
+      if (caliber !== factSummaryLib.CALIBER) shapeProblems.push(`${route} 口径句与常量不一致`);
+
+      // ---- ② 逐字重算 ----
+      const ids = [...html.matchAll(/<tr data-item="([^"]*)">/g)].map(match => unescapeHtml(match[1]));
+      if (!ids.length) {
+        valueProblems.push(`${route} 没有 data-item 行，无从重算`);
+        continue;
+      }
+      const items = ids.map(id => dealsById.get(id)).filter(Boolean);
+      if (items.length !== ids.length) {
+        valueProblems.push(`${route} 有 ${ids.length - items.length} 个 id 在 deals.json 里找不到`);
+        continue;
+      }
+      const asOf = (html.match(/数据更新 ([\d-]{10})/) || ['', ''])[1];
+      for (const expected of factSummaryLib.rowsFor(items, { asOf, vendorKeyOf })) {
+        const got = rows.find(row => row.key === expected.key);
+        if (!got) {
+          valueProblems.push(`${route}#${expected.key} 页面缺这一行`);
+          continue;
+        }
+        if (got.attr !== expected.value) {
+          valueProblems.push(`${route}#${expected.key} 属性值「${got.attr}」≠ 重算「${expected.value}」`);
+        }
+        if (got.text !== expected.value) {
+          valueProblems.push(`${route}#${expected.key} 可见值「${got.text}」≠ 重算「${expected.value}」`);
+        }
+      }
+    }
+
+    check('目录页事实摘要存在性：10 个 /need/* 页各自有 ≥3 行事实、5 个 key 齐、口径句逐字等于常量',
+      needSlugs.length === 10 && shapeProblems.length === 0,
+      `${needSlugs.length} 页 · ${factRowsSeen} 行`
+      + `${shapeProblems.length ? ` · 问题：${shapeProblems.slice(0, 3).join('；')}` : ''}`);
+    check('目录页事实摘要可重算：每行值都能用 deals.json 原始记录按同一口径算出，与属性值/可见文本逐字一致',
+      valueProblems.length === 0,
+      `${factRowsSeen} 行 × ${needSlugs.length} 页`
+      + `${valueProblems.length ? ` · 问题：${valueProblems.slice(0, 3).join('；')}` : ''}`);
+  }
 
   console.log('\n=== 23) 厂商资料页（/vendor/）===');
   {

@@ -98,12 +98,49 @@ const TEXT_FLOOR_RESIDUALS = [
   //     否则 `seo-selftest` 的「逐字节相同」当场红。
   // 下面这条登记仍然只覆盖「余量 < 150 字」的那几页 —— 这个改动对全站每页都是 −12 字，
   // 但只有这六页的余量本来就在登记射程内（其余页面离自己的下限还有 150 字以上）。
-  { route: 'need/no-card/', kind: 'need', count: 1, chars: 671, floor: 660, margin: 11, registeredAt: '2026-10-12' },
-  { route: 'category/', kind: 'hub', count: 5, chars: 826, floor: 800, margin: 26, registeredAt: '2026-10-12' },
-  { route: 'category/audio/', kind: 'category', count: 6, chars: 1044, floor: 960, margin: 84, registeredAt: '2026-10-12' },
-  { route: 'need/ai-coding/', kind: 'need', count: 4, chars: 937, floor: 840, margin: 97, registeredAt: '2026-10-12' },
-  { route: 'category/image/', kind: 'category', count: 5, chars: 1000, floor: 900, margin: 100, registeredAt: '2026-10-12' },
-  { route: 'category/agent/', kind: 'category', count: 4, chars: 943, floor: 840, margin: 103, registeredAt: '2026-10-12' }
+  // ⚠️ search-intent-v1（W2）一次性重新登记（2026-11-04）：**两条退役、四条更新读数**，
+  //   下限（floor / kind / count）一个字没动，判据仍是「实时余量 ≥ 登记值」与
+  //   「登记集合 == 实时余量 < 150 的集合」两条并行。
+  //   · 退役 `need/no-card/`（余量 11 → **313**）与 `need/ai-coding/`（97 → **417**）：
+  //     这两页本轮新增「事实摘要」（`aside.factsum`，5 行事实 + 一行口径），可见正文各涨
+  //     ≈300 字，余量因此**离开 < 150 的射程**。退役是那条双向不变式要求的动作
+  //     （登记了却已不薄 ⇒ 属于「过期登记」，同样判红），不是把判据放宽：
+  //     两页的下限 660 / 840 原样保留，`seo.textFloor('need', n)` 仍按原值判。
+  //   · 四条 category 页按今天的产物重读（数据日推进带来的读数漂移，与上一次同类）。
+  //   · 读数由 `node scripts/tools/seo-verify.js --print-floor-margins` 在产物上打印。
+  { route: 'category/', kind: 'hub', count: 5, chars: 852, floor: 800, margin: 52, registeredAt: '2026-11-04' },
+  { route: 'category/audio/', kind: 'category', count: 6, chars: 1070, floor: 960, margin: 110, registeredAt: '2026-11-04' },
+  { route: 'category/image/', kind: 'category', count: 5, chars: 1036, floor: 900, margin: 136, registeredAt: '2026-11-04' },
+  { route: 'category/agent/', kind: 'category', count: 4, chars: 969, floor: 840, margin: 129, registeredAt: '2026-11-04' }
+];
+
+/**
+ * 已经「毕业」的登记（`search-intent-v1` · W2，2026-11-04）。
+ *
+ * 为什么需要这一栏：登记表的不变式是**双向**的（`seo-verify.js` §③′）——
+ * 「登记集合 == 实时余量 < 150 的集合」。一页补内容补到余量够厚之后，它就不再属于
+ * 「最薄的那一档」，**留在表里会变成「过期登记」而判红**，所以必须从表里下来。
+ * 但另一条判据（`seo-selftest.js`）要求被点名的那条残留「不许静默下架」——
+ * 两条判据在「补内容」这件事上会互相打架。
+ *
+ * 这一栏就是解法：**毕业不是消失，是登记搬家**。规则三条，都由 selftest 判：
+ *   ① 毕业记录里的路由**不许**还留在 `TEXT_FLOOR_RESIDUALS`（否则两条表各说各话）；
+ *   ② 毕业当天的余量必须 **≥ 150**（拿「毕业」当挡箭牌去藏一页变薄的内容，判红）；
+ *   ③ `floor` 与 `textFloor(kind, count)` 必须相等（下限口径原样，毕业不改判据）。
+ *
+ * 也就是说：判据的**下限**一个字没动，动的是「这一页还薄不薄」这个事实。
+ */
+const TEXT_FLOOR_GRADUATED = [
+  {
+    route: 'need/no-card/', kind: 'need', count: 1, chars: 973, floor: 660, margin: 313,
+    graduatedAt: '2026-11-04',
+    reason: 'search-intent-v1 W2 给 10 个 /need/* 页加了「事实摘要」（5 行现算事实 + 一行口径），本页可见正文 671 → 973，余量 11 → 313'
+  },
+  {
+    route: 'need/ai-coding/', kind: 'need', count: 4, chars: 1257, floor: 840, margin: 417,
+    graduatedAt: '2026-11-04',
+    reason: '同上：事实摘要让本页余量 97 → 417，离开「余量 < 150」的射程'
+  }
 ];
 
 /** 路由 → 登记项（登记表很小，线性查；重复登记由 `seo-selftest` 断言） */
@@ -771,6 +808,7 @@ module.exports = {
   textFloor,
   // 正文下限**余量**登记（P2 残留 e1）：构建期、独立门禁、自测三处读同一份声明
   TEXT_FLOOR_RESIDUALS,
+  TEXT_FLOOR_GRADUATED,
   floorResidualOf,
   validate,
   recomputeSummary,

@@ -179,18 +179,21 @@ const codesOf = result => new Set(result.problems.map(problem => problem.code));
  *
  * @returns `[pages, opts]`，可直接 `run(...)`。
  */
-function registeredPageFixture(gap) {
-  const entry = seo.TEXT_FLOOR_RESIDUALS.find(row => row.route === 'need/no-card/');
-  const target = seo.textFloor(entry.kind, entry.count) + gap;
+function registeredPageFixture(gap, entry = seo.TEXT_FLOOR_RESIDUALS[0]) {
+  // search-intent-v1（W2）：不再写死 `need/no-card/` —— 它补了事实摘要之后余量已 ≥ 150，
+  // 按双向不变式退役了。夹具现在跟着**登记表里最薄的那一行**走（判据一个字没改）：
+  // 断言的仍是「已登记页的余量掉到登记值 −1 必须被 thin-content-margin 点名」。
+  const { route, kind, count } = entry;
+  const target = seo.textFloor(kind, count) + gap;
   const build = fillerChars => {
     const pages = cleanPages();
     // 入链：这一页是孤儿的话会被 orphan 咬到 —— 那是噪声，不是本夹具要证明的事
-    pages[1].html = pages[1].html.replace('</body>', '<p><a href="../../need/no-card/">need/no-card/</a></p></body>');
+    pages[1].html = pages[1].html.replace('</body>', `<p><a href="../../${route}">${route}</a></p></body>`);
     pages.push(Object.assign(clone(pages[1]), {
-      route: 'need/no-card/', slug: 'no-card', kind: 'need', count: 1,
+      route, slug: route.split('/').filter(Boolean).slice(-1)[0], kind, count,
       itemIds: ['aaa'], summary: [], pinned: true, feedMatch: [],
       html: pageHtml({
-        route: 'need/no-card/', title: '需求页标题', canonical: `${SITE}need/no-card/`, desc: '需求页描述',
+        route, title: '需求页标题', canonical: `${SITE}${route}`, desc: '需求页描述',
         rows: ['aaa'], listUrls: [`${SITE}deal/aaa/`], links: ['category/api/', 'vendor/acme/', ''],
         text: '字'.repeat(fillerChars)
       })
@@ -205,7 +208,7 @@ function registeredPageFixture(gap) {
     if (length === target) break;
     filler = Math.max(0, filler + (target - length));
   }
-  return [pages, { sitemap: [...BASE_OPTS.sitemap, `${SITE}need/no-card/`] }];
+  return [pages, { sitemap: [...BASE_OPTS.sitemap, `${SITE}${route}`] }];
 }
 
 /* ------------------------------------------------------------------ */
@@ -636,8 +639,26 @@ section('六、正文下限**余量**登记（P2 残留 e1：/need/no-card/ 只�
 
   // 被点名的那条残留：它可以从登记表里「毕业」（补内容补到余量够厚就删掉），
   // 但不许**悄悄消失** —— 消失意味着这一页没人看着了。
-  check('被点名的 /need/no-card/ 在登记表里（P2 残留 e1 的对象不许静默下架）',
-    rows.some(row => row.route === 'need/no-card/'));
+  // search-intent-v1（W2）：这条残留可以「毕业」（补内容补到余量够厚就下架），但不许**悄悄消失**。
+  // 于是判据从「必须在登记表里」扩成「在登记表里 **或** 在毕业记录里」，并加三条牙：
+  //   ① 毕业记录里的路由不许还留在登记表（两张表各说各话 = 判据失去依据）；
+  //   ② 毕业当天的余量必须 ≥ 150（拿「毕业」藏一页变薄的内容 ⇒ 红）；
+  //   ③ 毕业记录的 floor 必须等于 textFloor(kind, count)（下限口径不许跟着毕业一起动）。
+  const graduated = seo.TEXT_FLOOR_GRADUATED || [];
+  check('被点名的 /need/no-card/ 在登记表里或已登记毕业（P2 残留 e1 的对象不许静默下架）',
+    rows.some(row => row.route === 'need/no-card/')
+    || graduated.some(row => row.route === 'need/no-card/'));
+  check('【牙】毕业记录不许与登记表重叠（同一页不能既在表里又已毕业）',
+    graduated.every(row => !rows.some(live => live.route === row.route)),
+    graduated.filter(row => rows.some(live => live.route === row.route)).map(row => row.route).join('；'));
+  check('【牙】毕业当天的余量必须 ≥ 150（毕业不是藏变薄内容的挡箭牌）',
+    graduated.every(row => row.margin >= 150),
+    graduated.filter(row => !(row.margin >= 150)).map(row => `${row.route}(${row.margin})`).join('；'));
+  check('【牙】毕业记录的 floor / margin / chars 三方自洽，且 floor 就是 textFloor(kind, count)',
+    graduated.every(row => seo.textFloor(row.kind, row.count) === row.floor
+      && row.chars - row.floor === row.margin),
+    graduated.filter(row => !(seo.textFloor(row.kind, row.count) === row.floor
+      && row.chars - row.floor === row.margin)).map(row => row.route).join('；'));
 
   // 登记过期即红：路由没了、kind 变了、条数变了，登记表就不再是「这一页的底线」。
   // 条数按**构建期同一条判据**重算（`needsOf` / `collectionsOf` 是派生字段的唯一来源，
@@ -673,16 +694,16 @@ section('六、正文下限**余量**登记（P2 残留 e1：/need/no-card/ 只�
     transcript === null ? '文件不存在' : `文件 ${transcript.length} 字节 ≠ 声明 ${JSON.stringify(rows, null, 2).length + 1} 字节`);
 
   // ---- 边界与牙：判的必须是**登记值**，不是别的什么数 ----
-  const registered = rows.find(row => row.route === 'need/no-card/');
-  const atBoundary = run(...registeredPageFixture(registered.margin));
+  const registered = rows[0];   // 登记表按余量升序：第一行就是「最薄的那一页」
+  const atBoundary = run(...registeredPageFixture(registered.margin, registered));
   check('【对照组】余量正好等于登记值 ⇒ 不响（边界是「≥」，不是「>」）',
     !codesOf(atBoundary).has('thin-content-margin'),
     atBoundary.problems.map(problem => `[${problem.code}] ${problem.route}`).join('；'));
 
-  const belowBoundary = run(...registeredPageFixture(registered.margin - 1));
+  const belowBoundary = run(...registeredPageFixture(registered.margin - 1, registered));
   const belowCodes = belowBoundary.problems.filter(problem => problem.code === 'thin-content-margin');
-  check('【牙】余量掉到登记值 − 1 ⇒ 变红并点名 /need/no-card/（此时 thin-content 还没到红线）',
-    belowCodes.length === 1 && belowCodes[0].route === 'need/no-card/'
+  check(`【牙】余量掉到登记值 − 1 ⇒ 变红并点名 ${registered.route}（此时 thin-content 还没到红线）`,
+    belowCodes.length === 1 && belowCodes[0].route === registered.route
     && !codesOf(belowBoundary).has('thin-content'),
     belowBoundary.problems.map(problem => `[${problem.code}] ${problem.route} ${problem.detail}`).join('；') || '（一个问题都没有）');
   check('【牙】那一条红写清了三个数与出处（实测字数 / 下限 / 登记值 + 登记日期 + 重新登记的入口）',
@@ -700,9 +721,9 @@ section('六、正文下限**余量**登记（P2 残留 e1：/need/no-card/ 只�
   let loweredVerdict = null;
   try {
     registered.margin = savedMargin + 1;
-    raisedVerdict = codesOf(run(...registeredPageFixture(savedMargin)));
+    raisedVerdict = codesOf(run(...registeredPageFixture(savedMargin, registered)));
     registered.margin = savedMargin - 1;
-    loweredVerdict = codesOf(run(...registeredPageFixture(savedMargin - 1)));
+    loweredVerdict = codesOf(run(...registeredPageFixture(savedMargin - 1, registered)));
   } finally {
     registered.margin = savedMargin;
   }
@@ -712,7 +733,7 @@ section('六、正文下限**余量**登记（P2 残留 e1：/need/no-card/ 只�
     !loweredVerdict.has('thin-content-margin'));
   check('复位后回到绿（两次牙都没有改到真实登记表）',
     registered.margin === savedMargin
-    && !codesOf(run(...registeredPageFixture(savedMargin))).has('thin-content-margin'));
+    && !codesOf(run(...registeredPageFixture(savedMargin, registered))).has('thin-content-margin'));
 }
 
 /* ------------------------------------------------------------------ */

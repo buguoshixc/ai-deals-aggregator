@@ -2579,6 +2579,28 @@
       "origin": "observed",
       "runAt": "2026-10-08T14:18:16.686Z",
       "eventId": "8a300f4262de"
+    },
+    {
+      "planId": "4f8bae91f9f8",
+      "at": "2026-10-08",
+      "type": "updated",
+      "field": "officialUrl",
+      "from": "https://docs.anthropic.com/en/docs/about-claude/pricing",
+      "to": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "origin": "observed",
+      "runAt": "2026-11-03T20:04:45.776Z",
+      "eventId": "74a7173c28ea"
+    },
+    {
+      "planId": "4f8bae91f9f8",
+      "at": "2026-10-08",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://docs.anthropic.com/en/docs/about-claude/pricing",
+      "to": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "origin": "observed",
+      "runAt": "2026-11-03T20:04:45.776Z",
+      "eventId": "ceb4758dc240"
     }
   ]
 }
