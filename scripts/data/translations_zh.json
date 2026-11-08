@@ -4,22 +4,22 @@
     "f5ffff50772c": {
       "_title": "ChatGPT / OpenAI",
       "src": {
-        "discountInfo": "Free ChatGPT tier; annual billing available for Business and Enterprise plans. No standing public student or nonprofit discount was listed on the official pricing page when checked.",
-        "description": "Use the free plan or choose annual billing from the official pricing page.",
+        "discountInfo": "Free ChatGPT tier; annual billing available for Business and Enterprise plans. Verified nonprofits pay $8 per user per month for ChatGPT Business Standard seats billed annually, or $10 billed monthly, through OpenAI for Nonprofits;…",
+        "description": "Use the free plan, choose annual billing from the official pricing page, or apply through OpenAI for Nonprofits.",
         "eligibility": "Individuals, teams already standardizing on ChatGPT, businesses comparing seat costs."
       },
-      "discountInfo": "ChatGPT 提供免费档；Business 与 Enterprise 套餐可选年付。核查官方定价页时，页面上没有列出长期有效的公开学生或非营利折扣。",
-      "description": "可直接使用免费档，或在官方定价页选择年付。",
+      "discountInfo": "ChatGPT 提供免费档；Business 与 Enterprise 套餐可选年付。经认证的非营利组织可通过 OpenAI for Nonprofits 购买 ChatGPT Business Standard 席位：按年付费每位用户每月 $8，按月付费为每月 $10；…",
+      "description": "可使用免费档，或在官方定价页选择年付，或通过 OpenAI for Nonprofits 提交申请。",
       "eligibility": "个人用户、已统一使用 ChatGPT 的团队，以及正在比较席位成本的企业。"
     },
     "c789f0a090bf": {
       "_title": "Google Gemini",
       "src": {
-        "discountInfo": "Free Gemini access remains available. Google AI Pro student offers vary by country; the U.S. student offer page says the previous student offer ended March 11, 2026.",
+        "discountInfo": "Free Gemini access remains available. In the U.S., eligible college students ages 18+ can get Google AI Pro free for one year if they redeem by December 31, 2026; a valid payment method is required and the plan then renews at $19.99/month.…",
         "description": "Check the official Gemini student and subscription pages for your region.",
         "eligibility": "Students checking regional offers, Google Workspace users, people who want a free AI assistant."
       },
-      "discountInfo": "Gemini 免费访问仍然可用。Google AI Pro 的学生优惠因国家而异；美国学生优惠页面写明，上一轮学生优惠已于 2026 年 3 月 11 日结束。",
+      "discountInfo": "Gemini 免费访问仍然可用。在美国，年满 18 岁的在读大学生若在 2026 年 12 月 31 日前兑换，可免费使用 Google AI Pro 一年；需绑定有效付款方式，期满后按每月 $19.99 续订。…",
       "description": "请查看你所在地区的 Gemini 官方学生页与订阅页。",
       "eligibility": "在查各国学生优惠的学生、Google Workspace 用户，以及想要免费 AI 助手的用户。"
     },
@@ -92,12 +92,12 @@
     "c971e33a9cd0": {
       "_title": "ChatGPT Plus for Veterans (OpenAI)",
       "src": {
-        "discountInfo": "OpenAI, working with SheerID for verification, offers one full year of free ChatGPT Plus to eligible veterans and transitioning servicemembers, alongside example chats and a getting-started guide for job search, benefits, and relocation…",
-        "description": "Verify military or veteran status through SheerID at the official claim page.",
+        "discountInfo": "OpenAI offers one free year of ChatGPT Plus to verified U.S. veterans and retirees who left active duty within the past 12 months and to active service members who will transition within the next 12 months, verified through ID.me.",
+        "description": "Verify eligibility through ID.me from the official claim page, on a personal ChatGPT account.",
         "eligibility": "Veterans and active-duty servicemembers preparing to separate from the military."
       },
-      "discountInfo": "OpenAI 与 SheerID 合作完成身份验证，为符合条件的退伍军人和即将退役的现役军人提供整整一年免费 ChatGPT Plus，并附示例对话，以及面向求职、福利申请与搬迁规划的入门指南。",
-      "description": "在官方领取页面通过 SheerID 完成军人或退伍身份验证。",
+      "discountInfo": "OpenAI 为经核验的美国退伍军人、退役未满 12 个月的退休人员，以及将在未来 12 个月内退役的现役军人，提供一年免费 ChatGPT Plus，身份通过 ID.me 验证。",
+      "description": "在官方领取页通过 ID.me 验证资格，需使用个人 ChatGPT 账户。",
       "eligibility": "退伍军人，以及准备退役的现役军人。"
     },
     "173ff7aa837e": {
