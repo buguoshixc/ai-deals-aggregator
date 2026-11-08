@@ -69,6 +69,10 @@ const SOURCE_TYPES = {
   'Futuretools': 'directory',
   'Futurepedia': 'directory',
   'Layer3Labs': 'directory',
+  // AppSumo：第三方交易平台（deal 集市）。落地页是它自己的产品页 —— 页面上的
+  // 「折扣价 / 原价 / 截止日期」都是 AppSumo 作为交易平台一方给出的条款，不是厂商官方页，
+  // 所以登记为 directory 而不是 official。
+  'AppSumo': 'directory',
   // 人工策展
   'Curated': 'curated',
   'Curated-CN': 'curated'

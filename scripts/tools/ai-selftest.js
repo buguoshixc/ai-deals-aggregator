@@ -660,6 +660,101 @@ function structuralTeeth() {
 }
 
 /* ================================================================== */
+/* 采集侧判据的牙（P0：AppSumo 的「AI 筛选 + 价格/授权/状态」）              */
+/* ================================================================== */
+
+/**
+ * 为什么这组牙放在 AI 层自检里：AppSumo 采集器的产出判据（AI 关键词表、折扣价 vs 原价、
+ * lifetime 授权、在售状态）是「供给端进不进来」的**唯一判据**。fixture 只钉住 8 条真实
+ * 样本的行为；这里补的是「判据本身」的正反例 —— 改坏关键词表（比如把 `\\bai\\b` 退化成
+ * 裸子串 `ai`，`email` 会被判成 AI）时 fixture 未必有那条样本，而这组牙一定会红。
+ */
+function collectorFilterTeeth() {
+  const appsumo = require('../collectors/appsumo').__test;
+  assert('结构 AppSumo 判据出口存在（__test）', Boolean(appsumo && appsumo.classifyDeal && appsumo.isAi));
+
+  // ① AI 关键词表：正例（AI 能力本身）
+  const positive = [
+    'AI-powered captions and images',
+    'Build browser automation scripts, AI agents, and endpoints',
+    'Use this agentic mobile keyboard to dictate',
+    'Refine your prompt to get better outputs from ChatGPT',
+    'An LLM gateway with embeddings'
+  ];
+  positive.forEach(text => {
+    const raw = {
+      public_name: 'Probe Product',
+      card_description: text,
+      attributes: { category: ['Productivity & Automation'], subcategory: ['Workflow Automation'] },
+      product_tags: []
+    };
+    assert(`AppSumo AI 判据：正例「${text.slice(0, 24)}…」判为 AI`, appsumo.isAi(raw), '被判成非 AI（关键词表太窄）');
+  });
+
+  // ② 反例：验收单里点名的噪音形态 —— 泛技术词 / 含 ai 子串的英文单词 / 目录站常见的非 AI 品类
+  const negative = [
+    { title: 'Email Marketing Suite', desc: 'Bulk email campaigns and autoresponders', category: 'Email & SMS Marketing', tags: ['email-marketing'] },
+    { title: 'WPGraft', desc: 'Clone any website into your WordPress page builder', category: 'Website Builders & WordPress', tags: ['website-builders'] },
+    { title: 'GetTerms', desc: 'Cookie banner and website policy generator', category: 'Security & Compliance', tags: [] },
+    { title: 'Referly', desc: 'Launch your own affiliate programs with tracking', category: 'Lead Generation', tags: ['sales-outreach'] }
+  ];
+  negative.forEach(row => {
+    const raw = {
+      public_name: row.title,
+      card_description: row.desc,
+      attributes: { category: [row.category], subcategory: [] },
+      product_tags: row.tags
+    };
+    assert(`AppSumo AI 判据：反例「${row.title}」判为非 AI`, !appsumo.isAi(raw), '被判成 AI（关键词表太宽，会把目录站噪音放进来）');
+  });
+
+  // ③ classifyDeal 的每条拒绝理由都必须真的响（否则日志里打印的「筛掉原因」是假的）
+  const base = {
+    public_name: 'Acti',
+    get_absolute_url: '/products/acti/',
+    price: 59,
+    original_price: 299,
+    has_started: true,
+    has_ended: false,
+    unique_plan_types: [['Lifetime Deal', null, null]],
+    attributes: { category: ['Productivity & Automation'], subcategory: ['Workflow Automation'] },
+    product_tags: [],
+    card_description: 'Use this agentic mobile keyboard'
+  };
+  const reject = (name, patchObj, expectedReason) => {
+    const verdict = appsumo.classifyDeal({ ...base, ...patchObj });
+    assert(`AppSumo 判据：${name}`, verdict.dropped === expectedReason,
+      `期望「${expectedReason}」，实得「${verdict.dropped || '通过'}」`);
+  };
+  assert('AppSumo 判据：合规样本通过', appsumo.classifyDeal(base).ok === true, '合规样本被误杀');
+  reject('非 AI → 非 AI', { public_name: 'WPGraft', card_description: 'Clone any website', attributes: { category: ['Website Builders & WordPress'] } }, '非 AI');
+  reject('原价缺失 → 原价缺失', { original_price: 0 }, '原价缺失');
+  reject('折扣价缺失 → 折扣价缺失', { price: 0 }, '折扣价缺失');
+  reject('原价不高于折扣价 → 不构成折扣', { price: 299, original_price: 299 }, '原价不高于折扣价（不构成折扣）');
+  reject('非 lifetime 授权 → 非 lifetime 授权', { unique_plan_types: [['Limited License', 'year', 1]] }, '非 lifetime 授权');
+  reject('已结束 → 已结束', { has_ended: true }, '已结束');
+  reject('未上架 → 未上架', { has_started: false }, '未上架');
+  reject('链接缺失 → 产品链接缺失', { get_absolute_url: null }, '产品链接缺失');
+
+  // ④ fixture 回放之外的**筛选行为**：真实最小片段上，非 AI 与价格缺失必须被打印出来
+  const fixture = read('scripts/data/fixtures/appsumo.deals/page.min.html');
+  const parsed = appsumo.parseWithReport(fixture);
+  assert('AppSumo fixture：筛选后 6 条（解析与筛选同一把尺子）', parsed.items.length === 6,
+    `实得 ${parsed.items.length} 条`);
+  const droppedTitles = parsed.dropped.map(row => row.title);
+  assert('AppSumo fixture：非 AI（WPGraft）被筛掉且带原因',
+    parsed.dropped.some(row => row.title === 'WPGraft' && row.reason === '非 AI'),
+    `实得 ${JSON.stringify(parsed.dropped)}`);
+  assert('AppSumo fixture：价格缺失（Headroom）被筛掉且带原因',
+    parsed.dropped.some(row => row.title === 'Headroom' && row.reason === '折扣价缺失'),
+    `实得 ${JSON.stringify(parsed.dropped)}`);
+  assert('AppSumo fixture：每个被筛条目都有产品名（日志缺名 = 筛错了也查不到）',
+    parsed.dropped.every(row => row.title && row.title !== '(无标题)'), JSON.stringify(droppedTitles));
+  assert('AppSumo 日志纪律：被筛样本上限写死为 20 个', appsumo.MAX_DROPPED_LOGGED === 20,
+    `实得 ${appsumo.MAX_DROPPED_LOGGED}`);
+}
+
+/* ================================================================== */
 
 async function main() {
   console.log('AI 层自检（离线，不依赖任何 API key 与网络）');
@@ -676,6 +771,7 @@ async function main() {
   tooth8_noImplicitAccept();
   tooth9_candidateEnvelopeInProduction();
   structuralTeeth();
+  collectorFilterTeeth();
 
   // provider 的环境变量不该泄漏给后续步骤
   delete process.env.AI_PROVIDER;

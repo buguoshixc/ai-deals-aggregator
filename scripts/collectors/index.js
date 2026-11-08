@@ -9,9 +9,10 @@
 
 const globalDirectories = require('./global_directories');
 const globalDeals = require('./global_deals');
+const appsumo = require('./appsumo');
 const cnDocs = require('./cn_docs');
 
-const BASE = [...cnDocs, ...globalDeals, ...globalDirectories];
+const BASE = [...cnDocs, ...globalDeals, ...appsumo, ...globalDirectories];
 
 /** 惰性加载无头来源：缺 playwright-core 时给出可读错误，而不是把默认链路拖崩 */
 function loadHeadless() {

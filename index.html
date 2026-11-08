@@ -1801,7 +1801,11 @@
       [/anthropic|claude/i, 'anthropic', 'Anthropic', 'anthropic'],
       [/openai|chatgpt|gpt[\s-]?image|^gpt\b/i, 'openai', 'OpenAI', 'openai'],
       [/perplexity/i, 'perplexity', 'Perplexity', 'perplexity'],
-      [/canva/i, 'canva', 'Canva', 'canva'],
+      // 2026-11-09（P0 AppSumo）：这里原先是裸子串 /canva/i，于是 AppSumo 的
+      // 「MagicCanvas」（magic-canva-s）被归一成厂商 Canva —— 厂商页会把别人的产品
+      // 印在 Canva 名下，落地页门槛还会因此要求给 Canva 登记 slug。加词边界即可：
+      // 真 Canva 记录的 vendor 是「Canva」， 两侧都成立；MagicCanvas 的 canva 前是字母，不命中。
+      [/\bcanva\b/i, 'canva', 'Canva', 'canva'],
       [/cursor/i, 'cursor', 'Cursor', 'cursor'],
       [/replit/i, 'replit', 'Replit', 'replit'],
       [/zapier/i, 'zapier', 'Zapier', 'zapier'],

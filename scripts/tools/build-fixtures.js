@@ -52,6 +52,9 @@ function option(name, fallback = null) {
 }
 
 /** 每个 fixture 的"剪裁规则"：从整页里挑出解析器依赖的那块 DOM */
+/** AppSumo fixture 的保留条数：够覆盖「AI 保留 / 非 AI 筛掉 / 价格缺失筛掉」三条分支即可 */
+const APP_SUMO_FIXTURE_DEALS = 8;
+
 const TRIMS = {
   'layer3labs.deals': {
     url: 'https://www.layer3labs.io/ai-discounts',
@@ -92,8 +95,61 @@ const TRIMS = {
       const nodes = $('a[href*="/tool/"]').slice(0, MAX_CARDS).toArray();
       return nodes.length ? nodes.map(node => $.html(node)).join('\n') : null;
     }
+  },
+  // AppSumo：数据在 <script id="__NEXT_DATA__"> 的 JSON 里，不是 DOM 表格。
+  // 所以剪裁不是「挑节点」，而是「把 JSON 投影成解析器真正读的字段」——
+  // raw: true 表示跳过 minimize()（那一步会删掉 <script>，正好把唯一的数据源删没）。
+  'appsumo.deals': {
+    url: 'https://appsumo.com/collections/new/',
+    what: `前 ${APP_SUMO_FIXTURE_DEALS} 条 deal 的 __NEXT_DATA__ 片段（只保留解析器读的字段；AI/非 AI、有价/无价混合）`,
+    kind: 'raw-html',
+    trim($) {
+      const script = $('script#__NEXT_DATA__[type="application/json"]').first();
+      if (!script.length) return null;
+      let payload;
+      try {
+        payload = JSON.parse(script.text());
+      } catch (error) {
+        return null;
+      }
+      const deals = payload && payload.props && payload.props.pageProps &&
+        payload.props.pageProps.deals && payload.props.pageProps.deals.deals;
+      if (!Array.isArray(deals) || !deals.length) return null;
+      const projected = deals.slice(0, APP_SUMO_FIXTURE_DEALS).map(projectAppSumoDeal);
+      const nextData = { props: { pageProps: { deals: { deals: projected } } } };
+      return `<script id="__NEXT_DATA__" type="application/json">${JSON.stringify(nextData)}</script>`;
+    }
   }
 };
+
+/**
+ * AppSumo fixture 的字段投影：**只留生产解析器读的字段**。
+ * 保留 full deal 对象会把 AppSumo 的一堆图片/评论/营销字段带进仓库（体积与版权都不该）。
+ */
+function projectAppSumoDeal(raw) {
+  const deal = raw && typeof raw === 'object' ? raw : {};
+  const attributes = deal.attributes && typeof deal.attributes === 'object' ? deal.attributes : {};
+  const dates = deal.dates && typeof deal.dates === 'object' ? deal.dates : {};
+  return {
+    public_name: deal.public_name,
+    get_absolute_url: deal.get_absolute_url,
+    slug: deal.slug,
+    product_tags: deal.product_tags,
+    card_description: deal.card_description,
+    price: deal.price,
+    original_price: deal.original_price,
+    has_started: deal.has_started,
+    has_ended: deal.has_ended,
+    browse_deal_status: deal.browse_deal_status,
+    unique_plan_types: deal.unique_plan_types,
+    attributes: {
+      category: attributes.category,
+      subcategory: attributes.subcategory,
+      group: attributes.group
+    },
+    dates: { start_date: dates.start_date, end_date: dates.end_date }
+  };
+}
 
 function wrap(fragment, title) {
   return [
@@ -154,12 +210,27 @@ async function buildOne(fixtureName, { write = true } = {}) {
   const html = await http.getText(rule.url, { timeout: 30000 });
   const fullItems = entry.parse(html);
 
-  const $ = cheerio.load(html);
-  const fragment = rule.trim($);
-  if (!fragment) throw new Error(`${fixtureName}：整页里找不到规则描述的那块 DOM（页面可能已改版）`);
+  // 三种输入形态（v2.2 起）：
+  //  · html（默认）      —— 从 DOM 里剪节点，再自动最小化；
+  //  · raw-html          —— 剪出来的东西本身必须原样保留（AppSumo 的数据在 <script> JSON 里，
+  //                          minimize() 会删 script，所以不能走默认路径）；
+  //  · json / xml        —— 来源本身就是 API/feed（OpenRouter、RSS），剪裁函数直接处理原文，
+  //                          fixture 文件名相应为 page.min.json / page.min.xml。
+  let fixtureText;
+  let fixtureFile = 'page.min.html';
+  if (rule.kind === 'json' || rule.kind === 'xml') {
+    const trimmed = rule.trim(html);
+    if (!trimmed) throw new Error(`${fixtureName}：原文里找不到规则描述的那块数据（接口可能已改版）`);
+    fixtureText = trimmed;
+    fixtureFile = rule.kind === 'json' ? 'page.min.json' : 'page.min.xml';
+  } else {
+    const $ = cheerio.load(html);
+    const fragment = rule.trim($);
+    if (!fragment) throw new Error(`${fixtureName}：整页里找不到规则描述的那块 DOM（页面可能已改版）`);
+    fixtureText = rule.kind === 'raw-html' ? wrap(fragment, fixtureName) : wrap(minimize(fragment), fixtureName);
+  }
 
-  const trimmedHtml = wrap(minimize(fragment), fixtureName);
-  const trimmedItems = entry.parse(trimmedHtml);
+  const trimmedItems = entry.parse(fixtureText);
   if (!trimmedItems.length) {
     throw new Error(`${fixtureName}：片段上解析出 0 条 —— 剪裁把解析器需要的东西剪掉了`);
   }
@@ -167,7 +238,7 @@ async function buildOne(fixtureName, { write = true } = {}) {
   if (missing.length) {
     throw new Error(`${fixtureName}：片段解析出的 ${missing.length} 条与整页结果不一致（剪裁改变了语义）`);
   }
-  const bytes = Buffer.byteLength(trimmedHtml);
+  const bytes = Buffer.byteLength(fixtureText);
   if (bytes > MAX_FIXTURE_BYTES) {
     throw new Error(`${fixtureName}：片段 ${bytes} 字节 > 上限 ${MAX_FIXTURE_BYTES}`);
   }
@@ -188,15 +259,16 @@ async function buildOne(fixtureName, { write = true } = {}) {
 
   if (write) {
     fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(path.join(dir, 'page.min.html'), trimmedHtml, 'utf8');
+    fs.writeFileSync(path.join(dir, fixtureFile), fixtureText, 'utf8');
     fs.writeFileSync(path.join(dir, 'expected.json'), `${JSON.stringify(expected, null, 2)}\n`, 'utf8');
-    fs.writeFileSync(path.join(dir, 'PROVENANCE.md'), provenanceOf(fixtureName, rule, entry, bytes, trimmedItems.length, fullItems.length), 'utf8');
+    fs.writeFileSync(path.join(dir, 'PROVENANCE.md'),
+      provenanceOf(fixtureName, rule, entry, bytes, trimmedItems.length, fullItems.length, fixtureFile), 'utf8');
   }
 
   return { fixtureName, bytes, trimmedItems: trimmedItems.length, fullItems: fullItems.length, dir };
 }
 
-function provenanceOf(fixtureName, rule, entry, bytes, trimmedCount, fullCount) {
+function provenanceOf(fixtureName, rule, entry, bytes, trimmedCount, fullCount, fixtureFile = 'page.min.html') {
   return `# fixture 出处：${fixtureName}
 
 | 项 | 值 |
@@ -204,7 +276,8 @@ function provenanceOf(fixtureName, rule, entry, bytes, trimmedCount, fullCount) 
 | 来源页面 | ${rule.url} |
 | 采集器 | \`${entry.id}\`（${entry.name}） |
 | 抓取日期 | ${todayCN()} |
-| 保留的 DOM | ${rule.what} |
+| 保留的内容 | ${rule.what} |
+| 片段文件 | \`${fixtureFile}\` |
 | 片段体积 | ${bytes} 字节（上限 ${MAX_FIXTURE_BYTES}） |
 | 片段解析条数 | ${trimmedCount} |
 | 同规则整页解析条数 | ${fullCount} |

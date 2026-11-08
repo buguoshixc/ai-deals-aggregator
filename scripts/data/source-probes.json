@@ -59,6 +59,15 @@
         { "name": "new-user-package", "pattern": "新用户注册专享\\s*([\\d.]+万)\\s*免费\\s*Tokens\\s*资源包", "flags": "g" }
       ]
     },
+    "appsumo": {
+      "url": "https://appsumo.com/collections/new/",
+      "keywords": ["Lifetime Deal", "AppSumo", "ending-soon"],
+      "selectors": ["script#__NEXT_DATA__[type=\"application/json\"]", "a[href^=\"/products/\"]"],
+      "regexes": [
+        { "name": "next-data", "pattern": "__NEXT_DATA__", "flags": "g" },
+        { "name": "product-link", "pattern": "/products/[a-z0-9-]+/", "flags": "g" }
+      ]
+    },
     "cn_volc_ark": {
       "url": "https://www.volcengine.com/product/ark",
       "keywords": ["免费", "额度", "Token", "活动"],

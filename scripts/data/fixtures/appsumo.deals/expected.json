@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "source": "appsumo",
+  "sourceName": "AppSumo",
+  "fixture": "appsumo.deals",
+  "sourceUrl": "https://appsumo.com/collections/new/",
+  "capturedAt": "2026-11-09",
+  "trimmed": "前 8 条 deal 的 __NEXT_DATA__ 片段（只保留解析器读的字段；AI/非 AI、有价/无价混合）",
+  "note": "expected 是**生产解析器在这个最小片段上的真实输出**；重建后请人工 review diff。",
+  "count": 6,
+  "items": [
+    {
+      "title": "Acti",
+      "url": "https://appsumo.com/products/acti/",
+      "source": "AppSumo",
+      "region": "global",
+      "category": "Productivity & Automation · Workflow Automation",
+      "description": "Use this agentic mobile keyboard to dictate, translate, and automate tasks across 300+ apps and APIs",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $299（省 80%）",
+      "priceLine": "$59 终身（原价 $299）",
+      "pricingModel": "paid",
+      "expiresAt": null,
+      "type": "deal"
+    },
+    {
+      "title": "Webclaw",
+      "url": "https://appsumo.com/products/webclaw/",
+      "source": "AppSumo",
+      "region": "global",
+      "category": "Developer Tools · Web Scraping",
+      "description": "Feed your AI agents clean Markdown or structured JSON from any web page with this web scraper API",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $299（省 80%）",
+      "priceLine": "$59 终身（原价 $299）",
+      "pricingModel": "paid",
+      "expiresAt": null,
+      "type": "deal"
+    },
+    {
+      "title": "Creator Lookup",
+      "url": "https://appsumo.com/products/creator-lookup/",
+      "source": "AppSumo",
+      "region": "global",
+      "category": "Social Media · Influencer & UGC",
+      "description": "Search an AI-powered influencer database of 400M+ creators across Instagram, TikTok, and YouTube",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $299（省 80%）",
+      "priceLine": "$59 终身（原价 $299）",
+      "pricingModel": "paid",
+      "expiresAt": "2026-12-08T05:59:59Z",
+      "type": "deal"
+    },
+    {
+      "title": "AdaptlyPost",
+      "url": "https://appsumo.com/products/adaptlypost/",
+      "source": "AppSumo",
+      "region": "global",
+      "category": "Social Media · Scheduling",
+      "description": "Plan, schedule, and publish to 14 social platforms with AI-powered captions, images, and automation",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $190（省 69%）",
+      "priceLine": "$59 终身（原价 $190）",
+      "pricingModel": "paid",
+      "expiresAt": null,
+      "type": "deal"
+    },
+    {
+      "title": "DomScan",
+      "url": "https://appsumo.com/products/domscan/",
+      "source": "AppSumo",
+      "region": "global",
+      "category": "Developer Tools · Web Scraping",
+      "description": "Pull DNS, WHOIS, web, and security data into apps and AI agents with this domain intelligence API",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $39，原价 $199（省 80%）",
+      "priceLine": "$39 终身（原价 $199）",
+      "pricingModel": "paid",
+      "expiresAt": null,
+      "type": "deal"
+    },
+    {
+      "title": "NotiQ",
+      "url": "https://appsumo.com/products/notiq/",
+      "source": "AppSumo",
+      "region": "global",
+      "category": "Lead Generation · Cold Email",
+      "description": "Generate local business leads from Google Maps and let AI manage personalized email outreach",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $69，原价 $708（省 90%）",
+      "priceLine": "$69 终身（原价 $708）",
+      "pricingModel": "paid",
+      "expiresAt": null,
+      "type": "deal"
+    }
+  ]
+}
