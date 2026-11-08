@@ -73,6 +73,9 @@ const SOURCE_TYPES = {
   // 「折扣价 / 原价 / 截止日期」都是 AppSumo 作为交易平台一方给出的条款，不是厂商官方页，
   // 所以登记为 directory 而不是 official。
   'AppSumo': 'directory',
+  // OpenRouter：模型路由平台的官方 API/定价页。免费模型这条优惠的条款方就是 OpenRouter
+  // 自己（它的 pricing 就是「本平台如何计费」的权威），所以登记为 official。
+  'OpenRouter': 'official',
   // 人工策展
   'Curated': 'curated',
   'Curated-CN': 'curated'

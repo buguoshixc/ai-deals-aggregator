@@ -96,6 +96,27 @@ const TRIMS = {
       return nodes.length ? nodes.map(node => $.html(node)).join('\n') : null;
     }
   },
+  // OpenRouter：来源本身就是 JSON API。fixture 保留「最小真实 JSON 片段」——
+  // 3 个免费模型（含 :free 与非 :free 两种）+ 3 个付费模型，覆盖免费判据的两侧。
+  'openrouter.models': {
+    url: 'https://openrouter.ai/api/v1/models',
+    what: '前 3 个免费模型 + 前 3 个付费模型的 JSON 片段（只保留解析器读的字段）',
+    kind: 'json',
+    trim(raw) {
+      let payload;
+      try {
+        payload = JSON.parse(String(raw || ''));
+      } catch (error) {
+        return null;
+      }
+      const list = payload && Array.isArray(payload.data) ? payload.data : null;
+      if (!list) return null;
+      const isFree = item => item && item.pricing && item.pricing.prompt === '0';
+      const picked = [...list.filter(isFree).slice(0, 3), ...list.filter(item => !isFree(item)).slice(0, 3)];
+      if (!picked.length) return null;
+      return JSON.stringify({ data: picked.map(projectOpenRouterModel) });
+    }
+  },
   // AppSumo：数据在 <script id="__NEXT_DATA__"> 的 JSON 里，不是 DOM 表格。
   // 所以剪裁不是「挑节点」，而是「把 JSON 投影成解析器真正读的字段」——
   // raw: true 表示跳过 minimize()（那一步会删掉 <script>，正好把唯一的数据源删没）。
@@ -148,6 +169,26 @@ function projectAppSumoDeal(raw) {
       group: attributes.group
     },
     dates: { start_date: dates.start_date, end_date: dates.end_date }
+  };
+}
+
+/**
+ * OpenRouter fixture 的字段投影：只留生产解析器读的字段。
+ * `pricing` 只留 prompt/completion 两个数（其余是营销字段），`per_request_limits` 原样保留
+ * （它在真实样本里是 null，fixture 里保留这个事实本身）。
+ */
+function projectOpenRouterModel(raw) {
+  const model = raw && typeof raw === 'object' ? raw : {};
+  const pricing = model.pricing && typeof model.pricing === 'object' ? model.pricing : {};
+  return {
+    id: model.id,
+    name: model.name,
+    created: model.created,
+    expiration_date: model.expiration_date,
+    context_length: model.context_length,
+    description: model.description,
+    pricing: { prompt: pricing.prompt, completion: pricing.completion },
+    per_request_limits: model.per_request_limits
   };
 }
 

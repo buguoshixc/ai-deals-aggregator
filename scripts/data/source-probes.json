@@ -59,6 +59,15 @@
         { "name": "new-user-package", "pattern": "新用户注册专享\\s*([\\d.]+万)\\s*免费\\s*Tokens\\s*资源包", "flags": "g" }
       ]
     },
+    "openrouter": {
+      "url": "https://openrouter.ai/api/v1/models",
+      "keywords": ["pricing", "expiration_date", "created", "per_request_limits"],
+      "selectors": [],
+      "regexes": [
+        { "name": "models-data", "pattern": "\"data\"\\s*:\\s*\\[", "flags": "g" },
+        { "name": "free-price", "pattern": "\"prompt\"\\s*:\\s*\"0\"", "flags": "g" }
+      ]
+    },
     "appsumo": {
       "url": "https://appsumo.com/collections/new/",
       "keywords": ["Lifetime Deal", "AppSumo", "ending-soon"],

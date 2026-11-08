@@ -755,6 +755,101 @@ function collectorFilterTeeth() {
 }
 
 /* ================================================================== */
+/* 采集侧判据的牙（P1：OpenRouter「免费判据 + 30 天窗口 + 限流」）           */
+/* ================================================================== */
+
+/**
+ * OpenRouter 这一层的三件事只有这里会被验证：
+ *   ① 免费判据必须是 `pricing.prompt === "0"` 的**严格**比较（不能把数字 0 也放进来，
+ *      也不允许写成「或 id 以 :free 结尾」——:free 只是路由变体）；
+ *   ② 「新进入免费态」= created 落在注入的 now 窗口内，且免费窗口没过期；
+ *   ③ rate limit 只写「从官方文档读到的数字」或「未标注」，不硬编码、不猜。
+ * fixture 只能钉住真实样本的解析结果；窗口与判据的分支要靠这些注入 now 的用例。
+ */
+function openRouterTeeth() {
+  const or = require('../collectors/openrouter').__test;
+  assert('结构 OpenRouter 判据出口存在（__test）', Boolean(or && or.selectNewFree && or.parseFreeLimits));
+
+  const DAY = 24 * 3600 * 1000;
+  const NOW = Date.parse('2026-11-09T00:00:00Z');
+  const model = (patch = {}) => ({
+    id: 'probe/model:free',
+    name: 'Probe: Model',
+    created: Math.floor((NOW - 5 * DAY) / 1000),
+    expirationDate: null,
+    promptPrice: '0',
+    completionPrice: '0',
+    perRequestLimits: null,
+    contextLength: 8192,
+    description: '',
+    freeVariant: true,
+    isFree: true,
+    ...patch
+  });
+  const limits = { rpm: 20, dailyNoCredits: 50, dailyHasCredits: 1000, creditsThreshold: 10 };
+
+  // ① 免费判据：严格字符串 "0"；数字 0 与非 "0" 都不算
+  assert('OpenRouter 判据：pricing.prompt === "0" 才算免费', or.selectNewFree([model()], { now: NOW, limits }).items.length === 1, '严格等于 "0" 的模型没被收进来');
+  const numericZero = or.selectNewFree([model({ promptPrice: 0, isFree: false })], { now: NOW, limits });
+  assert('OpenRouter 判据：数字 0 不算免费（契约是字符串 "0"，不写宽松比较）', numericZero.items.length === 0,
+    '数字 0 被当成了免费');
+  const paid = or.selectNewFree([model({ promptPrice: '0.0000005', isFree: false })], { now: NOW, limits });
+  assert('OpenRouter 判据：有价模型不进（不看 :free 后缀）', paid.items.length === 0, paid.items.map(i => i.title).join(','));
+  const freeButOld = or.selectNewFree([model({ created: Math.floor((NOW - 90 * DAY) / 1000) })], { now: NOW, limits });
+  assert('OpenRouter 窗口：90 天前上线的免费模型被筛掉', freeButOld.items.length === 0, '旧免费模型被当成了「新进入」');
+  assert('OpenRouter 窗口：被筛掉的旧免费模型带原因', /窗口/.test(freeButOld.dropped[0] && freeButOld.dropped[0].reason || ''),
+    JSON.stringify(freeButOld.dropped));
+  const justOutside = or.selectNewFree([model({ created: Math.floor((NOW - 31 * DAY) / 1000) })], { now: NOW, limits });
+  const justInside = or.selectNewFree([model({ created: Math.floor((NOW - 29 * DAY) / 1000) })], { now: NOW, limits });
+  assert('OpenRouter 窗口：30 天阈值两侧行为正确（29 天进 / 31 天出）',
+    justInside.items.length === 1 && justOutside.items.length === 0,
+    `29 天=${justInside.items.length} / 31 天=${justOutside.items.length}`);
+
+  // ② 免费窗口已过期的免费模型不能进（expiration_date 早于 today）
+  const expired = or.selectNewFree([model({ expirationDate: '2026-11-01' })], { now: NOW, limits, today: '2026-11-09' });
+  assert('OpenRouter 窗口：expiration_date 已过期的免费模型被筛掉', expired.items.length === 0,
+    JSON.stringify(expired.items));
+
+  // ③ 字段映射（需求 §P1-3）：type/pricingModel/region/category/expiresAt 一个都不能错
+  const mapped = or.selectNewFree([model({ expirationDate: '2026-12-31' })], { now: NOW, limits, today: '2026-11-09' }).items[0];
+  assert('OpenRouter 映射：type=deal / pricingModel=free / region=global / category=API服务',
+    mapped.type === 'deal' && mapped.pricingModel === 'free' && mapped.region === 'global' && mapped.category === 'API服务',
+    JSON.stringify({ type: mapped.type, pricingModel: mapped.pricingModel, region: mapped.region, category: mapped.category }));
+  assert('OpenRouter 映射：expiresAt 取 expiration_date', mapped.expiresAt === '2026-12-31', mapped.expiresAt);
+  assert('OpenRouter 映射：产品链接是 OpenRouter 的模型页', mapped.url === 'https://openrouter.ai/probe/model:free', mapped.url);
+  assert('OpenRouter 映射：收录渠道 sourceUrl 是官方 API', mapped.sourceUrl === or.API_URL, mapped.sourceUrl);
+
+  // ④ rate limit：官方文档读到数字才写数字；:free 变体才套用免费档；读不到写「未标注」
+  const freeText = or.rateLimitText(model(), limits);
+  assert('OpenRouter 限流：免费档数字来自官方文档（20 RPM / 50·1000 RPD）',
+    freeText.includes('20 次/分钟') && freeText.includes('50 次') && freeText.includes('1000 次'), freeText);
+  const noLimitsText = or.rateLimitText(model(), null);
+  assert('OpenRouter 限流：读不到官方数字时写「未标注」，不硬编码', noLimitsText.includes('未标注') && !/\d+\s*次/.test(noLimitsText), noLimitsText);
+  const variantText = or.rateLimitText(model({ freeVariant: false }), limits);
+  assert('OpenRouter 限流：非 :free 变体不套用免费档数字（免得猜）',
+    variantText.includes('未标注') && !variantText.includes('20 次/分钟'), variantText);
+  assert('OpenRouter 限流：features 里有短标签（卡片一眼可见）',
+    Array.isArray(mapped.features) && mapped.features.some(tag => /RPM|限流/.test(tag)), JSON.stringify(mapped.features));
+
+  // ⑤ 官方限流文档的解析：真实文档的内联常量格式 + 解析失败必须返回 null
+  const sample = 'var FREE_MODEL_RATE_LIMIT_RPM=20;FREE_MODEL_NO_CREDITS_RPD=50;FREE_MODEL_HAS_CREDITS_RPD=1e3;FREE_MODEL_CREDITS_THRESHOLD=10;';
+  const parsed = or.parseFreeLimits(sample);
+  assert('OpenRouter 限流文档：四个常量都能解析（含 1e3 科学计数）',
+    parsed && parsed.rpm === 20 && parsed.dailyNoCredits === 50 && parsed.dailyHasCredits === 1000 && parsed.creditsThreshold === 10,
+    JSON.stringify(parsed));
+  assert('OpenRouter 限流文档：结构变化时返回 null（调用方写未标注，不猜）', or.parseFreeLimits('<html>空页面</html>') === null, '空页面也解析出了数字');
+  assert('OpenRouter 日志纪律：被筛免费模型样本上限写死为 20 个', or.MAX_DROPPED_FREE_LOGGED === 20,
+    `实得 ${or.MAX_DROPPED_FREE_LOGGED}`);
+
+  // ⑥ 真实 fixture 上的解析（免费/付费两侧都在片段里，解析本身不筛选）
+  const fixture = read('scripts/data/fixtures/openrouter.models/page.min.json');
+  const models = or.parseModels(fixture);
+  assert('OpenRouter fixture：片段解析出 6 个模型（3 免费 + 3 付费）', models.length === 6, `实得 ${models.length}`);
+  assert('OpenRouter fixture：免费/付费判据与 pricing.prompt 一致',
+    models.filter(item => item.isFree).length === 3, `实得免费 ${models.filter(item => item.isFree).length}`);
+}
+
+/* ================================================================== */
 
 async function main() {
   console.log('AI 层自检（离线，不依赖任何 API key 与网络）');
@@ -772,6 +867,7 @@ async function main() {
   tooth9_candidateEnvelopeInProduction();
   structuralTeeth();
   collectorFilterTeeth();
+  openRouterTeeth();
 
   // provider 的环境变量不该泄漏给后续步骤
   delete process.env.AI_PROVIDER;
