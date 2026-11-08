@@ -1,5 +1,5 @@
 {
-  "_note": "人工中文译文覆盖层。键 = deal.id（sha1(vendor|title|url) 前 12 位）。只放译文，绝不覆盖英文原文——英文原文字段一个字节都不改。src 是原文指纹：译文照抄的那段英文；英文被采集器改写后指纹对不上，该字段译文会自动停用并在构建日志里催促复核，避免出现和原文矛盾的中文。维护方式：node scripts/tools/zh-todo.js 看清单 → 填译文 → node scripts/tools/zh-todo.js --scaffold 盖指纹。",
+  "_note": "人工中文译文覆盖层。键 = deal.id（sha1(lower(vendor)|lower(title)|lower(url)) 前 12 位——三个字段先转小写再拼，与 scripts/lib/schema.js 的 makeId() 一致）。只放译文，绝不覆盖英文原文——英文原文字段一个字节都不改。src 是原文指纹：译文照抄的那段英文。英文被采集器改写后指纹对不上，该字段的译文会自动停用并回退英文原文（只在报告里点名，不阻塞发布，避免出现和原文矛盾的中文）。维护方式：node scripts/tools/zh-todo.js 看清单 → 填译文 → --scaffold 盖指纹。",
   "byId": {
     "f5ffff50772c": {
       "_title": "ChatGPT / OpenAI",

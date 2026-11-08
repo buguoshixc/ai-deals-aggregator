@@ -7,8 +7,9 @@
  *   node scripts/tools/zh-todo.js --json           # 输出机器可读清单
  *   node scripts/tools/zh-todo.js --scaffold       # 生成 translations_zh.json 骨架（已译的保留）
  *   node scripts/tools/zh-todo.js --orphans        # 只看对不上 id 的译文
- *   node scripts/tools/zh-todo.js --check          # 门禁视角：漂移必红；待译按宽限期判（默认 7 天）
- *   node scripts/tools/zh-todo.js --check --grace=0  # 待译也必须为 0（发布前自查用）
+ *   node scripts/tools/zh-todo.js --check          # 建议性视角：列出漂移与待译，**不阻断**（exit 0）
+ *   node scripts/tools/zh-todo.js --check --strict # 需要硬拦时用：有漂移或超期待译则 exit 1
+ *   node scripts/tools/zh-todo.js --check --grace=0 --strict  # 待译也当成必红（发布前自查用）
  *   node scripts/tools/zh-todo.js --check --json   # 附机器可读判词（drift / pending / overdue）
  *   node scripts/tools/zh-todo.js --file=xxx.json  # 换 deals.json
  *
@@ -29,7 +30,7 @@ const NOTE = [
   '人工中文译文覆盖层。键 = deal.id（sha1(lower(vendor)|lower(title)|lower(url)) 前 12 位——三个字段先转小写再拼，与 scripts/lib/schema.js 的 makeId() 一致）。',
   '只放译文，绝不覆盖英文原文——英文原文字段一个字节都不改。',
   'src 是原文指纹：译文照抄的那段英文。英文被采集器改写后指纹对不上，',
-  '该字段的译文会自动停用并在构建日志里催促复核，避免出现和原文矛盾的中文。',
+  '该字段的译文会自动停用并回退英文原文（只在报告里点名，不阻塞发布），避免出现和原文矛盾的中文。',
   '维护方式：node scripts/tools/zh-todo.js 看清单 → 填译文 → --scaffold 盖指纹。'
 ].join(' ');
 
@@ -83,26 +84,27 @@ for (const deal of attached) {
   });
 }
 
-if (has('json')) {
+// `--json` 单独用时输出「待办清单」；`--check --json` 走下面的判词 JSON（2026-11-08 修：
+// 此前这个早退分支吞掉了 --check 的判词，文档承诺的「机器可读判词」根本到不了）。
+if (has('json') && !has('check')) {
   console.log(JSON.stringify({ total: todo.length, todo }, null, 2));
   process.exit(0);
 }
 
 if (has('check')) {
-  // 门禁视角：不打印整份待办清单，只回答「有没有需要人来处理的事」，并给出退出码。
+  // 建议性视角（2026-11-08 起）：回答「现在有哪些译文对不上 / 还没译」，但**默认不影响退出码**。
   //
-  // 判词分两档（2026-09-28 起）：
-  //   ① **漂移 = 必红**：孤儿 / 原文已变停用 / 不合法 / 覆盖层管不到。四种都意味着
-  //      「线上可能正拿着一份对不上的中文」，没有宽限期，也没有阈值可调。
-  //   ② **待译 = 按年龄判**：新采进来的英文条目还没人工翻译。自动采集每天两次，
-  //      若待译必红，系统就长期停在「有新优惠 → 必然 CI 红」——那不是门禁，是噪音
-  //      （2026-09-28 实测：定时采集进一条英文条目，下一次人工 push 的 verify.yml 就红）。
-  //      但它也不能无声：数量与「最老多少天」每次都打印，超过宽限期（默认 7 天）即转红。
-  //      年龄按 firstSeen 算，缺失时从今天起算（迁移日不算陈年）。
+  // 为什么不再硬红：译文是**附加信息** —— 线上英文原文一直都在，翻译缺失或失效最多让某一块
+  // 显示英文。而 2026-11-02 至 11-08 的停更证明「译文漂移 → 门禁红 → 采集不提交 → 站点冻住」
+  // 的代价远大于收益：上游改写英文是**常态**，把发布链的可用性押在「有人及时补译」上，
+  // 就等于让一个纯展示层的问题停掉整条数据链（采集器本身是好的）。
   //
-  // unmanaged（deals.json 自带、覆盖层里没有的译文）仍算漂移：覆盖层对它是**看不见**的
-  // ——原文被采集器改写时指纹比对根本不会跑，停用逻辑失效，旧译文会一直发到线上。
-  // 判据放在这里而不是「顺手删掉 deal.zh」：不动的数据不会出错，删掉反而是静默丢失。
+  // 判词仍分两档，但**后果**变了：
+  //   ① **漂移**（孤儿 / 原文已变停用 / 不合规 / 覆盖层管不到）：相关字段已回退英文，这里列出；
+  //   ② **待译**（新采进来的英文条目还没人工翻译）：按年龄列出，超过宽限期标「超期」。
+  // 两者都只是报告。要恢复「红」的行为：加 `--strict`（人显式要求硬拦时才生效；
+  // 本仓 CI 的 gate 与 `npm run check:zh` 都不带它）。
+  const strict = has('strict');
   const drift = report.orphaned.length + report.stale.length +
     report.skipped.length + report.unmanaged.length;
   // 注：`report.dropped` 与 `report.stale` 是同一批事件（lib/zh.js 里 dropped 就是 stale 的计数），
@@ -124,15 +126,16 @@ if (has('check')) {
   const overdue = age.rows.filter(row => row.days > grace);
   const clean = drift === 0 && overdue.length === 0;
 
-  console.log(`译文门禁 · ${path.relative(ROOT, overlayFile)}（待译宽限 ${grace} 天）`);
+  const mode = strict ? '硬拦模式 --strict' : '建议性模式（不阻塞发布）';
+  console.log(`译文检查 · ${path.relative(ROOT, overlayFile)}（待译宽限 ${grace} 天 · ${mode}）`);
   console.log(`  已贴 ${report.attached} 条 / ${report.fields} 个字段（数据共 ${report.total} 条）`);
   console.log(
-    `  ${drift ? '✗' : '✓'} 漂移 ${drift} 处` +
-      `（对不上 id ${report.orphaned.length} · 原文已变停用 ${report.stale.length} · 不合法 ${report.skipped.length}` +
+    `  ${drift ? '⚠️' : '✓'} 漂移 ${drift} 处` +
+      `（对不上 id ${report.orphaned.length} · 原文已变停用 ${report.stale.length} · 不合规 ${report.skipped.length}` +
       ` · 覆盖层管不到 ${report.unmanaged.length}）`
   );
   console.log(
-    `  ${overdue.length ? '✗' : '✓'} 待译 ${todo.length} 条 / ${pendingFields} 个字段` +
+    `  ${overdue.length ? '⚠️' : '✓'} 待译 ${todo.length} 条 / ${pendingFields} 个字段` +
       ` · 最老 ${age.oldestDays} 天 · 超期 ${overdue.length} 条`
   );
   if (report.warnings.length) {
@@ -140,7 +143,7 @@ if (has('check')) {
   }
   for (const row of report.orphaned) console.log(`    孤儿   [${row.id}] ${row.title}`);
   for (const row of report.stale) console.log(`    停用   [${row.id}] ${row.title}：${row.message}`);
-  for (const row of report.skipped) console.log(`    不合法 [${row.id}] ${row.title}：${row.message}`);
+  for (const row of report.skipped) console.log(`    不合规 [${row.id}] ${row.title}：${row.message}（已回退英文）`);
   for (const row of report.unmanaged) {
     console.log(`    管不到 [${row.id}] ${row.title}：deals.json 里有译文但覆盖层没这条（撤回的译文会照发）`);
   }
@@ -150,6 +153,7 @@ if (has('check')) {
   }
   if (has('json')) {
     console.log(JSON.stringify({
+      mode: strict ? 'strict' : 'advisory',
       drift,
       pending: todo.length,
       pendingFields,
@@ -159,10 +163,15 @@ if (has('check')) {
       clean
     }, null, 2));
   }
-  console.log(clean
-    ? '\n✅ 译文与数据一致'
-    : `\n❌ 需要人工处理（见上）${overdue.length ? `：${overdue.length} 条待译已超过 ${grace} 天宽限` : ''}`);
-  process.exit(clean ? 0 : 1);
+  if (clean) {
+    console.log('\n✅ 译文与数据一致');
+  } else if (strict) {
+    console.log(`\n❌ --strict：译文需要处理${overdue.length ? `（${overdue.length} 条待译已超过 ${grace} 天宽限）` : ''}`);
+  } else {
+    console.log(`\n⚠️  译文有 ${drift} 处漂移 / ${overdue.length} 条超期待译：相关字段已回退英文，**不阻塞发布**`);
+    console.log('    这一层只是附加信息；需要硬拦时加 --strict（例如发布前自查）。');
+  }
+  process.exit(strict && !clean ? 1 : 0);
 }
 
 if (has('scaffold')) {

@@ -1,16 +1,18 @@
 #!/usr/bin/env node
 /**
- * 中文译文门禁演练（自恢复，不留污染）。
+ * 中文译文层演练（自恢复，不留污染）。
  *
  * 门禁这种东西，没见过它失败就不知道它到底管不管用。这里把几种坏数据真的塞进去，
- * 看构建是拦下来还是照发不误：
- *   ① 译文不含汉字         → 必须硬失败（合成一个「看起来像译文」的英文最危险）
+ * 看构建是拦下来还是照发不误。**2026-11-08 起译文层是建议性的**：坏译文一律
+ * 「丢弃该字段、回退英文原文」，构建照发；`check:zh` 只报告、exit 0；
+ * 想要硬拦必须显式加 `--strict`（人要求时才生效）。演练同时守住这两面：
+ *   ① 译文不含汉字         → 字段丢弃、回退英文，构建照发（不能把坏译文发上线，也不能停站）
  *   ② 原文指纹对不上       → 构建成功，但该字段译文停用（不能拿旧译文配新原文）
  *   ③ 译文键对不上任何条目 → 构建成功并告警（孤儿）
  *   ④ 覆盖层删掉一条译文   → 产物里也必须消失（不能靠 deals.json 里的残留撑着）
- *   ⑤ 同一份孤儿数据       → `zh-todo --check` 必须非零退出（建议性门禁要看得见漂移）
- *   ⑥ 整条译文从覆盖层撤回 → 构建放行，但 `zh-todo --check` 必须把 deals.json 里
- *                            残留的旧译文（unmanaged）计为漂移而非放过
+ *   ⑤ 同一份孤儿数据       → `check:zh` 必须把漂移标出来（**exit 0**），`--strict` 才 exit 1
+ *   ⑥ 整条译文从覆盖层撤回 → 构建放行，但 `check:zh` 必须把 deals.json 里
+ *                            残留的旧译文（unmanaged）计入漂移
  *
  * 用法：node scripts/tools/zh-selftest.js
  */
@@ -59,9 +61,10 @@ function readProduct(rel) {
   return fs.readFileSync(file, 'utf8');
 }
 
-/** 跑一次译文漂移门禁（zh-todo --check）：它不构建，只回答「有没有要人处理的事」 */
-function runCheck() {
-  const r = spawnSync(process.execPath, [path.join(ROOT, 'scripts', 'tools', 'zh-todo.js'), '--check'],
+/** 跑一次译文检查（zh-todo --check）：它不构建，只回答「有没有漂移 / 待译」；默认建议性 exit 0 */
+function runCheck(extra = []) {
+  const r = spawnSync(process.execPath,
+    [path.join(ROOT, 'scripts', 'tools', 'zh-todo.js'), '--check', ...extra],
     { cwd: ROOT, encoding: 'utf8' });
   return {
     code: typeof r.status === 'number' ? r.status : 1,
@@ -99,13 +102,19 @@ try {
   const onlyOne = ids.find(id => Object.keys(doc.byId[id])
     .filter(k => !k.startsWith('_') && k !== 'src').length === 1) || ids[0];
 
-  // ① 译文不是中文 → 必须硬失败
+  // ① 译文不是中文 → 该字段丢弃、回退英文原文，构建照发（译文层不阻塞发布）。
+  //    断言两件事：构建 exit 0 且**产物里少掉这一个字段**——「回退英文」不能靠嘴说，
+  //    字段数必须真的减 1；同时输出里必须留下「已回退英文原文」的告警。
   const bad = JSON.parse(original);
   bad.byId[ids[0]].description = 'This is still English.';
   write(bad);
   const r1 = run();
-  record('译文不含汉字 → 阻断发布', r1.code !== 0 && /中文译文不合规/.test(r1.out),
-    r1.code !== 0 ? '构建已中止' : '构建竟然通过了', r1);
+  const counted1 = /中文译文: \d+\/\d+ 条带中文译文（(\d+) 个字段）/.exec(r1.out);
+  const expected1 = overlayFieldCount() - 1;
+  record('译文不含汉字 → 丢弃该字段、回退英文，构建照发',
+    r1.code === 0 && /译文不合规，已回退英文原文/.test(r1.out) &&
+      counted1 && Number(counted1[1]) === expected1,
+    r1.code === 0 ? `字段数 ${counted1 ? counted1[1] : '?'}（应为 ${expected1}）` : '构建失败（译文层不该阻塞发布）', r1);
 
   // ② 原文指纹对不上 → 构建通过，但该字段译文停用
   const stale = JSON.parse(original);
@@ -115,7 +124,7 @@ try {
   const counted = /中文译文: \d+\/\d+ 条带中文译文（(\d+) 个字段）/.exec(r2.out);
   const expected = overlayFieldCount() - 1;
   record('原文已变 → 警告并停用该字段译文',
-    r2.code === 0 && /原文已变，译文已停用待复核/.test(r2.out) &&
+    r2.code === 0 && /原文已变，译文已停用/.test(r2.out) &&
     counted && Number(counted[1]) === expected,
     r2.code === 0 ? `字段数 ${counted ? counted[1] : '?'}（应为 ${expected}）` : '构建失败', r2);
 
@@ -128,11 +137,16 @@ try {
     r3.code === 0 && /译文对不上任何条目 id/.test(r3.out),
     r3.code === 0 ? '已告警' : '构建失败', r3);
 
-  // ⑤ 同一份孤儿数据：构建放行（发布不该被卡），但门禁必须把它标出来
+  // ⑤ 同一份孤儿数据：构建放行（发布不该被卡），但检查必须把它标出来；
+  //    默认建议性 exit 0，只有显式 --strict 才 exit 1（判据不能被悄悄弱化成「看不见」）。
   const r3b = runCheck();
-  record('译文对不上 id → check:zh 非零退出',
-    r3b.code !== 0 && /漂移 1 处/.test(r3b.out) && /孤儿\s+\[deadbeef0000\]/.test(r3b.out),
-    r3b.code !== 0 ? '已按漂移退出' : '竟然返回 0（漂移会被漏掉）', r3);
+  const r3bStrict = runCheck(['--strict']);
+  record('译文对不上 id → check 标出漂移但不阻塞（--strict 才拦）',
+    r3b.code === 0 && /漂移 1 处/.test(r3b.out) && /孤儿\s+\[deadbeef0000\]/.test(r3b.out) &&
+      r3bStrict.code !== 0 && /--strict/.test(r3bStrict.out),
+    r3b.code === 0
+      ? (r3bStrict.code !== 0 ? '建议性已标出，--strict 已拦' : '建议性放行，但 --strict 竟然也放行（牙没了）')
+      : '建议性竟然非零退出（会重新卡死发布）', r3b);
 
   // ④ 覆盖层删掉一条译文 → 产物里也必须消失
   const removed = JSON.parse(original);
@@ -186,9 +200,13 @@ try {
       : `构建失败（${unmanagedError || '产物未就位'}）`, r5);
 
   const r5b = runCheck();
-  record('撤回整条译文 → check:zh 非零退出（unmanaged 计入漂移）',
-    r5b.code !== 0 && /漂移 1 处/.test(r5b.out) && /管不到/.test(r5b.out) && !/译文与数据一致/.test(r5b.out),
-    r5b.code !== 0 ? '已按漂移退出' : '竟然返回 0（撤回的译文会被漏掉）', r5);
+  const r5bStrict = runCheck(['--strict']);
+  record('撤回整条译文 → check 标出「管不到」但不阻塞（--strict 才拦）',
+    r5b.code === 0 && /漂移 1 处/.test(r5b.out) && /管不到/.test(r5b.out) && !/译文与数据一致/.test(r5b.out) &&
+      r5bStrict.code !== 0,
+    r5b.code === 0
+      ? (r5bStrict.code !== 0 ? '建议性已标出，--strict 已拦' : '建议性放行，但 --strict 竟然也放行（牙没了）')
+      : '建议性竟然非零退出（会重新卡死发布）', r5);
 } finally {
   fs.writeFileSync(FILE, original, 'utf8');
 }
@@ -199,16 +217,16 @@ const fields = overlayFieldCount();
 const restored = back.code === 0 && new RegExp(`中文译文: \\d+/\\d+ 条带中文译文（${fields} 个字段）`).test(back.out);
 
 /**
- * 复原后的复核。判据从「exit 0」升级为「**漂移为 0**」——
- * 2026-09-28 起待译是按年龄判的（宽限 7 天），所以只要还有未超期的待译，
- * exit 0 与 exit 1 都可能出现，用它当判据就变成了「有没有人手翻译」而不是「门禁坏没坏」。
- * 但也不能只查漂移就放过：exit 非 0 时**必须**是「待译超期」这一个理由，
- * 否则（例如有人把待译做成永久静默、或漂移判据失效）这条同样会红。
+ * 复原后的复核：要求**漂移回到 0 且 exit 0**。
+ *
+ * 为什么不再看「有没有待译超期」：2026-11-08 起译文层是**建议性**的，待译/超期只报告、
+ * 不影响退出码。但也不能只查 exit 0（那等于「什么都看不见」也是绿的）：
+ * 「漂移 0 处」证明检测器仍然看得见脏数据，只是不拦发布。
+ * 反过来说，复原后 exit 非 0 就说明建议性语义坏了（会重新卡死发布），这条同样会红。
  */
 const backCheck = runCheck();
 const driftZero = /漂移 0 处/.test(backCheck.out) && /✓ 漂移 0 处/.test(backCheck.out);
-const checkClean = driftZero &&
-  (backCheck.code === 0 || /待译已超过 \d+ 天宽限/.test(backCheck.out));
+const checkClean = driftZero && backCheck.code === 0;
 
 /* ------------------------------------------------------------------ */
 /* ⑦ 待译的年龄门禁：新条目进得来、陈年条目不放过                        */
@@ -254,8 +272,8 @@ const makeProbeFile = (file, firstSeen) => fs.writeFileSync(file, `${JSON.string
   }]
 }, null, 2)}\n`, 'utf8');
 
-const runCheckOn = (file, grace, overlay, pending) => {
-  const args = [path.join(ROOT, 'scripts', 'tools', 'zh-todo.js'), '--check', `--file=${file}`, `--grace=${grace}`];
+const runCheckOn = (file, grace, overlay, pending, extra = []) => {
+  const args = [path.join(ROOT, 'scripts', 'tools', 'zh-todo.js'), '--check', `--file=${file}`, `--grace=${grace}`, ...extra];
   if (overlay) args.push(`--overlay=${overlay}`);
   if (pending) args.push(`--pending=${pending}`);
   const r = spawnSync(process.execPath, args, { cwd: ROOT, encoding: 'utf8' });
@@ -291,27 +309,31 @@ try {
 
   makeProbeFile(staleProbe, shiftDays(30));
   const rStale = runCheckOn(staleProbe, 7, emptyOverlay);
+  const rStaleStrict = runCheckOn(staleProbe, 7, emptyOverlay, null, ['--strict']);
   agingStale = {
-    pass: rStale.code !== 0 && /待译 1 条/.test(rStale.out) && /最老 30 天/.test(rStale.out) &&
-      /超过 7 天宽限/.test(rStale.out),
-    detail: rStale.code !== 0 ? '已按超期拦下' : '竟然放行（陈年待译没人管）'
+    // 建议性：条目再陈年也只是报告，exit 0；「超期」必须被点名（不能静默）+ --strict 必须拦。
+    pass: rStale.code === 0 && /待译 1 条/.test(rStale.out) && /最老 30 天/.test(rStale.out) &&
+      /超期 1 条/.test(rStale.out) && rStaleStrict.code !== 0 && /超过 7 天宽限/.test(rStaleStrict.out),
+    detail: rStale.code === 0
+      ? (rStaleStrict.code !== 0 ? '陈年待译已标为超期且不阻塞，--strict 已拦' : '--strict 竟然放行（牙没了）')
+      : '建议性竟然非零退出（会重新卡死发布）'
   };
-  record('待译超过宽限期（30 天）→ check:zh 必须拦下', agingStale.pass, agingStale.detail, rStale);
+  record('待译超过宽限期（30 天）→ check 标出超期但不阻塞（--strict 才拦）', agingStale.pass, agingStale.detail, rStale);
 
   makeProbeFile(freshProbe, shiftDays(0));
   const rFresh = runCheckOn(freshProbe, 7, emptyOverlay);
   agingFresh = {
     pass: rFresh.code === 0 && /待译 1 条/.test(rFresh.out) && /最老 0 天/.test(rFresh.out),
-    detail: rFresh.code === 0 ? '宽限内放行且可见' : '新条目被拦（等于方案 B，站点会停更）'
+    detail: rFresh.code === 0 ? '建议性放行且待译条数可见' : '新条目被拦（会重新卡死发布）'
   };
-  record('待译在宽限期内（今天新进）→ check:zh 放行但必须写明待译条数', agingFresh.pass, agingFresh.detail, rFresh);
+  record('待译在宽限期内（今天新进）→ check 放行但必须写明待译条数', agingFresh.pass, agingFresh.detail, rFresh);
 
   /**
    * 年龄的**基准**必须是「进入待译那天」，不是 firstSeen。
    * 反例就是 2026-09-28 实测到的：上游改写了 Midjourney / Grok 的英文，两条老条目的译文失效
-   * ——它们的 firstSeen 是 7 天前，用 firstSeen 计时等于「刚失效就超期」，第二天门禁就红。
-   *  · (a) firstSeen 30 天前 + 待译状态记的是今天 → **必须放行**（刚刚才进入待译）；
-   *  · (b) firstSeen 今天     + 待译状态记的是 30 天前 → **必须拦下**（义务从 30 天前就存在）。
+   * ——它们的 firstSeen 是 7 天前，用 firstSeen 计时等于「刚失效就超期」，第二天就被标成超期。
+   *  · (a) firstSeen 30 天前 + 待译状态记的是今天 → **必须按 0 天算**（刚刚才进入待译）；
+   *  · (b) firstSeen 今天     + 待译状态记的是 30 天前 → **必须按 30 天算**（义务从 30 天前就存在）。
    */
   makeProbeFile(staleProbe, shiftDays(30));   // 复用它：firstSeen = 30 天前
   fs.writeFileSync(pendingProbe, `${JSON.stringify({
@@ -331,9 +353,13 @@ try {
     byKey: { 'selftest-pending-probe|description': shiftDays(30) }
   }, null, 2)}\n`, 'utf8');
   const rSinceB = runCheckOn(freshProbe, 7, emptyOverlay, pendingProbe);
-  record('待译状态显示它已经等了 30 天 → 即便 firstSeen 是今天也必须拦下',
-    rSinceB.code !== 0 && /最老 30 天/.test(rSinceB.out) && /超过 7 天宽限/.test(rSinceB.out),
-    rSinceB.code !== 0 ? '已按进入待译的天数拦下' : '竟然放行（待译状态被忽略）', rSinceB);
+  const rSinceBStrict = runCheckOn(freshProbe, 7, emptyOverlay, pendingProbe, ['--strict']);
+  record('待译状态显示它已经等了 30 天 → 即便 firstSeen 是今天也要按 30 天算（--strict 拦下）',
+    rSinceB.code === 0 && /最老 30 天/.test(rSinceB.out) && /超期 1 条/.test(rSinceB.out) &&
+      rSinceBStrict.code !== 0 && /超过 7 天宽限/.test(rSinceBStrict.out),
+    rSinceB.code === 0
+      ? (rSinceBStrict.code !== 0 ? '已按进入待译的天数标为超期，--strict 已拦' : '--strict 竟然放行（待译状态被忽略）')
+      : '建议性竟然非零退出', rSinceB);
   /**
    * 待译账本必须**只记还没译的字段** —— 已经译好的行要在作者循环里被划掉。
    * 不划掉就是个假红陷阱：上游之后改写原文、人按 H2 把译文撤下（而不是改写）时，
@@ -401,10 +427,10 @@ try {
   }
 }
 
-console.log('\n=== 中文译文门禁演练 ===');
+console.log('\n=== 中文译文层演练（建议性：坏译文回退英文，不阻塞发布）===');
 results.forEach(r => console.log(`  ${r.pass ? '✓' : '✗'} ${r.name} — ${r.detail}`));
 console.log(`  ${restored ? '✓' : '✗'} 复原后构建回到 ${fields} 个译文字段`);
-console.log(`  ${checkClean ? '✓' : '✗'} 复原后 check:zh 漂移回到 0（待译只受宽限期约束）`);
+console.log(`  ${checkClean ? '✓' : '✗'} 复原后 check 漂移回到 0 且建议性 exit 0`);
 const extra = [restored, checkClean];
 const failed = results.filter(r => !r.pass).length + extra.filter(v => !v).length;
 console.log(`\n${failed ? '❌' : '✅'} 演练 ${results.length + extra.length} 项，失败 ${failed} 项`);

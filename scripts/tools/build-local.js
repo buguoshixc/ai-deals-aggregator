@@ -3517,15 +3517,11 @@ function assemble() {
   const zhAttached = attachZh(payload.deals);
   payload.deals = zhAttached.deals;
 
-  // 译文门禁。第 1 步的校验跑在**未贴译文**的 deals.json 上，所以 validateDeal 里的 zh
-  // 规则在那里永远不会被触发——必须在这里补一道，否则「译文不是中文 / 字段名写错 / 超长」
-  // 这类错误会一路静默发到线上。
-  // 分级处理：不合规 = 硬失败（译文文件只有人维护，永远能改对）；
-  //          原文已变 = 警告 + 该字段译文停用（采集器改英文不该把发布卡死）。
-  if (zhAttached.report.skipped.length) {
-    const lines = zhAttached.report.skipped.map(row => `  - ${row.title} [${row.id}]: ${row.message}`);
-    throw new Error(`中文译文不合规（${zhAttached.report.skipped.length} 处），已阻止发布：\n${lines.join('\n')}`);
-  }
+  // 译文附着（2026-11-08 起**不再有构建期译文门禁**）：第 1 步的 validateDeal 跑在**未贴译文**的
+  // deals.json 上，所以 lib/zh.js 的规则不经过它——原先这里补一道 throw 防止「译文不是中文 /
+  // 字段名写错 / 超长」发到线上。现在那道防线仍在，只是位置变了：normalizeZh 会把不合规 /
+  // 原文已变的字段**直接丢弃**（回退英文原文），产物里不可能出现坏译文；报告在下面打出来，
+  // 构建不因此失败。理由：译文是附加信息，它坏掉最多让某一块显示英文，不该停掉整次发布。
 
   // 分类归属在**构建期**由 `audience.collectionsOf` 一处算出，写进 `dist/assets/data/offers.json` 的
   // `collections` 字段；分类页与首页筛选器都读它。
@@ -3939,9 +3935,11 @@ function assemble() {
   fs.writeFileSync(path.join(OUT, OFFERS_ARTIFACT), `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
   console.log(`  中文译文: ${summarizeZh(zhAttached.report)}`);
   zhAttached.report.stale.forEach(row =>
-    console.warn(`    🔁 原文已变，译文已停用待复核: ${row.title} — ${row.message}`));
+    console.warn(`    🔁 原文已变，译文已停用（回退英文）: ${row.title} — ${row.message}`));
   zhAttached.report.orphaned.forEach(row =>
     console.warn(`    ⚠️  译文对不上任何条目 id（条目可能改名/换 URL）: ${row.id} ${row.title}`));
+  zhAttached.report.skipped.forEach(row =>
+    console.warn(`    ⚠️  译文不合规，已回退英文原文: ${row.title} — ${row.message}`));
   zhAttached.report.warnings.forEach(row =>
     console.warn(`    ℹ️  ${row.title}: ${row.message}`));
   if (zhAttached.report.unmanaged.length) {

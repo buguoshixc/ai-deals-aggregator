@@ -2636,8 +2636,8 @@ npm run verify:regress  # 与基线比回归：密度不得降、页高/请求�
 npm run report:tier     # 分档分布 + 每张卡命中的判据 + 判据读到的原文
 npm run report:vendor   # 厂商归一报告（多少种脏写法归到了同一家）
 npm run todo:zh         # 中文翻译待办（--json / --scaffold 盖原文指纹 / --orphans）
-npm run check:zh        # 译文漂移门禁：非零退出 = 有译文对不上 id / 原文已变 / 还有条目没译
-npm run selftest:zh     # 中文译文门禁演练（自恢复，验证坏译文真的会被拦下）
+npm run check:zh        # 译文覆盖度报告（建议性，exit 0；加 --strict 才在漂移/超期时非零退出）
+npm run selftest:zh     # 中文译文层演练（自恢复：坏译文回退英文、构建照发、--strict 才拦）
 npm run selftest:expiry # 活动期限门禁演练：截止日抽取正/负样例 + 三分类 + 排序次序 + 前后端词表一致性
 npm run check:history   # v1.4 历史门禁：基线 + 事件重放必须等于当前 deals.json（链 / 生命周期 / 上限）
 npm run selftest:history # v1.4 历史演练：噪音抑制 / 锚点 / 链 / 来源失败不误报「消失」/ 上限
@@ -3713,4 +3713,51 @@ API 记录没有 `billing`，所以任何 `promo` 都不产生"节省金额"。�
   症状是构建报 `… .lg is not a function` —— 离原因很远；上一次是注释里写了路由占位符的字面量）。
   两处注释里都已标注这条约束。
 
+
+
+### 2.46 译文层降级为「建议性」：译文出任何问题都不再阻塞发布（2026-11-08，分支 `fix/zh-advisory-2026-11-08`）
+
+**起因**：站点在 2026-11-02 ~ 11-08 停更了 6 天。根因不在采集器，而在**译文门禁的硬拦语义**：
+上游 Layer3Labs 改写了 3 条英文（ChatGPT / Gemini / ChatGPT-for-Veterans 的 `discountInfo` /
+`description`），`translations_zh.json` 的 `src` 指纹对不上 → 译文自动停用、记为「漂移」→
+`zh-todo --check` 非零退出 → 采集后的 gate 红 → 数据不提交 → deploy 的 prepublish 拒绝发布。
+采集本身每一轮都成功（run #93–#105），但没有任何一条数据能落地。
+
+这不是第一次：`37b8bd4` / `8e13d69` / `6f8864f` / `602fe77` 都是同一形状的「补译解封」。
+结论：**把发布链的可用性押在「有人及时补译」上，本身就是缺陷**——上游改写英文是常态。
+
+**改动（判据从「拦」降级为「报告 + 回退英文」）**：
+
+| 位置 | 之前 | 现在 |
+|---|---|---|
+| `scripts/lib/zh.js` `normalizeZh()` | 不合规字段报 error 但**仍留在 `zh` 里**；stale 字段删除 | 不合规字段（不含汉字 / 超长 / 原文为空）一律**从 `zh` 删除**，与 stale 一致 → 回退英文原文 |
+| `scripts/collect.js` | `skipped.length` → 跳过写盘、exit 1 | 只逐条告警（「已回退英文」），**不再拦写盘** |
+| `scripts/tools/build-local.js` | `skipped.length` → throw「已阻止发布」 | 只告警；产物里不会出现坏译文（上一步已删） |
+| `scripts/tools/zh-todo.js --check` | 漂移或超期待译 → exit 1 | 默认 exit 0（建议性），逐条打印；新增 `--strict` 恢复旧行为 |
+| `.github/actions/gate/action.yml` | 步骤 `Translation gate (drift blocks, pending ages out)` | 步骤 `Translation coverage (advisory, English fallback, never blocks)`，命令不变（`--check`） |
+| `scripts/tools/check-ci-consistency.js` | 冻结步骤名 + `run:` 体指纹 | 同步改名（步骤数不变，仍是冻结契约） |
+| `scripts/tools/zh-selftest.js` | 15 项，多条断言「必须非零退出」 | 同为 15 项，改成「构建照发 + 字段真的少一个 + 建议性 exit 0 + `--strict` 才 exit 1」 |
+| `README.md` / 本文 §三 | 「译文门禁（硬）：漂移必红」 | 「译文覆盖度报告（建议性）；`--strict` 才拦」 |
+
+**刻意保留的边界**：
+- 译文层**仍然在门禁里**、仍然逐条打印漂移/待译（check-ci 仍冻结这一步，拿掉会红）。
+  降的是「后果」，不是「可见性」——「从门禁里拿掉」与「降级为建议性」是两件事。
+- `translations_zh.json` 解析失败仍抛错（那是仓库文件损坏，不是译文内容问题）。
+- `schema.validateDeal` 对 `deals.json` 里 `zh` 的规则没动：写盘前坏字段已被删，所以它只会抓
+  「有人手工往数据里塞坏 zh」这种真正的数据污染。
+- `zh-pending.json` 照旧维护（报告用），待译年龄照旧按「进入待译」算。
+- **中文覆盖度从此只会减少、不会自动增加**：英文改动 / 新英文条目的中文会回退成英文，
+  除非有人再补译。这是明确取舍——宁可中文少一块，也不让站点停更；要自动补译另开一轮接 AI。
+
+**验证**（实跑）：
+
+| 检查 | 结果 |
+|---|---|
+| `npm run selftest:zh` | 15 项 0 失败（含 4 处 `--strict` 对照：建议性放行、`--strict` exit 1） |
+| `npm run check:zh` | 漂移 0 / 待译 2 条，**exit 0**（旧行为下这里会 exit 0，因为未超期；`--strict` 同样 0） |
+| `npm run check:ci` | 步骤名 / `run:` 体指纹同步后全过 |
+| 负向实跑① | 覆盖层一条译文改成英文 → 构建 exit 0、产物字段数 -1（回退英文）、告警「已回退英文原文」 |
+| 负向实跑② | 覆盖层一条 id 改成死键 → check 报「孤儿」**exit 0**，`--strict` exit 1 |
+
+**上线记录**：PR #133 · gate run 待填 · 合并后手动 `collect` 派发待填。
 
