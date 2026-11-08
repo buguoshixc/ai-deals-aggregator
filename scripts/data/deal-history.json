@@ -3182,6 +3182,335 @@
         "verified": false
       },
       "runAt": "2026-10-27T17:34:32.165Z"
+    },
+    {
+      "id": "2413e37ac108",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "2add85b3877d",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "音频语音",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "4e998909dbfb",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "paid",
+        "type": "tool",
+        "category": "API服务",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "7d8921eb5c47",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "paid",
+        "type": "tool",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "87a5685a4153",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "88b2afba57cf",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/openmontage-7994066d",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "98b5e610f7bc",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "paid",
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "a3f18a7a4b9d",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "a679dc7e78c6",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "paid",
+        "type": "tool",
+        "category": "对话模型",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "c21fd9ee54d1",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "free",
+        "type": "tool",
+        "category": "对话模型",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "c789f0a090bf",
+      "at": "2026-11-08",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "Free Gemini access remains available. Google AI Pro student offers vary by country; the U.S. student offer page says the previous student offer ended March 11, 2026.",
+      "to": "Free Gemini access remains available. In the U.S., eligible college students ages 18+ can get Google AI Pro free for one year if they redeem by December 31, 2026; a valid payment method is required and the plan then renews at $19.99/month.…",
+      "origin": "observed",
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "c789f0a090bf",
+      "at": "2026-11-08",
+      "type": "updated",
+      "field": "type",
+      "from": "tool",
+      "to": "deal",
+      "origin": "observed",
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "c971e33a9cd0",
+      "at": "2026-11-08",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "OpenAI, working with SheerID for verification, offers one full year of free ChatGPT Plus to eligible veterans and transitioning servicemembers, alongside example chats and a getting-started guide for job search, benefits, and relocation…",
+      "to": "OpenAI offers one free year of ChatGPT Plus to verified U.S. veterans and retirees who left active duty within the past 12 months and to active service members who will transition within the next 12 months, verified through ID.me.",
+      "origin": "observed",
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "d65084e7f76f",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "智能体",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "de0587956f33",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "e6da58501e1d",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "paid",
+        "type": "tool",
+        "category": "智能体",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "edcba5e8a6d2",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "其他",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "f005b0ea76d0",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "设计创意",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "f061ff167581",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "f5ffff50772c",
+      "at": "2026-11-08",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "Free ChatGPT tier; annual billing available for Business and Enterprise plans. No standing public student or nonprofit discount was listed on the official pricing page when checked.",
+      "to": "Free ChatGPT tier; annual billing available for Business and Enterprise plans. Verified nonprofits pay $8 per user per month for ChatGPT Business Standard seats billed annually, or $10 billed monthly, through OpenAI for Nonprofits;…",
+      "origin": "observed",
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "f7d846f3c57f",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "办公效率",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/skipit-ai",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
     }
   ]
 }
