@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-11-08T16:12:48+08:00",
+  "updatedAt": "2026-11-08T16:28:47+08:00",
   "count": 179,
   "deals": [
     {
@@ -2119,6 +2119,8 @@
         }
       },
       "zh": {
+        "discountInfo": "ChatGPT 提供免费档；Business 与 Enterprise 套餐可选年付。经认证的非营利组织可通过 OpenAI for Nonprofits 购买 ChatGPT Business Standard 席位：按年付费每位用户每月 $8，按月付费为每月 $10；…",
+        "description": "可使用免费档，或在官方定价页选择年付，或通过 OpenAI for Nonprofits 提交申请。",
         "eligibility": "个人用户、已统一使用 ChatGPT 的团队，以及正在比较席位成本的企业。"
       }
     },
@@ -2175,6 +2177,7 @@
         }
       },
       "zh": {
+        "discountInfo": "Gemini 免费访问仍然可用。在美国，年满 18 岁的在读大学生若在 2026 年 12 月 31 日前兑换，可免费使用 Google AI Pro 一年；需绑定有效付款方式，期满后按每月 $19.99 续订。…",
         "description": "请查看你所在地区的 Gemini 官方学生页与订阅页。",
         "eligibility": "在查各国学生优惠的学生、Google Workspace 用户，以及想要免费 AI 助手的用户。"
       }
@@ -2669,6 +2672,8 @@
         }
       },
       "zh": {
+        "discountInfo": "OpenAI 为经核验的美国退伍军人、退役未满 12 个月的退休人员，以及将在未来 12 个月内退役的现役军人，提供一年免费 ChatGPT Plus，身份通过 ID.me 验证。",
+        "description": "在官方领取页通过 ID.me 验证资格，需使用个人 ChatGPT 账户。",
         "eligibility": "退伍军人，以及准备退役的现役军人。"
       }
     },
@@ -3804,6 +3809,941 @@
       }
     },
     {
+      "id": "97d21ff73d3e",
+      "title": "智谱AI 新用户注册专享 2000万 免费 Tokens 资源包",
+      "vendor": "智谱AI",
+      "url": "https://bigmodel.cn/pricing",
+      "source": "智谱AI活动页",
+      "sourceUrl": null,
+      "region": "cn",
+      "type": "deal",
+      "discountInfo": "新用户注册专享 2000万 免费 Tokens 资源包，并含 120 次图像和视频资源包。",
+      "pricingModel": "free",
+      "priceLine": null,
+      "features": null,
+      "category": "API服务",
+      "description": "来源：智谱开放平台官方价格页营销位与活动说明。",
+      "eligibility": "智谱开放平台新注册用户（需实名认证）",
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-11-08",
+      "verified": false,
+      "verifiedAt": null,
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "identityVerificationRequired": true,
+        "newUserOnly": true
+      },
+      "claimRequirements": {
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "provenance": {
+        "credibility": "curated",
+        "contrib": {
+          "audience": [
+            "curated"
+          ],
+          "benefitType": [
+            "curated"
+          ],
+          "eligibilityDetail": [
+            "curated"
+          ],
+          "claimRequirements": [
+            "curated"
+          ],
+          "availability": [
+            "curated"
+          ]
+        },
+        "fields": {
+          "audience": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "benefitType": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "eligibilityDetail": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "claimRequirements": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "availability": {
+            "basis": "source",
+            "derived": "stated"
+          }
+        }
+      }
+    },
+    {
+      "id": "1688614d6669",
+      "title": "智谱AI 邀请好友注册赠送 Tokens 资源包",
+      "vendor": "智谱AI",
+      "url": "https://bigmodel.cn/pricing",
+      "source": "智谱AI活动页",
+      "sourceUrl": null,
+      "region": "cn",
+      "type": "deal",
+      "discountInfo": "邀好友实名注册即赠送 Tokens：官方活动页标注最高可领取总计 2亿 Tokens 资源包。",
+      "pricingModel": "free",
+      "priceLine": null,
+      "features": null,
+      "category": "API服务",
+      "description": "来源：智谱开放平台官方价格页营销位与活动说明。",
+      "eligibility": "智谱开放平台注册用户（邀请好友完成实名注册）",
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-11-08",
+      "verified": false,
+      "verifiedAt": null,
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "developer_credit"
+      ],
+      "eligibilityDetail": {
+        "identityVerificationRequired": true
+      },
+      "claimRequirements": {
+        "manualApplication": false,
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "provenance": {
+        "credibility": "curated",
+        "contrib": {
+          "audience": [
+            "curated"
+          ],
+          "benefitType": [
+            "curated"
+          ],
+          "eligibilityDetail": [
+            "curated"
+          ],
+          "claimRequirements": [
+            "curated"
+          ],
+          "availability": [
+            "curated"
+          ]
+        },
+        "fields": {
+          "audience": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "benefitType": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "eligibilityDetail": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "claimRequirements": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "availability": {
+            "basis": "source",
+            "derived": "stated"
+          }
+        }
+      }
+    },
+    {
+      "id": "adcb6471a512",
+      "title": "智谱AI Batch API 批量调用五折",
+      "vendor": "智谱AI",
+      "url": "https://bigmodel.cn/pricing",
+      "source": "智谱AI活动页",
+      "sourceUrl": null,
+      "region": "cn",
+      "type": "deal",
+      "discountInfo": "批量调用五折特惠：Batch API 面向大规模离线数据处理任务，按标准 API 价格的五折计费，适合批量分析、数据清洗等非实时场景",
+      "pricingModel": "paid",
+      "priceLine": null,
+      "features": null,
+      "category": "API服务",
+      "description": "来源：智谱开放平台官方价格页营销位与活动说明。",
+      "eligibility": "所有开发者（批量离线任务）",
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-11-08",
+      "verified": false,
+      "verifiedAt": null,
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "discount"
+      ],
+      "eligibilityDetail": {
+        "newUserOnly": false
+      },
+      "provenance": {
+        "credibility": "curated",
+        "contrib": {
+          "audience": [
+            "curated"
+          ],
+          "benefitType": [
+            "curated"
+          ],
+          "eligibilityDetail": [
+            "curated"
+          ]
+        },
+        "fields": {
+          "audience": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "benefitType": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "eligibilityDetail": {
+            "basis": "source",
+            "derived": "stated"
+          }
+        }
+      }
+    },
+    {
+      "id": "ead998e58cd9",
+      "title": "智谱AI 上下文缓存存储限时免费",
+      "vendor": "智谱AI",
+      "url": "https://bigmodel.cn/pricing",
+      "source": "智谱AI活动页",
+      "sourceUrl": null,
+      "region": "cn",
+      "type": "deal",
+      "discountInfo": "上下文缓存存储限时免费：将上下文缓存起来，按“元/百万tokens/小时”计费，目前多数模型为限时免费",
+      "pricingModel": "free",
+      "priceLine": null,
+      "features": null,
+      "category": "API服务",
+      "description": "来源：智谱开放平台官方价格页营销位与活动说明。",
+      "eligibility": "所有调用智谱 API 的开发者",
+      "validity": "限时免费（官方未标注截止日期）",
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-11-08",
+      "verified": false,
+      "verifiedAt": null,
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "trial"
+      ],
+      "eligibilityDetail": {
+        "newUserOnly": false
+      },
+      "provenance": {
+        "credibility": "curated",
+        "contrib": {
+          "audience": [
+            "curated"
+          ],
+          "benefitType": [
+            "curated"
+          ],
+          "eligibilityDetail": [
+            "curated"
+          ]
+        },
+        "fields": {
+          "audience": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "benefitType": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "eligibilityDetail": {
+            "basis": "source",
+            "derived": "stated"
+          }
+        }
+      }
+    },
+    {
+      "id": "1888ab62bd67",
+      "title": "Doubao-Seed-Character 免费额度",
+      "vendor": "火山引擎",
+      "url": "https://www.volcengine.com/product/ark",
+      "source": "火山方舟",
+      "sourceUrl": null,
+      "region": "cn",
+      "type": "deal",
+      "discountInfo": "火山方舟免费额度（文本生成）：50万tokens。",
+      "pricingModel": "free",
+      "priceLine": null,
+      "features": null,
+      "category": "对话模型",
+      "description": "来源：火山方舟产品页「免费额度」表。",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-11-08",
+      "verified": false,
+      "verifiedAt": null,
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "provenance": {
+        "credibility": "curated",
+        "contrib": {
+          "audience": [
+            "curated"
+          ],
+          "benefitType": [
+            "curated"
+          ]
+        },
+        "fields": {
+          "audience": {
+            "basis": "source",
+            "derived": "inferred",
+            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（文本生成）：50万tokens」"
+          },
+          "benefitType": {
+            "basis": "source",
+            "derived": "inferred",
+            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（文本生成）：50万tokens」"
+          }
+        }
+      }
+    },
+    {
+      "id": "d6aaee8c7379",
+      "title": "Doubao-Seedream-5.0-lite 免费额度",
+      "vendor": "火山引擎",
+      "url": "https://www.volcengine.com/product/ark",
+      "source": "火山方舟",
+      "sourceUrl": null,
+      "region": "cn",
+      "type": "deal",
+      "discountInfo": "火山方舟免费额度（图像生成）：50张。",
+      "pricingModel": "free",
+      "priceLine": null,
+      "features": null,
+      "category": "图像绘画",
+      "description": "来源：火山方舟产品页「免费额度」表。",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-11-08",
+      "verified": false,
+      "verifiedAt": null,
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "provenance": {
+        "credibility": "curated",
+        "contrib": {
+          "audience": [
+            "curated"
+          ],
+          "benefitType": [
+            "curated"
+          ]
+        },
+        "fields": {
+          "audience": {
+            "basis": "source",
+            "derived": "inferred",
+            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（图像生成）：50张」"
+          },
+          "benefitType": {
+            "basis": "source",
+            "derived": "inferred",
+            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（图像生成）：50张」"
+          }
+        }
+      }
+    },
+    {
+      "id": "45ead69d60cc",
+      "title": "Doubao-Seedream-4.5 免费额度",
+      "vendor": "火山引擎",
+      "url": "https://www.volcengine.com/product/ark",
+      "source": "火山方舟",
+      "sourceUrl": null,
+      "region": "cn",
+      "type": "deal",
+      "discountInfo": "火山方舟免费额度（图像生成）：200张。",
+      "pricingModel": "free",
+      "priceLine": null,
+      "features": null,
+      "category": "图像绘画",
+      "description": "来源：火山方舟产品页「免费额度」表。",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-11-08",
+      "verified": false,
+      "verifiedAt": null,
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "provenance": {
+        "credibility": "curated",
+        "contrib": {
+          "audience": [
+            "curated"
+          ],
+          "benefitType": [
+            "curated"
+          ]
+        },
+        "fields": {
+          "audience": {
+            "basis": "source",
+            "derived": "inferred",
+            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（图像生成）：200张」"
+          },
+          "benefitType": {
+            "basis": "source",
+            "derived": "inferred",
+            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（图像生成）：200张」"
+          }
+        }
+      }
+    },
+    {
+      "id": "7f8c32f6a327",
+      "title": "Doubao-Seedream-4.0 免费额度",
+      "vendor": "火山引擎",
+      "url": "https://www.volcengine.com/product/ark",
+      "source": "火山方舟",
+      "sourceUrl": null,
+      "region": "cn",
+      "type": "deal",
+      "discountInfo": "火山方舟免费额度（图像生成）：200张。",
+      "pricingModel": "free",
+      "priceLine": null,
+      "features": null,
+      "category": "图像绘画",
+      "description": "来源：火山方舟产品页「免费额度」表。",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-11-08",
+      "verified": false,
+      "verifiedAt": null,
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "provenance": {
+        "credibility": "curated",
+        "contrib": {
+          "audience": [
+            "curated"
+          ],
+          "benefitType": [
+            "curated"
+          ]
+        },
+        "fields": {
+          "audience": {
+            "basis": "source",
+            "derived": "inferred",
+            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（图像生成）：200张」"
+          },
+          "benefitType": {
+            "basis": "source",
+            "derived": "inferred",
+            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（图像生成）：200张」"
+          }
+        }
+      }
+    },
+    {
+      "id": "47a4c57f3a15",
+      "title": "Doubao-语音合成 免费额度",
+      "vendor": "火山引擎",
+      "url": "https://www.volcengine.com/product/ark",
+      "source": "火山方舟",
+      "sourceUrl": null,
+      "region": "cn",
+      "type": "deal",
+      "discountInfo": "火山方舟免费额度（语音模型）：5000字符。",
+      "pricingModel": "free",
+      "priceLine": null,
+      "features": null,
+      "category": "音频语音",
+      "description": "来源：火山方舟产品页「免费额度」表。",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-11-08",
+      "verified": false,
+      "verifiedAt": null,
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "provenance": {
+        "credibility": "curated",
+        "contrib": {
+          "audience": [
+            "curated"
+          ],
+          "benefitType": [
+            "curated"
+          ]
+        },
+        "fields": {
+          "audience": {
+            "basis": "source",
+            "derived": "inferred",
+            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（语音模型）：5000字符」"
+          },
+          "benefitType": {
+            "basis": "source",
+            "derived": "inferred",
+            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（语音模型）：5000字符」"
+          }
+        }
+      }
+    },
+    {
+      "id": "57847fbcc1ed",
+      "title": "Doubao-声音复刻 免费额度",
+      "vendor": "火山引擎",
+      "url": "https://www.volcengine.com/product/ark",
+      "source": "火山方舟",
+      "sourceUrl": null,
+      "region": "cn",
+      "type": "deal",
+      "discountInfo": "火山方舟免费额度（语音模型）：5000字符 + 10复刻声音。",
+      "pricingModel": "free",
+      "priceLine": null,
+      "features": null,
+      "category": "音频语音",
+      "description": "来源：火山方舟产品页「免费额度」表。",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-11-08",
+      "verified": false,
+      "verifiedAt": null,
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "provenance": {
+        "credibility": "curated",
+        "contrib": {
+          "audience": [
+            "curated"
+          ],
+          "benefitType": [
+            "curated"
+          ]
+        },
+        "fields": {
+          "audience": {
+            "basis": "source",
+            "derived": "inferred",
+            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（语音模型）：5000字符 + 10复刻声音」"
+          },
+          "benefitType": {
+            "basis": "source",
+            "derived": "inferred",
+            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（语音模型）：5000字符 + 10复刻声音」"
+          }
+        }
+      }
+    },
+    {
+      "id": "2db62eb1a8a0",
+      "title": "Doubao-流式语音识别 免费额度",
+      "vendor": "火山引擎",
+      "url": "https://www.volcengine.com/product/ark",
+      "source": "火山方舟",
+      "sourceUrl": null,
+      "region": "cn",
+      "type": "deal",
+      "discountInfo": "火山方舟免费额度（语音模型）：20小时。",
+      "pricingModel": "free",
+      "priceLine": null,
+      "features": null,
+      "category": "音频语音",
+      "description": "来源：火山方舟产品页「免费额度」表。",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-11-08",
+      "verified": false,
+      "verifiedAt": null,
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "provenance": {
+        "credibility": "curated",
+        "contrib": {
+          "audience": [
+            "curated"
+          ],
+          "benefitType": [
+            "curated"
+          ]
+        },
+        "fields": {
+          "audience": {
+            "basis": "source",
+            "derived": "inferred",
+            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（语音模型）：20小时」"
+          },
+          "benefitType": {
+            "basis": "source",
+            "derived": "inferred",
+            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（语音模型）：20小时」"
+          }
+        }
+      }
+    },
+    {
+      "id": "8dada3205ed8",
+      "title": "Doubao-录音文件识别 免费额度",
+      "vendor": "火山引擎",
+      "url": "https://www.volcengine.com/product/ark",
+      "source": "火山方舟",
+      "sourceUrl": null,
+      "region": "cn",
+      "type": "deal",
+      "discountInfo": "火山方舟免费额度（语音模型）：20小时。",
+      "pricingModel": "free",
+      "priceLine": null,
+      "features": null,
+      "category": "音频语音",
+      "description": "来源：火山方舟产品页「免费额度」表。",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-11-08",
+      "verified": false,
+      "verifiedAt": null,
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "provenance": {
+        "credibility": "curated",
+        "contrib": {
+          "audience": [
+            "curated"
+          ],
+          "benefitType": [
+            "curated"
+          ]
+        },
+        "fields": {
+          "audience": {
+            "basis": "source",
+            "derived": "inferred",
+            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（语音模型）：20小时」"
+          },
+          "benefitType": {
+            "basis": "source",
+            "derived": "inferred",
+            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（语音模型）：20小时」"
+          }
+        }
+      }
+    },
+    {
+      "id": "407572a1e046",
+      "title": "Doubao-embedding-vision 免费额度",
+      "vendor": "火山引擎",
+      "url": "https://www.volcengine.com/product/ark",
+      "source": "火山方舟",
+      "sourceUrl": null,
+      "region": "cn",
+      "type": "deal",
+      "discountInfo": "火山方舟免费额度（向量模型）：50万tokens。",
+      "pricingModel": "free",
+      "priceLine": null,
+      "features": null,
+      "category": "API服务",
+      "description": "来源：火山方舟产品页「免费额度」表。",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-11-08",
+      "verified": false,
+      "verifiedAt": null,
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "provenance": {
+        "credibility": "curated",
+        "contrib": {
+          "audience": [
+            "curated"
+          ],
+          "benefitType": [
+            "curated"
+          ]
+        },
+        "fields": {
+          "audience": {
+            "basis": "source",
+            "derived": "inferred",
+            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（向量模型）：50万tokens」"
+          },
+          "benefitType": {
+            "basis": "source",
+            "derived": "inferred",
+            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（向量模型）：50万tokens」"
+          }
+        }
+      }
+    },
+    {
+      "id": "4e659666cbb2",
+      "title": "联网资源 免费额度",
+      "vendor": "火山引擎",
+      "url": "https://www.volcengine.com/product/ark",
+      "source": "火山方舟",
+      "sourceUrl": null,
+      "region": "cn",
+      "type": "deal",
+      "discountInfo": "火山方舟免费额度（联网插件）：2万次/月。",
+      "pricingModel": "free",
+      "priceLine": null,
+      "features": null,
+      "category": "搜索研究",
+      "description": "来源：火山方舟产品页「免费额度」表。",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-11-08",
+      "verified": false,
+      "verifiedAt": null,
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "provenance": {
+        "credibility": "curated",
+        "contrib": {
+          "audience": [
+            "curated"
+          ],
+          "benefitType": [
+            "curated"
+          ]
+        },
+        "fields": {
+          "audience": {
+            "basis": "source",
+            "derived": "inferred",
+            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（联网插件）：2万次/月」"
+          },
+          "benefitType": {
+            "basis": "source",
+            "derived": "inferred",
+            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（联网插件）：2万次/月」"
+          }
+        }
+      }
+    },
+    {
+      "id": "4caf88e30671",
+      "title": "火山方舟 协作奖励计划：每日免费领取单模型最高 500 万 Tokens",
+      "vendor": "火山引擎",
+      "url": "https://www.volcengine.com/product/ark",
+      "source": "火山方舟",
+      "sourceUrl": null,
+      "region": "cn",
+      "type": "deal",
+      "discountInfo": "协作奖励计划：可免费领取单模型每日最高 500万 Tokens（官方标注二期已全面升级）。",
+      "pricingModel": "free",
+      "priceLine": null,
+      "features": null,
+      "category": "API服务",
+      "description": "来源：火山方舟产品页「最新活动」区。",
+      "eligibility": "火山方舟用户",
+      "validity": "每日可领取（官方未标注截止日期）",
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-11-08",
+      "verified": false,
+      "verifiedAt": null,
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "developer_credit"
+      ],
+      "claimRequirements": {
+        "accountRequired": true
+      },
+      "provenance": {
+        "credibility": "curated",
+        "contrib": {
+          "audience": [
+            "curated"
+          ],
+          "benefitType": [
+            "curated"
+          ],
+          "claimRequirements": [
+            "curated"
+          ]
+        },
+        "fields": {
+          "audience": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "benefitType": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "claimRequirements": {
+            "basis": "source",
+            "derived": "stated"
+          }
+        }
+      }
+    },
+    {
+      "id": "c694e7c5f125",
+      "title": "火山方舟 Agent Plan 限时 9.9 元起",
+      "vendor": "火山引擎",
+      "url": "https://www.volcengine.com/product/ark",
+      "source": "火山方舟",
+      "sourceUrl": null,
+      "region": "cn",
+      "type": "deal",
+      "discountInfo": "方舟 Agent Plan 限时首月 9.9 元起，覆盖超全模态模型与 Harness 能力。",
+      "pricingModel": "paid",
+      "priceLine": null,
+      "features": null,
+      "category": "智能体",
+      "description": "来源：火山方舟产品页「最新活动」区。",
+      "eligibility": "火山方舟用户（首月优惠）",
+      "validity": "限时活动（官方未标注截止日期）",
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-11-08",
+      "verified": false,
+      "verifiedAt": null,
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "discount"
+      ],
+      "claimRequirements": {
+        "accountRequired": true
+      },
+      "provenance": {
+        "credibility": "curated",
+        "contrib": {
+          "audience": [
+            "curated"
+          ],
+          "benefitType": [
+            "curated"
+          ],
+          "claimRequirements": [
+            "curated"
+          ]
+        },
+        "fields": {
+          "audience": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "benefitType": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "claimRequirements": {
+            "basis": "source",
+            "derived": "stated"
+          }
+        }
+      }
+    },
+    {
       "id": "a4dc88711e74",
       "title": "looot",
       "vendor": "looot",
@@ -4198,941 +5138,6 @@
       "verifiedAt": null,
       "zh": {
         "description": "给静态照片加上动效的 App。"
-      }
-    },
-    {
-      "id": "97d21ff73d3e",
-      "title": "智谱AI 新用户注册专享 2000万 免费 Tokens 资源包",
-      "vendor": "智谱AI",
-      "url": "https://bigmodel.cn/pricing",
-      "source": "智谱AI活动页",
-      "sourceUrl": null,
-      "region": "cn",
-      "type": "deal",
-      "discountInfo": "新用户注册专享 2000万 免费 Tokens 资源包，并含 120 次图像和视频资源包。",
-      "pricingModel": "free",
-      "priceLine": null,
-      "features": null,
-      "category": "API服务",
-      "description": "来源：智谱开放平台官方价格页营销位与活动说明。",
-      "eligibility": "智谱开放平台新注册用户（需实名认证）",
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-02",
-      "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
-    },
-    {
-      "id": "1688614d6669",
-      "title": "智谱AI 邀请好友注册赠送 Tokens 资源包",
-      "vendor": "智谱AI",
-      "url": "https://bigmodel.cn/pricing",
-      "source": "智谱AI活动页",
-      "sourceUrl": null,
-      "region": "cn",
-      "type": "deal",
-      "discountInfo": "邀好友实名注册即赠送 Tokens：官方活动页标注最高可领取总计 2亿 Tokens 资源包。",
-      "pricingModel": "free",
-      "priceLine": null,
-      "features": null,
-      "category": "API服务",
-      "description": "来源：智谱开放平台官方价格页营销位与活动说明。",
-      "eligibility": "智谱开放平台注册用户（邀请好友完成实名注册）",
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-02",
-      "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "developer_credit"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
-    },
-    {
-      "id": "adcb6471a512",
-      "title": "智谱AI Batch API 批量调用五折",
-      "vendor": "智谱AI",
-      "url": "https://bigmodel.cn/pricing",
-      "source": "智谱AI活动页",
-      "sourceUrl": null,
-      "region": "cn",
-      "type": "deal",
-      "discountInfo": "批量调用五折特惠：Batch API 面向大规模离线数据处理任务，按标准 API 价格的五折计费，适合批量分析、数据清洗等非实时场景",
-      "pricingModel": "paid",
-      "priceLine": null,
-      "features": null,
-      "category": "API服务",
-      "description": "来源：智谱开放平台官方价格页营销位与活动说明。",
-      "eligibility": "所有开发者（批量离线任务）",
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-02",
-      "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "discount"
-      ],
-      "eligibilityDetail": {
-        "newUserOnly": false
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
-    },
-    {
-      "id": "ead998e58cd9",
-      "title": "智谱AI 上下文缓存存储限时免费",
-      "vendor": "智谱AI",
-      "url": "https://bigmodel.cn/pricing",
-      "source": "智谱AI活动页",
-      "sourceUrl": null,
-      "region": "cn",
-      "type": "deal",
-      "discountInfo": "上下文缓存存储限时免费：将上下文缓存起来，按“元/百万tokens/小时”计费，目前多数模型为限时免费",
-      "pricingModel": "free",
-      "priceLine": null,
-      "features": null,
-      "category": "API服务",
-      "description": "来源：智谱开放平台官方价格页营销位与活动说明。",
-      "eligibility": "所有调用智谱 API 的开发者",
-      "validity": "限时免费（官方未标注截止日期）",
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-02",
-      "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "trial"
-      ],
-      "eligibilityDetail": {
-        "newUserOnly": false
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
-    },
-    {
-      "id": "1888ab62bd67",
-      "title": "Doubao-Seed-Character 免费额度",
-      "vendor": "火山引擎",
-      "url": "https://www.volcengine.com/product/ark",
-      "source": "火山方舟",
-      "sourceUrl": null,
-      "region": "cn",
-      "type": "deal",
-      "discountInfo": "火山方舟免费额度（文本生成）：50万tokens。",
-      "pricingModel": "free",
-      "priceLine": null,
-      "features": null,
-      "category": "对话模型",
-      "description": "来源：火山方舟产品页「免费额度」表。",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-02",
-      "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（文本生成）：50万tokens」"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（文本生成）：50万tokens」"
-          }
-        }
-      }
-    },
-    {
-      "id": "d6aaee8c7379",
-      "title": "Doubao-Seedream-5.0-lite 免费额度",
-      "vendor": "火山引擎",
-      "url": "https://www.volcengine.com/product/ark",
-      "source": "火山方舟",
-      "sourceUrl": null,
-      "region": "cn",
-      "type": "deal",
-      "discountInfo": "火山方舟免费额度（图像生成）：50张。",
-      "pricingModel": "free",
-      "priceLine": null,
-      "features": null,
-      "category": "图像绘画",
-      "description": "来源：火山方舟产品页「免费额度」表。",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-02",
-      "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（图像生成）：50张」"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（图像生成）：50张」"
-          }
-        }
-      }
-    },
-    {
-      "id": "45ead69d60cc",
-      "title": "Doubao-Seedream-4.5 免费额度",
-      "vendor": "火山引擎",
-      "url": "https://www.volcengine.com/product/ark",
-      "source": "火山方舟",
-      "sourceUrl": null,
-      "region": "cn",
-      "type": "deal",
-      "discountInfo": "火山方舟免费额度（图像生成）：200张。",
-      "pricingModel": "free",
-      "priceLine": null,
-      "features": null,
-      "category": "图像绘画",
-      "description": "来源：火山方舟产品页「免费额度」表。",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-02",
-      "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（图像生成）：200张」"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（图像生成）：200张」"
-          }
-        }
-      }
-    },
-    {
-      "id": "7f8c32f6a327",
-      "title": "Doubao-Seedream-4.0 免费额度",
-      "vendor": "火山引擎",
-      "url": "https://www.volcengine.com/product/ark",
-      "source": "火山方舟",
-      "sourceUrl": null,
-      "region": "cn",
-      "type": "deal",
-      "discountInfo": "火山方舟免费额度（图像生成）：200张。",
-      "pricingModel": "free",
-      "priceLine": null,
-      "features": null,
-      "category": "图像绘画",
-      "description": "来源：火山方舟产品页「免费额度」表。",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-02",
-      "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（图像生成）：200张」"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（图像生成）：200张」"
-          }
-        }
-      }
-    },
-    {
-      "id": "47a4c57f3a15",
-      "title": "Doubao-语音合成 免费额度",
-      "vendor": "火山引擎",
-      "url": "https://www.volcengine.com/product/ark",
-      "source": "火山方舟",
-      "sourceUrl": null,
-      "region": "cn",
-      "type": "deal",
-      "discountInfo": "火山方舟免费额度（语音模型）：5000字符。",
-      "pricingModel": "free",
-      "priceLine": null,
-      "features": null,
-      "category": "音频语音",
-      "description": "来源：火山方舟产品页「免费额度」表。",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-02",
-      "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（语音模型）：5000字符」"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（语音模型）：5000字符」"
-          }
-        }
-      }
-    },
-    {
-      "id": "57847fbcc1ed",
-      "title": "Doubao-声音复刻 免费额度",
-      "vendor": "火山引擎",
-      "url": "https://www.volcengine.com/product/ark",
-      "source": "火山方舟",
-      "sourceUrl": null,
-      "region": "cn",
-      "type": "deal",
-      "discountInfo": "火山方舟免费额度（语音模型）：5000字符 + 10复刻声音。",
-      "pricingModel": "free",
-      "priceLine": null,
-      "features": null,
-      "category": "音频语音",
-      "description": "来源：火山方舟产品页「免费额度」表。",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-02",
-      "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（语音模型）：5000字符 + 10复刻声音」"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（语音模型）：5000字符 + 10复刻声音」"
-          }
-        }
-      }
-    },
-    {
-      "id": "2db62eb1a8a0",
-      "title": "Doubao-流式语音识别 免费额度",
-      "vendor": "火山引擎",
-      "url": "https://www.volcengine.com/product/ark",
-      "source": "火山方舟",
-      "sourceUrl": null,
-      "region": "cn",
-      "type": "deal",
-      "discountInfo": "火山方舟免费额度（语音模型）：20小时。",
-      "pricingModel": "free",
-      "priceLine": null,
-      "features": null,
-      "category": "音频语音",
-      "description": "来源：火山方舟产品页「免费额度」表。",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-02",
-      "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（语音模型）：20小时」"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（语音模型）：20小时」"
-          }
-        }
-      }
-    },
-    {
-      "id": "8dada3205ed8",
-      "title": "Doubao-录音文件识别 免费额度",
-      "vendor": "火山引擎",
-      "url": "https://www.volcengine.com/product/ark",
-      "source": "火山方舟",
-      "sourceUrl": null,
-      "region": "cn",
-      "type": "deal",
-      "discountInfo": "火山方舟免费额度（语音模型）：20小时。",
-      "pricingModel": "free",
-      "priceLine": null,
-      "features": null,
-      "category": "音频语音",
-      "description": "来源：火山方舟产品页「免费额度」表。",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-02",
-      "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（语音模型）：20小时」"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（语音模型）：20小时」"
-          }
-        }
-      }
-    },
-    {
-      "id": "407572a1e046",
-      "title": "Doubao-embedding-vision 免费额度",
-      "vendor": "火山引擎",
-      "url": "https://www.volcengine.com/product/ark",
-      "source": "火山方舟",
-      "sourceUrl": null,
-      "region": "cn",
-      "type": "deal",
-      "discountInfo": "火山方舟免费额度（向量模型）：50万tokens。",
-      "pricingModel": "free",
-      "priceLine": null,
-      "features": null,
-      "category": "API服务",
-      "description": "来源：火山方舟产品页「免费额度」表。",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-02",
-      "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（向量模型）：50万tokens」"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（向量模型）：50万tokens」"
-          }
-        }
-      }
-    },
-    {
-      "id": "4e659666cbb2",
-      "title": "联网资源 免费额度",
-      "vendor": "火山引擎",
-      "url": "https://www.volcengine.com/product/ark",
-      "source": "火山方舟",
-      "sourceUrl": null,
-      "region": "cn",
-      "type": "deal",
-      "discountInfo": "火山方舟免费额度（联网插件）：2万次/月。",
-      "pricingModel": "free",
-      "priceLine": null,
-      "features": null,
-      "category": "搜索研究",
-      "description": "来源：火山方舟产品页「免费额度」表。",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-02",
-      "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（联网插件）：2万次/月」"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "inferred",
-            "note": "模型 API 平台产品页的免费额度 → audience = developer（推断）；额度本身按 discountInfo 原文 → free_credits + free_api。该条 eligibility 字段本身为空，门槛类字段一律不写；额度原文「火山方舟免费额度（联网插件）：2万次/月」"
-          }
-        }
-      }
-    },
-    {
-      "id": "4caf88e30671",
-      "title": "火山方舟 协作奖励计划：每日免费领取单模型最高 500 万 Tokens",
-      "vendor": "火山引擎",
-      "url": "https://www.volcengine.com/product/ark",
-      "source": "火山方舟",
-      "sourceUrl": null,
-      "region": "cn",
-      "type": "deal",
-      "discountInfo": "协作奖励计划：可免费领取单模型每日最高 500万 Tokens（官方标注二期已全面升级）。",
-      "pricingModel": "free",
-      "priceLine": null,
-      "features": null,
-      "category": "API服务",
-      "description": "来源：火山方舟产品页「最新活动」区。",
-      "eligibility": "火山方舟用户",
-      "validity": "每日可领取（官方未标注截止日期）",
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-02",
-      "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "developer_credit"
-      ],
-      "claimRequirements": {
-        "accountRequired": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
-    },
-    {
-      "id": "c694e7c5f125",
-      "title": "火山方舟 Agent Plan 限时 9.9 元起",
-      "vendor": "火山引擎",
-      "url": "https://www.volcengine.com/product/ark",
-      "source": "火山方舟",
-      "sourceUrl": null,
-      "region": "cn",
-      "type": "deal",
-      "discountInfo": "方舟 Agent Plan 限时首月 9.9 元起，覆盖超全模态模型与 Harness 能力。",
-      "pricingModel": "paid",
-      "priceLine": null,
-      "features": null,
-      "category": "智能体",
-      "description": "来源：火山方舟产品页「最新活动」区。",
-      "eligibility": "火山方舟用户（首月优惠）",
-      "validity": "限时活动（官方未标注截止日期）",
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-02",
-      "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "discount"
-      ],
-      "claimRequirements": {
-        "accountRequired": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
       }
     },
     {
