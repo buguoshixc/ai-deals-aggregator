@@ -11,6 +11,10 @@
  *     的 `zh` 字段 —— 浏览器 `fetch('deals.json')` 拿到的就是同一份，
  *     于是构建期预渲染与浏览器渲染仍然只有一条代码路径。
  *  3. 绝不覆盖原文：`zh` 是**附加**字段，英文原文字段一个字节都不改。
+ *  4. **译文层永不阻塞发布**（2026-11-08 收口）：译文不合规 / 原文已变都只是
+ *     「丢弃该字段、退回英文原文 + 报告」，绝不 throw、绝不非零退出。
+ *     理由：译文是附加信息，它坏掉最多让某一块显示英文，而英文原文一直都在——
+ *     绝不该让整条采集/发布链停下来（2026-11-02 至 11-08 站点停更就是这么来的）。
  *
  * 键：deal.id（`sha1(lower(vendor)|lower(title)|lower(url))` 前 12 位 —— 三个字段**先转小写**再拼，
  * 与 `scripts/lib/schema.js` 的 `makeId()` 逐字一致）。少写 lower() 就会算错：实测 130 条里 123 条的
@@ -107,7 +111,11 @@ function needsZh(deal, { hasZh = false } = {}) {
  *
  * `src` 是**原文指纹**：译文是照着某一段英文写的，英文一旦被采集器改写，译文就不再
  * 对得上。此时宁可不出译文，也不出一个和原文矛盾的译文——所以指纹不符时直接丢弃该字段
- * 并在报告里记为 stale，由构建日志催人复核。
+ * 并在报告里记为 stale（构建日志会打出来，但**不阻断发布**）。
+ *
+ * 不合规（不含汉字 / 超长 / 原文为空）的字段同样**丢弃并退回英文**，报告为 errors。
+ * 调用方（collect / build）只打印这些报告，不再把它们当成失败——判据在
+ * `zh-todo.js --check --strict` 里，只在人显式要求硬拦时才生效。
  *
  * @returns {{zh: object|null, errors: string[], stale: string[], warnings: string[]}}
  */
@@ -147,16 +155,23 @@ function normalizeZh(raw, deal = {}) {
     return { zh: null, errors, stale, warnings };
   }
 
+  // 不合规（不含汉字 / 超长 / 原文为空）的处理原则与 stale 一致：**丢弃该字段、退回英文**，
+  // 只写进 errors 报告，绝不阻断。译文是附加信息，坏了最多这一块显示英文。
   for (const [key, text] of Object.entries(cleaned)) {
     if (text.length > ZH_MAX[key]) {
       errors.push(`zh.${key} 超过 ${ZH_MAX[key]} 字（${text.length}）`);
+      delete cleaned[key];
+      continue;
     }
     if (cjkCount(text) === 0) {
       errors.push(`zh.${key} 一个汉字都没有——译文不能还是英文`);
+      delete cleaned[key];
+      continue;
     }
     const source = deal[key];
     if (typeof source !== 'string' || !source.trim()) {
       errors.push(`zh.${key} 有译文但原文 ${key} 为空`);
+      delete cleaned[key];
       continue;
     }
     // 原文指纹比对
@@ -164,7 +179,7 @@ function normalizeZh(raw, deal = {}) {
     if (snapshot === undefined || snapshot === null) {
       warnings.push(`zh.${key} 没有记录原文指纹（src.${key}），原文被改写时发现不了`);
     } else if (String(snapshot) !== source) {
-      stale.push(`zh.${key} 原文已变，译文停用待复核`);
+      stale.push(`zh.${key} 原文已变，译文停用（已回退英文）`);
       delete cleaned[key];
     }
   }
@@ -276,7 +291,7 @@ function summarize(report) {
   if (report.missing.length) parts.push(`${report.missing.length} 条待翻译`);
   if (report.dropped) parts.push(`${report.dropped} 处因原文已变停用`);
   if (report.orphaned.length) parts.push(`${report.orphaned.length} 条译文对不上 id`);
-  if (report.skipped.length) parts.push(`${report.skipped.length} 处译文不合法`);
+  if (report.skipped.length) parts.push(`${report.skipped.length} 处译文不合规已回退英文`);
   if (report.unmanaged.length) parts.push(`${report.unmanaged.length} 条译文不在覆盖层里`);
   return parts.join(' · ');
 }

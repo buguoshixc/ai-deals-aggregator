@@ -169,7 +169,7 @@ const GATE_STEP_NAMES = [
   // 基线文件），于是「能改写 deals.json 的命令行工具」没有任何 CI 守卫。改成 9 条合成
   // 夹具逐分支覆盖后才接得进来；接进来之前它就已经抓到一处潜伏缺陷（见 action.yml 注释）。
   'Migration verifier (audience provenance backfill)',
-  'Translation gate (drift blocks, pending ages out)',
+  'Translation coverage (advisory, English fallback, never blocks)',
   'Translation self-test',
   'Expiry self-test',
   'Text / cleanText self-test',
@@ -367,7 +367,7 @@ const GATE_STEP_RUN = {
     "node scripts/tools/history-verify.js",
   "Migration verifier (audience provenance backfill)":
     "node scripts/tools/migrate-audience-verify.js",
-  "Translation gate (drift blocks, pending ages out)":
+  "Translation coverage (advisory, English fallback, never blocks)":
     "node scripts/tools/zh-todo.js --check",
   "Translation self-test":
     "node scripts/tools/zh-selftest.js",

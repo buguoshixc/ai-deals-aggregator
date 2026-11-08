@@ -2,10 +2,14 @@
 /**
  * 采集编排器：注册表 → 采集 → 归一（makeDeal）→ 去重合并 → 门槛 → 写盘 → 报告。
  *
- * 写盘/退出只有两条**拦**的理由（其余一切都只是告警）：
+ * 写盘/退出只有**一条**拦的理由（其余一切都只是告警）：
  *   ① 真的没有可发布内容：本次采集零产出且未加 --force → 跳过写盘、非 0 退出。
  *      （零产出还要照写 updatedAt/策展 lastSeen，等于把一次失败伪装成"刚更新过"。）
- *   ② 译文不合规：zhReport.skipped 非空 → 与构建期同一把尺子，跳过写盘、非 0 退出。
+ *
+ * 译文层（scripts/data/translations_zh.json）自 2026-11-08 起是**纯附加信息**：
+ * 不合规 / 原文已变 / 孤儿 / 覆盖层之外，全部只告警 + 相关字段回退英文，**绝不拦写盘**。
+ * 理由：线上英文原文一直都在，翻译坏掉最多让某一块显示英文；而 2026-11-02 的停更证明
+ * 「译文漂移 ⇒ 门禁红 ⇒ 采集不提交 ⇒ 站点冻住」的代价远大于收益（上游改写英文是常态）。
  *
  * 明确区分两个**不拦**的概念，别把它们混成一个"降级"：
  *   · 单源失败（某个采集器抛错）：常态而非异常——collect.yml 的浏览器安装步骤本身就是
@@ -27,7 +31,7 @@
  *   node scripts/collect.js --headless          # 额外启用无头浏览器来源（抓 JS 渲染的公开页）
  *   node scripts/collect.js --only=cn_docs      # 只跑指定来源
  *   node scripts/collect.js --list              # 列出已注册来源
- *   node scripts/collect.js --force             # 即使零产出也照写（坏译文一律不写盘）
+ *   node scripts/collect.js --force             # 即使零产出也照写
  */
 
 const { makeDeal, todayCN } = require('./lib/schema');
@@ -364,13 +368,13 @@ async function main() {  const headless = flag('headless');
   const { deals: localized, report: zhReport } = attachZh(deals);
   console.log(`中文译文: ${summarizeZh(zhReport)}`);
   if (zhReport.stale.length) {
-    zhReport.stale.forEach(row => console.warn(`  🔁 原文已变，译文停用待复核: ${row.title} — ${row.message}`));
+    zhReport.stale.forEach(row => console.warn(`  🔁 原文已变，译文停用（已回退英文）: ${row.title} — ${row.message}`));
   }
   if (zhReport.orphaned.length) {
     zhReport.orphaned.forEach(row => console.warn(`  ⚠️  译文对不上任何条目 id: ${row.id} ${row.title}`));
   }
   zhReport.skipped.forEach(row =>
-    console.warn(`  ⚠️  译文不合规: [${row.id}] ${row.title} — ${row.message}`));
+    console.warn(`  ⚠️  译文不合规（已回退英文）: [${row.id}] ${row.title} — ${row.message}`));
   if (zhReport.unmanaged.length) {
     console.warn(
       `  ⚠️  ${zhReport.unmanaged.length} 条译文不在覆盖层里（deals.json 自带、覆盖层管不到）：` +
@@ -378,14 +382,14 @@ async function main() {  const headless = flag('headless');
     );
   }
   if (zhReport.missing.length) {
-    // 「还有几条没译」不够用：译文门禁是按**年龄**判的（超过宽限期就拦），所以必须把
-    // 「最老多少天」一起说出来 —— 否则没人知道下一次 push 会不会红。
+    // 「还有几条没译」只是提示，不参与发布判定（2026-11-08 起译文层不再拦写完/发布）。
+    // 但「最老多少天」仍要说：它是「中文覆盖度在退化」的唯一可见信号。
     // 年龄从「进入待译」那天算起（本轮结束时写回 zh-pending.json），不是 firstSeen：
     // 上游改写会让一条老条目的译文失效，用 firstSeen 计时等于「刚失效就超期」。
     const pendingStore = loadPending();
     const age = pendingAge(zhReport.missing, localized, { today, pending: pendingStore.doc });
-    console.log(`  ℹ️  待译 ${zhReport.missing.length} 条（最老 ${age.oldestDays} 天，宽限 ${PENDING_GRACE_DAYS} 天）：` +
-      `node scripts/tools/zh-todo.js 查看`);
+    console.log(`  ℹ️  待译 ${zhReport.missing.length} 条（最老 ${age.oldestDays} 天；` +
+      `超过 ${PENDING_GRACE_DAYS} 天只会提醒，不影响发布）：node scripts/tools/zh-todo.js 查看`);
     console.log(`      ${age.rows.slice(0, 5).map(row => `${row.title}（${row.days} 天）`).join('、')}` +
       `${age.rows.length > 5 ? ` 等 ${age.rows.length} 条` : ''}`);
   }
@@ -420,17 +424,11 @@ async function main() {  const headless = flag('headless');
     return;
   }
 
-  // 译文不合规：与构建期同一把尺子。
-  // build-local.js 遇到同一种数据直接 throw（阻止发布）；采集期在这里只 warn 的话，
-  // CI 会把不合规的 zh 提交进 deals.json，下一次采集的 "Validate current data (before)"
-  // 立刻变红——采集链路从此卡死，而真正的坏数据还躺在仓库里。
-  if (zhReport.skipped.length) {
-    console.error(
-      `\n❌ 译文不合规 ${zhReport.skipped.length} 处，跳过写盘（构建期同样会硬失败，加 --force 也不放行）。` +
-      `先修 scripts/data/translations_zh.json`
-    );
-    process.exit(1);
-  }
+  // 译文不合规**不再拦写盘**（2026-11-08 起）：lib/zh.js 的 normalizeZh 已经把不合规字段
+  // 从 zh 里删掉（回退英文），这里上面已经逐条告警。写进 deals.json 的只会是**贴成功的**译文，
+  // 所以下一轮「Validate current data (before)」也不会因为坏译文变红。
+  // 原先这里硬拦的理由是「构建期同款 throw，CI 会把坏 zh 提交进库」——构建期现在同样只告警，
+  // 两边的判据一致：译文是附加信息，不参与发布可用性。
 
   // 唯一会拦写盘的采集侧情形：真的没有可发布内容。
   // 零产出还要照写，会把 updatedAt 改成今天、把 32 条策展的 lastSeen 全刷成今天，
@@ -460,9 +458,9 @@ async function main() {  const headless = flag('headless');
   const historyStats = recordHistory({ previous: existing, next: deals, fresh, stats, healthSummary, today, only });
   const payload = writeDeals(localized);
   // 心跳与数据同批写盘：`source-health.json` 入库（dist/ 是 gitignore 的，存不了跨运行状态）。
-  // 注意：上面两条硬拦（译文不合规 / 零产出）会让本次提前退出，于是**这一次**的来源结果
-  // 不会落盘——CI 里那两种情况本来也不会提交任何文件。设计上接受这个边界：单源失败而
-  // 整体成功（最常见的情形）一定会被记下来。
+  // 注意：唯一的硬拦（零产出）会让本次提前退出，于是**这一次**的来源结果不会落盘——
+  // CI 里那种情况本来也不会提交任何文件。设计上接受这个边界：单源失败而整体成功
+  // （最常见的情形）一定会被记下来。
   health.write(healthDoc);
   if (historyStats) {
     history.save(historyStats.store);
