@@ -13,16 +13,16 @@ P3-B（源级熔断）状态见 §2；全程未推送、未动 master，两处**
 
 ## 2. 每阶段状态
 
-| 阶段 | 提交 SHA | 一句话 |
-|---|---|---|
-| T0 保命快照 | `327bc15` | P2 工作区在制品原样快照，先有可回退点；基线读数 ai-selftest 108/0、fixture-test 6/0 |
-| T1 P2 收尾 | `4ffd68a` | 8 份 feed fixture 生成（14/0）；ai-selftest 补 18 条线索判据（126/0）；修三处假陈述（leads.js 两处 + P1 偏差说明） |
-| T2 P2 实跑 | `cbc514b` | 全量实跑落盘：deals 207→210（+1 线索 +2 其它来源新增），history 同日 +3 created（含线索），8 个 leads_* 健康行全部 healthy，`/changes/` 与首页雷达可见线索 |
-| 基线红修复 | `51b54a7` | 接手状态下 `gate:build` 本已红两处（SEO 余量登记过期、coverage-targets 反证牙空转），按既定流程修复，判据未放宽（§5） |
-| T3 P3-A 门禁拆锁 | `5e7d828` | collect.yml 数据正确性 9 条在提交前硬拦、完整 gate 移到提交后自动降级 + `if: always()` 留痕；(11)/(13) 冻结表同步、条数仍 39 |
-| 文档真话 | `4413273` | P3 后旧叙述全部改正（README / action 描述 / verify 注释 / H9 / 采集链路图 / collect.js 头注释） |
-| T4 P3-B 源级熔断 | `（待填）` | （待填） |
-| T5 报告 | 本文 | 本文 |
+| 阶段 | 状态 | 提交 SHA | 一句话 |
+|---|---|---|---|
+| T0 保命快照 | **DONE** | `327bc15` | P2 工作区在制品原样快照，先有可回退点；基线读数 ai-selftest 108/0、fixture-test 6/0 |
+| T1 P2 收尾 | **DONE** | `4ffd68a` | 8 份 feed fixture 生成（fixture-test 14/0）；ai-selftest 补 18 条线索判据（126/0）；修三处假陈述（leads.js 两处 + P1 偏差说明）；另修了 `build-fixtures.js` 里 RSS 剪裁规则写好却没登记进 `TRIMS` 的实现缺口 |
+| T2 P2 实跑 | **DONE** | `cbc514b` | 全量实跑落盘：deals 207→210（+1 线索 +2 其它来源新增），history 同日 +3 created（含线索），8 个 leads_* 健康行全部 healthy，`/changes/` 与首页雷达可见线索 |
+| 基线红修复 | **DONE** | `51b54a7` | 接手状态下 `gate:build` 本已红两处（SEO 余量登记过期、coverage-targets 反证牙空转），按既定流程修复，判据未放宽（§5） |
+| T3 P3-A 门禁拆锁 | **DONE** | `5e7d828` | collect.yml 数据正确性 9 条在提交前硬拦、完整 gate 移到提交后自动降级 + `if: always()` 留痕；(11)/(13) 冻结表同步、条数仍 39；16/16 负向探针（Lead 另抽查 4 颗，§4.4） |
+| 文档真话 | **DONE** | `4413273` | P3 后旧叙述全部改正（README / action 描述 / verify 注释 / H9 / 采集链路图 / collect.js 头注释） |
+| T4 P3-B 源级熔断 | **（待填）** | `（待填）` | （待填） |
+| T5 报告 | **DONE** | 本文 | 本报告 + 状态文件并入 |
 
 ## 3. 数据影响（以文件为准）
 
@@ -110,6 +110,33 @@ P3-B（源级熔断）状态见 §2；全程未推送、未动 master，两处**
   plan-history/SEO 独立验收；其中 [46] Feed reproducibility 是**真的连续构建两次逐字节比对**）。
 - **结论不写成「gate 全绿」**：本次完整门禁在真浏览器验收处**明确失败**（不静默变绿），
   本机可验的 48 步全绿。真浏览器验收与回归比对需要在 CI（`verify.yml` / `deploy.yml`）上跑。
+
+### 4.4 独立抽查（Lead 对 teammate 的判据做二次验证，不只信报告）
+
+P3-A 的 16 颗负向探针由 T3 teammate 实跑；Lead 在**独立 worktree**（`/tmp/wt-mut`，基点 `5e7d828`）
+另抽查 4 颗，每颗都「定向篡改 → 必须红 → 逐字节还原 → 回绿」：
+
+| 篡改 | 预期 | 实得 |
+|---|---|---|
+| 数据正确性门禁里把 `fixture-test` 换成 `echo` | (13) 红并点名缺哪条命令 | ✗ `数据正确性硬门禁的 run 体里没有「node scripts/tools/fixture-test.js」`；exit 1 |
+| 完整 gate 的 `allow_degraded_run` 改成 `'false'` | (11) 红并点名三个事件都解析成 false | ✗ 三个事件逐条点名；exit 1 |
+| 给数据正确性门禁加 `continue-on-error: true` | (13) 红 | ✗ `它是提交前的硬拦，失败必须挡住提交`；exit 1 |
+| 删掉 `Release-readiness gate record` 留痕步 | (13) 红 | ✗ `找不到留痕步骤 —— 降级/失败会变成静默`；exit 1 |
+
+还原后 `check:ci` 回 **39/0**。另对本轮数据做了**线索 TTL 真数据抽查**（只读）：
+`store.prune(deals, today)` 在 `2026-11-16`（原文日期第 7 天）保留线索、`2026-11-17`（第 8 天）
+只下架该 1 条且其余 209 条不动 —— 与 §T1.2 的注入式断言一致。
+
+### 4.5 按提交的门禁覆盖（「每次提交前实跑」的留痕）
+
+| 提交 | 提交前实跑读数 |
+|---|---|
+| `4ffd68a` | ai-selftest 126/0 · fixture-test 14/0 · validate --strict ✓ |
+| `cbc514b` | validate --strict ✓ · history-verify ✓ · check-reproducible ✓ · health-selftest 72/0 · check:ci 39/0 · build-local ✓ |
+| `51b54a7` | seo-selftest 104/0 · seo-verify 18/0 · coverage-targets 200/0 · gate:build 40/0 |
+| `5e7d828` | check:ci 39/0（集成态）· PyYAML 解析 collect.yml = 17 步 · 4 颗负向抽查（§4.4） |
+| `4413273` | check:ci 39/0 · gate:build 40/0 |
+| 最终（T4 后） | 见 §4.6（待填） |
 
 ## 5. 门禁变更（P3 必填）
 
@@ -224,11 +251,15 @@ Google: Lyria 3 Clip Preview、Free Models Router。
 
 ## 8. 没做的事 + 为什么
 
-1. **P1 的 `benefitType: ["free_api"]` 仍未写**：需求点名要它，但 `check:reproducible` 要求非策展条目的六字段
-   必须能从管线/人工声明重建；采集器直出会红。要写它必须动 `scripts/data/audience-overrides.json`（六字段的
-   第二个人工来源，`mergeAll` 在 dedup 前注入）+ 重放口径。无人值守下模型每次下架/改名都会在该文件里制造
-   孤儿条目并卡死采集链，所以本轮**不做**，如实记为 P1 偏差（`openrouter.js` 文件头已写明）。**没有为了让
-   它变绿去改判据**。
+1. **P1 的 `benefitType: ["free_api"]` 仍未写（接上 P1 commit message 里那句「见报告」）**：
+   P1 的提交 `5144293` 的 message 里写着「benefitType 未由采集器写入（check:reproducible 判据要求非策展
+   六字段必须可从管线/人工声明重建，实测采集器直出会红，**见报告**）」——当时**报告并不存在**（那一轮
+   没写 OVERNIGHT-REPORT）。这一条现在在这里接上：需求点名要 `benefitType: ["free_api"]`，但
+   `scripts/tools/check-reproducible.js` 要求非策展条目的六字段必须能从管线重放或人工声明重建，
+   采集器直出会在「剥字段重放」时判「已知值无源」。要真的补上它，需要动的**不是采集器**，而是
+   `scripts/data/audience-overrides.json`（六字段的第二个人工来源，`mergeAll` 在 dedup 之前注入）
+   以及随之而来的重放口径。无人值守下模型每次下架/改名都会让该文件多一条孤儿并卡死采集链，所以
+   本轮**不做**；`openrouter.js` 文件头已把这段偏差与「改哪里」写清。**没有为了让它变绿去改判据**。
 2. **真浏览器验收 / 回归比对未跑**：本机无内核（`playwright-core` 未安装内核、系统无 Chrome/Edge）。
    本机不装内核、不改门禁来「变绿」。CI 上的 `verify.yml`/`deploy.yml` 仍会跑完整门禁（P3 改动已通过
    `check:ci` 的冻结表核对）。
