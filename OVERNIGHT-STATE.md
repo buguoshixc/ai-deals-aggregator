@@ -82,3 +82,16 @@
   让 `source-rulings.js` 的「连续失败≥3 必须有裁决」判据重新真的被触发；**判据本身未改**。读数 200/0。
 - **结果**：`npm run gate:build`（L1+L2+L3，40 个脚本）→ **全绿**。
 - 下一步：等 T3 提交 → cherry-pick → 集成复验 → 启动 T4。
+
+## 2026-11-10 00:56 T3 收回 + 文档真话 + 完整门禁读数
+
+- T3 teammate 交付 `c40269d`（check:ci 39/0 · 16/16 负向探针证明 (11)/(13) 有真牙）；Lead 审阅后
+  cherry-pick 为 `5e7d828`，集成态复跑 `check:ci` = 39/0，PyYAML 解析 collect.yml = 17 步。
+- 文档真话（`4413273`）：README（采集链路描述 / 门禁红处置）、`action.yml` 顶部描述、`verify.yml` 三处注释、
+  `docs/DESIGN-RULES.md` H9、`docs/AI-MAINTENANCE-v2.0.md` 采集链路图、`scripts/collect.js` 头注释。
+- **完整门禁实跑读数**（`npm run gate`，/tmp/gate-full.log）：解析 54 步骤、执行 49 个脚本步骤，
+  **48 通过 · 1 失败**；唯一失败 = `[52] Real-browser acceptance`（本机无浏览器内核 / 默认 Windows Edge 路径），
+  `[53]` 回归比对与 `[54]` 结论因此未执行。失败点在浏览器判定，非回归。
+- `npm run gate:build`（L1+L2+L3）= 40 脚本 · 失败 0（文档改动后复跑仍绿）。
+- T5 报告草稿已写入 `OVERNIGHT-REPORT.md`（§1–§4.3 与 §5/§7/§8 已填；T4 行、BLOCKED、附录待收尾）。
+- 下一步：等 T4（worktree `.worktrees/p3b-health`）→ cherry-pick → 集成复验 → 填报告 → 最终提交。
