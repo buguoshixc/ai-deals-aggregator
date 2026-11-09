@@ -95,3 +95,13 @@
 - `npm run gate:build`（L1+L2+L3）= 40 脚本 · 失败 0（文档改动后复跑仍绿）。
 - T5 报告草稿已写入 `OVERNIGHT-REPORT.md`（§1–§4.3 与 §5/§7/§8 已填；T4 行、BLOCKED、附录待收尾）。
 - 下一步：等 T4（worktree `.worktrees/p3b-health`）→ cherry-pick → 集成复验 → 填报告 → 最终提交。
+
+## 2026-11-10 01:00 独立复查（Lead 亲自跑的负向抽查 + TTL 真数据）
+
+- 在独立 worktree `/tmp/wt-mut`（基点 5e7d828）对 P3-A 判据做 4 颗定向篡改 → 全部按预期变红并点名：
+  ①数据门禁少 fixture-test ⇒ (13) 红；②release gate allow_degraded_run 改 'false' ⇒ (11) 红（三个事件逐条点名）；
+  ③数据门禁加 continue-on-error ⇒ (13) 红；④删留痕步 ⇒ (13) 红。逐字节还原后 check:ci 回 39/0。
+- 线索 TTL 真数据（只读）：`store.prune(deals, today)` 在 2026-11-16（第 7 天）保留线索；
+  2026-11-17（第 8 天）只下架该 1 条（removed.expired=1），其余 209 条不动。
+- 完整门禁 `npm run gate` 读数已写入 OVERNIGHT-REPORT.md §4.3（49 个脚本执行：48 通过、1 失败=真浏览器验收缺内核）。
+- 下一步：等 T4 → cherry-pick → 全量复验 → 填报告 T4 行/§4.6 → 最终提交。
