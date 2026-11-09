@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "source": "leads_sspai",
+  "sourceName": "少数派",
+  "fixture": "leads_sspai.feeds",
+  "sourceUrl": "https://sspai.com/feed",
+  "capturedAt": "2026-11-10",
+  "trimmed": "解析器/判据真正读的四个字段（title / link / pubDate / description）：三闸全中与近失配条目优先，最多 8 条，description 截到 200 字",
+  "note": "expected 是**生产解析器在这个最小片段上的真实输出**；重建后请人工 review diff。",
+  "count": 8,
+  "items": [
+    {
+      "title": "派评 | 近期值得关注的 App",
+      "url": "https://sspai.com/post/118833",
+      "source": "少数派",
+      "sourceUrl": "https://sspai.com/feed",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "双十一 | 少数派会员、正版软件、付费栏目限时优惠",
+      "url": "https://sspai.com/post/118799",
+      "source": "少数派",
+      "sourceUrl": "https://sspai.com/feed",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "一家人的客厅，和一个人的深夜 — Sonos Beam Ultra 与 Ace Ultra 体验",
+      "url": "https://sspai.com/post/118227",
+      "source": "少数派",
+      "sourceUrl": "https://sspai.com/feed",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "天花板上的白色盒子，是怎样保护我们的安全的？",
+      "url": "https://sspai.com/post/118029",
+      "source": "少数派",
+      "sourceUrl": "https://sspai.com/feed",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "双十一好物精选：Sonos Play 85 折送充电套装，CD 机加赠透明面盖",
+      "url": "https://sspai.com/post/118612",
+      "source": "少数派",
+      "sourceUrl": "https://sspai.com/feed",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "派早报：特斯拉将停产 Cybertruck",
+      "url": "https://sspai.com/post/118805",
+      "source": "少数派",
+      "sourceUrl": "https://sspai.com/feed",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "苹果产品那些不够颠覆，却值得被学习的细节",
+      "url": "https://sspai.com/post/118114",
+      "source": "少数派",
+      "sourceUrl": "https://sspai.com/feed",
+      "firstSeen": "2026-11-08",
+      "type": "tool"
+    },
+    {
+      "title": "一个 05 后的个人数码编年史",
+      "url": "https://sspai.com/post/116750",
+      "source": "少数派",
+      "sourceUrl": "https://sspai.com/feed",
+      "firstSeen": "2026-11-07",
+      "type": "tool"
+    }
+  ]
+}

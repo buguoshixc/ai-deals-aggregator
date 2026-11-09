@@ -214,6 +214,25 @@ const TRIMS = {
 };
 
 /**
+ * RSS feed 剪裁规则的**登记**：表在 `RSS_FIXTURE_FEEDS`、剪裁函数是上面的 `trimRssFeed()`，
+ * 但 `buildOne()` 只认 `TRIMS` 这一个入口 —— 两者必须在这里合流，否则规则写好了却永远跑不到
+ * （`main()` 的 `--source=` 参数也在 `TRIMS` 的键里找）。
+ *
+ * 片段形态是 `page.min.xml`（kind `xml`：来源本身就是 feed，不是 DOM 页面）。
+ * 片段名 = 采集器 id + `.feeds`，与 `collectors/leads.js` 的 `fixture` 字段逐字一致；
+ * `sourceId` 由 `buildOne` 从 `fixtureName.split('.')[0]` 推出，正好对上采集器 id。
+ */
+for (const [fixtureName, url] of Object.entries(RSS_FIXTURE_FEEDS)) {
+  TRIMS[fixtureName] = {
+    url,
+    what: `解析器/判据真正读的四个字段（title / link / pubDate / description）：三闸全中与近失配条目优先，` +
+      `最多 ${RSS_FIXTURE_MAX_ITEMS} 条，description 截到 ${RSS_FIXTURE_DESCRIPTION_CHARS} 字`,
+    kind: 'xml',
+    trim: trimRssFeed
+  };
+}
+
+/**
  * AppSumo fixture 的字段投影：**只留生产解析器读的字段**。
  * 保留 full deal 对象会把 AppSumo 的一堆图片/评论/营销字段带进仓库（体积与版权都不该）。
  */

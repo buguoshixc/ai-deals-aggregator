@@ -850,6 +850,132 @@ function openRouterTeeth() {
 }
 
 /* ================================================================== */
+/*  B 类资讯线索雷达（P2，beta）：判据 / 窗口 / 草稿形状 / TTL           */
+/* ================================================================== */
+
+/**
+ * 这一节钉的是「一条媒体稿凭什么算线索」这件事本身。
+ *
+ * 为什么它必须在这里、而不是靠 fixture：fixture 钉的是**解析器行为**（RSS → 草稿），
+ * 判据（三闸 / 7 天窗口 / TTL）要注入 now 才能逐格验证，塞不进解析器回放里。
+ * 而判据一旦漂移，表现是**完全静默**的：解析照样成功、采集器照样 healthy，
+ * 只是「今天的线索」变成 0 条（或变成一堆假线索），页面与构建全绿。
+ *
+ * 每一条都写成**正例 + 反例**：只有正例的判据可以是「永远返回 false」也全绿；
+ * 只有反例的判据可以是「永远返回 true」也全绿。两个方向都得钉住。
+ */
+function leadRadarTeeth() {
+  const radar = require('../lib/lead-radar');
+  const leads = require('../collectors/leads');
+  const store = require('../lib/store');
+
+  /** 注入的「现在」：窗口判据一律用注入时间，绝不读墙上时钟（否则这条自测每天结果不同） */
+  const NOW = Date.parse('2026-11-10T00:00:00+08:00');
+
+  // ① 三闸必须**同时**命中：平台名 + 免费/降价 + 时间词。缺任何一闸都不是线索。
+  //    「差时间词」正是媒体评测文最常见的形态（满篇平台名 + 免费额度），必须挡住。
+  const allGates = { title: 'DeepSeek 今日起限时免费开放', description: '活动期间所有用户可用，额度有限' };
+  assert('线索判据：三闸同时命中 → 是线索', radar.leadSignal(allGates).ok === true,
+    JSON.stringify(radar.leadSignal(allGates)));
+  const noTimeWord = { title: 'DeepSeek 免费额度使用体验', description: '我们测了它的免费额度，效果一般' };
+  const noTimeSignal = radar.leadSignal(noTimeWord);
+  assert('线索判据：平台名 + 免费、但没有时间词 → 不是线索（防「任何免费软件新闻」混进来）',
+    noTimeSignal.ok === false && Boolean(noTimeSignal.platform) && noTimeSignal.free && !noTimeSignal.time,
+    JSON.stringify(noTimeSignal));
+  const nearMiss = radar.selectLeads(
+    [{ ...noTimeWord, url: 'https://example.com/near-miss', date: '2026-11-09' }], { now: NOW });
+  assert('线索判据：只差时间词的样本进「近失配」清单并写明缺什么（日志里能抽查判据漏没漏）',
+    nearMiss.items.length === 0 && nearMiss.nearMisses.length === 1 && nearMiss.nearMisses[0].missing === '时间词',
+    JSON.stringify(nearMiss.nearMisses));
+
+  // ② 免费 + 时间词、但没有平台名（「今天限时免费的 5 款效率工具」这类合集）→ 不是线索；
+  //    同一句话补上平台名才算 —— 这一对正反例防的是「放宽到任何免费新闻」。
+  const noPlatform = { title: '今天限时免费领取的 5 款效率工具', description: '本周活动，先到先得' };
+  assert('线索判据：免费 + 时间词、但没有 AI 平台名 → 不是线索',
+    radar.leadSignal(noPlatform).ok === false && radar.leadSignal(noPlatform).platform === null,
+    JSON.stringify(radar.leadSignal(noPlatform)));
+  const withPlatform = { ...noPlatform, title: `DeepSeek ${noPlatform.title}` };
+  assert('线索判据：同一句话补上平台名 → 是线索（没有把正常写法一起挡掉）',
+    radar.leadSignal(withPlatform).ok === true, JSON.stringify(radar.leadSignal(withPlatform)));
+
+  // ③ 摘要窗口：判据只看标题 + 摘要前 SUMMARY_WINDOW_CHARS 字。
+  //    平台名只在正文深处的分析稿不算线索（实测这类稿子一天十几条）；挪到摘要开头就算。
+  const filler = '引'.repeat(radar.SUMMARY_WINDOW_CHARS);
+  const deepPlatform = { title: '今日限时免费领取', description: `${filler}DeepSeek 也在其中` };
+  assert(`线索判据：平台名只在摘要 ${radar.SUMMARY_WINDOW_CHARS} 字窗口之外 → 不是线索（摘要窗口生效）`,
+    radar.leadSignal(deepPlatform).ok === false && radar.leadSignal(deepPlatform).platform === null,
+    JSON.stringify(radar.leadSignal(deepPlatform)));
+  const inWindow = { ...deepPlatform, description: `DeepSeek ${filler}` };
+  assert('线索判据：平台名在摘要窗口内 → 是线索（窗口没有把「标题点题、摘要给条件」的正常写法挡掉）',
+    radar.leadSignal(inWindow).ok === true, JSON.stringify(radar.leadSignal(inWindow)));
+
+  // ④ 7 天窗口边界（注入 now）：原文日期**正好** 7 天前算，7 天零 1 秒前不算。
+  //    边界语义 = `ageDays > maxAgeDays` 才扔 ⇒ 恰好 7 天保留。差一秒就翻面，所以必须精确钉。
+  const dated = date => ({ ...allGates, url: `https://example.com/dated/${date}`, date });
+  const exactly7 = radar.selectLeads([dated('2026-11-03')], { now: NOW });
+  const after7 = radar.selectLeads([dated('2026-11-03')], { now: NOW + 1000 });
+  assert('线索窗口：原文日期正好 7 天前 → 收（边界含）',
+    exactly7.items.length === 1 && exactly7.stats.inWindow === 1, JSON.stringify(exactly7.stats));
+  assert('线索窗口：原文日期 7 天零 1 秒前 → 不收（边界外），且丢弃原因写明窗口',
+    after7.items.length === 0 && /超过 7 天窗口/.test((after7.dropped[0] && after7.dropped[0].reason) || ''),
+    JSON.stringify(after7.dropped));
+
+  // ⑤ 草稿形状：线索只有**四个事实**（标题 / 原文链接 / 原文日期 / 收录来源）+ schema 簿记；
+  //    优惠字段与「已核验」一个都不许出现，type 必须是 tool（未核验的资讯不是优惠）。
+  //    `leads.js` 的注释声称「由 ai-selftest 的「线索草稿形状」断言盯着」—— 就是这一组。
+  const draft = leads.__test.toDraft(
+    { title: 'DeepSeek 限时免费', url: 'https://example.com/draft', date: '2026-11-09' },
+    leads.__test.FEEDS[0]);
+  const draftKeys = Object.keys(draft).sort().join(',');
+  assert('线索草稿形状：键集合恰好是 title/url/source/sourceUrl/firstSeen/type（多一个键少一个键都是错的）',
+    draftKeys === 'firstSeen,source,sourceUrl,title,type,url', `实得 ${draftKeys}`);
+  assert('线索草稿形状：type 是 tool 而不是 deal（未核验的资讯不是优惠）', draft.type === 'tool', draft.type);
+  const forbiddenKeys = ['discountInfo', 'benefitType', 'eligibility', 'eligibilityDetail', 'availability',
+    'audience', 'validity', 'expiresAt', 'verified', 'verifiedAt', 'description', 'pricingModel', 'category'];
+  const presentForbidden = forbiddenKeys.filter(key => Object.prototype.hasOwnProperty.call(draft, key));
+  assert('线索草稿形状：优惠/核验字段一个都不出现（不下结论、不写已核验）',
+    presentForbidden.length === 0, `出现了 ${presentForbidden.join(',')}`);
+  const fixtureXml = read('scripts/data/fixtures/leads_qbitai.feeds/page.min.xml');
+  const fixtureDrafts = leads.__test.parseFeedAsDrafts(fixtureXml, leads.__test.FEEDS[2]);
+  assert('线索草稿形状：fixture 回放出的每一条都是同一形状（解析器不会偷偷加字段）',
+    fixtureDrafts.length > 0 && fixtureDrafts.every(item =>
+      Object.keys(item).sort().join(',') === 'firstSeen,source,sourceUrl,title,type,url' && item.type === 'tool'),
+    `fixture 条数 ${fixtureDrafts.length}`);
+
+  // ⑥ TTL：store.prune 对线索按 firstSeen（= 原文日期）算 7 天，**第 8 天必须下线**；
+  //    同一条规则**不许**顺手剪普通 deal —— 优惠的 firstSeen 是「首次收录日」，不是新闻时效，
+  //    拿 7 天去剪它会把真实优惠误删（这就是「不能顺着别的理由改判据」的具体形态）。
+  const LEAD_SOURCE = '快科技'; // provenance.SOURCE_TYPES 登记为 lead 的来源之一
+  const probeDeal = (id, source, firstSeen) => ({
+    id, title: `probe ${id}`, vendor: 'probe', url: `https://example.com/probe/${id}`,
+    source, sourceUrl: null, type: 'tool', firstSeen, lastSeen: '2026-11-10', discountInfo: null
+  });
+  const pruned = store.prune([
+    probeDeal('lead-7', LEAD_SOURCE, '2026-11-03'),   // 正好 7 天 → 在架
+    probeDeal('lead-8', LEAD_SOURCE, '2026-11-02'),   // 8 天 → 下线
+    probeDeal('deal-old', 'AppSumo', '2026-09-01')    // 普通 deal 的旧 firstSeen → 不受线索 TTL 影响
+  ], { today: '2026-11-10' });
+  assert('线索 TTL：原文日期第 7 天仍在架', pruned.deals.some(deal => deal.id === 'lead-7'),
+    `在架 ${pruned.deals.map(deal => deal.id).join(',')}`);
+  assert('线索 TTL：原文日期第 8 天下线（走既有「过期下架」通道）',
+    pruned.removed.expired.some(deal => deal.id === 'lead-8') &&
+    !pruned.deals.some(deal => deal.id === 'lead-8'),
+    `移除 ${pruned.removed.expired.map(deal => deal.id).join(',')}`);
+  assert('线索 TTL：同一条规则不剪普通 deal（优惠的 firstSeen 不是新闻时效）',
+    pruned.deals.some(deal => deal.id === 'deal-old'),
+    `在架 ${pruned.deals.map(deal => deal.id).join(',')}`);
+
+  // ⑦ TTL 常数只有一个出处：采集窗口与 prune 共用 lib/lead-radar.js 的 LEAD_TTL_DAYS。
+  //    两处各写一个 7 的话，改了一边另一边不会红 —— 而漂移掉的那一侧永远是没人看的那侧。
+  assert('线索 TTL：常数唯一出处是 lib/lead-radar.js，值为 7', radar.LEAD_TTL_DAYS === 7,
+    String(radar.LEAD_TTL_DAYS));
+  const storeSource = read('scripts/lib/store.js');
+  assert('线索 TTL：store.prune 引用同一个常数，而不是自己抄一个 7 天',
+    /LEAD_TTL_DAYS/.test(storeSource) && !/LEAD_TTL_DAYS\s*=\s*7/.test(storeSource),
+    'store.js 里没有引用 lead-radar 的 LEAD_TTL_DAYS');
+}
+
+/* ================================================================== */
 
 async function main() {
   console.log('AI 层自检（离线，不依赖任何 API key 与网络）');
@@ -868,6 +994,7 @@ async function main() {
   structuralTeeth();
   collectorFilterTeeth();
   openRouterTeeth();
+  leadRadarTeeth();
 
   // provider 的环境变量不该泄漏给后续步骤
   delete process.env.AI_PROVIDER;

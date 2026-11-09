@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "source": "leads_ifanr",
+  "sourceName": "爱范儿",
+  "fixture": "leads_ifanr.feeds",
+  "sourceUrl": "https://www.ifanr.com/feed",
+  "capturedAt": "2026-11-10",
+  "trimmed": "解析器/判据真正读的四个字段（title / link / pubDate / description）：三闸全中与近失配条目优先，最多 8 条，description 截到 200 字",
+  "note": "expected 是**生产解析器在这个最小片段上的真实输出**；重建后请人工 review diff。",
+  "count": 8,
+  "items": [
+    {
+      "title": "玛莎拉蒂将与尊界联合造车，首发车型或为双门 GT，明年正式量产",
+      "url": "https://www.ifanr.com/1688586?utm_source=rss&utm_medium=rss&utm_campaign=",
+      "source": "爱范儿",
+      "sourceUrl": "https://www.ifanr.com/feed",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "实测 Seedream5.5，豆包想把 AI 作图接进整条工作流",
+      "url": "https://www.ifanr.com/1688447?utm_source=rss&utm_medium=rss&utm_campaign=",
+      "source": "爱范儿",
+      "sourceUrl": "https://www.ifanr.com/feed",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "谁家 AI 这么听劝？Seedream 5.5 爆改 iPhone Duo 界面，精准到像素级",
+      "url": "https://www.ifanr.com/1688514?utm_source=rss&utm_medium=rss&utm_campaign=",
+      "source": "爱范儿",
+      "sourceUrl": "https://www.ifanr.com/feed",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "苹果罕见公布人形机器人进展，宇树 G1 背着一台跑千问的 Mac mini",
+      "url": "https://www.ifanr.com/1688485?utm_source=rss&utm_medium=rss&utm_campaign=",
+      "source": "爱范儿",
+      "sourceUrl": "https://www.ifanr.com/feed",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "微信 AI 录音笔体验：手机都能装的办公神器，免费！",
+      "url": "https://www.ifanr.com/1688410?utm_source=rss&utm_medium=rss&utm_campaign=",
+      "source": "爱范儿",
+      "sourceUrl": "https://www.ifanr.com/feed",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "M6 MacBook Pro 体验：38 块的灵魂，一万五的身体",
+      "url": "https://www.ifanr.com/1688127?utm_source=rss&utm_medium=rss&utm_campaign=",
+      "source": "爱范儿",
+      "sourceUrl": "https://www.ifanr.com/feed",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "早报｜曝特努斯要求加快AI研发/Win 11优化8GB内存电脑流畅度/马斯克：SpaceX明年12月年化营收或超5000亿美元",
+      "url": "https://www.ifanr.com/1688379?utm_source=rss&utm_medium=rss&utm_campaign=",
+      "source": "爱范儿",
+      "sourceUrl": "https://www.ifanr.com/feed",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "别再拿《影之刃零》对比《黑神话》了",
+      "url": "https://www.ifanr.com/1688282?utm_source=rss&utm_medium=rss&utm_campaign=",
+      "source": "爱范儿",
+      "sourceUrl": "https://www.ifanr.com/feed",
+      "firstSeen": "2026-11-08",
+      "type": "tool"
+    }
+  ]
+}

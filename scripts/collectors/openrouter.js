@@ -61,12 +61,22 @@
  * ## 字段映射（需求 §P1-3）
  *
  * `type: "deal"`、`pricingModel: "free"`、`region: "global"`、`category: "API服务"`、
- * `expiresAt` 取 `expiration_date`。`benefitType: ["free_api"]` **没有**在这里写 ——
- * 原因见 OVERNIGHT-REPORT.md 的 BLOCKED/取舍条目：本仓 `check:reproducible` 的判据是
- * 「非策展条目的六字段必须能从管线或人工声明重建」，采集器直接产出的六字段会被剥掉
- * 重放并判成「已知值无源」（2026-11-09 实测，一项红）。要进 `/free-api/` 分类页必须
- * 由 `scripts/data/audience-overrides.json` 逐条人工声明；无人值守下那会在每次模型
- * 下架时制造孤儿条目并卡死采集链，所以本次不做，如实记进报告。
+ * `expiresAt` 取 `expiration_date`。
+ *
+ * ### P1 偏差：需求点名的 `benefitType: ["free_api"]` 为什么没写在采集器里
+ *
+ * 本仓 `check:reproducible`（`scripts/tools/check-reproducible.js`）的判据是：
+ * **非策展条目的六字段必须能从「管线重放」或「人工声明」重建**。它会把六字段剥掉、
+ * 重跑一轮 `mergeAll()`（`scripts/lib/store.js`），还产不出来就判「已知值无源」。
+ * 采集器直出六字段时，重放那一侧没有来源，这条门禁必红（2026-11-09 实测，一项红）。
+ *
+ * 要真的补上这个字段，需要动的**不是这里**，而是六字段的第二个人工来源：
+ * `scripts/data/audience-overrides.json`（由 `mergeAll` 在进 dedup 之前注入，
+ * 见 `lib/store.js` 的 `overrides` 段），以及随之而来的 `check-reproducible` 重放口径。
+ * 但那条路要求逐条人工声明：模型每次下架/改名都会让文件里多一条指向不存在记录的孤儿，
+ * 无人值守下会卡死采集链 —— 所以本轮**不做**，作为 P1 偏差如实记进
+ * `OVERNIGHT-REPORT.md` 的「没做的事 + 为什么」与「BLOCKED/取舍」两节。
+ * 改动前请先读那份报告的对应条目，不要只为了补一个字段去放宽门禁。
  */
 
 const { getText } = require('../lib/http');

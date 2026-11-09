@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "source": "leads_mydrivers",
+  "sourceName": "快科技",
+  "fixture": "leads_mydrivers.feeds",
+  "sourceUrl": "https://rss.mydrivers.com/rss.aspx?Tid=1",
+  "capturedAt": "2026-11-10",
+  "trimmed": "解析器/判据真正读的四个字段（title / link / pubDate / description）：三闸全中与近失配条目优先，最多 8 条，description 截到 200 字",
+  "note": "expected 是**生产解析器在这个最小片段上的真实输出**；重建后请人工 review diff。",
+  "count": 8,
+  "items": [
+    {
+      "title": "每天白赚几百 AI大模型免费薅羊毛：DeepSeek、GPT等全都有",
+      "url": "https://news.mydrivers.com/1/1164/1164402.htm",
+      "source": "快科技",
+      "sourceUrl": "https://rss.mydrivers.com/rss.aspx?Tid=1",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "《GTA6》预载开启！PS5版游戏大小约209.8GB",
+      "url": "https://news.mydrivers.com/1/1164/1164431.htm",
+      "source": "快科技",
+      "sourceUrl": "https://rss.mydrivers.com/rss.aspx?Tid=1",
+      "firstSeen": "2026-11-10",
+      "type": "tool"
+    },
+    {
+      "title": "全国首个冷门绝学学院成立：研究方向覆盖甲骨学、简帛学等",
+      "url": "https://news.mydrivers.com/1/1164/1164430.htm",
+      "source": "快科技",
+      "sourceUrl": "https://rss.mydrivers.com/rss.aspx?Tid=1",
+      "firstSeen": "2026-11-10",
+      "type": "tool"
+    },
+    {
+      "title": "携手Adobe开发定制AI模型！迪士尼计划将AI推广至主题公园影视",
+      "url": "https://news.mydrivers.com/1/1164/1164429.htm",
+      "source": "快科技",
+      "sourceUrl": "https://rss.mydrivers.com/rss.aspx?Tid=1",
+      "firstSeen": "2026-11-10",
+      "type": "tool"
+    },
+    {
+      "title": "黄仁勋持股不足4%：为何能主导英伟达",
+      "url": "https://news.mydrivers.com/1/1164/1164428.htm",
+      "source": "快科技",
+      "sourceUrl": "https://rss.mydrivers.com/rss.aspx?Tid=1",
+      "firstSeen": "2026-11-10",
+      "type": "tool"
+    },
+    {
+      "title": "又一地官宣公办普高“愿上尽上”：录取率达96.24%",
+      "url": "https://news.mydrivers.com/1/1164/1164427.htm",
+      "source": "快科技",
+      "sourceUrl": "https://rss.mydrivers.com/rss.aspx?Tid=1",
+      "firstSeen": "2026-11-10",
+      "type": "tool"
+    },
+    {
+      "title": "三星探索滑轨屏手机：阔直板、长直屏随意切换",
+      "url": "https://news.mydrivers.com/1/1164/1164426.htm",
+      "source": "快科技",
+      "sourceUrl": "https://rss.mydrivers.com/rss.aspx?Tid=1",
+      "firstSeen": "2026-11-10",
+      "type": "tool"
+    },
+    {
+      "title": "iPhone Air 2机模上手：双摄+超薄机身 外观无悬念了",
+      "url": "https://news.mydrivers.com/1/1164/1164425.htm",
+      "source": "快科技",
+      "sourceUrl": "https://rss.mydrivers.com/rss.aspx?Tid=1",
+      "firstSeen": "2026-11-10",
+      "type": "tool"
+    }
+  ]
+}
