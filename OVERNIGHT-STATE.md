@@ -65,3 +65,20 @@
 - `dist/assets/data/offers.json` 里该记录 `sourceFacts.sourceType="lead"`、`history.events=[created]`、无 discountInfo/六字段。
 - T3（P3-A 门禁拆锁）已交给 teammate `p3a-gate` 在 `.worktrees/p3a-gate` 并行做；T4 工位与简报已备好（`.worktrees/p3b-health`），等 T3 收回后立即启动。
 - 下一步：等 T3 里程碑 → 审阅 diff + cherry-pick → 文档真话补齐 → 启动 T4。
+
+## 2026-11-10 00:50 修两处「基线既有红」（gate:build 前置；非本夜引入）
+
+- **发现**：接手状态 `27404e3` 的 `npm run gate:build` 本就是红的，红在两处与 P2 代码无关的地方；
+  T3 teammate 在其干净 worktree 独立复现，归因一致。
+- **红 ①：`selftest:seo` 余量登记过期**（`scripts/lib/seo.js` 的 `TEXT_FLOOR_RESIDUALS`）：
+  `category/audio/` 登记 count=6 / `category/image/` 登记 count=5，实时都是 7。
+  git 历史实测：master 基点 `ebdd0a8`（179 条）时是 6/5（与登记一致）→ P0 AppSumo +23（`6badae2`，202 条）后变 7/7；
+  P1/P2 未再改变。两页当前余量 168 / 267（≥150），已离开「余量 <150」射程 ⇒ 按 `seo-verify.js` §③′
+  的双向不变式**退役**（移入 `TEXT_FLOOR_GRADUATED` 并写明理由），下限公式 `textFloor(kind,count)` 一个字没动；
+  同步 `research/_raw/p2-residuals-v1/text-floor-margins.json` 转写。读数：seo-selftest 104/0、seo-verify 18/0。
+- **红 ②：`selftest:coverage-targets` 反证牙 v3④ 静默空转**：该牙只清空裁决表，咬人前提是真实
+  `source-health.json` 里有 `consecutiveFailures>=3` 的来源；当前 19 行全是 0（futurepedia 是 zero_output），
+  于是报告 exit 0、牙却判红。修法：牙自给自足 —— 用 `--source-health=` 覆盖入口注入一个同结构的合成失败来源，
+  让 `source-rulings.js` 的「连续失败≥3 必须有裁决」判据重新真的被触发；**判据本身未改**。读数 200/0。
+- **结果**：`npm run gate:build`（L1+L2+L3，40 个脚本）→ **全绿**。
+- 下一步：等 T3 提交 → cherry-pick → 集成复验 → 启动 T4。

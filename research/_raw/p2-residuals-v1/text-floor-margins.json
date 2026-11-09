@@ -9,24 +9,6 @@
     "registeredAt": "2026-11-04"
   },
   {
-    "route": "category/audio/",
-    "kind": "category",
-    "count": 6,
-    "chars": 1070,
-    "floor": 960,
-    "margin": 110,
-    "registeredAt": "2026-11-04"
-  },
-  {
-    "route": "category/image/",
-    "kind": "category",
-    "count": 5,
-    "chars": 1036,
-    "floor": 900,
-    "margin": 136,
-    "registeredAt": "2026-11-04"
-  },
-  {
     "route": "category/agent/",
     "kind": "category",
     "count": 4,
