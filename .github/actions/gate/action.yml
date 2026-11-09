@@ -1,8 +1,9 @@
 name: 'Gate（完整门禁）'
 description: >-
-  collect → validate → 译文 → 两个自测 → build → 真浏览器验收 → 回归比对的**唯一实现**。
-  verify.yml（PR/push）、deploy.yml（发布前）、collect.yml（提交数据前）都调用这一个文件，
-  避免出现两套相似但不同的测试链。
+  validate → 译文 → 自测 → build → 真浏览器验收 → 回归比对的**唯一实现**。
+  verify.yml（PR/push）、deploy.yml（发布前）、collect.yml（**数据提交之后**的发布就绪门禁）
+  都调用这一个文件，避免出现两套相似但不同的测试链。collect 侧的数据正确性由该 workflow
+  提交**之前**的独立硬门禁守着（9 条命令，见 collect.yml），本 action 不承担那一段。
 
 # 为什么是复合 action 而不是 reusable workflow（2026-09-28 的决定，附理由）：
 #  ① **检查名不能变**。verify.yml 的 job 名 `gate` 是分支保护要填的必需检查名；
