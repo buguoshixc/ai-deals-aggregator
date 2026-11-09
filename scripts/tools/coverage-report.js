@@ -77,6 +77,9 @@ const providers = require('../lib/providers');
 const registry = require('../lib/model-registry');
 const coverageTargets = require('../lib/coverage-targets');
 const sourceRulings = require('../lib/source-rulings');
+// P3 熔断的暂停文案/判定只从 lib/health.js 取（与 /status/、collect Summary 共用 pausedLabel，
+// 报告不复制一份"⏸ 已暂停…"的措辞）。
+const healthLib = require('../lib/health');
 const { todayCN } = require('../lib/schema');
 
 const ROOT = path.join(__dirname, '..', '..');
@@ -1135,6 +1138,11 @@ function main() {
     decisionOrder: sourceRulings.DECISIONS.slice(),
     decisionCounts: rulingsReconciled.byDecision,
     rulings: rulingsReconciled.rows,
+    // P3 自动熔断（纯观测透传，**不新增断言口径**）：暂停态由 source-health 的
+    // pausedAt/pausedReason 表达；本报告只回答"机器已经暂停了谁、他有没有人工裁决"。
+    // 「连续失败 ≥ 3 必须有裁决」仍由 reconciliation 的问题清单独立判定 —— 自动暂停不放宽它。
+    pausedSources: rulingsReconciled.pausedSources,
+    pausedWithoutRuling: rulingsReconciled.pausedWithoutRuling,
     validationProblems: rulingsValidationProblems,
     validationProblemCount: rulingsValidationProblems.length,
     reconciliation: {
@@ -1597,6 +1605,15 @@ function main() {
   line(`  裁决表：${sourceReliability.file} —— ${sourceReliability.notLanded ? '**尚未落盘**（未落盘 ≠ 通过：本轮三方对账没有输入）' : `已落盘（reviewedAt=${sourceReliability.reviewedAt === null ? '(未写)' : sourceReliability.reviewedAt}）`}`);
   line(`  注册表：${sourceReliability.collectorRegistryFile} 共 ${sourceReliability.collectorRegistryCount === null ? '(读不出)' : sourceReliability.collectorRegistryCount} 行`
     + ` · source-health 注册表共 ${sourceReliability.registryRowCount} 行（沿用既有 registryRowCount 口径）`);
+  // P3 自动熔断：0 也打印（"0 个暂停"与"这段没跑"是两件事），并与人工裁决明确分开说。
+  line(`  ⏸ 自动熔断暂停：${sourceReliability.pausedSources.length} 个`
+    + `${sourceReliability.pausedSources.length
+      ? '（本报告只透传机器状态，不替代人工裁决；「连续失败 ≥ 3 必须有裁决」仍由三方对账独立判定）'
+      : '（0 个也打印：与"没读这一层"是两件事）'}`);
+  for (const item of sourceReliability.pausedSources) {
+    line(`      · ${String(item.source).padEnd(20)} ${healthLib.pausedLabel(item)}`
+      + `${item.ruled ? ' · 已有裁决' : ' · 尚无裁决（三方对账 relation 2 独立判红）'}`);
+  }
   if (sourceReliability.notLanded) {
     line(`  ⚠️ ${sourceReliability.notLandedNote}`);
   } else {
@@ -1609,6 +1626,9 @@ function main() {
         ? `health ${row.health.status}${row.health.reason ? `/${row.health.reason}` : ''}（连续失败 ${row.health.consecutiveFailures}）`
         : 'health 无此行';
       line(`      · ${String(row.source).padEnd(20)} ${String(row.decision).padEnd(17)} ← ${where} · ${health}`);
+      if (row.health && row.health.paused) {
+        line(`        ${healthLib.pausedLabel({ pausedAt: row.health.paused.at, pausedReason: row.health.paused.reason })}`);
+      }
       line(`        理由：${row.reason}`);
       if (row.whyKept) line(`        保留理由：${row.whyKept}`);
       if (row.revisitBy) line(`        复查条件：${row.revisitBy}`);

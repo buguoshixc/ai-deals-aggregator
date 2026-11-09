@@ -28,6 +28,19 @@
  *   · `repair` / `headless-migrate` 的来源**必须**在注册表里 —— 裁决说要修 / 要迁，而注册表里
  *     根本没有这个身份，那这条裁决只是写给读者看的。
  *
+ * ## 与 P3 源级自动熔断的边界（2026-11 起）
+ *
+ * `lib/health.js` 的 P3 熔断会在「连续**采集器抛错**达到 5 次」时自动暂停来源（`pausedAt` /
+ * `pausedReason`），暂停满 3 天自动半开重试一次。它与本层是**两件事**，刻意分开：
+ *
+ *   · 自动熔断是**运行机制**（少花无谓请求 + 让暂停可见），阈值 5 **大于**本层的 3：机器不允许
+ *     抢在人工裁决之前关掉来源 —— 否则本层拿到的是一个"已经不再尝试"的来源，新鲜读数断供；
+ *   · 人工裁决是**判断**（repair / headless-migrate / keep-degraded / retire），`consecutiveFailures >= 3`
+ *     就必须留下裁决这条硬关系**不因自动暂停而放宽**：暂停只说明"它已经被机器关掉"，
+ *     不说明"有人决定过它该怎么办"。
+ *   · 本层**只透传**暂停态（`health.paused = {at, reason}` 与 `pausedSources` 观测列表）供
+ *     三方对账/报告看见；本模块不 require `lib/health.js`、不读墙上时钟、不把暂停算成任何问题。
+ *
  * ## 纯函数
  *
  * 本模块不读墙上时钟、不联网、无随机、不写盘。`load()` 只读一个文件（与
@@ -407,7 +420,10 @@ function identityIndex(registrySources, healthSources) {
       name: source.name || null,
       status: source.status === undefined ? null : source.status,
       reason: source.reason === undefined ? null : source.reason,
-      consecutiveFailures: Number.isFinite(source.consecutiveFailures) ? source.consecutiveFailures : 0
+      consecutiveFailures: Number.isFinite(source.consecutiveFailures) ? source.consecutiveFailures : 0,
+      // P3 熔断暂停态（附加字段，不是 status 的第四档）：只透传，不参与任何判定。
+      pausedAt: source.pausedAt === undefined ? null : source.pausedAt,
+      pausedReason: source.pausedReason === undefined ? null : source.pausedReason
     };
     if (row.name === null && source.name) row.name = source.name;
     if (!rows.includes(row)) rows.push(row);
@@ -465,7 +481,14 @@ function reconcileRulings(input = {}) {
         name: identity.health.name,
         status: identity.health.status,
         reason: identity.health.reason,
-        consecutiveFailures: identity.health.consecutiveFailures
+        consecutiveFailures: identity.health.consecutiveFailures,
+        // P3：`paused` 为 null = 未暂停；否则 {at, reason}。这是**观测**，不是第二条关系。
+        paused: identity.health.pausedAt
+          ? {
+            at: identity.health.pausedAt === undefined ? null : identity.health.pausedAt,
+            reason: identity.health.pausedReason === undefined ? null : identity.health.pausedReason
+          }
+          : null
       } : null
     };
   });
@@ -490,7 +513,12 @@ function reconcileRulings(input = {}) {
       source: source.source === undefined || source.source === null ? null : String(source.source),
       name: source.name === undefined || source.name === null ? null : String(source.name),
       status: source.status === undefined ? null : source.status,
-      consecutiveFailures: source.consecutiveFailures
+      consecutiveFailures: source.consecutiveFailures,
+      // P3：连续失败 ≥3 的清单里同时带出"是否已被自动暂停"，让裁决层看见机器状态
+      // （但"必须有裁决"这条关系仍按 consecutiveFailures 独立判定，不因暂停放宽）。
+      paused: source.pausedAt
+        ? { at: source.pausedAt === undefined ? null : source.pausedAt, reason: source.pausedReason === undefined ? null : source.pausedReason }
+        : null
     }));
   const missingRulingsForFailures = failuresRequiringRuling.filter(item => !(item.source && reasons.has(item.source)))
     .map(item => item.source || item.name || '(未署名)');
@@ -531,6 +559,30 @@ function reconcileRulings(input = {}) {
   const byDecision = {};
   for (const decision of DECISIONS) byDecision[decision] = rows.filter(row => row.decision === decision).length;
 
+  /* P3 观测：已被自动熔断暂停的来源（health 侧字段，不读时钟 —— 半开窗口是否到点由调用方判）。
+     与 relation 2 的关系：暂停源一定 consecutiveFailures >= 阈值 5 > 3，所以它本来就必须有裁决；
+     这里只把"既有暂停、又有/没有裁决"摆出来供报告显示，**不**新增任何问题。 */
+  const ruledHealthIds = new Set(rows.filter(row => row.health && row.health.id).map(row => String(row.health.id)));
+  const pausedSources = healthSources
+    .filter(source => source.pausedAt)
+    .map(source => {
+      const sourceId = source.source === undefined || source.source === null ? null : String(source.source);
+      return {
+        source: sourceId,
+        name: source.name === undefined || source.name === null ? null : String(source.name),
+        status: source.status === undefined ? null : source.status,
+        consecutiveFailures: Number.isFinite(source.consecutiveFailures) ? source.consecutiveFailures : 0,
+        pausedAt: source.pausedAt === undefined ? null : source.pausedAt,
+        pausedReason: source.pausedReason === undefined ? null : source.pausedReason,
+        ruled: Boolean(sourceId && ruledHealthIds.has(sourceId))
+      };
+    })
+    .sort((a, b) => {
+      const ak = a.source === null ? '' : a.source;
+      const bk = b.source === null ? '' : b.source;
+      return ak < bk ? -1 : ak > bk ? 1 : 0;
+    });
+
   return {
     doc,
     present: Boolean(doc),
@@ -548,7 +600,9 @@ function reconcileRulings(input = {}) {
     retireStillRegistered,
     retireStillInHealth,
     repairOrMigrateUnregistered,
-    unresolvedSources
+    unresolvedSources,
+    pausedSources,
+    pausedWithoutRuling: pausedSources.filter(item => !item.ruled).map(item => item.source)
   };
 }
 
