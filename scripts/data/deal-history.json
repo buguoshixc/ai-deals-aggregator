@@ -3511,6 +3511,23 @@
         "verified": false
       },
       "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "29be3db37d5c",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "对话模型",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/call-annie",
+        "verified": false
+      },
+      "runAt": "2026-11-09T04:48:44.758Z"
     }
   ]
 }

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-11-09T01:41:18+08:00",
-  "count": 179,
+  "updatedAt": "2026-11-09T12:48:44+08:00",
+  "count": 180,
   "deals": [
     {
       "id": "2eae0e246de2",
@@ -3325,32 +3325,6 @@
       }
     },
     {
-      "id": "06bc1d631f62",
-      "title": "Sync.so",
-      "vendor": "Sync.so",
-      "url": "https://sync.so/",
-      "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/sync-so",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "视频",
-      "description": "A tool to sync lips and clone voices in videos",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-09",
-      "verified": false,
-      "verifiedAt": null,
-      "zh": {
-        "description": "为视频做口型同步与声音克隆。"
-      }
-    },
-    {
       "id": "5e3897face03",
       "title": "Arena AI",
       "vendor": "Arena AI",
@@ -3473,6 +3447,29 @@
       "validity": null,
       "expiresAt": null,
       "firstSeen": "2026-11-08",
+      "lastSeen": "2026-11-09",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
+      "id": "29be3db37d5c",
+      "title": "Call Annie",
+      "vendor": "Call Annie",
+      "url": "https://callannie.ai/",
+      "source": "Futuretools",
+      "sourceUrl": "https://futuretools.io/tools/call-annie",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "对话模型",
+      "description": "An app for video call to learn and befriend.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-11-09",
       "lastSeen": "2026-11-09",
       "verified": false,
       "verifiedAt": null
@@ -4741,6 +4738,32 @@
             "derived": "stated"
           }
         }
+      }
+    },
+    {
+      "id": "06bc1d631f62",
+      "title": "Sync.so",
+      "vendor": "Sync.so",
+      "url": "https://sync.so/",
+      "source": "Futuretools",
+      "sourceUrl": "https://futuretools.io/tools/sync-so",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "视频",
+      "description": "A tool to sync lips and clone voices in videos",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-11-09",
+      "verified": false,
+      "verifiedAt": null,
+      "zh": {
+        "description": "为视频做口型同步与声音克隆。"
       }
     },
     {
