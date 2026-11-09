@@ -1,25 +1,26 @@
 name: Collect AI Deals
 
-# 采集链路（2026-09-28 起）：采集 → 写盘 → **完整门禁** → 提交 → （workflow_run）发布。
+# 采集链路（P3 起）：采集 → 写盘 → **数据正确性硬门禁** → 提交 → **完整门禁（发布就绪 · 自动降级）**
+# → 留痕 Summary →（workflow_run）由 deploy.yml 的严格门禁裁定是否发布。
 #
-# 门禁为什么放在**提交之前**：机器人提交一进 master 就是既成事实——它会立刻被
-# deploy.yml 的 workflow_run 接走。放在提交前意味着「数据有问题就根本不入库」，
-# 而不是「先入库、再靠下一轮去发现」。用的还是 `.github/actions/gate/action.yml`
+# 为什么拆成两类门禁（2026-11-02 停更 6 天的教训）：「完整门禁」放在提交之前时，
+# **任何一个发布就绪类检查**（真浏览器验收 / 产物自检 / 确定性构建 / SEO 对账）红一下，
+# 数据就根本不入库 ⇒ 线上停版。现在两类门禁分开、各有明确判据：
+#   · **数据正确性**（9 项，见下面的「Data correctness gate」）仍在提交**之前**硬拦，一条不松；
+#   · **发布就绪**（完整 gate 本身）移到提交**之后**、`continue-on-error: true`（失败不阻塞入库），
+#     并**自动**走 action 的降级通道（allow_degraded_run 写死 'true'，不再依赖人工勾选）；
+#     它到底跑没跑、跳了哪几步，由紧随其后的「Release-readiness gate record」写进 Summary。
+# 发布仍由 deploy.yml 的 prepublish 门禁**严格**裁定（该链不允许降级）——「数据入库」不等于
+# 「发布放行」，线上只跟随 deploy 的结论。用的还是 `.github/actions/gate/action.yml`
 # 那一个实现（与 verify.yml / deploy.yml 同源），没有第二套测试链。
-#
-# 代价如实记录：门禁是**严格**的（浏览器装不上 = 门禁红 = 本次不提交、线上保留上一版）。
-# 逃生口只有一个且必须人工：workflow_dispatch 勾 allow_degraded_run，Summary 里会
-# 明确留下「本次没有做真浏览器验收」。
 on:
   schedule:
     - cron: '0 0 * * *'   # UTC 00:00 = 北京时间 08:00
     - cron: '0 12 * * *'  # UTC 12:00 = 北京时间 20:00
   workflow_dispatch:      # 手动触发
-    inputs:
-      allow_degraded_run:
-        description: '浏览器不可用时仍提交数据（会在 Summary 明确记「未做真浏览器验收」）'
-        type: boolean
-        default: false
+# P3 起 collect **自动降级**：发布就绪类失败不再阻塞数据入库，也不再需要「人工勾选降级」——
+# 降级与触发方式无关（schedule / 手动都一样），而且必须在 Summary 里留痕（见最后的记录步骤）。
+# 所以这里刻意**不再声明** allow_degraded_run 输入（check:ci 的 (11) 会守住这一点）。
 
 permissions:
   contents: write
@@ -115,9 +116,6 @@ jobs:
       - name: Rebuild derived api-plans.json
         run: node scripts/tools/rebuild-api-plans.js
 
-      - name: Validate new data (strict gate)
-        run: node scripts/validate.js --strict
-
       # CI 口径漂移门禁：裸跑（不带 --expect-checks），项数自动从 verify.yml 的那一行派生 ——
       # 数字只有一个出处，本地裸跑同样受保护。
       # 注：步骤名里不要出现「冒号 + 空格」，那是 YAML 的映射分隔符，会被真实解析器拒绝
@@ -125,17 +123,8 @@ jobs:
       - name: CI consistency (bare run — 期望项数从 verify.yml 派生)
         run: node scripts/tools/check-ci-consistency.js
 
-      # 提交前的完整门禁（与 verify.yml / deploy.yml 同一个 action）。
-      # 放在这里而不是提交之后：门禁红 ⇒ 数据不入库 ⇒ 线上保留上一版。
-      # 注意 collect.js 已经在报告里逐条点名了失败来源与零产出来源，
-      # 但「单源失败」本身不拦写盘（那是有意的），拦的是门禁这一关。
-      - name: Gate (validate → translation → selftests → build → real browser)
-        uses: ./.github/actions/gate
-        with:
-          allow_degraded_run: ${{ inputs.allow_degraded_run && 'true' || 'false' }}
-
-      # 译文状态：门禁本身已经是硬检查，这里把清单写进 Summary，
-      # 点开就能看到「哪几条要人管、最老多少天」，不必翻日志。
+      # 译文状态（**建议性**）：把清单写进 Summary，点开就能看到「哪几条要人管、最老多少天」，
+      # 不必翻日志。它不参与数据入库判定（门禁里的 translation coverage 同样只报告、不判死）。
       - name: Translation status (advisory summary)
         if: always()
         continue-on-error: true
@@ -183,7 +172,32 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
+      # ─────────────────── 数据正确性硬门禁（必须在提交之前，一条不松） ───────────────────
+      # 这 9 项是「数据本身对不对」的唯一判据：schema / 可重建性 / 历史自洽 / 迁移验收 /
+      # 来源与变更记录 / AI 层 / 采集器 fixture。其中任何一项红都**不能入库** ——
+      # 坏数据一旦进了 master，下一轮 deploy 会拿它去构建，而来源修复要等下一次采集。
+      # 位置刻意紧贴提交步骤：只要它绿，这个提交就只可能包含「已通过数据正确性」的内容。
+      # 不许加 continue-on-error、也不许加步骤级 if（check:ci 的 (13) 会红）：
+      # 它是硬拦，不是建议；「发布就绪」类才允许失败（见提交之后的 gate）。
+      # 原先独立的 `Validate new data (strict gate)` 一步已并入这里（同样是 --strict，口径不变），
+      # 避免同一条命令在提交前跑两遍。
+      - name: Data correctness gate (hard — blocks the data commit)
+        id: data_gate
+        run: |
+          set -euo pipefail
+          # 每行一条命令：日志里能直接看出是哪一层数据正确性红的。
+          node scripts/validate.js --strict
+          node scripts/tools/check-reproducible.js
+          node scripts/tools/history-verify.js
+          node scripts/tools/migrate-audience-verify.js
+          node scripts/tools/provenance-selftest.js
+          node scripts/tools/history-selftest.js
+          node scripts/tools/changes-selftest.js
+          node scripts/tools/ai-selftest.js
+          node scripts/tools/fixture-test.js
+
       - name: Commit and push if changed
+        id: commit
         env:
           APP_TOKEN: ${{ steps.app.outputs.token }}
           BOT_NAME: ${{ steps.app.outputs.bot_name }}
@@ -229,3 +243,70 @@ jobs:
             git remote set-url origin "https://x-access-token:${APP_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
             git push
           fi
+
+      # ─────────────────── 发布就绪（自动降级 · 已不阻塞数据入库） ───────────────────
+      # P3 起完整门禁放在**提交之后**，三个要点缺一不可：
+      #   ① 数据已经入库（上面两步）：发布就绪类失败不再让整条链路红，不会重演
+      #      2026-11-02 那次「门禁红 ⇒ 不提交 ⇒ 线上停版 6 天」；
+      #   ② `continue-on-error: true` 是**载荷假设**，不是“让门禁变绿”：deploy.yml 的
+      #      workflow_run 只在 Collect 结论为 success 时才放行（refuse 那一步显式判定），
+      #      所以这里必须让 job 保持绿色 —— 否则一次浏览器故障就会冻结整条发布链。
+      #      真正的发布裁定在 deploy 的 prepublish 严格门禁（那边任何事件都不许降级）。
+      #   ③ `allow_degraded_run: 'true'` = **自动降级**（人工勾选入口已删除）：浏览器装不上时
+      #      action 只跑静态部分，并在 Summary 里明确写「本次没有做真浏览器验收」。
+      # 注意：仍在调用的同一个 action 实现（与 verify.yml / deploy.yml 同源），没有第二套测试链。
+      - name: Release-readiness gate (after the data commit — never blocks storage)
+        id: release_gate
+        uses: ./.github/actions/gate
+        with:
+          allow_degraded_run: 'true'
+        continue-on-error: true
+
+      # ─────────────────── 发布就绪门禁的**留痕**（绝不静默降级） ───────────────────
+      # 为什么需要这一步：上面的 gate 是 continue-on-error —— job 保持绿色，但「这一轮到底
+      # 有没有做真浏览器验收 / 发布就绪类有没有红」必须写进 Summary，否则降级就是静默的。
+      # 本步骤读不到复合 action 子步骤的内部结论（gate 没有暴露 outputs），所以它只如实报告
+      # outcome，并把「哪几步没跑 / 为什么」指向 Gate 步骤日志与 Summary 原文（那里的
+      # 「浏览器可用性判定」是唯一权威记录），绝不假装自己验证过。
+      # 失败（含 skipped/cancelled）时额外发一条 ::warning 注解，保证在 Actions 页也看得见。
+      - name: Release-readiness gate record (never silent)
+        if: always()
+        env:
+          DATA_GATE_OUTCOME: ${{ steps.data_gate.outcome }}
+          COMMIT_OUTCOME: ${{ steps.commit.outcome }}
+          RELEASE_GATE_OUTCOME: ${{ steps.release_gate.outcome }}
+        run: |
+          set -uo pipefail
+          {
+            echo ""
+            echo "### 发布就绪门禁记录（数据入库 ≠ 发布放行）"
+            echo ""
+            if [ "$DATA_GATE_OUTCOME" = "success" ]; then
+              echo "- **数据正确性硬门禁**：✅ 通过（提交前独立执行，共 9 项：validate --strict /"
+              echo "  check-reproducible / history-verify / migrate-audience-verify / provenance-selftest /"
+              echo "  history-selftest / changes-selftest / ai-selftest / fixture-test）。"
+            else
+              echo "- **数据正确性硬门禁**：❌ 结论为 '$DATA_GATE_OUTCOME' —— 数据**没有**入库（提交步骤不会执行）。"
+            fi
+            echo "- **提交/推送步骤结论**：'$COMMIT_OUTCOME'（success = 已推送，或本次数据无变化跳过提交；"
+            echo "  skipped / failure = 数据未入库，见该步骤日志）"
+            echo "- **完整 gate 结论**：'$RELEASE_GATE_OUTCOME'（success / failure / skipped / cancelled）"
+            echo ""
+            echo "发布就绪类检查项（本次结论以 Gate 步骤日志与 Summary 为准）："
+            echo "- 真浏览器验收（verify-site.js）与回归比对"
+            echo "- 产物自检（各 *-selftest 的 dist/ 断言、Residue guard）"
+            echo "- 确定性构建（Feed / Plans reproducibility 的二次构建逐字节比对）"
+            echo "- SEO 产物对账（SEO verification from dist/）"
+            echo ""
+            echo "**本次运行不声称「完整门禁全绿」。** 这些检查失败不再阻塞数据入库；"
+            echo "若本次发生**自动降级**（浏览器不可用），Gate 内「浏览器可用性判定」会在本页写明"
+            echo "「没有做真浏览器验收」以及跳过的是哪两步 —— 那就是「哪几步没跑 / 为什么」的权威记录。"
+            echo "发布最终由 deploy.yml 的 prepublish 门禁**严格**裁定（该链不允许降级）；"
+            echo "本次记录不构成对发布的放行。"
+          } >> "$GITHUB_STEP_SUMMARY"
+          case "$RELEASE_GATE_OUTCOME" in
+            success) ;;
+            *)
+              echo "::warning title=发布就绪门禁未通过（数据已入库）::Gate 结论 $RELEASE_GATE_OUTCOME；数据正确性已在提交前硬过并入库，发布由 deploy.yml 的 prepublish 严格门禁裁定"
+              ;;
+          esac
