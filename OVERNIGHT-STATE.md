@@ -54,3 +54,14 @@
 - 门禁读数：validate --strict ✅ · check-reproducible ✅ · history-verify（81 事件）✅ ·
   health-selftest 72/72 ✅ · check:ci 39/39 ✅ · build-local 产物自检 ✅。
 - 下一步：提交 T2 → T3 收回/审阅/合并 → spawn T4。
+
+## 2026-11-10 01:15 T1.3 行为级核验（T2 数据落盘后补做）
+
+- 线索在产物里的实际渲染：
+  - `dist/index.html` 首页「变化雷达」1 处：`<a class="ritem" data-deal-id="3eac4b6acccb" href="https://news.mydrivers.com/…" target="_blank" rel="noopener noreferrer">` + `<span class="rty rlead">线索 · 未核验</span>`；
+  - `dist/changes/index.html` 1 处：`created` 分栏，外链原文 + 「线索 · 未核验」；
+  - 首页卡片网格 0 处（该记录 type=tool，网格只渲 deal；且客户端 visibleDeals 先 `!isLeadRecord` 再筛选，双保险）；
+  - `dist/sitemap.xml` 0 处；`dist/deal/3eac4b6acccb` 不存在（无站内详情页，正确）。
+- `dist/assets/data/offers.json` 里该记录 `sourceFacts.sourceType="lead"`、`history.events=[created]`、无 discountInfo/六字段。
+- T3（P3-A 门禁拆锁）已交给 teammate `p3a-gate` 在 `.worktrees/p3a-gate` 并行做；T4 工位与简报已备好（`.worktrees/p3b-health`），等 T3 收回后立即启动。
+- 下一步：等 T3 里程碑 → 审阅 diff + cherry-pick → 文档真话补齐 → 启动 T4。
