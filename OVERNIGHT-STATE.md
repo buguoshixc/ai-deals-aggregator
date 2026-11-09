@@ -35,3 +35,22 @@
   **行为级**验证要等 T2 有数据后在 dist 里做。
 - 数据未动：deals.json 仍 207 条、线索 0 条（T2 才实跑）。
 - 下一步：提交 T1 → T2 dry-run → 全量实跑 → 核对 deals/history/source-health/dist → 提交。
+
+## 2026-11-10 01:05 T2 · P2 首轮实跑落盘
+
+- **dry-run（8 个 leads 源子集）**：日志 `/tmp/leads-dry.log`。逐源读数（RSS 条目 / 7 天窗口内 / 三闸命中）：
+  IT之家 60/60/0 · 36氪 30/30/0 · 量子位 10/10/0 · 爱范儿 20/20/0 · 少数派 10/10/0 ·
+  极客公园 30/19/0（11 条因原文日期>7 天被窗口筛掉）· 快科技 100/100/**1** · 钛媒体 15/15/0。
+  近失配样本 0 条；最终线索 1 条（快科技《每天白赚几百 AI大模型免费薅羊毛…》，原文日期 2026-11-09）。
+- **实跑（全量，不带 --only/--headless）**：日志 `/tmp/leads-real.log`，exit 0。
+  deals.json **207 → 210**：+3 = 线索 1（快科技）+ 其它来源新增 2（AppSumo NoCodeBackend、Futuretools Call Annie）；
+  AppSumo 本次 22 条（上次 23，少 1 条未达「连续两次未见」门槛，未记 ended，符合既有 absence 规则）。
+  deal-history 同日新增 **3 created**（含线索 id 3eac4b6acccb）+ 1 updated；history-verify 绿。
+  source-health 新增 8 个 leads_* 行，全部 healthy（mydrivers items=1，其余 0 条也 healthy —— zeroOutputExpected 生效）。
+- **页面验证**（build-local 后 dist/）：
+  线索只在 `dist/changes/index.html`（1 处）与首页「变化雷达」（1 处）出现，带「线索 · 未核验」徽标 +
+  原文外链 `https://news.mydrivers.com/1/1164/1164402.htm`（target=_blank rel=noopener）；
+  首页卡片列表 0 处；sitemap 0 处；无站内详情页 `dist/deal/3eac4b6acccb`（正确）。
+- 门禁读数：validate --strict ✅ · check-reproducible ✅ · history-verify（81 事件）✅ ·
+  health-selftest 72/72 ✅ · check:ci 39/39 ✅ · build-local 产物自检 ✅。
+- 下一步：提交 T2 → T3 收回/审阅/合并 → spawn T4。
