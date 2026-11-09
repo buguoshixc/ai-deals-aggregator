@@ -6664,7 +6664,9 @@ function selfCheck(built) {
       if (!['static', 'headless', 'curated', 'unknown'].includes(facts.method)) {
         problems.push(`${deal.id} 的 sourceFacts.method 非法（${facts.method}）`);
       }
-      if (!['official', 'directory', 'curated', 'unknown'].includes(facts.sourceType)) {
+      // sourceType 的合法集合与 provenance.SOURCE_TYPES 的取值一致。`lead` = B 类资讯线索
+      // （beta，2026-11 起）：页面按它显示「线索 · 未核验」，并把这类记录从优惠列表里排除。
+      if (!['official', 'directory', 'curated', 'lead', 'unknown'].includes(facts.sourceType)) {
         problems.push(`${deal.id} 的 sourceFacts.sourceType 非法（${facts.sourceType}）`);
       }
       if (!['known', 'na', 'unknown', 'unavailable'].includes(facts.lastSuccessState)) {

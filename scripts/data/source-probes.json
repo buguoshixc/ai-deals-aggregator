@@ -77,6 +77,54 @@
         { "name": "product-link", "pattern": "/products/[a-z0-9-]+/", "flags": "g" }
       ]
     },
+    "leads_ithome": {
+      "url": "https://www.ithome.com/rss/",
+      "keywords": ["item", "title", "link", "pubDate"],
+      "selectors": ["item", "item title", "item link"],
+      "regexes": [{ "name": "rss-items", "pattern": "<item>", "flags": "g" }]
+    },
+    "leads_36kr": {
+      "url": "https://www.36kr.com/feed",
+      "keywords": ["item", "title", "link", "pubDate"],
+      "selectors": ["item", "item title", "item link"],
+      "regexes": [{ "name": "rss-items", "pattern": "<item>", "flags": "g" }]
+    },
+    "leads_qbitai": {
+      "url": "https://www.qbitai.com/feed",
+      "keywords": ["item", "title", "link", "pubDate"],
+      "selectors": ["item", "item title", "item link"],
+      "regexes": [{ "name": "rss-items", "pattern": "<item>", "flags": "g" }]
+    },
+    "leads_ifanr": {
+      "url": "https://www.ifanr.com/feed",
+      "keywords": ["item", "title", "link", "pubDate"],
+      "selectors": ["item", "item title", "item link"],
+      "regexes": [{ "name": "rss-items", "pattern": "<item>", "flags": "g" }]
+    },
+    "leads_sspai": {
+      "url": "https://sspai.com/feed",
+      "keywords": ["item", "title", "link", "pubDate"],
+      "selectors": ["item", "item title", "item link"],
+      "regexes": [{ "name": "rss-items", "pattern": "<item>", "flags": "g" }]
+    },
+    "leads_geekpark": {
+      "url": "https://www.geekpark.net/rss",
+      "keywords": ["item", "title", "link", "pubDate"],
+      "selectors": ["item", "item title", "item link"],
+      "regexes": [{ "name": "rss-items", "pattern": "<item>", "flags": "g" }]
+    },
+    "leads_mydrivers": {
+      "url": "https://rss.mydrivers.com/rss.aspx?Tid=1",
+      "keywords": ["item", "title", "link", "pubDate"],
+      "selectors": ["item", "item title", "item link"],
+      "regexes": [{ "name": "rss-items", "pattern": "<item>", "flags": "g" }]
+    },
+    "leads_tmtpost": {
+      "url": "https://www.tmtpost.com/rss",
+      "keywords": ["item", "title", "link", "pubDate"],
+      "selectors": ["item", "item title", "item link"],
+      "regexes": [{ "name": "rss-items", "pattern": "<item>", "flags": "g" }]
+    },
     "cn_volc_ark": {
       "url": "https://www.volcengine.com/product/ark",
       "keywords": ["免费", "额度", "Token", "活动"],

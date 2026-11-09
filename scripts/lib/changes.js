@@ -420,12 +420,27 @@ function buildRadar({ deals = [], store = null, asOf = null, availability = 'ok'
     // 只有 `type === 'deal'` 的记录才有静态详情页（见 build-local 的 writeDetailPages），
     // 给工具条目或已离开数据集的条目挂链接就是造死链。判据 = `isLinkableDeal()`（唯一一处）。
     const linkable = isLinkableDeal(deal);
+    // B 类资讯线索（beta）：没有站内详情页（type=tool），但**必须能点开原文** ——
+    // 线索的全部价值就是「媒体写了这篇稿」。所以单独给一个 `extHref`（原文链接），
+    // 渲染层优先用它；它**不**进 `href`，因此 ItemList / 订阅 / 页面行对账都不受影响
+    // （那些消费者只认有站内详情页的记录，见下面 itemListRecords）。
+    const sourceType = deal && deal.sourceFacts && typeof deal.sourceFacts === 'object'
+      ? deal.sourceFacts.sourceType
+      : null;
+    const lead = sourceType === 'lead';
+    const externalUrl = lead && deal && typeof deal.url === 'string' && /^https?:\/\//i.test(deal.url)
+      ? deal.url
+      : null;
     return {
       title: title ? String(title) : null,
       vendor: vendor ? String(vendor) : '',
       titled: Boolean(title),
       linkable,
-      href: linkable ? `deal/${encodeURIComponent(id)}/` : null
+      href: linkable ? `deal/${encodeURIComponent(id)}/` : null,
+      // 线索的 beta 标记与原文链接（渲染层用；两类消费者都不读它们）
+      lead,
+      sourceType: sourceType || null,
+      extHref: externalUrl
     };
   };
 

@@ -33,6 +33,7 @@ const cheerio = require('cheerio');
 
 const http = require('../lib/http');
 const registry = require('../collectors');
+const radar = require('../lib/lead-radar');
 const { todayCN } = require('../lib/schema');
 
 const ROOT = path.join(__dirname, '..', '..');
@@ -54,6 +55,75 @@ function option(name, fallback = null) {
 /** 每个 fixture 的"剪裁规则"：从整页里挑出解析器依赖的那块 DOM */
 /** AppSumo fixture 的保留条数：够覆盖「AI 保留 / 非 AI 筛掉 / 价格缺失筛掉」三条分支即可 */
 const APP_SUMO_FIXTURE_DEALS = 8;
+
+/**
+ * RSS feed 的 fixture 剪裁（B 类资讯线索雷达，beta）。
+ *
+ * 保留什么：**判据的边界样本优先** —— 三闸全中的条目与「平台名 + 免费/降价」的近失配条目
+ * 必须进片段（否则 fixture 只钉住解析器，钉不住判据）；不足 MAX_ITEMS 时用当日前几条补齐。
+ * 每个 item 只留解析器/判据真正读的四个字段：title / link / pubDate / description。
+ * description 先剥成纯文本再截到 DESCRIPTION_CHARS：它只是「摘要窗口」的输入，
+ * 保留整篇正文既有体积问题也有版权问题（与其它 fixture 的纪律一致）。
+ */
+const RSS_FIXTURE_MAX_ITEMS = 8;
+const RSS_FIXTURE_DESCRIPTION_CHARS = 200;
+
+function xmlEscape(value) {
+  return String(value === null || value === undefined ? '' : value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function trimRssFeed(raw) {
+  const $ = cheerio.load(String(raw || ''), { xmlMode: true });
+  const nodes = $('item').toArray();
+  if (!nodes.length) return null;
+  const signalOf = node => radar.leadSignal({
+    title: $(node).find('title').first().text().trim(),
+    description: radar.summaryOf($(node).find('description').first().text())
+  });
+  const scored = nodes.map(node => ({ node, signal: signalOf(node) }));
+  // 边界样本（三闸全中 / 近失配）优先，其余按原顺序补齐
+  const boundary = scored.filter(entry => entry.signal.ok || (entry.signal.platform && entry.signal.free));
+  const picked = [];
+  for (const entry of [...boundary, ...scored]) {
+    if (picked.length >= RSS_FIXTURE_MAX_ITEMS) break;
+    if (!picked.includes(entry.node)) picked.push(entry.node);
+  }
+  const channelTitle = $('channel > title').first().text().trim() || 'rss-fixture';
+  const body = picked.map(node => {
+    const title = $(node).find('title').first().text().trim();
+    const link = $(node).find('link').first().text().trim();
+    const pubDate = $(node).find('pubDate').first().text().trim();
+    const summary = radar.summaryOf($(node).find('description').first().text())
+      .slice(0, RSS_FIXTURE_DESCRIPTION_CHARS);
+    return '<item>' +
+      `<title>${xmlEscape(title)}</title>` +
+      `<link>${xmlEscape(link)}</link>` +
+      `<pubDate>${xmlEscape(pubDate)}</pubDate>` +
+      (summary ? `<description>${xmlEscape(summary)}</description>` : '') +
+      '</item>';
+  }).join('');
+  return '<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel>' +
+    `<title>${xmlEscape(channelTitle)}</title>${body}</channel></rss>`;
+}
+
+/**
+ * 每个 feed 一条剪裁规则（fixture 名 = 采集器 id + `.feeds`，sourceId 由 buildOne 从
+ * `fixtureName.split('.')[0]` 推出，正好对上 collectors/leads.js 的 id）。
+ */
+const RSS_FIXTURE_FEEDS = {
+  'leads_ithome.feeds': 'https://www.ithome.com/rss/',
+  'leads_36kr.feeds': 'https://www.36kr.com/feed',
+  'leads_qbitai.feeds': 'https://www.qbitai.com/feed',
+  'leads_ifanr.feeds': 'https://www.ifanr.com/feed',
+  'leads_sspai.feeds': 'https://sspai.com/feed',
+  'leads_geekpark.feeds': 'https://www.geekpark.net/rss',
+  'leads_mydrivers.feeds': 'https://rss.mydrivers.com/rss.aspx?Tid=1',
+  'leads_tmtpost.feeds': 'https://www.tmtpost.com/rss'
+};
 
 const TRIMS = {
   'layer3labs.deals': {

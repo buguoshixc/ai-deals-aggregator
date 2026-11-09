@@ -32,6 +32,11 @@
  *  · **单次零产出不算 failed**。国内厂商的活动页本来就可能长期没有新内容，规则匹配不到
  *    不等于来源坏了；但它也不能算 healthy —— 那正是「显示今天更新、其实某个源早坏了」的成因。
  *  · **连续 3 次零产出才升级为 failed**。次数写在常量里，改它要动这一行代码，不是调阈值。
+ *  · **「零产出是预期内」的来源（B 类资讯线索雷达，2026-11 起）单独放行**：线索判据刻意严格
+ *    （平台名 + 免费 + 时间词三闸同时命中），多数媒体源一天 0 条是**设计结果**而不是故障。
+ *    这类来源由采集器声明 `zeroOutputExpected: true`，经 `attemptsFromReport({ zeroOutputExpectedIds })`
+ *    传进来；零产出/条数波动都不改状态（采集器抛错仍然 failed —— 结构变了不能装成「今天没线索」）。
+ *    没有这个放行，8 个媒体源会在 3 轮后集体被判 failed，再被 P3 的源级熔断关掉一个按设计空转的雷达。
  */
 
 const fs = require('fs');
@@ -127,10 +132,16 @@ function headlessReady({ isHeadless = false, browserStatus = null, errorCode = n
  * @param {Set|string[]} params.headlessIds  本轮跑了的无头来源 id
  * @param {object|null} params.browserStatus browser.getLaunchStatus() 快照
  * @param {Map|object|null} params.errorCodes 来源 id → 采集器抛出的原始错误码
+ * @param {Set|string[]|null} params.zeroOutputExpectedIds
+ *        本轮跑了的「零产出是预期内」来源 id（B 类资讯线索雷达；见文件头最后一条取舍）。
+ *        不传 = 没有任何来源豁免（旧行为逐字节不变）。
  */
-function attemptsFromReport({ rows = [], headlessIds = [], browserStatus = null, errorCodes = null } = {}) {
+function attemptsFromReport({ rows = [], headlessIds = [], browserStatus = null, errorCodes = null, zeroOutputExpectedIds = null } = {}) {
   const headless = headlessIds instanceof Set ? headlessIds : new Set(headlessIds || []);
   const codes = errorCodes instanceof Map ? errorCodes : new Map(Object.entries(errorCodes || {}));
+  const zeroExpected = zeroOutputExpectedIds instanceof Set
+    ? zeroOutputExpectedIds
+    : new Set(zeroOutputExpectedIds || []);
   return rows.map(row => {
     const isHeadless = headless.has(row.sourceId);
     return {
@@ -144,6 +155,7 @@ function attemptsFromReport({ rows = [], headlessIds = [], browserStatus = null,
       produced: row.produced,
       deals: row.deals,
       ms: row.ms,
+      zeroOutputExpected: zeroExpected.has(row.sourceId),
       headlessReady: headlessReady({ isHeadless, browserStatus, errorCode: codes.get(row.sourceId) || null })
     };
   });
@@ -230,6 +242,13 @@ function evaluate({ previous = null, attempt, now = new Date() } = {}) {
       reason: 'collector_error',
       lastError: String(attempt.error || '未知错误').split('\n')[0].slice(0, 200)
     };
+  }
+
+  // ②′「零产出是预期内」的来源（B 类资讯线索雷达）：成功解析了 feed、只是没有条目过三闸。
+  //    零产出与条数波动都不进任何降级分支（理由见文件头最后一条取舍）；采集器抛错已在 ② 拦下。
+  //    lastSuccessAt / lastItemCount 照常推进 —— 页面上的「最近成功采集」仍然是真话。
+  if (attempt.zeroOutputExpected === true) {
+    return { ...next, consecutiveZero: 0, status: STATUS.healthy, reason: null };
   }
 
   if (cur === 0) {

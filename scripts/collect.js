@@ -252,6 +252,10 @@ async function main() {  const headless = flag('headless');
   // 后者会在普通（不带 --headless）采集里 require playwright-core，与「默认链路完全不依赖它」
   // 的边界相冲突——那个边界正是「内核装不上也不该拖垮静态链路」的第一道保障。
   const headlessIds = picked.filter(c => c.headless).map(c => c.id);
+  // B 类资讯线索雷达（beta）：判据严格 ⇒ 多数媒体源一天 0 条是**设计结果**，不是故障。
+  // 把这些 id 传给健康判定（lib/health.js 的同名字段），零产出不会把它们推成 degraded/failed
+  // （否则 3 轮后会被 P3 的源级熔断当成坏源关掉）。采集器抛错仍然照常记失败。
+  const zeroOutputExpectedIds = picked.filter(c => c.zeroOutputExpected === true).map(c => c.id);
   const browserStatus = (() => {
     if (!headlessIds.length) return { attempted: false, ok: null, channel: null, error: null, checkedAt: null };
     try {
@@ -264,7 +268,8 @@ async function main() {  const headless = flag('headless');
     rows: report.list(),
     headlessIds,
     browserStatus,
-    errorCodes: collectorErrorCodes
+    errorCodes: collectorErrorCodes,
+    zeroOutputExpectedIds
   });
   const healthStore = health.load();
   if (healthStore.broken) {

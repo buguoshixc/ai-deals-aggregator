@@ -11,9 +11,11 @@ const globalDirectories = require('./global_directories');
 const globalDeals = require('./global_deals');
 const appsumo = require('./appsumo');
 const openrouter = require('./openrouter');
+const leads = require('./leads');
 const cnDocs = require('./cn_docs');
 
-const BASE = [...cnDocs, ...globalDeals, ...appsumo, ...openrouter, ...globalDirectories];
+// leads（B 类资讯线索雷达，beta）排在结构化来源之后：它是**补充**，不是主供给。
+const BASE = [...cnDocs, ...globalDeals, ...appsumo, ...openrouter, ...leads, ...globalDirectories];
 
 /** 惰性加载无头来源：缺 playwright-core 时给出可读错误，而不是把默认链路拖崩 */
 function loadHeadless() {
