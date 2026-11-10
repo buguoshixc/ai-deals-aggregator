@@ -8,7 +8,10 @@
 
 P2（B 类资讯线索雷达）从"工作区在制品"收尾成**可复现的 fixture + 18 条判据自测 + 首轮实跑落盘（1 条线索）**；
 P3-A（门禁拆锁）把「数据正确性」前置成提交前硬拦、把「发布就绪」移到提交后自动降级并留痕，冻结表同步更新、`check:ci` 39/39 绿；
-P3-B（源级熔断）状态见 §2；全程未推送、未动 master，两处**接手前就存在的基线门禁红**已修复并在 §5 留痕。
+P3-B（源级熔断）已在集成态**收口**（`2e8cb3b`，cherry-pick 自 `wip/p3b-health-v2` 的 `f8333124`）：
+连续 5 次采集器抛错自动暂停、满 3 天半开重试一次，collect 跳过并**显式打印**、`/status/` 与 collect Summary 都显示暂停态；
+10 条目标门禁在集成态逐条实跑通过（health-selftest 115/0 · check:ci 39/0 · gate:build 40/0，读数见 §4.6）。
+全程未推送、未动 master，两处**接手前就存在的基线门禁红**已修复并在 §5 留痕。
 **唯一卡住的不是代码，而是环境**：本机无浏览器内核，真浏览器验收/回归比对未跑（§4 逐条写明）。
 
 ## 2. 每阶段状态
@@ -21,7 +24,7 @@ P3-B（源级熔断）状态见 §2；全程未推送、未动 master，两处**
 | 基线红修复 | **DONE** | `51b54a7` | 接手状态下 `gate:build` 本已红两处（SEO 余量登记过期、coverage-targets 反证牙空转），按既定流程修复，判据未放宽（§5） |
 | T3 P3-A 门禁拆锁 | **DONE** | `5e7d828` | collect.yml 数据正确性 9 条在提交前硬拦、完整 gate 移到提交后自动降级 + `if: always()` 留痕；(11)/(13) 冻结表同步、条数仍 39；16/16 负向探针（Lead 另抽查 4 颗，§4.4） |
 | 文档真话 | **DONE** | `4413273` | P3 后旧叙述全部改正（README / action 描述 / verify 注释 / H9 / 采集链路图 / collect.js 头注释） |
-| T4 P3-B 源级熔断 | **（待填）** | `（待填）` | （待填） |
+| T4 P3-B 源级熔断 | **DONE** | `2e8cb3b` | 连续 5 次**采集器抛错**才自动暂停（5 > source-rulings 的 3 次人工裁决线，留 2 轮人工窗口；零产出 / 条数骤降 / `zeroOutputExpected` 一律不计数，避免按设计空转的线索雷达被关）；暂停满 3 天半开重试一次、失败窗口重算；collect 跳过并显式打印，`/status/` 与 Summary 均显示暂停态（集成态 health-selftest 115/0 · gate:build 40/0，见 §4.6） |
 | T5 报告 | **DONE** | 本文 | 本报告 + 状态文件并入 |
 
 ## 3. 数据影响（以文件为准）
@@ -75,7 +78,7 @@ P3-B（源级熔断）状态见 §2；全程未推送、未动 master，两处**
 | `node scripts/validate.js --strict` | 通过（6 条既有「疑似同一优惠未合并」警告，0 错误） |
 | `node scripts/tools/check-reproducible.js` | 通过（引文漂移 0 · 手写值矛盾 0） |
 | `node scripts/tools/history-verify.js` | 通过（81 事件 · 基线+事件重放逐字段等于 deals.json） |
-| `node scripts/tools/health-selftest.js` | 72 项 · 失败 0（T4 后会再增加，见 §2/T4） |
+| `node scripts/tools/health-selftest.js` | 72 项 · 失败 0（**T4 前**的读数；集成态增至 115/0，见 §4.6） |
 | `node scripts/tools/check-ci-consistency.js` | 39 项 · 失败 0（P3 后仍为 39，`--expect-checks=39` 未动） |
 | `node scripts/tools/migrate-audience-verify.js` | 通过（15/15） |
 | `node scripts/tools/provenance-selftest.js` | 通过（132/0） |
@@ -136,7 +139,46 @@ P3-A 的 16 颗负向探针由 T3 teammate 实跑；Lead 在**独立 worktree**�
 | `51b54a7` | seo-selftest 104/0 · seo-verify 18/0 · coverage-targets 200/0 · gate:build 40/0 |
 | `5e7d828` | check:ci 39/0（集成态）· PyYAML 解析 collect.yml = 17 步 · 4 颗负向抽查（§4.4） |
 | `4413273` | check:ci 39/0 · gate:build 40/0 |
-| 最终（T4 后） | 见 §4.6（待填） |
+| 最终（T4 后） | health-selftest 115/0 · check:ci 39/0 · ai-selftest 126/0 · fixture-test 14/0 · validate --strict ✓ · coverage-report 0 问题 · gate:build 40/0 · `npm run gate` 48/49（唯一红 = [52] 无浏览器内核）—— 逐条见 §4.6 |
+
+### 4.6 T4 集成态门禁读数（2026-11-10，`feat/deals-supply-2026-11` @ `2e8cb3b`）
+
+T4 由 cherry-pick 合入（`2e8cb3b`，父 `1f6713b`；来源 `wip/p3b-health-v2` 的 `f8333124`，commit body 已带来源行）。
+p3b 队友没有留下任何 T4 门禁读数（其 `.worktrees/p3b-health/OVERNIGHT-STATE.md` 停在 00:50），
+所以下面的数字**全部是本轮在集成态亲自实跑**的，不是转抄：
+
+| # | 命令 | 实跑读数 |
+|---|---|---|
+| 1 | `node scripts/tools/health-selftest.js` | **115 项通过 · 0 失败**（T4 前 72 项；p3b 新增 §7 熔断判据 43 条 ⇒ 72+43=115，项数 > 72 是要求，不许凑回 72） |
+| 2 | `node scripts/tools/coverage-report.js` | **报告自检问题 0 处**；候选登记表 40 条（已采信 13 / 未采信 21）；「连续失败 ≥ 3 次却没有裁决」0 条 |
+| 3 | `node scripts/validate.js --strict` | **通过**；错误 0；警告 6 条（全部是既有的「疑似同一优惠未合并」，T4 未新增） |
+| 4 | `node scripts/tools/check-ci-consistency.js` | **39 项 · 失败 0**（`(E)` 实跑 38 条 = 冻结清单 38 + 看门狗自身；`--expect-checks=39` 未动） |
+| 5 | `node scripts/tools/check-reproducible.js` | **通过**：孤儿值 0 · 凭空出现 0 · provenance 漂移 0 · 值字段漂移 0 · 引文漂移 0 · 手写值矛盾 0 |
+| 6 | `node scripts/tools/history-verify.js` | **通过**：81 条事件 / 79 条记录；created=76 · updated=2 · benefit_changed=3；文件 127.4 KB / 上限 1024 KB |
+| 7 | `node scripts/tools/ai-selftest.js` | **126 项 · 失败 0**（与 T4 前一致） |
+| 8 | `node scripts/tools/fixture-test.js` | **14 项 · 失败 0**（与 T4 前一致） |
+| 9 | `node scripts/tools/build-local.js` | **产物自检通过**：216 页 · 632.7 KB · 19 个健康来源逐个对账一致（正常 18 · 异常 0 · 失败 1；真实心跳当前没有 `pausedAt` 行） |
+| 10 | `npm run gate:build` | **全绿**：L1+L2+L3 合计 40 个脚本 · 失败 0（24.4s） |
+| 附 | `npm run gate`（完整门禁，如实记录） | 解析 54 步 / 执行 49 个脚本步骤；**48 通过 · 1 失败**（27.1s）。唯一失败 = `[52] Real-browser acceptance`，错误原文 `browserType.launch: Failed to launch chromium because executable doesn't exist at C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe`；`[53]`/`[54]` 因此未执行。**这是既有环境限制，不写「gate 全绿」、也没有为它改判据或跳过。** |
+
+**T4 暂停态渲染的独立实跑证据（合成注入 → 实跑 → 已还原；这不是真实采集数据）**：
+真实 `source-health.json` 当前没有 `pausedAt` 行，所以上面第 9 条通过只证明「诚实数据下不冤枉」，不能证明暂停分支真的会渲染。
+为此做了一次临时注入（先备份 → 给 `futurepedia` 注入暂停行 → 跑 → 按 SHA-256 还原）：
+
+- `node scripts/collect.js --dry-run --only=futurepedia`：首行
+  `开始采集（2026-11-10）：0 个来源，dry-run 模式（另有 1 个来源已熔断暂停，本轮跳过）`；
+  逐条打印 `⏸ Futurepedia（futurepedia）已熔断暂停：连续失败 5 次，本轮跳过 —— ⏸ 已暂停（熔断） · 暂停于 2026-11-10 00:38 · 半开重试窗口 2026-11-13 00:38 · circuit_open: 连续失败 5 次（最近错误：HTTP 503）`；
+  Summary 末尾出现 `合计：19 个来源 · 正常 18 · 异常 0 · 失败 1 · ⏸ 熔断暂停 1` 与「⏸ 已暂停（熔断）」清单
+  （`sed -n '/=== 数据源健康/,/^合计：/p'` 这个 CI Summary 抓取区间能抓到）。
+- `node scripts/tools/build-local.js`：产物自检通过；`dist/status/index.html` 真含 `⏸ 已暂停（熔断）`、
+  `⏸ 熔断暂停 1`、`暂停于 … 半开重试窗口 … circuit_open: 连续失败 5 次`；build-local 里那条
+  「暂停行必须在页面上行内可见」的数据驱动断言这次**真的被触发**并通过。
+- 还原后 `scripts/data/source-health.json` 的 SHA-256 与注入前一致（`5490690a…0b11`），`git status --short` 为空；
+  随后用真实数据重跑 `npm run build`，最终 `dist/` 不含任何合成行。
+
+**新增字段没有撞对账**：`pausedAt` / `pausedReason` 没有触发 build-local 的 `/status/` 逐行对账、
+`coverage-targets-selftest`（200/0，随 gate:build）或 `health-selftest` 的「结构不符」——
+本轮**没有**需要靠放宽断言才能过的项，§5.4 记录这次为什么门禁零变更。
 
 ## 5. 门禁变更（P3 必填）
 
@@ -194,9 +236,26 @@ P3-A 的 16 颗负向探针由 T3 teammate 实跑；Lead 在**独立 worktree**�
 - **为什么不算放水**：`source-rulings.js` 的判据本身一个字没动（改的是"喂给它的数据"，不是"它怎么判"）。
   修后 200/0。这是**加强**：修前这条牙永远不会响。
 
+### 5.4 T4 没有改任何门禁判据（冻结表也没动）
+
+- `2e8cb3b` 只改 `scripts/collect.js`、`scripts/lib/{health,report,source-rulings}.js`、
+  `scripts/tools/{build-local,coverage-report,health-selftest}.js`；`git diff --stat 1f6713b..2e8cb3b -- .github` 为空，
+  `.github/` 零改动。`check-ci-consistency` 的冻结表与 `--expect-checks=39` 一个字没动（集成态实跑仍 39/0）。
+- `pausedAt` / `pausedReason` 是**附加字段**，没有新增第四档 status（仍是 healthy/degraded/failed）；
+  `/status/` 的暂停断言是**数据驱动**的：真实心跳没有暂停行时它不触发，一旦采集写下暂停态而页面漏渲染就当场红
+  （§4.6 的注入实跑证明这条牙会咬，且咬的是「页面漏渲染」而不是「字段是新增的」）。
+- 因此本轮**没有**「把新增字段当成结构不符」的断言语义问题，也没有为此放宽任何判据；
+  `build-local` 的 216 页 / 19 来源逐条对账、`coverage-targets-selftest` 200/0 仍全过。
+
 ## 6. BLOCKED 清单
 
-（待填：目前无；若有则按 `文件:行 / 现象 / 试过什么 / 建议下一步` 格式）
+**无。**
+
+为什么可以写「无」：本轮验收要求的 10 条命令（§4.6 的 #1–#10）全部在集成态实跑通过；
+`npm run gate` 的唯一红是 `[52] Real-browser acceptance`，属**接手前就存在**的环境限制——本机没有浏览器内核，
+也没有系统 Chrome/Edge，`verify-site.js` 默认还指向 Windows Edge 路径；任务书明确不许为它改判据或跳过，
+它不阻塞本轮「合入 T4 + 集成门禁 + 报告收口」的验收。没有出现「同一处问题试 3 次不过」的情形，
+也没有越界改动（未 push / 未建 PR / 未动 master / `.github/` 零改动）。
 
 ## 7. 需要用户亲自判断的三件事
 
@@ -308,10 +367,45 @@ node -e "const h=require('./scripts/data/source-health.json');console.log(h.sour
 
 ---
 
-## 附录 A：本轮提交清单（时间顺序）
+## 附录 A：本轮提交清单（时间顺序，`git log --oneline 5144293..HEAD`）
 
-（待填：见 §2；最终 `git log --oneline`）
+实跑于 T4 合入后（`HEAD = 2e8cb3b`，共 **12** 条）：
+
+```text
+2e8cb3b feat(health): 源级熔断 —— 连续失败自动暂停 + 半开恢复（P3）        ← T4（cherry-pick 自 f8333124）
+1f6713b docs(state): 记录独立负向抽查与 TTL 真数据复查
+6781d31 docs(report): 补阶段状态列、独立抽查、按提交门禁覆盖、P1「见报告」指认
+a8801fd docs: 过夜报告草稿 + 状态更新（T3 收回 / 完整门禁读数）
+4413273 docs(ci): 补齐 P3 门禁拆锁后的真话（README / action 描述 / verify 注释 / H9 / 采集链路图 / collect.js 头注释）
+5e7d828 feat(ci): 数据正确性与发布就绪分开 —— 后者自动降级并留痕（P3）
+51b54a7 fix(gate): 修两处基线既有红 —— SEO 余量登记退役 + coverage-targets 反证牙注入失败源
+401d7fa docs: 过夜状态更新（T1.3 行为级核验）
+cbc514b data: P2 线索雷达首轮实跑落盘（1 条线索）
+4ffd68a feat(collector): B 类资讯线索雷达（P2）—— fixture + 判据自测 + 清理假陈述
+27404e3 docs: 过夜施工状态文件（T0 基线）
+327bc15 WIP: P2 线索雷达在制品（验证前快照）
+```
+
+> 本报告自身的收尾提交（`docs: 过夜报告收口 —— T4 熔断合入、门禁读数、BLOCKED 与附录`）是清单之后的**下一条 HEAD**；
+> 报告无法记录自己的 SHA，故以这条说明代替（早上跑 `git log --oneline -1` 即可看到）。
 
 ## 附录 B：已知限制 / 给下一轮的提示
 
-（待填）
+1. **本机无浏览器内核**：`npm run gate` 的 `[52] Real-browser acceptance`（及其后的 `[53]`/`[54]`、L4/L5）在本机必然红/未执行。
+   `verify-site.js` 默认找 Windows Edge（`C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe`），本机既没有该路径、
+   也没有系统 Chrome/Edge、也未安装 playwright 内核。**没有为它改判据**；真浏览器验收只能在 CI（`verify.yml` / `deploy.yml`）跑。
+2. **worktree 未清理**：`.worktrees/p3b-health`（分支 `wip/p3b-health-v2`，HEAD 仍 `f833312`）按任务书**保留作原始证据**；
+   本轮 T4 是 cherry-pick（新提交 `2e8cb3b`）不是 merge，分支与 worktree 都没删。`.worktrees/p3a-gate` 与 `.agents/worktrees/*`
+   是更早的工位，本轮未动。**可以清的时候**：确认 `2e8cb3b` 已完整、门禁全绿后再 `git worktree remove .worktrees/p3b-health`，
+   分支 `wip/p3b-health-v2` 仍建议保留到下次确认。
+3. **`wip/p3b-health-v2` / `.worktrees/p3b-health` 没有 T4 门禁读数**：其 `OVERNIGHT-STATE.md` 停在 2026-11-10 00:50 的基线红修复记录；
+   §4.6 的读数全部是本轮在集成态（`2e8cb3b`）补跑的。下一轮若要看 T4 的原始 selftest 设计，读该 worktree 的
+   `scripts/tools/health-selftest.js` §7，但**不要把它当集成态证据**。
+4. **暂停态渲染证据来自一次合成注入**：真实 `source-health.json` 暂无 `pausedAt` 行；§4.6 的 collect `/status/` 证据是
+   临时注入 `futurepedia` 暂停行后实跑、随后按 SHA-256 校验还原的（不是真实采集结果）。真实暂停要等线上真的连续 5 次抛错才会出现。
+5. **熔断会让「来源数分母」变小**：collect 用 `runnable`（去掉暂停跳过）作为失败计数分母，`--force`/零产出退出语义未变；
+   读日志时别把「⏸ 本轮跳过」误读成「今天失败」。
+6. **T4 阈值是代码常量**：`CIRCUIT_FAILURE_THRESHOLD = 5` / `HALF_OPEN_AFTER_DAYS = 3` 写在 `scripts/lib/health.js`，不是配置项；
+   调它们要改代码 + 同步 `health-selftest` §7 断言。本轮按任务书**没有调**这两个数。
+7. **未触发 GitHub Actions、未 push / 未建 PR / 未动 master / 未改 GitHub Secrets / ruleset**：硬约束，验收只到本地。
+8. **`dist/` 是构建产物（gitignore）**：本轮最后一次 `npm run build` 用的是真实数据；报告里的 216 页 / 632.7 KB 是这次构建读数。

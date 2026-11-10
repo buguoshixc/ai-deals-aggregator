@@ -105,3 +105,26 @@
   2026-11-17（第 8 天）只下架该 1 条（removed.expired=1），其余 209 条不动。
 - 完整门禁 `npm run gate` 读数已写入 OVERNIGHT-REPORT.md §4.3（49 个脚本执行：48 通过、1 失败=真浏览器验收缺内核）。
 - 下一步：等 T4 → cherry-pick → 全量复验 → 填报告 T4 行/§4.6 → 最终提交。
+
+## 2026-11-10 18:18 T4 收口 + 报告收尾（本轮结束）
+
+- **Step 1 清点**：`feat/deals-supply-2026-11` @ `1f6713b`，`git status --short` 为空；`.worktrees/p3b-health` 干净、HEAD `f833312`；
+  `git show --stat f8333124` 改动面只在 `scripts/`（7 文件 543+/27-，无 `.github/`、无 docs、无越界文件）。
+- **Step 2 cherry-pick**：`git cherry-pick f8333124` **无冲突**（`scripts/collect.js` 自动合并成功），新提交 **`2e8cb3b`**（父 `1f6713b`）；
+  commit body 已补 `(cherry picked from wip/p3b-health-v2, f8333124)`。按任务书把 `collect.js` 头注释补成两边事实并集：
+  保留「数据正确性前置 / 发布就绪降级」叙述，新增「源级熔断」段（阈值 5 / 半开 3 天 / 零产出不计数 / 跳过显式打印）。
+- **Step 3 集成态门禁**（全部真跑，逐条读数见 `OVERNIGHT-REPORT.md` §4.6）：
+  health-selftest **115/0**（72 + 43 条 §7 熔断判据）· coverage-report 报告自检 **0 问题** · validate --strict **通过（0 错 / 6 条既有警告）** ·
+  check:ci **39/0**（冻结表未动）· check-reproducible **通过（孤儿/凭空/三类漂移/手写矛盾全 0）** · history-verify **通过（81 事件）** ·
+  ai-selftest **126/0** · fixture-test **14/0** · build-local **产物自检通过（216 页 / 632.7 KB）** ·
+  gate:build **40 脚本 / 失败 0（24.4s）**；`npm run gate` = 49 个脚本步骤 **48 通过 / 1 失败**，唯一红仍是 `[52]` 无浏览器内核
+  （既有环境限制，未改判据、未跳过）。
+- **暂停态渲染补充证据**：真实 heartbeat 无 `pausedAt` 行 ⇒ 临时注入 `futurepedia` 暂停行实跑后按 SHA-256 还原
+  （collect 打印「已熔断暂停，本轮跳过」+ Summary「⏸ 熔断暂停 1」；`/status/` 渲染暂停标记，build-local 的数据驱动断言真被触发）。
+  数据文件已还原（SHA-256 与注入前一致）、`git status --short` 为空、`dist/` 用真实数据重建。
+- **Step 4 报告**：`OVERNIGHT-REPORT.md` 补 §2 T4 行（DONE / `2e8cb3b`）、新增 §4.6、§5.4、§6 明写「无」、附录 A/B、§1 结论；
+  `grep -c '（待填）' OVERNIGHT-REPORT.md` = **0**。
+- **Step 5 收尾**：本状态条目 + 报告一并通过 `docs: 过夜报告收口 —— T4 熔断合入、门禁读数、BLOCKED 与附录` 提交；
+  `.worktrees/p3b-health` 与 `wip/p3b-health-v2` 按任务书保留作原始证据（分支不删）。
+- 门禁（收尾提交前复跑）：check:ci 39/0 · gate:build 40/0。
+- 下一步：**无，本轮结束**（未 push / 未建 PR / 未动 master）。
