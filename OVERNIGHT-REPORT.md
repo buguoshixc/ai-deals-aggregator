@@ -12,7 +12,8 @@ P3-B（源级熔断）已在集成态**收口**（`2e8cb3b`，cherry-pick 自 `w
 连续 5 次采集器抛错自动暂停、满 3 天半开重试一次，collect 跳过并**显式打印**、`/status/` 与 collect Summary 都显示暂停态；
 10 条目标门禁在集成态逐条实跑通过（health-selftest 115/0 · check:ci 39/0 · gate:build 40/0，读数见 §4.6）。
 全程未推送、未动 master，两处**接手前就存在的基线门禁红**已修复并在 §5 留痕。
-**唯一卡住的不是代码，而是环境**：本机无浏览器内核，真浏览器验收/回归比对未跑（§4 逐条写明）。
+**报告时唯一卡住的不是代码，而是环境**：本机无浏览器内核，T5 时真浏览器验收/回归比对未跑（§4.2 逐条写明）；
+上线前已在本机补齐 chromium 依赖、把 L4 真跑通，并修掉它首次暴露的 3 处 P2/T4 集成问题（934/0 · regress 940/0，§10）。
 
 ## 2. 每阶段状态
 
@@ -26,6 +27,7 @@ P3-B（源级熔断）已在集成态**收口**（`2e8cb3b`，cherry-pick 自 `w
 | 文档真话 | **DONE** | `4413273` | P3 后旧叙述全部改正（README / action 描述 / verify 注释 / H9 / 采集链路图 / collect.js 头注释） |
 | T4 P3-B 源级熔断 | **DONE** | `2e8cb3b` | 连续 5 次**采集器抛错**才自动暂停（5 > source-rulings 的 3 次人工裁决线，留 2 轮人工窗口；零产出 / 条数骤降 / `zeroOutputExpected` 一律不计数，避免按设计空转的线索雷达被关）；暂停满 3 天半开重试一次、失败窗口重算；collect 跳过并显式打印，`/status/` 与 Summary 均显示暂停态（集成态 health-selftest 115/0 · gate:build 40/0，见 §4.6） |
 | T5 报告 | **DONE** | 本文 | 本报告 + 状态文件并入 |
+| 上线前 L4 修复 | **DONE** | `bc8a401` | 真浏览器验收首次实跑暴露 3 处 P2/T4 集成问题（线索外链被当详情页 / 过期条目误判未认领 / 状态页说明超 2 行），逐条修复且未放宽判据；回归基线按文献刷新（数据 +28 条当前优惠所致）；L4 934/0、regress 940/0（§10） |
 
 ## 3. 数据影响（以文件为准）
 
@@ -88,14 +90,14 @@ P3-B（源级熔断）已在集成态**收口**（`2e8cb3b`，cherry-pick 自 `w
 | L1+L2+L3 | `npm run gate:build` **全绿**（40 个脚本 · 失败 0；须先构建 dist；见下方说明） |
 | 完整门禁 | `npm run gate`（解析 action.yml 逐步骤）读数见 4.3 |
 
-### 4.2 本机没跑 / 跑不了的步骤（原因写清，不冒充）
+### 4.2 T5 报告时本机没跑 / 跑不了的步骤（原因写清，不冒充；上线前补跑见 §10）
 
 | 步骤 | 状态 | 原因 |
 |---|---|---|
-| 真浏览器验收（`verify-site.js`） | **未跑** | 本机没有 playwright 内核，也没有系统 Chrome/Edge；这是接手前就存在的环境限制（P0/P1 同一条路径）。 |
-| 回归比对（`verify-site.js --compare`） | **未跑** | 同上（需要真浏览器）。 |
-| GitHub Actions 实跑 | **未跑** | 做不到（任务书明确「不要尝试触发」）；验收只到本地 `check:ci` + `gate:build` + 改动说明。 |
-| `npm run gate` 的 L4/L5 部分 | 未跑 | 同「真浏览器验收」；`npm run gate` 在浏览器判定步骤按设计**明确失败**（不静默变绿），本次记录该读数，不修改任何判据。 |
+| 真浏览器验收（`verify-site.js`） | **T5 时未跑 → 上线前已补跑 ✅** | T5 时本机没有 playwright 内核，也没有系统 Chrome/Edge（接手前就存在的环境限制）；上线前复用已有 chromium + 临时依赖库补跑，934/0（§10）。 |
+| 回归比对（`verify-site.js --compare`） | **T5 时未跑 → 上线前已补跑 ✅** | 同上（需要真浏览器）；补跑 940/0，并按文献刷新了一次数据驱动的基线（§10.2）。 |
+| GitHub Actions 实跑 | **未跑** | 单次过夜任务内没触发（任务书「不要尝试触发」）；上线阶段由 PR #135 的 CI 承担，读数以 Actions 页面为准。 |
+| `npm run gate` 的 L4/L5 部分 | T5 时未跑 → 上线前 **L4 已补跑 ✅** / L5 未跑 | L4 同「真浏览器验收」；L5（线上冒烟）要等发布后才有对象。 |
 | `dist/` 双构建产物逐字节对账（gate 内 `Feed reproducibility` 等） | 已随 gate 实跑覆盖 | 见 4.3 的 `npm run gate` 读数（若 4.3 中该项在浏览器之前完成则已跑）。 |
 
 ### 4.3 `npm run gate`（完整门禁）实跑读数
@@ -365,14 +367,71 @@ node -e "const d=require('./deals.json');console.log(d.count, d.deals.filter(x=>
 node -e "const h=require('./scripts/data/source-health.json');console.log(h.sources.filter(s=>s.source.startsWith('leads_')))"
 ```
 
+## 10. 上线前补记：L4 真浏览器验收（首次实跑）+ 三处集成修复
+
+> 背景：T5 报告时本机没有浏览器内核，L4 未跑（§4.2）。用户随后要求「推送上线」，而 master 的分支规则
+> 要求 PR 的 `gate` 检查必须绿（`gate` 里含真浏览器验收）。于是本机复用了已有的
+> `~/.cache/ms-playwright/chromium-1243`（Chrome for Testing 153.0.8010.12），把缺失的
+> `libnspr4/libnss3/libasound2` 从 Ubuntu 的 .deb 解到 `/tmp` 后用临时 `LD_LIBRARY_PATH` 拉起浏览器
+> —— **没有改仓库默认浏览器路径、没有装系统包、没有改任何门禁判据**。
+
+### 10.1 CI 首次真跑暴露的 3 项红（PR #135，verify run 42799073316）
+
+`[52] Real-browser acceptance` 在 `verify-site.js` 处 fail；本机复现后逐条修复：
+
+| # | 失败读数 | 根因 | 处置 |
+|---|---|---|---|
+| 1 | 雷达行 fetch `TypeError: Failed to fetch`（verify-site.js:4706） | P2 起 `/changes/` 有 **B 类线索**行，按设计链接直达原文（外链、无站内详情页）；旧断言无条件 `fetch(links[0])` 当详情页 ⇒ 跨域外链必然失败 | 断言拆两半：站内链接仍必须 fetch 通且含「变更记录」；外链必须只在「线索 · 未核验」行且 `target=_blank`/`rel=noopener`（**新增**断言，比原来更严；不是不再看外链） |
+| 2 | 每条优惠按 id 归到恰好一张卡：未认领 2 条（Notte / Wideo） | P0 的 AppSumo 两条 `expiresAt=2026-11-09`，今天已过期、仍在 `store.prune` 宽限期内留在 deals.json；页面按北京时间今天 `isExpired()` 不渲染卡片，而 verify-site 的期望集把 `type=deal` 全算进去 | 期望集与页面同一语义（过期项不参与认领）；「每条**当前**优惠恰好一张卡」判据本身未改 |
+| 3 | §22c @1440/@1600 首屏说明 3 行 > 上限 2 行（`status/#0`，`note-intro-long`） | T4 把熔断细节写进 /status/ 的页面级 `snote`，把原本 2 行的说明撑到 3 行 | 压缩文案到 2 行（阈值 5 / 半开 3 天 / 零产出不进熔断仍保留）；§22c 阈值一个字未改 |
+
+修复前本机 plain verify 读数：**934 项 · 失败 3 项**（正是上表 3 条）；修复后见 10.3。
+
+### 10.2 回归基线刷新（按文档执行，不是为绿而绿）
+
+修完 1–3 后 `verify:regress` 仍红在「页高不增加（容差 15%）：4764 → 6798px」。查历史读数：
+PR #134（2026-11-08）时卡片 51 / 覆盖 81 / 页高 5037px；本支 P0/P1 带来 **+28 条当前优惠**
+（AppSumo +23 等）⇒ 卡片 51→78、覆盖 81→108，页高随卡片数**线性增长** —— 这是数据驱动的增长，
+不是布局回归。按 `docs/BUILD.md` §4 的既定命令刷新基线：
+
+```bash
+npm run verify:baseline     # 写 research/_raw/ours-baseline/verify.json（文档标注「会覆盖已入库的基线，谨慎」）
+```
+
+刷新后基线关键值：cards 78 · coveredDeals 108 · pageHeight 6798px · firstScreenFull 6 ·
+externalRequests 0 · JS errors 0。**阈值本身（页高 ≤ +15%、外部请求不增加、JS 错误 = 0 等）一个字未改**，
+比较仍照常执行；`bc8a401` 的提交信息里也写明了这次刷新只动基线数据、不动判据。
+
+### 10.3 修复后本机 L4 读数（同一台机、同一浏览器）
+
+| 命令 | 读数 |
+|---|---|
+| `npm run verify` | **934 项 · 失败 0** |
+| `npm run verify:regress` | **940 项 · 失败 0**（6 条回归：覆盖优惠条数 108→108 · 卡片 78→78 · 首屏完整可见 6→6 · 页高 6798→6798 · 外部请求 0→0 · JS 错误 0） |
+| `npm run check:ci` / `npm run gate:build` / `node scripts/validate.js --strict`（修复后复跑） | 39/0 · 40 脚本 0 失败 · 通过 |
+
+修复提交：`bc8a401`（`scripts/tools/verify-site.js` / `scripts/tools/build-local.js` / 回归基线 `verify.json`）。
+
+### 10.4 与上线流程的关系
+
+本报告只记录到**合并前**的本地读数。上线动作（推送分支 → PR #135 的 CI `gate` → 合并 master →
+`deploy.yml` prepublish → Pages 发布 → `npm run smoke`）发生在本提交之后，其运行编号与线上读数
+以 GitHub Actions / PR #135 页面为准；报告不预写未发生的结果。
+
 ---
 
 ## 附录 A：本轮提交清单（时间顺序，`git log --oneline 5144293..HEAD`）
 
-实跑于 T4 合入后（`HEAD = 2e8cb3b`，共 **12** 条）：
+实跑于推送前（含并入 master 的采集提交与上线前修复；此时 `HEAD = bc8a401`，共 **20** 条；
+本报告自身的收尾提交是清单之后的**下一条 HEAD**）：
 
 ```text
+bc8a401 fix(verify): L4 首次真跑暴露的三处集成修复 + 回归基线按文档刷新        ← 上线前修复
+d6a7a0d merge: 并入 master 的采集数据提交（冲突数据文件取本支一致快照）        ← merge master
+4617fc7 docs: 过夜报告收口 —— T4 熔断合入、门禁读数、BLOCKED 与附录
 2e8cb3b feat(health): 源级熔断 —— 连续失败自动暂停 + 半开恢复（P3）        ← T4（cherry-pick 自 f8333124）
+bb8d8ba chore(data): 更新优惠数据、来源健康与变更记录 2026-11-10 14:16 CST [skip ci]   ← master 侧采集机器人提交（经 merge 引入）
+ded2994 chore(data): 更新优惠数据、来源健康与变更记录 2026-11-10 06:10 CST [skip ci]   ← 同上
 1f6713b docs(state): 记录独立负向抽查与 TTL 真数据复查
 6781d31 docs(report): 补阶段状态列、独立抽查、按提交门禁覆盖、P1「见报告」指认
 a8801fd docs: 过夜报告草稿 + 状态更新（T3 收回 / 完整门禁读数）
@@ -384,16 +443,21 @@ cbc514b data: P2 线索雷达首轮实跑落盘（1 条线索）
 4ffd68a feat(collector): B 类资讯线索雷达（P2）—— fixture + 判据自测 + 清理假陈述
 27404e3 docs: 过夜施工状态文件（T0 基线）
 327bc15 WIP: P2 线索雷达在制品（验证前快照）
+c1b8b69 chore(data): 更新优惠数据、来源健康与变更记录 2026-11-09 13:01 CST [skip ci]   ← master 侧采集机器人提交（经 merge 引入）
+a5452ee chore(data): 更新优惠数据、来源健康与变更记录 2026-11-09 01:52 CST [skip ci]   ← 同上
+cefdf1b chore(data): 更新优惠数据、来源健康与变更记录 2026-11-08 20:14 CST [skip ci]   ← 同上
 ```
 
-> 本报告自身的收尾提交（`docs: 过夜报告收口 —— T4 熔断合入、门禁读数、BLOCKED 与附录`）是清单之后的**下一条 HEAD**；
+> 本报告自身的收尾提交（`docs: 上线前 L4 补记与集成修复留痕`）是清单之后的**下一条 HEAD**；
 > 报告无法记录自己的 SHA，故以这条说明代替（早上跑 `git log --oneline -1` 即可看到）。
 
 ## 附录 B：已知限制 / 给下一轮的提示
 
-1. **本机无浏览器内核**：`npm run gate` 的 `[52] Real-browser acceptance`（及其后的 `[53]`/`[54]`、L4/L5）在本机必然红/未执行。
-   `verify-site.js` 默认找 Windows Edge（`C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe`），本机既没有该路径、
-   也没有系统 Chrome/Edge、也未安装 playwright 内核。**没有为它改判据**；真浏览器验收只能在 CI（`verify.yml` / `deploy.yml`）跑。
+1. **本机默认没有浏览器内核**：`verify-site.js` 默认找 Windows Edge（`C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe`），
+   本机既没有该路径、也没有系统 Chrome/Edge、也未安装 playwright 内核。**没有为它改判据**。
+   上线前用已有的 `~/.cache/ms-playwright/chromium-1243` + 临时 `LD_LIBRARY_PATH`（缺的 3 个 .so 从 .deb 解到 `/tmp`）
+   在本机把 L4 真跑通（934/0 · regress 940/0，§10）——这**不改变**仓库默认路径；CI（`verify.yml` / `deploy.yml`）
+   仍按 action 里的「Prepare browser」自己装 chromium。
 2. **worktree 未清理**：`.worktrees/p3b-health`（分支 `wip/p3b-health-v2`，HEAD 仍 `f833312`）按任务书**保留作原始证据**；
    本轮 T4 是 cherry-pick（新提交 `2e8cb3b`）不是 merge，分支与 worktree 都没删。`.worktrees/p3a-gate` 与 `.agents/worktrees/*`
    是更早的工位，本轮未动。**可以清的时候**：确认 `2e8cb3b` 已完整、门禁全绿后再 `git worktree remove .worktrees/p3b-health`，

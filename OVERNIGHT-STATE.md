@@ -128,3 +128,21 @@
   `.worktrees/p3b-health` 与 `wip/p3b-health-v2` 按任务书保留作原始证据（分支不删）。
 - 门禁（收尾提交前复跑）：check:ci 39/0 · gate:build 40/0。
 - 下一步：**无，本轮结束**（未 push / 未建 PR / 未动 master）。
+
+## 2026-11-10 19:00 上线阶段（用户新指令「推送上线」）
+
+- 用户要求推送上线。master 有 `master-gate` ruleset（`pull_request` 必需 + required check `gate`），
+  因此走分支 → PR → 合并 → `deploy.yml` 的既定发布链；这是上线，不是过夜任务里那条「不 push」约束的延续。
+- 与 master 分叉处理：merge-base `ebdd0a8`，master 侧 5 条采集机器人提交；本地 merge 冲突只在 5 个机器数据文件
+  （deals / deal-history / source-health / source-snapshots / zh-pending），**整份取本支**一致快照（不与旧代码采集结果混行），
+  api-plans.json 取 master；合并提交 `d6a7a0d`。合并后本地复跑 validate/reproducible/history/health 115/0/ai 126/0/
+  fixture 14/0/coverage 0 问题/check:ci 39/0/gate:build 40/0 全过。
+- 推送分支 → **PR #135**；CI gate 首跑（verify run 42799073316）红在真浏览器验收（3 处 P2/T4 集成问题，详见 REPORT §10）。
+- 本机复现：复用 `~/.cache/ms-playwright/chromium-1243` + 临时 `LD_LIBRARY_PATH`（缺的 3 个 .so 从 .deb 解到 `/tmp`）→ L4 可跑。
+- 修复 3 处（`bc8a401`）：① 线索外链不再当详情页 fetch（外链另加 target/rel/线索行断言）② 过期条目不再算「未认领」
+  （期望集与页面 `isExpired` 同语义）③ `/status/` 首屏说明压回 2 行（§22c 阈值未改）；并按文献 `npm run verify:baseline`
+  刷新回归基线（P0/P1 +28 条当前优惠 ⇒ 卡片 51→78、页高 4764→6798px 是数据驱动增长，阈值未改）。
+- 本机 L4 读数：`npm run verify` **934/0** · `npm run verify:regress` **940/0**（页高 6798→6798 · 覆盖 108→108）。
+  静态门禁复跑：check:ci 39/0 · gate:build 40/0 · validate --strict ✓。
+- 下一步（本提交之后）：push 分支 → CI `gate` 重跑 → 合并 PR #135 → `deploy.yml` prepublish → Pages 发布 → `npm run smoke`；
+  CI/部署运行编号与线上读数以 GitHub Actions / PR 页面为准（报告不预写未发生的结果）。
