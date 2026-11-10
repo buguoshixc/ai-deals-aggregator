@@ -1626,11 +1626,8 @@ ${noteDeclare(route, {
         采集器报错、或连续 3 次零产出即 <b>❌ 失败</b>；请求成功但条数掉到上次一半以下、
         或零产出但还没到 3 次即 <b>⚠️ 异常</b>；其余为 <b>✅ 正常</b>。
         「连续失败 / 连续零产出」两列分别是这两个计数器的当前值。
-        <b>源级熔断（P3）</b>：连续 ${health.CIRCUIT_FAILURE_THRESHOLD} 次<b>采集器报错</b>即自动暂停该来源
-        （状态列标 <b>⏸ 已暂停（熔断）</b>，暂停期间<b>本轮不再采集</b>，行内写明暂停时间、半开重试窗口与原因）；
-        暂停满 ${health.HALF_OPEN_AFTER_DAYS} 天自动<b>半开重试一次</b>——成功即清零恢复，再失败则窗口重新计时。
-        零产出 / 条数波动<b>不进入</b>熔断（那是判定层的事）；自动暂停<b>不替代</b>人工裁决：
-        连续失败仍需在 <code>scripts/data/source-rulings.json</code> 留下裁决（见 coverage 报告）。
+        <b>⏸ 已暂停（熔断）</b>：连续 ${health.CIRCUIT_FAILURE_THRESHOLD} 次<b>采集器报错</b>后暂停，
+        满 ${health.HALF_OPEN_AFTER_DAYS} 天<b>半开重试一次</b>；零产出不进入熔断。
       </p>`)}
 
       <div class="stable-wrap">
