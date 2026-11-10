@@ -4175,6 +4175,101 @@
         "verified": false
       },
       "runAt": "2026-11-09T16:38:06.629Z"
+    },
+    {
+      "id": "318a050a84bb",
+      "at": "2026-11-11",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-10",
+      "to": "2026-11-13",
+      "origin": "observed",
+      "runAt": "2026-11-10T19:25:01.475Z"
+    },
+    {
+      "id": "60c544edd8be",
+      "at": "2026-11-11",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $39，原价 $129（省 70%）",
+        "pricingModel": "paid",
+        "priceLine": "$39 终身（原价 $129）",
+        "expiresAt": "2026-11-25",
+        "type": "deal",
+        "category": "设计创意",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-10T19:25:01.475Z"
+    },
+    {
+      "id": "8384e847f282",
+      "at": "2026-11-11",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "音频语音",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/copilot-audio-expression",
+        "verified": false
+      },
+      "runAt": "2026-11-10T19:25:01.475Z"
+    },
+    {
+      "id": "940d872f9eac",
+      "at": "2026-11-11",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "OpenRouter 免费模型：prompt / completion 价格均为 $0；限流：20 次/分钟；每日 50 次（累计购买 <10 credits）或 1000 次（≥10 credits）—— 出自 OpenRouter 官方限流文档；官方未标注免费截止日期",
+        "pricingModel": "free",
+        "priceLine": "$0 输入 / $0 输出（免费）",
+        "features": [
+          "免费 API",
+          "20 RPM / 50 RPD",
+          ":free 路由"
+        ],
+        "validity": "官方未标注免费截止日期",
+        "type": "deal",
+        "category": "API服务",
+        "region": "global",
+        "source": "OpenRouter",
+        "sourceUrl": "https://openrouter.ai/api/v1/models",
+        "verified": false
+      },
+      "runAt": "2026-11-10T19:25:01.475Z"
+    },
+    {
+      "id": "9e43fb1945c3",
+      "at": "2026-11-11",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $69，原价 $144（省 52%）",
+        "pricingModel": "paid",
+        "priceLine": "$69 终身（原价 $144）",
+        "expiresAt": "2026-11-12",
+        "type": "deal",
+        "category": "教育学习",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-10T19:25:01.475Z"
     }
   ]
 }
