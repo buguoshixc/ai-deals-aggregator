@@ -22,6 +22,18 @@ const MAX_FEATURES = 3;
 const MAX_FEATURE_LENGTH = 20;
 /** 价格阶梯行（如「免费 → $20/月 Pro」）的最大长度 */
 const MAX_PRICE_LINE_LENGTH = 60;
+/**
+ * B 类资讯线索「原文摘要引文」（excerpt）的最大长度。
+ *
+ * 这是与 `lib/lead-radar.js` 的 `summaryOf()` **同一把尺子**：那边 `cleanText(text, 240)`
+ * 把 RSS `<description>` 洗成引文，这边校验落盘的值没超过同一上限。
+ *
+ * ⚠️ 两处各有一个 240，且**不能**合并成一处：`lead-radar.js` 已经 `require('./schema')`
+ * 的 `cleanText`，schema 反过来 require lead-radar 会成环。改这个数时必须同时看
+ * `scripts/lib/lead-radar.js` 的 `summaryOf()` —— 只改一边，超长引文会在校验期报错
+ * （或采集期写不满），两边对不上时 ai-selftest 的形状断言会先红。
+ */
+const MAX_EXCERPT_LENGTH = 240;
 
 /* ---------------- v1.1 学生 / 开发者模型 ---------------- */
 
@@ -461,6 +473,11 @@ function makeDeal(raw = {}, opts = {}) {
     // 描述是垃圾但标题正常：保留记录、丢弃描述
   }
 
+  // B 类资讯线索的「原文摘要引文」：RSS <description> 的逐字清洗文本（引用，不是结论）。
+  // 与 description 同一处归一：cleanText 负责去零宽/压空白/≤MAX_EXCERPT_LENGTH 并标出截断。
+  // 这里只清洗**不生成**：摘要由 lead-radar.parseFeed → summaryOf 从原文取得，schema 不产文案。
+  const excerpt = cleanText(raw.excerpt, MAX_EXCERPT_LENGTH);
+
   const vendor = cleanText(raw.vendor || opts.vendor || inferVendor(title), 60);
   const source = cleanText(raw.source || opts.source, 40) || 'Unknown';
   const region = REGIONS.includes(raw.region) ? raw.region : (REGIONS.includes(opts.region) ? opts.region : 'global');
@@ -534,6 +551,12 @@ function makeDeal(raw = {}, opts = {}) {
   // 两个人工来源入口（curated / audience-overrides）的对账负责，见 provenance.auditEvidence。
   const evidence = provenance.normalizeEvidence(raw.evidence, { today });
   if (evidence) deal.evidence = evidence;
+
+  // B 类资讯线索的原文摘要引文：**只在有值时追加**（与 zh / evidence 同一条「缺席 = 没有，
+  // 不写 null」的纪律）。若无条件写 `excerpt: null`，deals.json 里既有记录会在下一次
+  // collect 全体多一行、diff 失真 —— 而「没有引文」本来就该是字段缺席，不是空值。
+  // 引文命中垃圾特征（CSS 残片/导航文本）时同样丢弃：它不是一句可引用的原文。
+  if (excerpt && !isGarbage(excerpt)) deal.excerpt = excerpt;
 
   return deal;
 }
@@ -617,6 +640,19 @@ function validateDeal(deal, index = 0) {
   if (deal.validity !== null && deal.validity !== undefined && typeof deal.validity !== 'string') {
     errors.push(`${where}: validity 必须是字符串`);
   }
+  // B 类资讯线索的原文摘要引文（可选）：引用文本，不是结论。规则与 makeDeal 的归一一致。
+  // 「缺席」放行 —— 普通优惠没有、旧线索也没有，字段不存在就是没有。
+  if (deal.excerpt !== null && deal.excerpt !== undefined) {
+    if (typeof deal.excerpt !== 'string') {
+      errors.push(`${where}: excerpt 必须是字符串`);
+    } else if (!deal.excerpt.trim()) {
+      errors.push(`${where}: excerpt 为空（没有引文时应省略该字段）`);
+    } else if (deal.excerpt.length > MAX_EXCERPT_LENGTH) {
+      errors.push(`${where}: excerpt 超过 ${MAX_EXCERPT_LENGTH} 字`);
+    } else if (isGarbage(deal.excerpt)) {
+      errors.push(`${where}: excerpt 命中垃圾特征`);
+    }
+  }
   if (!/^\d{4}-\d{2}-\d{2}$/.test(String(deal.firstSeen || ''))) errors.push(`${where}: firstSeen 格式非法`);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(String(deal.lastSeen || ''))) errors.push(`${where}: lastSeen 格式非法`);
   if (typeof deal.verified !== 'boolean') errors.push(`${where}: verified 必须是布尔`);
@@ -633,7 +669,7 @@ function validateDeal(deal, index = 0) {
     'id', 'title', 'vendor', 'url', 'source', 'sourceUrl', 'region', 'type',
     'discountInfo', 'pricingModel', 'priceLine', 'features', 'category', 'description',
     'eligibility', 'validity', 'expiresAt', 'firstSeen', 'lastSeen', 'verified', 'verifiedAt',
-    'zh', 'evidence',
+    'zh', 'evidence', 'excerpt',
     ...AUDIENCE_FIELD_ORDER
   ]);
   for (const key of Object.keys(deal)) {
@@ -890,6 +926,7 @@ module.exports = {
   MAX_FEATURES,
   MAX_FEATURE_LENGTH,
   MAX_PRICE_LINE_LENGTH,
+  MAX_EXCERPT_LENGTH,
   AUDIENCE_FIELD_ORDER,
   MAX_REGION_RESTRICTION_LENGTH,
   MAX_PROVENANCE_NOTE_LENGTH,

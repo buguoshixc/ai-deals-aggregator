@@ -867,6 +867,7 @@ function openRouterTeeth() {
 function leadRadarTeeth() {
   const radar = require('../lib/lead-radar');
   const leads = require('../collectors/leads');
+  const schema = require('../lib/schema');
   const store = require('../lib/store');
 
   /** 注入的「现在」：窗口判据一律用注入时间，绝不读墙上时钟（否则这条自测每天结果不同） */
@@ -920,15 +921,36 @@ function leadRadarTeeth() {
     after7.items.length === 0 && /超过 7 天窗口/.test((after7.dropped[0] && after7.dropped[0].reason) || ''),
     JSON.stringify(after7.dropped));
 
-  // ⑤ 草稿形状：线索只有**四个事实**（标题 / 原文链接 / 原文日期 / 收录来源）+ schema 簿记；
-  //    优惠字段与「已核验」一个都不许出现，type 必须是 tool（未核验的资讯不是优惠）。
+  // ⑤ 草稿形状：线索只有**五个事实**（标题 / 原文链接 / 原文日期 / 收录来源 / 原文摘要引文）
+  //    + schema 簿记；优惠字段与「已核验」一个都不许出现，type 必须是 tool（未核验的资讯不是优惠）。
+  //    excerpt 是**原文摘要引文**（引用文本，不是优惠/核验结论）：站内线索卡要展示它。
   //    `leads.js` 的注释声称「由 ai-selftest 的「线索草稿形状」断言盯着」—— 就是这一组。
+  //
+  //    清洗发生在 parseFeed() → summaryOf()（剥 HTML/解实体/≤240），toDraft() 只做透传；
+  //    所以这里先用一条带 HTML 实体的 description 钉住 summaryOf 的输出，再喂给 toDraft。
+  const rawDraftDescription = '<p>本周限时免费，&amp; 额度有限</p>';
+  const cleanedDraftDescription = radar.summaryOf(rawDraftDescription);
+  assert('线索草稿形状：RSS 摘要先经 summaryOf 清洗（剥 <p>、解 &amp; 实体）',
+    cleanedDraftDescription === '本周限时免费，& 额度有限', JSON.stringify(cleanedDraftDescription));
   const draft = leads.__test.toDraft(
-    { title: 'DeepSeek 限时免费', url: 'https://example.com/draft', date: '2026-11-09' },
+    {
+      title: 'DeepSeek 限时免费',
+      url: 'https://example.com/draft',
+      date: '2026-11-09',
+      description: cleanedDraftDescription
+    },
     leads.__test.FEEDS[0]);
   const draftKeys = Object.keys(draft).sort().join(',');
-  assert('线索草稿形状：键集合恰好是 title/url/source/sourceUrl/firstSeen/type（多一个键少一个键都是错的）',
-    draftKeys === 'firstSeen,source,sourceUrl,title,type,url', `实得 ${draftKeys}`);
+  assert('线索草稿形状：键集合恰好是 excerpt/firstSeen/source/sourceUrl/title/type/url（多一个键少一个键都是错的；excerpt 是线索卡要展示的原文摘要引文，不是优惠/核验结论）',
+    draftKeys === 'excerpt,firstSeen,source,sourceUrl,title,type,url', `实得 ${draftKeys}`);
+  assert('线索草稿形状：excerpt 与 lead-radar.summaryOf(description) 逐字一致（清洗 + 240 同一把尺子）',
+    draft.excerpt === radar.summaryOf(rawDraftDescription), `实得 ${JSON.stringify(draft.excerpt)}`);
+  const noDescriptionDraft = leads.__test.toDraft(
+    { title: 'DeepSeek 限时免费', url: 'https://example.com/no-description', date: '2026-11-09' },
+    leads.__test.FEEDS[0]);
+  assert('线索草稿形状：没有 description 时 excerpt 键仍在、值为 undefined（键形状不随内容变化）',
+    Object.prototype.hasOwnProperty.call(noDescriptionDraft, 'excerpt') && noDescriptionDraft.excerpt === undefined,
+    `实得 ${JSON.stringify(Object.keys(noDescriptionDraft))}`);
   assert('线索草稿形状：type 是 tool 而不是 deal（未核验的资讯不是优惠）', draft.type === 'tool', draft.type);
   const forbiddenKeys = ['discountInfo', 'benefitType', 'eligibility', 'eligibilityDetail', 'availability',
     'audience', 'validity', 'expiresAt', 'verified', 'verifiedAt', 'description', 'pricingModel', 'category'];
@@ -939,10 +961,53 @@ function leadRadarTeeth() {
   const fixtureDrafts = leads.__test.parseFeedAsDrafts(fixtureXml, leads.__test.FEEDS[2]);
   assert('线索草稿形状：fixture 回放出的每一条都是同一形状（解析器不会偷偷加字段）',
     fixtureDrafts.length > 0 && fixtureDrafts.every(item =>
-      Object.keys(item).sort().join(',') === 'firstSeen,source,sourceUrl,title,type,url' && item.type === 'tool'),
+      Object.keys(item).sort().join(',') === 'excerpt,firstSeen,source,sourceUrl,title,type,url' && item.type === 'tool'),
     `fixture 条数 ${fixtureDrafts.length}`);
 
-  // ⑥ TTL：store.prune 对线索按 firstSeen（= 原文日期）算 7 天，**第 8 天必须下线**；
+  // ⑥ excerpt 的数据层回归钉：从「草稿有 excerpt」到「deals.json 能存 excerpt」之间还隔着
+  //    makeDeal 的显式白名单与 validateDeal 的 allowed Set —— 两处都是**静默吞掉**新字段的
+  //    位置（不报错，只是字段消失 / 或少见地报「未知字段」）。所以这组直接对 schema 钉：
+  //      · 有值 → 保留并清洗；垃圾特征 → 丢弃（构造结果里连字段都不该有）；
+  //      · 超长 → 截到 MAX_EXCERPT_LENGTH；validateDeal 认这个字段、并拒绝非法形状。
+  const makeLeadDeal = (patch = {}) => schema.makeDeal({
+    title: 'DeepSeek 限时免费',
+    url: 'https://example.com/lead-excerpt',
+    source: '快科技',
+    sourceUrl: 'https://rss.mydrivers.com/rss.aspx?Tid=1',
+    firstSeen: '2026-11-09',
+    type: 'tool',
+    ...patch
+  }, { source: '快科技', region: 'cn' });
+
+  const excerptDeal = makeLeadDeal({ excerpt: '  本周限时免费，\n 额度有限  ' });
+  assert('线索 excerpt：makeDeal 保留并清洗给定引文（压空白/去首尾，不是原样透传）',
+    excerptDeal && excerptDeal.excerpt === '本周限时免费， 额度有限',
+    JSON.stringify(excerptDeal && excerptDeal.excerpt));
+  assert('线索 excerpt：validateDeal 认这个字段（allowed Set 已登记，不再报「未知字段」）',
+    excerptDeal && schema.validateDeal(excerptDeal).ok === true,
+    JSON.stringify(excerptDeal ? schema.validateDeal(excerptDeal).errors : null));
+  const garbageExcerptDeal = makeLeadDeal({ excerpt: '.css-abc{all:unset}' });
+  assert('线索 excerpt：命中垃圾特征的引文在构造期丢弃，且不写 excerpt:null（缺席 = 没有）',
+    garbageExcerptDeal && !Object.prototype.hasOwnProperty.call(garbageExcerptDeal, 'excerpt'),
+    JSON.stringify(garbageExcerptDeal));
+  const longExcerptDeal = makeLeadDeal({ excerpt: '引'.repeat(300) });
+  assert('线索 excerpt：超长引文被截到 MAX_EXCERPT_LENGTH（240 字）并标出截断',
+    longExcerptDeal && typeof longExcerptDeal.excerpt === 'string' &&
+      longExcerptDeal.excerpt.length === schema.MAX_EXCERPT_LENGTH && longExcerptDeal.excerpt.endsWith('…'),
+    JSON.stringify(longExcerptDeal && longExcerptDeal.excerpt));
+  const validExcerptDeal = makeLeadDeal({ excerpt: '本周限时免费，额度有限' });
+  const badExcerptType = schema.validateDeal({ ...validExcerptDeal, excerpt: 42 });
+  const badExcerptLong = schema.validateDeal({
+    ...validExcerptDeal, excerpt: 'a'.repeat(schema.MAX_EXCERPT_LENGTH + 1)
+  });
+  assert('线索 excerpt：validateDeal 拒绝非字符串的 excerpt',
+    badExcerptType.ok === false && badExcerptType.errors.some(message => /excerpt 必须是字符串/.test(message)),
+    JSON.stringify(badExcerptType.errors));
+  assert('线索 excerpt：validateDeal 拒绝超过 MAX_EXCERPT_LENGTH 的 excerpt',
+    badExcerptLong.ok === false && badExcerptLong.errors.some(message => /excerpt 超过 240 字/.test(message)),
+    JSON.stringify(badExcerptLong.errors));
+
+  // ⑦ TTL：store.prune 对线索按 firstSeen（= 原文日期）算 7 天，**第 8 天必须下线**；
   //    同一条规则**不许**顺手剪普通 deal —— 优惠的 firstSeen 是「首次收录日」，不是新闻时效，
   //    拿 7 天去剪它会把真实优惠误删（这就是「不能顺着别的理由改判据」的具体形态）。
   const LEAD_SOURCE = '快科技'; // provenance.SOURCE_TYPES 登记为 lead 的来源之一
@@ -965,7 +1030,7 @@ function leadRadarTeeth() {
     pruned.deals.some(deal => deal.id === 'deal-old'),
     `在架 ${pruned.deals.map(deal => deal.id).join(',')}`);
 
-  // ⑦ TTL 常数只有一个出处：采集窗口与 prune 共用 lib/lead-radar.js 的 LEAD_TTL_DAYS。
+  // ⑧ TTL 常数只有一个出处：采集窗口与 prune 共用 lib/lead-radar.js 的 LEAD_TTL_DAYS。
   //    两处各写一个 7 的话，改了一边另一边不会红 —— 而漂移掉的那一侧永远是没人看的那侧。
   assert('线索 TTL：常数唯一出处是 lib/lead-radar.js，值为 7', radar.LEAD_TTL_DAYS === 7,
     String(radar.LEAD_TTL_DAYS));

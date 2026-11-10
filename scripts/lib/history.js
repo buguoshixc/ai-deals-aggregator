@@ -105,6 +105,7 @@ const UNTRACKED_FIELDS = {
   vendor: '身份的一部分（见 id）',
   url: '身份的一部分（见 id）',
   zh: '人工译文是展示层覆盖，不是优惠本身',
+  excerpt: 'RSS 摘要原文（引用文本）——媒体改稿/清洗口径变化不该记成一条优惠变化事件',
   needs: '构建期派生字段，源数据里不存在',
   collections: '构建期派生字段，源数据里不存在',
   sourceFacts: '构建期派生字段，源数据里不存在',
