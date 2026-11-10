@@ -59,7 +59,17 @@
  *   · (11) 追加：把每个调用方的 `with.allow_degraded_run` **按触发事件真的求值**（不是 grep
  *     字符串）：PR / push / schedule / workflow_run 与 workflow_dispatch 的「默认（未勾选）」
  *     都必须解析成 `'false'`；只有人工 workflow_dispatch **显式勾选**允许 `'true'`（而且必须
- *     真的解析成 `'true'`，逃生口不能被堵死）；deploy.yml 任何事件都不许降级；
+ *     真的解析成 `'true'`，逃生口不能被堵死）；deploy.yml 任何事件都不许降级。
+ *     **P3 例外**：collect.yml 的完整 gate 已移到数据提交**之后**（见 (13)），它的降级是
+ *     **自动**的 —— 所以要求它在**所有事件**上都解析成 `'true'`（而不是只改一句 detail 文案），
+ *     并且因为不再引用 inputs.* 而**不许**再声明降级输入（死开关会误导人工触发者）；
+ *     deploy.yml 仍任何事件都不许降级、verify.yml 仍非人工不许降级。
+ *   · (13) 追加（P3「门禁拆锁」）：collect.yml 的**数据正确性 9 条**必须在提交**之前**作为
+ *     独立硬门禁（无 `if` / 无 `continue-on-error`，run 体逐条包含命令）；**完整 gate** 必须
+ *     在提交**之后**运行、失败不阻塞入库，且**失败可见**（`continue-on-error` + 紧随其后
+ *     引用其 outcome 的 `if: always()` 留痕步）。旧语义「完整门禁在提交之前」正是 2026-11-02
+ *     一次门禁红停更 6 天的成因；新红线是「**坏数据不入库** + **发布就绪失败不静默**」——
+ *     数据正确性一条没松，发布仍由 deploy.yml 的 prepublish 严格门禁裁定（(12) 守着）。
  *   · (17) 追加：产物依赖步骤必须显式 `--dir=dist` 且排在 `Assemble site` **之后**
  *     （§10.9 / P2-26：原先它们排在构建前，CI 干净检出里没有 dist/ ⇒ 这些牙一次都没跑过）。
  *  反过来的边界也如实写在这里：`GATE_STEP_RUN` 是**逐步骤**的指纹，不是整文件 SHA（§13.10 禁止）；
@@ -615,6 +625,17 @@ const CALLER_EVENT_MATRIX = {
 const STRICT_ONLY_EVENTS = ['pull_request', 'push', 'schedule', 'workflow_run'];
 /** 发布链：**任何**事件都不许降级（含人工 workflow_dispatch） */
 const NEVER_DEGRADE_WORKFLOWS = ['deploy.yml'];
+/**
+ * **自动降级**的调用方（P3「门禁拆锁」）：collect.yml 的完整 gate 已移到数据提交**之后**，
+ * 数据正确性由提交前的独立硬门禁守着（见 (13)）。所以这条链路**应该**降级，而不是冻结入库：
+ *   · 它的 `with.allow_degraded_run` 必须在**所有事件**上都解析成 `'true'`（写死，不再有人工
+ *     勾选入口）—— 解析成 'false' 会让一次浏览器故障把 collect job 判红，而 deploy.yml 的
+ *     workflow_run 只在结论 success 时才放行 ⇒ 停版会换个位置复活；
+ *   · 因为不再引用 `inputs.*`，它也不该再声明 `on.workflow_dispatch.inputs.allow_degraded_run`
+ *     （一个不起作用的开关会误导人工触发者）。
+ * ⚠️ deploy.yml **永远不在这里**：发布链任何事件都不许降级（NEVER_DEGRADE_WORKFLOWS）。
+ */
+const AUTO_DEGRADE_WORKFLOWS = ['collect.yml'];
 
 /** 三个调用方：都必须恰好调用一次门禁 action */
 const GATE_CALLERS = ['collect.yml', 'deploy.yml', 'verify.yml'];
@@ -654,7 +675,11 @@ const FROZEN_ASSERTION_NAMES = [
   '(10c) gate 复合 action 不含任何第三方 uses（门禁里不引入未冻结的外部动作）',
   '(11) collect.yml / deploy.yml / verify.yml 各恰好调用一次门禁 action',
   '(12) deploy.yml 的发布链必须先过门禁：prepublish 无 job 级 if、build 依赖它、deploy 依赖 build',
-  '(13) collect.yml 的门禁步骤排在提交步骤之前',
+  // P3「门禁拆锁」改名 + 改语义（旧名：(13) collect.yml 的门禁步骤排在提交步骤之前）：
+  // 红线从「完整门禁在提交前」变成「**数据正确性在提交前 + 完整门禁在提交后且失败可见**」。
+  // 数据正确性那 9 条一条没松（而且从门禁内部的一步升级成提交前的独立硬拦）；发布就绪类的
+  // 失败只是不再冻住数据入库，发布仍由 deploy.yml 的 prepublish 严格门禁裁定（(12) 守着）。
+  '(13) collect.yml 的数据正确性硬门禁在提交之前、完整 gate 在提交之后且失败可见',
   '(14) workflow 与复合 action 里没有「未加引号的标量含『冒号+空格』」（真实 YAML 会拒绝，本文件的缩进读取器读得过去）',
   '(15) collect.yml 的推送用专用 GitHub App 身份（github-actions 不能被加进 ruleset 绕过名单）',
   // v2.0：AI 维护链路必须"只读 + 只出 artifact"。这条断言存在的理由与 (13)/(15) 同类 ——
@@ -1029,7 +1054,10 @@ const gateStepNames = gateEntries
 /* ────────── P1-2 / P1-3 的判据工具：步骤体冻结 + 降级语义的真实执行 ────────── */
 
 /**
- * 按步解析 action.yml **原文**：返回每个步骤的 { name, id, ifValue, hasContinueOnError, runBody }。
+ * 按步解析 workflow / 复合 action 的**原文**：返回每个步骤的
+ * { name, id, ifValue, hasContinueOnError, runBody }。
+ * （P3 起也用于 collect.yml 的步骤：(13) 要核对数据正确性硬门禁的 run 体与 gate 的接线。
+ *   它只依赖「`- name:` 起始 + 缩进更深的 run 块」，两种文件都是同一形状。）
  *
  * 为什么不复用上面的 `parseWorkflow`：那个缩进读取器按设计**整体跳过块标量**（`run: |` 的内容），
  * 而这里要判的恰恰是块标量里的 body。两者互补：结构（键 / 路径）走 `parseWorkflow`，
@@ -1319,9 +1347,15 @@ check('(10c) gate 复合 action 不含任何第三方 uses（门禁里不引入�
 // 之前这里只数调用次数，于是把 `verify.yml` / `collect.yml` 的
 // `${{ inputs.allow_degraded_run && 'true' || 'false' }}` 硬编码成 `'true'`、或把 deploy.yml 的
 // `'false'` 改成 `'true'`，36/36 照样全绿（审计实测）。现在按**每个触发事件**把那个表达式
-// 真的算一遍：PR / push / schedule / workflow_run，以及 workflow_dispatch 的「默认（未勾选）」
-// 都必须解析成 'false'；只有人工 workflow_dispatch **显式勾选**才允许 'true'（而且必须真的
-// 解析成 'true' —— 逃生口不能被堵死）；发布链（deploy.yml）任何事件都不许降级。
+// 真的算一遍（判据是求值结果，不是字符串）：
+//   · deploy.yml：任何事件都必须 'false'（发布链不许降级）；
+//   · verify.yml：PR / push / 默认（未勾选）必须 'false'；只有人工显式勾选允许（且必须）'true'；
+//   · collect.yml（P3 起 AUTO_DEGRADE_WORKFLOWS）：gate 已在数据提交之后 ⇒ 它在**所有事件**
+//     上都必须是 'true'（自动降级，不再有逃生口）。若哪天有人把它改回 'false'，一次浏览器
+//     故障就会把 collect job 判红，而 deploy.yml 的 workflow_run 只在 success 时放行 ——
+//     2026-11-02 那次停更会换个位置复活，所以这里必须红。
+// 输入登记与引用绑定：只有**真的引用 `inputs.*`** 的调用方才要求声明带默认值的输入；
+// collect.yml 不再引用、也就不该再声明（下面单独判「不许残留死开关」）。
 const gateCallDetail = GATE_CALLERS.map(f =>
   `${f}:${usesEntries(wf[f] || []).filter(e => parseUses(e.value).kind === 'local' &&
     parseUses(e.value).raw === GATE_ACTION_REF).length}`);
@@ -1332,6 +1366,7 @@ const degradedDetail = [];
 for (const file of GATE_CALLERS) {
   const entries = wf[file] || [];
   if (!Object.prototype.hasOwnProperty.call(wf, file)) { degradedProblems.push(`${file}: 文件不存在`); continue; }
+  const isAutoDegrade = AUTO_DEGRADE_WORKFLOWS.includes(file);
   const withEntries = entries.filter(e => e.key === DEGRADED_INPUT && e.path.includes('steps') && e.path.includes('with'));
   if (withEntries.length !== 1) {
     degradedProblems.push(`${file}: with.${DEGRADED_INPUT} 出现 ${withEntries.length} 次（期望恰好 1 次，与 uses 调用一一对应）`);
@@ -1347,11 +1382,23 @@ for (const file of GATE_CALLERS) {
   const defaultEntry = entries.find(e => e.path.join('.') === `on.workflow_dispatch.inputs.${DEGRADED_INPUT}.default`);
   const declaredDefault = defaultEntry
     ? String(defaultEntry.value).replace(/^(['"])([\s\S]*)\1$/, '$2') : 'false';
-  if (triggers.has('workflow_dispatch') && !NEVER_DEGRADE_WORKFLOWS.includes(file) && !defaultEntry) {
+  // 「输入必须登记」只对**真的引用了 inputs.*** 的调用方生效（P3 前的行为等价于「所有可降级调用方」，
+  // 因为那时 verify.yml / collect.yml 都引用它）。collect.yml 改成自动降级后不再引用 ⇒ 不再要求声明；
+  // verify.yml 仍引用 ⇒ 仍要求声明 default=false（人工不勾选就不降级）。
+  const referencesInputs = /inputs\./.test(rawValue);
+  if (referencesInputs && triggers.has('workflow_dispatch') && !NEVER_DEGRADE_WORKFLOWS.includes(file) && !defaultEntry) {
     degradedProblems.push(`${file}: workflow_dispatch 允许降级，但 inputs.${DEGRADED_INPUT} 没有声明 default（手工降级必须是一个显式、带默认值的输入）`);
   }
   if (defaultEntry && declaredDefault !== 'false') {
     degradedProblems.push(`${file}: inputs.${DEGRADED_INPUT}.default = ${JSON.stringify(declaredDefault)}（必须默认 false —— 不勾选就是不降级）`);
+  }
+  // 自动降级调用方必须**与触发方式无关**：引用 inputs.* 就是在把它重新交回给「谁勾选」。
+  if (isAutoDegrade && referencesInputs) {
+    degradedProblems.push(`${file}: 自动降级值引用了 inputs.*（P3 起降级不取决于谁触发/谁勾选，必须写死 'true'）`);
+  }
+  // 也不许留下一个**不起作用的死开关**：自动降级后人工勾它没有任何效果，只会误导触发者。
+  if (isAutoDegrade && defaultEntry) {
+    degradedProblems.push(`${file}: 已改为自动降级，但 workflow_dispatch 仍声明 inputs.${DEGRADED_INPUT}（死开关：它不再被 with 引用，请删除）`);
   }
   for (const event of CALLER_EVENT_MATRIX[file]) {
     const contexts = event === 'workflow_dispatch'
@@ -1366,9 +1413,18 @@ for (const file of GATE_CALLERS) {
       if (evaluated.error) { degradedProblems.push(`${where}: ${evaluated.error}`); continue; }
       const resolved = String(evaluated.value);
       degradedDetail.push(`${where.replace(`${file} @ `, '')}=${resolved}`);
-      if (NEVER_DEGRADE_WORKFLOWS.includes(file) && resolved !== 'false') {
-        degradedProblems.push(`${where}: 解析成 ${resolved} —— 发布链任何事件都不许降级（它必须写死 'false'）`);
-      } else if (!NEVER_DEGRADE_WORKFLOWS.includes(file) && context.manual && resolved !== 'true') {
+      if (NEVER_DEGRADE_WORKFLOWS.includes(file)) {
+        if (resolved !== 'false') {
+          degradedProblems.push(`${where}: 解析成 ${resolved} —— 发布链任何事件都不许降级（它必须写死 'false'）`);
+        }
+      } else if (isAutoDegrade) {
+        // P3：collect 的 gate 在数据提交之后 ⇒ 降级是**正确**形态（不会让坏数据入库，发布由
+        // deploy 的严格门禁另行裁定）。反过来，解析成 'false' 会把「浏览器故障」重新变成
+        // 「collect job 红 ⇒ deploy 的 workflow_run 拒绝发布」—— 停版会换个位置复活。
+        if (resolved !== 'true') {
+          degradedProblems.push(`${where}: 解析成 ${resolved} —— collect 的 gate 已在提交之后，发布就绪失败必须**自动降级**（所有事件都写死 'true'）；改成 false 会让一次浏览器故障冻结整条发布链`);
+        }
+      } else if (context.manual && resolved !== 'true') {
         degradedProblems.push(`${where}: 解析成 ${resolved} —— 人工显式降级这条逃生口被堵死了（合法的降级必须仍然可用）`);
       } else if (!context.manual && resolved !== 'false') {
         degradedProblems.push(`${where}: 解析成 ${resolved} —— 必需路径不得静默降级（只有人工 workflow_dispatch 显式勾选才允许 'true'）`);
@@ -1380,7 +1436,8 @@ for (const file of GATE_CALLERS) {
 check('(11) collect.yml / deploy.yml / verify.yml 各恰好调用一次门禁 action',
   gateCallsOk && degradedProblems.length === 0,
   degradedProblems.length ? degradedProblems.slice(0, 4).join('；')
-    : `${gateCallDetail.join('、')}；降级输入按真实表达式求值 —— ${degradedDetail.join(' · ')}`);
+    : `${gateCallDetail.join('、')}；自动降级 ${AUTO_DEGRADE_WORKFLOWS.join('、')}（gate 已在提交之后）`
+      + `；降级输入按真实表达式求值 —— ${degradedDetail.join(' · ')}`);
 
 // (12) 发布链必须「先过门禁再发布」。三件事一起看：
 //   · prepublish **没有** job 级 if（被跳过的 job 报 Success，等于没跑却算过）；
@@ -1408,20 +1465,129 @@ check('(12) deploy.yml 的发布链必须先过门禁：prepublish 无 job 级 i
   gateWiringProblems.length ? gateWiringProblems.join('；')
     : `prepublish(无 if) → build(needs=${JSON.stringify(buildNeeds)}) → deploy(needs=${JSON.stringify(deployNeeds)})`);
 
-// (13) 采集路径的门禁必须在**提交之前**：机器人提交一进 master 就会被 deploy 的
-// workflow_run 接走，门禁放在提交之后就只是「事后告警」。
-// 判据用**原文位置**而不是解析结果：提交步骤的脚本是 `run: |` 块标量，缩进读取器按设计
-// 整体跳过块标量内容（那是它不引入 YAML 依赖的代价），所以「谁在前谁在后」直接比字符串位置，
-// 反而更贴近事实。两处引用都恰好只有一次（前者由 (11) 保证）。
+// (13) 采集链路的**两类门禁**（P3「门禁拆锁」后的红线，旧名是
+//      「(13) collect.yml 的门禁步骤排在提交步骤之前」）：
+//   ① **数据正确性**必须在数据提交**之前**硬拦：独立步骤、9 条命令逐条在 run 体里、
+//      不许步骤级 if（`if: false` 等于没验）、不许 continue-on-error（失败必须挡住提交）；
+//   ② **完整 gate**（发布就绪类）必须在提交**之后**运行，且失败要**不阻塞入库也不静默**：
+//      调用本身带 continue-on-error（失败不把 collect job 判红 —— deploy.yml 的 workflow_run
+//      只在 Collect 结论 success 时放行，这里判红等于冻结整条发布链）；紧随其后必须有
+//      一个 `if: always()` 的留痕步，引用 `steps.release_gate.outcome` 把结论写进 Summary、
+//      失败/降级时发 `::warning`。
+// 为什么这不算放水：旧语义「完整门禁在提交前」在 2026-11-02 让一次门禁红停更 6 天；新红线
+// 把两件事分开各自守 —— **坏数据一条都不许入库**（9 条命令逐字核对，一条没删），**发布就绪
+// 失败不许静默**（continue-on-error 只在"失败可见"成立时才允许）。发布仍由 deploy.yml 的
+// prepublish 严格门禁裁定（该链不允许降级，(12) 继续守着）。
+// 判据用**原文位置**：提交步骤与 run 体是 `run: |` 块标量，缩进读取器按设计整体跳过块标量内容
+// （那是它不引入 YAML 依赖的代价），所以「谁在前谁在后」直接比字符串位置，反而更贴近事实。
 const collectRaw = fs.readFileSync(path.join(WF_DIR, 'collect.yml'), 'utf8');
+const DATA_CORRECTNESS_STEP = 'Data correctness gate (hard — blocks the data commit)';
+const RELEASE_GATE_STEP = 'Release-readiness gate (after the data commit — never blocks storage)';
+const RELEASE_RECORD_STEP = 'Release-readiness gate record (never silent)';
+const RELEASE_GATE_ID = 'release_gate';
+/** 提交前**硬拦**的数据正确性命令（一条不松；增删/改顺序都要同步本条断言） */
+const DATA_CORRECTNESS_COMMANDS = [
+  'node scripts/validate.js --strict',
+  'node scripts/tools/check-reproducible.js',
+  'node scripts/tools/history-verify.js',
+  'node scripts/tools/migrate-audience-verify.js',
+  'node scripts/tools/provenance-selftest.js',
+  'node scripts/tools/history-selftest.js',
+  'node scripts/tools/changes-selftest.js',
+  'node scripts/tools/ai-selftest.js',
+  'node scripts/tools/fixture-test.js'
+];
+// `parseGateStepsRaw` 只依赖「`- name:` 起始 + 同缩进的 run 块」，对 workflow 的 steps 同样适用。
+const collectStepsRaw = parseGateStepsRaw(collectRaw);
+const collectStepByName = name => collectStepsRaw.find(step => step.name === name);
+/** 按 byte 切出某个步骤块的原文（用于检查 id / env 这类 parseGateStepsRaw 不建模的字段） */
+const collectStepSlices = (() => {
+  const starts = [];
+  const re = /\n {6}- name: /g;
+  let match;
+  while ((match = re.exec(collectRaw)) !== null) starts.push(match.index + 1);
+  return starts;
+})();
+function rawStepSlice(name) {
+  const marker = `      - name: ${name}`;
+  for (let i = 0; i < collectStepSlices.length; i++) {
+    const at = collectStepSlices[i];
+    if (collectRaw.startsWith(marker, at)) {
+      const end = i + 1 < collectStepSlices.length ? collectStepSlices[i + 1] : collectRaw.length;
+      return collectRaw.slice(at, end);
+    }
+  }
+  return '';
+}
 const idxGateRef = collectRaw.indexOf(`uses: ${GATE_ACTION_REF}`);
 const idxPush = collectRaw.indexOf('git push');
+const idxDataGate = collectRaw.indexOf(`- name: ${DATA_CORRECTNESS_STEP}`);
+const idxRecord = collectRaw.indexOf(`- name: ${RELEASE_RECORD_STEP}`);
 const commitStepCount = (collectRaw.match(/name: Commit and push if changed/g) || []).length;
 const collectProblems = [];
-if (idxGateRef < 0) collectProblems.push(`collect.yml 里没有 \`uses: ${GATE_ACTION_REF}\``);
+
+// ① 数据正确性硬门禁：存在 + 9 条命令逐条在 run 体里 + 无 if / 无 continue-on-error + 在推送之前。
+const dataGateStep = collectStepByName(DATA_CORRECTNESS_STEP);
+if (!dataGateStep) {
+  collectProblems.push(`collect.yml 里找不到「${DATA_CORRECTNESS_STEP}」步骤（改名/删除都要同步改本条断言）`);
+} else {
+  const dataGateBody = normalizeRunBody(dataGateStep.runBody);
+  for (const command of DATA_CORRECTNESS_COMMANDS) {
+    if (!dataGateBody.includes(command)) collectProblems.push(`数据正确性硬门禁的 run 体里没有「${command}」`);
+  }
+  if (dataGateStep.hasContinueOnError) {
+    collectProblems.push('数据正确性硬门禁带了 continue-on-error —— 它是提交前的硬拦，失败必须挡住提交');
+  }
+  if (dataGateStep.ifValue !== null) {
+    collectProblems.push(`数据正确性硬门禁带了步骤级 if（${dataGateStep.ifValue}）—— 被跳过就等于没验`);
+  }
+}
 if (idxPush < 0) collectProblems.push('collect.yml 里没有 git push（提交步骤不见了）');
-if (idxGateRef >= 0 && idxPush >= 0 && idxGateRef > idxPush) {
-  collectProblems.push('门禁写在 git push 之后（门禁红也拦不住入库）');
+if (idxDataGate >= 0 && idxPush >= 0 && idxDataGate > idxPush) {
+  collectProblems.push('数据正确性硬门禁写在 git push 之后 —— 坏数据会先入库');
+}
+
+// ② 完整 gate：必须在推送之后；带 continue-on-error（失败不阻塞发布链）+ 有 id；
+//    并且必须有 always() 留痕步引用它的 outcome（否则降级/失败就是静默的）。
+const releaseGateStep = collectStepByName(RELEASE_GATE_STEP);
+if (idxGateRef < 0) collectProblems.push(`collect.yml 里没有 \`uses: ${GATE_ACTION_REF}\``);
+if (idxGateRef >= 0 && idxPush >= 0 && idxGateRef < idxPush) {
+  collectProblems.push('完整 gate 仍在 git push 之前 —— 发布就绪类失败会再次冻住数据入库（P3 之前的行为）');
+}
+if (!releaseGateStep) {
+  collectProblems.push(`collect.yml 里找不到「${RELEASE_GATE_STEP}」步骤（发布就绪门禁的登记名）`);
+} else {
+  if (releaseGateStep.id !== RELEASE_GATE_ID) {
+    collectProblems.push(`「${RELEASE_GATE_STEP}」的 id 是 ${JSON.stringify(releaseGateStep.id)}`
+      + `（期望 ${JSON.stringify(RELEASE_GATE_ID)}：留痕步要按它读 outcome）`);
+  }
+  if (!releaseGateStep.hasContinueOnError) {
+    collectProblems.push('发布就绪 gate 没有 continue-on-error —— 它一红 collect job 就红，'
+      + '而 deploy.yml 的 workflow_run 只在结论 success 时放行 ⇒ 一次门禁失败会冻结整条发布链');
+  }
+}
+const releaseRecordStep = collectStepByName(RELEASE_RECORD_STEP);
+if (!releaseRecordStep) {
+  collectProblems.push(`collect.yml 里找不到「${RELEASE_RECORD_STEP}」留痕步骤 —— 降级/失败会变成静默`);
+} else {
+  if (releaseRecordStep.ifValue !== 'always()') {
+    collectProblems.push(`「${RELEASE_RECORD_STEP}」的 if 是 ${JSON.stringify(releaseRecordStep.ifValue)}`
+      + '（必须是 always()：失败 / skipped / cancelled 时也要留痕）');
+  }
+  const recordSlice = rawStepSlice(RELEASE_RECORD_STEP);
+  if (!recordSlice.includes(`steps.${RELEASE_GATE_ID}.outcome`)) {
+    collectProblems.push(`「${RELEASE_RECORD_STEP}」没有引用 steps.${RELEASE_GATE_ID}.outcome —— `
+      + '留痕必须基于真实结论，不能只写一句「见日志」');
+  }
+  if (!recordSlice.includes('GITHUB_STEP_SUMMARY')) {
+    collectProblems.push(`「${RELEASE_RECORD_STEP}」没有写 $GITHUB_STEP_SUMMARY —— 不在 Summary 留痕就不算「不静默」`);
+  }
+  if (!recordSlice.includes('::warning')) {
+    collectProblems.push(`「${RELEASE_RECORD_STEP}」没有 ::warning 注解 —— 失败/降级在 Actions 页上也必须看得见`);
+  }
+}
+if (idxGateRef >= 0 && idxRecord >= 0 && idxRecord < idxGateRef) {
+  collectProblems.push('留痕步排在完整 gate 之前（那时还没有 outcome 可读）');
 }
 if (commitStepCount !== 1) collectProblems.push(`「Commit and push」步骤出现 ${commitStepCount} 次（期望恰好 1 次）`);
 // 提交内容：四份东西必须一起走 —— 数据本身，以及三份**跨运行状态**
@@ -1432,10 +1598,14 @@ if (commitStepCount !== 1) collectProblems.push(`「Commit and push」步骤出�
 for (const needed of ['deals.json', 'scripts/data/source-health.json', 'scripts/data/zh-pending.json', 'scripts/data/deal-history.json']) {
   if (!collectRaw.includes(needed)) collectProblems.push(`collect.yml 的提交里没有 ${needed}`);
 }
-check('(13) collect.yml 的门禁步骤排在提交步骤之前',
+check('(13) collect.yml 的数据正确性硬门禁在提交之前、完整 gate 在提交之后且失败可见',
   collectProblems.length === 0,
   collectProblems.length ? collectProblems.join('；')
-    : `门禁在字节 ${idxGateRef} → git push 在字节 ${idxPush}（同一 collect job 里，步骤顺序即语义）`);
+    : `数据正确性 ${DATA_CORRECTNESS_COMMANDS.length} 条在字节 ${idxDataGate}（逐条核对，无 if / 无 continue-on-error）`
+      + ` → git push 在字节 ${idxPush}`
+      + ` → 完整 gate 在字节 ${idxGateRef}（continue-on-error + id=${RELEASE_GATE_ID}）`
+      + ` → 留痕步在字节 ${idxRecord}（if: always()，引用 steps.${RELEASE_GATE_ID}.outcome 写 Summary 与 ::warning）`
+      + '；提交步骤唯一且仍带齐 deals / source-health / zh-pending / deal-history');
 
 /* ─────────── (20) 无人值守链路里的外部安装步骤必须**有界** ─────────── */
 

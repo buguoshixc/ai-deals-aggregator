@@ -108,9 +108,18 @@ const TEXT_FLOOR_RESIDUALS = [
   //     两页的下限 660 / 840 原样保留，`seo.textFloor('need', n)` 仍按原值判。
   //   · 四条 category 页按今天的产物重读（数据日推进带来的读数漂移，与上一次同类）。
   //   · 读数由 `node scripts/tools/seo-verify.js --print-floor-margins` 在产物上打印。
+  // ⚠️ 2026-11-10 数据驱动退役两条（**不是下限被调低，也不是判据放宽**）：
+  //   · `category/audio/`：条数 6 → 7、可见正文 1070 → 1188 字、下限随条数 960 → 1020，
+  //     余量 110 → **168**；`category/image/`：条数 5 → 7、1036 → 1287 字、下限 900 → 1020，
+  //     余量 136 → **267**。两页都已离开「余量 < 150」的射程，留在表里会变成
+  //     `seo-verify.js` §③′ 的「过期登记」而判红 ⇒ 按双向不变式的既定动作退役，
+  //     退役理由与读数记在下面的 `TEXT_FLOOR_GRADUATED`（不静默消失）。
+  //   · 触发源是**存量数据增长**（本轮 git 历史实测：master 基点 `ebdd0a8` 179 条时两页
+  //     是 6 / 5 条，与登记一致；P0 的 AppSumo 23 条（`6badae2`，202 条）之后变成 7 / 7，
+  //     此后的 P1（207 条）与 P2 首轮（210 条）读数都停在 7 / 7）。下限公式
+  //     `textFloor(kind, count)` 一个字没动；`category/` 与 `category/agent/` 的读数
+  //     与上次登记逐字相同（52 / 129），原样保留。
   { route: 'category/', kind: 'hub', count: 5, chars: 852, floor: 800, margin: 52, registeredAt: '2026-11-04' },
-  { route: 'category/audio/', kind: 'category', count: 6, chars: 1070, floor: 960, margin: 110, registeredAt: '2026-11-04' },
-  { route: 'category/image/', kind: 'category', count: 5, chars: 1036, floor: 900, margin: 136, registeredAt: '2026-11-04' },
   { route: 'category/agent/', kind: 'category', count: 4, chars: 969, floor: 840, margin: 129, registeredAt: '2026-11-04' }
 ];
 
@@ -140,6 +149,18 @@ const TEXT_FLOOR_GRADUATED = [
     route: 'need/ai-coding/', kind: 'need', count: 4, chars: 1257, floor: 840, margin: 417,
     graduatedAt: '2026-11-04',
     reason: '同上：事实摘要让本页余量 97 → 417，离开「余量 < 150」的射程'
+  },
+  // 2026-11-10（**存量数据增长**导致的数据驱动退役，与上面两条同形：页面变厚离开射程）：
+  // 条数与可见正文都随数据推进而增长，下限 `textFloor(kind, count)` 原样跟着条数算，未调低。
+  {
+    route: 'category/audio/', kind: 'category', count: 7, chars: 1188, floor: 1020, margin: 168,
+    graduatedAt: '2026-11-10',
+    reason: '条数 6 → 7、可见正文 1070 → 1188 字（`node scripts/tools/seo-verify.js --print-floor-margins` 在 dist 上重读），余量 110 → 168，离开「余量 < 150」的射程'
+  },
+  {
+    route: 'category/image/', kind: 'category', count: 7, chars: 1287, floor: 1020, margin: 267,
+    graduatedAt: '2026-11-10',
+    reason: '同上：条数 5 → 7、可见正文 1036 → 1287 字，余量 136 → 267，离开「余量 < 150」的射程'
   }
 ];
 

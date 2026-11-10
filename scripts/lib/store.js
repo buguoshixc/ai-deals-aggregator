@@ -16,6 +16,10 @@ const { SCHEMA_VERSION, nowCN, todayCN, validateDeal, isGarbage, hasDiscountSign
 const { dedup, score } = require('./dedup');
 const { applyDeadline } = require('./expiry');
 const { loadOverrides, applyOverrides } = require('./audience-overrides');
+// B 类资讯线索（beta）：来源类型与 TTL 的判据只有一处 —— provenance 的声明表 + lead-radar 的常数。
+// 这里只做「按来源类型识别线索 + 按原文日期到期下架」，不复制判据（见 prune 的注释）。
+const { SOURCE_TYPES } = require('./provenance');
+const { LEAD_TTL_DAYS } = require('./lead-radar');
 
 const DEALS_FILE = path.join(__dirname, '..', '..', 'deals.json');
 const MAX_DEALS = 300;
@@ -25,6 +29,16 @@ const CIRCUIT_BREAKER_RATIO = 0.3;
 
 /** 人工策展来源：其分类结果受信任，不随启发式规则变动 */
 const TRUSTED_SOURCES = new Set(['Curated', 'Curated-CN']);
+
+/** B 类资讯线索的来源名集合（由 provenance 声明表派生；不在这里再抄一份媒体名单） */
+const LEAD_SOURCES = new Set(
+  Object.keys(SOURCE_TYPES).filter(source => SOURCE_TYPES[source] === 'lead')
+);
+
+/** 这条记录是不是「线索」（B 类资讯线索雷达，beta） */
+function isLeadDeal(deal) {
+  return Boolean(deal && typeof deal.source === 'string' && LEAD_SOURCES.has(deal.source));
+}
 
 /** 读取 deals.json；兼容旧的裸数组格式 */
 function loadStore(file = DEALS_FILE) {
@@ -75,6 +89,21 @@ function prune(deals, { today = todayCN(), max = MAX_DEALS } = {}) {
   const removed = { expired: [], overflow: [] };
 
   let kept = deals.filter(deal => {
+    // B 类资讯线索：**7 天 TTL，从原文日期算**（不是从「我们抓到它」算）。
+    //
+    // 为什么用 firstSeen：契约里没有独立的「原文日期」字段，而采集器把原文日期写进了
+    // firstSeen（见 collectors/leads.js 的 toDraft 注释）——它是线索详情/雷达上唯一的日期行。
+    // 为什么线索不能像优惠那样活到 expiresAt：线索是**新闻**，7 天后即使没人核验也不该继续
+    // 挂在站上（需求 §P2-4「未核验的东西不能永久挂在站上」）。到期走既有「过期下架」通道：
+    // remove 的 id 进 stats.removedExpiredIds ⇒ 历史层照常记 ended + pruned_expired，
+    // 变化雷达的「已结束」栏因此也能如实说它下线了，不需要另造一条下架通道。
+    // TTL 常数与采集窗口共用 LEAD_TTL_DAYS（唯一出处：lib/lead-radar.js）。
+    if (isLeadDeal(deal) && /^\d{4}-\d{2}-\d{2}$/.test(String(deal.firstSeen || ''))) {
+      if (daysBetween(today, deal.firstSeen) > LEAD_TTL_DAYS) {
+        removed.expired.push(deal);
+        return false;
+      }
+    }
     if (deal.type === 'deal' && deal.expiresAt) {
       if (daysBetween(today, deal.expiresAt) > EXPIRED_GRACE_DAYS) {
         removed.expired.push(deal);

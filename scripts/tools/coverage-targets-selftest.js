@@ -1642,8 +1642,8 @@ try {
       fs.writeFileSync(file, `${JSON.stringify(doc, null, 2)}\n`);
       return file;
     };
-    const redRun = (file, needle) => {
-      const result = runReport([`--source-rulings=${file}`]);
+    const redRun = (file, needle, extraArgs = []) => {
+      const result = runReport([`--source-rulings=${file}`, ...extraArgs]);
       return {
         ok: result.status !== 0 && result.stderr.includes(needle),
         exit: result.status,
@@ -1665,8 +1665,28 @@ try {
     check('【反证牙·v3④】已裁决 retire 的来源仍在采集器注册表 ⇒ 报告自检非 0，并点名「仍然挂在采集器注册表里」',
       retireRun.ok, `exit ${retireRun.exit}；${retireRun.hit}`);
 
+    // ⚠️ 反证牙 ④ 的**喂数**（2026-11-10 修，理由见报告「门禁变更」）：
+    // 这一条原先只清空裁决表，咬人的前提是**真实 source-health.json 里恰好有一个
+    // consecutiveFailures >= 3 的来源**。2026-11-10 实测该前提已不成立（19 个来源的
+    // 连续失败全部为 0；futurepedia 从 collector_error 转成了 zero_output 且 failures=0），
+    // 于是这条牙**静默空转**：报告 exit 0，而牙仍报绿。牙的判据必须自给自足 ——
+    // 这里注入一个与真实心跳同结构的合成失败来源（`--source-health=` 覆盖入口），
+    // 让 source-rulings.js 的「连续失败 ≥ 3 ⇒ 必须有裁决」这条判据重新真的被触发。
+    // **判据本身一个字没动**：改的是"喂给它的数据"，不是"它怎么判"。
+    const failingHealth = clone(liveHealth);
+    failingHealth.sources = [...liveHealth.sources, {
+      source: 'probe_failing_source', name: 'Probe Failing Source', region: 'global', kind: 'static',
+      lastAttemptAt: '2026-01-01T00:00:00.000Z', lastSuccessAt: null, lastItemCount: 0,
+      previousItemCount: 0, delta: 0, consecutiveFailures: 3, consecutiveZero: 0,
+      status: 'failed', reason: 'collector_error', lastError: '夹具：连续失败 3 次', lastDurationMs: 1,
+      headlessReady: null
+    }];
+    const failingHealthFile = path.join(v3Tmp, 'source-health.failing.json');
+    fs.writeFileSync(failingHealthFile, `${JSON.stringify(failingHealth, null, 2)}\n`);
+
     const emptyRulings = writeFixture('bad-empty.json', doc => { doc.rulings = []; });
-    const emptyRun = redRun(emptyRulings, '却没有在 scripts/data/source-rulings.json 里留下裁决');
+    const emptyRun = redRun(emptyRulings, '却没有在 scripts/data/source-rulings.json 里留下裁决',
+      [`--source-health=${failingHealthFile}`]);
     check('【反证牙·v3④】连续失败 ≥ 3 次的来源一条裁决都没有 ⇒ 报告自检非 0，并点名「没有在 source-rulings.json 里留下裁决」',
       emptyRun.ok, `exit ${emptyRun.exit}；${emptyRun.hit}`);
 

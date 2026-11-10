@@ -789,6 +789,10 @@ const WORDING_CONTRACT = {
     official: '厂商官方页直采',
     directory: '第三方目录站收录（已解析到官方页）',
     curated: '人工策展',
+    // B 类资讯线索（beta，2026-11 起）：科技媒体的报道，**没核验、可能不准确**。
+    // 这一档存在的唯一目的就是把「未核验」印在页面上 —— 没有它，线索只能被塞进
+    // official/directory 两档之一，而两档的措辞都会让读者把它读成「已核实的优惠」。
+    lead: '线索 · 未核验',
     unknown: '未知'
   },
   SOURCE_STATE: {

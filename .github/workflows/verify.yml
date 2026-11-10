@@ -24,8 +24,9 @@ name: Verify site (gate)
 #   workflow_dispatch       手动跑（另有仅手动可用的 allow_degraded_run 开关）
 # 注：机器人用仓库自带 GITHUB_TOKEN 推的 deals.json 提交**不会**触发本 workflow
 #     （原因见 deploy.yml 里 workflow_run 那段说明）。所以采集那条链路的门禁在
-#     collect.yml 里自己跑（提交数据**之前**），发布那条链路的门禁在 deploy.yml 里自己跑
-#     （发布**之前**）——本文件覆盖的是人类 PR / 推送，也正是分支保护要求的那一个。
+#     collect.yml 里自己跑（**数据正确性**在提交之前硬拦；**发布就绪**的完整 gate 在提交之后、
+#     失败自动降级并留痕），发布那条链路的门禁在 deploy.yml 里自己跑（发布**之前**、不许降级）
+#     ——本文件覆盖的是人类 PR / 推送，也正是分支保护要求的那一个。
 on:
   pull_request:
     branches: [ master ]
@@ -106,7 +107,9 @@ jobs:
       #    并**真实执行**"浏览器可用性判定"那段 shell（浏览器不可用 + 非逐字 'true' ⇒ 必须失败；
       #    逐字 'true' ⇒ 降级且必须留下明确记录）；⑧′ 产物依赖步骤必须显式 `--dir=dist` 且排在
       #    Assemble site **之后**（原先排在构建前，CI 干净检出里没有 dist/ ⇒ 那些牙一次都没跑过）；
-      #    ⑨ collect.yml 的 gate 必须排在提交步骤之前；⑩ 末尾看门狗断言「断言名单与冻结清单等值」。
+      #    ⑨ collect.yml 的**数据正确性硬门禁必须排在提交之前**、完整 gate 必须在提交之后且
+      #    失败可见（P3 门禁拆锁：(13) 会逐条核对 9 条命令/无 if/无 continue-on-error/留痕接线）；
+      #    ⑩ 末尾看门狗断言「断言名单与冻结清单等值」。
       # ⑪ 未加引号的标量里不得出现「冒号 + 空格」—— 那在块上下文里是映射分隔符，GitHub 的
       #    真实 YAML 解析器会拒绝整个文件（本仓库的缩进读取器读得过去，于是本地全绿、
       #    推上去什么都不跑；2026-09-28 实测踩到过一次，用 Python 的 YAML 解析器才发现）。
@@ -156,7 +159,8 @@ jobs:
       - name: CI consistency (action / runner / node-version / engines drift)
         run: node scripts/tools/check-ci-consistency.js --expect-checks=39
 
-      # 门禁本体：与 deploy.yml 的 prepublish、collect.yml 的提交前检查**同一个文件**。
+      # 门禁本体：与 deploy.yml 的 prepublish、collect.yml 的发布就绪门禁（数据提交之后）
+      # **同一个文件**。
       - name: Gate (validate → translation → selftests → build → real browser)
         uses: ./.github/actions/gate
         with:

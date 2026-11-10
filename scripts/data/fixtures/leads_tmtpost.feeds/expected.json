@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "source": "leads_tmtpost",
+  "sourceName": "钛媒体",
+  "fixture": "leads_tmtpost.feeds",
+  "sourceUrl": "https://www.tmtpost.com/rss",
+  "capturedAt": "2026-11-10",
+  "trimmed": "解析器/判据真正读的四个字段（title / link / pubDate / description）：三闸全中与近失配条目优先，最多 8 条，description 截到 200 字",
+  "note": "expected 是**生产解析器在这个最小片段上的真实输出**；重建后请人工 review diff。",
+  "count": 8,
+  "items": [
+    {
+      "title": "*ST亿晶重整易主引爆五连板：中润光能拟入主，游资击鼓传花",
+      "url": "https://www.tmtpost.com/8198759.html",
+      "source": "钛媒体",
+      "sourceUrl": "https://www.tmtpost.com/rss",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "唐山工控集团投资者交流会落地上海，三大上市平台协同构筑产业发展新格局",
+      "url": "https://www.tmtpost.com/8197722.html",
+      "source": "钛媒体",
+      "sourceUrl": "https://www.tmtpost.com/rss",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "光模块龙头股价腰斩之际，天安新材拟2.5亿“追光”｜并购一线",
+      "url": "https://www.tmtpost.com/8198545.html",
+      "source": "钛媒体",
+      "sourceUrl": "https://www.tmtpost.com/rss",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "商超重拾散装零食",
+      "url": "https://www.tmtpost.com/8198256.html",
+      "source": "钛媒体",
+      "sourceUrl": "https://www.tmtpost.com/rss",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "AI进不了相亲相爱一家人，怎么办？",
+      "url": "https://www.tmtpost.com/8198165.html",
+      "source": "钛媒体",
+      "sourceUrl": "https://www.tmtpost.com/rss",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "黄仁勋婚外情背后：黄乐的神秘履历、48亿美元芯片生意与美国政策博弈",
+      "url": "https://www.tmtpost.com/8198370.html",
+      "source": "钛媒体",
+      "sourceUrl": "https://www.tmtpost.com/rss",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "AI带得动这届双十一吗？",
+      "url": "https://www.tmtpost.com/8198668.html",
+      "source": "钛媒体",
+      "sourceUrl": "https://www.tmtpost.com/rss",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "黄仁勋最危险的一次失控",
+      "url": "https://www.tmtpost.com/8198019.html",
+      "source": "钛媒体",
+      "sourceUrl": "https://www.tmtpost.com/rss",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    }
+  ]
+}

@@ -3513,8 +3513,608 @@
       "runAt": "2026-11-08T08:12:48.752Z"
     },
     {
-      "id": "29be3db37d5c",
+      "id": "086534ebceeb",
       "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $39，原价 $199（省 80%）",
+        "pricingModel": "paid",
+        "priceLine": "$39 终身（原价 $199）",
+        "type": "deal",
+        "category": "编程开发",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "0d9b9646f1a5",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $89，原价 $360（省 75%）",
+        "pricingModel": "paid",
+        "priceLine": "$89 终身（原价 $360）",
+        "expiresAt": "2026-11-18",
+        "type": "deal",
+        "category": "音频语音",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "2e5118bcd2c1",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $39，原价 $180（省 78%）",
+        "pricingModel": "paid",
+        "priceLine": "$39 终身（原价 $180）",
+        "expiresAt": "2026-11-12",
+        "type": "deal",
+        "category": "办公效率",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "318a050a84bb",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $49，原价 $156（省 69%）",
+        "pricingModel": "paid",
+        "priceLine": "$49 终身（原价 $156）",
+        "expiresAt": "2026-11-10",
+        "type": "deal",
+        "category": "其他",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "33d4fd34f78f",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $39，原价 $468（省 92%）",
+        "pricingModel": "paid",
+        "priceLine": "$39 终身（原价 $468）",
+        "type": "deal",
+        "category": "视频",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "3f97a29b90e6",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $49，原价 $99（省 51%）",
+        "pricingModel": "paid",
+        "priceLine": "$49 终身（原价 $99）",
+        "expiresAt": "2026-11-16",
+        "type": "deal",
+        "category": "办公效率",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "44848acd19f3",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $55，原价 $150（省 63%）",
+        "pricingModel": "paid",
+        "priceLine": "$55 终身（原价 $150）",
+        "expiresAt": "2026-11-14",
+        "type": "deal",
+        "category": "设计创意",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "49f87d205620",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $19，原价 $70（省 73%）",
+        "pricingModel": "paid",
+        "priceLine": "$19 终身（原价 $70）",
+        "expiresAt": "2026-11-17",
+        "type": "deal",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "620ef4290482",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $144（省 59%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $144）",
+        "type": "deal",
+        "category": "视频",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "72100a42eb69",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $179，原价 $299（省 40%）",
+        "pricingModel": "paid",
+        "priceLine": "$179 终身（原价 $299）",
+        "type": "deal",
+        "category": "办公效率",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "7f06124571e2",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $49，原价 $228（省 79%）",
+        "pricingModel": "paid",
+        "priceLine": "$49 终身（原价 $228）",
+        "type": "deal",
+        "category": "办公效率",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "8797caa10aea",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $120（省 51%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $120）",
+        "expiresAt": "2026-11-10",
+        "type": "deal",
+        "category": "办公效率",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "8b8b44476f52",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $299（省 80%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $299）",
+        "type": "deal",
+        "category": "编程开发",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "8e4af3df250c",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $148（省 60%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $148）",
+        "type": "deal",
+        "category": "教育学习",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "c61916544faf",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $299（省 80%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $299）",
+        "type": "deal",
+        "category": "办公效率",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "dfa07fdc244d",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $69，原价 $240（省 71%）",
+        "pricingModel": "paid",
+        "priceLine": "$69 终身（原价 $240）",
+        "expiresAt": "2026-11-09",
+        "type": "deal",
+        "category": "编程开发",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "e2bea3790e12",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $190（省 69%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $190）",
+        "type": "deal",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "e5fcacad308b",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $299（省 80%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $299）",
+        "expiresAt": "2026-12-08",
+        "type": "deal",
+        "category": "搜索研究",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "f1323ce17329",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $69，原价 $708（省 90%）",
+        "pricingModel": "paid",
+        "priceLine": "$69 终身（原价 $708）",
+        "type": "deal",
+        "category": "办公效率",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "f34797ef8750",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $99，原价 $299（省 67%）",
+        "pricingModel": "paid",
+        "priceLine": "$99 终身（原价 $299）",
+        "type": "deal",
+        "category": "设计创意",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "f6e6f3b1c820",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $228（省 74%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $228）",
+        "expiresAt": "2026-11-09",
+        "type": "deal",
+        "category": "视频",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "fef21feaac71",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $69，原价 $588（省 88%）",
+        "pricingModel": "paid",
+        "priceLine": "$69 终身（原价 $588）",
+        "expiresAt": "2026-11-12",
+        "type": "deal",
+        "category": "API服务",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "ff8cbecdd5f6",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $199（省 70%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $199）",
+        "type": "deal",
+        "category": "视频",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "14f39f10f728",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "OpenRouter 免费模型：prompt / completion 价格均为 $0；限流：20 次/分钟；每日 50 次（累计购买 <10 credits）或 1000 次（≥10 credits）—— 出自 OpenRouter 官方限流文档；官方未标注免费截止日期",
+        "pricingModel": "free",
+        "priceLine": "$0 输入 / $0 输出（免费）",
+        "features": [
+          "免费 API",
+          "20 RPM / 50 RPD",
+          ":free 路由"
+        ],
+        "validity": "官方未标注免费截止日期",
+        "type": "deal",
+        "category": "API服务",
+        "region": "global",
+        "source": "OpenRouter",
+        "sourceUrl": "https://openrouter.ai/api/v1/models",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:10:21.091Z"
+    },
+    {
+      "id": "2374288880c3",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "OpenRouter 免费模型：prompt / completion 价格均为 $0；限流：20 次/分钟；每日 50 次（累计购买 <10 credits）或 1000 次（≥10 credits）—— 出自 OpenRouter 官方限流文档；官方未标注免费截止日期",
+        "pricingModel": "free",
+        "priceLine": "$0 输入 / $0 输出（免费）",
+        "features": [
+          "免费 API",
+          "20 RPM / 50 RPD",
+          ":free 路由"
+        ],
+        "validity": "官方未标注免费截止日期",
+        "type": "deal",
+        "category": "API服务",
+        "region": "global",
+        "source": "OpenRouter",
+        "sourceUrl": "https://openrouter.ai/api/v1/models",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:10:21.091Z"
+    },
+    {
+      "id": "6637868284f5",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "OpenRouter 免费模型：prompt / completion 价格均为 $0；限流：20 次/分钟；每日 50 次（累计购买 <10 credits）或 1000 次（≥10 credits）—— 出自 OpenRouter 官方限流文档；官方未标注免费截止日期",
+        "pricingModel": "free",
+        "priceLine": "$0 输入 / $0 输出（免费）",
+        "features": [
+          "免费 API",
+          "20 RPM / 50 RPD",
+          ":free 路由"
+        ],
+        "validity": "官方未标注免费截止日期",
+        "type": "deal",
+        "category": "API服务",
+        "region": "global",
+        "source": "OpenRouter",
+        "sourceUrl": "https://openrouter.ai/api/v1/models",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:10:21.091Z"
+    },
+    {
+      "id": "75c584a4d6a2",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "OpenRouter 免费模型：prompt / completion 价格均为 $0；限流：20 次/分钟；每日 50 次（累计购买 <10 credits）或 1000 次（≥10 credits）—— 出自 OpenRouter 官方限流文档；官方未标注免费截止日期",
+        "pricingModel": "free",
+        "priceLine": "$0 输入 / $0 输出（免费）",
+        "features": [
+          "免费 API",
+          "20 RPM / 50 RPD",
+          ":free 路由"
+        ],
+        "validity": "官方未标注免费截止日期",
+        "type": "deal",
+        "category": "API服务",
+        "region": "global",
+        "source": "OpenRouter",
+        "sourceUrl": "https://openrouter.ai/api/v1/models",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:10:21.091Z"
+    },
+    {
+      "id": "ef3cba339a72",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "OpenRouter 免费模型：prompt / completion 价格均为 $0；限流：未标注（该模型 ID 无 :free 后缀；官方免费档限流条款按文档只适用于 free variant）；官方未标注免费截止日期",
+        "pricingModel": "free",
+        "priceLine": "$0 输入 / $0 输出（免费）",
+        "features": [
+          "免费 API",
+          "限流未标注"
+        ],
+        "validity": "官方未标注免费截止日期",
+        "type": "deal",
+        "category": "API服务",
+        "region": "global",
+        "source": "OpenRouter",
+        "sourceUrl": "https://openrouter.ai/api/v1/models",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:10:21.091Z"
+    },
+    {
+      "id": "29be3db37d5c",
+      "at": "2026-11-10",
       "type": "created",
       "field": null,
       "from": null,
@@ -3527,7 +4127,54 @@
         "sourceUrl": "https://futuretools.io/tools/call-annie",
         "verified": false
       },
-      "runAt": "2026-11-09T04:48:44.758Z"
+      "runAt": "2026-11-09T16:38:06.629Z"
+    },
+    {
+      "id": "2e5118bcd2c1",
+      "at": "2026-11-10",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/ending-soon/",
+      "to": "https://appsumo.com/collections/new/",
+      "origin": "observed",
+      "runAt": "2026-11-09T16:38:06.629Z"
+    },
+    {
+      "id": "3eac4b6acccb",
+      "at": "2026-11-10",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "对话模型",
+        "region": "cn",
+        "source": "快科技",
+        "sourceUrl": "https://rss.mydrivers.com/rss.aspx?Tid=1",
+        "verified": false
+      },
+      "runAt": "2026-11-09T16:38:06.629Z"
+    },
+    {
+      "id": "e7f286155de9",
+      "at": "2026-11-10",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $79，原价 $688（省 89%）",
+        "pricingModel": "paid",
+        "priceLine": "$79 终身（原价 $688）",
+        "type": "deal",
+        "category": "设计创意",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-09T16:38:06.629Z"
     }
   ]
 }

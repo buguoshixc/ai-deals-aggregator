@@ -112,14 +112,26 @@ function printReport(report, { title = '采集报告' } = {}) {
 /** 健康状态的中文简写（表格里用的短标签，与 health.STATUS_LABEL 的符号版区分开） */
 const STATUS_TEXT = { healthy: '正常', degraded: '异常', failed: '失败' };
 
+// 暂停态的**文案与判定**一律来自 lib/health.js（/status/、collect Summary、coverage 报告共用
+// 同一个 pausedLabel()）—— 本文件不复制一份"⏸ 已暂停…"的措辞，否则三处迟早漂移。
+const health = require('./health');
+
 /**
  * 数据源健康表（跨运行状态，不是当次运行的表）。
  *
  * 列：来源 / 上次 / 本次 / 增减 / 状态 / 最近成功。刻意把「上次」放在「本次」左边 ——
  * 判断一个来源是不是坏了，看的是这两个数的关系，不是本次的绝对值。
+ *
+ * P3 熔断：暂停来源在状态列标 `⏸`，并在**「合计：」行之前**追加逐条暂停说明。
+ * 为什么强调"之前"：`.github/workflows/collect.yml` 的 Publish run summary 用
+ * `sed -n '/=== 数据源健康/,/^合计：/p'` 抓这一段进 CI Summary —— 合计之后的
+ * 失败/异常清单本来就抓不到，暂停说明若也放在后面，线上 Summary 就看不到"它已停"。
  */
 function printHealth(summary, { title = '数据源健康（跨运行）' } = {}) {
   const rows = summary.rows || [];
+  const pausedRows = Array.isArray(summary.pausedSources)
+    ? summary.pausedSources
+    : rows.filter(row => row && row.pausedAt);
   console.log(`\n=== ${title} ===`);
   if (!rows.length) {
     console.log('（本轮没有任何来源记录）');
@@ -132,17 +144,23 @@ function printHealth(summary, { title = '数据源健康（跨运行）' } = {})
     const status = STATUS_TEXT[row.status] || row.status;
     const last = row.lastSuccessAt ? row.lastSuccessAt.replace('T', ' ').slice(0, 16) : '从未';
     const extra = row.reason && row.reason !== 'zero_output' ? `（${row.reason}）` : '';
+    const pausedMark = row.pausedAt ? ' ⏸' : '';
     console.log([
       pad(row.name || row.source, 18),
       pad(row.previousItemCount === null ? '—' : row.previousItemCount, 6),
       pad(row.lastItemCount, 6),
       pad(row.delta > 0 ? `+${row.delta}` : row.delta, 6),
-      pad(status + extra, 10),
+      pad(status + extra + pausedMark, 10),
       last
     ].join(' '));
   }
   console.log('-'.repeat(header.join(' ').length + 6));
-  console.log(`合计：${summary.total} 个来源 · 正常 ${summary.healthy} · 异常 ${summary.degraded} · 失败 ${summary.failed}`);
+  if (pausedRows.length) {
+    console.log('⏸ 已暂停（熔断）：');
+    pausedRows.forEach(row => console.log(`  ⏸ ${row.source} ${row.name}：${health.pausedLabel(row)}`));
+  }
+  console.log(`合计：${summary.total} 个来源 · 正常 ${summary.healthy} · 异常 ${summary.degraded} · 失败 ${summary.failed}`
+    + `${pausedRows.length ? ` · ⏸ 熔断暂停 ${pausedRows.length}` : ''}`);
   if (summary.failedSources.length) {
     // 逐条点名 + 连续次数：这是「某个源已经坏了几天」唯一会开口说话的地方
     console.log('失败来源：');

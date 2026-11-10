@@ -226,7 +226,7 @@ collector-patch-v1    translate-field-v1   audit-record-v1
 ## 十一、默认 AI 不参与正式定时发布
 
 ```text
-collect（定时）→ 确定性链路 → 门禁 → 提交 → 发布      ← 全程零 AI 调用
+collect（定时）→ 确定性链路 → 数据正确性门禁 → 提交 → 发布就绪门禁（自动降级）→ 发布（deploy 严格裁定）  ← 全程零 AI 调用
 AI 维护（手动 workflow_dispatch）→ 候选 → artifact        ← 不提交、不发布
 ```
 

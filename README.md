@@ -1193,14 +1193,21 @@ Install dependencies → Architecture fitness (structure invariants) → Evidenc
   Collect 的结论，而第一句 `event_name != 'workflow_run'` 让每一次人工 push 都无条件发布
   —— 线上实证：`e01dcfc` 上 `gate=failure` 而 `build`/`deploy=success` 照发。
 - `.github/workflows/collect.yml`：cron **名义**上是每天北京时间 08:00 / 20:00（`0 0 * * *` / `0 12 * * *`
-  = UTC 00:00 / 12:00）采集 → 校验 → **提交前的完整门禁** → 有变化才提交
+  = UTC 00:00 / 12:00）采集 → 校验 → **数据正确性硬门禁（提交前）** → 有变化才提交
   `deals.json` + `scripts/data/source-health.json` + `scripts/data/zh-pending.json`
   + `scripts/data/source-snapshots.json`（v2.0 起第四份：页面结构摘要，**不含正文**）。
-  四份一起走：数据本身，以及三份跨运行状态。门禁排在 `git push` **之前**：数据有问题
-  就根本不入库（机器人提交一进 master 就会被 deploy 的 workflow_run 接走）。
+  四份一起走：数据本身，以及三份跨运行状态。P3「门禁拆锁」起门禁拆成两类
+  （2026-11-02 那次「门禁红 ⇒ 不提交 ⇒ 线上停版 6 天」的教训）：
+  · **数据正确性**（9 条：`validate --strict` / `check-reproducible` / `history-verify` /
+    `migrate-audience-verify` / provenance·history·changes·ai·fixture 各 selftest）在 `git push`
+    **之前**硬拦 —— 坏数据根本不入库；
+  · **发布就绪**（完整 gate：真浏览器验收 / 产物自检 / 确定性构建 / SEO 对账）在提交**之后**运行，
+    失败不阻塞入库且**自动降级**（`allow_degraded_run: 'true'`，不再需要人工勾选），结论与
+    「哪几步没跑 / 为什么」写进 Summary；**发布仍由 deploy.yml 的 prepublish 严格门禁裁定**。
   采集步骤为 `node scripts/collect.js --headless`（静态来源 + 无头来源），前面会安装 playwright 自带
-  chromium（这一步失败不阻断采集本身，但会让无头来源在健康表里判成 `headless_unavailable`，
-  进而让**提交前的门禁**失败——这是刻意的，见下）。
+  chromium（这一步失败不阻断采集本身，会让无头来源在健康表里判成 `headless_unavailable`：
+  发布就绪门禁因此自动降级、数据仍入库，但 deploy 的 prepublish 会以「浏览器不可用」拒发
+  ——见下）。
   **实测**：GitHub 的 schedule 队列常把这一跑延后 **3 到 6 小时**。2026-09-23 从 Actions API 复核 4 次
   schedule 运行的 `created_at`（延后 +3h26m50s 到 +5h55m40s）：
   `2026-09-21T17:55:40Z`（名义 12:00Z → 北京 09-22 01:55，延后 5h55m40s，run 35635091297）、
@@ -1235,10 +1242,13 @@ Install dependencies → Architecture fitness (structure invariants) → Evidenc
 > `npm ci`。此前「发布前无需 npm install」的说法只对 `build-local.js` 那一步成立（它确实零依赖），
 > 现在整条发布链不再与网络无关——这是「gate 全过才发布」的必然代价，如实记录。
 
-> ⚠️ **门禁红时会怎样**：本次不发布，线上继续保留上一份成功版本。定时采集那条链路尤其如此
-> ——浏览器装不上 = 门禁红 = 本次不提交数据、站点停更。这是刻意的取舍（数据正确性 >
-> 更新频率）；逃生口只有一个且必须人工：`workflow_dispatch` 勾 `allow_degraded_run`，
-> Summary 里会明确留下「本次没有做真浏览器验收」。
+> ⚠️ **门禁红时会怎样**（P3 起分两类，处置完全不同）：
+> · **数据正确性**红 ⇒ 本次不提交数据；线上保留上一份成功版本。
+> · **发布就绪**红 ⇒ 数据照常入库（提交已在前一步完成），collect 的 job 保持绿色，
+>   结论写进 Summary（`Release-readiness gate record`）；是否发布由 deploy.yml 的 `prepublish`
+>   **严格**门禁另行裁定 —— 发布链任何事件都不许降级。所以「数据入库」不等于「发布放行」。
+> 采集侧不再需要人工勾选降级（自动降级 + `<GITHUB_STEP_SUMMARY>` 留痕）；`verify.yml` 上那个
+> 人工 `allow_degraded_run` 开关只作用于 PR/push 门禁的浏览器验收，与发布链无关。
 
 > ⚠️ **回归比对的代价**：`verify --compare` 对覆盖条数 / 卡片数 / 首屏完整可见条数只允许
 > 「不减少」。合法的数据缩减（过期下架、重新折叠）会拦发布，处置方式是**人工、留痕**地

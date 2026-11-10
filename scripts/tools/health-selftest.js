@@ -13,6 +13,14 @@
  *   ⑤ 无头浏览器没起来               failed（哪怕采集器自己没抛错）
  * 外加：采集器抛异常、条数陡降、恢复后计数清零、本轮没跑的来源不许冒充「今天健康」。
  *
+ * §7 是 P3 源级熔断的回归钉（注入 now、不读墙上时钟）：
+ *   ① 连续失败 4 次（< 阈值 5）不暂停，下一轮仍应运行；
+ *   ② 第 5 次失败 ⇒ pausedAt/pausedReason 写入、窗口内 circuitState=open、跳过；
+ *   ③ 暂停满 N 天 ⇒ half_open 放行一次；成功清零恢复，再失败刷新窗口（重新计时）；
+ *   另外钉住：零产出 / zeroOutputExpected（线索雷达）**绝不参与熔断**、build() 对未跑源
+ *   保留暂停字段且不伪造 lastAttemptAt、printHealth 的暂停标记落在 CI Summary 的 sed 区间内、
+ *   三处展示（/status/ · Summary · coverage 报告）共用同一个 health.pausedLabel()。
+ *
  * 第 5、6 节是 P2-15 的回归钉：**判定写在生产里、断言写在别处**正是那个缺陷的形态
  * （真实接线路径下 `headless_unavailable` 出现 0 次，全被折叠成 `collector_error`）。
  * 所以这两节不复制公式：
@@ -30,9 +38,14 @@ const path = require('path');
 const { spawnSync } = require('child_process');
 const {
   STATUS, ZERO_OUTPUT_FAIL_AFTER, SHARP_DROP_RATIO, REASON_LABEL,
+  CIRCUIT_STATE, CIRCUIT_FAILURE_THRESHOLD, HALF_OPEN_AFTER_DAYS, HALF_OPEN_AFTER_MS,
   emptyDoc, evaluate, build, summarize, relativeTime, formatCN,
-  headlessReady, attemptsFromReport
+  headlessReady, attemptsFromReport,
+  circuitState, shouldSkipPaused, halfOpenAt, pausedLabel
 } = require('../lib/health');
+// printHealth 是 collect.js 打印「=== 数据源健康（跨运行）」表的**同一个函数**：
+// §7 直接调它并捕获取样，证明暂停标记落在 CI Summary 的 sed 区间（`=== 数据源健康` ~ `合计：`）内。
+const { printHealth } = require('../lib/report');
 
 const ROOT = path.join(__dirname, '..', '..');
 
@@ -323,6 +336,164 @@ check('H2 Collect Summary 里无头来源落到 headless_unavailable', /失败�
 check('H3 Collect Summary 同时明说「无头浏览器 不可用」', /无头浏览器 不可用/.test(summaryLine), summaryLine);
 check('H4 这一轮演练一个字节都没写进生产数据文件（dry-run 的只读承诺）', changedFiles.length === 0,
   changedFiles.join(', '));
+
+/* ------------------------------------------------------------------ */
+console.log('\n=== 7) P3 源级熔断：连续失败暂停 + 半开恢复（注入 now，不读墙上时钟） ===');
+
+const CIRCUIT_T0 = Date.UTC(2026, 10, 1, 4, 0, 0); // 2026-11-01 12:00 北京时间
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * 按**显式时间序列**推进熔断状态：`at` 是绝对毫秒时间戳（不是墙钟），
+ * `ok:false` = 采集器抛错（唯一参与熔断的形态），`valid` = 本次合格条数。
+ */
+function runCircuit(steps, { source = 'circuit_demo', kind = 'static', start = null } = {}) {
+  let previous = start;
+  return steps.map(step => {
+    const record = evaluate({
+      previous,
+      attempt: {
+        source,
+        name: source,
+        region: 'cn',
+        kind,
+        ok: step.ok !== false,
+        error: step.ok === false ? (step.error || 'fetch failed: socket hang up') : null,
+        valid: step.ok === false ? 0 : (step.valid === undefined ? 10 : step.valid),
+        ms: 100,
+        headlessReady: step.headlessReady === undefined ? true : step.headlessReady,
+        zeroOutputExpected: step.zeroOutputExpected === true
+      },
+      now: new Date(step.at)
+    });
+    previous = record;
+    return record;
+  });
+}
+
+const failAt = day => ({ ok: false, at: CIRCUIT_T0 + day * DAY_MS });
+
+/* ---- ① 不到阈值不停 ---- */
+const fourFails = runCircuit([failAt(0), failAt(1), failAt(2), failAt(3)]);
+const fourth = fourFails[3];
+checkEqual('§7① 连续失败 4 次仍未暂停（pausedAt 为空）', fourth.pausedAt, null);
+checkEqual('§7① 连续失败 4 次仍未写 pausedReason', fourth.pausedReason, null);
+checkEqual('§7① 连续失败计数照常到 4', fourth.consecutiveFailures, 4);
+checkEqual('§7① status 仍按原规则 failed（不新增枚举值）', fourth.status, STATUS.failed);
+checkEqual('§7① circuitState=closed（下一轮仍应运行）',
+  circuitState(fourth, new Date(CIRCUIT_T0 + 3 * DAY_MS + 1)), CIRCUIT_STATE.closed);
+checkEqual('§7① shouldSkipPaused=false（未到阈值不许跳过）',
+  shouldSkipPaused(fourth, new Date(CIRCUIT_T0 + 30 * DAY_MS)), false);
+const recoveredBelowThreshold = runCircuit([failAt(0), failAt(1), failAt(2), failAt(3), { ok: true, at: CIRCUIT_T0 + 4 * DAY_MS }]);
+checkEqual('§7① 反例：4 次失败后来一次成功 ⇒ 计数清零且仍无暂停',
+  `${recoveredBelowThreshold[4].consecutiveFailures}/${recoveredBelowThreshold[4].pausedAt}`, '0/null');
+
+/* ---- ② 到阈值暂停（第 5 次连续失败）---- */
+const fiveFails = runCircuit([failAt(0), failAt(1), failAt(2), failAt(3), failAt(4)]);
+const fifth = fiveFails[4];
+const FIFTH_AT = new Date(CIRCUIT_T0 + 4 * DAY_MS).toISOString();
+checkEqual('§7② 第 5 次连续失败 ⇒ consecutiveFailures=5', fifth.consecutiveFailures, CIRCUIT_FAILURE_THRESHOLD);
+checkEqual('§7② 第 5 次失败写入 pausedAt（= 本次失败时刻）', fifth.pausedAt, FIFTH_AT);
+check('§7② pausedReason 带 circuit_open 前缀与失败次数',
+  /^circuit_open: 连续失败 5 次/.test(fifth.pausedReason || ''), fifth.pausedReason);
+check('§7② pausedReason 保留最近错误原文', /socket hang up/.test(fifth.pausedReason || ''), fifth.pausedReason);
+checkEqual('§7② 窗口内 circuitState=open',
+  circuitState(fifth, new Date(CIRCUIT_T0 + 4 * DAY_MS + 1)), CIRCUIT_STATE.open);
+checkEqual('§7② 窗口内 shouldSkipPaused=true（暂停中本轮不跑）',
+  shouldSkipPaused(fifth, new Date(CIRCUIT_T0 + 4 * DAY_MS + 2 * DAY_MS)), true);
+checkEqual('§7② 窗口边界前 1ms 仍是 open',
+  circuitState(fifth, new Date(CIRCUIT_T0 + 4 * DAY_MS + HALF_OPEN_AFTER_MS - 1)), CIRCUIT_STATE.open);
+checkEqual('§7② 未暂停的行不跳过（null row / healthy row）',
+  `${shouldSkipPaused(null, new Date())}/${shouldSkipPaused({ pausedAt: null, pausedReason: null }, new Date())}`, 'false/false');
+
+// 暂停源被 collect 跳过时**不传 attempt 给 build**：旧字段必须原样保留（尤其不能伪造 lastAttemptAt）。
+const pausedDocInput = { schemaVersion: 1, generatedAt: fifth.lastAttemptAt, sources: [fifth] };
+const skippedBuild = build({ previousDoc: pausedDocInput, now: new Date(CIRCUIT_T0 + 5 * DAY_MS), attempts: [] });
+const skippedRow = skippedBuild.doc.sources[0];
+checkEqual('§7② 暂停源本轮未跑 ⇒ stale/lastRunMissing 标记照旧',
+  `${skippedRow.stale}/${skippedRow.lastRunMissing}`, 'true/true');
+checkEqual('§7② 暂停源本轮未跑 ⇒ pausedAt/pausedReason 原样保留（build 不覆盖丢失）',
+  `${skippedRow.pausedAt}/${skippedRow.pausedReason === fifth.pausedReason}`, `${FIFTH_AT}/true`);
+checkEqual('§7② 暂停源本轮未跑 ⇒ lastAttemptAt 不被伪造（仍是上一次失败时刻）',
+  skippedRow.lastAttemptAt, fifth.lastAttemptAt);
+checkEqual('§7② 汇总里「暂停」与「失败」分开计数',
+  `${skippedBuild.summary.failed}/${skippedBuild.summary.paused}`, '1/1');
+
+/* ---- ②′ 零产出 / 线索雷达绝不参与熔断 ---- */
+const zeroRun = runCircuit([0, 1, 2, 3, 4, 5, 6, 7].map(day => ({ ok: true, valid: 0, at: CIRCUIT_T0 + day * DAY_MS })));
+checkEqual('§7②′ 零产出 8 轮：consecutiveZero 到 8（判定层照旧）', zeroRun[7].consecutiveZero, 8);
+checkEqual('§7②′ 零产出 8 轮：pausedAt 始终为空（零产出绝不参与熔断）', zeroRun[7].pausedAt, null);
+checkEqual('§7②′ 零产出 8 轮：shouldSkipPaused=false', shouldSkipPaused(zeroRun[7], new Date(CIRCUIT_T0 + 90 * DAY_MS)), false);
+const radarRun = runCircuit([0, 1, 2, 3, 4, 5, 6, 7].map(day => ({ ok: true, valid: 0, zeroOutputExpected: true, at: CIRCUIT_T0 + day * DAY_MS })));
+checkEqual('§7②′ zeroOutputExpected（线索雷达）8 轮零产出：不暂停且仍 healthy',
+  `${radarRun[7].pausedAt}/${radarRun[7].status}`, 'null/healthy');
+
+/* ---- ③ 半开窗口到点重试：成功恢复 / 失败刷新窗口 ---- */
+const DUE_AT_MS = new Date(fifth.pausedAt).getTime() + HALF_OPEN_AFTER_MS;
+const dueAt = new Date(DUE_AT_MS);
+checkEqual('§7③ 暂停满 N 天 ⇒ circuitState=half_open', circuitState(fifth, dueAt), CIRCUIT_STATE.half_open);
+checkEqual('§7③ 半开窗口到点 ⇒ shouldSkipPaused=false（放行一次重试）', shouldSkipPaused(fifth, dueAt), false);
+checkEqual('§7③ halfOpenAt 给出绝对到期时刻（展示用）', halfOpenAt(fifth), dueAt.toISOString());
+checkEqual('§7③ 未暂停行的 halfOpenAt/pausedLabel 为空', `${halfOpenAt(recoveredBelowThreshold[4])}/${pausedLabel(recoveredBelowThreshold[4])}`, 'null/');
+
+const halfOpenSuccess = evaluate({
+  previous: fifth,
+  attempt: { source: 'circuit_demo', name: 'circuit_demo', region: 'cn', kind: 'static', ok: true, valid: 12, ms: 100 },
+  now: dueAt
+});
+checkEqual('§7③ 半开重试成功 ⇒ pausedAt 清空', halfOpenSuccess.pausedAt, null);
+checkEqual('§7③ 半开重试成功 ⇒ pausedReason 清空', halfOpenSuccess.pausedReason, null);
+checkEqual('§7③ 半开重试成功 ⇒ consecutiveFailures=0', halfOpenSuccess.consecutiveFailures, 0);
+checkEqual('§7③ 半开重试成功 ⇒ status=healthy', halfOpenSuccess.status, STATUS.healthy);
+checkEqual('§7③ 恢复后 circuitState=closed',
+  circuitState(halfOpenSuccess, new Date(DUE_AT_MS + DAY_MS)), CIRCUIT_STATE.closed);
+
+const halfOpenFail = evaluate({
+  previous: fifth,
+  attempt: { source: 'circuit_demo', name: 'circuit_demo', region: 'cn', kind: 'static', ok: false, error: 'HTTP 503 service unavailable', valid: 0, ms: 100 },
+  now: dueAt
+});
+checkEqual('§7③ 半开重试再失败 ⇒ consecutiveFailures=6（照常 +1）', halfOpenFail.consecutiveFailures, 6);
+checkEqual('§7③ 半开重试再失败 ⇒ pausedAt 刷新为本次重试时刻（窗口重新计时）', halfOpenFail.pausedAt, dueAt.toISOString());
+checkEqual('§7③ 半开重试再失败 ⇒ 立刻回到 open（不会连续重试）',
+  circuitState(halfOpenFail, new Date(DUE_AT_MS + 1)), CIRCUIT_STATE.open);
+checkEqual('§7③ 半开重试再失败 ⇒ shouldSkipPaused=true', shouldSkipPaused(halfOpenFail, new Date(DUE_AT_MS + 1)), true);
+check('§7③ 刷新后的 pausedReason 记录新错误', /HTTP 503/.test(halfOpenFail.pausedReason || ''), halfOpenFail.pausedReason);
+
+/* ---- ④ 留痕：暂停文案单一来源 + CI Summary sed 区间 + 渲染接线 ---- */
+const label = pausedLabel(fifth);
+check('§7④ pausedLabel 文案含 ⏸/暂停于/半开重试窗口/原因',
+  /⏸ 已暂停（熔断）/.test(label)
+  && label.includes('暂停于 2026-11-05 12:00')
+  && label.includes('半开重试窗口 2026-11-08 12:00')
+  && /circuit_open: 连续失败 5 次/.test(label), label);
+
+// 直接调 collect.js 用的同一个 printHealth()，捕获取样（不复制表格实现）。
+const healthLog = [];
+const originalConsoleLog = console.log;
+console.log = (...args) => healthLog.push(args.join(' '));
+try {
+  printHealth(summarize(pausedDocInput));
+} finally {
+  console.log = originalConsoleLog;
+}
+const healthTableText = healthLog.join('\n');
+const pausedIndex = healthTableText.indexOf('⏸ 已暂停（熔断）');
+const totalIndex = healthTableText.indexOf('合计：');
+check('§7④ printHealth 表里出现暂停标记（状态列 ⏸ + 逐条说明）', pausedIndex >= 0, healthTableText.split('\n').slice(0, 4).join(' / '));
+check('§7④ CI Summary 的 sed 区间（=== 数据源健康 ~ 合计：）内可见暂停标记',
+  pausedIndex >= 0 && totalIndex > pausedIndex, `暂停标记@${pausedIndex} / 合计@${totalIndex}`);
+check('§7④ 合计行同时给出暂停计数', /合计：1 个来源 · 正常 0 · 异常 0 · 失败 1 · ⏸ 熔断暂停 1/.test(healthTableText),
+  (healthTableText.match(/合计：[^\n]*/) || [''])[0]);
+
+// 三处展示共用同一份文案/判定：静态接线检查（渲染器行为由 build-local 产物自检覆盖）。
+const buildLocalSource = fs.readFileSync(path.join(ROOT, 'scripts', 'tools', 'build-local.js'), 'utf8');
+const reportLibSource = fs.readFileSync(path.join(ROOT, 'scripts', 'lib', 'report.js'), 'utf8');
+const collectSource = fs.readFileSync(path.join(ROOT, 'scripts', 'collect.js'), 'utf8');
+check('§7④ /status/ 与 collect Summary 都调用 health.pausedLabel（不是各写一份措辞）',
+  buildLocalSource.includes('health.pausedLabel') && reportLibSource.includes('health.pausedLabel'));
+check('§7④ collect.js 的跳过闸门调用 health.circuitState / shouldSkipPaused（判定与断言同源）',
+  collectSource.includes('health.circuitState') || collectSource.includes('health.shouldSkipPaused'));
 
 /* ------------------------------------------------------------------ */
 console.log(`\n${failures.length ? '❌' : '✅'} 数据源健康自测：${pass} 项通过，${failures.length} 项失败`);

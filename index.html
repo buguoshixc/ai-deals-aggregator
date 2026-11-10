@@ -1620,7 +1620,7 @@
     /* v1.3 信息来源块的措辞同源副本：与 lib/audience.js 的 WORDING_CONTRACT 同组名、同文本，
        由 checkWordingContract() 逐项比对。三个缺失状态（不适用 / 未知 / 不可用）必须分开写：
        人工策展按设计没有采集器，与「心跳里匹配不到」是两件不同的事实。 */
-    const SOURCE_WORDING = {"SOURCE_LABELS":{"sectionTitle":"信息来源","official":"官方页面","origin":"收录渠道","source":"收录来源","sourceType":"来源类型","method":"采集方式","firstSeen":"首次收录","lastSeen":"最近发现","lastSuccess":"最近成功采集","basis":"断言依据","evidence":"官方原文片段"},"SOURCE_METHOD":{"static":"静态抓取（HTTP 解析）","headless":"无头浏览器渲染","curated":"人工策展（人工逐条整理）","unknown":"未知"},"SOURCE_TYPE":{"official":"厂商官方页直采","directory":"第三方目录站收录（已解析到官方页）","curated":"人工策展","unknown":"未知"},"SOURCE_STATE":{"na":"不适用","unknown":"未知","unavailable":"不可用"},"SOURCE_REASON":{"curated":"本条来自人工策展，不经过采集器","no_health_row":"来源心跳里没有这一条（来源改名 / 本轮只跑了部分来源）","no_health_doc":"本次构建没有可用的来源心跳数据"},"SOURCE_BASIS":{"source":"官方页面明写","documented":"依据官方条款原文","inferred":"由官方原文推断","collected":"第三方收录页原文（非官方页直引）","none":"未声明依据"},"SOURCE_HEALTH":{"healthy":"最近一次采集正常","degraded":"最近一次采集异常","failed":"最近一次采集失败"},"SOURCE_FIELD_LABELS":{"discountInfo":"优惠说明","eligibility":"适用条件","validity":"有效期说明","priceLine":"价格阶梯","expiresAt":"截止日期"},"SOURCE_NOTES":{"noOrigin":"未署名收录渠道","noEvidence":"未收录官方原文片段","evidenceNote":"以下片段摘自厂商官方页面，仅用于核对本页信息；完整内容与最终条款以官方页面为准。","disclaimer":"以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断。"}};
+    const SOURCE_WORDING = {"SOURCE_LABELS":{"sectionTitle":"信息来源","official":"官方页面","origin":"收录渠道","source":"收录来源","sourceType":"来源类型","method":"采集方式","firstSeen":"首次收录","lastSeen":"最近发现","lastSuccess":"最近成功采集","basis":"断言依据","evidence":"官方原文片段"},"SOURCE_METHOD":{"static":"静态抓取（HTTP 解析）","headless":"无头浏览器渲染","curated":"人工策展（人工逐条整理）","unknown":"未知"},"SOURCE_TYPE":{"official":"厂商官方页直采","directory":"第三方目录站收录（已解析到官方页）","curated":"人工策展","lead":"线索 · 未核验","unknown":"未知"},"SOURCE_STATE":{"na":"不适用","unknown":"未知","unavailable":"不可用"},"SOURCE_REASON":{"curated":"本条来自人工策展，不经过采集器","no_health_row":"来源心跳里没有这一条（来源改名 / 本轮只跑了部分来源）","no_health_doc":"本次构建没有可用的来源心跳数据"},"SOURCE_BASIS":{"source":"官方页面明写","documented":"依据官方条款原文","inferred":"由官方原文推断","collected":"第三方收录页原文（非官方页直引）","none":"未声明依据"},"SOURCE_HEALTH":{"healthy":"最近一次采集正常","degraded":"最近一次采集异常","failed":"最近一次采集失败"},"SOURCE_FIELD_LABELS":{"discountInfo":"优惠说明","eligibility":"适用条件","validity":"有效期说明","priceLine":"价格阶梯","expiresAt":"截止日期"},"SOURCE_NOTES":{"noOrigin":"未署名收录渠道","noEvidence":"未收录官方原文片段","evidenceNote":"以下片段摘自厂商官方页面，仅用于核对本页信息；完整内容与最终条款以官方页面为准。","disclaimer":"以上是本站采集与整理过程的事实，不构成对优惠是否有效、是否适用于你的判断。"}};
     const HISTORY_WORDING = {"HISTORY_LABELS":{"sectionTitle":"变更记录","empty":"暂无变更记录","since":"变更记录自 {date} 起（此前状态没有记录）","more":"另有 {n} 条更早的记录未在此显示","from":"原","to":"新"},"HISTORY_TYPES":{"created":"首次收录","updated":"信息更新","benefit_changed":"优惠内容变化","eligibility_changed":"领取条件变化","expiry_changed":"有效期变化","ended":"不再收录","restored":"重新出现"},"HISTORY_END_REASONS":{"source_no_longer_lists":"来源不再列出（连续多次成功采集未见）","pruned_expired":"过期下架","pruned_overflow":"超出收录上限","retired_garbage":"判定为无效数据后退役","withdrawn":"已移除"},"HISTORY_FIELD_LABELS":{"discountInfo":"优惠说明","pricingModel":"计费模式","priceLine":"价格阶梯","features":"特性标签","benefitType":"优惠类型","eligibility":"适用条件","eligibilityDetail":"领取资格","claimRequirements":"领取要求","audience":"适用人群","availability":"可用性","expiresAt":"截止日期","validity":"有效期说明","type":"记录类型","category":"分类","region":"地区","source":"收录来源","sourceUrl":"原始出处","evidence":"官方原文片段","verified":"人工核验声明","verifiedAt":"人工核验日期"},"HISTORY_NOTES":{"derived":"（由本站规则推导）","lifecycle":"本条记录的生命周期事件","emptyNote":"起算日之前的状态没有历史记录，因此这里不显示任何变化。","disclaimer":"以上是本站采集与合并过程留下的观测记录；「不再收录」表示本站未再观测到该条目，不表示厂商已经下架或优惠已经失效。"}};
     /* v1.5 变化雷达的措辞同源副本：与 lib/changes.js 的 CHANGES_WORDING 同组名、同文本，
        由 build-local 的产物自检逐项比对（validate --strict 的 checkWordingContract 也要求它
@@ -1801,7 +1801,11 @@
       [/anthropic|claude/i, 'anthropic', 'Anthropic', 'anthropic'],
       [/openai|chatgpt|gpt[\s-]?image|^gpt\b/i, 'openai', 'OpenAI', 'openai'],
       [/perplexity/i, 'perplexity', 'Perplexity', 'perplexity'],
-      [/canva/i, 'canva', 'Canva', 'canva'],
+      // 2026-11-09（P0 AppSumo）：这里原先是裸子串 /canva/i，于是 AppSumo 的
+      // 「MagicCanvas」（magic-canva-s）被归一成厂商 Canva —— 厂商页会把别人的产品
+      // 印在 Canva 名下，落地页门槛还会因此要求给 Canva 登记 slug。加词边界即可：
+      // 真 Canva 记录的 vendor 是「Canva」， 两侧都成立；MagicCanvas 的 canva 前是字母，不命中。
+      [/\bcanva\b/i, 'canva', 'Canva', 'canva'],
       [/cursor/i, 'cursor', 'Cursor', 'cursor'],
       [/replit/i, 'replit', 'Replit', 'replit'],
       [/zapier/i, 'zapier', 'Zapier', 'zapier'],
@@ -3066,9 +3070,23 @@
       return list.map(withTier).sort(compareCards);
     }
 
+    /**
+     * B 类资讯线索（beta，2026-11 起）：来源类型由构建期 sourceFacts 派生（`lead`）。
+     *
+     * 线索**不进**优惠/工具列表：它是一条「媒体说可能有优惠、本站未核验」的资讯，
+     * 混进列表会稀释优惠流（98 条 tool 稀释优惠流的老问题）。它只出现在「变化雷达」里
+     * （created 事件 ⇒ 今日新增），并带「线索 · 未核验」标记、链接直达原文。
+     * 判据来自数据（sourceFacts.sourceType），不是前端再猜一遍。
+     */
+    function isLeadRecord(deal) {
+      return Boolean(deal && deal.sourceFacts && typeof deal.sourceFacts === 'object' &&
+        deal.sourceFacts.sourceType === 'lead');
+    }
+
     /** 通过筛选的原始条目（未经折叠） */
     function visibleDeals(deals, filters) {
-      return deals.filter(deal => matches(deal, filters));
+      // 先剔除线索，再套筛选：线索不是优惠条目，不参与任何列表/计数/筛选器。
+      return deals.filter(deal => !isLeadRecord(deal) && matches(deal, filters));
     }
 
     /**
@@ -3218,7 +3236,8 @@
     }
 
     function categoryOptionsHtml(deals) {
-      return [...new Set(deals.map(d => d.category).filter(Boolean))].sort()
+      // 线索不是优惠/工具条目（不进列表），因此也不该出现在「分类」筛选项里。
+      return [...new Set(deals.filter(deal => !isLeadRecord(deal)).map(d => d.category).filter(Boolean))].sort()
         .map(category => '<option value="' + escapeAttr(category) + '">' + escapeHtml(category) + '</option>')
         .join('');
     }
@@ -4053,6 +4072,23 @@
     }
 
     /**
+     * 线索的**原文链接**（B 类资讯线索，beta）。线索没有站内详情页，但读者必须能点到原文；
+     * 构建期在雷达条目上给了 `extHref`（见 lib/changes.js 的 identityOf）。只放行 http(s)，
+     * 防止脏数据把 javascript: 之类的东西塞进 href。
+     */
+    function radarExtHrefOf(item) {
+      const href = item && typeof item.extHref === 'string' ? item.extHref : '';
+      return /^https?:\/\//i.test(href) ? href : '';
+    }
+
+    /** 线索的 beta 标记（与「信息来源」块同一个词；措辞的唯一出处仍是 SOURCE_WORDING） */
+    function radarLeadBadgeHtml(item) {
+      if (!item || item.lead !== true) return '';
+      return '<span class="rty rlead" title="科技媒体报道，本站未核验">' +
+        escapeHtml(SOURCE_WORDING.SOURCE_TYPE.lead) + '</span>';
+    }
+
+    /**
      * 首页条带。**永远包含**「全部变化 →」入口，而且它不在横滑容器里 ——
      * 窄屏上「一个需要横滑才看得见的入口」等于没有入口（v1.2 的同一课）。
      */
@@ -4084,12 +4120,18 @@
         inner = items.map(item => {
           const badge = radarTypeLabel(item);
           const body = (badge ? '<span class="rty">' + escapeHtml(badge) + '</span>' : '') +
+            radarLeadBadgeHtml(item) +
             '<span class="rti">' + radarTitleHtml(item) + '</span>';
           const href = radarHrefOf(item, '');
+          const ext = radarExtHrefOf(item);
           const attr = ' class="ritem" data-deal-id="' + escapeAttr(String(item.id || '')) + '"';
-          return href
-            ? '<a' + attr + ' href="' + escapeAttr(href) + '">' + body + '</a>'
-            : '<span' + attr + '>' + body + '</span>';
+          if (href) return '<a' + attr + ' href="' + escapeAttr(href) + '">' + body + '</a>';
+          // B 类资讯线索：没有站内详情页，但原文链接必须可点（新开标签页，不丢当前页）
+          if (ext) {
+            return '<a' + attr + ' href="' + escapeAttr(ext) + '" target="_blank" rel="noopener noreferrer">' +
+              body + '</a>';
+          }
+          return '<span' + attr + '>' + body + '</span>';
         }).join('');
       }
 
@@ -4119,6 +4161,8 @@
       const badge = radarTypeLabel(item);
       const fieldLabel = item.field && hasOwn(H.HISTORY_FIELD_LABELS, item.field) ? H.HISTORY_FIELD_LABELS[item.field] : '';
       const href = radarHrefOf(item, prefix);
+      // 线索：没有站内详情页，链接直达原文（与首页条带同一判据：extHref 而非 href）。
+      const ext = radarExtHrefOf(item);
 
       let body;
       if (item.kind === 'endingSoon') {
@@ -4146,7 +4190,10 @@
         (badge ? '<span class="chgt">' + escapeHtml(badge) + '</span>' : '') +
         (fieldLabel ? '<span class="chgf">' + escapeHtml(fieldLabel) + '</span>' : '') +
         (href ? '<a class="chgn" href="' + escapeAttr(href) + '">' + radarTitleHtml(item) + '</a>'
-          : '<span class="chgn">' + radarTitleHtml(item) + '</span>') +
+          : ext ? '<a class="chgn" href="' + escapeAttr(ext) + '" target="_blank" rel="noopener noreferrer">' +
+            radarTitleHtml(item) + '</a>'
+            : '<span class="chgn">' + radarTitleHtml(item) + '</span>') +
+        radarLeadBadgeHtml(item) +
         '</div>' + body + '</li>';
     }
 

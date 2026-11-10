@@ -1532,12 +1532,19 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
     const label = health.STATUS_LABEL[row.status] || row.status;
     const reason = row.reason ? (health.REASON_LABEL[row.reason] || row.reason) : '';
     const missing = row.lastRunMissing ? '<small>本轮未跑（沿用上次结果）</small>' : '';
+    // P3 熔断：暂停来源必须**行内可见**（而不是只改个状态）——「某个源已经停了」与
+    // 「今天没数据」长得一样正是本页当初要修的问题，熔断不能把它带回来。
+    // 文案与判定只来自 health.pausedLabel()（与 collect Summary、coverage 报告共用一份）；
+    // 时间一律绝对北京时间（本页构建确定性：不读墙上时钟，相对时间交给 data-rel 脚本）。
+    // ⚠️ 这里刻意**不用** class="stt"：下面构建期自检按 `<span class="stt ...">` 数状态行，
+    //    暂停标记若也带 stt 会被当成一行状态，把「页面状态序列 == 数据状态序列」判红。
+    const paused = row.pausedAt ? `<small class="paused">${htmlEscape(health.pausedLabel(row))}</small>` : '';
     return `
         <tr>
           <th scope="row">${htmlEscape(row.name || row.source)}<small>${htmlEscape(row.source)} · ${
   row.kind === 'headless' ? '无头浏览器' : '静态抓取'}${row.region === 'cn' ? ' · 国内' : ' · 国外'}</small>${missing}</th>
           <td class="st"><span class="stt ${htmlEscape(row.status)}">${htmlEscape(label)}</span>${
-  reason ? `<small>${htmlEscape(reason)}</small>` : ''}</td>
+  reason ? `<small>${htmlEscape(reason)}</small>` : ''}${paused}</td>
           <td class="num">${Number(row.lastItemCount) || 0}</td>
           <td class="num">${row.previousItemCount === null || row.previousItemCount === undefined ? '—' : Number(row.previousItemCount)}</td>
           <td class="num">${Number(row.consecutiveFailures) || 0} / ${Number(row.consecutiveZero) || 0}</td>
@@ -1567,6 +1574,7 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
   .stt.healthy { color: var(--ok, #137a4b); border-color: currentColor; }
   .stt.degraded { color: var(--warn, #a35a00); border-color: currentColor; }
   .stt.failed { color: var(--bad, #b3261e); border-color: currentColor; }
+  .stable small.paused { color: var(--bad, #b3261e); }
   .stable-wrap { overflow-x: auto; }
   @media (max-width: 760px) { .stable th, .stable td { padding: 8px 9px; } }`;
   /* 相对时间只在浏览器里换算：页面字节因此与构建时刻无关（连续两次 build 产物一致）。
@@ -1618,11 +1626,14 @@ ${noteDeclare(route, {
         采集器报错、或连续 3 次零产出即 <b>❌ 失败</b>；请求成功但条数掉到上次一半以下、
         或零产出但还没到 3 次即 <b>⚠️ 异常</b>；其余为 <b>✅ 正常</b>。
         「连续失败 / 连续零产出」两列分别是这两个计数器的当前值。
+        <b>⏸ 已暂停（熔断）</b>：连续 ${health.CIRCUIT_FAILURE_THRESHOLD} 次<b>采集器报错</b>后暂停，
+        满 ${health.HALF_OPEN_AFTER_DAYS} 天<b>半开重试一次</b>；零产出不进入熔断。
       </p>`)}
 
       <div class="stable-wrap">
       <table class="stable">
-        <caption>共 ${summary.total} 个来源 · 正常 ${summary.healthy} · 异常 ${summary.degraded} · 失败 ${summary.failed}</caption>
+        <caption>共 ${summary.total} 个来源 · 正常 ${summary.healthy} · 异常 ${summary.degraded} · 失败 ${summary.failed}${
+  summary.paused ? ` · ⏸ 熔断暂停 ${summary.paused}` : ''}</caption>
         <thead>
           <tr>
             <th scope="col">来源</th>
@@ -6664,7 +6675,9 @@ function selfCheck(built) {
       if (!['static', 'headless', 'curated', 'unknown'].includes(facts.method)) {
         problems.push(`${deal.id} 的 sourceFacts.method 非法（${facts.method}）`);
       }
-      if (!['official', 'directory', 'curated', 'unknown'].includes(facts.sourceType)) {
+      // sourceType 的合法集合与 provenance.SOURCE_TYPES 的取值一致。`lead` = B 类资讯线索
+      // （beta，2026-11 起）：页面按它显示「线索 · 未核验」，并把这类记录从优惠列表里排除。
+      if (!['official', 'directory', 'curated', 'lead', 'unknown'].includes(facts.sourceType)) {
         problems.push(`${deal.id} 的 sourceFacts.sourceType 非法（${facts.sourceType}）`);
       }
       if (!['known', 'na', 'unknown', 'unavailable'].includes(facts.lastSuccessState)) {
@@ -7214,6 +7227,16 @@ function selfCheck(built) {
     }
     if (summary.total > 0 && !/<time datetime="[^"]*"/.test(page)) {
       problems.push('状态页没有任何 <time datetime>（无 JS 时可读性依赖它）');
+    }
+    // P3 熔断：暂停行必须在页面上**行内可见**（文案与判定同源于 health.pausedLabel，不复制一份）。
+    // 数据驱动：当前心跳若没有 pausedAt 这一条不触发；一旦采集写下暂停态、页面却漏渲染，
+    // 这里当场红 —— 否则"某个源已经停了"又会被页面上"今天没数据"的样子吞掉。
+    const pausedRows = summary.rows.filter(row => row.pausedAt);
+    for (const row of pausedRows) {
+      const marker = htmlEscape(health.pausedLabel(row));
+      if (!marker || !page.includes(marker)) {
+        problems.push(`来源 ${row.source} 处于熔断暂停态，但状态页没有渲染暂停标记（应有：${marker.slice(0, 80)}）`);
+      }
     }
     if (summary.total === 0 && !/还没有采集记录/.test(page)) {
       problems.push('没有采集数据时，状态页必须明说，而不是给一张空表');

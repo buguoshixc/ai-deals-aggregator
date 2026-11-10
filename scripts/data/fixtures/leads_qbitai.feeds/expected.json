@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "source": "leads_qbitai",
+  "sourceName": "量子位",
+  "fixture": "leads_qbitai.feeds",
+  "sourceUrl": "https://www.qbitai.com/feed",
+  "capturedAt": "2026-11-10",
+  "trimmed": "解析器/判据真正读的四个字段（title / link / pubDate / description）：三闸全中与近失配条目优先，最多 8 条，description 截到 200 字",
+  "note": "expected 是**生产解析器在这个最小片段上的真实输出**；重建后请人工 review diff。",
+  "count": 8,
+  "items": [
+    {
+      "title": "倒计时一周｜量子位2026人工智能年度榜单征集即将截止！",
+      "url": "https://www.qbitai.com/2026/11/508745.html",
+      "source": "量子位",
+      "sourceUrl": "https://www.qbitai.com/feed",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "香港金融科技周 x StartmeupHK 2026圆满结束，吸引逾48000与会者 汇聚全球创新力量与增长机遇",
+      "url": "https://www.qbitai.com/2026/11/508753.html",
+      "source": "量子位",
+      "sourceUrl": "https://www.qbitai.com/feed",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "百度文心首次披露RSI进展：ERNIE Evolve已用于最新模型研发，文心5.5 Flash 或将近期发布",
+      "url": "https://www.qbitai.com/2026/11/508746.html",
+      "source": "量子位",
+      "sourceUrl": "https://www.qbitai.com/feed",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "具身智能出海，物流先行",
+      "url": "https://www.qbitai.com/2026/11/508716.html",
+      "source": "量子位",
+      "sourceUrl": "https://www.qbitai.com/feed",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "“AI毁了我的计算机学位”",
+      "url": "https://www.qbitai.com/2026/11/508706.html",
+      "source": "量子位",
+      "sourceUrl": "https://www.qbitai.com/feed",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "腾讯混元跻身最强开源模型！一手实测Hy4：搭配WorkBuddy，多模态Agent交付力拉满",
+      "url": "https://www.qbitai.com/2026/11/507843.html",
+      "source": "量子位",
+      "sourceUrl": "https://www.qbitai.com/feed",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "千问办公2.0发布，首个支持多人与Agent协作的Team Agent来了",
+      "url": "https://www.qbitai.com/2026/11/508694.html",
+      "source": "量子位",
+      "sourceUrl": "https://www.qbitai.com/feed",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "叙事奔涌，何以为锚?丨第 20 届中国投资年会·有限合伙人峰会即将启幕",
+      "url": "https://www.qbitai.com/2026/11/508690.html",
+      "source": "量子位",
+      "sourceUrl": "https://www.qbitai.com/feed",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    }
+  ]
+}

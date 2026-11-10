@@ -1133,8 +1133,14 @@ function noJsControlExemptionFor(route) {
         memberText: (card.querySelector('.fmembers') || {}).textContent || ''
       };
     });
+    // 首页卡片只渲染**当前**优惠：页面里的 `isExpired()` 用北京时间的今天判定，
+    // 过期但在 `store.prune` 宽限期内仍留在 deals.json 的记录**没有卡片**。
+    // 这里独立算一遍（不 require 构建期模块 —— 这一节的价值就是用另一条路算），
+    // 否则 P0 的 AppSumo 两条（expiresAt=2026-11-09，今天已过期）会被误判成「未认领」。
+    const todayCN = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
+    const isExpired = deal => Boolean(deal.expiresAt && String(deal.expiresAt).slice(0, 10) < todayCN);
     const byId = new Map();
-    for (const deal of data.deals) if (deal.type === 'deal') byId.set(String(deal.id), deal);
+    for (const deal of data.deals) if (deal.type === 'deal' && !isExpired(deal)) byId.set(String(deal.id), deal);
 
     const owners = new Map();          // deal id → [card titles]
     const unmatched = [];
@@ -4562,6 +4568,21 @@ function noJsControlExemptionFor(route) {
   const changesPage = await page.evaluate(() => {
     const heads = [...document.querySelectorAll('.chgsec h2')].map(h => h.textContent.trim());
     const links = [...document.querySelectorAll('a.chgn[href]')].map(a => a.getAttribute('href'));
+    // P2（2026-11）起雷达行会出现 **B 类线索**：按设计没有站内详情页，链接直达原文（外链）。
+    // 这里逐条带上「是否外链 / 线索徽标 / target / rel」，让下面的断言能区分
+    // 「站内详情页链接」与「线索原文链接」—— 跨域 fetch 外链会 TypeError: Failed to fetch，
+    // 那是正常设计，不是坏页；不拿外链冒充详情页去回读。
+    const radarLinks = [...document.querySelectorAll('a.chgn[href]')].map(a => {
+      const href = a.getAttribute('href') || '';
+      const row = a.closest('.chgi');
+      return {
+        href,
+        external: /^https?:\/\//i.test(href),
+        target: a.getAttribute('target') || '',
+        rel: a.getAttribute('rel') || '',
+        lead: Boolean(row && row.querySelector('.rlead'))
+      };
+    });
     const planSection = document.getElementById('plans');
     // v3.0 Stage H：第三条变化流（API 价格变化）。
     const apiSection = document.getElementById('api-plans');
@@ -4575,6 +4596,7 @@ function noJsControlExemptionFor(route) {
       })),
       wrongPrefix: links.filter(href => href.startsWith('deal/')).length,
       links,
+      radarLinks,
       // v2.3：套餐变化块
       jumpNav: Boolean(document.querySelector('nav.chgjump')),
       dealsAnchor: Boolean(document.getElementById('deals')),
@@ -4702,17 +4724,37 @@ function noJsControlExemptionFor(route) {
 
   // 雷达行 → 单条优惠的详情页（要求 4：详情页能看单条优惠的历史）。
   // 没有可点的雷达行时如实报「本轮无样本」，并改验另一条出口（条带 → /changes/）。
-  if (changesPage.links.length) {
-    const probe = await page.evaluate(async (href) => {
-      const response = await fetch(href);
-      const text = await response.text();
-      return { ok: response.ok, status: response.status, hasHistory: text.includes('变更记录') };
-    }, changesPage.links[0]);
-    check('雷达行链到的详情页真的打得开且含「变更记录」块',
-      probe.ok && probe.hasHistory, `HTTP ${probe.status} · 含变更记录=${probe.hasHistory}`);
-  } else {
-    check('雷达行 → 单条历史（本轮无样本：日志里还没有任何事件）', true,
-      '跳过：可点的雷达行为 0（v1.5 交付当天日志为空，链路已由 selftest 与构建自检覆盖）');
+  //
+  // P2（2026-11）起雷达会出现 **B 类线索**：线索按设计没有站内详情页，链接直达原文（外链）。
+  // 旧断言拿 `links[0]` 无条件 fetch 当详情页 —— 线索行排在最前时 fetch 跨域原文会
+  // TypeError: Failed to fetch，把正常设计误判成红（CI 首次真跑暴露）。
+  // 现在的判据分两半，**不放过**任何一半：
+  //   ① 站内详情页链接：仍然逐条可 fetch、且含「变更记录」块（原判据不改）；
+  //   ② 外链：必须只在「线索 · 未核验」行、target=_blank、rel 含 noopener，
+  //      且**不许**拿它冒充站内详情页（外链存在时不再对 links[0] 盲 fetch）。
+  {
+    const radarLinks = changesPage.radarLinks || [];
+    const internalLinks = radarLinks.filter(link => !link.external);
+    const externalLinks = radarLinks.filter(link => link.external);
+    const badExternal = externalLinks.filter(link =>
+      !link.lead || link.target !== '_blank' || !/(^|\s)noopener(\s|$)/.test(link.rel));
+    check('雷达外链只在「线索 · 未核验」行，且 target=_blank / rel=noopener（不冒充站内详情页）',
+      badExternal.length === 0,
+      externalLinks.length
+        ? `${externalLinks.length} 条外链 · 不合格 ${badExternal.length} 条${badExternal.slice(0, 2).map(link => `（${link.href.slice(0, 60)}）`).join('')}`
+        : '本页暂无外链雷达行');
+    if (internalLinks.length) {
+      const probe = await page.evaluate(async (href) => {
+        const response = await fetch(href);
+        const text = await response.text();
+        return { ok: response.ok, status: response.status, hasHistory: text.includes('变更记录') };
+      }, internalLinks[0].href);
+      check('雷达行链到的详情页真的打得开且含「变更记录」块',
+        probe.ok && probe.hasHistory, `HTTP ${probe.status} · 含变更记录=${probe.hasHistory}`);
+    } else {
+      check('雷达行 → 单条历史（本轮无样本：日志里还没有任何事件）', true,
+        '跳过：可点的站内雷达行为 0' + (externalLinks.length ? `（其中 ${externalLinks.length} 条是线索外链）` : ''));
+    }
   }
 
   // 无 JS：这一页也必须是完整正文

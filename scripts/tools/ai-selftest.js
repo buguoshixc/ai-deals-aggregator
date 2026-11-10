@@ -660,6 +660,322 @@ function structuralTeeth() {
 }
 
 /* ================================================================== */
+/* 采集侧判据的牙（P0：AppSumo 的「AI 筛选 + 价格/授权/状态」）              */
+/* ================================================================== */
+
+/**
+ * 为什么这组牙放在 AI 层自检里：AppSumo 采集器的产出判据（AI 关键词表、折扣价 vs 原价、
+ * lifetime 授权、在售状态）是「供给端进不进来」的**唯一判据**。fixture 只钉住 8 条真实
+ * 样本的行为；这里补的是「判据本身」的正反例 —— 改坏关键词表（比如把 `\\bai\\b` 退化成
+ * 裸子串 `ai`，`email` 会被判成 AI）时 fixture 未必有那条样本，而这组牙一定会红。
+ */
+function collectorFilterTeeth() {
+  const appsumo = require('../collectors/appsumo').__test;
+  assert('结构 AppSumo 判据出口存在（__test）', Boolean(appsumo && appsumo.classifyDeal && appsumo.isAi));
+
+  // ① AI 关键词表：正例（AI 能力本身）
+  const positive = [
+    'AI-powered captions and images',
+    'Build browser automation scripts, AI agents, and endpoints',
+    'Use this agentic mobile keyboard to dictate',
+    'Refine your prompt to get better outputs from ChatGPT',
+    'An LLM gateway with embeddings'
+  ];
+  positive.forEach(text => {
+    const raw = {
+      public_name: 'Probe Product',
+      card_description: text,
+      attributes: { category: ['Productivity & Automation'], subcategory: ['Workflow Automation'] },
+      product_tags: []
+    };
+    assert(`AppSumo AI 判据：正例「${text.slice(0, 24)}…」判为 AI`, appsumo.isAi(raw), '被判成非 AI（关键词表太窄）');
+  });
+
+  // ② 反例：验收单里点名的噪音形态 —— 泛技术词 / 含 ai 子串的英文单词 / 目录站常见的非 AI 品类
+  const negative = [
+    { title: 'Email Marketing Suite', desc: 'Bulk email campaigns and autoresponders', category: 'Email & SMS Marketing', tags: ['email-marketing'] },
+    { title: 'WPGraft', desc: 'Clone any website into your WordPress page builder', category: 'Website Builders & WordPress', tags: ['website-builders'] },
+    { title: 'GetTerms', desc: 'Cookie banner and website policy generator', category: 'Security & Compliance', tags: [] },
+    { title: 'Referly', desc: 'Launch your own affiliate programs with tracking', category: 'Lead Generation', tags: ['sales-outreach'] }
+  ];
+  negative.forEach(row => {
+    const raw = {
+      public_name: row.title,
+      card_description: row.desc,
+      attributes: { category: [row.category], subcategory: [] },
+      product_tags: row.tags
+    };
+    assert(`AppSumo AI 判据：反例「${row.title}」判为非 AI`, !appsumo.isAi(raw), '被判成 AI（关键词表太宽，会把目录站噪音放进来）');
+  });
+
+  // ③ classifyDeal 的每条拒绝理由都必须真的响（否则日志里打印的「筛掉原因」是假的）
+  const base = {
+    public_name: 'Acti',
+    get_absolute_url: '/products/acti/',
+    price: 59,
+    original_price: 299,
+    has_started: true,
+    has_ended: false,
+    unique_plan_types: [['Lifetime Deal', null, null]],
+    attributes: { category: ['Productivity & Automation'], subcategory: ['Workflow Automation'] },
+    product_tags: [],
+    card_description: 'Use this agentic mobile keyboard'
+  };
+  const reject = (name, patchObj, expectedReason) => {
+    const verdict = appsumo.classifyDeal({ ...base, ...patchObj });
+    assert(`AppSumo 判据：${name}`, verdict.dropped === expectedReason,
+      `期望「${expectedReason}」，实得「${verdict.dropped || '通过'}」`);
+  };
+  assert('AppSumo 判据：合规样本通过', appsumo.classifyDeal(base).ok === true, '合规样本被误杀');
+  reject('非 AI → 非 AI', { public_name: 'WPGraft', card_description: 'Clone any website', attributes: { category: ['Website Builders & WordPress'] } }, '非 AI');
+  reject('原价缺失 → 原价缺失', { original_price: 0 }, '原价缺失');
+  reject('折扣价缺失 → 折扣价缺失', { price: 0 }, '折扣价缺失');
+  reject('原价不高于折扣价 → 不构成折扣', { price: 299, original_price: 299 }, '原价不高于折扣价（不构成折扣）');
+  reject('非 lifetime 授权 → 非 lifetime 授权', { unique_plan_types: [['Limited License', 'year', 1]] }, '非 lifetime 授权');
+  reject('已结束 → 已结束', { has_ended: true }, '已结束');
+  reject('未上架 → 未上架', { has_started: false }, '未上架');
+  reject('链接缺失 → 产品链接缺失', { get_absolute_url: null }, '产品链接缺失');
+
+  // ④ fixture 回放之外的**筛选行为**：真实最小片段上，非 AI 与价格缺失必须被打印出来
+  const fixture = read('scripts/data/fixtures/appsumo.deals/page.min.html');
+  const parsed = appsumo.parseWithReport(fixture);
+  assert('AppSumo fixture：筛选后 6 条（解析与筛选同一把尺子）', parsed.items.length === 6,
+    `实得 ${parsed.items.length} 条`);
+  const droppedTitles = parsed.dropped.map(row => row.title);
+  assert('AppSumo fixture：非 AI（WPGraft）被筛掉且带原因',
+    parsed.dropped.some(row => row.title === 'WPGraft' && row.reason === '非 AI'),
+    `实得 ${JSON.stringify(parsed.dropped)}`);
+  assert('AppSumo fixture：价格缺失（Headroom）被筛掉且带原因',
+    parsed.dropped.some(row => row.title === 'Headroom' && row.reason === '折扣价缺失'),
+    `实得 ${JSON.stringify(parsed.dropped)}`);
+  assert('AppSumo fixture：每个被筛条目都有产品名（日志缺名 = 筛错了也查不到）',
+    parsed.dropped.every(row => row.title && row.title !== '(无标题)'), JSON.stringify(droppedTitles));
+  assert('AppSumo 日志纪律：被筛样本上限写死为 20 个', appsumo.MAX_DROPPED_LOGGED === 20,
+    `实得 ${appsumo.MAX_DROPPED_LOGGED}`);
+}
+
+/* ================================================================== */
+/* 采集侧判据的牙（P1：OpenRouter「免费判据 + 30 天窗口 + 限流」）           */
+/* ================================================================== */
+
+/**
+ * OpenRouter 这一层的三件事只有这里会被验证：
+ *   ① 免费判据必须是 `pricing.prompt === "0"` 的**严格**比较（不能把数字 0 也放进来，
+ *      也不允许写成「或 id 以 :free 结尾」——:free 只是路由变体）；
+ *   ② 「新进入免费态」= created 落在注入的 now 窗口内，且免费窗口没过期；
+ *   ③ rate limit 只写「从官方文档读到的数字」或「未标注」，不硬编码、不猜。
+ * fixture 只能钉住真实样本的解析结果；窗口与判据的分支要靠这些注入 now 的用例。
+ */
+function openRouterTeeth() {
+  const or = require('../collectors/openrouter').__test;
+  assert('结构 OpenRouter 判据出口存在（__test）', Boolean(or && or.selectNewFree && or.parseFreeLimits));
+
+  const DAY = 24 * 3600 * 1000;
+  const NOW = Date.parse('2026-11-09T00:00:00Z');
+  const model = (patch = {}) => ({
+    id: 'probe/model:free',
+    name: 'Probe: Model',
+    created: Math.floor((NOW - 5 * DAY) / 1000),
+    expirationDate: null,
+    promptPrice: '0',
+    completionPrice: '0',
+    perRequestLimits: null,
+    contextLength: 8192,
+    description: '',
+    freeVariant: true,
+    isFree: true,
+    ...patch
+  });
+  const limits = { rpm: 20, dailyNoCredits: 50, dailyHasCredits: 1000, creditsThreshold: 10 };
+
+  // ① 免费判据：严格字符串 "0"；数字 0 与非 "0" 都不算
+  assert('OpenRouter 判据：pricing.prompt === "0" 才算免费', or.selectNewFree([model()], { now: NOW, limits }).items.length === 1, '严格等于 "0" 的模型没被收进来');
+  const numericZero = or.selectNewFree([model({ promptPrice: 0, isFree: false })], { now: NOW, limits });
+  assert('OpenRouter 判据：数字 0 不算免费（契约是字符串 "0"，不写宽松比较）', numericZero.items.length === 0,
+    '数字 0 被当成了免费');
+  const paid = or.selectNewFree([model({ promptPrice: '0.0000005', isFree: false })], { now: NOW, limits });
+  assert('OpenRouter 判据：有价模型不进（不看 :free 后缀）', paid.items.length === 0, paid.items.map(i => i.title).join(','));
+  const freeButOld = or.selectNewFree([model({ created: Math.floor((NOW - 90 * DAY) / 1000) })], { now: NOW, limits });
+  assert('OpenRouter 窗口：90 天前上线的免费模型被筛掉', freeButOld.items.length === 0, '旧免费模型被当成了「新进入」');
+  assert('OpenRouter 窗口：被筛掉的旧免费模型带原因', /窗口/.test(freeButOld.dropped[0] && freeButOld.dropped[0].reason || ''),
+    JSON.stringify(freeButOld.dropped));
+  const justOutside = or.selectNewFree([model({ created: Math.floor((NOW - 31 * DAY) / 1000) })], { now: NOW, limits });
+  const justInside = or.selectNewFree([model({ created: Math.floor((NOW - 29 * DAY) / 1000) })], { now: NOW, limits });
+  assert('OpenRouter 窗口：30 天阈值两侧行为正确（29 天进 / 31 天出）',
+    justInside.items.length === 1 && justOutside.items.length === 0,
+    `29 天=${justInside.items.length} / 31 天=${justOutside.items.length}`);
+
+  // ② 免费窗口已过期的免费模型不能进（expiration_date 早于 today）
+  const expired = or.selectNewFree([model({ expirationDate: '2026-11-01' })], { now: NOW, limits, today: '2026-11-09' });
+  assert('OpenRouter 窗口：expiration_date 已过期的免费模型被筛掉', expired.items.length === 0,
+    JSON.stringify(expired.items));
+
+  // ③ 字段映射（需求 §P1-3）：type/pricingModel/region/category/expiresAt 一个都不能错
+  const mapped = or.selectNewFree([model({ expirationDate: '2026-12-31' })], { now: NOW, limits, today: '2026-11-09' }).items[0];
+  assert('OpenRouter 映射：type=deal / pricingModel=free / region=global / category=API服务',
+    mapped.type === 'deal' && mapped.pricingModel === 'free' && mapped.region === 'global' && mapped.category === 'API服务',
+    JSON.stringify({ type: mapped.type, pricingModel: mapped.pricingModel, region: mapped.region, category: mapped.category }));
+  assert('OpenRouter 映射：expiresAt 取 expiration_date', mapped.expiresAt === '2026-12-31', mapped.expiresAt);
+  assert('OpenRouter 映射：产品链接是 OpenRouter 的模型页', mapped.url === 'https://openrouter.ai/probe/model:free', mapped.url);
+  assert('OpenRouter 映射：收录渠道 sourceUrl 是官方 API', mapped.sourceUrl === or.API_URL, mapped.sourceUrl);
+
+  // ④ rate limit：官方文档读到数字才写数字；:free 变体才套用免费档；读不到写「未标注」
+  const freeText = or.rateLimitText(model(), limits);
+  assert('OpenRouter 限流：免费档数字来自官方文档（20 RPM / 50·1000 RPD）',
+    freeText.includes('20 次/分钟') && freeText.includes('50 次') && freeText.includes('1000 次'), freeText);
+  const noLimitsText = or.rateLimitText(model(), null);
+  assert('OpenRouter 限流：读不到官方数字时写「未标注」，不硬编码', noLimitsText.includes('未标注') && !/\d+\s*次/.test(noLimitsText), noLimitsText);
+  const variantText = or.rateLimitText(model({ freeVariant: false }), limits);
+  assert('OpenRouter 限流：非 :free 变体不套用免费档数字（免得猜）',
+    variantText.includes('未标注') && !variantText.includes('20 次/分钟'), variantText);
+  assert('OpenRouter 限流：features 里有短标签（卡片一眼可见）',
+    Array.isArray(mapped.features) && mapped.features.some(tag => /RPM|限流/.test(tag)), JSON.stringify(mapped.features));
+
+  // ⑤ 官方限流文档的解析：真实文档的内联常量格式 + 解析失败必须返回 null
+  const sample = 'var FREE_MODEL_RATE_LIMIT_RPM=20;FREE_MODEL_NO_CREDITS_RPD=50;FREE_MODEL_HAS_CREDITS_RPD=1e3;FREE_MODEL_CREDITS_THRESHOLD=10;';
+  const parsed = or.parseFreeLimits(sample);
+  assert('OpenRouter 限流文档：四个常量都能解析（含 1e3 科学计数）',
+    parsed && parsed.rpm === 20 && parsed.dailyNoCredits === 50 && parsed.dailyHasCredits === 1000 && parsed.creditsThreshold === 10,
+    JSON.stringify(parsed));
+  assert('OpenRouter 限流文档：结构变化时返回 null（调用方写未标注，不猜）', or.parseFreeLimits('<html>空页面</html>') === null, '空页面也解析出了数字');
+  assert('OpenRouter 日志纪律：被筛免费模型样本上限写死为 20 个', or.MAX_DROPPED_FREE_LOGGED === 20,
+    `实得 ${or.MAX_DROPPED_FREE_LOGGED}`);
+
+  // ⑥ 真实 fixture 上的解析（免费/付费两侧都在片段里，解析本身不筛选）
+  const fixture = read('scripts/data/fixtures/openrouter.models/page.min.json');
+  const models = or.parseModels(fixture);
+  assert('OpenRouter fixture：片段解析出 6 个模型（3 免费 + 3 付费）', models.length === 6, `实得 ${models.length}`);
+  assert('OpenRouter fixture：免费/付费判据与 pricing.prompt 一致',
+    models.filter(item => item.isFree).length === 3, `实得免费 ${models.filter(item => item.isFree).length}`);
+}
+
+/* ================================================================== */
+/*  B 类资讯线索雷达（P2，beta）：判据 / 窗口 / 草稿形状 / TTL           */
+/* ================================================================== */
+
+/**
+ * 这一节钉的是「一条媒体稿凭什么算线索」这件事本身。
+ *
+ * 为什么它必须在这里、而不是靠 fixture：fixture 钉的是**解析器行为**（RSS → 草稿），
+ * 判据（三闸 / 7 天窗口 / TTL）要注入 now 才能逐格验证，塞不进解析器回放里。
+ * 而判据一旦漂移，表现是**完全静默**的：解析照样成功、采集器照样 healthy，
+ * 只是「今天的线索」变成 0 条（或变成一堆假线索），页面与构建全绿。
+ *
+ * 每一条都写成**正例 + 反例**：只有正例的判据可以是「永远返回 false」也全绿；
+ * 只有反例的判据可以是「永远返回 true」也全绿。两个方向都得钉住。
+ */
+function leadRadarTeeth() {
+  const radar = require('../lib/lead-radar');
+  const leads = require('../collectors/leads');
+  const store = require('../lib/store');
+
+  /** 注入的「现在」：窗口判据一律用注入时间，绝不读墙上时钟（否则这条自测每天结果不同） */
+  const NOW = Date.parse('2026-11-10T00:00:00+08:00');
+
+  // ① 三闸必须**同时**命中：平台名 + 免费/降价 + 时间词。缺任何一闸都不是线索。
+  //    「差时间词」正是媒体评测文最常见的形态（满篇平台名 + 免费额度），必须挡住。
+  const allGates = { title: 'DeepSeek 今日起限时免费开放', description: '活动期间所有用户可用，额度有限' };
+  assert('线索判据：三闸同时命中 → 是线索', radar.leadSignal(allGates).ok === true,
+    JSON.stringify(radar.leadSignal(allGates)));
+  const noTimeWord = { title: 'DeepSeek 免费额度使用体验', description: '我们测了它的免费额度，效果一般' };
+  const noTimeSignal = radar.leadSignal(noTimeWord);
+  assert('线索判据：平台名 + 免费、但没有时间词 → 不是线索（防「任何免费软件新闻」混进来）',
+    noTimeSignal.ok === false && Boolean(noTimeSignal.platform) && noTimeSignal.free && !noTimeSignal.time,
+    JSON.stringify(noTimeSignal));
+  const nearMiss = radar.selectLeads(
+    [{ ...noTimeWord, url: 'https://example.com/near-miss', date: '2026-11-09' }], { now: NOW });
+  assert('线索判据：只差时间词的样本进「近失配」清单并写明缺什么（日志里能抽查判据漏没漏）',
+    nearMiss.items.length === 0 && nearMiss.nearMisses.length === 1 && nearMiss.nearMisses[0].missing === '时间词',
+    JSON.stringify(nearMiss.nearMisses));
+
+  // ② 免费 + 时间词、但没有平台名（「今天限时免费的 5 款效率工具」这类合集）→ 不是线索；
+  //    同一句话补上平台名才算 —— 这一对正反例防的是「放宽到任何免费新闻」。
+  const noPlatform = { title: '今天限时免费领取的 5 款效率工具', description: '本周活动，先到先得' };
+  assert('线索判据：免费 + 时间词、但没有 AI 平台名 → 不是线索',
+    radar.leadSignal(noPlatform).ok === false && radar.leadSignal(noPlatform).platform === null,
+    JSON.stringify(radar.leadSignal(noPlatform)));
+  const withPlatform = { ...noPlatform, title: `DeepSeek ${noPlatform.title}` };
+  assert('线索判据：同一句话补上平台名 → 是线索（没有把正常写法一起挡掉）',
+    radar.leadSignal(withPlatform).ok === true, JSON.stringify(radar.leadSignal(withPlatform)));
+
+  // ③ 摘要窗口：判据只看标题 + 摘要前 SUMMARY_WINDOW_CHARS 字。
+  //    平台名只在正文深处的分析稿不算线索（实测这类稿子一天十几条）；挪到摘要开头就算。
+  const filler = '引'.repeat(radar.SUMMARY_WINDOW_CHARS);
+  const deepPlatform = { title: '今日限时免费领取', description: `${filler}DeepSeek 也在其中` };
+  assert(`线索判据：平台名只在摘要 ${radar.SUMMARY_WINDOW_CHARS} 字窗口之外 → 不是线索（摘要窗口生效）`,
+    radar.leadSignal(deepPlatform).ok === false && radar.leadSignal(deepPlatform).platform === null,
+    JSON.stringify(radar.leadSignal(deepPlatform)));
+  const inWindow = { ...deepPlatform, description: `DeepSeek ${filler}` };
+  assert('线索判据：平台名在摘要窗口内 → 是线索（窗口没有把「标题点题、摘要给条件」的正常写法挡掉）',
+    radar.leadSignal(inWindow).ok === true, JSON.stringify(radar.leadSignal(inWindow)));
+
+  // ④ 7 天窗口边界（注入 now）：原文日期**正好** 7 天前算，7 天零 1 秒前不算。
+  //    边界语义 = `ageDays > maxAgeDays` 才扔 ⇒ 恰好 7 天保留。差一秒就翻面，所以必须精确钉。
+  const dated = date => ({ ...allGates, url: `https://example.com/dated/${date}`, date });
+  const exactly7 = radar.selectLeads([dated('2026-11-03')], { now: NOW });
+  const after7 = radar.selectLeads([dated('2026-11-03')], { now: NOW + 1000 });
+  assert('线索窗口：原文日期正好 7 天前 → 收（边界含）',
+    exactly7.items.length === 1 && exactly7.stats.inWindow === 1, JSON.stringify(exactly7.stats));
+  assert('线索窗口：原文日期 7 天零 1 秒前 → 不收（边界外），且丢弃原因写明窗口',
+    after7.items.length === 0 && /超过 7 天窗口/.test((after7.dropped[0] && after7.dropped[0].reason) || ''),
+    JSON.stringify(after7.dropped));
+
+  // ⑤ 草稿形状：线索只有**四个事实**（标题 / 原文链接 / 原文日期 / 收录来源）+ schema 簿记；
+  //    优惠字段与「已核验」一个都不许出现，type 必须是 tool（未核验的资讯不是优惠）。
+  //    `leads.js` 的注释声称「由 ai-selftest 的「线索草稿形状」断言盯着」—— 就是这一组。
+  const draft = leads.__test.toDraft(
+    { title: 'DeepSeek 限时免费', url: 'https://example.com/draft', date: '2026-11-09' },
+    leads.__test.FEEDS[0]);
+  const draftKeys = Object.keys(draft).sort().join(',');
+  assert('线索草稿形状：键集合恰好是 title/url/source/sourceUrl/firstSeen/type（多一个键少一个键都是错的）',
+    draftKeys === 'firstSeen,source,sourceUrl,title,type,url', `实得 ${draftKeys}`);
+  assert('线索草稿形状：type 是 tool 而不是 deal（未核验的资讯不是优惠）', draft.type === 'tool', draft.type);
+  const forbiddenKeys = ['discountInfo', 'benefitType', 'eligibility', 'eligibilityDetail', 'availability',
+    'audience', 'validity', 'expiresAt', 'verified', 'verifiedAt', 'description', 'pricingModel', 'category'];
+  const presentForbidden = forbiddenKeys.filter(key => Object.prototype.hasOwnProperty.call(draft, key));
+  assert('线索草稿形状：优惠/核验字段一个都不出现（不下结论、不写已核验）',
+    presentForbidden.length === 0, `出现了 ${presentForbidden.join(',')}`);
+  const fixtureXml = read('scripts/data/fixtures/leads_qbitai.feeds/page.min.xml');
+  const fixtureDrafts = leads.__test.parseFeedAsDrafts(fixtureXml, leads.__test.FEEDS[2]);
+  assert('线索草稿形状：fixture 回放出的每一条都是同一形状（解析器不会偷偷加字段）',
+    fixtureDrafts.length > 0 && fixtureDrafts.every(item =>
+      Object.keys(item).sort().join(',') === 'firstSeen,source,sourceUrl,title,type,url' && item.type === 'tool'),
+    `fixture 条数 ${fixtureDrafts.length}`);
+
+  // ⑥ TTL：store.prune 对线索按 firstSeen（= 原文日期）算 7 天，**第 8 天必须下线**；
+  //    同一条规则**不许**顺手剪普通 deal —— 优惠的 firstSeen 是「首次收录日」，不是新闻时效，
+  //    拿 7 天去剪它会把真实优惠误删（这就是「不能顺着别的理由改判据」的具体形态）。
+  const LEAD_SOURCE = '快科技'; // provenance.SOURCE_TYPES 登记为 lead 的来源之一
+  const probeDeal = (id, source, firstSeen) => ({
+    id, title: `probe ${id}`, vendor: 'probe', url: `https://example.com/probe/${id}`,
+    source, sourceUrl: null, type: 'tool', firstSeen, lastSeen: '2026-11-10', discountInfo: null
+  });
+  const pruned = store.prune([
+    probeDeal('lead-7', LEAD_SOURCE, '2026-11-03'),   // 正好 7 天 → 在架
+    probeDeal('lead-8', LEAD_SOURCE, '2026-11-02'),   // 8 天 → 下线
+    probeDeal('deal-old', 'AppSumo', '2026-09-01')    // 普通 deal 的旧 firstSeen → 不受线索 TTL 影响
+  ], { today: '2026-11-10' });
+  assert('线索 TTL：原文日期第 7 天仍在架', pruned.deals.some(deal => deal.id === 'lead-7'),
+    `在架 ${pruned.deals.map(deal => deal.id).join(',')}`);
+  assert('线索 TTL：原文日期第 8 天下线（走既有「过期下架」通道）',
+    pruned.removed.expired.some(deal => deal.id === 'lead-8') &&
+    !pruned.deals.some(deal => deal.id === 'lead-8'),
+    `移除 ${pruned.removed.expired.map(deal => deal.id).join(',')}`);
+  assert('线索 TTL：同一条规则不剪普通 deal（优惠的 firstSeen 不是新闻时效）',
+    pruned.deals.some(deal => deal.id === 'deal-old'),
+    `在架 ${pruned.deals.map(deal => deal.id).join(',')}`);
+
+  // ⑦ TTL 常数只有一个出处：采集窗口与 prune 共用 lib/lead-radar.js 的 LEAD_TTL_DAYS。
+  //    两处各写一个 7 的话，改了一边另一边不会红 —— 而漂移掉的那一侧永远是没人看的那侧。
+  assert('线索 TTL：常数唯一出处是 lib/lead-radar.js，值为 7', radar.LEAD_TTL_DAYS === 7,
+    String(radar.LEAD_TTL_DAYS));
+  const storeSource = read('scripts/lib/store.js');
+  assert('线索 TTL：store.prune 引用同一个常数，而不是自己抄一个 7 天',
+    /LEAD_TTL_DAYS/.test(storeSource) && !/LEAD_TTL_DAYS\s*=\s*7/.test(storeSource),
+    'store.js 里没有引用 lead-radar 的 LEAD_TTL_DAYS');
+}
+
+/* ================================================================== */
 
 async function main() {
   console.log('AI 层自检（离线，不依赖任何 API key 与网络）');
@@ -676,6 +992,9 @@ async function main() {
   tooth8_noImplicitAccept();
   tooth9_candidateEnvelopeInProduction();
   structuralTeeth();
+  collectorFilterTeeth();
+  openRouterTeeth();
+  leadRadarTeeth();
 
   // provider 的环境变量不该泄漏给后续步骤
   delete process.env.AI_PROVIDER;

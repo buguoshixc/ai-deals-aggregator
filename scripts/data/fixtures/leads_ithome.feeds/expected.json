@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "source": "leads_ithome",
+  "sourceName": "IT之家",
+  "fixture": "leads_ithome.feeds",
+  "sourceUrl": "https://www.ithome.com/rss/",
+  "capturedAt": "2026-11-10",
+  "trimmed": "解析器/判据真正读的四个字段（title / link / pubDate / description）：三闸全中与近失配条目优先，最多 8 条，description 截到 200 字",
+  "note": "expected 是**生产解析器在这个最小片段上的真实输出**；重建后请人工 review diff。",
+  "count": 8,
+  "items": [
+    {
+      "title": "《GTA 6》PS5 版正式开启预载，XBOX Series X｜S 需等到北京时间早上 8 点",
+      "url": "https://www.ithome.com/1/024/566.htm",
+      "source": "IT之家",
+      "sourceUrl": "https://www.ithome.com/rss/",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "英伟达黄仁勋承认出轨，消息称其去年已聘请擅长处理丑闻的危机公关公司",
+      "url": "https://www.ithome.com/1/024/565.htm",
+      "source": "IT之家",
+      "sourceUrl": "https://www.ithome.com/rss/",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "欧洲力推本土制造电池，或使一辆电动汽车成本增加 2100 欧元",
+      "url": "https://www.ithome.com/1/024/564.htm",
+      "source": "IT之家",
+      "sourceUrl": "https://www.ithome.com/rss/",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "FEVM 迷你主机 FNPH1 实物亮相：2cm 超薄，0.4L 体积",
+      "url": "https://www.ithome.com/1/024/563.htm",
+      "source": "IT之家",
+      "sourceUrl": "https://www.ithome.com/rss/",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "何小鹏：希望小鹏明年能成为第一个在欧洲上线智能辅助驾驶的中国品牌",
+      "url": "https://www.ithome.com/1/024/561.htm",
+      "source": "IT之家",
+      "sourceUrl": "https://www.ithome.com/rss/",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "AOC“U32U4”31.5 英寸显示器发售：4K 120Hz QD-OLED Penta Tandem 五层堆栈面板 + 双扬，6499 元",
+      "url": "https://www.ithome.com/1/024/560.htm",
+      "source": "IT之家",
+      "sourceUrl": "https://www.ithome.com/rss/",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "美国知名风险投资家科斯拉看好 AI 重塑互联网：能让网站“有生命”",
+      "url": "https://www.ithome.com/1/024/559.htm",
+      "source": "IT之家",
+      "sourceUrl": "https://www.ithome.com/rss/",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "微软商店 Microsoft Store《我的世界》PC 版游戏涨价，国区 89 元起 → 110.99 元起",
+      "url": "https://www.ithome.com/1/024/558.htm",
+      "source": "IT之家",
+      "sourceUrl": "https://www.ithome.com/rss/",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    }
+  ]
+}

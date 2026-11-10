@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "source": "leads_36kr",
+  "sourceName": "36氪",
+  "fixture": "leads_36kr.feeds",
+  "sourceUrl": "https://www.36kr.com/feed",
+  "capturedAt": "2026-11-10",
+  "trimmed": "解析器/判据真正读的四个字段（title / link / pubDate / description）：三闸全中与近失配条目优先，最多 8 条，description 截到 200 字",
+  "note": "expected 是**生产解析器在这个最小片段上的真实输出**；重建后请人工 review diff。",
+  "count": 8,
+  "items": [
+    {
+      "title": "SK-II推出新精华，押注PITERA™科研叙事延伸高端护肤生意",
+      "url": "https://36kr.com/p/4062617457235081?f=rss",
+      "source": "36氪",
+      "sourceUrl": "https://www.36kr.com/feed",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "最前线｜仰望鼎曜阿联酋全球首发，预估售价200万元",
+      "url": "https://36kr.com/p/4062540807099270?f=rss",
+      "source": "36氪",
+      "sourceUrl": "https://www.36kr.com/feed",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "前歌尔、华为团队做全彩3D拼装DIY创作平台，拿下元禾、梅花等天使系列融资｜硬氪首发",
+      "url": "https://36kr.com/p/4053486898418569?f=rss",
+      "source": "36氪",
+      "sourceUrl": "https://www.36kr.com/feed",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "36氪首发丨数十台套产品在轨稳定运行，国科大系卫星推进器公司完成近亿元融资",
+      "url": "https://36kr.com/p/4062043589432195?f=rss",
+      "source": "36氪",
+      "sourceUrl": "https://www.36kr.com/feed",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "「国家队」的作业不好抄",
+      "url": "https://36kr.com/p/4061923101660041?f=rss",
+      "source": "36氪",
+      "sourceUrl": "https://www.36kr.com/feed",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "122天、团队不止翻倍，耐克首批本土源创系列幕后｜专访",
+      "url": "https://36kr.com/p/4059160873046920?f=rss",
+      "source": "36氪",
+      "sourceUrl": "https://www.36kr.com/feed",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "36万「中女」，一年买走52亿江南布衣",
+      "url": "https://36kr.com/p/4061858250773385?f=rss",
+      "source": "36氪",
+      "sourceUrl": "https://www.36kr.com/feed",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    },
+    {
+      "title": "一年融5轮，首颗星计划明年一季度发射，「谱星航天」连续完成两轮近3亿元融资｜融资首发",
+      "url": "https://36kr.com/p/4061912127247490?f=rss",
+      "source": "36氪",
+      "sourceUrl": "https://www.36kr.com/feed",
+      "firstSeen": "2026-11-09",
+      "type": "tool"
+    }
+  ]
+}

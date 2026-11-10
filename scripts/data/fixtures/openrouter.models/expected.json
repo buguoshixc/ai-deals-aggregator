@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "source": "openrouter",
+  "sourceName": "OpenRouter",
+  "fixture": "openrouter.models",
+  "sourceUrl": "https://openrouter.ai/api/v1/models",
+  "capturedAt": "2026-11-09",
+  "trimmed": "前 3 个免费模型 + 前 3 个付费模型的 JSON 片段（只保留解析器读的字段）",
+  "note": "expected 是**生产解析器在这个最小片段上的真实输出**；重建后请人工 review diff。",
+  "count": 6,
+  "items": [
+    {
+      "id": "liquid/lfm-3-1.7b:free",
+      "name": "LiquidAI: LFM3-1.7B (free)",
+      "created": 1794009477,
+      "expirationDate": null,
+      "promptPrice": "0",
+      "completionPrice": "0",
+      "perRequestLimits": null,
+      "contextLength": 262144,
+      "description": "A compact 1.7B-parameter text model with a 256K-token context, post-trained for agents, tool calling, and structured outputs. It reasons before it answers. Prompts and outputs may be retained and use…",
+      "freeVariant": true,
+      "isFree": true
+    },
+    {
+      "id": "stealth/crouton-alpha",
+      "name": "Crouton Alpha",
+      "created": 1793669930,
+      "expirationDate": null,
+      "promptPrice": "0",
+      "completionPrice": "0",
+      "perRequestLimits": null,
+      "contextLength": 1048576,
+      "description": "Crouton Alpha is a lightweight model built for scalable coding, agentic, and multimodal workflows. It's ideal for executing agentic sub-tasks, tool use, and document analysis in high-volume, repeated…",
+      "freeVariant": false,
+      "isFree": true
+    },
+    {
+      "id": "recursive/flint-v1.0:free",
+      "name": "Recursive: Flint (free)",
+      "created": 1792622765,
+      "expirationDate": null,
+      "promptPrice": "0",
+      "completionPrice": "0",
+      "perRequestLimits": null,
+      "contextLength": 262144,
+      "description": "Flint is an open-weight mixture-of-experts model from Recursive, with about 2.5B active parameters out of 40B total, built by Recursive's autoresearch system Eureka Machine for coding agents. It is…",
+      "freeVariant": true,
+      "isFree": true
+    },
+    {
+      "id": "liquid/lfm-3-1.7b",
+      "name": "LiquidAI: LFM3-1.7B",
+      "created": 1794009477,
+      "expirationDate": null,
+      "promptPrice": "0.00000008",
+      "completionPrice": "0.0000002",
+      "perRequestLimits": null,
+      "contextLength": 262144,
+      "description": "A compact 1.7B-parameter text model with a 256K-token context, post-trained for agents, tool calling, and structured outputs. It reasons before it answers. Prompts and outputs may be retained and use…",
+      "freeVariant": false,
+      "isFree": false
+    },
+    {
+      "id": "google/gemini-omni-1.2-flash",
+      "name": "Google: Gemini Omni 1.2 Flash",
+      "created": 1793898961,
+      "expirationDate": null,
+      "promptPrice": "0.0000015",
+      "completionPrice": "0.000009",
+      "perRequestLimits": null,
+      "contextLength": 131072,
+      "description": "Gemini Omni 1.2 Flash is Google's native multimodal video generation and editing model, the successor to Gemini Omni 1.1 Flash. It generates clips up to 15 seconds long with native…",
+      "freeVariant": false,
+      "isFree": false
+    },
+    {
+      "id": "google/gemini-omni-1.1-flash",
+      "name": "Google: Gemini Omni 1.1 Flash",
+      "created": 1793825668,
+      "expirationDate": null,
+      "promptPrice": "0.0000015",
+      "completionPrice": "0.000009",
+      "perRequestLimits": null,
+      "contextLength": 131072,
+      "description": "Gemini Omni 1.1 Flash is Google's native multimodal video generation and editing model, the generally available successor to Gemini Omni Flash Preview. It is suited for text-to-video, image-to-video,…",
+      "freeVariant": false,
+      "isFree": false
+    }
+  ]
+}
