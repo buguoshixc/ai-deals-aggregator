@@ -4270,6 +4270,53 @@
         "verified": false
       },
       "runAt": "2026-11-10T19:25:01.475Z"
+    },
+    {
+      "id": "0a2fc31c76cc",
+      "at": "2026-11-11",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "对话模型",
+        "region": "cn",
+        "source": "IT之家",
+        "sourceUrl": "https://www.ithome.com/rss/",
+        "verified": false
+      },
+      "runAt": "2026-11-11T04:51:57.183Z"
+    },
+    {
+      "id": "ee446d349239",
+      "at": "2026-11-11",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $69，原价 $90（省 23%）",
+        "pricingModel": "paid",
+        "priceLine": "$69 终身（原价 $90）",
+        "type": "deal",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-11T04:51:57.183Z"
+    },
+    {
+      "id": "fef21feaac71",
+      "at": "2026-11-11",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/ending-soon/",
+      "to": "https://appsumo.com/collections/new/",
+      "origin": "observed",
+      "runAt": "2026-11-11T04:51:57.183Z"
     }
   ]
 }
