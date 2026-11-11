@@ -1977,6 +1977,29 @@ function noJsControlExemptionFor(route) {
   check('亮色主题：低于 4.5:1 的文本 ≤ 20', lightContrast.below <= 20,
     `抽样 ${lightContrast.sampled} · 跳过复杂背景 ${lightContrast.skipped} · 低于要求 ${lightContrast.below} · 最低 ${lightContrast.min} · 最差 ${worstText(lightContrast)}`);
 
+  // v5 识别层（Tooth：浏览器侧）——**事实数字是页面唯一的高音**。
+  // 判据：font-size ≥ 20px 的元素必须全部是 `.stat`，且元素**自身直接文本**（child text nodes，
+  // 不含子元素）是纯数字。单位「条」在 11px 的 `.stat-unit` 子元素里，不参与大字判定。
+  // 数量不写死：need 卡条数随数据变化（0 条入口整卡消失），分带数也随档位分布变（4/5 档）。
+  // 这里同时要求 big.length == 页面 .stat 总数 —— 只判「big 全是 .stat」会漏掉
+  // 「.stat 的 22/30px 规则没生效、退回 11px」这种反向坏法。
+  const bigTextProbe = await page.evaluate(() => {
+    const directText = el => [...el.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent).join('').trim();
+    const big = [...document.querySelectorAll('body *')]
+      .filter(el => parseFloat(getComputedStyle(el).fontSize) >= 20 && directText(el));
+    const bad = big.filter(el => !el.classList.contains('stat') || !/^\d+$/.test(directText(el)));
+    return {
+      total: big.length,
+      statTotal: document.querySelectorAll('.stat').length,
+      sizes: [...new Set(big.map(el => getComputedStyle(el).fontSize))].sort(),
+      bad: bad.map(el => `${String(el.className) || el.tagName.toLowerCase()}「${directText(el).slice(0, 12)}」@${getComputedStyle(el).fontSize}`)
+    };
+  });
+  check('首页：font-size ≥ 20px 的元素全部是 .stat 且直接文本为纯数字（v5 事实数字唯一高音）',
+    bigTextProbe.bad.length === 0 && bigTextProbe.total >= 10 && bigTextProbe.total === bigTextProbe.statTotal,
+    `≥20px ${bigTextProbe.total} 个 · 页面 .stat ${bigTextProbe.statTotal} 个 · 字号 ${bigTextProbe.sizes.join(' / ') || '无'} · 违规 ${bigTextProbe.bad.length} 个`
+      + (bigTextProbe.bad.length ? `（${bigTextProbe.bad.slice(0, 3).join('；')}）` : ''));
+
   // 主题切换：深色 → 记住 → 刷新仍深色 → 暗色下对比度同样达标 → 切回跟随系统
   await page.click('#themeSeg [data-theme-value="dark"]');
   await page.waitForTimeout(250);
@@ -2876,8 +2899,10 @@ function noJsControlExemptionFor(route) {
             href: a.getAttribute('href'),
             label: txt(strong),
             desc: txt(small),
-            // 条数：口径与 build-local.js 的 renderNeedRow 一致（只数 type === 'deal'）
-            badge: Number((a.querySelector('.need-copy b') || {}).textContent || ''),
+            // 条数：口径与 build-local.js 的 renderNeedRow 一致（只数 type === 'deal'）。
+            // v5：计数标记是 `<b class="stat stat-30">N<span class="stat-unit">条</span></b>`，
+            // 必须读**自身第一个文本节点** —— `textContent` 会连单位「条」一起读成 "13条" ⇒ NaN。
+            badge: Number((((a.querySelector('.need-copy b') || {}).firstChild || {}).textContent || '').trim()),
             isAnchor: a.tagName === 'A',
             isNeedCard: a.classList.contains('need-card'),
             iconCount: a.querySelectorAll('.need-icon').length,
@@ -6241,6 +6266,13 @@ function noJsControlExemptionFor(route) {
       crumbs: [...document.querySelectorAll('.crumb a')].map(a => a.getAttribute('href') || ''),
       footLinks: [...document.querySelectorAll('footer a')].map(a => a.getAttribute('href') || ''),
       cross: [...document.querySelectorAll('a[href$="plans/coding/"]')].length,
+      // v5 识别层：h1 旁 3 个事实数字（.stopstats 里每个是 .stat stat-22，读自身直接文本）
+      stopStatsBlocks: document.querySelectorAll('.stopstats').length,
+      stopStats: [...document.querySelectorAll('.stopstats .stat')].map(el => ({
+        text: [...el.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent).join('').trim(),
+        fontSize: getComputedStyle(el).fontSize
+      })),
+      stopMeta: ((document.querySelector('.stop .meta') || {}).textContent || '').trim(),
       text: document.body ? document.body.innerText.replace(/\s+/g, ' ').trim() : ''
     }));
 
@@ -6262,7 +6294,7 @@ function noJsControlExemptionFor(route) {
           });
         }
       }
-      return { rows, recordIds: (doc.plans || []).map(plan => plan.id) };
+      return { rows, recordIds: (doc.plans || []).map(plan => plan.id), providerKeys: [...new Set((doc.plans || []).map(plan => plan.provider))] };
     })()`).catch(() => null);
 
     const truthRows = apiTruth ? apiTruth.rows : null;
@@ -6279,6 +6311,21 @@ function noJsControlExemptionFor(route) {
     check('/plans/api/ 能打开且恰好一个 h1',
       ap.h1Count === 1 && ap.text.length > 1200 && /API/.test(ap.h1),
       `h1 ${ap.h1Count} 个 · 正文 ${ap.text.length} 字 · 「${ap.h1.trim()}」`);
+
+    // v5 识别层（Tooth：浏览器侧）：h1 旁的事实数字 = **3 个 22px 真数**，且与页面数据现算值一致
+    // （不许硬编码 24/21/108 —— 数据一推进就必须跟着变）。同时 .stop 里的「最后核对 YYYY-MM-DD」
+    // 必须保留：这行日期是这一页的可核对性声明，不能被数字块顺手吃掉。
+    const expectedStopStats = apiTruth
+      ? [apiTruth.recordIds.length, apiTruth.providerKeys.length, truthRows.length]
+      : null;
+    check('/plans/api/ h1 旁恰好 3 个 22px 事实数字，且与页面数据现算值一致（v5 识别层）',
+      ap.stopStatsBlocks === 1 && ap.stopStats.length === 3 &&
+      ap.stopStats.every(s => s.fontSize === '22px' && /^\d+$/.test(s.text)) &&
+      /^最后核对 \d{4}-\d{2}-\d{2}$/.test(ap.stopMeta) &&
+      Boolean(expectedStopStats) &&
+      JSON.stringify(ap.stopStats.map(s => Number(s.text))) === JSON.stringify(expectedStopStats),
+      `.stopstats 块 ${ap.stopStatsBlocks} 个 · 数字 ${ap.stopStats.map(s => `${s.text}@${s.fontSize}`).join(' / ') || '无'}`
+        + ` · 数据现算 ${expectedStopStats ? expectedStopStats.join(' / ') : '未读到'} · meta「${ap.stopMeta}」`);
     check('/plans/api/ canonical 自指',
       ap.canonicalPath.endsWith('/plans/api/'), ap.canonicalPath);
     check('/plans/api/ 行数与 api-plans.json 逐个对账',

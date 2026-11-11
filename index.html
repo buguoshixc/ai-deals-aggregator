@@ -87,22 +87,28 @@
       /* 力度档位（语义固定：1 完全免费 → 4 折扣促销）。
          原先「角标三角」与「优惠条竖条」各用一套色（t2 是 #5b7cfa / #7c3aed），
          这里统一成一套，样式熵从 2 套降到 1 套。 */
-      --t1: #0e9f6e;
-      --t2: #7c3aed;
-      --t3: #2563eb;
-      --t4: #c2410c;
-      --t5: #94a3b8;
+      /* v5：原 t2 紫 #7c3aed / t3 蓝 #2563eb / --brand 蓝 #3b5bfd 三色挤在同一段蓝紫，
+         放大成 22px 方块会变彩虹。改成一串可辨识的档位序列：绿 → 蓝 → 青 → 琥珀 → 灰。
+         每个色都实测过（见 _data/contrast.json 与 NOTES.md）：作文字 / 色块 vs 底色 ≥ 5.05:1。 */
+      --t1: #0b7a44;
+      --t2: #1d4ed8;
+      --t3: #155e75;
+      --t4: #92400e;
+      --t5: #475569;
       /* 档位色**当文字**用时又是另一组：亮色主题需要更深的一档才够 4.5:1
          （#0e9f6e 当文字在卡片上只有 3.38:1，所以优惠文案里的高亮用 #0b7a44）。 */
+      /* v5：引文文字统一回 --ink，--t*-ink 不再承载彩色文字；保留 token 且值 = 新档位色，
+         以免将来误用时对比度掉到 4.5:1 以下。 */
       --t1-ink: #0b7a44;
-      --t2-ink: #6d28d9;
+      --t2-ink: #1d4ed8;
 
       /* 色块上的文字逐块指定「on 色」：9px 白字压档位 1 只有 3.38:1、压档位 5 只有 2.57:1 */
-      --on-t1: #05291c;
+      /* v5：新档位色都足够深，统一白字；每个组合的实测对比度 ≥ 5.41:1（11px 数字也过 AA）。 */
+      --on-t1: #fff;
       --on-t2: #fff;
       --on-t3: #fff;
       --on-t4: #fff;
-      --on-t5: #1f2937;
+      --on-t5: #fff;
       --on-accent: #fff;
       --mark-from: #4f6bff;
       --mark-to: #3b5bfd;
@@ -118,6 +124,10 @@
       --fs-base: 14px;
       --fs-lg: 16px;
       --fs-xl: 19px;
+      /* v5 识别层：事实数字的三级断崖。只有「事实数字」能用这一档 —— 标签 / 标题 / 说明一律不许。 */
+      --fs-stat-sm: 22px;
+      --fs-stat: 30px;
+      --fs-stat-lg: 42px;
       --lh: 1.5;
 
       /* 形状与间距：4 的倍数体系 */
@@ -169,13 +179,14 @@
       --ok: #3ddc97;
       --warn: #ffab6b;
 
-      --t1: #3ddc97;
-      --t2: #b18cff;
-      --t3: #7aa2ff;
-      --t4: #ffab6b;
-      --t5: #8d97a5;
-      --t1-ink: #3ddc97;   /* 暗色下档位色本身够亮，直接当文字用 */
-      --t2-ink: #b18cff;
+      /* v5：同一串档位序列的深色版（色相不变、亮度抬高）；实测 vs --bg / --card ≥ 7.01:1。 */
+      --t1: #4ade80;
+      --t2: #60a5fa;
+      --t3: #22d3ee;
+      --t4: #fbbf24;
+      --t5: #94a3b8;
+      --t1-ink: #4ade80;
+      --t2-ink: #60a5fa;
 
       --on-t1: #0b0d10;
       --on-t2: #0b0d10;
@@ -198,8 +209,8 @@
         --mut-deco: #6b7280; --line: #242a33; --line2: #1c2129; --ring: rgba(255, 255, 255, .07);
         --brand: #7c93ff; --brand-ink: #8fb0ff; --deal: #ff6b81; --deal-ink: #ff8f9f; --dealsoft: #2a1418;
         --cn: #3ddc97; --cnbg: #10231d; --gl: #8fb0ff; --glbg: #141c33; --ok: #3ddc97; --warn: #ffab6b;
-        --t1: #3ddc97; --t2: #b18cff; --t3: #7aa2ff; --t4: #ffab6b; --t5: #8d97a5;
-        --t1-ink: #3ddc97; --t2-ink: #b18cff;
+        --t1: #4ade80; --t2: #60a5fa; --t3: #22d3ee; --t4: #fbbf24; --t5: #94a3b8;
+        --t1-ink: #4ade80; --t2-ink: #60a5fa;
         --on-t1: #0b0d10; --on-t2: #0b0d10; --on-t3: #0b0d10; --on-t4: #0b0d10; --on-t5: #0b0d10;
         --on-accent: #0b0d10; --mark-from: #3b5bfd; --mark-to: #2b45d6;
         --elev-hover: 0 0 0 1px var(--ring), 0 4px 14px -6px rgba(0, 0, 0, .7);
@@ -513,9 +524,14 @@
       margin: 0 0 var(--s2); font-size: var(--fs-sm); color: var(--mut);
     }
     .jump .lb { color: var(--mut); }
+    /* v5：首屏原本只有一个档位色（t1 分带 + t1 引文条），25% 缩略图里「≥3 块档位色」不可能成立。
+       把已有的「跳到档位」四枚 chip 升级成档位图例：22px 方块与 .tierhead .n 同一尺度，
+       没有新增色值、没有新增高度行（chip 高度只跟着方块走）。 */
     .jump a {
+      display: inline-flex; align-items: center; gap: 6px;
+      /* v5：纵向内边距减半 ⇒ 22px 方块 + 2px*2 = 26px，与旧 chip 28px 的带高不变（整行仍是 28px）。 */
       color: var(--ink2); text-decoration: none; border: 1px solid var(--line);
-      border-radius: var(--r-pill); padding: var(--s1) 12px;
+      border-radius: var(--r-pill); padding: calc(var(--s1) / 2) 12px;
       transition: border-color var(--t-fast) var(--e-std), color var(--t-fast) var(--e-std);
     }
     .jump a:hover { border-color: var(--brand); color: var(--brand); }
@@ -575,11 +591,12 @@
        在 12px 上会缩成一个认不出的小点 —— 它是同一条字号阶梯里的既有档位，不是新字号。 */
     .need-card .need-icon { flex: none; font-size: var(--fs-lg); line-height: 1; }
     .need-card .need-copy {
-      display: flex; flex-wrap: wrap; align-items: center; gap: 1px var(--s2);
+      /* v5：30px 数字与 12px 标题按基线对齐（同一行里两种字号）；卡高仍是 68px，靠卡内纵向余量。 */
+      display: flex; flex-wrap: wrap; align-items: baseline; gap: 1px var(--s2);
       flex: 1 1 auto; min-width: 0;
     }
     .need-card .need-copy strong { font-size: var(--fs-sm); font-weight: 600; }
-    .need-card .need-copy b { font-size: var(--fs-xs); font-weight: 600; color: var(--mut); }
+    .need-card .need-copy b { font-size: var(--fs-stat); font-weight: 700; color: var(--ink); }
     /* 说明行**单行截断**：卡片高度与文案长度无关（长文案既不会把卡片顶高、也不会让行高抖）。
        flex-basis 100% 让它在「标题 + 条数」那一行之后独占一行。 */
     .need-card .need-copy small {
@@ -788,20 +805,19 @@
     .fmembers:focus-within { background: var(--line2); }
     .fmembers a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
     .fmembers a:hover { color: var(--brand); }
-    .of .bar { flex: none; width: 3px; border-radius: var(--r-pill); background: var(--t5); margin-top: 1px; }
+    .of .bar { flex: none; width: 6px; border-radius: var(--r-pill); background: var(--t5); margin-top: 1px; }
     .of.t1 .bar { background: var(--t1); }
     .of.t2 .bar { background: var(--t2); }
     .of.t3 .bar { background: var(--t3); }
     .of.t4 .bar { background: var(--t4); }
     .of.t5 .bar { background: var(--t5); }
-    .of.t4 .bar { background: var(--warn); }
     .of .tx {
       font-size: 13px; line-height: 1.5; color: var(--ink);
       display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
     }
-    .of .tx b { color: var(--deal); font-weight: 700; }
-    .of.t1 .tx b { color: var(--t1-ink); }
-    .of.t2 .tx b { color: var(--t2-ink); }
+    /* v5 引文让位：三批视觉复核都说「引文比标题抢眼」。颜色只留在左侧 6px 竖条上，
+       引文（含加粗的「事实短语」）一律回正文色 --ink。 */
+    .of .tx b { color: var(--ink); font-weight: 700; }
     /* 工具条目：没有优惠文案，正文是工具简介，用灰条与优惠区分开 */
     .of.plain .bar { background: var(--t5); }
     .of.plain .tx { color: var(--ink2); }
@@ -843,15 +859,17 @@
       grid-column: 1 / -1; display: flex; align-items: center; gap: 8px;
       margin: 2px 0 -4px; font-size: 11.5px; color: var(--mut);
       position: sticky; top: calc(var(--topH) + var(--facetH)); z-index: 5;
-      background: linear-gradient(var(--bg) 72%, transparent); padding: var(--s1) 0;
+      /* v5：22px 方块 + calc(--s1/2)*2 = 26px —— 与旧带宽逐像素相同，首屏卡数不动。 */
+      background: linear-gradient(var(--bg) 72%, transparent); padding: calc(var(--s1) / 2) 0;
     }
-    .tierhead .n { width: 16px; height: 16px; border-radius: var(--r-sm); display: grid; place-items: center; font-size: 9.5px; font-weight: 700; font-family: ui-monospace, monospace; flex: none; }
+    .tierhead .n { width: 22px; height: 22px; border-radius: var(--r-sm); display: grid; place-items: center; font-size: 11px; font-weight: 700; font-family: ui-monospace, monospace; flex: none; }
     .tierhead.t1 .n { background: var(--t1); color: var(--on-t1); }    .tierhead.t2 .n { background: var(--t2); color: var(--on-t2); }
     .tierhead.t3 .n { background: var(--t3); color: var(--on-t3); }
     .tierhead.t4 .n { background: var(--t4); color: var(--on-t4); }
     .tierhead.t5 .n { background: var(--t5); color: var(--on-t5); }
     .tierhead b { color: var(--ink); font-size: 12px; }
-    .tierhead .hint { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    /* v5：条数是「事实数字」，从 .hint 里拆出来单独排版（.hint 只剩说明，继续可截断）。 */
+    .tierhead .hint { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .tierhead .line { flex: 1; height: 1px; background: var(--line); min-width: 12px; }
 
     .empty { grid-column: 1 / -1; text-align: center; padding: 3rem 1rem; color: var(--mut); background: var(--card); border-radius: var(--r-dlg); border: 1px dashed var(--line); }
@@ -1396,6 +1414,56 @@
        ⚠️ 348 而不是 347：可用宽是**小数**（316.33 > 348 − 32 = 316）⇒ 348 这一档仍然折行，
        349 起才排得下。这条边界由 verify-site.js 的 2a2 节逐档钉住（320/348 折、349 起不折）。 */
     @media (max-width: 348px) { .ghlink { margin-left: auto; } }
+
+    /* ============================================================
+       v5 识别层（新增规则；不新增圆角 / 阴影 / 边框色，尺寸只用既有 token）
+       ============================================================ */
+    /* 事实数字：唯一允许的三级字号。tabular-nums 让同列数字不跳，-.02em 收紧大字号的字距。 */
+    .stat { font-variant-numeric: tabular-nums; letter-spacing: -.02em; line-height: 1; font-weight: 700; }
+    .stat-22 { font-size: var(--fs-stat-sm); }
+    .stat-30 { font-size: var(--fs-stat); }
+    .stat-42 { font-size: var(--fs-stat-lg); }
+    .stat-unit { font-size: var(--fs-xs); font-weight: 500; color: var(--mut); letter-spacing: 0; font-variant-numeric: normal; }
+
+    /* need 卡：数字是 30px 唯一高音，单位回 11px 灰字；卡高不变 */
+    .need-card .need-copy .stat-unit { margin-left: 2px; }
+
+    /* 分带：条数 22px；1px 细线改成该档位色（40% 不透明度），不再是一条无信息的灰线 */
+    .tierhead .stat { color: var(--ink); flex: none; }
+    .tierhead .stat-unit { margin-left: 2px; }
+    .tierhead.t1 .line { background: var(--t1); opacity: .4; }
+    .tierhead.t2 .line { background: var(--t2); opacity: .4; }
+    .tierhead.t3 .line { background: var(--t3); opacity: .4; }
+    .tierhead.t4 .line { background: var(--t4); opacity: .4; }
+    .tierhead.t5 .line { background: var(--t5); opacity: .4; }
+
+    /* 跳到档位 = 档位图例：22px 方块 + 11px 等宽数字，与 .tierhead .n 完全同尺度 */
+    .jump .jn {
+      width: 22px; height: 22px; border-radius: var(--r-sm); flex: none;
+      display: grid; place-items: center;
+      font-size: 11px; font-weight: 700; font-family: ui-monospace, monospace;
+    }
+    .jump .jn.t1 { background: var(--t1); color: var(--on-t1); }
+    .jump .jn.t2 { background: var(--t2); color: var(--on-t2); }
+    .jump .jn.t3 { background: var(--t3); color: var(--on-t3); }
+    .jump .jn.t4 { background: var(--t4); color: var(--on-t4); }
+    .jump .jn.t5 { background: var(--t5); color: var(--on-t5); }
+
+    /* 窄屏：分带里那半句说明让位给 22px 方块 + 22px 条数（规格 4 自查的回落方案） */
+    @media (max-width: 760px) {
+      .tierhead .hint { display: none; }
+      /* 档位图例 chip：窄屏恢复既有 2px 横向内边距（本文件的 .jump a 规则在媒体查询之后，
+         不写这一条会把窄屏的 2px 覆盖成 12px，360/390px 会把 label 挤出 chip）。 */
+      /* v5-P4（落地时发现）：.jump a 改 inline-flex 后，≤760px 的 grid 里 text-align:center 对
+         chip 内容失效，四枚 chip 会左对齐（mockup 的 390 截图未滚到这一段，未验过）。
+         justify-content:center 修它；桌面 chip 是 shrink-to-fit、无剩余空间，该属性不产生任何变化。 */
+      .jump a { justify-content: center; padding: calc(var(--s1) / 2) 2px; gap: 2px; }
+    }
+    /* 320–348px：4 枚 chip 均分后每枚只剩 ~69px，22px 方块 + 4 字标签放不下。
+       沿用站点既有的 348px 断点，只在这一档收起图例方块（档位色仍由分带 22px 方块与 6px 竖条承担）。 */
+    @media (max-width: 348px) {
+      .jump .jn { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -1503,10 +1571,10 @@
     <div class="hubline">
       <nav class="jump" id="jumpNav" aria-label="跳到力度档位">
         <span class="lb">跳到</span>
-        <a href="#tier-1">① 完全免费</a>
-        <a href="#tier-2">② 免费额度</a>
-        <a href="#tier-3">③ 身份优惠</a>
-        <a href="#tier-4">④ 折扣促销</a>
+        <a href="#tier-1"><span class="jn t1" aria-hidden="true">1</span>完全免费</a>
+        <a href="#tier-2"><span class="jn t2" aria-hidden="true">2</span>免费额度</a>
+        <a href="#tier-3"><span class="jn t3" aria-hidden="true">3</span>身份优惠</a>
+        <a href="#tier-4"><span class="jn t4" aria-hidden="true">4</span>折扣促销</a>
       </nav>
       <!--PRERENDER:changes-->
     </div>
@@ -3437,7 +3505,8 @@
       return '<div class="tierhead t' + tier.n + '" id="tier-' + tier.n + '">' +
         '<span class="n" aria-hidden="true">' + tier.n + '</span>' +
         '<b>' + escapeHtml(tier.name) + '</b>' +
-        '<span class="hint">' + escapeHtml(tier.hint) + ' · ' + count + ' 条</span>' +
+        '<span class="hint">' + escapeHtml(tier.hint) + '</span>' +
+        '<span class="stat stat-22">' + count + '<span class="stat-unit">条</span></span>' +
         '<span class="line"></span></div>';
     }
 

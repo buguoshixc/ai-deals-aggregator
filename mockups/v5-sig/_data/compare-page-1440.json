@@ -1,0 +1,94 @@
+{
+  "measuredAt": "2026-11-11T13:30:58.935Z",
+  "url": "http://127.0.0.1:8081/mockups/v5-sig/compare.html",
+  "viewport": {
+    "w": 1440,
+    "h": 900
+  },
+  "scale": 1,
+  "theme": null,
+  "errors": [],
+  "blockedExternal": [],
+  "scrollWidth": 1440,
+  "scrollHeight": 900,
+  "horizontalOverflow": 0,
+  "cardCount": 0,
+  "fullyVisibleCards": 0,
+  "intersectingCards": 0,
+  "fullyVisibleTiers": [],
+  "layout": {
+    ".top": null,
+    ".topin": null,
+    ".facets": null,
+    ".needs": null,
+    ".need-grid": null,
+    ".rbar": null,
+    ".hubline": null,
+    "#dealsList": null,
+    ".tierhead": null,
+    ".wrap": null,
+    "footer": {
+      "rect": {
+        "top": 669.97,
+        "bottom": 840.41,
+        "left": 24,
+        "right": 1416,
+        "w": 1392,
+        "h": 170.44
+      },
+      "h": 170.44
+    }
+  },
+  "tierheads": [],
+  "needCards": [],
+  "firstTierCard": null,
+  "bars": [],
+  "txB": [],
+  "stats": [],
+  "bigText": [],
+  "tokens": {
+    "--bg": "",
+    "--card": "",
+    "--ink": "",
+    "--ink2": "",
+    "--mut": "",
+    "--line": "",
+    "--t1": "",
+    "--t2": "",
+    "--t3": "",
+    "--t4": "",
+    "--t5": "",
+    "--on-t1": "",
+    "--on-t2": "",
+    "--on-t3": "",
+    "--on-t4": "",
+    "--on-t5": "",
+    "--fs-stat-sm": "",
+    "--fs-stat": "",
+    "--fs-stat-lg": "",
+    "--brand": ""
+  },
+  "h1": [
+    {
+      "text": "识别层 v5 —— 改前 / 改后",
+      "fs": "18px",
+      "rect": {
+        "top": 12,
+        "bottom": 38.09,
+        "left": 24,
+        "right": 244.77,
+        "w": 220.77,
+        "h": 26.09
+      }
+    }
+  ],
+  "fontSizesUsed": [
+    "10px",
+    "10.5px",
+    "11px",
+    "12px",
+    "13px",
+    "18px"
+  ],
+  "shot": "mockups/v5-sig/shots/home-before-after.png"
+}

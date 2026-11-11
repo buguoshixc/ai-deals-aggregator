@@ -1,0 +1,1048 @@
+{
+  "measuredAt": "2026-11-11T13:30:46.016Z",
+  "url": "http://127.0.0.1:8081/mockups/v5-sig/home-light.html",
+  "viewport": {
+    "w": 1440,
+    "h": 900
+  },
+  "scale": 0.25,
+  "theme": "light",
+  "errors": [],
+  "blockedExternal": [],
+  "scrollWidth": 1440,
+  "scrollHeight": 6797,
+  "horizontalOverflow": 0,
+  "cardCount": 76,
+  "fullyVisibleCards": 6,
+  "intersectingCards": 9,
+  "fullyVisibleTiers": [
+    "1"
+  ],
+  "layout": {
+    ".top": {
+      "rect": {
+        "top": 0,
+        "bottom": 59,
+        "left": 0,
+        "right": 1440,
+        "w": 1440,
+        "h": 59
+      },
+      "h": 59
+    },
+    ".topin": {
+      "rect": {
+        "top": 0,
+        "bottom": 58,
+        "left": 10,
+        "right": 1430,
+        "w": 1420,
+        "h": 58
+      },
+      "h": 58
+    },
+    ".facets": {
+      "rect": {
+        "top": 59,
+        "bottom": 105,
+        "left": 0,
+        "right": 1440,
+        "w": 1440,
+        "h": 46
+      },
+      "h": 46
+    },
+    ".needs": {
+      "rect": {
+        "top": 105,
+        "bottom": 258,
+        "left": 10,
+        "right": 1430,
+        "w": 1420,
+        "h": 153
+      },
+      "h": 153
+    },
+    ".need-grid": {
+      "rect": {
+        "top": 110,
+        "bottom": 258,
+        "left": 30,
+        "right": 1410,
+        "w": 1380,
+        "h": 148
+      },
+      "h": 148
+    },
+    ".rbar": {
+      "rect": {
+        "top": 274,
+        "bottom": 306,
+        "left": 30,
+        "right": 1410,
+        "w": 1380,
+        "h": 32
+      },
+      "h": 32
+    },
+    ".hubline": {
+      "rect": {
+        "top": 316,
+        "bottom": 344,
+        "left": 30,
+        "right": 1410,
+        "w": 1380,
+        "h": 28
+      },
+      "h": 28
+    },
+    "#dealsList": {
+      "rect": {
+        "top": 352,
+        "bottom": 5992,
+        "left": 30,
+        "right": 1410,
+        "w": 1380,
+        "h": 5640
+      },
+      "h": 5640
+    },
+    ".tierhead": {
+      "rect": {
+        "top": 354,
+        "bottom": 380,
+        "left": 30,
+        "right": 1410,
+        "w": 1380,
+        "h": 26
+      },
+      "h": 26
+    },
+    ".wrap": {
+      "rect": {
+        "top": 258,
+        "bottom": 6796.97,
+        "left": 10,
+        "right": 1430,
+        "w": 1420,
+        "h": 6538.97
+      },
+      "h": 6538.97
+    },
+    "footer": {
+      "rect": {
+        "top": 6579.19,
+        "bottom": 6736.97,
+        "left": 30,
+        "right": 1410,
+        "w": 1380,
+        "h": 157.78
+      },
+      "h": 157.78
+    }
+  },
+  "tierheads": [
+    {
+      "id": "tier-1",
+      "cls": "tierhead t1",
+      "h": 26,
+      "rect": {
+        "top": 354,
+        "bottom": 380,
+        "left": 30,
+        "right": 1410,
+        "w": 1380,
+        "h": 26
+      },
+      "n": {
+        "top": 356,
+        "bottom": 378,
+        "left": 30,
+        "right": 52,
+        "w": 22,
+        "h": 22
+      },
+      "nBg": "rgb(11, 122, 68)",
+      "nColor": "rgb(255, 255, 255)",
+      "nFs": "11px",
+      "lineBg": "rgb(11, 122, 68)",
+      "hint": "注册就能用，不用等额度到账",
+      "stat": {
+        "text": "11条",
+        "fs": "22px",
+        "rect": {
+          "top": 356,
+          "bottom": 378,
+          "left": 280,
+          "right": 322.75,
+          "w": 42.75,
+          "h": 22
+        }
+      }
+    },
+    {
+      "id": "tier-2",
+      "cls": "tierhead t2",
+      "h": 26,
+      "rect": {
+        "top": 1206,
+        "bottom": 1232,
+        "left": 30,
+        "right": 1410,
+        "w": 1380,
+        "h": 26
+      },
+      "n": {
+        "top": 1208,
+        "bottom": 1230,
+        "left": 30,
+        "right": 52,
+        "w": 22,
+        "h": 22
+      },
+      "nBg": "rgb(29, 78, 216)",
+      "nColor": "rgb(255, 255, 255)",
+      "nFs": "11px",
+      "lineBg": "rgb(29, 78, 216)",
+      "hint": "新用户一次性赠送 / 首月免费，够跑一段时间",
+      "stat": {
+        "text": "20条",
+        "fs": "22px",
+        "rect": {
+          "top": 1208,
+          "bottom": 1230,
+          "left": 363.19,
+          "right": 405.94,
+          "w": 42.75,
+          "h": 22
+        }
+      }
+    },
+    {
+      "id": "tier-3",
+      "cls": "tierhead t3",
+      "h": 26,
+      "rect": {
+        "top": 2670,
+        "bottom": 2696,
+        "left": 30,
+        "right": 1410,
+        "w": 1380,
+        "h": 26
+      },
+      "n": {
+        "top": 2672,
+        "bottom": 2694,
+        "left": 30,
+        "right": 52,
+        "w": 22,
+        "h": 22
+      },
+      "nBg": "rgb(21, 94, 117)",
+      "nColor": "rgb(255, 255, 255)",
+      "nFs": "11px",
+      "lineBg": "rgb(21, 94, 117)",
+      "hint": "学生 / 教师 / 非营利 / 初创 —— 有资格就不花钱",
+      "stat": {
+        "text": "20条",
+        "fs": "22px",
+        "rect": {
+          "top": 2672,
+          "bottom": 2694,
+          "left": 379.88,
+          "right": 422.63,
+          "w": 42.75,
+          "h": 22
+        }
+      }
+    },
+    {
+      "id": "tier-4",
+      "cls": "tierhead t4",
+      "h": 26,
+      "rect": {
+        "top": 4134,
+        "bottom": 4160,
+        "left": 30,
+        "right": 1410,
+        "w": 1380,
+        "h": 26
+      },
+      "n": {
+        "top": 4136,
+        "bottom": 4158,
+        "left": 30,
+        "right": 52,
+        "w": 22,
+        "h": 22
+      },
+      "nBg": "rgb(146, 64, 14)",
+      "nColor": "rgb(255, 255, 255)",
+      "nFs": "11px",
+      "lineBg": "rgb(146, 64, 14)",
+      "hint": "要花钱，但比标准价便宜",
+      "stat": {
+        "text": "25条",
+        "fs": "22px",
+        "rect": {
+          "top": 4136,
+          "bottom": 4158,
+          "left": 256,
+          "right": 298.75,
+          "w": 42.75,
+          "h": 22
+        }
+      }
+    }
+  ],
+  "needCards": [
+    {
+      "h": 68,
+      "rect": {
+        "top": 110,
+        "bottom": 178,
+        "left": 30,
+        "right": 296.39,
+        "w": 266.39,
+        "h": 68
+      },
+      "b": {
+        "text": "13条",
+        "fs": "30px",
+        "lh": "30px",
+        "rect": {
+          "top": 120.25,
+          "bottom": 150.25,
+          "left": 116.61,
+          "right": 170.17,
+          "w": 53.56,
+          "h": 30
+        }
+      },
+      "copyOverflowX": 0,
+      "cardOverflow": 0
+    },
+    {
+      "h": 68,
+      "rect": {
+        "top": 110,
+        "bottom": 178,
+        "left": 308.39,
+        "right": 574.8,
+        "w": 266.41,
+        "h": 68
+      },
+      "b": {
+        "text": "7条",
+        "fs": "30px",
+        "lh": "30px",
+        "rect": {
+          "top": 120.25,
+          "bottom": 150.25,
+          "left": 419,
+          "right": 452.28,
+          "w": 33.28,
+          "h": 30
+        }
+      },
+      "copyOverflowX": 0,
+      "cardOverflow": 0
+    },
+    {
+      "h": 68,
+      "rect": {
+        "top": 110,
+        "bottom": 178,
+        "left": 586.8,
+        "right": 853.19,
+        "w": 266.39,
+        "h": 68
+      },
+      "b": {
+        "text": "1条",
+        "fs": "30px",
+        "lh": "30px",
+        "rect": {
+          "top": 120.25,
+          "bottom": 150.25,
+          "left": 685.41,
+          "right": 718.69,
+          "w": 33.28,
+          "h": 30
+        }
+      },
+      "copyOverflowX": 0,
+      "cardOverflow": 0
+    },
+    {
+      "h": 68,
+      "rect": {
+        "top": 110,
+        "bottom": 178,
+        "left": 865.19,
+        "right": 1131.59,
+        "w": 266.41,
+        "h": 68
+      },
+      "b": {
+        "text": "30条",
+        "fs": "30px",
+        "lh": "30px",
+        "rect": {
+          "top": 120.25,
+          "bottom": 150.25,
+          "left": 951.8,
+          "right": 1005.36,
+          "w": 53.56,
+          "h": 30
+        }
+      },
+      "copyOverflowX": 0,
+      "cardOverflow": 0
+    },
+    {
+      "h": 68,
+      "rect": {
+        "top": 110,
+        "bottom": 178,
+        "left": 1143.59,
+        "right": 1409.98,
+        "w": 266.39,
+        "h": 68
+      },
+      "b": {
+        "text": "66条",
+        "fs": "30px",
+        "lh": "30px",
+        "rect": {
+          "top": 120.25,
+          "bottom": 150.25,
+          "left": 1236.59,
+          "right": 1290.16,
+          "w": 53.56,
+          "h": 30
+        }
+      },
+      "copyOverflowX": 0,
+      "cardOverflow": 0
+    },
+    {
+      "h": 68,
+      "rect": {
+        "top": 190,
+        "bottom": 258,
+        "left": 30,
+        "right": 296.39,
+        "w": 266.39,
+        "h": 68
+      },
+      "b": {
+        "text": "45条",
+        "fs": "30px",
+        "lh": "30px",
+        "rect": {
+          "top": 200.25,
+          "bottom": 230.25,
+          "left": 119.34,
+          "right": 172.91,
+          "w": 53.56,
+          "h": 30
+        }
+      },
+      "copyOverflowX": 0,
+      "cardOverflow": 0
+    },
+    {
+      "h": 68,
+      "rect": {
+        "top": 190,
+        "bottom": 258,
+        "left": 308.39,
+        "right": 574.8,
+        "w": 266.41,
+        "h": 68
+      },
+      "b": {
+        "text": "44条",
+        "fs": "30px",
+        "lh": "30px",
+        "rect": {
+          "top": 200.25,
+          "bottom": 230.25,
+          "left": 421.5,
+          "right": 475.06,
+          "w": 53.56,
+          "h": 30
+        }
+      },
+      "copyOverflowX": 0,
+      "cardOverflow": 0
+    },
+    {
+      "h": 68,
+      "rect": {
+        "top": 190,
+        "bottom": 258,
+        "left": 586.8,
+        "right": 853.19,
+        "w": 266.39,
+        "h": 68
+      },
+      "b": {
+        "text": "7条",
+        "fs": "30px",
+        "lh": "30px",
+        "rect": {
+          "top": 200.25,
+          "bottom": 230.25,
+          "left": 690.23,
+          "right": 723.52,
+          "w": 33.28,
+          "h": 30
+        }
+      },
+      "copyOverflowX": 0,
+      "cardOverflow": 0
+    },
+    {
+      "h": 68,
+      "rect": {
+        "top": 190,
+        "bottom": 258,
+        "left": 865.19,
+        "right": 1131.59,
+        "w": 266.41,
+        "h": 68
+      },
+      "b": {
+        "text": "12条",
+        "fs": "30px",
+        "lh": "30px",
+        "rect": {
+          "top": 200.25,
+          "bottom": 230.25,
+          "left": 951.8,
+          "right": 1005.36,
+          "w": 53.56,
+          "h": 30
+        }
+      },
+      "copyOverflowX": 0,
+      "cardOverflow": 0
+    },
+    {
+      "h": 68,
+      "rect": {
+        "top": 190,
+        "bottom": 258,
+        "left": 1143.59,
+        "right": 1409.98,
+        "w": 266.39,
+        "h": 68
+      },
+      "b": {
+        "text": "67条",
+        "fs": "30px",
+        "lh": "30px",
+        "rect": {
+          "top": 200.25,
+          "bottom": 230.25,
+          "left": 1270.83,
+          "right": 1324.39,
+          "w": 53.56,
+          "h": 30
+        }
+      },
+      "copyOverflowX": 0,
+      "cardOverflow": 0
+    }
+  ],
+  "firstTierCard": {
+    "rect": {
+      "top": 388,
+      "bottom": 580,
+      "left": 30,
+      "right": 482,
+      "w": 452,
+      "h": 192
+    },
+    "h": 192
+  },
+  "bars": [
+    {
+      "w": "6px",
+      "bg": "rgb(11, 122, 68)",
+      "rect": {
+        "top": 455.09,
+        "bottom": 493.09,
+        "left": 45,
+        "right": 51,
+        "w": 6,
+        "h": 38
+      }
+    },
+    {
+      "w": "6px",
+      "bg": "rgb(11, 122, 68)",
+      "rect": {
+        "top": 455.09,
+        "bottom": 493.09,
+        "left": 509,
+        "right": 515,
+        "w": 6,
+        "h": 38
+      }
+    },
+    {
+      "w": "6px",
+      "bg": "rgb(11, 122, 68)",
+      "rect": {
+        "top": 474.69,
+        "bottom": 512.69,
+        "left": 973,
+        "right": 979,
+        "w": 6,
+        "h": 38
+      }
+    },
+    {
+      "w": "6px",
+      "bg": "rgb(11, 122, 68)",
+      "rect": {
+        "top": 659.09,
+        "bottom": 697.09,
+        "left": 45,
+        "right": 51,
+        "w": 6,
+        "h": 38
+      }
+    }
+  ],
+  "txB": [
+    {
+      "color": "rgb(15, 23, 42)",
+      "text": "OpenRouter 免费模型"
+    },
+    {
+      "color": "rgb(15, 23, 42)",
+      "text": "OpenRouter 免费模型"
+    },
+    {
+      "color": "rgb(15, 23, 42)",
+      "text": "OpenRouter 免费模型"
+    },
+    {
+      "color": "rgb(15, 23, 42)",
+      "text": "OpenRouter 免费模型"
+    }
+  ],
+  "stats": [
+    {
+      "cls": "stat stat-30",
+      "fs": "30px",
+      "lh": "30px",
+      "text": "13条",
+      "rect": {
+        "top": 120.25,
+        "bottom": 150.25,
+        "left": 116.61,
+        "right": 170.17,
+        "w": 53.56,
+        "h": 30
+      },
+      "color": "rgb(15, 23, 42)",
+      "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+    },
+    {
+      "cls": "stat stat-30",
+      "fs": "30px",
+      "lh": "30px",
+      "text": "7条",
+      "rect": {
+        "top": 120.25,
+        "bottom": 150.25,
+        "left": 419,
+        "right": 452.28,
+        "w": 33.28,
+        "h": 30
+      },
+      "color": "rgb(15, 23, 42)",
+      "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+    },
+    {
+      "cls": "stat stat-30",
+      "fs": "30px",
+      "lh": "30px",
+      "text": "1条",
+      "rect": {
+        "top": 120.25,
+        "bottom": 150.25,
+        "left": 685.41,
+        "right": 718.69,
+        "w": 33.28,
+        "h": 30
+      },
+      "color": "rgb(15, 23, 42)",
+      "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+    },
+    {
+      "cls": "stat stat-30",
+      "fs": "30px",
+      "lh": "30px",
+      "text": "30条",
+      "rect": {
+        "top": 120.25,
+        "bottom": 150.25,
+        "left": 951.8,
+        "right": 1005.36,
+        "w": 53.56,
+        "h": 30
+      },
+      "color": "rgb(15, 23, 42)",
+      "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+    },
+    {
+      "cls": "stat stat-30",
+      "fs": "30px",
+      "lh": "30px",
+      "text": "66条",
+      "rect": {
+        "top": 120.25,
+        "bottom": 150.25,
+        "left": 1236.59,
+        "right": 1290.16,
+        "w": 53.56,
+        "h": 30
+      },
+      "color": "rgb(15, 23, 42)",
+      "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+    },
+    {
+      "cls": "stat stat-30",
+      "fs": "30px",
+      "lh": "30px",
+      "text": "45条",
+      "rect": {
+        "top": 200.25,
+        "bottom": 230.25,
+        "left": 119.34,
+        "right": 172.91,
+        "w": 53.56,
+        "h": 30
+      },
+      "color": "rgb(15, 23, 42)",
+      "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+    },
+    {
+      "cls": "stat stat-30",
+      "fs": "30px",
+      "lh": "30px",
+      "text": "44条",
+      "rect": {
+        "top": 200.25,
+        "bottom": 230.25,
+        "left": 421.5,
+        "right": 475.06,
+        "w": 53.56,
+        "h": 30
+      },
+      "color": "rgb(15, 23, 42)",
+      "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+    },
+    {
+      "cls": "stat stat-30",
+      "fs": "30px",
+      "lh": "30px",
+      "text": "7条",
+      "rect": {
+        "top": 200.25,
+        "bottom": 230.25,
+        "left": 690.23,
+        "right": 723.52,
+        "w": 33.28,
+        "h": 30
+      },
+      "color": "rgb(15, 23, 42)",
+      "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+    },
+    {
+      "cls": "stat stat-30",
+      "fs": "30px",
+      "lh": "30px",
+      "text": "12条",
+      "rect": {
+        "top": 200.25,
+        "bottom": 230.25,
+        "left": 951.8,
+        "right": 1005.36,
+        "w": 53.56,
+        "h": 30
+      },
+      "color": "rgb(15, 23, 42)",
+      "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+    },
+    {
+      "cls": "stat stat-30",
+      "fs": "30px",
+      "lh": "30px",
+      "text": "67条",
+      "rect": {
+        "top": 200.25,
+        "bottom": 230.25,
+        "left": 1270.83,
+        "right": 1324.39,
+        "w": 53.56,
+        "h": 30
+      },
+      "color": "rgb(15, 23, 42)",
+      "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+    },
+    {
+      "cls": "stat stat-22",
+      "fs": "22px",
+      "lh": "22px",
+      "text": "11条",
+      "rect": {
+        "top": 356,
+        "bottom": 378,
+        "left": 280,
+        "right": 322.75,
+        "w": 42.75,
+        "h": 22
+      },
+      "color": "rgb(15, 23, 42)",
+      "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+    },
+    {
+      "cls": "stat stat-22",
+      "fs": "22px",
+      "lh": "22px",
+      "text": "20条",
+      "rect": {
+        "top": 1208,
+        "bottom": 1230,
+        "left": 363.19,
+        "right": 405.94,
+        "w": 42.75,
+        "h": 22
+      },
+      "color": "rgb(15, 23, 42)",
+      "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+    },
+    {
+      "cls": "stat stat-22",
+      "fs": "22px",
+      "lh": "22px",
+      "text": "20条",
+      "rect": {
+        "top": 2672,
+        "bottom": 2694,
+        "left": 379.88,
+        "right": 422.63,
+        "w": 42.75,
+        "h": 22
+      },
+      "color": "rgb(15, 23, 42)",
+      "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+    },
+    {
+      "cls": "stat stat-22",
+      "fs": "22px",
+      "lh": "22px",
+      "text": "25条",
+      "rect": {
+        "top": 4136,
+        "bottom": 4158,
+        "left": 256,
+        "right": 298.75,
+        "w": 42.75,
+        "h": 22
+      },
+      "color": "rgb(15, 23, 42)",
+      "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+    }
+  ],
+  "bigText": [
+    {
+      "tag": "B",
+      "cls": "stat stat-30",
+      "fs": "30px",
+      "fw": "700",
+      "text": "13条",
+      "color": "rgb(15, 23, 42)",
+      "clsName": "stat stat-30"
+    },
+    {
+      "tag": "B",
+      "cls": "stat stat-30",
+      "fs": "30px",
+      "fw": "700",
+      "text": "7条",
+      "color": "rgb(15, 23, 42)",
+      "clsName": "stat stat-30"
+    },
+    {
+      "tag": "B",
+      "cls": "stat stat-30",
+      "fs": "30px",
+      "fw": "700",
+      "text": "1条",
+      "color": "rgb(15, 23, 42)",
+      "clsName": "stat stat-30"
+    },
+    {
+      "tag": "B",
+      "cls": "stat stat-30",
+      "fs": "30px",
+      "fw": "700",
+      "text": "30条",
+      "color": "rgb(15, 23, 42)",
+      "clsName": "stat stat-30"
+    },
+    {
+      "tag": "B",
+      "cls": "stat stat-30",
+      "fs": "30px",
+      "fw": "700",
+      "text": "66条",
+      "color": "rgb(15, 23, 42)",
+      "clsName": "stat stat-30"
+    },
+    {
+      "tag": "B",
+      "cls": "stat stat-30",
+      "fs": "30px",
+      "fw": "700",
+      "text": "45条",
+      "color": "rgb(15, 23, 42)",
+      "clsName": "stat stat-30"
+    },
+    {
+      "tag": "B",
+      "cls": "stat stat-30",
+      "fs": "30px",
+      "fw": "700",
+      "text": "44条",
+      "color": "rgb(15, 23, 42)",
+      "clsName": "stat stat-30"
+    },
+    {
+      "tag": "B",
+      "cls": "stat stat-30",
+      "fs": "30px",
+      "fw": "700",
+      "text": "7条",
+      "color": "rgb(15, 23, 42)",
+      "clsName": "stat stat-30"
+    },
+    {
+      "tag": "B",
+      "cls": "stat stat-30",
+      "fs": "30px",
+      "fw": "700",
+      "text": "12条",
+      "color": "rgb(15, 23, 42)",
+      "clsName": "stat stat-30"
+    },
+    {
+      "tag": "B",
+      "cls": "stat stat-30",
+      "fs": "30px",
+      "fw": "700",
+      "text": "67条",
+      "color": "rgb(15, 23, 42)",
+      "clsName": "stat stat-30"
+    },
+    {
+      "tag": "SPAN",
+      "cls": "stat stat-22",
+      "fs": "22px",
+      "fw": "700",
+      "text": "11条",
+      "color": "rgb(15, 23, 42)",
+      "clsName": "stat stat-22"
+    },
+    {
+      "tag": "SPAN",
+      "cls": "stat stat-22",
+      "fs": "22px",
+      "fw": "700",
+      "text": "20条",
+      "color": "rgb(15, 23, 42)",
+      "clsName": "stat stat-22"
+    },
+    {
+      "tag": "SPAN",
+      "cls": "stat stat-22",
+      "fs": "22px",
+      "fw": "700",
+      "text": "20条",
+      "color": "rgb(15, 23, 42)",
+      "clsName": "stat stat-22"
+    },
+    {
+      "tag": "SPAN",
+      "cls": "stat stat-22",
+      "fs": "22px",
+      "fw": "700",
+      "text": "25条",
+      "color": "rgb(15, 23, 42)",
+      "clsName": "stat stat-22"
+    }
+  ],
+  "tokens": {
+    "--bg": "#f6f7f9",
+    "--card": "#fff",
+    "--ink": "#0f172a",
+    "--ink2": "#495066",
+    "--mut": "#6b7280",
+    "--line": "#e6e9ef",
+    "--t1": "#0b7a44",
+    "--t2": "#1d4ed8",
+    "--t3": "#155e75",
+    "--t4": "#92400e",
+    "--t5": "#475569",
+    "--on-t1": "#fff",
+    "--on-t2": "#fff",
+    "--on-t3": "#fff",
+    "--on-t4": "#fff",
+    "--on-t5": "#fff",
+    "--fs-stat-sm": "22px",
+    "--fs-stat": "30px",
+    "--fs-stat-lg": "42px",
+    "--brand": "#3b5bfd"
+  },
+  "h1": [
+    {
+      "text": "AI 优惠聚合器",
+      "fs": "16px",
+      "rect": {
+        "top": 13.48,
+        "bottom": 31.88,
+        "left": 70,
+        "right": 175.09,
+        "w": 105.09,
+        "h": 18.39
+      }
+    }
+  ],
+  "fontSizesUsed": [
+    "0px",
+    "9px",
+    "9.5px",
+    "10px",
+    "10.5px",
+    "11px",
+    "11.5px",
+    "12px",
+    "12.5px",
+    "13px",
+    "13.5px",
+    "14px",
+    "15px",
+    "16px",
+    "22px",
+    "30px"
+  ],
+  "shot": "mockups/v5-sig/shots/home-25pct.png"
+}

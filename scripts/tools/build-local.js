@@ -910,7 +910,7 @@ function renderNeedRow(deals) {
     .map(item =>
       `<a class="need-card" href="${item.spec.route}">` +
       `<span class="need-icon" aria-hidden="true">${htmlEscape(item.spec.icon)}</span>` +
-      `<span class="need-copy"><strong>${htmlEscape(item.spec.label)}</strong><b>${item.count}</b>` +
+      `<span class="need-copy"><strong>${htmlEscape(item.spec.label)}</strong><b class="stat stat-30">${item.count}<span class="stat-unit">条</span></b>` +
       `<small>${htmlEscape(item.spec.homeDescription)}</small></span>` +
       `<span class="need-arrow" aria-hidden="true">→</span>` +
       `</a>`).join('');
@@ -2196,6 +2196,13 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
   .stop { display: flex; align-items: baseline; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s2); }
   .stop h1 { font-size: 19px; margin: 0; }
   .stop .meta { color: var(--mut); font-size: var(--fs-sm); }
+  /* v5 识别层：h1 旁的事实数字（只有 /plans/api/ 有；其它页面族的 .stop 不加数字）。
+     三个数是本页数据的现算值（计费记录 / 平台 / 模型计价条目），不是硬编码。 */
+  .stopstats { display: flex; align-items: baseline; flex-wrap: wrap; gap: var(--s1) var(--s4); }
+  .stopstat { display: flex; align-items: baseline; gap: var(--s1); }
+  .stopstat .stat { color: var(--ink); }
+  .stopstat-lb { font-size: var(--fs-xs); color: var(--mut); }
+  @media (max-width: 760px) { .stopstats { gap: var(--s2) var(--s3); } }
   .ph2 { font-size: 15px; margin: var(--s4) 0 var(--s2); }
   .plist { margin: 0; padding-left: 1.15em; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; max-width: none; }
   .plist b { color: var(--ink2); }
@@ -8345,6 +8352,7 @@ function selfCheck(built) {
     // 所以它按**元素**判，不按类名判 —— v1.8 换成整卡之后，这一条再往前一步：
     // **逐张卡**判四件套（图标 / 标题 / 说明 / 箭头）齐不齐，以及卡上那串 `class="need-card"`
     // 是不是就长在 `<a>` 自己身上（「容器挂类名、里面只有文字是链接」那种形状要能被抓住）。
+    // v5 识别层起，卡上的计数还必须是 `.stat stat-30` 形态（30px 事实数字；见循环里那条断言）。
     {
       const needsNav = (html.match(/<nav class="needs"[^>]*>([\s\S]*?)<\/nav>/) || [])[1];
       if (!needsNav) {
@@ -8363,13 +8371,20 @@ function selfCheck(built) {
         }
         const buttons = [...needsNav.matchAll(/<button|<input|<select|data-facet|aria-pressed|role="button"/g)].length;
         if (buttons) problems.push(`按需求导航卡里出现了 ${buttons} 个 JS 控件 / facet 语义（无 JS 时是死按钮，只允许 <a>）`);
+        // v5 契约（识别层）：计数必须是 `<b class="stat stat-30">N<span class="stat-unit">条</span></b>`
+        // —— 30px 事实数字。形态不对一张都不许放过；否则数字会悄悄退回 11px 灰字而不报错。
+        const statHits = (needsNav.match(/<b class="stat stat-30">/g) || []).length;
+        if (statHits !== cards.length) {
+          problems.push(`按需求导航卡里 .stat stat-30 计数标记 ${statHits} 个 ≠ 卡片 ${cards.length} 张（v5 契约：每张卡的计数都是 30px 事实数字）`);
+        }
         for (const [, href, inner] of cards) {
           // 四件套逐件取文本：取不到 = 那一件没了（空文本与「标签在但内容是空的」都算缺失）
           const icon = (inner.match(/<span class="need-icon" aria-hidden="true">([^<]*)<\/span>/) || [])[1] || '';
           const label = (inner.match(/<strong>([^<]*)<\/strong>/) || [])[1] || '';
           const desc = (inner.match(/<small>([^<]*)<\/small>/) || [])[1] || '';
           const arrow = (inner.match(/<span class="need-arrow" aria-hidden="true">([^<]*)<\/span>/) || [])[1] || '';
-          const badge = (inner.match(/<b>(\d+)<\/b>/) || [])[1];
+          const badge = (inner.match(/<b class="stat stat-30">(\d+)<span class="stat-unit">条<\/span><\/b>/) || [])[1];
+          if (!badge) problems.push(`专题导航卡 ${href} 的计数不是 .stat 形态（v5 契约：计数必须是 30px 事实数字）`);
           const missing = [!icon && '图标', !label && '标题', !desc && '说明', !arrow && '箭头'].filter(Boolean);
           if (missing.length) problems.push(`专题导航卡 ${href} 缺 ${missing.join(' / ')}（四件套不齐，卡片退化成一条看不懂的链接）`);
           // 「每条 href 有真实文件」：`built.needPages` 只能证明**计划里有**这一页，
@@ -8379,8 +8394,8 @@ function selfCheck(built) {
           }
           const page = built.needPages.find(item => item.route === href);
           if (!page) { problems.push(`首页导航卡「${label}」指向未生成的 ${href}`); continue; }
-          if (page.count !== Number(badge)) {
-            problems.push(`首页导航卡「${label}」数字 ${badge === undefined ? '缺失' : badge} ≠ 落地页 ${page.count} 条`);
+          if (badge !== undefined && page.count !== Number(badge)) {
+            problems.push(`首页导航卡「${label}」数字 ${badge} ≠ 落地页 ${page.count} 条`);
           }
         }
         const missingEntry = built.needPages.filter(page => !cards.some(card => card[1] === page.route));

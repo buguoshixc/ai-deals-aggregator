@@ -1,0 +1,1134 @@
+{
+  "url": "http://127.0.0.1:8081/mockups/v5-sig/home-light.html",
+  "measuredAt": "2026-11-11T13:30:57.221Z",
+  "results": [
+    {
+      "w": 1920,
+      "viewportW": 1920,
+      "scrollWidth": 1920,
+      "overflow": 0,
+      "cards": 76,
+      "fullyVisible": 6,
+      "gridTop": 352,
+      "needH": 68,
+      "needClip": 0,
+      "tierClip": 0,
+      "statOverflow": 0,
+      "jumpOverflow": 0,
+      "jump": [
+        {
+          "r": {
+            "top": 316,
+            "right": 402,
+            "bottom": 344,
+            "left": 300,
+            "w": 102,
+            "h": 28
+          },
+          "jn": {
+            "top": 319,
+            "right": 335,
+            "bottom": 341,
+            "left": 313,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "1完全免费"
+        },
+        {
+          "r": {
+            "top": 316,
+            "right": 510,
+            "bottom": 344,
+            "left": 408,
+            "w": 102,
+            "h": 28
+          },
+          "jn": {
+            "top": 319,
+            "right": 443,
+            "bottom": 341,
+            "left": 421,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "2免费额度"
+        },
+        {
+          "r": {
+            "top": 316,
+            "right": 618,
+            "bottom": 344,
+            "left": 516,
+            "w": 102,
+            "h": 28
+          },
+          "jn": {
+            "top": 319,
+            "right": 551,
+            "bottom": 341,
+            "left": 529,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "3身份优惠"
+        },
+        {
+          "r": {
+            "top": 316,
+            "right": 726,
+            "bottom": 344,
+            "left": 624,
+            "w": 102,
+            "h": 28
+          },
+          "jn": {
+            "top": 319,
+            "right": 659,
+            "bottom": 341,
+            "left": 637,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "4折扣促销"
+        }
+      ],
+      "tierheadH": 26,
+      "jumpRowH": 28
+    },
+    {
+      "w": 1440,
+      "viewportW": 1440,
+      "scrollWidth": 1440,
+      "overflow": 0,
+      "cards": 76,
+      "fullyVisible": 6,
+      "gridTop": 352,
+      "needH": 68,
+      "needClip": 0,
+      "tierClip": 0,
+      "statOverflow": 0,
+      "jumpOverflow": 0,
+      "jump": [
+        {
+          "r": {
+            "top": 316,
+            "right": 162,
+            "bottom": 344,
+            "left": 60,
+            "w": 102,
+            "h": 28
+          },
+          "jn": {
+            "top": 319,
+            "right": 95,
+            "bottom": 341,
+            "left": 73,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "1完全免费"
+        },
+        {
+          "r": {
+            "top": 316,
+            "right": 270,
+            "bottom": 344,
+            "left": 168,
+            "w": 102,
+            "h": 28
+          },
+          "jn": {
+            "top": 319,
+            "right": 203,
+            "bottom": 341,
+            "left": 181,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "2免费额度"
+        },
+        {
+          "r": {
+            "top": 316,
+            "right": 378,
+            "bottom": 344,
+            "left": 276,
+            "w": 102,
+            "h": 28
+          },
+          "jn": {
+            "top": 319,
+            "right": 311,
+            "bottom": 341,
+            "left": 289,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "3身份优惠"
+        },
+        {
+          "r": {
+            "top": 316,
+            "right": 486,
+            "bottom": 344,
+            "left": 384,
+            "w": 102,
+            "h": 28
+          },
+          "jn": {
+            "top": 319,
+            "right": 419,
+            "bottom": 341,
+            "left": 397,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "4折扣促销"
+        }
+      ],
+      "tierheadH": 26,
+      "jumpRowH": 28
+    },
+    {
+      "w": 1280,
+      "viewportW": 1280,
+      "scrollWidth": 1280,
+      "overflow": 0,
+      "cards": 76,
+      "fullyVisible": 6,
+      "gridTop": 352,
+      "needH": 68,
+      "needClip": 0,
+      "tierClip": 0,
+      "statOverflow": 0,
+      "jumpOverflow": 0,
+      "jump": [
+        {
+          "r": {
+            "top": 316,
+            "right": 152,
+            "bottom": 344,
+            "left": 50,
+            "w": 102,
+            "h": 28
+          },
+          "jn": {
+            "top": 319,
+            "right": 85,
+            "bottom": 341,
+            "left": 63,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "1完全免费"
+        },
+        {
+          "r": {
+            "top": 316,
+            "right": 260,
+            "bottom": 344,
+            "left": 158,
+            "w": 102,
+            "h": 28
+          },
+          "jn": {
+            "top": 319,
+            "right": 193,
+            "bottom": 341,
+            "left": 171,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "2免费额度"
+        },
+        {
+          "r": {
+            "top": 316,
+            "right": 368,
+            "bottom": 344,
+            "left": 266,
+            "w": 102,
+            "h": 28
+          },
+          "jn": {
+            "top": 319,
+            "right": 301,
+            "bottom": 341,
+            "left": 279,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "3身份优惠"
+        },
+        {
+          "r": {
+            "top": 316,
+            "right": 476,
+            "bottom": 344,
+            "left": 374,
+            "w": 102,
+            "h": 28
+          },
+          "jn": {
+            "top": 319,
+            "right": 409,
+            "bottom": 341,
+            "left": 387,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "4折扣促销"
+        }
+      ],
+      "tierheadH": 26,
+      "jumpRowH": 28
+    },
+    {
+      "w": 1180,
+      "viewportW": 1180,
+      "scrollWidth": 1180,
+      "overflow": 0,
+      "cards": 76,
+      "fullyVisible": 2,
+      "gridTop": 544.8,
+      "needH": 68,
+      "needClip": 0,
+      "tierClip": 0,
+      "statOverflow": 0,
+      "jumpOverflow": 0,
+      "jump": [
+        {
+          "r": {
+            "top": 508.8,
+            "right": 152,
+            "bottom": 536.8,
+            "left": 50,
+            "w": 102,
+            "h": 28
+          },
+          "jn": {
+            "top": 511.8,
+            "right": 85,
+            "bottom": 533.8,
+            "left": 63,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "1完全免费"
+        },
+        {
+          "r": {
+            "top": 508.8,
+            "right": 260,
+            "bottom": 536.8,
+            "left": 158,
+            "w": 102,
+            "h": 28
+          },
+          "jn": {
+            "top": 511.8,
+            "right": 193,
+            "bottom": 533.8,
+            "left": 171,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "2免费额度"
+        },
+        {
+          "r": {
+            "top": 508.8,
+            "right": 368,
+            "bottom": 536.8,
+            "left": 266,
+            "w": 102,
+            "h": 28
+          },
+          "jn": {
+            "top": 511.8,
+            "right": 301,
+            "bottom": 533.8,
+            "left": 279,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "3身份优惠"
+        },
+        {
+          "r": {
+            "top": 508.8,
+            "right": 476,
+            "bottom": 536.8,
+            "left": 374,
+            "w": 102,
+            "h": 28
+          },
+          "jn": {
+            "top": 511.8,
+            "right": 409,
+            "bottom": 533.8,
+            "left": 387,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "4折扣促销"
+        }
+      ],
+      "tierheadH": 26,
+      "jumpRowH": 28
+    },
+    {
+      "w": 1100,
+      "viewportW": 1100,
+      "scrollWidth": 1100,
+      "overflow": 0,
+      "cards": 76,
+      "fullyVisible": 2,
+      "gridTop": 544.8,
+      "needH": 68,
+      "needClip": 0,
+      "tierClip": 0,
+      "statOverflow": 0,
+      "jumpOverflow": 0,
+      "jump": [
+        {
+          "r": {
+            "top": 508.8,
+            "right": 152,
+            "bottom": 536.8,
+            "left": 50,
+            "w": 102,
+            "h": 28
+          },
+          "jn": {
+            "top": 511.8,
+            "right": 85,
+            "bottom": 533.8,
+            "left": 63,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "1完全免费"
+        },
+        {
+          "r": {
+            "top": 508.8,
+            "right": 260,
+            "bottom": 536.8,
+            "left": 158,
+            "w": 102,
+            "h": 28
+          },
+          "jn": {
+            "top": 511.8,
+            "right": 193,
+            "bottom": 533.8,
+            "left": 171,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "2免费额度"
+        },
+        {
+          "r": {
+            "top": 508.8,
+            "right": 368,
+            "bottom": 536.8,
+            "left": 266,
+            "w": 102,
+            "h": 28
+          },
+          "jn": {
+            "top": 511.8,
+            "right": 301,
+            "bottom": 533.8,
+            "left": 279,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "3身份优惠"
+        },
+        {
+          "r": {
+            "top": 508.8,
+            "right": 476,
+            "bottom": 536.8,
+            "left": 374,
+            "w": 102,
+            "h": 28
+          },
+          "jn": {
+            "top": 511.8,
+            "right": 409,
+            "bottom": 533.8,
+            "left": 387,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "4折扣促销"
+        }
+      ],
+      "tierheadH": 26,
+      "jumpRowH": 28
+    },
+    {
+      "w": 941,
+      "viewportW": 941,
+      "scrollWidth": 941,
+      "overflow": 0,
+      "cards": 76,
+      "fullyVisible": 2,
+      "gridTop": 544.8,
+      "needH": 68,
+      "needClip": 0,
+      "tierClip": 0,
+      "statOverflow": 0,
+      "jumpOverflow": 0,
+      "jump": [
+        {
+          "r": {
+            "top": 508.8,
+            "right": 152,
+            "bottom": 536.8,
+            "left": 50,
+            "w": 102,
+            "h": 28
+          },
+          "jn": {
+            "top": 511.8,
+            "right": 85,
+            "bottom": 533.8,
+            "left": 63,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "1完全免费"
+        },
+        {
+          "r": {
+            "top": 508.8,
+            "right": 260,
+            "bottom": 536.8,
+            "left": 158,
+            "w": 102,
+            "h": 28
+          },
+          "jn": {
+            "top": 511.8,
+            "right": 193,
+            "bottom": 533.8,
+            "left": 171,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "2免费额度"
+        },
+        {
+          "r": {
+            "top": 508.8,
+            "right": 368,
+            "bottom": 536.8,
+            "left": 266,
+            "w": 102,
+            "h": 28
+          },
+          "jn": {
+            "top": 511.8,
+            "right": 301,
+            "bottom": 533.8,
+            "left": 279,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "3身份优惠"
+        },
+        {
+          "r": {
+            "top": 508.8,
+            "right": 476,
+            "bottom": 536.8,
+            "left": 374,
+            "w": 102,
+            "h": 28
+          },
+          "jn": {
+            "top": 511.8,
+            "right": 409,
+            "bottom": 533.8,
+            "left": 387,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "4折扣促销"
+        }
+      ],
+      "tierheadH": 26,
+      "jumpRowH": 28
+    },
+    {
+      "w": 820,
+      "viewportW": 820,
+      "scrollWidth": 820,
+      "overflow": 0,
+      "cards": 76,
+      "fullyVisible": 2,
+      "gridTop": 589.8,
+      "needH": 68,
+      "needClip": 0,
+      "tierClip": 0,
+      "statOverflow": 0,
+      "jumpOverflow": 0,
+      "jump": [
+        {
+          "r": {
+            "top": 553.8,
+            "right": 152,
+            "bottom": 581.8,
+            "left": 50,
+            "w": 102,
+            "h": 28
+          },
+          "jn": {
+            "top": 556.8,
+            "right": 85,
+            "bottom": 578.8,
+            "left": 63,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "1完全免费"
+        },
+        {
+          "r": {
+            "top": 553.8,
+            "right": 260,
+            "bottom": 581.8,
+            "left": 158,
+            "w": 102,
+            "h": 28
+          },
+          "jn": {
+            "top": 556.8,
+            "right": 193,
+            "bottom": 578.8,
+            "left": 171,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "2免费额度"
+        },
+        {
+          "r": {
+            "top": 553.8,
+            "right": 368,
+            "bottom": 581.8,
+            "left": 266,
+            "w": 102,
+            "h": 28
+          },
+          "jn": {
+            "top": 556.8,
+            "right": 301,
+            "bottom": 578.8,
+            "left": 279,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "3身份优惠"
+        },
+        {
+          "r": {
+            "top": 553.8,
+            "right": 476,
+            "bottom": 581.8,
+            "left": 374,
+            "w": 102,
+            "h": 28
+          },
+          "jn": {
+            "top": 556.8,
+            "right": 409,
+            "bottom": 578.8,
+            "left": 387,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "4折扣促销"
+        }
+      ],
+      "tierheadH": 26,
+      "jumpRowH": 28
+    },
+    {
+      "w": 760,
+      "viewportW": 760,
+      "scrollWidth": 760,
+      "overflow": 0,
+      "cards": 76,
+      "fullyVisible": 1,
+      "gridTop": 684.8,
+      "needH": 68,
+      "needClip": 0,
+      "tierClip": 0,
+      "statOverflow": 0,
+      "jumpOverflow": 0,
+      "jump": [
+        {
+          "r": {
+            "top": 614.8,
+            "right": 94,
+            "bottom": 642.8,
+            "left": 16,
+            "w": 78,
+            "h": 28
+          },
+          "jn": {
+            "top": 617.8,
+            "right": 41,
+            "bottom": 639.8,
+            "left": 19,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "1完全免费"
+        },
+        {
+          "r": {
+            "top": 614.8,
+            "right": 176,
+            "bottom": 642.8,
+            "left": 98,
+            "w": 78,
+            "h": 28
+          },
+          "jn": {
+            "top": 617.8,
+            "right": 123,
+            "bottom": 639.8,
+            "left": 101,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "2免费额度"
+        },
+        {
+          "r": {
+            "top": 614.8,
+            "right": 258,
+            "bottom": 642.8,
+            "left": 180,
+            "w": 78,
+            "h": 28
+          },
+          "jn": {
+            "top": 617.8,
+            "right": 205,
+            "bottom": 639.8,
+            "left": 183,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "3身份优惠"
+        },
+        {
+          "r": {
+            "top": 614.8,
+            "right": 340,
+            "bottom": 642.8,
+            "left": 262,
+            "w": 78,
+            "h": 28
+          },
+          "jn": {
+            "top": 617.8,
+            "right": 287,
+            "bottom": 639.8,
+            "left": 265,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "4折扣促销"
+        }
+      ],
+      "tierheadH": 26,
+      "jumpRowH": 28
+    },
+    {
+      "w": 560,
+      "viewportW": 560,
+      "scrollWidth": 560,
+      "overflow": 0,
+      "cards": 76,
+      "fullyVisible": 0,
+      "gridTop": 1095.5,
+      "needH": 68,
+      "needClip": 0,
+      "tierClip": 0,
+      "statOverflow": 0,
+      "jumpOverflow": 0,
+      "jump": [
+        {
+          "r": {
+            "top": 1025.5,
+            "right": 94,
+            "bottom": 1053.5,
+            "left": 16,
+            "w": 78,
+            "h": 28
+          },
+          "jn": {
+            "top": 1028.5,
+            "right": 41,
+            "bottom": 1050.5,
+            "left": 19,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "1完全免费"
+        },
+        {
+          "r": {
+            "top": 1025.5,
+            "right": 176,
+            "bottom": 1053.5,
+            "left": 98,
+            "w": 78,
+            "h": 28
+          },
+          "jn": {
+            "top": 1028.5,
+            "right": 123,
+            "bottom": 1050.5,
+            "left": 101,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "2免费额度"
+        },
+        {
+          "r": {
+            "top": 1025.5,
+            "right": 258,
+            "bottom": 1053.5,
+            "left": 180,
+            "w": 78,
+            "h": 28
+          },
+          "jn": {
+            "top": 1028.5,
+            "right": 205,
+            "bottom": 1050.5,
+            "left": 183,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "3身份优惠"
+        },
+        {
+          "r": {
+            "top": 1025.5,
+            "right": 340,
+            "bottom": 1053.5,
+            "left": 262,
+            "w": 78,
+            "h": 28
+          },
+          "jn": {
+            "top": 1028.5,
+            "right": 287,
+            "bottom": 1050.5,
+            "left": 265,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "4折扣促销"
+        }
+      ],
+      "tierheadH": 26,
+      "jumpRowH": 28
+    },
+    {
+      "w": 390,
+      "viewportW": 390,
+      "scrollWidth": 390,
+      "overflow": 0,
+      "cards": 76,
+      "fullyVisible": 0,
+      "gridTop": 1148.8,
+      "needH": 68,
+      "needClip": 0,
+      "tierClip": 0,
+      "statOverflow": 0,
+      "jumpOverflow": 0,
+      "jump": [
+        {
+          "r": {
+            "top": 1078.8,
+            "right": 94,
+            "bottom": 1106.8,
+            "left": 16,
+            "w": 78,
+            "h": 28
+          },
+          "jn": {
+            "top": 1081.8,
+            "right": 41,
+            "bottom": 1103.8,
+            "left": 19,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "1完全免费"
+        },
+        {
+          "r": {
+            "top": 1078.8,
+            "right": 176,
+            "bottom": 1106.8,
+            "left": 98,
+            "w": 78,
+            "h": 28
+          },
+          "jn": {
+            "top": 1081.8,
+            "right": 123,
+            "bottom": 1103.8,
+            "left": 101,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "2免费额度"
+        },
+        {
+          "r": {
+            "top": 1078.8,
+            "right": 258,
+            "bottom": 1106.8,
+            "left": 180,
+            "w": 78,
+            "h": 28
+          },
+          "jn": {
+            "top": 1081.8,
+            "right": 205,
+            "bottom": 1103.8,
+            "left": 183,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "3身份优惠"
+        },
+        {
+          "r": {
+            "top": 1078.8,
+            "right": 340,
+            "bottom": 1106.8,
+            "left": 262,
+            "w": 78,
+            "h": 28
+          },
+          "jn": {
+            "top": 1081.8,
+            "right": 287,
+            "bottom": 1103.8,
+            "left": 265,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "4折扣促销"
+        }
+      ],
+      "tierheadH": 26,
+      "jumpRowH": 28
+    },
+    {
+      "w": 360,
+      "viewportW": 360,
+      "scrollWidth": 360,
+      "overflow": 0,
+      "cards": 76,
+      "fullyVisible": 0,
+      "gridTop": 1179.5,
+      "needH": 68,
+      "needClip": 0,
+      "tierClip": 0,
+      "statOverflow": 0,
+      "jumpOverflow": 0,
+      "jump": [
+        {
+          "r": {
+            "top": 1109.5,
+            "right": 94,
+            "bottom": 1137.5,
+            "left": 16,
+            "w": 78,
+            "h": 28
+          },
+          "jn": {
+            "top": 1112.5,
+            "right": 41,
+            "bottom": 1134.5,
+            "left": 19,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "1完全免费"
+        },
+        {
+          "r": {
+            "top": 1109.5,
+            "right": 176,
+            "bottom": 1137.5,
+            "left": 98,
+            "w": 78,
+            "h": 28
+          },
+          "jn": {
+            "top": 1112.5,
+            "right": 123,
+            "bottom": 1134.5,
+            "left": 101,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "2免费额度"
+        },
+        {
+          "r": {
+            "top": 1109.5,
+            "right": 258,
+            "bottom": 1137.5,
+            "left": 180,
+            "w": 78,
+            "h": 28
+          },
+          "jn": {
+            "top": 1112.5,
+            "right": 205,
+            "bottom": 1134.5,
+            "left": 183,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "3身份优惠"
+        },
+        {
+          "r": {
+            "top": 1109.5,
+            "right": 340,
+            "bottom": 1137.5,
+            "left": 262,
+            "w": 78,
+            "h": 28
+          },
+          "jn": {
+            "top": 1112.5,
+            "right": 287,
+            "bottom": 1134.5,
+            "left": 265,
+            "w": 22,
+            "h": 22
+          },
+          "txt": "4折扣促销"
+        }
+      ],
+      "tierheadH": 26,
+      "jumpRowH": 28
+    },
+    {
+      "w": 320,
+      "viewportW": 320,
+      "scrollWidth": 320,
+      "overflow": 0,
+      "cards": 76,
+      "fullyVisible": 0,
+      "gridTop": 1275.3,
+      "needH": 68,
+      "needClip": 0,
+      "tierClip": 0,
+      "statOverflow": 0,
+      "jumpOverflow": 0,
+      "jump": [
+        {
+          "r": {
+            "top": 1209.3,
+            "right": 70,
+            "bottom": 1233.3,
+            "left": 16,
+            "w": 54,
+            "h": 24
+          },
+          "jn": {
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0,
+            "w": 0,
+            "h": 0
+          },
+          "txt": "1完全免费"
+        },
+        {
+          "r": {
+            "top": 1209.3,
+            "right": 128,
+            "bottom": 1233.3,
+            "left": 74,
+            "w": 54,
+            "h": 24
+          },
+          "jn": {
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0,
+            "w": 0,
+            "h": 0
+          },
+          "txt": "2免费额度"
+        },
+        {
+          "r": {
+            "top": 1209.3,
+            "right": 186,
+            "bottom": 1233.3,
+            "left": 132,
+            "w": 54,
+            "h": 24
+          },
+          "jn": {
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0,
+            "w": 0,
+            "h": 0
+          },
+          "txt": "3身份优惠"
+        },
+        {
+          "r": {
+            "top": 1209.3,
+            "right": 244,
+            "bottom": 1233.3,
+            "left": 190,
+            "w": 54,
+            "h": 24
+          },
+          "jn": {
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0,
+            "w": 0,
+            "h": 0
+          },
+          "txt": "4折扣促销"
+        }
+      ],
+      "tierheadH": 26,
+      "jumpRowH": 24
+    }
+  ]
+}
