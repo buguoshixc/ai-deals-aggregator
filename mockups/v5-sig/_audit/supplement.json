@@ -1,0 +1,774 @@
+{
+  "sameSite": {
+    "headerEqual": false,
+    "footerEqual": false,
+    "headerLen": [
+      2646,
+      1644
+    ],
+    "footerLen": [
+      1274,
+      1341
+    ],
+    "tokensEqual": true,
+    "tokens": {
+      "--bg": "#f6f7f9",
+      "--card": "#fff",
+      "--ink": "#0f172a",
+      "--line": "#e6e9ef",
+      "--t1": "#0b7a44",
+      "--t2": "#1d4ed8",
+      "--t3": "#155e75",
+      "--t4": "#92400e",
+      "--t5": "#475569"
+    },
+    "fontEqual": true,
+    "font": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif",
+    "logosEqual": true,
+    "logos": [
+      "../../dist/logos.css"
+    ],
+    "themeMetaEqual": true,
+    "sharedStyleEqual": true,
+    "homeStyleLen": [
+      77117
+    ],
+    "famStyleLen": [
+      77117,
+      5276
+    ],
+    "familyBigText": [
+      {
+        "tag": "B",
+        "cls": "stat stat-22",
+        "fs": "22px",
+        "direct": "24",
+        "isStat": true
+      },
+      {
+        "tag": "B",
+        "cls": "stat stat-22",
+        "fs": "22px",
+        "direct": "21",
+        "isStat": true
+      },
+      {
+        "tag": "B",
+        "cls": "stat stat-22",
+        "fs": "22px",
+        "direct": "108",
+        "isStat": true
+      }
+    ]
+  },
+  "diag390": {
+    "cardCountBefore": 76,
+    "cardCountAfter": 76,
+    "diffCount": 0,
+    "diffs": [],
+    "before": {
+      "scrollH": 16849,
+      "footerH": 271.77,
+      "footerChildren": [
+        {
+          "tag": "P",
+          "cls": "catnav",
+          "h": 22.8
+        },
+        {
+          "tag": "P",
+          "cls": "catnav",
+          "h": 91.19
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "h": 45.59
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "h": 45.59
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "h": 22.8
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "h": 22.8
+        }
+      ],
+      "needH": [
+        68,
+        68,
+        68,
+        68,
+        68,
+        68,
+        68,
+        68,
+        68,
+        68
+      ],
+      "hubH": 62,
+      "jumpH": 28,
+      "jumpAH": [
+        28,
+        28,
+        28,
+        28
+      ]
+    },
+    "after": {
+      "scrollH": 16813,
+      "footerH": 271.77,
+      "footerChildren": [
+        {
+          "tag": "P",
+          "cls": "catnav",
+          "h": 22.8
+        },
+        {
+          "tag": "P",
+          "cls": "catnav",
+          "h": 91.19
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "h": 45.59
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "h": 45.59
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "h": 22.8
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "h": 22.8
+        }
+      ],
+      "needH": [
+        68,
+        68,
+        68,
+        68,
+        68,
+        68,
+        68,
+        68,
+        68,
+        68
+      ],
+      "hubH": 62,
+      "jumpH": 28,
+      "jumpAH": [
+        28,
+        28,
+        28,
+        28
+      ]
+    }
+  },
+  "thumbClusters": {
+    "t1": {
+      "hex": "#0b7a44",
+      "total": 164,
+      "components": [
+        {
+          "n": 16,
+          "x": 8,
+          "y": 89,
+          "w": 5,
+          "h": 5
+        },
+        {
+          "n": 15,
+          "x": 8,
+          "y": 98,
+          "w": 5,
+          "h": 4
+        },
+        {
+          "n": 15,
+          "x": 124,
+          "y": 98,
+          "w": 5,
+          "h": 4
+        },
+        {
+          "n": 15,
+          "x": 240,
+          "y": 98,
+          "w": 5,
+          "h": 4
+        },
+        {
+          "n": 15,
+          "x": 8,
+          "y": 149,
+          "w": 5,
+          "h": 4
+        },
+        {
+          "n": 15,
+          "x": 124,
+          "y": 149,
+          "w": 5,
+          "h": 4
+        }
+      ]
+    },
+    "t2": {
+      "hex": "#1d4ed8",
+      "total": 11,
+      "components": [
+        {
+          "n": 11,
+          "x": 46,
+          "y": 80,
+          "w": 4,
+          "h": 5
+        }
+      ]
+    },
+    "t3": {
+      "hex": "#155e75",
+      "total": 12,
+      "components": [
+        {
+          "n": 11,
+          "x": 73,
+          "y": 80,
+          "w": 4,
+          "h": 5
+        },
+        {
+          "n": 1,
+          "x": 19,
+          "y": 20,
+          "w": 1,
+          "h": 1
+        }
+      ]
+    },
+    "t4": {
+      "hex": "#92400e",
+      "total": 13,
+      "components": [
+        {
+          "n": 11,
+          "x": 100,
+          "y": 80,
+          "w": 4,
+          "h": 5
+        },
+        {
+          "n": 2,
+          "x": 100,
+          "y": 80,
+          "w": 1,
+          "h": 2
+        }
+      ]
+    }
+  },
+  "contrastTable": {
+    "light": {
+      "bg": "#f6f7f9",
+      "card": "#fff",
+      "tiers": {
+        "t1": {
+          "hex": "#0b7a44",
+          "hsl": {
+            "h": 150.8,
+            "s": 83.5,
+            "l": 26.1
+          },
+          "hueClass": "green",
+          "blockVsBg": 5.05,
+          "blockVsCard": 5.41,
+          "asTextVsBg": 5.05,
+          "asTextVsCard": 5.41
+        },
+        "t2": {
+          "hex": "#1d4ed8",
+          "hsl": {
+            "h": 224.3,
+            "s": 76.3,
+            "l": 48
+          },
+          "hueClass": "blue",
+          "blockVsBg": 6.25,
+          "blockVsCard": 6.7,
+          "asTextVsBg": 6.25,
+          "asTextVsCard": 6.7
+        },
+        "t3": {
+          "hex": "#155e75",
+          "hsl": {
+            "h": 194.4,
+            "s": 69.6,
+            "l": 27.1
+          },
+          "hueClass": "cyan",
+          "blockVsBg": 6.78,
+          "blockVsCard": 7.27,
+          "asTextVsBg": 6.78,
+          "asTextVsCard": 7.27
+        },
+        "t4": {
+          "hex": "#92400e",
+          "hsl": {
+            "h": 22.7,
+            "s": 82.5,
+            "l": 31.4
+          },
+          "hueClass": "amber",
+          "blockVsBg": 6.61,
+          "blockVsCard": 7.09,
+          "asTextVsBg": 6.61,
+          "asTextVsCard": 7.09
+        },
+        "t5": {
+          "hex": "#475569",
+          "hsl": {
+            "h": 215.3,
+            "s": 19.3,
+            "l": 34.5
+          },
+          "hueClass": "gray",
+          "blockVsBg": 7.07,
+          "blockVsCard": 7.58,
+          "asTextVsBg": 7.07,
+          "asTextVsCard": 7.58
+        }
+      },
+      "on": {
+        "t1": {
+          "hex": "#fff",
+          "onVsBlock": 5.41
+        },
+        "t2": {
+          "hex": "#fff",
+          "onVsBlock": 6.7
+        },
+        "t3": {
+          "hex": "#fff",
+          "onVsBlock": 7.27
+        },
+        "t4": {
+          "hex": "#fff",
+          "onVsBlock": 7.09
+        },
+        "t5": {
+          "hex": "#fff",
+          "onVsBlock": 7.58
+        }
+      },
+      "ink": {
+        "inkVsBg": 16.65,
+        "inkVsCard": 17.85,
+        "mutVsBg": 4.51,
+        "mutVsCard": 4.83
+      }
+    },
+    "dark": {
+      "bg": "#0b0d10",
+      "card": "#14171c",
+      "tiers": {
+        "t1": {
+          "hex": "#4ade80",
+          "hsl": {
+            "h": 141.9,
+            "s": 69.2,
+            "l": 58
+          },
+          "hueClass": "green",
+          "blockVsBg": 11.17,
+          "blockVsCard": 10.31,
+          "asTextVsBg": 11.17,
+          "asTextVsCard": 10.31
+        },
+        "t2": {
+          "hex": "#60a5fa",
+          "hsl": {
+            "h": 213.1,
+            "s": 93.9,
+            "l": 67.8
+          },
+          "hueClass": "blue",
+          "blockVsBg": 7.65,
+          "blockVsCard": 7.07,
+          "asTextVsBg": 7.65,
+          "asTextVsCard": 7.07
+        },
+        "t3": {
+          "hex": "#22d3ee",
+          "hsl": {
+            "h": 187.9,
+            "s": 85.7,
+            "l": 53.3
+          },
+          "hueClass": "cyan",
+          "blockVsBg": 10.77,
+          "blockVsCard": 9.94,
+          "asTextVsBg": 10.77,
+          "asTextVsCard": 9.94
+        },
+        "t4": {
+          "hex": "#fbbf24",
+          "hsl": {
+            "h": 43.3,
+            "s": 96.4,
+            "l": 56.3
+          },
+          "hueClass": "amber",
+          "blockVsBg": 11.66,
+          "blockVsCard": 10.76,
+          "asTextVsBg": 11.66,
+          "asTextVsCard": 10.76
+        },
+        "t5": {
+          "hex": "#94a3b8",
+          "hsl": {
+            "h": 215,
+            "s": 20.2,
+            "l": 65.1
+          },
+          "hueClass": "gray",
+          "blockVsBg": 7.59,
+          "blockVsCard": 7.01,
+          "asTextVsBg": 7.59,
+          "asTextVsCard": 7.01
+        }
+      },
+      "on": {
+        "t1": {
+          "hex": "#0b0d10",
+          "onVsBlock": 11.17
+        },
+        "t2": {
+          "hex": "#0b0d10",
+          "onVsBlock": 7.65
+        },
+        "t3": {
+          "hex": "#0b0d10",
+          "onVsBlock": 10.77
+        },
+        "t4": {
+          "hex": "#0b0d10",
+          "onVsBlock": 11.66
+        },
+        "t5": {
+          "hex": "#0b0d10",
+          "onVsBlock": 7.59
+        }
+      },
+      "ink": {
+        "inkVsBg": 16.41,
+        "inkVsCard": 15.15,
+        "mutVsBg": 6.58,
+        "mutVsCard": 6.08
+      }
+    },
+    "renderedOn": {
+      "light": {
+        "tierSquares": [
+          {
+            "cls": "tierhead t1",
+            "bg": "#0b7a44",
+            "color": "#ffffff",
+            "contrast": 5.41,
+            "fs": "11px"
+          },
+          {
+            "cls": "tierhead t2",
+            "bg": "#1d4ed8",
+            "color": "#ffffff",
+            "contrast": 6.7,
+            "fs": "11px"
+          },
+          {
+            "cls": "tierhead t3",
+            "bg": "#155e75",
+            "color": "#ffffff",
+            "contrast": 7.27,
+            "fs": "11px"
+          },
+          {
+            "cls": "tierhead t4",
+            "bg": "#92400e",
+            "color": "#ffffff",
+            "contrast": 7.09,
+            "fs": "11px"
+          }
+        ],
+        "legendSquares": [
+          {
+            "text": "1完全免费",
+            "bg": "#0b7a44",
+            "color": "#ffffff",
+            "contrast": 5.41,
+            "fs": "11px"
+          },
+          {
+            "text": "2免费额度",
+            "bg": "#1d4ed8",
+            "color": "#ffffff",
+            "contrast": 6.7,
+            "fs": "11px"
+          },
+          {
+            "text": "3身份优惠",
+            "bg": "#155e75",
+            "color": "#ffffff",
+            "contrast": 7.27,
+            "fs": "11px"
+          },
+          {
+            "text": "4折扣促销",
+            "bg": "#92400e",
+            "color": "#ffffff",
+            "contrast": 7.09,
+            "fs": "11px"
+          }
+        ]
+      },
+      "dark": {
+        "tierSquares": [
+          {
+            "cls": "tierhead t1",
+            "bg": "#4ade80",
+            "color": "#0b0d10",
+            "contrast": 11.17,
+            "fs": "11px"
+          },
+          {
+            "cls": "tierhead t2",
+            "bg": "#60a5fa",
+            "color": "#0b0d10",
+            "contrast": 7.65,
+            "fs": "11px"
+          },
+          {
+            "cls": "tierhead t3",
+            "bg": "#22d3ee",
+            "color": "#0b0d10",
+            "contrast": 10.77,
+            "fs": "11px"
+          },
+          {
+            "cls": "tierhead t4",
+            "bg": "#fbbf24",
+            "color": "#0b0d10",
+            "contrast": 11.66,
+            "fs": "11px"
+          }
+        ],
+        "legendSquares": [
+          {
+            "text": "1完全免费",
+            "bg": "#4ade80",
+            "color": "#0b0d10",
+            "contrast": 11.17,
+            "fs": "11px"
+          },
+          {
+            "text": "2免费额度",
+            "bg": "#60a5fa",
+            "color": "#0b0d10",
+            "contrast": 7.65,
+            "fs": "11px"
+          },
+          {
+            "text": "3身份优惠",
+            "bg": "#22d3ee",
+            "color": "#0b0d10",
+            "contrast": 10.77,
+            "fs": "11px"
+          },
+          {
+            "text": "4折扣促销",
+            "bg": "#fbbf24",
+            "color": "#0b0d10",
+            "contrast": 11.66,
+            "fs": "11px"
+          }
+        ]
+      }
+    }
+  },
+  "afterDarkBigText": [
+    "30px:13:stat",
+    "30px:7:stat",
+    "30px:1:stat",
+    "30px:30:stat",
+    "30px:66:stat",
+    "30px:45:stat",
+    "30px:44:stat",
+    "30px:7:stat",
+    "30px:12:stat",
+    "30px:67:stat",
+    "22px:11:stat",
+    "22px:20:stat",
+    "22px:20:stat",
+    "22px:25:stat"
+  ],
+  "familyBigText": [
+    "22px:24:stat",
+    "22px:21:stat",
+    "22px:108:stat"
+  ],
+  "beforeHint": {
+    "hintFs": "11.5px",
+    "tierFs": "11.5px",
+    "text": "注册就能用，不用等额度到账 · 11 条"
+  },
+  "shots": {
+    "home25": {
+      "w": 360,
+      "h": 225,
+      "bytes": 47943
+    },
+    "homeBeforeAfter": {
+      "w": 1440,
+      "h": 900,
+      "bytes": 288932
+    },
+    "verifyCompare": {
+      "w": 1440,
+      "h": 900,
+      "bytes": 294093
+    }
+  },
+  "mtimes": {
+    "index.html": {
+      "mtime": "2026-11-10T16:38:14.787Z",
+      "size": 338355
+    },
+    "dist/index.html": {
+      "mtime": "2026-11-11T01:33:25.438Z",
+      "size": 493326
+    },
+    "dist/plans/api/index.html": {
+      "mtime": "2026-11-11T01:33:25.642Z",
+      "size": 279733
+    },
+    "mockups/v5-sig/home-light.html": {
+      "mtime": "2026-11-11T13:23:15.005Z",
+      "size": 265170
+    }
+  },
+  "notes": [
+    ".scratch/apicost/before-wt/dist.notes.ndjson",
+    ".scratch/apicost/isolated-wt/dist.notes.ndjson",
+    ".scratch/apicost/mutant-dist.notes.ndjson",
+    ".scratch/hdr-owner-after.notes.ndjson",
+    ".scratch/hdr-owner-before.notes.ndjson",
+    ".scratch/hdr-owner-l1.notes.ndjson",
+    ".scratch/hdr-owner-t10-after.notes.ndjson",
+    ".scratch/hdr-owner-t10-before.notes.ndjson",
+    ".scratch/hdr-owner-wrap-after.notes.ndjson",
+    ".scratch/hdr-owner-wrap-fix.notes.ndjson",
+    ".scratch/notes-probe.cjs",
+    ".scratch/probe-final3.notes.ndjson",
+    ".scratch/probe-final4.notes.ndjson",
+    ".scratch/probe-postmerge.notes.ndjson",
+    ".scratch/probe-zh.notes.ndjson",
+    ".scratch/t2-dist.notes.ndjson",
+    ".scratch/t3-report/probe-dist.notes.ndjson",
+    ".scratch/tmpbuild.notes.ndjson",
+    ".scratch/verify-team/consistency-auditor/out-r4.notes.ndjson",
+    ".scratch/verify-team/teeth-verifier/out-A7.notes.ndjson",
+    ".scratch/verify-team/teeth-verifier/out-B5.notes.ndjson",
+    ".scratch/verify-team/teeth-verifier/out-C1.notes.ndjson",
+    ".scratch/verify-team/teeth-verifier/out-C2.notes.ndjson",
+    ".scratch/verify-team/teeth-verifier/out-D1.notes.ndjson",
+    ".scratch/verify-team/teeth-verifier/out-D5.notes.ndjson",
+    ".scratch/verify-team/teeth-verifier/out-r3-A7.notes.ndjson",
+    ".scratch/verify-team/teeth-verifier/out-r3-B5.notes.ndjson",
+    ".scratch/verify-team/teeth-verifier/out-r3-C1.notes.ndjson",
+    ".scratch/verify-team/teeth-verifier/out-r3-C2.notes.ndjson",
+    ".scratch/verify-team/teeth-verifier/out-r3-D1.notes.ndjson",
+    ".scratch/verify-team/teeth-verifier/out-r3-D5n.notes.ndjson",
+    ".worktrees/docs-pr117/research/notes-manifest-residual-v1-report.md",
+    ".worktrees/docs-pr117/research/notes-manifest-residual-v1-self-audit.md",
+    ".worktrees/docs-pr117/research/notes-manifest-v1-report.md",
+    ".worktrees/docs-pr117/research/notes-manifest-v1-self-audit.md",
+    ".worktrees/docs-pr117/research/page-notes-disclosure-v1-report.md",
+    ".worktrees/feat-api-cost-calculator/dist.notes.ndjson",
+    ".worktrees/feat-api-cost-calculator/research/notes-manifest-residual-v1-report.md",
+    ".worktrees/feat-api-cost-calculator/research/notes-manifest-residual-v1-self-audit.md",
+    ".worktrees/feat-api-cost-calculator/research/notes-manifest-v1-report.md",
+    ".worktrees/feat-api-cost-calculator/research/notes-manifest-v1-self-audit.md",
+    ".worktrees/feat-api-cost-calculator/research/page-notes-disclosure-v1-report.md",
+    ".worktrees/p3a-gate/dist.notes.ndjson",
+    ".worktrees/p3a-gate/research/notes-manifest-residual-v1-report.md",
+    ".worktrees/p3a-gate/research/notes-manifest-residual-v1-self-audit.md",
+    ".worktrees/p3a-gate/research/notes-manifest-v1-report.md",
+    ".worktrees/p3a-gate/research/notes-manifest-v1-self-audit.md",
+    ".worktrees/p3a-gate/research/page-notes-disclosure-v1-report.md",
+    ".worktrees/p3b-health/dist.notes.ndjson",
+    ".worktrees/p3b-health/research/notes-manifest-residual-v1-report.md",
+    ".worktrees/p3b-health/research/notes-manifest-residual-v1-self-audit.md",
+    ".worktrees/p3b-health/research/notes-manifest-v1-report.md",
+    ".worktrees/p3b-health/research/notes-manifest-v1-self-audit.md",
+    ".worktrees/p3b-health/research/page-notes-disclosure-v1-report.md",
+    "dist.deexpose.notes.ndjson",
+    "dist.mergecheck.notes.ndjson",
+    "dist.notes.ndjson",
+    "dist.qc-det.notes.ndjson",
+    "dist.qc-fix-after.notes.ndjson",
+    "dist.qc-fix-before.notes.ndjson",
+    "dist.qc-guards-atom.notes.ndjson",
+    "dist.qc-guards-broken.notes.ndjson",
+    "dist.qc-guards.notes.ndjson",
+    "dist.qc-mut.notes.ndjson",
+    "dist.qc-review-a.notes.ndjson",
+    "dist.qc-review-b.notes.ndjson",
+    "dist.qc-review.notes.ndjson",
+    "dist.qc-spec-contract.notes.ndjson",
+    "dist.qc-t8.notes.ndjson",
+    "dist.qc-tooth-7c.notes.ndjson",
+    "dist.qc-tooth-control.notes.ndjson",
+    "dist.qc-tooth-control2.notes.ndjson",
+    "dist.qc-tooth2-control-post.notes.ndjson",
+    "dist.qc-tooth2-control-pre.notes.ndjson",
+    "dist.qc-tooth2-control.notes.ndjson",
+    "dist.qc-tooth2-r6.notes.ndjson",
+    "dist.qc-tooth2-r7.notes.ndjson",
+    "dist.qc-tooth2-r8.notes.ndjson",
+    "dist.qc-tooth3-control.notes.ndjson",
+    "dist.qc-tooth3-r12.notes.ndjson",
+    "dist.qc-tooth3-r13.notes.ndjson",
+    "dist.qc-tooth3-r6.notes.ndjson",
+    "dist.qc-tooth3-r7.notes.ndjson",
+    "dist.qc-tooth3-r8.notes.ndjson",
+    "dist.qc-verify-2.notes.ndjson",
+    "dist.qc-verify.notes.ndjson",
+    "dist.qc-wiring-1.notes.ndjson",
+    "dist.qc-wiring-2.notes.ndjson",
+    "dist.qc-wiring.notes.ndjson",
+    "docs/v3.0/IA-NOTES-t12.md",
+    "mockups/v5-sig/NOTES.md",
+    "research/_raw/new-teeth-adversary/tooth-2-notes-ndjson.json",
+    "research/_raw/secondary-page-residue-v1/scan-notes.cjs",
+    "research/_raw/secondary-page-residue-v2-captain-recon/captain-preflight-notes.md",
+    "research/_raw/t43/pr-and-release-notes.md",
+    "research/notes-manifest-residual-v1-report.md",
+    "research/notes-manifest-residual-v1-self-audit.md",
+    "research/notes-manifest-v1-report.md",
+    "research/notes-manifest-v1-self-audit.md",
+    "research/page-notes-disclosure-v1-report.md"
+  ]
+}

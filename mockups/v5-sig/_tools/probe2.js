@@ -1,0 +1,33 @@
+const fs = require('fs');
+const cheerio = require('cheerio');
+const strip = s => s.replace(/\s+/g, ' ').trim();
+const cut = (s, n = 400) => s.length > n ? s.slice(0, n) + '…' : s;
+const $ = cheerio.load(fs.readFileSync('dist/index.html', 'utf8'), { decodeEntities: false });
+console.log('== BODY TAG =='); console.log($.html('body').slice(0, 120));
+console.log('\n== WRAP MAIN START ==');
+const main = $('main');
+console.log('main class=', main.attr('class'), 'rbar:', cut(strip(main.find('.rbar').html()), 1200));
+console.log('\n== HUBLINE ==');
+console.log(cut($('.hubline').html(), 2200));
+console.log('\n== FIRST CARD ==');
+console.log(cut($('#dealsList article').first().toString(), 2600));
+console.log('\n== FIRST TIERHEAD ==');
+console.log(cut($('#dealsList .tierhead').first().toString(), 800));
+console.log('tierheads count=', $('#dealsList .tierhead').length, 'cards=', $('#dealsList article').length);
+console.log('\n== FOOTER TEXT ==');
+console.log(cut(strip($('footer').text()), 500));
+
+// family page
+const famPath = 'dist/plans/api/index.html';
+const fam = cheerio.load(fs.readFileSync(famPath, 'utf8'), { decodeEntities: false });
+console.log('\n\n== FAMILY:', famPath, '==');
+console.log('title=', fam('title').text());
+console.log('styles=', fam('style').length, fam('style').map((i,e)=>fam(e).toString().length).get());
+console.log('h1=', cut(fam('h1').toString(), 600));
+console.log('h1 parent=', cut(fam('h1').parent().toString(), 1500));
+console.log('body children=', fam('body').children().map((i,e)=>e.tagName+'.'+(fam(e).attr('class')||'')).get().join(' | '));
+console.log('main children=', fam('main').children().map((i,e)=>e.tagName+(fam(e).attr('class')?'.'+fam(e).attr('class').split(/\s+/).join('.'):'')+' len='+(fam(e).html()||'').length).get().join('\n'));
+console.log('scripts=', fam('script').length);
+console.log('page-style lines=', fam('style').length > 1 ? fam('style').eq(1).html().split('\n').slice(0,30).join('\n') : 'NONE');
+console.log('\n== FAMILY TEXT HEAD ==');
+console.log(cut(strip(fam('main').text()), 1200));

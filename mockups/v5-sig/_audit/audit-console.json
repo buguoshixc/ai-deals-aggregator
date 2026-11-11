@@ -1,0 +1,310 @@
+{
+ "afterLight": {
+  "cards": 76,
+  "full": 6,
+  "gridTop": 352,
+  "hOverflow": 0,
+  "tierH": [
+   26,
+   26,
+   26,
+   26
+  ],
+  "needH": [
+   68
+  ],
+  "bigText": [
+   "30px:13:stat",
+   "30px:7:stat",
+   "30px:1:stat",
+   "30px:30:stat",
+   "30px:66:stat",
+   "30px:45:stat",
+   "30px:44:stat",
+   "30px:7:stat",
+   "30px:12:stat",
+   "30px:67:stat",
+   "22px:11:stat",
+   "22px:20:stat",
+   "22px:20:stat",
+   "22px:25:stat"
+  ]
+ },
+ "afterDark": {
+  "cards": 76,
+  "full": 6,
+  "gridTop": 352,
+  "hOverflow": 0,
+  "tierH": [
+   26,
+   26,
+   26,
+   26
+  ]
+ },
+ "beforeLight": {
+  "full": 6,
+  "gridTop": 352,
+  "hOverflow": 0
+ },
+ "beforeDark": {
+  "full": 6,
+  "gridTop": 352,
+  "hOverflow": 0
+ },
+ "after390": {
+  "hOverflow": 0,
+  "needH": [
+   68
+  ],
+  "tierHeights": [
+   26,
+   26,
+   26,
+   26
+  ],
+  "hint": [
+   "none",
+   "none",
+   "none",
+   "none"
+  ],
+  "n": [
+   "22x22",
+   "22x22",
+   "22x22",
+   "22x22"
+  ],
+  "stat": [
+   "22px",
+   "22px",
+   "22px",
+   "22px"
+  ]
+ },
+ "before390": {
+  "hOverflow": 0,
+  "hublineH": 62,
+  "gridTop": 1148.75,
+  "scrollH": 16849
+ },
+ "family": {
+  "stats": [
+   "22px:24",
+   "22px:21",
+   "22px:108"
+  ],
+  "statCount": 3,
+  "hOverflow": 0,
+  "h1": {
+   "text": "API / Token 计费对比",
+   "fs": "19px",
+   "rect": {
+    "top": 106.5,
+    "left": 30,
+    "right": 230.5,
+    "bottom": 135
+   }
+  },
+  "cssLeak": false,
+  "styleInBody": 0,
+  "beforeMeta": "24 条计费记录 · 21 个平台 · 108 个模型计价条目 · 最后核对 2026-10-08"
+ },
+ "compare": {
+  "scrollH": 900,
+  "innerH": 900,
+  "footerBottom": 840.41,
+  "imgs": [
+   "shots/before-1440.png|none|1440x900",
+   "shots/before-1440.png|matrix(0.25, 0, 0, 0.25, 0, 0)|1440x900",
+   "shots/after-1440.png|none|1440x900",
+   "shots/after-1440.png|matrix(0.25, 0, 0, 0.25, 0, 0)|1440x900"
+  ]
+ },
+ "contrastMin": {
+  "light": 5.05,
+  "dark": 7.01,
+  "onLight": 5.41,
+  "onDark": 7.59
+ },
+ "hueSequenceLight": [
+  "150.8/83.5%=green",
+  "224.3/76.3%=blue",
+  "194.4/69.6%=cyan",
+  "22.7/82.5%=amber",
+  "215.3/19.3%=gray"
+ ],
+ "hueSequenceDark": [
+  "141.9/69.2%=green",
+  "213.1/93.9%=blue",
+  "187.9/85.7%=cyan",
+  "43.3/96.4%=amber",
+  "215/20.2%=gray"
+ ],
+ "thumb": {
+  "natural": {
+   "w": 360,
+   "h": 225
+  },
+  "counts": {
+   "t1": {
+    "hex": "#0b7a44",
+    "tol20": 164,
+    "tol8": 163,
+    "tol3": 158
+   },
+   "t2": {
+    "hex": "#1d4ed8",
+    "tol20": 11,
+    "tol8": 11,
+    "tol3": 11
+   },
+   "t3": {
+    "hex": "#155e75",
+    "tol20": 12,
+    "tol8": 11,
+    "tol3": 9
+   },
+   "t4": {
+    "hex": "#92400e",
+    "tol20": 13,
+    "tol8": 10,
+    "tol3": 9
+   },
+   "t5": {
+    "hex": "#475569",
+    "tol20": 231,
+    "tol8": 26,
+    "tol3": 0
+   }
+  },
+  "measurable": [
+   "t1",
+   "t2",
+   "t3",
+   "t4"
+  ]
+ },
+ "cssDiff": {
+  "deco": {
+   "border-radius": {
+    "beforeVals": 7,
+    "afterVals": 7,
+    "added": [],
+    "removed": []
+   },
+   "box-shadow": {
+    "beforeVals": 8,
+    "afterVals": 8,
+    "added": [],
+    "removed": []
+   },
+   "border-color": {
+    "beforeVals": 10,
+    "afterVals": 10,
+    "added": [],
+    "removed": []
+   },
+   "border": {
+    "beforeVals": 6,
+    "afterVals": 6,
+    "added": [],
+    "removed": []
+   },
+   "border-top": {
+    "beforeVals": 4,
+    "afterVals": 4,
+    "added": [],
+    "removed": []
+   },
+   "border-bottom": {
+    "beforeVals": 3,
+    "afterVals": 3,
+    "added": [],
+    "removed": []
+   },
+   "border-left": {
+    "beforeVals": 8,
+    "afterVals": 8,
+    "added": [],
+    "removed": []
+   },
+   "outline": {
+    "beforeVals": 3,
+    "afterVals": 3,
+    "added": [],
+    "removed": []
+   }
+  },
+  "t1inkUsage": 0,
+  "t2inkUsage": 0,
+  "statRule": true
+ },
+ "htmlScan": {
+  "home-light.html": {
+   "headScripts": 1,
+   "bodyScripts": 0,
+   "jsonLd": 0,
+   "theme": true,
+   "styleInBody": false,
+   "badRel": [],
+   "analytics": false
+  },
+  "home-dark.html": {
+   "headScripts": 1,
+   "bodyScripts": 0,
+   "jsonLd": 0,
+   "theme": true,
+   "styleInBody": false,
+   "badRel": [],
+   "analytics": false
+  },
+  "home-390.html": {
+   "headScripts": 1,
+   "bodyScripts": 0,
+   "jsonLd": 0,
+   "theme": true,
+   "styleInBody": false,
+   "badRel": [],
+   "analytics": false
+  },
+  "family.html": {
+   "headScripts": 1,
+   "bodyScripts": 0,
+   "jsonLd": 0,
+   "theme": true,
+   "styleInBody": false,
+   "badRel": [],
+   "analytics": false
+  },
+  "compare.html": {
+   "headScripts": 0,
+   "bodyScripts": 0,
+   "jsonLd": 0,
+   "theme": false,
+   "styleInBody": false,
+   "badRel": [
+    "shots/before-1440.png",
+    "shots/before-1440.png",
+    "shots/after-1440.png",
+    "shots/after-1440.png"
+   ],
+   "analytics": false
+  }
+ },
+ "git": {
+  "statusPorcelain": [
+   "?? mockups/v5-sig/"
+  ],
+  "diffNameOnly": [],
+  "distIgnored": ".gitignore:2:dist/\tdist/index.html",
+  "indexHtmlHeadSha": "bb704909858501ba72edfff2a887ef88e8a4a0accca615b580b3fb3cd7a99483",
+  "indexHtmlWorkingSha": "bb704909858501ba72edfff2a887ef88e8a4a0accca615b580b3fb3cd7a99483",
+  "indexHtmlUnmodified": true
+ },
+ "notes": {
+  "referenced": true,
+  "exists": true
+ },
+ "changedDuringAudit": []
+}

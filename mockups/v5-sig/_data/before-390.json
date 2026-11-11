@@ -1,0 +1,648 @@
+{
+  "measuredAt": "2026-11-11T12:50:00.863Z",
+  "url": "http://127.0.0.1:8081/dist/index.html",
+  "viewport": {
+    "w": 390,
+    "h": 844
+  },
+  "scale": 1,
+  "theme": null,
+  "errors": [],
+  "blockedExternal": [],
+  "scrollWidth": 390,
+  "scrollHeight": 16849,
+  "horizontalOverflow": 0,
+  "cardCount": 76,
+  "fullyVisibleCards": 0,
+  "intersectingCards": 0,
+  "fullyVisibleTiers": [],
+  "layout": {
+    ".top": {
+      "rect": {
+        "top": 0,
+        "bottom": 148,
+        "left": 0,
+        "right": 390,
+        "w": 390,
+        "h": 148
+      },
+      "h": 148
+    },
+    ".topin": {
+      "rect": {
+        "top": 0,
+        "bottom": 147,
+        "left": 0,
+        "right": 390,
+        "w": 390,
+        "h": 147
+      },
+      "h": 147
+    },
+    ".facets": {
+      "rect": {
+        "top": 148,
+        "bottom": 194,
+        "left": 0,
+        "right": 390,
+        "w": 390,
+        "h": 46
+      },
+      "h": 46
+    },
+    ".needs": {
+      "rect": {
+        "top": 194,
+        "bottom": 952,
+        "left": 0,
+        "right": 390,
+        "w": 390,
+        "h": 758
+      },
+      "h": 758
+    },
+    ".need-grid": {
+      "rect": {
+        "top": 200,
+        "bottom": 952,
+        "left": 16,
+        "right": 374,
+        "w": 358,
+        "h": 752
+      },
+      "h": 752
+    },
+    ".rbar": {
+      "rect": {
+        "top": 964,
+        "bottom": 1068.75,
+        "left": 16,
+        "right": 374,
+        "w": 358,
+        "h": 104.75
+      },
+      "h": 104.75
+    },
+    ".hubline": {
+      "rect": {
+        "top": 1078.75,
+        "bottom": 1140.75,
+        "left": 16,
+        "right": 374,
+        "w": 358,
+        "h": 62
+      },
+      "h": 62
+    },
+    "#dealsList": {
+      "rect": {
+        "top": 1148.75,
+        "bottom": 15940.38,
+        "left": 16,
+        "right": 374,
+        "w": 358,
+        "h": 14791.63
+      },
+      "h": 14791.63
+    },
+    ".tierhead": {
+      "rect": {
+        "top": 1150.75,
+        "bottom": 1176.75,
+        "left": 16,
+        "right": 374,
+        "w": 358,
+        "h": 26
+      },
+      "h": 26
+    },
+    ".wrap": {
+      "rect": {
+        "top": 952,
+        "bottom": 16849.33,
+        "left": 0,
+        "right": 390,
+        "w": 390,
+        "h": 15897.33
+      },
+      "h": 15897.33
+    },
+    "footer": {
+      "rect": {
+        "top": 16527.56,
+        "bottom": 16799.33,
+        "left": 16,
+        "right": 374,
+        "w": 358,
+        "h": 271.77
+      },
+      "h": 271.77
+    }
+  },
+  "tierheads": [
+    {
+      "id": "tier-1",
+      "cls": "tierhead t1",
+      "h": 26,
+      "rect": {
+        "top": 1150.75,
+        "bottom": 1176.75,
+        "left": 16,
+        "right": 374,
+        "w": 358,
+        "h": 26
+      },
+      "n": {
+        "top": 1155.75,
+        "bottom": 1171.75,
+        "left": 16,
+        "right": 32,
+        "w": 16,
+        "h": 16
+      },
+      "nBg": "rgb(14, 159, 110)",
+      "nColor": "rgb(5, 41, 28)",
+      "nFs": "9.5px",
+      "lineBg": "rgb(230, 233, 239)",
+      "hint": "注册就能用，不用等额度到账 · 11 条",
+      "stat": null
+    },
+    {
+      "id": "tier-2",
+      "cls": "tierhead t2",
+      "h": 44,
+      "rect": {
+        "top": 3366.63,
+        "bottom": 3410.63,
+        "left": 16,
+        "right": 374,
+        "w": 358,
+        "h": 44
+      },
+      "n": {
+        "top": 3380.63,
+        "bottom": 3396.63,
+        "left": 16,
+        "right": 32,
+        "w": 16,
+        "h": 16
+      },
+      "nBg": "rgb(124, 58, 237)",
+      "nColor": "rgb(255, 255, 255)",
+      "nFs": "9.5px",
+      "lineBg": "rgb(230, 233, 239)",
+      "hint": "新用户一次性赠送 / 首月免费，够跑一段时间 · 20 条",
+      "stat": null
+    },
+    {
+      "id": "tier-3",
+      "cls": "tierhead t3",
+      "h": 44,
+      "rect": {
+        "top": 7380.81,
+        "bottom": 7424.81,
+        "left": 16,
+        "right": 374,
+        "w": 358,
+        "h": 44
+      },
+      "n": {
+        "top": 7394.81,
+        "bottom": 7410.81,
+        "left": 16,
+        "right": 32,
+        "w": 16,
+        "h": 16
+      },
+      "nBg": "rgb(37, 99, 235)",
+      "nColor": "rgb(255, 255, 255)",
+      "nFs": "9.5px",
+      "lineBg": "rgb(230, 233, 239)",
+      "hint": "学生 / 教师 / 非营利 / 初创 —— 有资格就不花钱 · 20 条",
+      "stat": null
+    },
+    {
+      "id": "tier-4",
+      "cls": "tierhead t4",
+      "h": 26,
+      "rect": {
+        "top": 11292.25,
+        "bottom": 11318.25,
+        "left": 16,
+        "right": 374,
+        "w": 358,
+        "h": 26
+      },
+      "n": {
+        "top": 11297.25,
+        "bottom": 11313.25,
+        "left": 16,
+        "right": 32,
+        "w": 16,
+        "h": 16
+      },
+      "nBg": "rgb(194, 65, 12)",
+      "nColor": "rgb(255, 255, 255)",
+      "nFs": "9.5px",
+      "lineBg": "rgb(230, 233, 239)",
+      "hint": "要花钱，但比标准价便宜 · 25 条",
+      "stat": null
+    }
+  ],
+  "needCards": [
+    {
+      "h": 68,
+      "rect": {
+        "top": 200,
+        "bottom": 268,
+        "left": 16,
+        "right": 374,
+        "w": 358,
+        "h": 68
+      },
+      "b": {
+        "text": "13",
+        "fs": "11px",
+        "lh": "16.5px",
+        "rect": {
+          "top": 217,
+          "bottom": 233.5,
+          "left": 96.61,
+          "right": 111.92,
+          "w": 15.31,
+          "h": 16.5
+        }
+      },
+      "copyOverflowX": 0,
+      "cardOverflow": 0
+    },
+    {
+      "h": 68,
+      "rect": {
+        "top": 276,
+        "bottom": 344,
+        "left": 16,
+        "right": 374,
+        "w": 358,
+        "h": 68
+      },
+      "b": {
+        "text": "7",
+        "fs": "11px",
+        "lh": "16.5px",
+        "rect": {
+          "top": 293,
+          "bottom": 309.5,
+          "left": 120.61,
+          "right": 128.27,
+          "w": 7.66,
+          "h": 16.5
+        }
+      },
+      "copyOverflowX": 0,
+      "cardOverflow": 0
+    },
+    {
+      "h": 68,
+      "rect": {
+        "top": 352,
+        "bottom": 420,
+        "left": 16,
+        "right": 374,
+        "w": 358,
+        "h": 68
+      },
+      "b": {
+        "text": "1",
+        "fs": "11px",
+        "lh": "16.5px",
+        "rect": {
+          "top": 369,
+          "bottom": 385.5,
+          "left": 108.61,
+          "right": 116.27,
+          "w": 7.66,
+          "h": 16.5
+        }
+      },
+      "copyOverflowX": 0,
+      "cardOverflow": 0
+    },
+    {
+      "h": 68,
+      "rect": {
+        "top": 428,
+        "bottom": 496,
+        "left": 16,
+        "right": 374,
+        "w": 358,
+        "h": 68
+      },
+      "b": {
+        "text": "30",
+        "fs": "11px",
+        "lh": "16.5px",
+        "rect": {
+          "top": 445,
+          "bottom": 461.5,
+          "left": 96.61,
+          "right": 111.92,
+          "w": 15.31,
+          "h": 16.5
+        }
+      },
+      "copyOverflowX": 0,
+      "cardOverflow": 0
+    },
+    {
+      "h": 68,
+      "rect": {
+        "top": 504,
+        "bottom": 572,
+        "left": 16,
+        "right": 374,
+        "w": 358,
+        "h": 68
+      },
+      "b": {
+        "text": "66",
+        "fs": "11px",
+        "lh": "16.5px",
+        "rect": {
+          "top": 521,
+          "bottom": 537.5,
+          "left": 103,
+          "right": 118.31,
+          "w": 15.31,
+          "h": 16.5
+        }
+      },
+      "copyOverflowX": 0,
+      "cardOverflow": 0
+    },
+    {
+      "h": 68,
+      "rect": {
+        "top": 580,
+        "bottom": 648,
+        "left": 16,
+        "right": 374,
+        "w": 358,
+        "h": 68
+      },
+      "b": {
+        "text": "45",
+        "fs": "11px",
+        "lh": "16.5px",
+        "rect": {
+          "top": 597,
+          "bottom": 613.5,
+          "left": 99.34,
+          "right": 114.66,
+          "w": 15.31,
+          "h": 16.5
+        }
+      },
+      "copyOverflowX": 0,
+      "cardOverflow": 0
+    },
+    {
+      "h": 68,
+      "rect": {
+        "top": 656,
+        "bottom": 724,
+        "left": 16,
+        "right": 374,
+        "w": 358,
+        "h": 68
+      },
+      "b": {
+        "text": "44",
+        "fs": "11px",
+        "lh": "16.5px",
+        "rect": {
+          "top": 673,
+          "bottom": 689.5,
+          "left": 123.11,
+          "right": 138.42,
+          "w": 15.31,
+          "h": 16.5
+        }
+      },
+      "copyOverflowX": 0,
+      "cardOverflow": 0
+    },
+    {
+      "h": 68,
+      "rect": {
+        "top": 732,
+        "bottom": 800,
+        "left": 16,
+        "right": 374,
+        "w": 358,
+        "h": 68
+      },
+      "b": {
+        "text": "7",
+        "fs": "11px",
+        "lh": "16.5px",
+        "rect": {
+          "top": 749,
+          "bottom": 765.5,
+          "left": 113.44,
+          "right": 121.09,
+          "w": 7.66,
+          "h": 16.5
+        }
+      },
+      "copyOverflowX": 0,
+      "cardOverflow": 0
+    },
+    {
+      "h": 68,
+      "rect": {
+        "top": 808,
+        "bottom": 876,
+        "left": 16,
+        "right": 374,
+        "w": 358,
+        "h": 68
+      },
+      "b": {
+        "text": "12",
+        "fs": "11px",
+        "lh": "16.5px",
+        "rect": {
+          "top": 825,
+          "bottom": 841.5,
+          "left": 96.61,
+          "right": 111.92,
+          "w": 15.31,
+          "h": 16.5
+        }
+      },
+      "copyOverflowX": 0,
+      "cardOverflow": 0
+    },
+    {
+      "h": 68,
+      "rect": {
+        "top": 884,
+        "bottom": 952,
+        "left": 16,
+        "right": 374,
+        "w": 358,
+        "h": 68
+      },
+      "b": {
+        "text": "67",
+        "fs": "11px",
+        "lh": "16.5px",
+        "rect": {
+          "top": 901,
+          "bottom": 917.5,
+          "left": 137.23,
+          "right": 152.55,
+          "w": 15.31,
+          "h": 16.5
+        }
+      },
+      "copyOverflowX": 0,
+      "cardOverflow": 0
+    }
+  ],
+  "firstTierCard": {
+    "rect": {
+      "top": 1180.75,
+      "bottom": 1354.84,
+      "left": 16,
+      "right": 374,
+      "w": 358,
+      "h": 174.09
+    },
+    "h": 174.09
+  },
+  "bars": [
+    {
+      "w": "3px",
+      "bg": "rgb(14, 159, 110)",
+      "rect": {
+        "top": 1247.84,
+        "bottom": 1285.84,
+        "left": 31,
+        "right": 34,
+        "w": 3,
+        "h": 38
+      }
+    },
+    {
+      "w": "3px",
+      "bg": "rgb(14, 159, 110)",
+      "rect": {
+        "top": 1449.53,
+        "bottom": 1487.53,
+        "left": 31,
+        "right": 34,
+        "w": 3,
+        "h": 38
+      }
+    },
+    {
+      "w": "3px",
+      "bg": "rgb(14, 159, 110)",
+      "rect": {
+        "top": 1651.22,
+        "bottom": 1689.22,
+        "left": 31,
+        "right": 34,
+        "w": 3,
+        "h": 38
+      }
+    },
+    {
+      "w": "3px",
+      "bg": "rgb(14, 159, 110)",
+      "rect": {
+        "top": 1852.91,
+        "bottom": 1890.91,
+        "left": 31,
+        "right": 34,
+        "w": 3,
+        "h": 38
+      }
+    }
+  ],
+  "txB": [
+    {
+      "color": "rgb(11, 122, 68)",
+      "text": "OpenRouter 免费模型"
+    },
+    {
+      "color": "rgb(11, 122, 68)",
+      "text": "OpenRouter 免费模型"
+    },
+    {
+      "color": "rgb(11, 122, 68)",
+      "text": "OpenRouter 免费模型"
+    },
+    {
+      "color": "rgb(11, 122, 68)",
+      "text": "OpenRouter 免费模型"
+    }
+  ],
+  "stats": [],
+  "bigText": [],
+  "tokens": {
+    "--bg": "#f6f7f9",
+    "--card": "#fff",
+    "--ink": "#0f172a",
+    "--ink2": "#495066",
+    "--mut": "#6b7280",
+    "--line": "#e6e9ef",
+    "--t1": "#0e9f6e",
+    "--t2": "#7c3aed",
+    "--t3": "#2563eb",
+    "--t4": "#c2410c",
+    "--t5": "#94a3b8",
+    "--on-t1": "#05291c",
+    "--on-t2": "#fff",
+    "--on-t3": "#fff",
+    "--on-t4": "#fff",
+    "--on-t5": "#1f2937",
+    "--fs-stat-sm": "",
+    "--fs-stat": "",
+    "--fs-stat-lg": "",
+    "--brand": "#3b5bfd"
+  },
+  "h1": [
+    {
+      "text": "AI 优惠聚合器",
+      "fs": "16px",
+      "rect": {
+        "top": 10.48,
+        "bottom": 28.88,
+        "left": 56,
+        "right": 161.09,
+        "w": 105.09,
+        "h": 18.39
+      }
+    }
+  ],
+  "fontSizesUsed": [
+    "0px",
+    "9px",
+    "9.5px",
+    "10px",
+    "10.5px",
+    "11px",
+    "11.5px",
+    "12px",
+    "12.5px",
+    "13px",
+    "13.5px",
+    "14px",
+    "15px",
+    "16px"
+  ],
+  "shot": "mockups/v5-sig/shots/before-390.png"
+}

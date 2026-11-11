@@ -1,0 +1,205 @@
+{
+  "measuredAt": "2026-11-11T13:30:49.647Z",
+  "url": "http://127.0.0.1:8081/mockups/v5-sig/family.html",
+  "viewport": {
+    "w": 1440,
+    "h": 900
+  },
+  "scale": 1,
+  "theme": "light",
+  "errors": [],
+  "blockedExternal": [],
+  "scrollWidth": 1440,
+  "scrollHeight": 16740,
+  "horizontalOverflow": 0,
+  "cardCount": 0,
+  "fullyVisibleCards": 0,
+  "intersectingCards": 0,
+  "fullyVisibleTiers": [],
+  "layout": {
+    ".top": {
+      "rect": {
+        "top": 0,
+        "bottom": 59,
+        "left": 0,
+        "right": 1440,
+        "w": 1440,
+        "h": 59
+      },
+      "h": 59
+    },
+    ".topin": {
+      "rect": {
+        "top": 0,
+        "bottom": 58,
+        "left": 10,
+        "right": 1430,
+        "w": 1420,
+        "h": 58
+      },
+      "h": 58
+    },
+    ".facets": null,
+    ".needs": null,
+    ".need-grid": null,
+    ".rbar": null,
+    ".hubline": null,
+    "#dealsList": null,
+    ".tierhead": null,
+    ".wrap": {
+      "rect": {
+        "top": 59,
+        "bottom": 16739.84,
+        "left": 10,
+        "right": 1430,
+        "w": 1420,
+        "h": 16680.84
+      },
+      "h": 16680.84
+    },
+    "footer": {
+      "rect": {
+        "top": 16522.06,
+        "bottom": 16679.84,
+        "left": 30,
+        "right": 1410,
+        "w": 1380,
+        "h": 157.78
+      },
+      "h": 157.78
+    }
+  },
+  "tierheads": [],
+  "needCards": [],
+  "firstTierCard": null,
+  "bars": [],
+  "txB": [],
+  "stats": [
+    {
+      "cls": "stat stat-22",
+      "fs": "22px",
+      "lh": "22px",
+      "text": "24",
+      "rect": {
+        "top": 109.5,
+        "bottom": 131.5,
+        "left": 238.52,
+        "right": 268.27,
+        "w": 29.75,
+        "h": 22
+      },
+      "color": "rgb(15, 23, 42)",
+      "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+    },
+    {
+      "cls": "stat stat-22",
+      "fs": "22px",
+      "lh": "22px",
+      "text": "21",
+      "rect": {
+        "top": 109.5,
+        "bottom": 131.5,
+        "left": 343.27,
+        "right": 373.02,
+        "w": 29.75,
+        "h": 22
+      },
+      "color": "rgb(15, 23, 42)",
+      "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+    },
+    {
+      "cls": "stat stat-22",
+      "fs": "22px",
+      "lh": "22px",
+      "text": "108",
+      "rect": {
+        "top": 109.5,
+        "bottom": 131.5,
+        "left": 426.02,
+        "right": 470.63,
+        "w": 44.61,
+        "h": 22
+      },
+      "color": "rgb(15, 23, 42)",
+      "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+    }
+  ],
+  "bigText": [
+    {
+      "tag": "B",
+      "cls": "stat stat-22",
+      "fs": "22px",
+      "fw": "700",
+      "text": "24",
+      "color": "rgb(15, 23, 42)",
+      "clsName": "stat stat-22"
+    },
+    {
+      "tag": "B",
+      "cls": "stat stat-22",
+      "fs": "22px",
+      "fw": "700",
+      "text": "21",
+      "color": "rgb(15, 23, 42)",
+      "clsName": "stat stat-22"
+    },
+    {
+      "tag": "B",
+      "cls": "stat stat-22",
+      "fs": "22px",
+      "fw": "700",
+      "text": "108",
+      "color": "rgb(15, 23, 42)",
+      "clsName": "stat stat-22"
+    }
+  ],
+  "tokens": {
+    "--bg": "#f6f7f9",
+    "--card": "#fff",
+    "--ink": "#0f172a",
+    "--ink2": "#495066",
+    "--mut": "#6b7280",
+    "--line": "#e6e9ef",
+    "--t1": "#0b7a44",
+    "--t2": "#1d4ed8",
+    "--t3": "#155e75",
+    "--t4": "#92400e",
+    "--t5": "#475569",
+    "--on-t1": "#fff",
+    "--on-t2": "#fff",
+    "--on-t3": "#fff",
+    "--on-t4": "#fff",
+    "--on-t5": "#fff",
+    "--fs-stat-sm": "22px",
+    "--fs-stat": "30px",
+    "--fs-stat-lg": "42px",
+    "--brand": "#3b5bfd"
+  },
+  "h1": [
+    {
+      "text": "API / Token 计费对比",
+      "fs": "19px",
+      "rect": {
+        "top": 106.5,
+        "bottom": 135,
+        "left": 30,
+        "right": 230.52,
+        "w": 200.52,
+        "h": 28.5
+      }
+    }
+  ],
+  "fontSizesUsed": [
+    "11px",
+    "11.5px",
+    "11.6667px",
+    "12px",
+    "13px",
+    "14px",
+    "15px",
+    "16px",
+    "19px",
+    "22px"
+  ],
+  "shot": "mockups/v5-sig/shots/family-after-1440.png"
+}

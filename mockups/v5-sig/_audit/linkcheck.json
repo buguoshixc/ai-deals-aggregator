@@ -1,0 +1,373 @@
+{
+  "home-light.html": {
+    "total": 152,
+    "bad": 0,
+    "prefixes": {
+      "../../dist/": 152
+    },
+    "badSamples": [],
+    "allSamples": [
+      {
+        "url": "../../dist/logos.css",
+        "resolved": "dist/logos.css",
+        "exists": true,
+        "isDir": false,
+        "indexExists": null,
+        "ok": true
+      },
+      {
+        "url": "../../dist/favicon.svg",
+        "resolved": "dist/favicon.svg",
+        "exists": true,
+        "isDir": false,
+        "indexExists": null,
+        "ok": true
+      },
+      {
+        "url": "../../dist/",
+        "resolved": "dist",
+        "exists": true,
+        "isDir": true,
+        "indexExists": true,
+        "ok": true
+      },
+      {
+        "url": "../../dist/plans/coding/",
+        "resolved": "dist/plans/coding",
+        "exists": true,
+        "isDir": true,
+        "indexExists": true,
+        "ok": true
+      },
+      {
+        "url": "../../dist/plans/api/",
+        "resolved": "dist/plans/api",
+        "exists": true,
+        "isDir": true,
+        "indexExists": true,
+        "ok": true
+      },
+      {
+        "url": "../../dist/tools/api-cost/",
+        "resolved": "dist/tools/api-cost",
+        "exists": true,
+        "isDir": true,
+        "indexExists": true,
+        "ok": true
+      }
+    ]
+  },
+  "home-dark.html": {
+    "total": 152,
+    "bad": 0,
+    "prefixes": {
+      "../../dist/": 152
+    },
+    "badSamples": [],
+    "allSamples": [
+      {
+        "url": "../../dist/logos.css",
+        "resolved": "dist/logos.css",
+        "exists": true,
+        "isDir": false,
+        "indexExists": null,
+        "ok": true
+      },
+      {
+        "url": "../../dist/favicon.svg",
+        "resolved": "dist/favicon.svg",
+        "exists": true,
+        "isDir": false,
+        "indexExists": null,
+        "ok": true
+      },
+      {
+        "url": "../../dist/",
+        "resolved": "dist",
+        "exists": true,
+        "isDir": true,
+        "indexExists": true,
+        "ok": true
+      },
+      {
+        "url": "../../dist/plans/coding/",
+        "resolved": "dist/plans/coding",
+        "exists": true,
+        "isDir": true,
+        "indexExists": true,
+        "ok": true
+      },
+      {
+        "url": "../../dist/plans/api/",
+        "resolved": "dist/plans/api",
+        "exists": true,
+        "isDir": true,
+        "indexExists": true,
+        "ok": true
+      },
+      {
+        "url": "../../dist/tools/api-cost/",
+        "resolved": "dist/tools/api-cost",
+        "exists": true,
+        "isDir": true,
+        "indexExists": true,
+        "ok": true
+      }
+    ]
+  },
+  "home-390.html": {
+    "total": 152,
+    "bad": 0,
+    "prefixes": {
+      "../../dist/": 152
+    },
+    "badSamples": [],
+    "allSamples": [
+      {
+        "url": "../../dist/logos.css",
+        "resolved": "dist/logos.css",
+        "exists": true,
+        "isDir": false,
+        "indexExists": null,
+        "ok": true
+      },
+      {
+        "url": "../../dist/favicon.svg",
+        "resolved": "dist/favicon.svg",
+        "exists": true,
+        "isDir": false,
+        "indexExists": null,
+        "ok": true
+      },
+      {
+        "url": "../../dist/",
+        "resolved": "dist",
+        "exists": true,
+        "isDir": true,
+        "indexExists": true,
+        "ok": true
+      },
+      {
+        "url": "../../dist/plans/coding/",
+        "resolved": "dist/plans/coding",
+        "exists": true,
+        "isDir": true,
+        "indexExists": true,
+        "ok": true
+      },
+      {
+        "url": "../../dist/plans/api/",
+        "resolved": "dist/plans/api",
+        "exists": true,
+        "isDir": true,
+        "indexExists": true,
+        "ok": true
+      },
+      {
+        "url": "../../dist/tools/api-cost/",
+        "resolved": "dist/tools/api-cost",
+        "exists": true,
+        "isDir": true,
+        "indexExists": true,
+        "ok": true
+      }
+    ]
+  },
+  "family.html": {
+    "total": 32,
+    "bad": 30,
+    "prefixes": {
+      "../../dist/": 32
+    },
+    "badSamples": [
+      {
+        "url": "../../dist/dist/",
+        "resolved": "dist/dist",
+        "exists": false,
+        "isDir": false,
+        "indexExists": null,
+        "ok": false
+      },
+      {
+        "url": "../../dist/dist/",
+        "resolved": "dist/dist",
+        "exists": false,
+        "isDir": false,
+        "indexExists": null,
+        "ok": false
+      },
+      {
+        "url": "../../dist/dist/",
+        "resolved": "dist/dist",
+        "exists": false,
+        "isDir": false,
+        "indexExists": null,
+        "ok": false
+      },
+      {
+        "url": "../../dist/dist/tools/api-cost/",
+        "resolved": "dist/dist/tools/api-cost",
+        "exists": false,
+        "isDir": false,
+        "indexExists": null,
+        "ok": false
+      },
+      {
+        "url": "../../dist/dist/plans/coding/",
+        "resolved": "dist/dist/plans/coding",
+        "exists": false,
+        "isDir": false,
+        "indexExists": null,
+        "ok": false
+      },
+      {
+        "url": "../../dist/dist/plans/coding/",
+        "resolved": "dist/dist/plans/coding",
+        "exists": false,
+        "isDir": false,
+        "indexExists": null,
+        "ok": false
+      },
+      {
+        "url": "../../dist/dist/deal/97d21ff73d3e/",
+        "resolved": "dist/dist/deal/97d21ff73d3e",
+        "exists": false,
+        "isDir": false,
+        "indexExists": null,
+        "ok": false
+      },
+      {
+        "url": "../../dist/dist/deal/ebd47f6d2522/",
+        "resolved": "dist/dist/deal/ebd47f6d2522",
+        "exists": false,
+        "isDir": false,
+        "indexExists": null,
+        "ok": false
+      },
+      {
+        "url": "../../dist/dist/plans/coding/",
+        "resolved": "dist/dist/plans/coding",
+        "exists": false,
+        "isDir": false,
+        "indexExists": null,
+        "ok": false
+      },
+      {
+        "url": "../../dist/dist/changes/",
+        "resolved": "dist/dist/changes",
+        "exists": false,
+        "isDir": false,
+        "indexExists": null,
+        "ok": false
+      },
+      {
+        "url": "../../dist/dist/student/",
+        "resolved": "dist/dist/student",
+        "exists": false,
+        "isDir": false,
+        "indexExists": null,
+        "ok": false
+      },
+      {
+        "url": "../../dist/dist/developer/",
+        "resolved": "dist/dist/developer",
+        "exists": false,
+        "isDir": false,
+        "indexExists": null,
+        "ok": false
+      }
+    ],
+    "allSamples": [
+      {
+        "url": "../../dist/logos.css",
+        "resolved": "dist/logos.css",
+        "exists": true,
+        "isDir": false,
+        "indexExists": null,
+        "ok": true
+      },
+      {
+        "url": "../../dist/favicon.svg",
+        "resolved": "dist/favicon.svg",
+        "exists": true,
+        "isDir": false,
+        "indexExists": null,
+        "ok": true
+      },
+      {
+        "url": "../../dist/dist/",
+        "resolved": "dist/dist",
+        "exists": false,
+        "isDir": false,
+        "indexExists": null,
+        "ok": false
+      },
+      {
+        "url": "../../dist/dist/",
+        "resolved": "dist/dist",
+        "exists": false,
+        "isDir": false,
+        "indexExists": null,
+        "ok": false
+      },
+      {
+        "url": "../../dist/dist/",
+        "resolved": "dist/dist",
+        "exists": false,
+        "isDir": false,
+        "indexExists": null,
+        "ok": false
+      },
+      {
+        "url": "../../dist/dist/tools/api-cost/",
+        "resolved": "dist/dist/tools/api-cost",
+        "exists": false,
+        "isDir": false,
+        "indexExists": null,
+        "ok": false
+      }
+    ]
+  },
+  "compare.html": {
+    "total": 4,
+    "bad": 0,
+    "prefixes": {
+      "shots/": 4
+    },
+    "badSamples": [],
+    "allSamples": [
+      {
+        "url": "shots/before-1440.png",
+        "resolved": "mockups/v5-sig/shots/before-1440.png",
+        "exists": true,
+        "isDir": false,
+        "indexExists": null,
+        "ok": true
+      },
+      {
+        "url": "shots/before-1440.png",
+        "resolved": "mockups/v5-sig/shots/before-1440.png",
+        "exists": true,
+        "isDir": false,
+        "indexExists": null,
+        "ok": true
+      },
+      {
+        "url": "shots/after-1440.png",
+        "resolved": "mockups/v5-sig/shots/after-1440.png",
+        "exists": true,
+        "isDir": false,
+        "indexExists": null,
+        "ok": true
+      },
+      {
+        "url": "shots/after-1440.png",
+        "resolved": "mockups/v5-sig/shots/after-1440.png",
+        "exists": true,
+        "isDir": false,
+        "indexExists": null,
+        "ok": true
+      }
+    ]
+  }
+}

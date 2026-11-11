@@ -1,0 +1,283 @@
+{
+  "mobile390": {
+    "needCards": 10,
+    "needFullyVisible": 8,
+    "tierheadTop": 1150.8,
+    "tierheadHeight": 26,
+    "scrollWidth": 390,
+    "innerWidth": 390,
+    "needStatFont": "30px",
+    "tierheadHintDisplay": "none",
+    "tierheadStatFont": "22px"
+  },
+  "thumb25": {
+    "size": {
+      "w": 360,
+      "h": 225
+    },
+    "counts": {
+      "#0b7a44": 164,
+      "#1d4ed8": 14,
+      "#155e75": 14,
+      "#92400e": 14
+    }
+  },
+  "light": {
+    "bigText": [
+      {
+        "fs": "30px",
+        "cls": "stat stat-30",
+        "direct": "13",
+        "isStat": true
+      },
+      {
+        "fs": "30px",
+        "cls": "stat stat-30",
+        "direct": "7",
+        "isStat": true
+      },
+      {
+        "fs": "30px",
+        "cls": "stat stat-30",
+        "direct": "1",
+        "isStat": true
+      },
+      {
+        "fs": "30px",
+        "cls": "stat stat-30",
+        "direct": "30",
+        "isStat": true
+      },
+      {
+        "fs": "30px",
+        "cls": "stat stat-30",
+        "direct": "66",
+        "isStat": true
+      },
+      {
+        "fs": "30px",
+        "cls": "stat stat-30",
+        "direct": "45",
+        "isStat": true
+      },
+      {
+        "fs": "30px",
+        "cls": "stat stat-30",
+        "direct": "44",
+        "isStat": true
+      },
+      {
+        "fs": "30px",
+        "cls": "stat stat-30",
+        "direct": "7",
+        "isStat": true
+      },
+      {
+        "fs": "30px",
+        "cls": "stat stat-30",
+        "direct": "12",
+        "isStat": true
+      },
+      {
+        "fs": "30px",
+        "cls": "stat stat-30",
+        "direct": "67",
+        "isStat": true
+      },
+      {
+        "fs": "22px",
+        "cls": "stat stat-22",
+        "direct": "11",
+        "isStat": true
+      },
+      {
+        "fs": "22px",
+        "cls": "stat stat-22",
+        "direct": "20",
+        "isStat": true
+      },
+      {
+        "fs": "22px",
+        "cls": "stat stat-22",
+        "direct": "20",
+        "isStat": true
+      },
+      {
+        "fs": "22px",
+        "cls": "stat stat-22",
+        "direct": "25",
+        "isStat": true
+      }
+    ],
+    "bigNonNumeric": 0,
+    "bar": "6px",
+    "barBg": "rgb(11, 122, 68)",
+    "quoteInk": "rgb(15, 23, 42)",
+    "quoteBoldInk": "rgb(15, 23, 42)",
+    "tierheadLine": {
+      "bg": "rgb(11, 122, 68)",
+      "opacity": "0.4"
+    },
+    "jumpSquares": [
+      {
+        "w": "22px",
+        "bg": "rgb(11, 122, 68)"
+      },
+      {
+        "w": "22px",
+        "bg": "rgb(29, 78, 216)"
+      },
+      {
+        "w": "22px",
+        "bg": "rgb(21, 94, 117)"
+      },
+      {
+        "w": "22px",
+        "bg": "rgb(146, 64, 14)"
+      }
+    ]
+  },
+  "dark": {
+    "bigText": [
+      {
+        "fs": "30px",
+        "cls": "stat stat-30",
+        "direct": "13",
+        "isStat": true
+      },
+      {
+        "fs": "30px",
+        "cls": "stat stat-30",
+        "direct": "7",
+        "isStat": true
+      },
+      {
+        "fs": "30px",
+        "cls": "stat stat-30",
+        "direct": "1",
+        "isStat": true
+      },
+      {
+        "fs": "30px",
+        "cls": "stat stat-30",
+        "direct": "30",
+        "isStat": true
+      },
+      {
+        "fs": "30px",
+        "cls": "stat stat-30",
+        "direct": "66",
+        "isStat": true
+      },
+      {
+        "fs": "30px",
+        "cls": "stat stat-30",
+        "direct": "45",
+        "isStat": true
+      },
+      {
+        "fs": "30px",
+        "cls": "stat stat-30",
+        "direct": "44",
+        "isStat": true
+      },
+      {
+        "fs": "30px",
+        "cls": "stat stat-30",
+        "direct": "7",
+        "isStat": true
+      },
+      {
+        "fs": "30px",
+        "cls": "stat stat-30",
+        "direct": "12",
+        "isStat": true
+      },
+      {
+        "fs": "30px",
+        "cls": "stat stat-30",
+        "direct": "67",
+        "isStat": true
+      },
+      {
+        "fs": "22px",
+        "cls": "stat stat-22",
+        "direct": "11",
+        "isStat": true
+      },
+      {
+        "fs": "22px",
+        "cls": "stat stat-22",
+        "direct": "20",
+        "isStat": true
+      },
+      {
+        "fs": "22px",
+        "cls": "stat stat-22",
+        "direct": "20",
+        "isStat": true
+      },
+      {
+        "fs": "22px",
+        "cls": "stat stat-22",
+        "direct": "25",
+        "isStat": true
+      }
+    ],
+    "bigNonNumeric": 0,
+    "bar": "6px",
+    "barBg": "rgb(74, 222, 128)",
+    "quoteInk": "rgb(232, 236, 242)",
+    "quoteBoldInk": "rgb(232, 236, 242)",
+    "tierheadLine": {
+      "bg": "rgb(74, 222, 128)",
+      "opacity": "0.4"
+    },
+    "jumpSquares": [
+      {
+        "w": "22px",
+        "bg": "rgb(74, 222, 128)"
+      },
+      {
+        "w": "22px",
+        "bg": "rgb(96, 165, 250)"
+      },
+      {
+        "w": "22px",
+        "bg": "rgb(34, 211, 238)"
+      },
+      {
+        "w": "22px",
+        "bg": "rgb(251, 191, 36)"
+      }
+    ]
+  },
+  "contrast": {
+    "--bg": "#f6f7f9",
+    "--card": "#fff",
+    "--t1": "#0b7a44",
+    "--t2": "#1d4ed8",
+    "--t3": "#155e75",
+    "--t4": "#92400e",
+    "--t5": "#475569",
+    "--on-t1": "#fff",
+    "--on-t2": "#fff",
+    "--on-t3": "#fff",
+    "--on-t4": "#fff",
+    "--on-t5": "#fff"
+  },
+  "contrastDark": {
+    "--bg": "#0b0d10",
+    "--card": "#14171c",
+    "--t1": "#4ade80",
+    "--t2": "#60a5fa",
+    "--t3": "#22d3ee",
+    "--t4": "#fbbf24",
+    "--t5": "#94a3b8",
+    "--on-t1": "#0b0d10",
+    "--on-t2": "#0b0d10",
+    "--on-t3": "#0b0d10",
+    "--on-t4": "#0b0d10",
+    "--on-t5": "#0b0d10"
+  }
+}

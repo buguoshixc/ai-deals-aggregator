@@ -1,0 +1,3024 @@
+{
+  "before": {
+    "measuredAt": "2026-11-11T12:49:58.989Z",
+    "url": "http://127.0.0.1:8081/dist/index.html",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "scale": 1,
+    "theme": null,
+    "errors": [],
+    "blockedExternal": [],
+    "scrollWidth": 1440,
+    "scrollHeight": 6797,
+    "horizontalOverflow": 0,
+    "cardCount": 76,
+    "fullyVisibleCards": 6,
+    "intersectingCards": 9,
+    "fullyVisibleTiers": [
+      "1"
+    ],
+    "layout": {
+      ".top": {
+        "rect": {
+          "top": 0,
+          "bottom": 59,
+          "left": 0,
+          "right": 1440,
+          "w": 1440,
+          "h": 59
+        },
+        "h": 59
+      },
+      ".topin": {
+        "rect": {
+          "top": 0,
+          "bottom": 58,
+          "left": 10,
+          "right": 1430,
+          "w": 1420,
+          "h": 58
+        },
+        "h": 58
+      },
+      ".facets": {
+        "rect": {
+          "top": 59,
+          "bottom": 105,
+          "left": 0,
+          "right": 1440,
+          "w": 1440,
+          "h": 46
+        },
+        "h": 46
+      },
+      ".needs": {
+        "rect": {
+          "top": 105,
+          "bottom": 258,
+          "left": 10,
+          "right": 1430,
+          "w": 1420,
+          "h": 153
+        },
+        "h": 153
+      },
+      ".need-grid": {
+        "rect": {
+          "top": 110,
+          "bottom": 258,
+          "left": 30,
+          "right": 1410,
+          "w": 1380,
+          "h": 148
+        },
+        "h": 148
+      },
+      ".rbar": {
+        "rect": {
+          "top": 274,
+          "bottom": 306,
+          "left": 30,
+          "right": 1410,
+          "w": 1380,
+          "h": 32
+        },
+        "h": 32
+      },
+      ".hubline": {
+        "rect": {
+          "top": 316,
+          "bottom": 344,
+          "left": 30,
+          "right": 1410,
+          "w": 1380,
+          "h": 28
+        },
+        "h": 28
+      },
+      "#dealsList": {
+        "rect": {
+          "top": 352,
+          "bottom": 5992,
+          "left": 30,
+          "right": 1410,
+          "w": 1380,
+          "h": 5640
+        },
+        "h": 5640
+      },
+      ".tierhead": {
+        "rect": {
+          "top": 354,
+          "bottom": 380,
+          "left": 30,
+          "right": 1410,
+          "w": 1380,
+          "h": 26
+        },
+        "h": 26
+      },
+      ".wrap": {
+        "rect": {
+          "top": 258,
+          "bottom": 6796.97,
+          "left": 10,
+          "right": 1430,
+          "w": 1420,
+          "h": 6538.97
+        },
+        "h": 6538.97
+      },
+      "footer": {
+        "rect": {
+          "top": 6579.19,
+          "bottom": 6736.97,
+          "left": 30,
+          "right": 1410,
+          "w": 1380,
+          "h": 157.78
+        },
+        "h": 157.78
+      }
+    },
+    "tierheads": [
+      {
+        "id": "tier-1",
+        "cls": "tierhead t1",
+        "h": 26,
+        "rect": {
+          "top": 354,
+          "bottom": 380,
+          "left": 30,
+          "right": 1410,
+          "w": 1380,
+          "h": 26
+        },
+        "n": {
+          "top": 359,
+          "bottom": 375,
+          "left": 30,
+          "right": 46,
+          "w": 16,
+          "h": 16
+        },
+        "nBg": "rgb(14, 159, 110)",
+        "nColor": "rgb(5, 41, 28)",
+        "nFs": "9.5px",
+        "lineBg": "rgb(230, 233, 239)",
+        "hint": "注册就能用，不用等额度到账 · 11 条",
+        "stat": null
+      },
+      {
+        "id": "tier-2",
+        "cls": "tierhead t2",
+        "h": 26,
+        "rect": {
+          "top": 1206,
+          "bottom": 1232,
+          "left": 30,
+          "right": 1410,
+          "w": 1380,
+          "h": 26
+        },
+        "n": {
+          "top": 1211,
+          "bottom": 1227,
+          "left": 30,
+          "right": 46,
+          "w": 16,
+          "h": 16
+        },
+        "nBg": "rgb(124, 58, 237)",
+        "nColor": "rgb(255, 255, 255)",
+        "nFs": "9.5px",
+        "lineBg": "rgb(230, 233, 239)",
+        "hint": "新用户一次性赠送 / 首月免费，够跑一段时间 · 20 条",
+        "stat": null
+      },
+      {
+        "id": "tier-3",
+        "cls": "tierhead t3",
+        "h": 26,
+        "rect": {
+          "top": 2670,
+          "bottom": 2696,
+          "left": 30,
+          "right": 1410,
+          "w": 1380,
+          "h": 26
+        },
+        "n": {
+          "top": 2675,
+          "bottom": 2691,
+          "left": 30,
+          "right": 46,
+          "w": 16,
+          "h": 16
+        },
+        "nBg": "rgb(37, 99, 235)",
+        "nColor": "rgb(255, 255, 255)",
+        "nFs": "9.5px",
+        "lineBg": "rgb(230, 233, 239)",
+        "hint": "学生 / 教师 / 非营利 / 初创 —— 有资格就不花钱 · 20 条",
+        "stat": null
+      },
+      {
+        "id": "tier-4",
+        "cls": "tierhead t4",
+        "h": 26,
+        "rect": {
+          "top": 4134,
+          "bottom": 4160,
+          "left": 30,
+          "right": 1410,
+          "w": 1380,
+          "h": 26
+        },
+        "n": {
+          "top": 4139,
+          "bottom": 4155,
+          "left": 30,
+          "right": 46,
+          "w": 16,
+          "h": 16
+        },
+        "nBg": "rgb(194, 65, 12)",
+        "nColor": "rgb(255, 255, 255)",
+        "nFs": "9.5px",
+        "lineBg": "rgb(230, 233, 239)",
+        "hint": "要花钱，但比标准价便宜 · 25 条",
+        "stat": null
+      }
+    ],
+    "needCards": [
+      {
+        "h": 68,
+        "rect": {
+          "top": 110,
+          "bottom": 178,
+          "left": 30,
+          "right": 296.39,
+          "w": 266.39,
+          "h": 68
+        },
+        "b": {
+          "text": "13",
+          "fs": "11px",
+          "lh": "16.5px",
+          "rect": {
+            "top": 127,
+            "bottom": 143.5,
+            "left": 116.61,
+            "right": 131.92,
+            "w": 15.31,
+            "h": 16.5
+          }
+        },
+        "copyOverflowX": 0,
+        "cardOverflow": 0
+      },
+      {
+        "h": 68,
+        "rect": {
+          "top": 110,
+          "bottom": 178,
+          "left": 308.39,
+          "right": 574.8,
+          "w": 266.41,
+          "h": 68
+        },
+        "b": {
+          "text": "7",
+          "fs": "11px",
+          "lh": "16.5px",
+          "rect": {
+            "top": 127,
+            "bottom": 143.5,
+            "left": 419,
+            "right": 426.66,
+            "w": 7.66,
+            "h": 16.5
+          }
+        },
+        "copyOverflowX": 0,
+        "cardOverflow": 0
+      },
+      {
+        "h": 68,
+        "rect": {
+          "top": 110,
+          "bottom": 178,
+          "left": 586.8,
+          "right": 853.19,
+          "w": 266.39,
+          "h": 68
+        },
+        "b": {
+          "text": "1",
+          "fs": "11px",
+          "lh": "16.5px",
+          "rect": {
+            "top": 127,
+            "bottom": 143.5,
+            "left": 685.41,
+            "right": 693.06,
+            "w": 7.66,
+            "h": 16.5
+          }
+        },
+        "copyOverflowX": 0,
+        "cardOverflow": 0
+      },
+      {
+        "h": 68,
+        "rect": {
+          "top": 110,
+          "bottom": 178,
+          "left": 865.19,
+          "right": 1131.59,
+          "w": 266.41,
+          "h": 68
+        },
+        "b": {
+          "text": "30",
+          "fs": "11px",
+          "lh": "16.5px",
+          "rect": {
+            "top": 127,
+            "bottom": 143.5,
+            "left": 951.8,
+            "right": 967.11,
+            "w": 15.31,
+            "h": 16.5
+          }
+        },
+        "copyOverflowX": 0,
+        "cardOverflow": 0
+      },
+      {
+        "h": 68,
+        "rect": {
+          "top": 110,
+          "bottom": 178,
+          "left": 1143.59,
+          "right": 1409.98,
+          "w": 266.39,
+          "h": 68
+        },
+        "b": {
+          "text": "66",
+          "fs": "11px",
+          "lh": "16.5px",
+          "rect": {
+            "top": 127,
+            "bottom": 143.5,
+            "left": 1236.59,
+            "right": 1251.91,
+            "w": 15.31,
+            "h": 16.5
+          }
+        },
+        "copyOverflowX": 0,
+        "cardOverflow": 0
+      },
+      {
+        "h": 68,
+        "rect": {
+          "top": 190,
+          "bottom": 258,
+          "left": 30,
+          "right": 296.39,
+          "w": 266.39,
+          "h": 68
+        },
+        "b": {
+          "text": "45",
+          "fs": "11px",
+          "lh": "16.5px",
+          "rect": {
+            "top": 207,
+            "bottom": 223.5,
+            "left": 119.34,
+            "right": 134.66,
+            "w": 15.31,
+            "h": 16.5
+          }
+        },
+        "copyOverflowX": 0,
+        "cardOverflow": 0
+      },
+      {
+        "h": 68,
+        "rect": {
+          "top": 190,
+          "bottom": 258,
+          "left": 308.39,
+          "right": 574.8,
+          "w": 266.41,
+          "h": 68
+        },
+        "b": {
+          "text": "44",
+          "fs": "11px",
+          "lh": "16.5px",
+          "rect": {
+            "top": 207,
+            "bottom": 223.5,
+            "left": 421.5,
+            "right": 436.81,
+            "w": 15.31,
+            "h": 16.5
+          }
+        },
+        "copyOverflowX": 0,
+        "cardOverflow": 0
+      },
+      {
+        "h": 68,
+        "rect": {
+          "top": 190,
+          "bottom": 258,
+          "left": 586.8,
+          "right": 853.19,
+          "w": 266.39,
+          "h": 68
+        },
+        "b": {
+          "text": "7",
+          "fs": "11px",
+          "lh": "16.5px",
+          "rect": {
+            "top": 207,
+            "bottom": 223.5,
+            "left": 690.23,
+            "right": 697.89,
+            "w": 7.66,
+            "h": 16.5
+          }
+        },
+        "copyOverflowX": 0,
+        "cardOverflow": 0
+      },
+      {
+        "h": 68,
+        "rect": {
+          "top": 190,
+          "bottom": 258,
+          "left": 865.19,
+          "right": 1131.59,
+          "w": 266.41,
+          "h": 68
+        },
+        "b": {
+          "text": "12",
+          "fs": "11px",
+          "lh": "16.5px",
+          "rect": {
+            "top": 207,
+            "bottom": 223.5,
+            "left": 951.8,
+            "right": 967.11,
+            "w": 15.31,
+            "h": 16.5
+          }
+        },
+        "copyOverflowX": 0,
+        "cardOverflow": 0
+      },
+      {
+        "h": 68,
+        "rect": {
+          "top": 190,
+          "bottom": 258,
+          "left": 1143.59,
+          "right": 1409.98,
+          "w": 266.39,
+          "h": 68
+        },
+        "b": {
+          "text": "67",
+          "fs": "11px",
+          "lh": "16.5px",
+          "rect": {
+            "top": 207,
+            "bottom": 223.5,
+            "left": 1270.83,
+            "right": 1286.14,
+            "w": 15.31,
+            "h": 16.5
+          }
+        },
+        "copyOverflowX": 0,
+        "cardOverflow": 0
+      }
+    ],
+    "firstTierCard": {
+      "rect": {
+        "top": 388,
+        "bottom": 580,
+        "left": 30,
+        "right": 482,
+        "w": 452,
+        "h": 192
+      },
+      "h": 192
+    },
+    "bars": [
+      {
+        "w": "3px",
+        "bg": "rgb(14, 159, 110)",
+        "rect": {
+          "top": 455.09,
+          "bottom": 493.09,
+          "left": 45,
+          "right": 48,
+          "w": 3,
+          "h": 38
+        }
+      },
+      {
+        "w": "3px",
+        "bg": "rgb(14, 159, 110)",
+        "rect": {
+          "top": 455.09,
+          "bottom": 493.09,
+          "left": 509,
+          "right": 512,
+          "w": 3,
+          "h": 38
+        }
+      },
+      {
+        "w": "3px",
+        "bg": "rgb(14, 159, 110)",
+        "rect": {
+          "top": 474.69,
+          "bottom": 512.69,
+          "left": 973,
+          "right": 976,
+          "w": 3,
+          "h": 38
+        }
+      },
+      {
+        "w": "3px",
+        "bg": "rgb(14, 159, 110)",
+        "rect": {
+          "top": 659.09,
+          "bottom": 697.09,
+          "left": 45,
+          "right": 48,
+          "w": 3,
+          "h": 38
+        }
+      }
+    ],
+    "txB": [
+      {
+        "color": "rgb(11, 122, 68)",
+        "text": "OpenRouter 免费模型"
+      },
+      {
+        "color": "rgb(11, 122, 68)",
+        "text": "OpenRouter 免费模型"
+      },
+      {
+        "color": "rgb(11, 122, 68)",
+        "text": "OpenRouter 免费模型"
+      },
+      {
+        "color": "rgb(11, 122, 68)",
+        "text": "OpenRouter 免费模型"
+      }
+    ],
+    "stats": [],
+    "bigText": [],
+    "tokens": {
+      "--bg": "#f6f7f9",
+      "--card": "#fff",
+      "--ink": "#0f172a",
+      "--ink2": "#495066",
+      "--mut": "#6b7280",
+      "--line": "#e6e9ef",
+      "--t1": "#0e9f6e",
+      "--t2": "#7c3aed",
+      "--t3": "#2563eb",
+      "--t4": "#c2410c",
+      "--t5": "#94a3b8",
+      "--on-t1": "#05291c",
+      "--on-t2": "#fff",
+      "--on-t3": "#fff",
+      "--on-t4": "#fff",
+      "--on-t5": "#1f2937",
+      "--fs-stat-sm": "",
+      "--fs-stat": "",
+      "--fs-stat-lg": "",
+      "--brand": "#3b5bfd"
+    },
+    "h1": [
+      {
+        "text": "AI 优惠聚合器",
+        "fs": "16px",
+        "rect": {
+          "top": 13.48,
+          "bottom": 31.88,
+          "left": 70,
+          "right": 175.09,
+          "w": 105.09,
+          "h": 18.39
+        }
+      }
+    ],
+    "fontSizesUsed": [
+      "0px",
+      "9px",
+      "9.5px",
+      "10px",
+      "10.5px",
+      "11px",
+      "11.5px",
+      "12px",
+      "12.5px",
+      "13px",
+      "13.5px",
+      "14px",
+      "15px",
+      "16px"
+    ],
+    "shot": "mockups/v5-sig/shots/before-1440.png"
+  },
+  "after": {
+    "measuredAt": "2026-11-11T13:30:42.250Z",
+    "url": "http://127.0.0.1:8081/mockups/v5-sig/home-light.html",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "scale": 1,
+    "theme": "light",
+    "errors": [],
+    "blockedExternal": [],
+    "scrollWidth": 1440,
+    "scrollHeight": 6797,
+    "horizontalOverflow": 0,
+    "cardCount": 76,
+    "fullyVisibleCards": 6,
+    "intersectingCards": 9,
+    "fullyVisibleTiers": [
+      "1"
+    ],
+    "layout": {
+      ".top": {
+        "rect": {
+          "top": 0,
+          "bottom": 59,
+          "left": 0,
+          "right": 1440,
+          "w": 1440,
+          "h": 59
+        },
+        "h": 59
+      },
+      ".topin": {
+        "rect": {
+          "top": 0,
+          "bottom": 58,
+          "left": 10,
+          "right": 1430,
+          "w": 1420,
+          "h": 58
+        },
+        "h": 58
+      },
+      ".facets": {
+        "rect": {
+          "top": 59,
+          "bottom": 105,
+          "left": 0,
+          "right": 1440,
+          "w": 1440,
+          "h": 46
+        },
+        "h": 46
+      },
+      ".needs": {
+        "rect": {
+          "top": 105,
+          "bottom": 258,
+          "left": 10,
+          "right": 1430,
+          "w": 1420,
+          "h": 153
+        },
+        "h": 153
+      },
+      ".need-grid": {
+        "rect": {
+          "top": 110,
+          "bottom": 258,
+          "left": 30,
+          "right": 1410,
+          "w": 1380,
+          "h": 148
+        },
+        "h": 148
+      },
+      ".rbar": {
+        "rect": {
+          "top": 274,
+          "bottom": 306,
+          "left": 30,
+          "right": 1410,
+          "w": 1380,
+          "h": 32
+        },
+        "h": 32
+      },
+      ".hubline": {
+        "rect": {
+          "top": 316,
+          "bottom": 344,
+          "left": 30,
+          "right": 1410,
+          "w": 1380,
+          "h": 28
+        },
+        "h": 28
+      },
+      "#dealsList": {
+        "rect": {
+          "top": 352,
+          "bottom": 5992,
+          "left": 30,
+          "right": 1410,
+          "w": 1380,
+          "h": 5640
+        },
+        "h": 5640
+      },
+      ".tierhead": {
+        "rect": {
+          "top": 354,
+          "bottom": 380,
+          "left": 30,
+          "right": 1410,
+          "w": 1380,
+          "h": 26
+        },
+        "h": 26
+      },
+      ".wrap": {
+        "rect": {
+          "top": 258,
+          "bottom": 6796.97,
+          "left": 10,
+          "right": 1430,
+          "w": 1420,
+          "h": 6538.97
+        },
+        "h": 6538.97
+      },
+      "footer": {
+        "rect": {
+          "top": 6579.19,
+          "bottom": 6736.97,
+          "left": 30,
+          "right": 1410,
+          "w": 1380,
+          "h": 157.78
+        },
+        "h": 157.78
+      }
+    },
+    "tierheads": [
+      {
+        "id": "tier-1",
+        "cls": "tierhead t1",
+        "h": 26,
+        "rect": {
+          "top": 354,
+          "bottom": 380,
+          "left": 30,
+          "right": 1410,
+          "w": 1380,
+          "h": 26
+        },
+        "n": {
+          "top": 356,
+          "bottom": 378,
+          "left": 30,
+          "right": 52,
+          "w": 22,
+          "h": 22
+        },
+        "nBg": "rgb(11, 122, 68)",
+        "nColor": "rgb(255, 255, 255)",
+        "nFs": "11px",
+        "lineBg": "rgb(11, 122, 68)",
+        "hint": "注册就能用，不用等额度到账",
+        "stat": {
+          "text": "11条",
+          "fs": "22px",
+          "rect": {
+            "top": 356,
+            "bottom": 378,
+            "left": 280,
+            "right": 322.75,
+            "w": 42.75,
+            "h": 22
+          }
+        }
+      },
+      {
+        "id": "tier-2",
+        "cls": "tierhead t2",
+        "h": 26,
+        "rect": {
+          "top": 1206,
+          "bottom": 1232,
+          "left": 30,
+          "right": 1410,
+          "w": 1380,
+          "h": 26
+        },
+        "n": {
+          "top": 1208,
+          "bottom": 1230,
+          "left": 30,
+          "right": 52,
+          "w": 22,
+          "h": 22
+        },
+        "nBg": "rgb(29, 78, 216)",
+        "nColor": "rgb(255, 255, 255)",
+        "nFs": "11px",
+        "lineBg": "rgb(29, 78, 216)",
+        "hint": "新用户一次性赠送 / 首月免费，够跑一段时间",
+        "stat": {
+          "text": "20条",
+          "fs": "22px",
+          "rect": {
+            "top": 1208,
+            "bottom": 1230,
+            "left": 363.19,
+            "right": 405.94,
+            "w": 42.75,
+            "h": 22
+          }
+        }
+      },
+      {
+        "id": "tier-3",
+        "cls": "tierhead t3",
+        "h": 26,
+        "rect": {
+          "top": 2670,
+          "bottom": 2696,
+          "left": 30,
+          "right": 1410,
+          "w": 1380,
+          "h": 26
+        },
+        "n": {
+          "top": 2672,
+          "bottom": 2694,
+          "left": 30,
+          "right": 52,
+          "w": 22,
+          "h": 22
+        },
+        "nBg": "rgb(21, 94, 117)",
+        "nColor": "rgb(255, 255, 255)",
+        "nFs": "11px",
+        "lineBg": "rgb(21, 94, 117)",
+        "hint": "学生 / 教师 / 非营利 / 初创 —— 有资格就不花钱",
+        "stat": {
+          "text": "20条",
+          "fs": "22px",
+          "rect": {
+            "top": 2672,
+            "bottom": 2694,
+            "left": 379.88,
+            "right": 422.63,
+            "w": 42.75,
+            "h": 22
+          }
+        }
+      },
+      {
+        "id": "tier-4",
+        "cls": "tierhead t4",
+        "h": 26,
+        "rect": {
+          "top": 4134,
+          "bottom": 4160,
+          "left": 30,
+          "right": 1410,
+          "w": 1380,
+          "h": 26
+        },
+        "n": {
+          "top": 4136,
+          "bottom": 4158,
+          "left": 30,
+          "right": 52,
+          "w": 22,
+          "h": 22
+        },
+        "nBg": "rgb(146, 64, 14)",
+        "nColor": "rgb(255, 255, 255)",
+        "nFs": "11px",
+        "lineBg": "rgb(146, 64, 14)",
+        "hint": "要花钱，但比标准价便宜",
+        "stat": {
+          "text": "25条",
+          "fs": "22px",
+          "rect": {
+            "top": 4136,
+            "bottom": 4158,
+            "left": 256,
+            "right": 298.75,
+            "w": 42.75,
+            "h": 22
+          }
+        }
+      }
+    ],
+    "needCards": [
+      {
+        "h": 68,
+        "rect": {
+          "top": 110,
+          "bottom": 178,
+          "left": 30,
+          "right": 296.39,
+          "w": 266.39,
+          "h": 68
+        },
+        "b": {
+          "text": "13条",
+          "fs": "30px",
+          "lh": "30px",
+          "rect": {
+            "top": 120.25,
+            "bottom": 150.25,
+            "left": 116.61,
+            "right": 170.17,
+            "w": 53.56,
+            "h": 30
+          }
+        },
+        "copyOverflowX": 0,
+        "cardOverflow": 0
+      },
+      {
+        "h": 68,
+        "rect": {
+          "top": 110,
+          "bottom": 178,
+          "left": 308.39,
+          "right": 574.8,
+          "w": 266.41,
+          "h": 68
+        },
+        "b": {
+          "text": "7条",
+          "fs": "30px",
+          "lh": "30px",
+          "rect": {
+            "top": 120.25,
+            "bottom": 150.25,
+            "left": 419,
+            "right": 452.28,
+            "w": 33.28,
+            "h": 30
+          }
+        },
+        "copyOverflowX": 0,
+        "cardOverflow": 0
+      },
+      {
+        "h": 68,
+        "rect": {
+          "top": 110,
+          "bottom": 178,
+          "left": 586.8,
+          "right": 853.19,
+          "w": 266.39,
+          "h": 68
+        },
+        "b": {
+          "text": "1条",
+          "fs": "30px",
+          "lh": "30px",
+          "rect": {
+            "top": 120.25,
+            "bottom": 150.25,
+            "left": 685.41,
+            "right": 718.69,
+            "w": 33.28,
+            "h": 30
+          }
+        },
+        "copyOverflowX": 0,
+        "cardOverflow": 0
+      },
+      {
+        "h": 68,
+        "rect": {
+          "top": 110,
+          "bottom": 178,
+          "left": 865.19,
+          "right": 1131.59,
+          "w": 266.41,
+          "h": 68
+        },
+        "b": {
+          "text": "30条",
+          "fs": "30px",
+          "lh": "30px",
+          "rect": {
+            "top": 120.25,
+            "bottom": 150.25,
+            "left": 951.8,
+            "right": 1005.36,
+            "w": 53.56,
+            "h": 30
+          }
+        },
+        "copyOverflowX": 0,
+        "cardOverflow": 0
+      },
+      {
+        "h": 68,
+        "rect": {
+          "top": 110,
+          "bottom": 178,
+          "left": 1143.59,
+          "right": 1409.98,
+          "w": 266.39,
+          "h": 68
+        },
+        "b": {
+          "text": "66条",
+          "fs": "30px",
+          "lh": "30px",
+          "rect": {
+            "top": 120.25,
+            "bottom": 150.25,
+            "left": 1236.59,
+            "right": 1290.16,
+            "w": 53.56,
+            "h": 30
+          }
+        },
+        "copyOverflowX": 0,
+        "cardOverflow": 0
+      },
+      {
+        "h": 68,
+        "rect": {
+          "top": 190,
+          "bottom": 258,
+          "left": 30,
+          "right": 296.39,
+          "w": 266.39,
+          "h": 68
+        },
+        "b": {
+          "text": "45条",
+          "fs": "30px",
+          "lh": "30px",
+          "rect": {
+            "top": 200.25,
+            "bottom": 230.25,
+            "left": 119.34,
+            "right": 172.91,
+            "w": 53.56,
+            "h": 30
+          }
+        },
+        "copyOverflowX": 0,
+        "cardOverflow": 0
+      },
+      {
+        "h": 68,
+        "rect": {
+          "top": 190,
+          "bottom": 258,
+          "left": 308.39,
+          "right": 574.8,
+          "w": 266.41,
+          "h": 68
+        },
+        "b": {
+          "text": "44条",
+          "fs": "30px",
+          "lh": "30px",
+          "rect": {
+            "top": 200.25,
+            "bottom": 230.25,
+            "left": 421.5,
+            "right": 475.06,
+            "w": 53.56,
+            "h": 30
+          }
+        },
+        "copyOverflowX": 0,
+        "cardOverflow": 0
+      },
+      {
+        "h": 68,
+        "rect": {
+          "top": 190,
+          "bottom": 258,
+          "left": 586.8,
+          "right": 853.19,
+          "w": 266.39,
+          "h": 68
+        },
+        "b": {
+          "text": "7条",
+          "fs": "30px",
+          "lh": "30px",
+          "rect": {
+            "top": 200.25,
+            "bottom": 230.25,
+            "left": 690.23,
+            "right": 723.52,
+            "w": 33.28,
+            "h": 30
+          }
+        },
+        "copyOverflowX": 0,
+        "cardOverflow": 0
+      },
+      {
+        "h": 68,
+        "rect": {
+          "top": 190,
+          "bottom": 258,
+          "left": 865.19,
+          "right": 1131.59,
+          "w": 266.41,
+          "h": 68
+        },
+        "b": {
+          "text": "12条",
+          "fs": "30px",
+          "lh": "30px",
+          "rect": {
+            "top": 200.25,
+            "bottom": 230.25,
+            "left": 951.8,
+            "right": 1005.36,
+            "w": 53.56,
+            "h": 30
+          }
+        },
+        "copyOverflowX": 0,
+        "cardOverflow": 0
+      },
+      {
+        "h": 68,
+        "rect": {
+          "top": 190,
+          "bottom": 258,
+          "left": 1143.59,
+          "right": 1409.98,
+          "w": 266.39,
+          "h": 68
+        },
+        "b": {
+          "text": "67条",
+          "fs": "30px",
+          "lh": "30px",
+          "rect": {
+            "top": 200.25,
+            "bottom": 230.25,
+            "left": 1270.83,
+            "right": 1324.39,
+            "w": 53.56,
+            "h": 30
+          }
+        },
+        "copyOverflowX": 0,
+        "cardOverflow": 0
+      }
+    ],
+    "firstTierCard": {
+      "rect": {
+        "top": 388,
+        "bottom": 580,
+        "left": 30,
+        "right": 482,
+        "w": 452,
+        "h": 192
+      },
+      "h": 192
+    },
+    "bars": [
+      {
+        "w": "6px",
+        "bg": "rgb(11, 122, 68)",
+        "rect": {
+          "top": 455.09,
+          "bottom": 493.09,
+          "left": 45,
+          "right": 51,
+          "w": 6,
+          "h": 38
+        }
+      },
+      {
+        "w": "6px",
+        "bg": "rgb(11, 122, 68)",
+        "rect": {
+          "top": 455.09,
+          "bottom": 493.09,
+          "left": 509,
+          "right": 515,
+          "w": 6,
+          "h": 38
+        }
+      },
+      {
+        "w": "6px",
+        "bg": "rgb(11, 122, 68)",
+        "rect": {
+          "top": 474.69,
+          "bottom": 512.69,
+          "left": 973,
+          "right": 979,
+          "w": 6,
+          "h": 38
+        }
+      },
+      {
+        "w": "6px",
+        "bg": "rgb(11, 122, 68)",
+        "rect": {
+          "top": 659.09,
+          "bottom": 697.09,
+          "left": 45,
+          "right": 51,
+          "w": 6,
+          "h": 38
+        }
+      }
+    ],
+    "txB": [
+      {
+        "color": "rgb(15, 23, 42)",
+        "text": "OpenRouter 免费模型"
+      },
+      {
+        "color": "rgb(15, 23, 42)",
+        "text": "OpenRouter 免费模型"
+      },
+      {
+        "color": "rgb(15, 23, 42)",
+        "text": "OpenRouter 免费模型"
+      },
+      {
+        "color": "rgb(15, 23, 42)",
+        "text": "OpenRouter 免费模型"
+      }
+    ],
+    "stats": [
+      {
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "lh": "30px",
+        "text": "13条",
+        "rect": {
+          "top": 120.25,
+          "bottom": 150.25,
+          "left": 116.61,
+          "right": 170.17,
+          "w": 53.56,
+          "h": 30
+        },
+        "color": "rgb(15, 23, 42)",
+        "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+      },
+      {
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "lh": "30px",
+        "text": "7条",
+        "rect": {
+          "top": 120.25,
+          "bottom": 150.25,
+          "left": 419,
+          "right": 452.28,
+          "w": 33.28,
+          "h": 30
+        },
+        "color": "rgb(15, 23, 42)",
+        "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+      },
+      {
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "lh": "30px",
+        "text": "1条",
+        "rect": {
+          "top": 120.25,
+          "bottom": 150.25,
+          "left": 685.41,
+          "right": 718.69,
+          "w": 33.28,
+          "h": 30
+        },
+        "color": "rgb(15, 23, 42)",
+        "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+      },
+      {
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "lh": "30px",
+        "text": "30条",
+        "rect": {
+          "top": 120.25,
+          "bottom": 150.25,
+          "left": 951.8,
+          "right": 1005.36,
+          "w": 53.56,
+          "h": 30
+        },
+        "color": "rgb(15, 23, 42)",
+        "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+      },
+      {
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "lh": "30px",
+        "text": "66条",
+        "rect": {
+          "top": 120.25,
+          "bottom": 150.25,
+          "left": 1236.59,
+          "right": 1290.16,
+          "w": 53.56,
+          "h": 30
+        },
+        "color": "rgb(15, 23, 42)",
+        "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+      },
+      {
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "lh": "30px",
+        "text": "45条",
+        "rect": {
+          "top": 200.25,
+          "bottom": 230.25,
+          "left": 119.34,
+          "right": 172.91,
+          "w": 53.56,
+          "h": 30
+        },
+        "color": "rgb(15, 23, 42)",
+        "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+      },
+      {
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "lh": "30px",
+        "text": "44条",
+        "rect": {
+          "top": 200.25,
+          "bottom": 230.25,
+          "left": 421.5,
+          "right": 475.06,
+          "w": 53.56,
+          "h": 30
+        },
+        "color": "rgb(15, 23, 42)",
+        "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+      },
+      {
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "lh": "30px",
+        "text": "7条",
+        "rect": {
+          "top": 200.25,
+          "bottom": 230.25,
+          "left": 690.23,
+          "right": 723.52,
+          "w": 33.28,
+          "h": 30
+        },
+        "color": "rgb(15, 23, 42)",
+        "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+      },
+      {
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "lh": "30px",
+        "text": "12条",
+        "rect": {
+          "top": 200.25,
+          "bottom": 230.25,
+          "left": 951.8,
+          "right": 1005.36,
+          "w": 53.56,
+          "h": 30
+        },
+        "color": "rgb(15, 23, 42)",
+        "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+      },
+      {
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "lh": "30px",
+        "text": "67条",
+        "rect": {
+          "top": 200.25,
+          "bottom": 230.25,
+          "left": 1270.83,
+          "right": 1324.39,
+          "w": 53.56,
+          "h": 30
+        },
+        "color": "rgb(15, 23, 42)",
+        "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+      },
+      {
+        "cls": "stat stat-22",
+        "fs": "22px",
+        "lh": "22px",
+        "text": "11条",
+        "rect": {
+          "top": 356,
+          "bottom": 378,
+          "left": 280,
+          "right": 322.75,
+          "w": 42.75,
+          "h": 22
+        },
+        "color": "rgb(15, 23, 42)",
+        "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+      },
+      {
+        "cls": "stat stat-22",
+        "fs": "22px",
+        "lh": "22px",
+        "text": "20条",
+        "rect": {
+          "top": 1208,
+          "bottom": 1230,
+          "left": 363.19,
+          "right": 405.94,
+          "w": 42.75,
+          "h": 22
+        },
+        "color": "rgb(15, 23, 42)",
+        "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+      },
+      {
+        "cls": "stat stat-22",
+        "fs": "22px",
+        "lh": "22px",
+        "text": "20条",
+        "rect": {
+          "top": 2672,
+          "bottom": 2694,
+          "left": 379.88,
+          "right": 422.63,
+          "w": 42.75,
+          "h": 22
+        },
+        "color": "rgb(15, 23, 42)",
+        "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+      },
+      {
+        "cls": "stat stat-22",
+        "fs": "22px",
+        "lh": "22px",
+        "text": "25条",
+        "rect": {
+          "top": 4136,
+          "bottom": 4158,
+          "left": 256,
+          "right": 298.75,
+          "w": 42.75,
+          "h": 22
+        },
+        "color": "rgb(15, 23, 42)",
+        "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+      }
+    ],
+    "bigText": [
+      {
+        "tag": "B",
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "fw": "700",
+        "text": "13条",
+        "color": "rgb(15, 23, 42)",
+        "clsName": "stat stat-30"
+      },
+      {
+        "tag": "B",
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "fw": "700",
+        "text": "7条",
+        "color": "rgb(15, 23, 42)",
+        "clsName": "stat stat-30"
+      },
+      {
+        "tag": "B",
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "fw": "700",
+        "text": "1条",
+        "color": "rgb(15, 23, 42)",
+        "clsName": "stat stat-30"
+      },
+      {
+        "tag": "B",
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "fw": "700",
+        "text": "30条",
+        "color": "rgb(15, 23, 42)",
+        "clsName": "stat stat-30"
+      },
+      {
+        "tag": "B",
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "fw": "700",
+        "text": "66条",
+        "color": "rgb(15, 23, 42)",
+        "clsName": "stat stat-30"
+      },
+      {
+        "tag": "B",
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "fw": "700",
+        "text": "45条",
+        "color": "rgb(15, 23, 42)",
+        "clsName": "stat stat-30"
+      },
+      {
+        "tag": "B",
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "fw": "700",
+        "text": "44条",
+        "color": "rgb(15, 23, 42)",
+        "clsName": "stat stat-30"
+      },
+      {
+        "tag": "B",
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "fw": "700",
+        "text": "7条",
+        "color": "rgb(15, 23, 42)",
+        "clsName": "stat stat-30"
+      },
+      {
+        "tag": "B",
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "fw": "700",
+        "text": "12条",
+        "color": "rgb(15, 23, 42)",
+        "clsName": "stat stat-30"
+      },
+      {
+        "tag": "B",
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "fw": "700",
+        "text": "67条",
+        "color": "rgb(15, 23, 42)",
+        "clsName": "stat stat-30"
+      },
+      {
+        "tag": "SPAN",
+        "cls": "stat stat-22",
+        "fs": "22px",
+        "fw": "700",
+        "text": "11条",
+        "color": "rgb(15, 23, 42)",
+        "clsName": "stat stat-22"
+      },
+      {
+        "tag": "SPAN",
+        "cls": "stat stat-22",
+        "fs": "22px",
+        "fw": "700",
+        "text": "20条",
+        "color": "rgb(15, 23, 42)",
+        "clsName": "stat stat-22"
+      },
+      {
+        "tag": "SPAN",
+        "cls": "stat stat-22",
+        "fs": "22px",
+        "fw": "700",
+        "text": "20条",
+        "color": "rgb(15, 23, 42)",
+        "clsName": "stat stat-22"
+      },
+      {
+        "tag": "SPAN",
+        "cls": "stat stat-22",
+        "fs": "22px",
+        "fw": "700",
+        "text": "25条",
+        "color": "rgb(15, 23, 42)",
+        "clsName": "stat stat-22"
+      }
+    ],
+    "tokens": {
+      "--bg": "#f6f7f9",
+      "--card": "#fff",
+      "--ink": "#0f172a",
+      "--ink2": "#495066",
+      "--mut": "#6b7280",
+      "--line": "#e6e9ef",
+      "--t1": "#0b7a44",
+      "--t2": "#1d4ed8",
+      "--t3": "#155e75",
+      "--t4": "#92400e",
+      "--t5": "#475569",
+      "--on-t1": "#fff",
+      "--on-t2": "#fff",
+      "--on-t3": "#fff",
+      "--on-t4": "#fff",
+      "--on-t5": "#fff",
+      "--fs-stat-sm": "22px",
+      "--fs-stat": "30px",
+      "--fs-stat-lg": "42px",
+      "--brand": "#3b5bfd"
+    },
+    "h1": [
+      {
+        "text": "AI 优惠聚合器",
+        "fs": "16px",
+        "rect": {
+          "top": 13.48,
+          "bottom": 31.88,
+          "left": 70,
+          "right": 175.09,
+          "w": 105.09,
+          "h": 18.39
+        }
+      }
+    ],
+    "fontSizesUsed": [
+      "0px",
+      "9px",
+      "9.5px",
+      "10px",
+      "10.5px",
+      "11px",
+      "11.5px",
+      "12px",
+      "12.5px",
+      "13px",
+      "13.5px",
+      "14px",
+      "15px",
+      "16px",
+      "22px",
+      "30px"
+    ],
+    "shot": "mockups/v5-sig/shots/after-1440.png"
+  },
+  "afterDark": {
+    "measuredAt": "2026-11-11T13:30:44.117Z",
+    "url": "http://127.0.0.1:8081/mockups/v5-sig/home-dark.html",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    },
+    "scale": 1,
+    "theme": "dark",
+    "errors": [],
+    "blockedExternal": [],
+    "scrollWidth": 1440,
+    "scrollHeight": 6797,
+    "horizontalOverflow": 0,
+    "cardCount": 76,
+    "fullyVisibleCards": 6,
+    "intersectingCards": 9,
+    "fullyVisibleTiers": [
+      "1"
+    ],
+    "layout": {
+      ".top": {
+        "rect": {
+          "top": 0,
+          "bottom": 59,
+          "left": 0,
+          "right": 1440,
+          "w": 1440,
+          "h": 59
+        },
+        "h": 59
+      },
+      ".topin": {
+        "rect": {
+          "top": 0,
+          "bottom": 58,
+          "left": 10,
+          "right": 1430,
+          "w": 1420,
+          "h": 58
+        },
+        "h": 58
+      },
+      ".facets": {
+        "rect": {
+          "top": 59,
+          "bottom": 105,
+          "left": 0,
+          "right": 1440,
+          "w": 1440,
+          "h": 46
+        },
+        "h": 46
+      },
+      ".needs": {
+        "rect": {
+          "top": 105,
+          "bottom": 258,
+          "left": 10,
+          "right": 1430,
+          "w": 1420,
+          "h": 153
+        },
+        "h": 153
+      },
+      ".need-grid": {
+        "rect": {
+          "top": 110,
+          "bottom": 258,
+          "left": 30,
+          "right": 1410,
+          "w": 1380,
+          "h": 148
+        },
+        "h": 148
+      },
+      ".rbar": {
+        "rect": {
+          "top": 274,
+          "bottom": 306,
+          "left": 30,
+          "right": 1410,
+          "w": 1380,
+          "h": 32
+        },
+        "h": 32
+      },
+      ".hubline": {
+        "rect": {
+          "top": 316,
+          "bottom": 344,
+          "left": 30,
+          "right": 1410,
+          "w": 1380,
+          "h": 28
+        },
+        "h": 28
+      },
+      "#dealsList": {
+        "rect": {
+          "top": 352,
+          "bottom": 5992,
+          "left": 30,
+          "right": 1410,
+          "w": 1380,
+          "h": 5640
+        },
+        "h": 5640
+      },
+      ".tierhead": {
+        "rect": {
+          "top": 354,
+          "bottom": 380,
+          "left": 30,
+          "right": 1410,
+          "w": 1380,
+          "h": 26
+        },
+        "h": 26
+      },
+      ".wrap": {
+        "rect": {
+          "top": 258,
+          "bottom": 6796.97,
+          "left": 10,
+          "right": 1430,
+          "w": 1420,
+          "h": 6538.97
+        },
+        "h": 6538.97
+      },
+      "footer": {
+        "rect": {
+          "top": 6579.19,
+          "bottom": 6736.97,
+          "left": 30,
+          "right": 1410,
+          "w": 1380,
+          "h": 157.78
+        },
+        "h": 157.78
+      }
+    },
+    "tierheads": [
+      {
+        "id": "tier-1",
+        "cls": "tierhead t1",
+        "h": 26,
+        "rect": {
+          "top": 354,
+          "bottom": 380,
+          "left": 30,
+          "right": 1410,
+          "w": 1380,
+          "h": 26
+        },
+        "n": {
+          "top": 356,
+          "bottom": 378,
+          "left": 30,
+          "right": 52,
+          "w": 22,
+          "h": 22
+        },
+        "nBg": "rgb(74, 222, 128)",
+        "nColor": "rgb(11, 13, 16)",
+        "nFs": "11px",
+        "lineBg": "rgb(74, 222, 128)",
+        "hint": "注册就能用，不用等额度到账",
+        "stat": {
+          "text": "11条",
+          "fs": "22px",
+          "rect": {
+            "top": 356,
+            "bottom": 378,
+            "left": 280,
+            "right": 322.75,
+            "w": 42.75,
+            "h": 22
+          }
+        }
+      },
+      {
+        "id": "tier-2",
+        "cls": "tierhead t2",
+        "h": 26,
+        "rect": {
+          "top": 1206,
+          "bottom": 1232,
+          "left": 30,
+          "right": 1410,
+          "w": 1380,
+          "h": 26
+        },
+        "n": {
+          "top": 1208,
+          "bottom": 1230,
+          "left": 30,
+          "right": 52,
+          "w": 22,
+          "h": 22
+        },
+        "nBg": "rgb(96, 165, 250)",
+        "nColor": "rgb(11, 13, 16)",
+        "nFs": "11px",
+        "lineBg": "rgb(96, 165, 250)",
+        "hint": "新用户一次性赠送 / 首月免费，够跑一段时间",
+        "stat": {
+          "text": "20条",
+          "fs": "22px",
+          "rect": {
+            "top": 1208,
+            "bottom": 1230,
+            "left": 363.19,
+            "right": 405.94,
+            "w": 42.75,
+            "h": 22
+          }
+        }
+      },
+      {
+        "id": "tier-3",
+        "cls": "tierhead t3",
+        "h": 26,
+        "rect": {
+          "top": 2670,
+          "bottom": 2696,
+          "left": 30,
+          "right": 1410,
+          "w": 1380,
+          "h": 26
+        },
+        "n": {
+          "top": 2672,
+          "bottom": 2694,
+          "left": 30,
+          "right": 52,
+          "w": 22,
+          "h": 22
+        },
+        "nBg": "rgb(34, 211, 238)",
+        "nColor": "rgb(11, 13, 16)",
+        "nFs": "11px",
+        "lineBg": "rgb(34, 211, 238)",
+        "hint": "学生 / 教师 / 非营利 / 初创 —— 有资格就不花钱",
+        "stat": {
+          "text": "20条",
+          "fs": "22px",
+          "rect": {
+            "top": 2672,
+            "bottom": 2694,
+            "left": 379.88,
+            "right": 422.63,
+            "w": 42.75,
+            "h": 22
+          }
+        }
+      },
+      {
+        "id": "tier-4",
+        "cls": "tierhead t4",
+        "h": 26,
+        "rect": {
+          "top": 4134,
+          "bottom": 4160,
+          "left": 30,
+          "right": 1410,
+          "w": 1380,
+          "h": 26
+        },
+        "n": {
+          "top": 4136,
+          "bottom": 4158,
+          "left": 30,
+          "right": 52,
+          "w": 22,
+          "h": 22
+        },
+        "nBg": "rgb(251, 191, 36)",
+        "nColor": "rgb(11, 13, 16)",
+        "nFs": "11px",
+        "lineBg": "rgb(251, 191, 36)",
+        "hint": "要花钱，但比标准价便宜",
+        "stat": {
+          "text": "25条",
+          "fs": "22px",
+          "rect": {
+            "top": 4136,
+            "bottom": 4158,
+            "left": 256,
+            "right": 298.75,
+            "w": 42.75,
+            "h": 22
+          }
+        }
+      }
+    ],
+    "needCards": [
+      {
+        "h": 68,
+        "rect": {
+          "top": 110,
+          "bottom": 178,
+          "left": 30,
+          "right": 296.39,
+          "w": 266.39,
+          "h": 68
+        },
+        "b": {
+          "text": "13条",
+          "fs": "30px",
+          "lh": "30px",
+          "rect": {
+            "top": 120.25,
+            "bottom": 150.25,
+            "left": 116.61,
+            "right": 170.17,
+            "w": 53.56,
+            "h": 30
+          }
+        },
+        "copyOverflowX": 0,
+        "cardOverflow": 0
+      },
+      {
+        "h": 68,
+        "rect": {
+          "top": 110,
+          "bottom": 178,
+          "left": 308.39,
+          "right": 574.8,
+          "w": 266.41,
+          "h": 68
+        },
+        "b": {
+          "text": "7条",
+          "fs": "30px",
+          "lh": "30px",
+          "rect": {
+            "top": 120.25,
+            "bottom": 150.25,
+            "left": 419,
+            "right": 452.28,
+            "w": 33.28,
+            "h": 30
+          }
+        },
+        "copyOverflowX": 0,
+        "cardOverflow": 0
+      },
+      {
+        "h": 68,
+        "rect": {
+          "top": 110,
+          "bottom": 178,
+          "left": 586.8,
+          "right": 853.19,
+          "w": 266.39,
+          "h": 68
+        },
+        "b": {
+          "text": "1条",
+          "fs": "30px",
+          "lh": "30px",
+          "rect": {
+            "top": 120.25,
+            "bottom": 150.25,
+            "left": 685.41,
+            "right": 718.69,
+            "w": 33.28,
+            "h": 30
+          }
+        },
+        "copyOverflowX": 0,
+        "cardOverflow": 0
+      },
+      {
+        "h": 68,
+        "rect": {
+          "top": 110,
+          "bottom": 178,
+          "left": 865.19,
+          "right": 1131.59,
+          "w": 266.41,
+          "h": 68
+        },
+        "b": {
+          "text": "30条",
+          "fs": "30px",
+          "lh": "30px",
+          "rect": {
+            "top": 120.25,
+            "bottom": 150.25,
+            "left": 951.8,
+            "right": 1005.36,
+            "w": 53.56,
+            "h": 30
+          }
+        },
+        "copyOverflowX": 0,
+        "cardOverflow": 0
+      },
+      {
+        "h": 68,
+        "rect": {
+          "top": 110,
+          "bottom": 178,
+          "left": 1143.59,
+          "right": 1409.98,
+          "w": 266.39,
+          "h": 68
+        },
+        "b": {
+          "text": "66条",
+          "fs": "30px",
+          "lh": "30px",
+          "rect": {
+            "top": 120.25,
+            "bottom": 150.25,
+            "left": 1236.59,
+            "right": 1290.16,
+            "w": 53.56,
+            "h": 30
+          }
+        },
+        "copyOverflowX": 0,
+        "cardOverflow": 0
+      },
+      {
+        "h": 68,
+        "rect": {
+          "top": 190,
+          "bottom": 258,
+          "left": 30,
+          "right": 296.39,
+          "w": 266.39,
+          "h": 68
+        },
+        "b": {
+          "text": "45条",
+          "fs": "30px",
+          "lh": "30px",
+          "rect": {
+            "top": 200.25,
+            "bottom": 230.25,
+            "left": 119.34,
+            "right": 172.91,
+            "w": 53.56,
+            "h": 30
+          }
+        },
+        "copyOverflowX": 0,
+        "cardOverflow": 0
+      },
+      {
+        "h": 68,
+        "rect": {
+          "top": 190,
+          "bottom": 258,
+          "left": 308.39,
+          "right": 574.8,
+          "w": 266.41,
+          "h": 68
+        },
+        "b": {
+          "text": "44条",
+          "fs": "30px",
+          "lh": "30px",
+          "rect": {
+            "top": 200.25,
+            "bottom": 230.25,
+            "left": 421.5,
+            "right": 475.06,
+            "w": 53.56,
+            "h": 30
+          }
+        },
+        "copyOverflowX": 0,
+        "cardOverflow": 0
+      },
+      {
+        "h": 68,
+        "rect": {
+          "top": 190,
+          "bottom": 258,
+          "left": 586.8,
+          "right": 853.19,
+          "w": 266.39,
+          "h": 68
+        },
+        "b": {
+          "text": "7条",
+          "fs": "30px",
+          "lh": "30px",
+          "rect": {
+            "top": 200.25,
+            "bottom": 230.25,
+            "left": 690.23,
+            "right": 723.52,
+            "w": 33.28,
+            "h": 30
+          }
+        },
+        "copyOverflowX": 0,
+        "cardOverflow": 0
+      },
+      {
+        "h": 68,
+        "rect": {
+          "top": 190,
+          "bottom": 258,
+          "left": 865.19,
+          "right": 1131.59,
+          "w": 266.41,
+          "h": 68
+        },
+        "b": {
+          "text": "12条",
+          "fs": "30px",
+          "lh": "30px",
+          "rect": {
+            "top": 200.25,
+            "bottom": 230.25,
+            "left": 951.8,
+            "right": 1005.36,
+            "w": 53.56,
+            "h": 30
+          }
+        },
+        "copyOverflowX": 0,
+        "cardOverflow": 0
+      },
+      {
+        "h": 68,
+        "rect": {
+          "top": 190,
+          "bottom": 258,
+          "left": 1143.59,
+          "right": 1409.98,
+          "w": 266.39,
+          "h": 68
+        },
+        "b": {
+          "text": "67条",
+          "fs": "30px",
+          "lh": "30px",
+          "rect": {
+            "top": 200.25,
+            "bottom": 230.25,
+            "left": 1270.83,
+            "right": 1324.39,
+            "w": 53.56,
+            "h": 30
+          }
+        },
+        "copyOverflowX": 0,
+        "cardOverflow": 0
+      }
+    ],
+    "firstTierCard": {
+      "rect": {
+        "top": 388,
+        "bottom": 580,
+        "left": 30,
+        "right": 482,
+        "w": 452,
+        "h": 192
+      },
+      "h": 192
+    },
+    "bars": [
+      {
+        "w": "6px",
+        "bg": "rgb(74, 222, 128)",
+        "rect": {
+          "top": 455.09,
+          "bottom": 493.09,
+          "left": 45,
+          "right": 51,
+          "w": 6,
+          "h": 38
+        }
+      },
+      {
+        "w": "6px",
+        "bg": "rgb(74, 222, 128)",
+        "rect": {
+          "top": 455.09,
+          "bottom": 493.09,
+          "left": 509,
+          "right": 515,
+          "w": 6,
+          "h": 38
+        }
+      },
+      {
+        "w": "6px",
+        "bg": "rgb(74, 222, 128)",
+        "rect": {
+          "top": 474.69,
+          "bottom": 512.69,
+          "left": 973,
+          "right": 979,
+          "w": 6,
+          "h": 38
+        }
+      },
+      {
+        "w": "6px",
+        "bg": "rgb(74, 222, 128)",
+        "rect": {
+          "top": 659.09,
+          "bottom": 697.09,
+          "left": 45,
+          "right": 51,
+          "w": 6,
+          "h": 38
+        }
+      }
+    ],
+    "txB": [
+      {
+        "color": "rgb(232, 236, 242)",
+        "text": "OpenRouter 免费模型"
+      },
+      {
+        "color": "rgb(232, 236, 242)",
+        "text": "OpenRouter 免费模型"
+      },
+      {
+        "color": "rgb(232, 236, 242)",
+        "text": "OpenRouter 免费模型"
+      },
+      {
+        "color": "rgb(232, 236, 242)",
+        "text": "OpenRouter 免费模型"
+      }
+    ],
+    "stats": [
+      {
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "lh": "30px",
+        "text": "13条",
+        "rect": {
+          "top": 120.25,
+          "bottom": 150.25,
+          "left": 116.61,
+          "right": 170.17,
+          "w": 53.56,
+          "h": 30
+        },
+        "color": "rgb(232, 236, 242)",
+        "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+      },
+      {
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "lh": "30px",
+        "text": "7条",
+        "rect": {
+          "top": 120.25,
+          "bottom": 150.25,
+          "left": 419,
+          "right": 452.28,
+          "w": 33.28,
+          "h": 30
+        },
+        "color": "rgb(232, 236, 242)",
+        "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+      },
+      {
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "lh": "30px",
+        "text": "1条",
+        "rect": {
+          "top": 120.25,
+          "bottom": 150.25,
+          "left": 685.41,
+          "right": 718.69,
+          "w": 33.28,
+          "h": 30
+        },
+        "color": "rgb(232, 236, 242)",
+        "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+      },
+      {
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "lh": "30px",
+        "text": "30条",
+        "rect": {
+          "top": 120.25,
+          "bottom": 150.25,
+          "left": 951.8,
+          "right": 1005.36,
+          "w": 53.56,
+          "h": 30
+        },
+        "color": "rgb(232, 236, 242)",
+        "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+      },
+      {
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "lh": "30px",
+        "text": "66条",
+        "rect": {
+          "top": 120.25,
+          "bottom": 150.25,
+          "left": 1236.59,
+          "right": 1290.16,
+          "w": 53.56,
+          "h": 30
+        },
+        "color": "rgb(232, 236, 242)",
+        "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+      },
+      {
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "lh": "30px",
+        "text": "45条",
+        "rect": {
+          "top": 200.25,
+          "bottom": 230.25,
+          "left": 119.34,
+          "right": 172.91,
+          "w": 53.56,
+          "h": 30
+        },
+        "color": "rgb(232, 236, 242)",
+        "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+      },
+      {
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "lh": "30px",
+        "text": "44条",
+        "rect": {
+          "top": 200.25,
+          "bottom": 230.25,
+          "left": 421.5,
+          "right": 475.06,
+          "w": 53.56,
+          "h": 30
+        },
+        "color": "rgb(232, 236, 242)",
+        "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+      },
+      {
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "lh": "30px",
+        "text": "7条",
+        "rect": {
+          "top": 200.25,
+          "bottom": 230.25,
+          "left": 690.23,
+          "right": 723.52,
+          "w": 33.28,
+          "h": 30
+        },
+        "color": "rgb(232, 236, 242)",
+        "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+      },
+      {
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "lh": "30px",
+        "text": "12条",
+        "rect": {
+          "top": 200.25,
+          "bottom": 230.25,
+          "left": 951.8,
+          "right": 1005.36,
+          "w": 53.56,
+          "h": 30
+        },
+        "color": "rgb(232, 236, 242)",
+        "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+      },
+      {
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "lh": "30px",
+        "text": "67条",
+        "rect": {
+          "top": 200.25,
+          "bottom": 230.25,
+          "left": 1270.83,
+          "right": 1324.39,
+          "w": 53.56,
+          "h": 30
+        },
+        "color": "rgb(232, 236, 242)",
+        "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+      },
+      {
+        "cls": "stat stat-22",
+        "fs": "22px",
+        "lh": "22px",
+        "text": "11条",
+        "rect": {
+          "top": 356,
+          "bottom": 378,
+          "left": 280,
+          "right": 322.75,
+          "w": 42.75,
+          "h": 22
+        },
+        "color": "rgb(232, 236, 242)",
+        "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+      },
+      {
+        "cls": "stat stat-22",
+        "fs": "22px",
+        "lh": "22px",
+        "text": "20条",
+        "rect": {
+          "top": 1208,
+          "bottom": 1230,
+          "left": 363.19,
+          "right": 405.94,
+          "w": 42.75,
+          "h": 22
+        },
+        "color": "rgb(232, 236, 242)",
+        "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+      },
+      {
+        "cls": "stat stat-22",
+        "fs": "22px",
+        "lh": "22px",
+        "text": "20条",
+        "rect": {
+          "top": 2672,
+          "bottom": 2694,
+          "left": 379.88,
+          "right": 422.63,
+          "w": 42.75,
+          "h": 22
+        },
+        "color": "rgb(232, 236, 242)",
+        "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+      },
+      {
+        "cls": "stat stat-22",
+        "fs": "22px",
+        "lh": "22px",
+        "text": "25条",
+        "rect": {
+          "top": 4136,
+          "bottom": 4158,
+          "left": 256,
+          "right": 298.75,
+          "w": 42.75,
+          "h": 22
+        },
+        "color": "rgb(232, 236, 242)",
+        "family": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif"
+      }
+    ],
+    "bigText": [
+      {
+        "tag": "B",
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "fw": "700",
+        "text": "13条",
+        "color": "rgb(232, 236, 242)",
+        "clsName": "stat stat-30"
+      },
+      {
+        "tag": "B",
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "fw": "700",
+        "text": "7条",
+        "color": "rgb(232, 236, 242)",
+        "clsName": "stat stat-30"
+      },
+      {
+        "tag": "B",
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "fw": "700",
+        "text": "1条",
+        "color": "rgb(232, 236, 242)",
+        "clsName": "stat stat-30"
+      },
+      {
+        "tag": "B",
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "fw": "700",
+        "text": "30条",
+        "color": "rgb(232, 236, 242)",
+        "clsName": "stat stat-30"
+      },
+      {
+        "tag": "B",
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "fw": "700",
+        "text": "66条",
+        "color": "rgb(232, 236, 242)",
+        "clsName": "stat stat-30"
+      },
+      {
+        "tag": "B",
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "fw": "700",
+        "text": "45条",
+        "color": "rgb(232, 236, 242)",
+        "clsName": "stat stat-30"
+      },
+      {
+        "tag": "B",
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "fw": "700",
+        "text": "44条",
+        "color": "rgb(232, 236, 242)",
+        "clsName": "stat stat-30"
+      },
+      {
+        "tag": "B",
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "fw": "700",
+        "text": "7条",
+        "color": "rgb(232, 236, 242)",
+        "clsName": "stat stat-30"
+      },
+      {
+        "tag": "B",
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "fw": "700",
+        "text": "12条",
+        "color": "rgb(232, 236, 242)",
+        "clsName": "stat stat-30"
+      },
+      {
+        "tag": "B",
+        "cls": "stat stat-30",
+        "fs": "30px",
+        "fw": "700",
+        "text": "67条",
+        "color": "rgb(232, 236, 242)",
+        "clsName": "stat stat-30"
+      },
+      {
+        "tag": "SPAN",
+        "cls": "stat stat-22",
+        "fs": "22px",
+        "fw": "700",
+        "text": "11条",
+        "color": "rgb(232, 236, 242)",
+        "clsName": "stat stat-22"
+      },
+      {
+        "tag": "SPAN",
+        "cls": "stat stat-22",
+        "fs": "22px",
+        "fw": "700",
+        "text": "20条",
+        "color": "rgb(232, 236, 242)",
+        "clsName": "stat stat-22"
+      },
+      {
+        "tag": "SPAN",
+        "cls": "stat stat-22",
+        "fs": "22px",
+        "fw": "700",
+        "text": "20条",
+        "color": "rgb(232, 236, 242)",
+        "clsName": "stat stat-22"
+      },
+      {
+        "tag": "SPAN",
+        "cls": "stat stat-22",
+        "fs": "22px",
+        "fw": "700",
+        "text": "25条",
+        "color": "rgb(232, 236, 242)",
+        "clsName": "stat stat-22"
+      }
+    ],
+    "tokens": {
+      "--bg": "#0b0d10",
+      "--card": "#14171c",
+      "--ink": "#e8ecf2",
+      "--ink2": "#b6bec9",
+      "--mut": "#8d97a5",
+      "--line": "#242a33",
+      "--t1": "#4ade80",
+      "--t2": "#60a5fa",
+      "--t3": "#22d3ee",
+      "--t4": "#fbbf24",
+      "--t5": "#94a3b8",
+      "--on-t1": "#0b0d10",
+      "--on-t2": "#0b0d10",
+      "--on-t3": "#0b0d10",
+      "--on-t4": "#0b0d10",
+      "--on-t5": "#0b0d10",
+      "--fs-stat-sm": "22px",
+      "--fs-stat": "30px",
+      "--fs-stat-lg": "42px",
+      "--brand": "#7c93ff"
+    },
+    "h1": [
+      {
+        "text": "AI 优惠聚合器",
+        "fs": "16px",
+        "rect": {
+          "top": 13.48,
+          "bottom": 31.88,
+          "left": 70,
+          "right": 175.09,
+          "w": 105.09,
+          "h": 18.39
+        }
+      }
+    ],
+    "fontSizesUsed": [
+      "0px",
+      "9px",
+      "9.5px",
+      "10px",
+      "10.5px",
+      "11px",
+      "11.5px",
+      "12px",
+      "12.5px",
+      "13px",
+      "13.5px",
+      "14px",
+      "15px",
+      "16px",
+      "22px",
+      "30px"
+    ],
+    "shot": "mockups/v5-sig/shots/after-dark-1440.png"
+  },
+  "contrast": {
+    "palettes": {
+      "light": {
+        "t1": "#0b7a44",
+        "t2": "#1d4ed8",
+        "t3": "#155e75",
+        "t4": "#92400e",
+        "t5": "#475569",
+        "on": {
+          "t1": "#ffffff",
+          "t2": "#ffffff",
+          "t3": "#ffffff",
+          "t4": "#ffffff",
+          "t5": "#ffffff"
+        }
+      },
+      "dark": {
+        "t1": "#4ade80",
+        "t2": "#60a5fa",
+        "t3": "#22d3ee",
+        "t4": "#fbbf24",
+        "t5": "#94a3b8",
+        "on": {
+          "t1": "#0b0d10",
+          "t2": "#0b0d10",
+          "t3": "#0b0d10",
+          "t4": "#0b0d10",
+          "t5": "#0b0d10"
+        }
+      }
+    },
+    "results": {
+      "light": {
+        "t1": {
+          "hex": "#0b7a44",
+          "textOnCard": 5.41,
+          "textOnBg": 5.05,
+          "blockVsCard": 5.41,
+          "blockVsBg": 5.05,
+          "onColor": "#ffffff",
+          "onColorVsBlock": 5.41
+        },
+        "t2": {
+          "hex": "#1d4ed8",
+          "textOnCard": 6.7,
+          "textOnBg": 6.25,
+          "blockVsCard": 6.7,
+          "blockVsBg": 6.25,
+          "onColor": "#ffffff",
+          "onColorVsBlock": 6.7
+        },
+        "t3": {
+          "hex": "#155e75",
+          "textOnCard": 7.27,
+          "textOnBg": 6.78,
+          "blockVsCard": 7.27,
+          "blockVsBg": 6.78,
+          "onColor": "#ffffff",
+          "onColorVsBlock": 7.27
+        },
+        "t4": {
+          "hex": "#92400e",
+          "textOnCard": 7.09,
+          "textOnBg": 6.61,
+          "blockVsCard": 7.09,
+          "blockVsBg": 6.61,
+          "onColor": "#ffffff",
+          "onColorVsBlock": 7.09
+        },
+        "t5": {
+          "hex": "#475569",
+          "textOnCard": 7.58,
+          "textOnBg": 7.07,
+          "blockVsCard": 7.58,
+          "blockVsBg": 7.07,
+          "onColor": "#ffffff",
+          "onColorVsBlock": 7.58
+        },
+        "brandVsCard": 5.12
+      },
+      "dark": {
+        "t1": {
+          "hex": "#4ade80",
+          "textOnCard": 10.31,
+          "textOnBg": 11.17,
+          "blockVsCard": 10.31,
+          "blockVsBg": 11.17,
+          "onColor": "#0b0d10",
+          "onColorVsBlock": 11.17
+        },
+        "t2": {
+          "hex": "#60a5fa",
+          "textOnCard": 7.07,
+          "textOnBg": 7.65,
+          "blockVsCard": 7.07,
+          "blockVsBg": 7.65,
+          "onColor": "#0b0d10",
+          "onColorVsBlock": 7.65
+        },
+        "t3": {
+          "hex": "#22d3ee",
+          "textOnCard": 9.94,
+          "textOnBg": 10.77,
+          "blockVsCard": 9.94,
+          "blockVsBg": 10.77,
+          "onColor": "#0b0d10",
+          "onColorVsBlock": 10.77
+        },
+        "t4": {
+          "hex": "#fbbf24",
+          "textOnCard": 10.76,
+          "textOnBg": 11.66,
+          "blockVsCard": 10.76,
+          "blockVsBg": 11.66,
+          "onColor": "#0b0d10",
+          "onColorVsBlock": 11.66
+        },
+        "t5": {
+          "hex": "#94a3b8",
+          "textOnCard": 7.01,
+          "textOnBg": 7.59,
+          "blockVsCard": 7.01,
+          "blockVsBg": 7.59,
+          "onColor": "#0b0d10",
+          "onColorVsBlock": 7.59
+        },
+        "brandVsCard": 6.39
+      }
+    },
+    "amber": [
+      {
+        "hex": "#b45309",
+        "vsWhite": 5.02,
+        "vsBg": 4.68,
+        "whiteOnIt": 5.02
+      },
+      {
+        "hex": "#a34d09",
+        "vsWhite": 5.8,
+        "vsBg": 5.41,
+        "whiteOnIt": 5.8
+      },
+      {
+        "hex": "#92400e",
+        "vsWhite": 7.09,
+        "vsBg": 6.61,
+        "whiteOnIt": 7.09
+      },
+      {
+        "hex": "#8a3f0a",
+        "vsWhite": 7.51,
+        "vsBg": 7.01,
+        "whiteOnIt": 7.51
+      }
+    ],
+    "cyan": [
+      {
+        "hex": "#0e7490",
+        "vsWhite": 5.36,
+        "vsBg": 5
+      },
+      {
+        "hex": "#155e75",
+        "vsWhite": 7.27,
+        "vsBg": 6.78
+      },
+      {
+        "hex": "#0f766e",
+        "vsWhite": 5.47,
+        "vsBg": 5.11
+      },
+      {
+        "hex": "#0891b2",
+        "vsWhite": 3.68,
+        "vsBg": 3.43
+      }
+    ],
+    "green": [
+      {
+        "hex": "#0b7a44",
+        "vsWhite": 5.41,
+        "vsBg": 5.05
+      },
+      {
+        "hex": "#0e7a4e",
+        "vsWhite": 5.37,
+        "vsBg": 5.01
+      },
+      {
+        "hex": "#15803d",
+        "vsWhite": 5.02,
+        "vsBg": 4.68
+      },
+      {
+        "hex": "#0f9d58",
+        "vsWhite": 3.51,
+        "vsBg": 3.27
+      }
+    ]
+  },
+  "rows": [
+    [
+      "首屏完整可见卡片",
+      "6 张",
+      "6 张",
+      "持平（不许下降）"
+    ],
+    [
+      "网格起点",
+      "352px",
+      "352px",
+      "零位移"
+    ],
+    [
+      "分带高 / 方块",
+      "26px / 16px",
+      "26px / 22px",
+      "带宽不变"
+    ],
+    [
+      "need 卡高",
+      "68px",
+      "68px",
+      "卡高不变"
+    ],
+    [
+      "need 卡计数",
+      "11px",
+      "30px",
+      "数字成为高音"
+    ],
+    [
+      "分带条数",
+      "11.5px",
+      "22px",
+      "数字成为高音"
+    ],
+    [
+      "引文竖条 / 文字",
+      "3px / rgb(11, 122, 68)",
+      "6px / --ink",
+      "颜色只留竖条"
+    ],
+    [
+      "新增非数字大字号",
+      "0",
+      "0",
+      "14 处大字全是 .stat 数字"
+    ]
+  ],
+  "minLight": 5.05,
+  "minDark": 7.59,
+  "bigNonNumeric": 0,
+  "buildOutputs": [
+    {
+      "file": "home-light.html",
+      "bytes": 265170,
+      "stats": 14
+    },
+    {
+      "file": "home-dark.html",
+      "bytes": 265169,
+      "stats": 14
+    },
+    {
+      "file": "home-390.html",
+      "bytes": 265176,
+      "stats": 14
+    },
+    {
+      "file": "family.html",
+      "bytes": 255223,
+      "stats": 3,
+      "h1Stats": 3
+    }
+  ]
+}
