@@ -785,7 +785,12 @@ ${verifyRows.map(row => `          <div class="factsum-row" data-fact-key="${row
 
       <div class="stop">
         <h1>${escapeHtml(API_PLANS_HEADING)}</h1>
-        <span class="meta">${plans.length} 条计费记录 · ${providers.length} 个平台 · ${rows.length} 个模型计价条目 · 最后核对 ${escapeHtml(updatedAt)}</span>
+        <div class="stopstats" aria-label="本页事实数字">
+          <span class="stopstat"><b class="stat stat-22">${plans.length}</b><span class="stopstat-lb">条计费记录</span></span>
+          <span class="stopstat"><b class="stat stat-22">${providers.length}</b><span class="stopstat-lb">个平台</span></span>
+          <span class="stopstat"><b class="stat stat-22">${rows.length}</b><span class="stopstat-lb">个模型计价条目</span></span>
+        </div>
+        <span class="meta">最后核对 ${escapeHtml(updatedAt)}</span>
       </div>
 
 ${verifyFactsHtml}
