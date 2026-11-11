@@ -4908,6 +4908,15 @@ function noJsControlExemptionFor(route) {
     const expectLeadCard = Boolean(leadRecentFrom) && radarLeadDeals.some(deal =>
       typeof deal.firstSeen === 'string' && deal.firstSeen >= leadRecentFrom && deal.firstSeen <= leadAsOf);
     const leadSkipDetail = '窗口内 0 条线索（线索判据按 0 条是正常结果，卡片结构断言如实跳过）';
+    // 期望分栏由**历史事件日**推导，不写死 `created`（2026-11-11 上线轮修正）：
+    // 线索的 `created` 历史事件日 = 基准日 ⇒「今日新增」；否则（仍在 7 天窗口内）⇒
+    // 「最近 7 天变化」。写死 created 会在数据日推进后的第二天误报 —— 渲染行为本身是对的，
+    // 错的是判据（见 research/lead-card-insite-v1-self-audit.md §4-1）。
+    const leadCreatedAtById = new Map();
+    for (const event of (radarHistoryDoc.events || [])) {
+      if (event && event.type === 'created' && leadIds.has(event.id)) leadCreatedAtById.set(event.id, event.at);
+    }
+    const expectedLeadSection = dealId => (leadCreatedAtById.get(dealId) === leadAsOf ? 'created' : 'changed');
     check('线索卡在场性：窗口内有线索 ⇒ /changes/ 上必须有线索卡；窗口内没有 ⇒ 卡片也必须为 0',
       expectLeadCard ? cards.length > 0 : cards.length === 0,
       expectLeadCard
@@ -4917,13 +4926,16 @@ function noJsControlExemptionFor(route) {
     const expectedBlocks = card => (card.blocks.includes('lcexcerpt')
       ? ['lctitle', 'lcmeta', 'lcdecl', 'lcexcerpt', 'lcbasis', 'lcactions']
       : ['lctitle', 'lcmeta', 'lcdecl', 'lcbasis', 'lcactions']);
-    check('/changes/ 的 created 分栏里线索渲染成结构不同的线索卡（article.leadcard id=lead-<id>，不是普通变化行）',
-      !expectLeadCard || (cards.length > 0 &&
-        cards.every(card => card.section === 'created' && card.dealId && card.id === `lead-${card.dealId}`)),
+    const placementProblems = cards.filter(card => !card.dealId || card.id !== `lead-${card.dealId}` ||
+      card.section !== expectedLeadSection(card.dealId));
+    check('/changes/ 的线索卡按历史事件日落在正确分栏（created 事件日=基准日 ⇒ 今日新增，否则 ⇒ 最近 7 天变化；article.leadcard id=lead-<id>，不是普通变化行）',
+      !expectLeadCard || (cards.length > 0 && placementProblems.length === 0),
       expectLeadCard
         ? (cards.length
-          ? `${cards.length} 张：${cards.slice(0, 2).map(card => `${card.id}@${card.section || '(未知分栏)'}`).join('、')}`
-          : 'created 分栏里没有线索卡（线索仍在数据/雷达里，但渲染分支没接上？）')
+          ? (placementProblems.length
+            ? `${placementProblems.length}/${cards.length} 张分栏不符：` + placementProblems.slice(0, 2).map(card => `${card.id}@${card.section || '(未知分栏)'}（应 ${card.dealId ? expectedLeadSection(card.dealId) : '?'}）`).join('、')
+            : `${cards.length} 张：${cards.slice(0, 2).map(card => `${card.id}@${card.section || '(未知分栏)'}`).join('、')}`)
+          : '页面上没有线索卡（线索仍在数据/雷达里，但渲染分支没接上？）')
         : leadSkipDetail);
     const orderProblems = cards.filter(card => JSON.stringify(card.blocks) !== JSON.stringify(expectedBlocks(card)));
     check('线索卡块顺序：标题 → 来源媒体+原文日期 → 未核验声明 → 摘录引文（有则出）→ 判据与下架说明 → CTA',
