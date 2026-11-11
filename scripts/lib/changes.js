@@ -98,6 +98,24 @@ const CHANGES_WORDING = {
     soonBasis: '「即将结束」只认数据里写有绝对截止日期（expiresAt）的条目，剩余天数按基准日计算。',
     unavailable: '本次构建没有拿到历史日志（deal-history.json 缺失或损坏），因此无法显示变化记录 —— 这不表示「没有变化」。',
     noEvents: '自起算日起还没有任何变更事件。'
+  },
+  /**
+   * B 类资讯线索卡（`/changes/` 的 created 分栏与二级页「最近变化」）的措辞 —— **唯一权威**。
+   *
+   * 渲染层（RENDER-CORE 的 `leadCardHtml()`）只做模板替换（`{source}` / `{date}`），
+   * **不许**再写新的中文字面量：线索卡的每一句读者可见文字都必须能在这里找到。
+   *   · `basis` 与 `ttl` 渲染时**直接拼接**（两句都以「。」结尾，拼接处不再补标点）；
+   *   · 引文出处按「有没有来源媒体」二选一（`excerptFrom` / `excerptFromUnknown`）；
+   *   · `readOriginal` 是线索卡里**唯一**可点链接的文案（全卡只有一个 `<a>`）。
+   */
+  CHANGES_LEAD: {
+    sourceLine: '来源：{source}',
+    dateLine: '原文日期：{date}',
+    excerptFrom: '—— 摘录自{source}的 RSS 原文（仅清理空白，未改写）',
+    excerptFromUnknown: '—— 摘录自原文 RSS（仅清理空白，未改写）',
+    basis: '线索判据：标题或摘要开头同时出现 AI 平台名、免费/限时/降价信号与时间词，且原文可点开。',
+    ttl: '线索按原文日期保留 7 天，第 8 天自动下架。',
+    readOriginal: '阅读原文 →'
   }
 };
 
@@ -420,27 +438,43 @@ function buildRadar({ deals = [], store = null, asOf = null, availability = 'ok'
     // 只有 `type === 'deal'` 的记录才有静态详情页（见 build-local 的 writeDetailPages），
     // 给工具条目或已离开数据集的条目挂链接就是造死链。判据 = `isLinkableDeal()`（唯一一处）。
     const linkable = isLinkableDeal(deal);
-    // B 类资讯线索（beta）：没有站内详情页（type=tool），但**必须能点开原文** ——
-    // 线索的全部价值就是「媒体写了这篇稿」。所以单独给一个 `extHref`（原文链接），
-    // 渲染层优先用它；它**不**进 `href`，因此 ItemList / 订阅 / 页面行对账都不受影响
-    // （那些消费者只认有站内详情页的记录，见下面 itemListRecords）。
     const sourceType = deal && deal.sourceFacts && typeof deal.sourceFacts === 'object'
       ? deal.sourceFacts.sourceType
       : null;
     const lead = sourceType === 'lead';
+    // B 类资讯线索（beta）的**锚点身份在这里定义（全站唯一构造点）**：
+    //   首页条带把它拼成 `changes/#<anchor>`，`/changes/` 的线索卡把它当 `id`。
+    //   将来若要搬到 `/lead/<id>/` 独立页，只改这一行 —— 渲染层不自己拼锚点。
+    const anchor = lead ? `lead-${id}` : null;
+    // 线索卡的展示字段（渲染层只读、不改写）：
+    //   · `extHref` —— **只**给线索卡里那个「阅读原文」CTA 用（全站唯一的线索跨域链接）；
+    //     首页条带与 `/changes/` 的标题一律不再外链（旧行为是「条带直接跳原文」，已删）；
+    //   · `excerpt` / `media` / `publishedAt` —— 摘录引文与出处。没有 `excerpt` 时渲染层
+    //     **整块省略**（不写「暂无摘要」之类的占位句）；媒体与原文日期取自记录本身
+    //     （`source` / `firstSeen` —— 对线索而言 `firstSeen` 承载的是原文日期，见
+    //     `collectors/leads.js` 与 `lib/lead-radar.js` 的 TTL 说明）。
+    // 以上都**不**进 `href`，因此 ItemList / 订阅 / 页面行对账都不受影响
+    //（那些消费者只认有站内详情页的记录，见下面 itemListRecords）。
     const externalUrl = lead && deal && typeof deal.url === 'string' && /^https?:\/\//i.test(deal.url)
       ? deal.url
       : null;
+    const excerpt = lead && deal && typeof deal.excerpt === 'string' && deal.excerpt ? deal.excerpt : null;
+    const media = lead && deal && typeof deal.source === 'string' ? deal.source : null;
+    const publishedAt = lead && deal && typeof deal.firstSeen === 'string' ? deal.firstSeen : null;
     return {
       title: title ? String(title) : null,
       vendor: vendor ? String(vendor) : '',
       titled: Boolean(title),
       linkable,
       href: linkable ? `deal/${encodeURIComponent(id)}/` : null,
-      // 线索的 beta 标记与原文链接（渲染层用；两类消费者都不读它们）
+      // 线索的 beta 标记、站内锚点身份与展示字段（渲染层用；上面两类消费者都不读它们）
       lead,
       sourceType: sourceType || null,
-      extHref: externalUrl
+      anchor,
+      extHref: externalUrl,
+      excerpt,
+      media,
+      publishedAt
     };
   };
 

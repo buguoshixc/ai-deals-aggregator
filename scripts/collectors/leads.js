@@ -9,7 +9,8 @@
  * 永远查不到它。P0/P1 两个结构化来源（AppSumo / OpenRouter）覆盖不到这一类。
  *
  * 所以 B 类只做一件事：**在可信科技媒体的 RSS 里发现「像线索」的文章，按线索登记**。
- * 它不核验、不下结论：一条线索只存**四个事实**（标题 / 原文链接 / 日期 / 来源），
+ * 它不核验、不下结论：一条线索只存**五个事实**（标题 / 原文链接 / 原文日期 / 收录来源 /
+ * 原文摘要引文 —— 末项是 RSS `<description>` 的逐字清洗文本，是引用不是断言），
  * 外加 schema 必需的簿记字段（id / 类型 / 收录渠道）。判据、TTL、三道门的唯一出处是
  * `scripts/lib/lead-radar.js`，本文件只负责「抓哪个 feed、怎么把候选变成记录、怎么留日志」。
  *
@@ -50,9 +51,11 @@
  * 「一条待核验的资讯」。同时 `validateDeal` 对 `type:"deal"` 要求 `discountInfo` 非空，
  * 而给线索编一句「优惠说明」本身就是下结论 —— 这条边界也由 type 的选择守住。
  *
- * 页面侧按 `sourceFacts.sourceType === "lead"` 把线索从优惠列表里排除，只留在「变化雷达」，
- * 并按 `SOURCE_WORDING.SOURCE_TYPE.lead` 显示「线索 · 未核验」；雷达行的链接直接指向原文
- * （线索没有站内详情页）。这一层改动见 `lib/changes.js` 与 `index.html` 的注释。
+ * 页面侧按 `sourceFacts.sourceType === "lead"` 把线索从优惠列表里排除，只留在「变化雷达」的
+ * 线索卡里，并按 `SOURCE_WORDING.SOURCE_TYPE.lead` 显示「线索 · 未核验」。本轮起线索是
+ * **站内卡片**：卡片内唯一的「阅读原文」CTA 指向原文链接（外链），首页条带链接到该卡的站内
+ * 锚点（锚点身份由 `lib/changes.js` 的 `identityOf()` 决定，本文件不拼锚点）。这一层改动见
+ * `lib/changes.js` 与 `index.html` 的注释。
  *
  * ## 本轮改动历史
  *
@@ -134,19 +137,26 @@ const MAX_NEAR_MISS_LOGGED = 10;
 const MAX_DROPPED_LOGGED = 10;
 
 /**
- * 基本信息元组 + 来源。**只放四个事实**（标题 / 原文链接 / 日期 / 收录来源）与 schema 簿记：
+ * 基本信息元组 + 来源。**只放五个事实**（标题 / 原文链接 / 原文日期 / 收录来源 / 原文摘要引文）
+ * 与 schema 簿记：
  *   · `title`     —— RSS `<title>`，已 cleanText（≤150 字，与 makeDeal 同一把尺子）
  *   · `url`       —— RSS `<link>`，读者点开就能看原文
  *   · `firstSeen` —— **原文日期**（RSS `<pubDate>` 归一成 YYYY-MM-DD）。
  *     契约里没有独立的「原文日期」字段，而 firstSeen 是详情/雷达上唯一展示的日期行；
  *     把它填成原文日期，TTL 才能按新闻的时效算（见 lead-radar.js 文件头最后一段）。
  *   · `source`    —— 媒体名（写进记录的「来源」行；类型由 provenance.SOURCE_TYPES 登记为 lead）
+ *   · `excerpt`   —— **原文摘要引文**：RSS `<description>` 的逐字文本，已由
+ *     `lead-radar.parseFeed()` → `summaryOf()` 剥掉 HTML、用 cleanText 清洗并截到 240 字
+ *     （与 `schema.MAX_EXCERPT_LENGTH` 同一把尺子）。它是**引用不是断言**：不生成摘要、
+ *     不改写、不存结论。线索卡展示它，是为了让读者读到媒体原话，而不是我们替媒体下判断。
  * 另两个是 schema 必需/出处簿记，不是内容字段：
  *   · `sourceUrl` —— 该 feed 的地址（页面「收录渠道」行；点开可复核我们读的是哪一路 RSS）
  *   · `type`      —— `tool`（不是优惠，理由见文件头「记录形态」）；makeDeal 会按无优惠信号保持 tool
  *
- * **刻意不填**：description / discountInfo / validity / expiresAt / 六字段 / verified ——
+ * **刻意不填**：discountInfo / validity / expiresAt / 六字段 / verified ——
  * 「不填六字段、不下结论、不写已核验」是本阶段的硬要求，由 ai-selftest 的「线索草稿形状」断言盯着。
+ * 为什么现在要存 excerpt：站内线索卡要展示「原文摘要引文」，也为将来做内容栏目留字段；
+ * 它只是引文，不改变「线索未被核验」的定位，也不是给线索编一句优惠说明。
  */
 function toDraft(item, feed) {
   return {
@@ -155,7 +165,8 @@ function toDraft(item, feed) {
     source: feed.name,
     sourceUrl: feed.url,
     firstSeen: item.date,
-    type: 'tool'
+    type: 'tool',
+    excerpt: item.description
   };
 }
 

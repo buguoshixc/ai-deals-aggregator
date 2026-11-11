@@ -106,6 +106,13 @@ const factSummaryLib = require('../lib/fact-summary');
 // 事实摘要里的平台名走 `RENDER-CORE` 的 `vendorOf()`（与页面同一条归并），所以这里也要能从
 // 产物 `index.html` 里把那段 RENDER-CORE 载进 VM —— 与 build-local 用的是同一个 loader。
 const { load: loadRenderCore } = require('../lib/render-core');
+// B 类资讯线索（lead）的判据**唯一出处**：`provenance.SOURCE_TYPES`（构建期 `factsFor()` 正是
+// 用它派生 `sourceFacts.sourceType`）。验收脚本不另写一份「哪些来源算线索」的名单 —— 那份名单
+// 一抄就会分家，而分家后的表现是「页面上有一条线索，断言却不知道它是线索」。
+const provenance = require('../lib/provenance');
+// 线索卡的措辞权威（`CHANGES_LEAD` / `CHANGES_LABELS` …）。断言按 lib/changes.js 的常量比对，
+// 不把「阅读原文 →」「线索判据：…」抄成第二份字面量。
+const changesLib = require('../lib/changes');
 
 /**
  * 订阅产物登记表 `FEED_FILES` 的**唯一读取点**（唯一出处 = `scripts/lib/feed.js` 的导出）。
@@ -4476,6 +4483,33 @@ function noJsControlExemptionFor(route) {
   // 那会解析到 `assets/data/deal-history.json`，一个**刻意不存在**的路径。
   const radarDealsDoc = readRoot('deals.json');
   const radarHistoryDoc = readRoot('scripts/data/deal-history.json');
+
+  // ---- B 类资讯线索（lead）的数据层不变量（2026-11 改版）----------------------------
+  //
+  // 线索是「科技媒体报道里像优惠的资讯」：本站**没核验、不下结论**，所以它的 `type` 必须
+  // 一直是 `tool`。这条断言防的是「为了把线索塞进优惠列表/AI 卡片，顺手把 type 改成 deal」——
+  // 一改，它就会进首页卡片、优惠计数、详情页路由与 ItemList（`type === 'deal'` 是那些地方的
+  // 唯一入口判据），而页面上不会有任何一眼可见的异常。
+  //
+  // 判据的唯一出处是 `provenance.SOURCE_TYPES`（构建期 `factsFor()` 用它派生
+  // `sourceFacts.sourceType === 'lead'`）。这里读**仓库根** deals.json，不读 dist：
+  // `--url=` 线上冒烟时没有本地产物，而数据不变量与产物无关。
+  const radarLeadDeals = (radarDealsDoc.deals || [])
+    .filter(deal => deal && provenance.SOURCE_TYPES[deal.source] === 'lead');
+  const leadDealById = new Map(radarLeadDeals.map(deal => [deal.id, deal]));
+  const leadIds = new Set(leadDealById.keys());
+  const leadUrls = new Set(radarLeadDeals
+    .map(deal => deal.url)
+    .filter(url => /^https?:\/\//i.test(String(url || ''))));
+  {
+    const notTool = radarLeadDeals.filter(deal => deal.type !== 'tool');
+    check('线索记录 type 仍是 tool（来源登记为 lead ⇒ type=tool；改成 deal 会混进优惠列表/计数/ItemList）',
+      notTool.length === 0,
+      radarLeadDeals.length
+        ? `${radarLeadDeals.length} 条线索 · type 非 tool ${notTool.length} 条` +
+          (notTool.length ? `（${notTool.slice(0, 2).map(deal => `${deal.id}→${deal.type}`).join('、')}）` : '')
+        : '本轮 0 条线索（7 天窗口内没有候选 —— 判据按 0 条是正常结果）');
+  }
   // ⚠️ page.evaluate(fn, arg) **只接受一个**参数 —— 两份数据必须打成一个对象传进去
   // （先前写成两个位置参数时第二个被静默忽略，页面里读到 `undefined.events` 直接抛错）。
   const radarExpect = await page.evaluate(async ({ payload, historyDoc }) => {
@@ -4520,7 +4554,21 @@ function noJsControlExemptionFor(route) {
       height: Math.round(rect.height),
       total: Number(nav.dataset.radarTotal || 0),
       other: Number(nav.dataset.radarOther || 0),
-      items: [...nav.querySelectorAll('.ritem')].map(el => ({ id: el.dataset.dealId || '', href: el.getAttribute('href') || '' })),
+      items: [...nav.querySelectorAll('.ritem')].map(el => ({
+        id: el.dataset.dealId || '',
+        href: el.getAttribute('href') || '',
+        external: /^https?:\/\//i.test(el.getAttribute('href') || ''),
+        target: el.getAttribute('target') || '',
+        rel: el.getAttribute('rel') || '',
+        // 线索徽标是「这一项是线索」的页面侧证据（与 sourceType 的数据判据互为第二把尺子）
+        lead: Boolean(el.querySelector('.rlead'))
+      })),
+      // 条带里**所有**可点元素（含「全部变化」入口）：判「条带内零跨域链接」用的是它；
+      // 只数 `.ritem` 会漏掉入口那一条，而「漏掉的那一条」正是这条断言要防的失效形态。
+      anchors: [...nav.querySelectorAll('a[href]')].map(a => ({
+        href: a.getAttribute('href') || '',
+        external: /^https?:\/\//i.test(a.getAttribute('href') || '')
+      })),
       empty: Boolean(nav.querySelector('.rnone')),
       unavailable: nav.textContent.includes('没有拿到历史日志'),
       noChange: nav.textContent.includes('当前没有观测到变化'),
@@ -4542,6 +4590,42 @@ function noJsControlExemptionFor(route) {
     check('条带自身不横溢（横滑只发生在正文区）', radarHome.navOverflow <= 0,
       `nav 溢出 ${radarHome.navOverflow}px · 正文区可滑 ${radarHome.scrollOverflow}px`);
     check('条带最多 3 项', radarHome.items.length <= 3, `${radarHome.items.length} 项`);
+
+    // ---- B 类线索（2026-11 改版）：首页条带不再把读者直接送往外站 ----
+    // 旧行为：线索项本身就是指向原文的 target=_blank 外链。新契约：条带 → /changes/ 的
+    // 站内线索卡锚点，跨域链接只剩卡片里的那一个 CTA。两半都判，缺一不可：
+    //   ① 线索项必须是 `changes/#lead-<id>`（由 id 推出，防前端自己拼错/回退成外链）；
+    //   ② 整条条带（含「全部变化」入口）零跨域链接。
+    const stripLeadItems = radarHome.items.filter(item => item.lead);
+    const badLeadHrefs = stripLeadItems.filter(item =>
+      item.external || item.target || item.href !== `changes/#lead-${item.id}`);
+    check('条带里的线索项链接到站内 changes/#lead-<id>（无 target=_blank，不再直接跳外站）',
+      badLeadHrefs.length === 0,
+      stripLeadItems.length
+        ? `${stripLeadItems.length} 条线索项 · 不合格 ${badLeadHrefs.length} 条` +
+          (badLeadHrefs.length
+            ? `（${badLeadHrefs.slice(0, 2).map(item => `${item.id}→${item.href || '(无 href)'}`).join('、')}）`
+            : '')
+        : '本轮条带无线索项');
+    const stripExternal = (radarHome.anchors || []).filter(anchor => anchor.external);
+    check('条带内零跨域链接（线索不再从首页把读者送到外站）',
+      stripExternal.length === 0,
+      stripExternal.length
+        ? `${stripExternal.length} 条：${stripExternal.slice(0, 2).map(anchor => anchor.href.slice(0, 60)).join('、')}`
+        : '全部站内');
+
+    // 线索不进首页优惠列表/筛选器：卡片成员 id（`article.g` 的 data-deal-ids）里一个都不能有线索。
+    // 页面的排除判据是 RENDER-CORE 的 isLeadRecord()（读 sourceFacts.sourceType），
+    // 这里从**渲染结果**反着验：只要有一张卡的成员集合里出现线索 id，就说明排除判据被绕开了。
+    const homeCardIds = await page.evaluate(() => [...document.querySelectorAll('article.g[data-deal-ids]')]
+      .flatMap(card => (card.dataset.dealIds || '').split(',').filter(Boolean)));
+    const leakedLeadIds = homeCardIds.filter(id => leadIds.has(id));
+    check('线索不进首页优惠列表/筛选器（卡片 data-deal-ids 集合不含线索）',
+      leakedLeadIds.length === 0,
+      leakedLeadIds.length
+        ? `${leakedLeadIds.length} 条线索出现在优惠卡片里：${leakedLeadIds.slice(0, 3).join(', ')}`
+        : `卡片 ${homeCardIds.length} 个成员 id · 线索 ${leadIds.size} 条均未出现`);
+
     if (radarExpect.unavailable) {
       check('历史日志缺失时条带明说「没有拿到历史日志」（不冒充「没有变化」）', radarHome.unavailable,
         radarHome.unavailable ? '' : '条带没有说明日志不可用');
@@ -4568,10 +4652,9 @@ function noJsControlExemptionFor(route) {
   const changesPage = await page.evaluate(() => {
     const heads = [...document.querySelectorAll('.chgsec h2')].map(h => h.textContent.trim());
     const links = [...document.querySelectorAll('a.chgn[href]')].map(a => a.getAttribute('href'));
-    // P2（2026-11）起雷达行会出现 **B 类线索**：按设计没有站内详情页，链接直达原文（外链）。
-    // 这里逐条带上「是否外链 / 线索徽标 / target / rel」，让下面的断言能区分
-    // 「站内详情页链接」与「线索原文链接」—— 跨域 fetch 外链会 TypeError: Failed to fetch，
-    // 那是正常设计，不是坏页；不拿外链冒充详情页去回读。
+    // B 类线索（2026-11 改版）：线索行的标题**不再是链接**，它的唯一链接是卡片里的
+    // 「阅读原文」CTA；因此 `a.chgn[href]` 只剩普通变化行（站内详情页）。这里仍逐条带上
+    // 「是否外链 / 线索徽标 / target / rel」，供下面的断言判「标题链接不许外链」。
     const radarLinks = [...document.querySelectorAll('a.chgn[href]')].map(a => {
       const href = a.getAttribute('href') || '';
       const row = a.closest('.chgi');
@@ -4619,7 +4702,53 @@ function noJsControlExemptionFor(route) {
       apiItems: apiSection ? apiSection.querySelectorAll('.chglist li').length : -1,
       apiEmpty: apiSection ? /没有观测到|没有拿到 API 计费变化日志/.test(apiSection.innerText) : false,
       apiUnavailable: apiSection ? apiSection.innerText.includes('没有拿到 API 计费变化日志') : false,
-      apiLinkHrefs: apiSection ? [...apiSection.querySelectorAll('a.pchgwho[href]')].map(a => a.getAttribute('href')) : []
+      apiLinkHrefs: apiSection ? [...apiSection.querySelectorAll('a.pchgwho[href]')].map(a => a.getAttribute('href')) : [],
+      // B 类线索卡（2026-11）：结构断言的取值面。全部按 DOM 契约读（块类名 / 文本 / 链接属性），
+      // 不用「文本里先出现哪一句」这种一改排版就假绿的判据。
+      leadCards: [...document.querySelectorAll('.chgi .leadcard')].map(card => {
+        const row = card.closest('.chgi');
+        const section = card.closest('.chgsec');
+        const text = el => (el ? (el.textContent || '').replace(/\s+/g, ' ').trim() : '');
+        const pick = cls => text(card.querySelector('.' + cls));
+        const time = card.querySelector('time');
+        const anchors = [...card.querySelectorAll('a')].map(a => ({
+          href: a.getAttribute('href') || '',
+          target: a.getAttribute('target') || '',
+          rel: a.getAttribute('rel') || '',
+          cls: a.className || '',
+          text: text(a)
+        }));
+        return {
+          id: card.id,
+          dealId: row ? row.getAttribute('data-deal-id') || '' : '',
+          section: section ? section.id : '',
+          // 子块按文档顺序取第一个 class token（断言块顺序与「未核验声明压在引文上方」）
+          blocks: [...card.children].map(el => (el.className || '').split(/\s+/)[0]),
+          title: pick('lctitle'),
+          meta: pick('lcmeta'),
+          decl: pick('lcdecl'),
+          excerpt: pick('lcexcerpt'),
+          basis: pick('lcbasis'),
+          ctaText: pick('lcactions'),
+          anchors,
+          time: time ? { datetime: time.getAttribute('datetime') || '', text: text(time) } : null
+        };
+      }),
+      // 首页条带 href 的落点判据：线索卡锚点 id 必须真的存在这一页上。
+      leadAnchorIds: [...document.querySelectorAll('.leadcard[id]')].map(card => card.id),
+      // `/changes/` 的 ItemList 成员 id（element.url 是 SITE_URL 绝对地址）—— 线索没有站内详情页，
+      // 一条都不许进来（与 page-kinds 的 checkRows 是两把尺子：那一把数行，这一把判成员语义）。
+      itemListIds: (() => {
+        const blocks = [...document.querySelectorAll('script[type="application/ld+json"]')]
+          .map(script => { try { return JSON.parse(script.textContent); } catch (error) { return null; } })
+          .filter(Boolean);
+        const list = blocks.find(block => block['@type'] === 'ItemList');
+        if (!list) return [];
+        return (list.itemListElement || []).map(element => {
+          const match = String(element.url || '').match(/\/deal\/([^/]+)\/$/);
+          return match ? decodeURIComponent(match[1]) : '';
+        });
+      })()
     };
   });
   check('/changes/ 页存在且分栏齐（优惠五栏 + 套餐一栏 + API 一栏）', changesPage.headings.length === 7, changesPage.headings.join(' | '));
@@ -4723,38 +4852,248 @@ function noJsControlExemptionFor(route) {
   // `check-plan-history.js` / `selftest:api-plans` 这类**对账仓库根源文件**的门禁盯着。
 
   // 雷达行 → 单条优惠的详情页（要求 4：详情页能看单条优惠的历史）。
-  // 没有可点的雷达行时如实报「本轮无样本」，并改验另一条出口（条带 → /changes/）。
-  //
-  // P2（2026-11）起雷达会出现 **B 类线索**：线索按设计没有站内详情页，链接直达原文（外链）。
-  // 旧断言拿 `links[0]` 无条件 fetch 当详情页 —— 线索行排在最前时 fetch 跨域原文会
-  // TypeError: Failed to fetch，把正常设计误判成红（CI 首次真跑暴露）。
-  // 现在的判据分两半，**不放过**任何一半：
-  //   ① 站内详情页链接：仍然逐条可 fetch、且含「变更记录」块（原判据不改）；
-  //   ② 外链：必须只在「线索 · 未核验」行、target=_blank、rel 含 noopener，
-  //      且**不许**拿它冒充站内详情页（外链存在时不再对 links[0] 盲 fetch）。
+  // B 类线索（2026-11 改版）不在这条链上：线索没有站内详情页，它的唯一可点链接是卡片 CTA。
+  // 因此 `a.chgn` 只剩普通变化行，判据简化为「一条外链都不许有」——旧的
+  // 「外链只在线索行」判据已随改版作废（它守的行为本轮被删掉了）。
   {
     const radarLinks = changesPage.radarLinks || [];
-    const internalLinks = radarLinks.filter(link => !link.external);
     const externalLinks = radarLinks.filter(link => link.external);
-    const badExternal = externalLinks.filter(link =>
-      !link.lead || link.target !== '_blank' || !/(^|\s)noopener(\s|$)/.test(link.rel));
-    check('雷达外链只在「线索 · 未核验」行，且 target=_blank / rel=noopener（不冒充站内详情页）',
-      badExternal.length === 0,
+    check('雷达行标题链接只指向站内详情页（线索标题不再是外链）',
+      externalLinks.length === 0,
       externalLinks.length
-        ? `${externalLinks.length} 条外链 · 不合格 ${badExternal.length} 条${badExternal.slice(0, 2).map(link => `（${link.href.slice(0, 60)}）`).join('')}`
-        : '本页暂无外链雷达行');
-    if (internalLinks.length) {
+        ? `${externalLinks.length} 条外链：${externalLinks.slice(0, 2).map(link => link.href.slice(0, 60)).join('、')}`
+        : `${radarLinks.length} 条全部站内`);
+    if (radarLinks.length) {
       const probe = await page.evaluate(async (href) => {
         const response = await fetch(href);
         const text = await response.text();
         return { ok: response.ok, status: response.status, hasHistory: text.includes('变更记录') };
-      }, internalLinks[0].href);
+      }, radarLinks[0].href);
       check('雷达行链到的详情页真的打得开且含「变更记录」块',
         probe.ok && probe.hasHistory, `HTTP ${probe.status} · 含变更记录=${probe.hasHistory}`);
     } else {
-      check('雷达行 → 单条历史（本轮无样本：日志里还没有任何事件）', true,
-        '跳过：可点的站内雷达行为 0' + (externalLinks.length ? `（其中 ${externalLinks.length} 条是线索外链）` : ''));
+      check('雷达行 → 单条历史（本轮无样本：日志里还没有任何事件）', true, '跳过：可点的站内雷达行为 0');
     }
+  }
+
+  // 首页条带 → /changes/ 的线索锚点必须真的落在这一页上（否则首页那个链接是死锚）。
+  {
+    const stripLeadAnchors = radarHome && Array.isArray(radarHome.items)
+      ? radarHome.items.filter(item => item.lead).map(item => (item.href.split('#')[1] || ''))
+      : [];
+    check('首页条带 → /changes/ 的线索锚点在目标页真实存在（无死锚）',
+      stripLeadAnchors.every(anchor => (changesPage.leadAnchorIds || []).includes(anchor)),
+      stripLeadAnchors.length ? `${stripLeadAnchors.length} 条锚点` : '本轮条带无线索项');
+  }
+
+  // ---- 线索卡：结构 / 顺序 / 唯一 CTA（2026-11 的验收主体）------------------------------
+  //
+  // 每一条断言都对应一个「页面看起来正常、语义已经坏了」的坏法：
+  //   · 线索卡被渲染成普通变化行 → 读者只看到一句没有上下文的「首次收录」；
+  //   · 未核验声明挪到引文下面 / 被删掉 → 读者先读到引文、后知道未核验（顺序即语义）；
+  //   · 标题也做成外链 → 跨域链接又回到两处，「只在线索卡 CTA」的断言就失去意义；
+  //   · 没有 excerpt 时印一句「暂无摘要」→ 用一句假话填了「空就是空」这条规矩。
+  {
+    const cards = changesPage.leadCards || [];
+    const LEADS = changesLib.CHANGES_WORDING.CHANGES_LEAD;
+    const LEAD_BADGE = audienceLib.WORDING_CONTRACT.SOURCE_TYPE.lead;
+    // 线索是否**按窗口应当**出现在 /changes/ 上：线索的 created 事件落在最近 7 天窗口内 ⇒
+    // 卡片必须出现。线索判据刻意严格，多数日子是 0 条 —— 0 条不是页面缺陷，卡片结构断言
+    // 如实跳过（与「雷达行无样本」那条同一纪律）；但「数据里有一条窗口内的线索、卡片却没渲染」
+    // 必须是红的，否则渲染分支断了也没人知道。
+    const leadAsOf = String(radarDealsDoc.updatedAt || '').slice(0, 10);
+    const leadRecentFrom = Number.isFinite(Date.parse(`${leadAsOf}T00:00:00Z`))
+      ? new Date(Date.parse(`${leadAsOf}T00:00:00Z`) - 6 * 86400000).toISOString().slice(0, 10)
+      : null;
+    const expectLeadCard = Boolean(leadRecentFrom) && radarLeadDeals.some(deal =>
+      typeof deal.firstSeen === 'string' && deal.firstSeen >= leadRecentFrom && deal.firstSeen <= leadAsOf);
+    const leadSkipDetail = '窗口内 0 条线索（线索判据按 0 条是正常结果，卡片结构断言如实跳过）';
+    // 期望分栏由**历史事件日**推导，不写死 `created`（2026-11-11 上线轮修正）：
+    // 线索的 `created` 历史事件日 = 基准日 ⇒「今日新增」；否则（仍在 7 天窗口内）⇒
+    // 「最近 7 天变化」。写死 created 会在数据日推进后的第二天误报 —— 渲染行为本身是对的，
+    // 错的是判据（见 research/lead-card-insite-v1-self-audit.md §4-1）。
+    const leadCreatedAtById = new Map();
+    for (const event of (radarHistoryDoc.events || [])) {
+      if (event && event.type === 'created' && leadIds.has(event.id)) leadCreatedAtById.set(event.id, event.at);
+    }
+    const expectedLeadSection = dealId => (leadCreatedAtById.get(dealId) === leadAsOf ? 'created' : 'changed');
+    check('线索卡在场性：窗口内有线索 ⇒ /changes/ 上必须有线索卡；窗口内没有 ⇒ 卡片也必须为 0',
+      expectLeadCard ? cards.length > 0 : cards.length === 0,
+      expectLeadCard
+        ? `窗口内 ${radarLeadDeals.filter(deal => String(deal.firstSeen || '') >= leadRecentFrom).length} 条线索 · 页面 ${cards.length} 张卡`
+        : `窗口内 0 条线索 · 页面 ${cards.length} 张卡`);
+    // 卡片块顺序是逐块的（不是「文本里先出现哪句」）：少一块、多一块、换顺序都会红。
+    const expectedBlocks = card => (card.blocks.includes('lcexcerpt')
+      ? ['lctitle', 'lcmeta', 'lcdecl', 'lcexcerpt', 'lcbasis', 'lcactions']
+      : ['lctitle', 'lcmeta', 'lcdecl', 'lcbasis', 'lcactions']);
+    const placementProblems = cards.filter(card => !card.dealId || card.id !== `lead-${card.dealId}` ||
+      card.section !== expectedLeadSection(card.dealId));
+    check('/changes/ 的线索卡按历史事件日落在正确分栏（created 事件日=基准日 ⇒ 今日新增，否则 ⇒ 最近 7 天变化；article.leadcard id=lead-<id>，不是普通变化行）',
+      !expectLeadCard || (cards.length > 0 && placementProblems.length === 0),
+      expectLeadCard
+        ? (cards.length
+          ? (placementProblems.length
+            ? `${placementProblems.length}/${cards.length} 张分栏不符：` + placementProblems.slice(0, 2).map(card => `${card.id}@${card.section || '(未知分栏)'}（应 ${card.dealId ? expectedLeadSection(card.dealId) : '?'}）`).join('、')
+            : `${cards.length} 张：${cards.slice(0, 2).map(card => `${card.id}@${card.section || '(未知分栏)'}`).join('、')}`)
+          : '页面上没有线索卡（线索仍在数据/雷达里，但渲染分支没接上？）')
+        : leadSkipDetail);
+    const orderProblems = cards.filter(card => JSON.stringify(card.blocks) !== JSON.stringify(expectedBlocks(card)));
+    check('线索卡块顺序：标题 → 来源媒体+原文日期 → 未核验声明 → 摘录引文（有则出）→ 判据与下架说明 → CTA',
+      !expectLeadCard || (cards.length > 0 && orderProblems.length === 0),
+      expectLeadCard
+        ? (orderProblems.length
+          ? orderProblems.slice(0, 2).map(card => `「${card.id}」=${card.blocks.join('>')}`).join(' · ')
+          : cards.map(card => card.blocks.join('>')).join(' · ') || '无线索卡')
+        : leadSkipDetail);
+    const declProblems = cards.filter(card => {
+      const declAt = card.blocks.indexOf('lcdecl');
+      const excerptAt = card.blocks.indexOf('lcexcerpt');
+      return declAt < 0 || !card.decl.includes(LEAD_BADGE) || (excerptAt >= 0 && declAt > excerptAt);
+    });
+    check('未核验声明压在摘录引文上方，且文本来自 SOURCE_WORDING.SOURCE_TYPE.lead（「线索 · 未核验」）',
+      !expectLeadCard || (cards.length > 0 && declProblems.length === 0),
+      expectLeadCard
+        ? (declProblems.length ? `${declProblems.length}/${cards.length} 张不合格` : `${cards.length} 张卡声明块全部合格`)
+        : leadSkipDetail);
+    const ctaProblems = cards.filter(card => {
+      const deal = leadDealById.get(card.dealId);
+      const cta = card.anchors.find(anchor => anchor.cls.split(/\s+/).includes('lccta'));
+      if (!cta || card.anchors.length !== 1) return true;          // 全卡只许一个可点链接，且必须是 CTA
+      if (!/^https?:\/\//i.test(cta.href) || cta.target !== '_blank') return true;
+      const rel = new Set(cta.rel.split(/\s+/).filter(Boolean));
+      if (!rel.has('noopener') || !rel.has('noreferrer')) return true;
+      return !deal || cta.href !== deal.url;
+    });
+    check('线索卡只有一个可点链接 = 「阅读原文 →」CTA（href=原文、target=_blank、rel 含 noopener noreferrer）',
+      !expectLeadCard || (cards.length > 0 && ctaProblems.length === 0),
+      expectLeadCard
+        ? (ctaProblems.length ? `${ctaProblems.length}/${cards.length} 张不合格` : `${cards.length} 张卡各 1 个 CTA`)
+        : leadSkipDetail);
+    const contentProblems = [];
+    for (const card of cards) {
+      const deal = leadDealById.get(card.dealId);
+      if (!deal) { contentProblems.push(`${card.id}：找不到记录`); continue; }
+      if (card.title !== String(deal.title)) contentProblems.push(`${card.id}：标题不一致`);
+      if (!card.meta.includes(String(deal.source || ''))) contentProblems.push(`${card.id}：缺来源媒体`);
+      if (!card.time || card.time.datetime !== String(deal.firstSeen)) contentProblems.push(`${card.id}：原文日期不一致`);
+      const excerpt = typeof deal.excerpt === 'string' && deal.excerpt ? deal.excerpt : '';
+      if (excerpt) {
+        if (!card.blocks.includes('lcexcerpt') || !card.excerpt.includes(excerpt)) {
+          contentProblems.push(`${card.id}：摘要引文缺失或不一致`);
+        }
+      } else if (card.blocks.includes('lcexcerpt')) {
+        contentProblems.push(`${card.id}：没有 excerpt 却渲染了引文块（不许写占位句）`);
+      }
+      if (!card.basis.includes(LEADS.basis) || !card.basis.includes(LEADS.ttl)) {
+        contentProblems.push(`${card.id}：判据/下架说明不是 CHANGES_LEAD 的权威措辞`);
+      }
+      if (!card.anchors.some(anchor => anchor.text.includes(LEADS.readOriginal.replace(/\s*→$/, '')))) {
+        contentProblems.push(`${card.id}：CTA 文案不是「${LEADS.readOriginal}」`);
+      }
+    }
+    check('线索卡内容与记录一致（标题 / 来源 / 原文日期 / 摘要引文；无 excerpt 时整块省略、不写占位句）',
+      !expectLeadCard || (cards.length > 0 && contentProblems.length === 0),
+      expectLeadCard
+        ? (contentProblems.length ? contentProblems.slice(0, 3).join('；') : `${cards.length} 张卡逐项对齐`)
+        : leadSkipDetail);
+
+    // —— 线索不进 ItemList / sitemap（没有站内详情页，就不能出现在结构化数据里）——
+    const leadInItemList = (changesPage.itemListIds || []).filter(id => leadIds.has(id));
+    check('/changes/ 的 ItemList 不含线索（线索没有站内详情页，不能进结构化数据）',
+      leadInItemList.length === 0,
+      leadInItemList.length
+        ? `混入 ${leadInItemList.join(', ')}`
+        : `ItemList ${(changesPage.itemListIds || []).length} 项 · 线索 ${leadIds.size} 条均未出现`);
+    const sitemapProbe = await page.evaluate(async (href) => {
+      try {
+        const response = await fetch(href);
+        return { status: response.status, body: await response.text() };
+      } catch (error) {
+        return { status: 0, body: '' };
+      }
+    }, new URL('sitemap.xml', base).href);
+    const sitemapLeadHits = [...leadIds].filter(id => sitemapProbe.body.includes(id));
+    check('/changes/ 的线索不进 sitemap（无 /deal/<lead-id>/ 或线索独立页）',
+      sitemapProbe.status === 200 && sitemapLeadHits.length === 0,
+      sitemapProbe.status === 200
+        ? (sitemapLeadHits.length ? `混入 ${sitemapLeadHits.slice(0, 3).join(', ')}` : 'sitemap 里没有线索 id')
+        : `读不到 sitemap（HTTP ${sitemapProbe.status}）`);
+  }
+
+  // ---- 全站跨域链接扫描：指向线索原文的 <a> 只允许是线索卡 CTA -------------------------
+  //
+  // 验收原话：「跨域链接全站只剩卡片里的一个 CTA」。浏览器只访问了首页与 /changes/，
+  // 而「全站」必须对产物里的**每一个 .html** 判，所以这一段在 Node 侧做字面扫描：
+  //   · 指向线索原文（仓库根 deals.json 里 lead 记录的 url）的 <a> 必须带 class="lccta"
+  //     且 target=_blank / rel=noopener noreferrer；
+  //   · **逐文件**「指向线索原文的外链数 == 该文件的线索卡张数」：多一条 = 卡片之外又
+  //     出现了跨域链接；少一条 = 某张卡的 CTA 不见了（两种都不许）；
+  //   · /changes/ 上按 DOM 数出的线索卡张数必须与字面扫描的卡数一致（两把尺子互相校验）。
+  // 判据不写死「只许出现在 /changes/」：将来线索卡若被二级页的「最近变化」块复用，
+  // 每张卡仍然只带一个 CTA —— 这条断言照样成立，且不会误报。首页条带零跨域由上面的
+  // 真浏览器断言单独守（那一条必须钉死在首页条带上）。
+  //
+  // 不把「线索原文 URL」抄成字面量：URL 从数据现取；也不数「看起来像外链」的字符串 ——
+  // 只数真正的 <a href> 标签，避免把原文里的 URL 文本误判成链接。
+  {
+    const decodeAttr = text => String(text)
+      .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"');
+    const htmlFiles = [];
+    const walk = dir => {
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const file = path.join(dir, entry.name);
+        if (entry.isDirectory()) walk(file);
+        else if (entry.name.endsWith('.html')) htmlFiles.push(file);
+      }
+    };
+    walk(DIR);
+    const hits = [];
+    const cardsByFile = new Map();
+    for (const file of htmlFiles) {
+      const raw = fs.readFileSync(file, 'utf8');
+      const rel = path.relative(DIR, file).split(path.sep).join('/');
+      // ⚠️ 先剥掉 `<script>` / `<style>` 再数：首页的内联 RENDER-CORE 源码里含有渲染模板的
+      // 字面串（`'<article class="leadcard"'`）与文档注释 —— 直接扫原始 HTML 会把**模板源码**
+      // 数成「页面上真的有一张卡」（实测首页因此假报 2 张卡 / 0 条外链）。渲染出来的卡片是
+      // 构建期写进正文的静态标记，剥脚本/样式后仍然在，所以这一刀不会漏掉真卡。
+      const html = raw
+        .replace(/<script[\s\S]*?<\/script>/gi, '')
+        .replace(/<style[\s\S]*?<\/style>/gi, '');
+      // 线索卡的 DOM 契约（`<article class="leadcard" id="lead-…">`）——字面扫描的卡数按它数。
+      const cardCount = (html.match(/<article class="leadcard"/g) || []).length;
+      if (cardCount) cardsByFile.set(rel, cardCount);
+      if (!leadUrls.size) continue;
+      for (const match of html.matchAll(/<a\b[^>]*>/g)) {
+        const tag = match[0];
+        const href = /href="([^"]*)"/.exec(tag);
+        if (!href) continue;
+        const value = decodeAttr(href[1]);
+        if (!leadUrls.has(value)) continue;
+        hits.push({ file: rel, tag });
+      }
+    }
+    const notCta = hits.filter(hit =>
+      !/\bclass="[^"]*\blccta\b/.test(hit.tag) || !/target="_blank"/.test(hit.tag) ||
+      !/rel="noopener noreferrer"/.test(hit.tag));
+    const hitsByFile = new Map();
+    for (const hit of hits) hitsByFile.set(hit.file, (hitsByFile.get(hit.file) || 0) + 1);
+    const allFiles = new Set([...cardsByFile.keys(), ...hitsByFile.keys()]);
+    const countMismatch = [...allFiles]
+      .map(file => ({ file, cards: cardsByFile.get(file) || 0, links: hitsByFile.get(file) || 0 }))
+      .filter(row => row.cards !== row.links);
+    const totalCards = [...cardsByFile.values()].reduce((sum, count) => sum + count, 0);
+    const changesCards = cardsByFile.get('changes/index.html') || 0;
+    const domCards = (changesPage.leadCards || []).length;
+    check('全站跨域链接只剩线索卡里的那个 CTA（逐文件：指向线索原文的外链数 == 线索卡张数，且每条都是 .lccta）',
+      notCta.length === 0 && countMismatch.length === 0 && changesCards === domCards,
+      leadUrls.size
+        ? `${hits.length} 条指向线索原文 · 非 CTA ${notCta.length} 条 · 线索卡 ${totalCards} 张` +
+          `（/changes/ 字面 ${changesCards} 张 / DOM ${domCards} 张）` +
+          (countMismatch.length
+            ? ` · 卡数≠外链数的文件：${countMismatch.slice(0, 3)
+              .map(row => `${row.file}(${row.cards}/${row.links})`).join('、')}`
+            : '')
+        : '本轮 0 条线索（跨域链接面自然为空）');
   }
 
   // 无 JS：这一页也必须是完整正文
