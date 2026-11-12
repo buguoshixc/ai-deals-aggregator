@@ -36,6 +36,11 @@ const landing = require('../lib/landing');
 // 站点常量（SITE_URL / VENDOR_SLUGS / VENDOR_THRESHOLDS）的唯一出处。t2 起从订阅层的
 // `feeds.js` 改指本模块：订阅层整体下架后这份常量不能跟着陪葬，而本工具只用到这三样。
 const site = require('../lib/site');
+// 入口文案的权威措辞表（2026-11）：指向 /changes/ 的入口现在有**两种**，
+// 「全部变化 →」是通用入口，常驻线索入口的计数文案由 `CHANGES_LEAD.count/countMore`
+// 渲染。两者都必须在产物里**按权威表复算**，而不是各自写一份字面量。
+const changes = require('../lib/changes');
+const audience = require('../lib/audience');
 
 const dirArg = process.argv.find(a => a.startsWith('--dir='));
 const OUT = path.resolve(ROOT, dirArg ? dirArg.slice(6) : 'dist');
@@ -535,9 +540,19 @@ const ownVisibleText = html => unescapeHtml(
 {
   const FORBIDDEN = '查看全部';
   const ENTRY = '全部变化 →';
+  // 指向 /changes/ 的**第二种**入口（2026-11）：B 类未核验线索的常驻计数入口。
+  // 它不是「同一件事的第二个词」，而是另一个入口 —— 但它的文案同样必须是权威措辞的
+  // 渲染结果：徽标 = `SOURCE_WORDING.SOURCE_TYPE.lead`，计数 = `CHANGES_LEAD.count/
+  // countMore` 以 N=min(data-lead-count, LEAD_CHIP_MAX) 替换 `{n}`。这里按**数据属性 +
+  // 权威表独立复算**，不把「线索 · 未核验 … 条 →」抄成第二份字面量。
+  const LEAD_WORD = changes.CHANGES_WORDING.CHANGES_LEAD;
+  const LEAD_MAX = changes.LIMITS.LEAD_CHIP_MAX;
+  const LEAD_BADGE = audience.WORDING_CONTRACT.SOURCE_TYPE.lead;
   const forbiddenPages = [];
   const entryPages = [];
   const oddArrows = [];
+  const leadChipProblems = [];
+  let leadChips = 0;
 
   for (const route of routes) {
     const rel = route === '' ? 'index.html' : `${route}/index.html`;
@@ -550,8 +565,24 @@ const ownVisibleText = html => unescapeHtml(
       if (!/(^|\/)changes\/$/.test(href)) continue;
       const text = m[2].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
       if (!text.includes('→')) continue;   // 导航「变化雷达」/ 标题「最近变化」不带箭头
-      if (text === ENTRY) entries++;
-      else oddArrows.push(`${route}：「${text}」`);
+      if (text === ENTRY) { entries++; continue; }
+      // 常驻线索入口：`<a class="rleadcount" data-lead-count="N" href="changes/#lead-<id>">`
+      const tag = m[0].slice(0, m[0].indexOf('>') + 1);
+      if (/\bclass="[^"]*\brleadcount\b/.test(tag)) {
+        leadChips++;
+        const countMatch = tag.match(/\bdata-lead-count="(\d+)"/);
+        const n = countMatch ? Number(countMatch[1]) : NaN;
+        const problems = [];
+        if (!Number.isInteger(n) || n <= 0) problems.push('data-lead-count 缺失或不是正整数');
+        const suffix = (Number.isInteger(n) && n > LEAD_MAX ? LEAD_WORD.countMore : LEAD_WORD.count)
+          .replace('{n}', String(Number.isInteger(n) ? Math.min(n, LEAD_MAX) : '?'));
+        const expected = `${LEAD_BADGE} ${suffix}`;
+        if (text !== expected) problems.push(`文案「${text}」≠ 权威措辞「${expected}」`);
+        if (!/^changes\/#lead-[0-9a-f]{12}$/.test(m[1])) problems.push(`href「${m[1]}」不是 changes/#lead-<id>`);
+        if (problems.length) leadChipProblems.push(`${route}：${problems.join('；')}`);
+        continue;
+      }
+      oddArrows.push(`${route}：「${text}」`);
     }
     if (entries) entryPages.push(`${route}(${entries})`);
   }
@@ -560,8 +591,11 @@ const ownVisibleText = html => unescapeHtml(
     forbiddenPages.length === 0, forbiddenPages.slice(0, 4).join(', '));
   check(`入口文案：指向 /changes/ 的箭头锚逐字都是「${ENTRY}」（同一件事只有一个词）`,
     oddArrows.length === 0, oddArrows.slice(0, 4).join('；'));
+  check(`入口文案：常驻线索入口按权威表渲染（min(N, ${LEAD_MAX})；N 超限带「+」，href 指向 changes/#lead-<id>）`,
+    leadChipProblems.length === 0, leadChipProblems.slice(0, 4).join('；'));
   console.log(`\n=== 入口文案读数 · 「${ENTRY}」出现在 ${entryPages.length} 页`
-    + `${entryPages.length ? `：${entryPages.join(' · ')}` : '（0 页）'}`);
+    + `${entryPages.length ? `：${entryPages.join(' · ')}` : '（0 页）'}`
+    + ` · 常驻线索入口 ${leadChips} 处`);
 }
 
 /* ------------------------------------------------------------------ */

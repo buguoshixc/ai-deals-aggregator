@@ -115,7 +115,11 @@ const CHANGES_WORDING = {
     excerptFromUnknown: '—— 摘录自原文 RSS（仅清理空白，未改写）',
     basis: '线索判据：标题或摘要开头同时出现 AI 平台名、免费/限时/降价信号与时间词，且原文可点开。',
     ttl: '线索按原文日期保留 7 天，第 8 天自动下架。',
-    readOriginal: '阅读原文 →'
+    readOriginal: '阅读原文 →',
+    /** 首页条带「常驻线索入口」的计数后缀。`{n}` = min(N, LIMITS.LEAD_CHIP_MAX)；真值永远在 data-lead-count 上 */
+    count: '{n} 条 →',
+    /** N 超过显示上限时的那套后缀（「3+ 条 →」）—— 不新增第二套窄屏文案 */
+    countMore: '{n}+ 条 →'
   }
 };
 
@@ -136,7 +140,20 @@ const LIMITS = {
   /** 每个分栏最多渲染多少行（超出只报条数，不删数据） */
   itemsPerSection: 30,
   /** 首页条带最多展示几项 */
-  homeItems: 3
+  homeItems: 3,
+  /**
+   * 首页条带「常驻线索入口」的显示上限（B 类未核验线索）。
+   *
+   * 线索**不占**条带的 `.ritem` 槽位（`buildRadar()` 的 home 池按 `lead === true` 排除），
+   * 改由一条常驻入口独立呈现 —— 它不随日期消失，所以必须自己封顶，否则线索一多
+   * 就会把条带撑成第二条正文行。显示值 = `min(N, LEAD_CHIP_MAX)`；`N > LEAD_CHIP_MAX`
+   * 时用 `CHANGES_LEAD.countMore`（「N+ 条 →」），**N 的真值永远写在 `data-lead-count` 上**。
+   *
+   * `N` 不是 deals.json 里的线索总数：它只扫**渲染用**的五个分栏（`SECTION_ORDER`，
+   * 已过 `itemsPerSection` 截断）并按 id 去重 —— 与 `/changes/` 会渲染出的 `.leadcard`
+   * 集合是同一把尺子。数值与 RENDER-CORE 的同名常量必须一致（构建期自检现渲染核对）。
+   */
+  LEAD_CHIP_MAX: 3
 };
 
 /** 分栏顺序（页面与条带共用；顺序是契约，自测按它逐项对账） */
@@ -598,6 +615,11 @@ function buildRadar({ deals = [], store = null, asOf = null, availability = 'ok'
   for (const key of HOME_PRIORITY) {
     for (const item of pools[key] || []) {
       if (home.length >= cfg.homeItems) break;
+      // B 类未核验线索**不占**首页条带的槽位（2026-11）：它们有自己的常驻入口
+      // （RENDER-CORE 的 `a.rleadcount`，不随日期消失、不计入「最多 3 项」）。
+      // 必须在这一层排（而不是渲染层）：条带自检要求 `.ritem` 的 id 序列
+      // 与 `radar.home.items` **逐项相等**，渲染层过滤会让构建当场红。
+      if (item.lead === true) continue;
       home.push(Object.assign({}, item, { homeKind: key }));
     }
     if (home.length >= cfg.homeItems) break;

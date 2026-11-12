@@ -377,6 +377,35 @@ section('⑩ 渲染器：条带与页面的形态由 RENDER-CORE 现渲染断言
   const brokenStrip = rc.changesStripHtml(changes.buildRadar({ deals: [], store: null, asOf: AS_OF, availability: 'unavailable' }));
   check('日志不可用时条带说「没有拿到历史日志」', brokenStrip.includes('没有拿到历史日志'));
   check('日志不可用时条带不说「没有变化」', brokenStrip.includes('当前没有观测到变化') === false);
+
+  // ---- 常驻线索入口（2026-11）：不占条带槽位、不随日期消失 ----------------------------
+  // 线索判据的唯一入口是 `identityOf()`：`deal.sourceFacts.sourceType === 'lead'`
+  //（与构建期 provenance 派生的字段同名）。fixture 必须显式带上它，否则测的就不是线索。
+  const leadDeal = id => deal({ id, type: 'tool', sourceFacts: { sourceType: 'lead' } });
+  const leadCreated = id => event({ id, at: day(0), type: 'created', field: null, from: null, to: null, fields: {} });
+
+  const oneLeadId = '111111111111';
+  const oneLead = radarOf([leadCreated(oneLeadId)], [leadDeal(oneLeadId)]);
+  const stripOneLead = rc.changesStripHtml(oneLead);
+  check('线索不占条带 .ritem 槽位（数据层 home 池按 lead 排除，N 另有常驻入口）',
+    oneLead.home.items.length === 0 && stripOneLead.includes('class="ritem"') === false);
+  check('N=1：常驻入口文本「线索 · 未核验 1 条」，data-lead-count=1',
+    stripOneLead.includes('class="rleadcount" data-lead-count="1"') &&
+    stripOneLead.includes('线索 · 未核验') && stripOneLead.includes('1 条 →'));
+  check('N>0 且条带正文区为空时**不**印「当前没有观测到变化」（否则一边说没变化一边挂入口）',
+    stripOneLead.includes('当前没有观测到变化') === false && stripOneLead.includes('class="rnone"') === false);
+  check('线索入口的锚点来自 identityOf()（changes/#lead-<id>，渲染层不自己拼）',
+    stripOneLead.includes('href="changes/#lead-' + oneLeadId + '"'));
+  check('线索入口不带 data-deal-id（它不是 .ritem 条目，整串比对只认 .ritem）',
+    /<a class="rleadcount"[^>]*data-deal-id/.test(stripOneLead) === false);
+
+  const manyLeadIds = ['111111111111', '222222222222', '333333333333', '444444444444', '555555555555'];
+  const fiveLeads = radarOf(manyLeadIds.map(leadCreated), manyLeadIds.map(leadDeal));
+  const stripFiveLeads = rc.changesStripHtml(fiveLeads);
+  check('N=5：显示值封顶为「' + changes.LIMITS.LEAD_CHIP_MAX + '+ 条 →」，真值仍写在 data-lead-count=5',
+    stripFiveLeads.includes('data-lead-count="5"') &&
+    stripFiveLeads.includes(changes.LIMITS.LEAD_CHIP_MAX + '+ 条 →') &&
+    stripFiveLeads.includes('5 条 →') === false);
 }
 
 /* ------------------------------------------------------------------ */
