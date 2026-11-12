@@ -42,6 +42,9 @@ const noteIn = source => {
 
 const plansPage = require('./plans-page');
 
+/** 日期形状（记录里的 `lastSeen` 是 `YYYY-MM-DD`；老数据可能带时间，比对前先截到日期） */
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
 const ARCHIVE_INDEX_ROUTE = 'archive/';
 const ARCHIVE_HEADING = '历史档案';
 const ARCHIVE_DESCRIPTION = '本站的原则是：资料失效不等于资料删除。'
@@ -55,9 +58,10 @@ const ARCHIVE_DESCRIPTION = '本站的原则是：资料失效不等于资料删
  * 档案详情是"单一实体的叶子页"，因此与索引页不是同一族 —— 见
  * `scripts/lib/page-kinds.js` 的 `LAYOUT_FAMILIES`：`archive-detail → 'detail'`。
  *
- * ⚠️ **今天生产 0 个实例**（三份日志的 ended / restored 事件各 0 条），但这条路径一旦生成页面，
- * 就必须是这一列，而不是整幅 1380px 的数据容器 —— 一个"今天永远跑不到"的渲染分支，
- * 正是最容易在它第一次跑起来的那天露出未验证布局的地方。
+ * ⚠️ **2026-11-12 之前生产 0 个实例**（三份日志的 ended / restored 事件各 0 条，这个"今天永远
+ * 跑不到"的分支因此也从未被验证过）；判据修复后第一批真实结束记录（deals 60 条）才让它开始生成页面。
+ * 这条路径必须是这一列，而不是整幅 1380px 的数据容器。第一次真正跑起来时暴露的登记缺口
+ * （`build-local.js` 没把 `note` 注入 renderArchiveEntry）已同批补上并被产物自检咬住。
  * 常量在这里定义、由 `build-local.js` 的调用点传入、再由 `assertPageHonesty()` 从整页上反查，
  * 三处指的是同一个字符串。
  */
@@ -267,6 +271,7 @@ function buildArchive({
   absence = {},
   tombstones = {},
   records = null,
+  linkableIds = null,
   asOf = null,
   massThreshold = null,
   anomalies = [],
@@ -283,6 +288,11 @@ function buildArchive({
   const baselineIds = Object.keys(fields);
   const sorted = sortEvents(events);
   const recordsById = recordsByIdOf(records);
+  // 「这条记录此刻是否有**站内详情页**」——由调用方传入集合（deals = `type === 'deal'` 的 id）。
+  // 判据不在归档层重写：它和 `/changes/` 的 `isLinkableDeal()` 是同一条（唯一实现在
+  // changes.js），归档层只消费现成的 id 集合。没有它的记录（工具条目、已离开数据集、
+  // 套餐 / API 记录）一律不给 `/deal/` 链接 —— 造死链比少一个入口更糟。
+  const linkableSet = linkableIds instanceof Set ? linkableIds : new Set(linkableIds || []);
   const tombstoneMap = tombstones instanceof Map ? tombstones : new Map(Object.entries(tombstones || {}));
   const absenceMap = absence && typeof absence === 'object' ? absence : {};
   const hasInput = baselineIds.length > 0 || sorted.length > 0;
@@ -362,6 +372,17 @@ function buildArchive({
 
     const lastEventAt = orderedEvents.length ? orderedEvents[orderedEvents.length - 1].at : baselineAt;
 
+    // 「最后有效时间」= 有证据的最后一次**见到它**（2026-11-12 修正，独立复查 F4）：
+    // 仍在数据集里的记录用 `record.lastSeen`（采集器最近一次真的列出它的日期）；已经离开
+    // 数据集的记录没有这个读数，只能退回「最后一条事件日」并在页面上如实注明来源。
+    // 修正前一律取最后一条事件日 ⇒ 对 60/60 条 ended 它恰好 == 结束发现时间（被读成
+    // 「有效到结束那天」，而真实 lastSeen 最早是 49 天前）。
+    // 注意 `lastChangedAt` 仍保留最后一条事件日：它回答的是「这一页的内容何时变过」，
+    // sitemap 的 `<lastmod>` 用后者 —— 展示口径不能把搜索引擎的更新时间一起带早。
+    // 本函数仍不读盘、不看时钟：两个读数都来自调用方给的 events / records。
+    const lastSeenAt = record && typeof record.lastSeen === 'string' &&
+      DATE_RE.test(record.lastSeen.slice(0, 10)) ? record.lastSeen.slice(0, 10) : null;
+
     entries.push({
       id,
       kind,
@@ -370,7 +391,9 @@ function buildArchive({
       firstSeen: createdEvent
         ? { at: createdEvent.at, origin: 'created' }
         : { at: baselineAt, origin: 'baseline' },
-      lastEffectiveAt: lastEventAt,
+      lastEffectiveAt: lastSeenAt || lastEventAt,
+      lastEffectiveAtSource: lastSeenAt ? 'lastSeen' : 'lastEvent',
+      lastChangedAt: lastEventAt,
       endedAt: lastEnded ? lastEnded.at : null,
       endDiscoveredAt: lastEnded ? (lastEnded.firstMissedAt || lastEnded.at) : null,
       endReason: lastEnded ? (lastEnded.reason || null) : null,
@@ -398,6 +421,13 @@ function buildArchive({
         type: event.type,
         reason: typeof event.reason === 'string' ? event.reason : null
       })),
+      // 这条记录此刻**有站内详情页**（调用方给的 linkable 集合 = 与 /changes/ 同一条判据）。
+      // ended(source_no_longer_lists) 的记录仍在 deals.json（本站只记「来源不再列出」，
+      // 不等于删除），其中 `type === 'deal'` 的仍会生成 /deal/<id>/ 详情页 —— 档案详情页
+      // 据此给一个「站内详情页」入口（见 renderArchiveEntry 的 sourceLines）。这不只是导航：
+      // 2026-11-12 的产物自检 [SEO/orphan] 就是靠这条稳定入链解决的（过期优惠从首页卡片消失、
+      // /changes/ 分栏又有行数上限，详情页会在「两边都照不到」的窗口里变成零入链的可索引页）。
+      linkable: linkableSet.has(id),
       suspect: false,
       suspectReason: null,
       absence: absenceMap[id] || null
@@ -693,7 +723,17 @@ function renderArchiveEntry(entry, ctx = {}) {
           <span class="pchgtype">${escapeHtml(event.type)}</span>
           <span class="pchgwhat">${escapeHtml(what)}</span></li>`;
   }).join('\n');
+  // 仍在数据集里的记录（source_no_longer_lists 不会把它从站内删掉）给一个站内详情页入口。
+  // 为什么必须有：详情页对所有 `type=deal` 记录都生成，而「首页卡片只渲未过期」「/changes/
+  // 分栏有 30 行上限」这两道窗都可能照不到同一条 —— 那时它就成了零入链的可索引页
+  // （产物自检的 SEO[orphan] 会红；2026-11-12 真实数据第一次撞上）。档案页是**只要记录
+  // 有生命周期事件就存在**的稳定表面，因此由它承担这条入链。只给 deals：套餐 / API 记录的
+  // 站内路由不在 `/deal/` 下，这里不为它们猜第二条路由。
+  const dealHref = entry.kind === 'deal' && entry.linkable
+    ? `${prefix}deal/${encodeURIComponent(entry.id)}/`
+    : null;
   const sourceLines = [
+    dealHref ? `<a href="${escapeHtml(dealHref)}">站内详情页 →</a>` : null,
     entry.source.officialUrl ? `<a href="${escapeHtml(entry.source.officialUrl)}" rel="noopener">官方页面 ↗</a>` : null,
     entry.source.sourceUrl ? `<a href="${escapeHtml(entry.source.sourceUrl)}" rel="noopener">原始出处 ↗</a>` : null,
     entry.source.source ? `来源类型：${escapeHtml(entry.source.source)}` : null
@@ -716,7 +756,7 @@ ${suspectBlock}
       <dl class="ainfo">
         <dt>状态</dt><dd>${escapeHtml(entry.suspect ? '疑似来源故障（结束记录待复核）' : (entry.status === 'restored' ? '曾结束，现已恢复' : '已结束 / 已下线'))}</dd>
         <dt>首次发现</dt><dd>${escapeHtml(entry.firstSeen.at || UNKNOWN_TEXT)}${entry.firstSeen.origin === 'baseline' ? '（基线快照，不是创建事件）' : ''}</dd>
-        <dt>最后有效时间</dt><dd>${escapeHtml(entry.lastEffectiveAt || UNKNOWN_TEXT)}</dd>
+        <dt>最后有效时间</dt><dd>${escapeHtml(entry.lastEffectiveAt || UNKNOWN_TEXT)}${entry.lastEffectiveAtSource === 'lastEvent' ? '（按最后一条事件日）' : ''}</dd>
         <dt>结束发现时间</dt><dd>${escapeHtml(entry.endDiscoveredAt || UNKNOWN_TEXT)}</dd>
         <dt>结束原因</dt><dd>${escapeHtml(entry.endReason || UNKNOWN_TEXT)}</dd>
         <dt>恢复时间</dt><dd>${escapeHtml(entry.restoredAt || UNKNOWN_NUM)}</dd>
@@ -725,7 +765,7 @@ ${suspectBlock}
       </dl>
 
       <h2 class="ph2" id="archive-known">最后已知内容</h2>
-      ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">${rich('这是**结束那一刻**的字段值（按基线 + 事件重放得到），不是当前值。')}</p>`)}
+      ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote">${rich('这是**结束那一刻**的字段值（按基线 + 事件重放得到），不是当前值。时间线只列本站记录过的事件与字段变化：没记录过的不补造，缺项留空不猜；官方来源一列只链记录里的原始地址。')}</p>`)}
       <dl class="aknown">
 ${knownRows || `        <dt>${escapeHtml(UNKNOWN_TEXT)}</dt><dd>${escapeHtml('结束时没有可重建的字段值')}</dd>`}
       </dl>

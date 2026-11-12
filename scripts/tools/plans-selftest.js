@@ -669,7 +669,9 @@ const FROZEN_VENDOR_KEYS = [
   ['huggingface', 'Hugging Face'],
   ['mistral', 'Mistral'],
   ['together', 'Together AI'],
-  ['minimax', 'MiniMax（稀宇科技）']
+  ['minimax', 'MiniMax（稀宇科技）'],
+  // 2026-11-12：AppSumo 新增厂商 NinjaPipe（新增路由 /vendor/ninjapipe/，既有路由一字未改）
+  ['ninjapipe', 'NinjaPipe']
 ];
 
 /**
@@ -716,7 +718,11 @@ const FROZEN_VENDOR_SLUGS = {
   '百川智能': 'baichuan',
   '360智脑': 'ai360',
   'Replit': 'replit',
-  'AWS': 'aws'
+  'AWS': 'aws',
+  /* 2026-11-12：AppSumo 采集新增厂商 NinjaPipe（1 条有效优惠 / 3 条历史事件）——
+   * 落地页门槛已达标（`lib/landing.js` 的 assertVendorSlugDeclared 会在没登记 slug 时
+   * 让构建直接失败），按冻结表纪律**新增一行**（既有 `/vendor/` 路由一个字节未改）。 */
+  'NinjaPipe': 'ninjapipe'
 };
 
 /** 逐条比对 A 空间的 `[键, 显示名]` 序列（顺序也算）；返回漂移列表（空 = 未漂移） */

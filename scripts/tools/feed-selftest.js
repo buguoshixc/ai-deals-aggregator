@@ -575,7 +575,19 @@ function judgeRealDataDealLinkability(mod) {
   // 判据①一旦变红这里会跟着空掉，这颗牙就被静默拔掉了。
   const mustSelect = reading.events.filter(event => linkableKeys.has(event.id));
   const mustSelectKeys = mustSelect.map(event => event.id).slice().sort().join(',');
-  const selectedMatchMustSelect = reading.selectedKeys.slice().sort().join(',') === mustSelectKeys;
+  // 该发的条数超过 `FEED_MAX_ITEMS` 时，feed 会**明确记账**地截断（`stats.truncated`），
+  // 入选集合只会是「该发集合」的前缀 —— 此时逐元素相等不成立，但条数必须对得上：
+  //   kept = min(该发, 上限) 且 truncated = max(0, 该发 − 上限)。
+  // 2026-11-12 实测：真实日志涨到 155 条事件（该发 54 条 > 上限 40）第一次触发截断，
+  // 旧判据把「被截断」误当成「没入选」而恒红 —— 那是判据没跟上 feed 自己的账目形状，不是死链回归。
+  const expectedKept = Math.min(mustSelect.length, mod.FEED_MAX_ITEMS);
+  const expectedTruncated = Math.max(0, mustSelect.length - mod.FEED_MAX_ITEMS);
+  const truncationAccounted = reading.stats.kept === expectedKept
+    && reading.stats.truncated === expectedTruncated
+    && reading.selectedKeys.length === expectedKept;
+  const selectedMatchMustSelect = truncationAccounted
+    && (mustSelect.length > mod.FEED_MAX_ITEMS
+      || reading.selectedKeys.slice().sort().join(',') === mustSelectKeys);
   const selectedAllLinkable = reading.selectedKeys.every(key => linkableKeys.has(key));
   // 反向：kept 与入选集合必须对得上（防「边入选边丢弃」的记账错位）。
   const keptMatchesSelection = reading.stats.kept === reading.selectedKeys.length;
@@ -584,21 +596,23 @@ function judgeRealDataDealLinkability(mod) {
     && [...reading.recordDerivedIds].every(id => linkableKeys.has(id));
   const accountsClosed = reading.stats.kept + droppedTotalOf(reading.stats)
     + reading.stats.truncated === reading.stats.considered;
-  // 被丢的每条都必须真的没有详情页（既没有 deal 型记录，或那份 Set 里没有它）。
-  const droppedAllUnlinkable = reading.events
-    .filter(event => !reading.selectedKeys.includes(event.id))
-    .every(event => !linkableKeys.has(event.id));
+  // 被丢的每条都必须真的没有详情页：直接对 `dropped.notLinkable` 的**精确条数**对账
+  // （= 事件总数 − 该发条数）。截断条数由上面的 truncationAccounted 单独守，
+  // 不能拿「没入选」当「被丢」—— 截断的每一条恰恰都是**有**详情页的。
+  const droppedNotLinkableExact = reading.stats.dropped.notLinkable
+    === reading.events.length - mustSelect.length;
   return {
     ok: reading.events.length > 0 && setMatchesRecords && selectedMatchMustSelect
-      && selectedAllLinkable && keptMatchesSelection && accountsClosed && droppedAllUnlinkable,
+      && selectedAllLinkable && keptMatchesSelection && accountsClosed && droppedNotLinkableExact,
     detail: `真实 deals.json ${reading.deals.length} 条（有详情页 ${linkableKeys.size} 条 · 无详情页 `
       + `${reading.deals.length - linkableKeys.size} 条）· deal-history ${reading.events.length} 条事件`
       + `（指向无详情页记录 ${reading.events.length - mustSelect.length}/${reading.events.length}`
       + ` ⇒ 该发 ${mustSelect.length} 条）⇒ ${statsLine(reading.stats)}`
       + ` · 判据集合 == 按记录字段重算 ${setMatchesRecords}`
+      + ` · 截断记账（kept=${expectedKept} / truncated=${expectedTruncated}）${truncationAccounted}`
       + ` · 入选集合 == 该发集合 ${selectedMatchMustSelect} · 入选逐条有详情页 ${selectedAllLinkable}`
       + ` · kept == 入选条数 ${keptMatchesSelection}`
-      + ` · 被丢的逐条确实没有详情页 ${droppedAllUnlinkable}`
+      + ` · 被丢的逐条确实没有详情页 ${droppedNotLinkableExact}`
   };
 }
 

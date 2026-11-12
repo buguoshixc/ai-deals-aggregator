@@ -105,8 +105,13 @@ const renderCoreBundle = renderCore.load(path.join(ROOT, 'index.html'));
 const vendorKeyOf = deal => renderCoreBundle.vendorOf(deal).name;
 
 const vendorThresholds = site.VENDOR_THRESHOLDS;
+const dealHistoryEvents = Array.isArray(readJson('scripts/data/deal-history.json').events)
+  ? readJson('scripts/data/deal-history.json').events
+  : [];
+const vendorEventCount = landing.vendorEventCountsOf({ deals, events: dealHistoryEvents, vendorKeyOf });
 const planOptions = {
-  deals, vendorKeyOf, vendorSlugs: site.VENDOR_SLUGS, vendorThresholds, eventCountOf: () => 0
+  deals, vendorKeyOf, vendorSlugs: site.VENDOR_SLUGS, vendorThresholds,
+  eventCountOf: name => vendorEventCount.get(name) || 0
 };
 const basePlan = landing.planLandingPages(planOptions);
 const extPlan = landing.planLandingPages({
@@ -147,6 +152,16 @@ check(`真实数据上厂商页从 ${basePlan.pages.filter(p => p.kind === 'vend
  */
 function candidateSetProblems(pages) {
   const problems = [];
+  // 身份来源 = **A 空间规范名**（RENDER-CORE 的 `vendorKeyNames()`，与 `selftest:seo` 同一条判据）。
+  // 这里原先是「providers.json 里 vendorKey 非 null 的 name」—— 那只是 A 空间的一个子集：
+  // 2026-11-12 出现的 NinjaPipe 是**只有优惠记录、没有 provider 条目**的新厂商
+  // （A 空间身份已登记、`/vendor/ninjapipe/` 已生成），于是「页面不许超出身份集合」
+  // 这条把真实页面误判成越权。身份判据与页面计划必须读同一个集合，不能各取一份子集。
+  const aSpaceNames = renderCoreBundle.vendorKeyNames().map(pair => pair.name);
+  const identityNames = new Set(aSpaceNames);
+  // 正向（必须有页）只判**有 provider 条目且 vendorKey 非 null** 的身份 —— 那是
+  // providers.json 层的责任；只有优惠记录、没有 provider 条目的新厂商（NinjaPipe）
+  // 由计划层（`landing.planLandingPages`）与 `seo-verify` 的行集合对账负责，不在这里重复判。
   const identityProviders = Object.entries(providerTable)
     .filter(([, entry]) => entry && entry.vendorKey).map(([, entry]) => String(entry.name));
   const expected = identityProviders.filter(name => {
@@ -154,7 +169,7 @@ function candidateSetProblems(pages) {
     return material.nonDeal || pages.some(page => page.key === name);
   });
   for (const name of expected) if (!pages.some(page => page.key === name)) problems.push(`${name}: 有 A 空间身份且达标，却没有厂商页`);
-  for (const page of pages) if (!identityProviders.includes(page.key)) problems.push(`${page.key}: 页面存在，但不在 A 空间身份集合里`);
+  for (const page of pages) if (!identityNames.has(page.key)) problems.push(`${page.key}: 页面存在，但不在 A 空间身份集合里`);
   return problems;
 }
 check('候选集合 == 「有 A 空间厂商名 且 达标」的 provider 集合（不再多、不再少）',

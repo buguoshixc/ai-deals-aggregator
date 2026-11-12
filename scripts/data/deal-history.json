@@ -2705,7 +2705,374 @@
       }
     }
   },
-  "absence": {},
+  "absence": {
+    "014a945319a7": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "06bc1d631f62": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "070cad8aa770": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "0750a3061d72": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "086534ebceeb": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-12",
+      "endedAt": null
+    },
+    "0ddacfb2cc6e": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "1fff4784ec9d": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "27b4acca203a": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "31232ad4315e": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "314fb9d43531": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "33d4fd34f78f": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "39d2832e3c8f": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "3fa2cec73c43": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "413a77602a7c": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "44a401cd8f13": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "46b1877f5969": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "4a4f4777ffbc": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "4fcc2847e3fc": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "4fede366f914": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "54d867a4530d": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "5975c73aa115": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "60317b771abf": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "654e05ed3453": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "69a0d047e3f9": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "6c02d0ffe148": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "72048178d658": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "72410d92e184": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "75c584a4d6a2": {
+      "source": "OpenRouter",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "7f1250402ebb": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "7f3607d92aa5": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "8384e847f282": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "84dfc76c38e0": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "8583e9860d88": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "8797caa10aea": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "8b8b44476f52": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "8c2a12fcf560": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "8c9181f2b117": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "90ef368f720d": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "9b734ca08ce5": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "9ce2f3d45c11": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "9d99178344b6": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "9e63611224ef": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "a134b60a8edc": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "a4dc88711e74": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "a9053ca847fb": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "ab4c0e5c007e": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "b4d191dd0c65": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "bf08e4fbd5ac": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "c3d6bd34ebfe": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "c9c5429f2205": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "cb17bb1508c4": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "cbfce04c5556": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "d338170e86af": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "d6cd29e05603": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "d7d64e1ef240": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "dfa07fdc244d": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "e7f286155de9": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "ee446d349239": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "ef3cba339a72": {
+      "source": "OpenRouter",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "f6e6f3b1c820": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "f91e1085801f": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    }
+  },
   "events": [
     {
       "id": "4a4f4777ffbc",
@@ -4415,6 +4782,916 @@
       "to": "https://appsumo.com/collections/ending-soon/",
       "origin": "observed",
       "runAt": "2026-11-11T19:19:08.228Z"
+    },
+    {
+      "id": "014a945319a7",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "NexusAi",
+        "vendor": "NexusAi"
+      }
+    },
+    {
+      "id": "06bc1d631f62",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Sync.so",
+        "vendor": "Sync.so"
+      }
+    },
+    {
+      "id": "070cad8aa770",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Verla",
+        "vendor": "Verla"
+      }
+    },
+    {
+      "id": "0750a3061d72",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Flora AI",
+        "vendor": "Flora AI"
+      }
+    },
+    {
+      "id": "0ddacfb2cc6e",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Wavel.ai",
+        "vendor": "Wavel.ai"
+      }
+    },
+    {
+      "id": "1fff4784ec9d",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Privaro",
+        "vendor": "Privaro"
+      }
+    },
+    {
+      "id": "27b4acca203a",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "TalkPix",
+        "vendor": "TalkPix"
+      }
+    },
+    {
+      "id": "31232ad4315e",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Hylark",
+        "vendor": "Hylark"
+      }
+    },
+    {
+      "id": "314fb9d43531",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "GPT Image 2.5",
+        "vendor": "GPT Image"
+      }
+    },
+    {
+      "id": "33d4fd34f78f",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "CaptionBolt",
+        "vendor": "CaptionBolt"
+      }
+    },
+    {
+      "id": "39d2832e3c8f",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Unboring.ai",
+        "vendor": "Unboring.ai"
+      }
+    },
+    {
+      "id": "3fa2cec73c43",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "AI Manga Translator AI",
+        "vendor": "AI Manga"
+      }
+    },
+    {
+      "id": "413a77602a7c",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Tenki Cloud",
+        "vendor": "Tenki Cloud"
+      }
+    },
+    {
+      "id": "44a401cd8f13",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Seedance 3.0 AI",
+        "vendor": "Seedance 3.0"
+      }
+    },
+    {
+      "id": "46b1877f5969",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Ontosight.ai",
+        "vendor": "Ontosight.ai"
+      }
+    },
+    {
+      "id": "4a4f4777ffbc",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Flowrite",
+        "vendor": "Flowrite"
+      }
+    },
+    {
+      "id": "4fcc2847e3fc",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "more.graphics",
+        "vendor": "more.graphics"
+      }
+    },
+    {
+      "id": "4fede366f914",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Labrynth",
+        "vendor": "Labrynth"
+      }
+    },
+    {
+      "id": "54d867a4530d",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Landscape Design AI",
+        "vendor": "Landscape Design"
+      }
+    },
+    {
+      "id": "5975c73aa115",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Qlip.ai",
+        "vendor": "Qlip.ai"
+      }
+    },
+    {
+      "id": "60317b771abf",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "AutoPod",
+        "vendor": "AutoPod"
+      }
+    },
+    {
+      "id": "654e05ed3453",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Sorank",
+        "vendor": "Sorank"
+      }
+    },
+    {
+      "id": "69a0d047e3f9",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Pickle AI",
+        "vendor": "Pickle AI"
+      }
+    },
+    {
+      "id": "6c02d0ffe148",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Designkit (formerly 美图设计室-智能生成海报)",
+        "vendor": "Designkit"
+      }
+    },
+    {
+      "id": "72048178d658",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "DeepBrain AI",
+        "vendor": "DeepBrain AI"
+      }
+    },
+    {
+      "id": "72410d92e184",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "TickClip",
+        "vendor": "TickClip"
+      }
+    },
+    {
+      "id": "75c584a4d6a2",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "XingChen: Xing4.0 29B A4B (free)",
+        "vendor": "XingChen"
+      }
+    },
+    {
+      "id": "7f1250402ebb",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Klarent",
+        "vendor": "Klarent"
+      }
+    },
+    {
+      "id": "7f3607d92aa5",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Genmo Mochi-1",
+        "vendor": "Genmo Mochi"
+      }
+    },
+    {
+      "id": "8384e847f282",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Copilot Audio Expression",
+        "vendor": "Copilot Audio"
+      }
+    },
+    {
+      "id": "84dfc76c38e0",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Genjutsu AI Video Editor",
+        "vendor": "Genjutsu AI"
+      }
+    },
+    {
+      "id": "8583e9860d88",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Getsolved AI Detector",
+        "vendor": "Getsolved AI"
+      }
+    },
+    {
+      "id": "8797caa10aea",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Prismical",
+        "vendor": "Prismical"
+      }
+    },
+    {
+      "id": "8b8b44476f52",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Webclaw",
+        "vendor": "Webclaw"
+      }
+    },
+    {
+      "id": "8c2a12fcf560",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Seedance 3.0",
+        "vendor": "Seedance 3.0"
+      }
+    },
+    {
+      "id": "8c9181f2b117",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Rumi Events",
+        "vendor": "Rumi Events"
+      }
+    },
+    {
+      "id": "90ef368f720d",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Anyvids",
+        "vendor": "Anyvids"
+      }
+    },
+    {
+      "id": "9b734ca08ce5",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Invoice Mama",
+        "vendor": "Invoice Mama"
+      }
+    },
+    {
+      "id": "9ce2f3d45c11",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Jason AI",
+        "vendor": "Jason AI"
+      }
+    },
+    {
+      "id": "9d99178344b6",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Infinite Slop",
+        "vendor": "Infinite Slop"
+      }
+    },
+    {
+      "id": "9e63611224ef",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "aipoker.bot",
+        "vendor": "aipoker.bot"
+      }
+    },
+    {
+      "id": "a134b60a8edc",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Dubly.AI",
+        "vendor": "Dubly.AI"
+      }
+    },
+    {
+      "id": "a4dc88711e74",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "looot",
+        "vendor": "looot"
+      }
+    },
+    {
+      "id": "a9053ca847fb",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Humanize Max",
+        "vendor": "Humanize Max"
+      }
+    },
+    {
+      "id": "ab4c0e5c007e",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Kreado AI",
+        "vendor": "Kreado AI"
+      }
+    },
+    {
+      "id": "b4d191dd0c65",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "HiClip",
+        "vendor": "HiClip"
+      }
+    },
+    {
+      "id": "bf08e4fbd5ac",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Star By Face",
+        "vendor": "Star By"
+      }
+    },
+    {
+      "id": "c3d6bd34ebfe",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Getsolved",
+        "vendor": "Getsolved"
+      }
+    },
+    {
+      "id": "c9c5429f2205",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Libra",
+        "vendor": "Libra"
+      }
+    },
+    {
+      "id": "cb17bb1508c4",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "AI Manga Translator",
+        "vendor": "AI Manga"
+      }
+    },
+    {
+      "id": "cbfce04c5556",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Motionleap",
+        "vendor": "Motionleap"
+      }
+    },
+    {
+      "id": "d338170e86af",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "MagicRemover",
+        "vendor": "MagicRemover"
+      }
+    },
+    {
+      "id": "d6cd29e05603",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Dawnwood",
+        "vendor": "Dawnwood"
+      }
+    },
+    {
+      "id": "d7d64e1ef240",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "ImagesArt AI Image Editor",
+        "vendor": "ImagesArt AI"
+      }
+    },
+    {
+      "id": "dfa07fdc244d",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Notte",
+        "vendor": "Notte"
+      }
+    },
+    {
+      "id": "e7f286155de9",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "NoCodeBackend",
+        "vendor": "NoCodeBackend"
+      }
+    },
+    {
+      "id": "ee446d349239",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "AltText.ai",
+        "vendor": "AltText.ai"
+      }
+    },
+    {
+      "id": "ef3cba339a72",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Crouton Alpha",
+        "vendor": "Crouton"
+      }
+    },
+    {
+      "id": "f6e6f3b1c820",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Wideo",
+        "vendor": "Wideo"
+      }
+    },
+    {
+      "id": "f91e1085801f",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "ReelMuse.ai",
+        "vendor": "ReelMuse.ai"
+      }
+    },
+    {
+      "id": "fef21feaac71",
+      "at": "2026-11-12",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/ending-soon/",
+      "to": "https://appsumo.com/collections/new/",
+      "origin": "observed",
+      "runAt": "2026-11-12T02:09:31.338Z"
     }
   ]
 }

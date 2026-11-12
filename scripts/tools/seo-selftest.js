@@ -485,9 +485,15 @@ section('四、注册表与产物的一致性（用真实数据）');
   const payload = JSON.parse(fs.readFileSync(path.join(ROOT, 'deals.json'), 'utf8'));
   const renderCore = require('../lib/render-core').load(path.join(ROOT, 'index.html'));
   const vendorKeyOf = deal => renderCore.vendorOf(deal).name;
+  const realHistory = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts', 'data', 'deal-history.json'), 'utf8'));
+  const vendorEventCount = landing.vendorEventCountsOf({
+    deals: payload.deals,
+    events: Array.isArray(realHistory.events) ? realHistory.events : [],
+    vendorKeyOf
+  });
   const plan = landing.planLandingPages({
     deals: payload.deals, vendorKeyOf, vendorSlugs: site.VENDOR_SLUGS,
-    vendorThresholds: site.VENDOR_THRESHOLDS, eventCountOf: () => 0
+    vendorThresholds: site.VENDOR_THRESHOLDS, eventCountOf: name => vendorEventCount.get(name) || 0
   });
 
   check('计划里没有问题（违规在构建期就直接抛错）', plan.problems.length === 0, plan.problems.join('；'));
@@ -669,9 +675,15 @@ section('六、正文下限**余量**登记（P2 残留 e1：/need/no-card/ 只�
   const dealsWithDerived = payload.deals.map(deal => Object.assign({}, deal, {
     needs: audience.needsOf(deal), collections: audience.collectionsOf(deal)
   }));
+  const realHistoryForRegistry = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts', 'data', 'deal-history.json'), 'utf8'));
+  const vendorEventCountForRegistry = landing.vendorEventCountsOf({
+    deals: dealsWithDerived,
+    events: Array.isArray(realHistoryForRegistry.events) ? realHistoryForRegistry.events : [],
+    vendorKeyOf
+  });
   const plan = landing.planLandingPages({
     deals: dealsWithDerived, vendorKeyOf, vendorSlugs: site.VENDOR_SLUGS,
-    vendorThresholds: site.VENDOR_THRESHOLDS, eventCountOf: () => 0
+    vendorThresholds: site.VENDOR_THRESHOLDS, eventCountOf: name => vendorEventCountForRegistry.get(name) || 0
   });
   const staleRows = rows.filter(row => {
     const spec = plan.pages.find(page => page.route === row.route);

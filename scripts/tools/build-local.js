@@ -3649,16 +3649,12 @@ function assemble() {
   //
   // 厂商门槛**复用订阅那一套常量**（site.VENDOR_THRESHOLDS）：页面与 Feed 的集合
   // 因此在结构上不可能分头变化 —— 这正是 v1.6 报告里那条「URL 稳定性只兜住一半」的补法。
-  const vendorEventCount = (() => {
-    const counts = new Map();
-    const vendorOfId = new Map(payload.deals.map(deal => [deal && deal.id, deal ? VENDOR_KEY_OF(deal) : '']));
-    for (const event of history.eventsOf(historyStore.store)) {
-      const name = vendorOfId.get(event && event.id);
-      if (!name) continue;
-      counts.set(name, (counts.get(name) || 0) + 1);
-    }
-    return counts;
-  })();
+  // 厂商事件数：唯一实现在 `landing.vendorEventCountsOf()`（构建期 / 独立验收 / 三个 selftest 同源）。
+  const vendorEventCount = landing.vendorEventCountsOf({
+    deals: payload.deals,
+    events: history.eventsOf(historyStore.store),
+    vendorKeyOf: VENDOR_KEY_OF
+  });
   // ⚠️ v3.0 Stage E：`landing.planLandingPages()` 的调用点**后移到 Model Registry 之后**
   // （见下面「落地页计划」那一段）—— 因为它现在要 join 四份数据：
   // plans / api-plans / providerTable / Model Registry 的派生产物。
@@ -4455,17 +4451,21 @@ function assemble() {
   // （含事件类型分解）。ended/restored 分支由 `selftest:archive` 的合成夹具驱动。
   // **绝不为了填满这一页而补造事件。**
   const archiveAsOf = dealLinksAsOf || lastmod;
+  // 档案条目可挂的「站内详情页」判据与 `/changes/` 完全同源（`changes.linkableDealIdsOf()`）：
+  // 只有 `type === 'deal'` 的记录才有 /deal/<id>/ 详情页，工具条目 / 套餐 / API 记录没有。
+  const archiveLinkableIds = changes.linkableDealIdsOf(payload.deals);
   const archives = [
-    { kind: 'deal', store: historyStore.store, records: payload.deals },
+    { kind: 'deal', store: historyStore.store, records: payload.deals, linkableIds: archiveLinkableIds },
     { kind: 'plan', store: planHistoryStore, records: plansStore.plans },
     { kind: 'api', store: apiPlanHistoryStore, records: apiPlansStore.plans }
-  ].map(({ kind, store, records }) => archiveLib.buildArchive({
+  ].map(({ kind, store, records, linkableIds }) => archiveLib.buildArchive({
     kind,
     baseline: store ? store.baseline : null,
     events: (store && Array.isArray(store.events)) ? store.events : [],
     absence: (store && store.absence) || {},
     anomalies: (store && store.anomalies) || [],
     records,
+    linkableIds: linkableIds || null,
     startedAt: (store && store.startedAt) || null,
     asOf: archiveAsOf
   }));
@@ -4520,7 +4520,12 @@ function assemble() {
         route,
         title: `${entry.title || entry.id} · ${archiveLib.ARCHIVE_HEADING}`,
         description: `${entry.title || entry.id} 的结束 / 恢复记录：首次发现、最后有效时间、结束发现时间、最后已知内容与变化时间线。资料失效不等于资料删除。`,
-        body: archiveLib.renderArchiveEntry(entry, { prefix, siteUrl: SITE_URL }),
+        // 说明登记：档案详情页的 `.snote` 由 `lib/archive.js` 的 renderArchiveEntry **逐条登记**
+        // （notes-manifest-residual-v1 接管了构造点）。`note` 必须从这里注入 —— 少了它，
+        // noteIn() 退化成恒等函数，页面照常输出 `.snote` 却没有登记（构建期「先登记后输出」对账
+        // 直接红）。这条路径在 2026-11-12 之前生产 0 个实例（三份日志 ended/restored 全 0），
+        // 所以这个缺口一直没有被照到；判据修复后第一次跑起来就被产物自检咬住了。
+        body: archiveLib.renderArchiveEntry(entry, { prefix, siteUrl: SITE_URL, note: noteDeclarerFor(route) }),
         jsonLd: archiveLib.archiveEntryJsonLd(entry, { siteUrl: SITE_URL }),
         prefix,
         extraCss: ARCHIVE_PAGE_CSS,
@@ -4531,8 +4536,10 @@ function assemble() {
         mainClass: archiveLib.ARCHIVE_ENTRY_MAIN_CLASS
       }, html);
       // 说明意图：档案详情页的 `.snote` 已由 `lib/archive.js` 的 renderArchiveEntry **逐条登记**
-      // （notes-manifest-residual-v1 接管了构造点）。目前**一条 ended/restored 都没有**（这个循环不跑），
-      // 一旦跑起来，登记会随渲染一起上场（漏登记即红）。
+      // （notes-manifest-residual-v1 接管了构造点；`note` 在 renderStaticPage 的 body 参数里注入）。
+      // 2026-11-12 之前三份日志的 ended/restored 全为 0、这个循环不跑；判据修复后第一批真实
+      // 结束记录（60 条）才第一次让这条「从未验证过的渲染分支」跑起来 —— 登记缺口也就是那时
+      // 被产物自检照出来并补上的（见上面 body 参数的注释）。
       notePage(route, { kind: 'archive-entry' });
       fs.writeFileSync(path.join(OUT, route, 'index.html'), entryHtml, 'utf8');
       const entryProblems = archiveLib.assertPageHonesty(entryHtml, { kind: 'archive-entry', entry });
@@ -4696,7 +4703,7 @@ function assemble() {
   </url>`;
   const archiveDetailUrls = gatedArchiveEntries.map(entry => `  <url>
     <loc>${SITE_URL}${archiveLib.archiveEntryRoute(entry)}</loc>
-    <lastmod>${String(entry.lastEffectiveAt || lastmod).slice(0, 10)}</lastmod>
+    <lastmod>${String(entry.lastChangedAt || entry.lastEffectiveAt || lastmod).slice(0, 10)}</lastmod>
     <changefreq>${pageKinds.sitemapMeta('archive-detail').changefreq}</changefreq>
     <priority>${pageKinds.sitemapMeta('archive-detail').priority}</priority>
   </url>`).join('\n');

@@ -36,15 +36,11 @@ for (const deal of payload.deals) {
 const renderCore = require('../lib/render-core').load(path.join(ROOT, 'index.html'));
 const vendorKeyOf = deal => renderCore.vendorOf(deal).name;
 const store = history.load();
-const vendorEventCount = (() => {
-  const counts = new Map();
-  const byId = new Map(payload.deals.map(deal => [deal.id, vendorKeyOf(deal)]));
-  for (const event of history.eventsOf(store.store)) {
-    const name = byId.get(event && event.id);
-    if (name) counts.set(name, (counts.get(name) || 0) + 1);
-  }
-  return counts;
-})();
+const vendorEventCount = landing.vendorEventCountsOf({
+  deals: payload.deals,
+  events: history.eventsOf(store.store),
+  vendorKeyOf
+});
 
 const plan = landing.planLandingPages({
   deals: payload.deals,

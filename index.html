@@ -612,35 +612,54 @@
 
     /* ---------- 变化雷达（v1.5） ----------
        与 .needs 同一套视觉语言（pill + --line 边框 + --fs-sm）。
-       **它不单独占一行**：与「跳到档位」共用 `.hubline` 这一行。原因是一道只有 1px 的余量 ——
-       1440×900 实测：网格起点 227px、卡片高 192px、行距 12px、档间分带标题 26px，
-       第三行（档 2 的第一行）底边 = 899px，距视口底边只剩 1px。任何独立成行的条带
-       （哪怕 23px 高）都会把首屏完整可见从 9 张压到 6 张 —— 这条由 verify-site.js 的
-       「首屏完整可见卡片 ≥ 9」硬断言当着，实测数据见本文件上方的 .hubline 注释与报告。
-       ⚠️ v1.8 追记：上方那块专题导航卡从 31px 抬到 153px（δ=+122px），首屏完整可见因此
-       **就是** 9 → 6 张。阈值与 ours-baseline 基线按实测同步（唯一被授权的契约变更，
-       见报告）。上面这段数字全部是**改动之前**测的，留在这里作为那次实测的原始记录，
-       不要在下一轮把它当成本轮之后的现状。
-       雷达因此是那一行的**可伸缩项**：`flex: 1 1 auto; min-width: 0`，内容超宽时由
-       正文区（.rscroll）内部横滑，绝不把整行顶成两行；唯一的入口「全部变化」放在
-       横滑容器**外面**、`flex: none` —— 一个需要横滑才看得见的入口等于没有入口（v1.2 的同一课）。 */
+       **2026-11-12 起它独占一行**：`.hubline { flex-wrap: wrap }` + `.radar { flex: 1 1 100% }`
+       （basis 100% 才强制换行；`.hubline .jump` 的 `flex: 0 0 auto` 不变）。
+       条带自身仍只有一行（实测 26px，闸值 ≤34px 不变），正文区（.rscroll）内部横滑，
+       条带自身零横溢（navOverflow ≤ 0）；入口「全部变化」仍在横滑容器**外面**、`flex: none`
+       —— 一个需要横滑才看得见的入口等于没有入口（v1.2 的同一课）。
+       正文区右缘另有 24px 渐隐（见 .rscroll 的 mask-image）：条目被切时切口不再是一条直边；
+       内容装得下时遮罩落在右侧空白上，看不见。
+       代价（2026-11-12 实测，本机 Linux Chromium，同一份 dist）：`.hubline` 28px → 66px
+       （+38px = 26px 条带 + 12px 行距；设计值 24 + 12 = 36px，差的 2px 来自字体度量下的行高）。
+       1440×900：网格起点 353 → 391px，「首屏完整可见卡片」**6 → 6**、「列表视图首屏完整
+       可见 ≥ 10 行」**10 → 10**（列表视图里 #jumpNav 隐藏，`.hubline` 只剩条带这一行，
+       高度不变）—— verify-site.js 的两条硬断言因此都保持绿。
+       真实窗口视口 1305×803：「完整可见卡片」6 → 3（第 6 张卡底边 823px > 803px；含截断
+       9 → 6）—— 这是该视口下的实际读数，闸值「≥6」只在 1440×900 门禁视口上跑。
+       历史记录（v1.5 时代实测，**改动之前**的原始记录，勿当现状）：1440×900 网格起点 227px、
+       卡片 192px、行距 12px、档间分带标题 26px ⇒ 第三行底边 899px、距视口底边仅 1px；
+       当时任何独立成行的条带（哪怕 23px）都会把首屏完整可见从 9 张压到 6 张，所以条带与
+       「跳到档位」共用一行。v1.8 专题卡把网格起点抬到 349px（本机实测 353px）后，首屏
+       完整可见本来就是 9 → 6，闸值同步改成 6。
+       ⚠️ verify-site.js:749-750 的「顶部再加任何一条独立条带（实测 ≥47px）都会让它重新变红」
+       与本次读数打架：拆行前第 6 张卡底 785px、距 900 还有 115px；+38px 后 823px、仍剩 77px。
+       以读数为准（未改阈值、未删那条历史注释）。
+       窄屏（≤760px）本来就是这套换行布局，唯一差异是行距 6px（见媒体查询）；
+       本次改动后窄屏几何与改动前逐项相同。 */
     .hubline {
-      display: flex; align-items: center; gap: var(--s3); flex-wrap: nowrap;
+      display: flex; align-items: center; gap: var(--s3); flex-wrap: wrap;
       min-width: 0; margin: 0 0 var(--s2);
     }
     /* 跳到档位**不许收缩**（`flex: 0 0 auto`）：它一旦被压窄，四个 chip 会在自己内部折成两行，
-       整行高度 +28px，首屏照样掉一行（演练实测：收缩版网格起点 261px、完整可见 6 张；
-       冻结版 227px、9 张）。要吸收宽度的只能是雷达的正文区（它内部横滑）。 */
+       整行高度 +28px，首屏跟着下移。要吸收宽度的只能是雷达的正文区（它内部横滑）。
+       （下面这组演练数字是 v1.5「共用一行」时代的实测记录，只作历史：收缩版网格起点
+       261px、完整可见 6 张；冻结版 227px、9 张。2026-11-12 拆行后的读数见上方 .radar 注释。） */
     .hubline .jump { margin: 0; flex: 0 0 auto; min-width: 0; }
     .radar {
       display: flex; align-items: center; gap: var(--s2);
-      font-size: var(--fs-sm); flex: 1 1 auto; min-width: 0;
+      font-size: var(--fs-sm); flex: 1 1 100%; min-width: 0;
     }
     .radar .rlb { color: var(--mut); flex: none; }
     .radar .rscroll {
       flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 6px var(--s2);
       overflow-x: auto; overflow-y: hidden; white-space: nowrap;
       scrollbar-width: none; -ms-overflow-style: none;
+      /* 右缘 24px 渐隐：只在正文区**真的被切**时才落在切口上。正文区撑满整行、条目左对齐，
+         内容装得下时最右侧 24px 是空白，遮罩落在空处看不见 —— 所以不需要 JS 监听
+         「能不能滑」再决定是否显示。「全部变化 →」在横滑容器外，不受这个遮罩影响。
+         `-webkit-` 同款留给 Safari（同一份 CSS 也服务那一侧）。 */
+      mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent);
+      -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent);
     }
     .radar .rscroll::-webkit-scrollbar { display: none; }
     .radar .ritem {
@@ -1343,10 +1362,11 @@
       .needs { padding: 6px 16px 0; }
       .need-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s2); }
       .need-card { padding: 0 10px; gap: var(--s1); }
-      /* 变化雷达：窄屏下「跳到档位」本身是四等分整行（见上），所以雷达顺延到下一行 ——
-         仍然只有一行（实测 24px），且正文区横滑、入口固定。桌面端它不额外占行。 */
-      .hubline { flex-wrap: wrap; gap: 6px var(--s3); }
-      .radar { flex: 1 1 100%; }
+      /* 变化雷达：换行本身（`.hubline { flex-wrap: wrap }` + `.radar { flex: 1 1 100% }`）
+         已在基础层、全宽度生效，窄屏不再另写一份同名规则 —— 两份同名规则必然各自漂移。
+         这里只保留窄屏真正不同的两件事：**行距 6px**（桌面 12px；窄屏条带紧跟四等分的
+         「跳到档位」，6px 是既有的紧凑档）与条目内边距 / 空态短文案。 */
+      .hubline { gap: 6px var(--s3); }
       .radar .ritem { padding: 4px 9px; }
       /* 窄屏换短文案：全称 22 字在 390px 下比正文区宽，会被裁掉半句（实测溢出 16px） */
       .radar .rnone .rf { display: none; }
@@ -1537,8 +1557,9 @@
   <!--PRERENDER:needs-->
 
   <!--
-    变化雷达（v1.5）在「跳到档位」那一行里（见 main 里的 .hubline）——
-    它**不单独占一行**，原因与实测数字写在 .radar / .hubline 的样式注释里。
+    变化雷达（v1.5）自 2026-11-12 起**独占一行**（`.hubline { flex-wrap: wrap }` +
+    `.radar { flex: 1 1 100% }`，见 main 里的 .hubline）——「跳到档位」留在上一行。
+    代价与改前改后的实测读数写在 .radar / .hubline 的样式注释里。
   -->
 
   <div class="wrap">
@@ -1560,13 +1581,20 @@
     </div>
 
     <!--
-      变化雷达（v1.5）与「跳到档位」**共用一行**（`.hubline`）。
-      为什么不是自己占一行：1440×900 实测网格起点 227px、卡片 192px、行距 12px、
-      每档之间的分带标题 26px —— 第三行（档 2 的第一行）底边落在 899px，距视口底边
-      只剩 **1px**。任何独立成行的条带（哪怕 23px）都会整掉一行，首屏完整可见从
-      9 张掉到 6 张。跳到档位那一行右侧本来就有大量空白，因此雷达放在它右边、由
-      `flex: 1 1 auto; min-width: 0` 收缩（正文区内部横滑），一行之内解决。
-      窄屏例外：那里「跳到档位」本身是四等分整行，雷达顺延到下一行（仍是一行 24px）。
+      变化雷达（v1.5）自 2026-11-12 起**独占一行**：`.hubline { flex-wrap: wrap }` +
+      `.radar { flex: 1 1 100% }`（basis 100% 强制换行），「跳到档位」仍在上一行。
+      上一行右侧因此空出约 2/3 —— 这是预期：那一行的语义只是「跳到档位」，
+      不要拉宽 4 枚 chip、不要往右侧塞别的东西、也不要给它加底色做成「条带」。
+      代价：条带自身 24px 级（实测 26px）+ 行距 12px = 整行 +38px（设计值 24+12 = 36px）。
+      实测读数（2026-11-12，本机 Linux Chromium）：1440×900 网格起点 353 → 391px，
+      首屏完整可见卡片 6 → 6、列表视图首屏完整可见 10 → 10（两条硬断言保持绿）；
+      真实窗口视口 1305×803 首屏完整可见卡片 6 → 3（第 6 张底边 823px > 803px）。
+      历史记录（v1.5 时代的实测，**改动之前**，勿当现状）：1440×900 网格起点 227px、
+      卡片 192px、行距 12px、每档之间的分带标题 26px —— 第三行底边落在 899px、距视口
+      底边只剩 **1px**；任何独立成行的条带（哪怕 23px）都会整掉一行，首屏完整可见从
+      9 张掉到 6 张，所以当年雷达与「跳到档位」共用一行、由 `flex: 1 1 auto` 收缩。
+      v1.8 专题卡把网格起点抬到 349px 后，首屏完整可见本来就是 9 → 6，闸值同步改成 6。
+      窄屏（≤760px）原本就是这个换行布局（行距 6px），移动端几何与改动前逐项相同。
     -->
     <div class="hubline">
       <nav class="jump" id="jumpNav" aria-label="跳到力度档位">
@@ -1942,7 +1970,12 @@
       // 不合并会让 /vendor/minimax/ 少收一条、并在筛选条里出现两家。
       // 这一家没有取到官方品牌图形（见 assets/logos/README.md 的缺口表），
       // 因此 logo key 为 null ⇒ 走既有的「名称缩写兜底」路径，不冒充品牌图形。
-      [/minimax|海螺/i, 'minimax', 'MiniMax（稀宇科技）', null]
+      [/minimax|海螺/i, 'minimax', 'MiniMax（稀宇科技）', null],
+      // 2026-11-12：AppSumo 采集新增厂商 NinjaPipe（1 条有效优惠 / 3 条历史事件）。
+      // 它没有官方品牌图形（assets/logos/ 未登记）⇒ logo key 为 null，走「名称缩写」兜底。
+      // 新厂商进入 A 空间（身份来源）后，`scripts/data/vendor-slugs.json` 才允许有同名键 ——
+      // 两条都由 `selftest:seo` / `selftest:plans` 的冻结表把守。
+      [/ninjapipe/i, 'ninjapipe', 'NinjaPipe', null]
     ];
 
     /** [匹配模型名的正则, logo key, 显示名]：用于折叠卡上的模型家族 logo */

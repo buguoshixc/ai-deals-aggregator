@@ -159,13 +159,22 @@ const plansForPlan = JSON.parse(fs.readFileSync(path.join(ROOT, 'plans.json'), '
 const apiPlansForPlan = JSON.parse(fs.readFileSync(path.join(ROOT, 'api-plans.json'), 'utf8')).plans;
 const modelsForPlan = JSON.parse(fs.readFileSync(path.join(ROOT, 'models.json'), 'utf8')).models;
 const modelLinksForPlan = JSON.parse(fs.readFileSync(path.join(ROOT, 'model-registry-links.json'), 'utf8')).links;
+// 厂商页第三条门槛（历史事件数）必须与构建期同源：唯一实现在 `landing.vendorEventCountsOf()`。
+// 以前这里传 `eventCountOf: () => 0`，在「只靠事件数达标」的厂商出现前一直看不出来
+// （2026-11-12 NinjaPipe 第一次撞上：独立门禁的计划比产物少一页）。
+const dealHistoryStore = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts', 'data', 'deal-history.json'), 'utf8'));
+const vendorEventCount = landing.vendorEventCountsOf({
+  deals,
+  events: Array.isArray(dealHistoryStore.events) ? dealHistoryStore.events : [],
+  vendorKeyOf
+});
 const plan = landing.planLandingPages({
   deals,
   vendorKeyOf,
   vendorSlugs: site.VENDOR_SLUGS,
   thresholds: undefined,
   vendorThresholds: site.VENDOR_THRESHOLDS,
-  eventCountOf: () => 0,
+  eventCountOf: name => vendorEventCount.get(name) || 0,
   pinned: landing.loadPinned(),
   aliases: landing.loadAliases(),
   plans: plansForPlan,
