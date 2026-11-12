@@ -2730,8 +2730,8 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
-    "086534ebceeb": {
-      "source": "AppSumo",
+    "0a2fc31c76cc": {
+      "source": "IT之家",
       "misses": 1,
       "since": "2026-11-12",
       "endedAt": null
@@ -2753,6 +2753,12 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
+    },
+    "2f0c03c32d8d": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-12",
+      "endedAt": null
     },
     "31232ad4315e": {
       "source": "aitools.fyi",
@@ -2777,6 +2783,12 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
+    },
+    "3eac4b6acccb": {
+      "source": "快科技",
+      "misses": 1,
+      "since": "2026-11-12",
+      "endedAt": null
     },
     "3fa2cec73c43": {
       "source": "aitools.fyi",
@@ -2928,6 +2940,12 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
+    "8e4af3df250c": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-12",
+      "endedAt": null
+    },
     "90ef368f720d": {
       "source": "aitools.fyi",
       "misses": 2,
@@ -3038,6 +3056,12 @@
     },
     "dfa07fdc244d": {
       "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "e4bd8003b3d6": {
+      "source": "智谱AI活动页",
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
@@ -5692,6 +5716,55 @@
       "to": "https://appsumo.com/collections/new/",
       "origin": "observed",
       "runAt": "2026-11-12T02:09:31.338Z"
+    },
+    {
+      "id": "717bfce842bf",
+      "at": "2026-11-12",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "其他",
+        "region": "cn",
+        "source": "快科技",
+        "sourceUrl": "https://rss.mydrivers.com/rss.aspx?Tid=1",
+        "verified": false
+      },
+      "runAt": "2026-11-12T05:53:51.475Z"
+    },
+    {
+      "id": "8c8ed425e7c3",
+      "at": "2026-11-12",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "其他",
+        "region": "cn",
+        "source": "IT之家",
+        "sourceUrl": "https://www.ithome.com/rss/",
+        "verified": false
+      },
+      "runAt": "2026-11-12T05:53:51.475Z"
+    },
+    {
+      "id": "e4bd8003b3d6",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T05:53:51.475Z",
+      "label": {
+        "title": "GLM-5.3-Flash 限时五折",
+        "vendor": "智谱AI"
+      }
     }
   ]
 }
