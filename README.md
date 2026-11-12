@@ -969,6 +969,16 @@ Linux Chromium，同一份 `dist`）：1440×900 网格起点 353 → 391px、�
 这是如实结果（**不补造历史**）；非空路径由 `selftest:changes` 的夹具与一次**真实数据演练**
 证明（演练造了 6 类变化、跑完 build → verify，再逐字节还原两个文件）。
 
+**2026-11-12 起「已结束」分栏第一次有真实内容**：v1.4 的「来源不再列出」判据在生产接线上
+把采集器 id 当成了来源名（`aitools` vs `aitools.fyi`），两个命名空间从无交集 ⇒ `absence` 与
+`ended` 五周都是 0 条（自测用展示名，全绿）。修复判据 + 按「上一轮成功运行也没见到它」的
+证据补记历史欠账后，本地实跑一次采集即产生 **60 条 `ended(source_no_longer_lists)`**
+（aitools.fyi 30 / Futuretools 21 / AppSumo 7 / OpenRouter 2）。`/changes/` 的「已结束」栏按
+30 天窗口统计 60 条，但**渲染上限是 30 行**（既有分栏契约）：渲染出的 30 行里 `type === 'deal'`
+的 2 条带详情页链接，其余 7 条 deal 落在「另有 30 条未显示」的计数内；全部 9 条 deal 都能在
+`/archive/deal/<id>/` 档案详情页的「站内详情页」入口链到（9/9），工具类记录按既有「死链」判据
+不挂链接（`isLinkableDeal()` 唯一判据）。判据细节见 [`docs/SCHEMA-v1.4.md`](docs/SCHEMA-v1.4.md) §四。
+
 契约见 [`docs/SCHEMA-v1.5.md`](docs/SCHEMA-v1.5.md)，完成报告见
 `research/v1.5-change-radar-report.md`。
 

@@ -213,6 +213,17 @@ API 侧的键是结构化的（指到一条真实计价条目），所以**只�
 
 ### 3.1 URL 策略（题面 §8 的裁决：方案 A）
 
+**新增厂商登记清单（2026-11-12 实测，NinjaPipe）**：`/vendor/<slug>/` 的身份来源只有 **A 空间**
+（`index.html` 的 `VENDOR_RULES`）。数据里第一次出现的厂商要生成厂商页，必须同批改四处，
+缺一处就有一处门禁红：
+
+1. `index.html` RENDER-CORE `VENDOR_RULES` 加一行 `[正则, 厂商键, 规范显示名, logo key]`（A 空间身份）；
+2. `scripts/data/vendor-slugs.json` 用**规范显示名**为键登记 slug（不是采集原始串）；
+3. `scripts/tools/plans-selftest.js` 的两张冻结表（`FROZEN_VENDOR_KEYS` / `FROZEN_VENDOR_SLUGS`）同步；
+4. 厂商页资格三条 OR 里的**历史事件数**由 `landing.vendorEventCountsOf()` 统一现算
+   （构建期 / `seo-verify` / 三个 selftest 同源；此前三处传 `() => 0`，只靠事件数达标的厂商会被独立门禁判成「多出来的页」）。
+
+
 - **继续用 `/vendor/<slug>/`**；**不新增 `/provider/`**：`assertNoParallelProviderRoutes()` 在构建期与自测里同时判红（牙 #7）。
 - slug 必须来自**权威表** `scripts/data/vendor-slugs.json`（`assertVendorSlugDeclared()`）；
   `providers.json` 的隐式兜底不再算数（牙 #6）。
@@ -242,6 +253,24 @@ API 侧的键是结构化的（指到一条真实计价条目），所以**只�
   条目**仍然展示**，但页面必须写明「疑似来源故障」，不许伪装成正常归档（牙 #10）。
 - **资料消失不等于资料删除**：档案只依赖事件，当前数据里没有这条记录**不影响**它出现在档案里（牙 #9）。
 - 详情页门槛：必须有可重建的事件链（≥1 条 `ended` / `restored`）且快照可重建（`archiveDetailGate()`）。
+
+**2026-11-12 追记（第一批真实档案件）**：判据修复前生产从未有过 `ended`（`absence` 判据接线错误，
+见 [`SCHEMA-v1.4.md`](SCHEMA-v1.4.md) §四），所以 `/archive/` 一直是 0 条的「从未验证过的分支」。
+修复后第一次实跑产生 60 条结束记录，随之补了三处（都由门禁当场咬出来，不是预判）：
+
+- **说明登记**：`build-local.js` 渲染档案详情页时必须注入 `note`（`noteDeclarerFor(route)`）——
+  漏了它 `.snote` 照常输出但不入清单，产物自检的「先登记后输出」对账当场红；
+- **站内入链**：仍在数据集里、且 `type === 'deal'` 的记录，档案详情页给一条
+  `站内详情页 →`（判据与 `/changes/` 同源：`changes.linkableDealIdsOf()` 的集合）。
+  为什么需要：`/deal/<id>/` 对所有 `type=deal` 都生成，而首页卡片只渲未过期、
+  `/changes/` 分栏有行数上限 —— 同一条记录可能两边都照不到，变成零入链的可索引页（`orphan` 红）；
+- **正文下限**：档案详情页的「口径」说明扩写了一句（时间线只列记录过的事件、缺项留空不猜），
+  使这一族页面的可见正文余量稳定高于 150 字的薄页登记射程（不靠登记表追着数据跑）。
+- **「最后有效时间」口径修正（独立复查 F4）**：原实现取「最后一条事件日」，对 60/60 条 `ended`
+  它恰好等于「结束发现时间」（被读成「有效到结束那天」，而真实 `lastSeen` 最早在 49 天前）。
+  现在：记录仍在数据集里 ⇒ 取 `record.lastSeen`（有证据的最后一次见到）；已离开数据集 ⇒ 退回
+  最后一条事件日并在页面注明「按最后一条事件日」。**`lastChangedAt`（最后一条事件日）单独保留**，
+  sitemap 的 `<lastmod>` 用它 —— 展示口径不能把搜索引擎的更新时间一起带早。
 
 ---
 

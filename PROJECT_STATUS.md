@@ -2303,9 +2303,58 @@ A（每日全量快照）实测约 **170 MB/年**，直接否掉。
 原因直接取 `mergeAll` 手里的对象）。**三道不误报的闸**：来源失败/骤降/零产出/上一轮遗留不参与计数；
 `--only`/`--dry-run`/被硬拦的运行完全不写；人工策展条目不参与「未见」判定。
 
+**2026-11-12 根治：`absence` 判据的生产接线从未生效**。生产接线取的是 health 行的 `source`
+（采集器 id：`aitools` / `appsumo` / `futuretools`），而历史记录写的是 `deal.source`（展示名：
+`aitools.fyi` / `AppSumo` / `Futuretools`）—— 两个命名空间从无交集，`eligible.has(deal.source)`
+恒为 false ⇒ `deal-history.json` 的 `absence` 自 v1.4 上线起一直是 **0 条**、`ended` **0 条**；
+自测夹具用展示名，所以 `selftest:history` 全绿（又一个「判定公式生产另写一份」的形态）。
+修法：① 判据收成唯一实现 `history.absenceEligibleSourcesOf(rows)`（输出展示名；collect 只调用它，
+自测用真实形状的健康行咬住，回退成 id 立刻红）；② 观测态缺失的历史欠账按证据补记 ——
+上一轮**成功运行**日（health 的 `lastSuccessAt`，按北京日期换算）晚于记录 `lastSeen` 时，
+该轮缺席折进计数（`lastSeen` 只在观测到时刷新，所以这是「上一轮确实没列出它」的直接证据）；
+证据只支持两次连续成功运行未见，补记只 +1，不替它编第三次。
+实跑读数（本机，数据日 2026-11-12）：`selftest:history` **84/0**（原 62 + 新增 22 条：16 条接线 /
+补记 / 反例 + 6 条「补记证据源必须可信」的加固牙）；`collect` 一次 → 历史层新增 **61** 条
+（`ended 60` = aitools.fyi 30 / Futuretools 21 / AppSumo 7 / OpenRouter 2，`updated 1`；
+`absenceSeeded 60`），观测态 61 条（60 ended + 1 待确认），`check:history` 通过
+（155 事件 / 基线+事件重放 == `deals.json`）。用户可见：`/changes/` 的「已结束」栏按 30 天窗口
+统计 60 条、**渲染上限 30 行**（渲染出的 30 行里 `type==='deal'` 的 2 条带详情页链接，其余 7 条
+deal 落在「另有 30 条未显示」的计数内）；全部 9 条 deal 都在 `/archive/deal/<id>/` 档案详情页
+有「站内详情页」入口（9/9），工具类记录按 `isLinkableDeal()` 唯一判据不挂链接。
+
+**首批真实档案件的连带修复（都由门禁当场咬出来，不是预判）**：`/archive/` 此前生产 0 条
+（该渲染分支从未被真实数据验证过），60 条 `ended` 第一次让它上线，随之补了四处：
+① `build-local.js` 渲染档案详情页时注入 `note`（`noteDeclarerFor(route)`）—— 漏了它 `.snote`
+照常输出但不进清单，「先登记后输出」的产物对账当场红；② 仍在数据集里、且 `type === 'deal'`
+的档案条目给一条「站内详情页 →」（判据与 `/changes/` 同源：`changes.linkableDealIdsOf()`），
+否则 Wideo 这类「已过期但仍在 14 天留存期」的记录会成为零入链可索引页（`orphan` 红）；
+③ 档案详情页「口径」说明扩写一句（时间线只列记录过的事件、缺项留空不猜），使这一族页面的
+可见正文余量稳定高于 150 字薄页射程（不靠登记表追着数据跑）；④ 「最后有效时间」口径修正
+（原取最后一条事件日 ⇒ 对 60/60 条 `ended` 它恰好等于「结束发现时间」；现有记录改取
+`lastSeen`，`lastChangedAt` 单独保留给 sitemap 的 `<lastmod>`；独立复查 F4）。
+数据侧连带项：AppSumo 新增厂商 NinjaPipe 按 v3.0 身份层的四处登记补齐（`index.html`
+`VENDOR_RULES` / `vendor-slugs.json` / `plans-selftest` 冻结表 / `landing.vendorEventCountsOf()`
+统一事件数现算——此前构建、`seo-verify` 与三个 selftest 各传一份 `() => 0`，只靠历史事件数
+达标的厂商会被判成「多出来的页」）；seo 正文余量按新数据日重新登记
+（`research/_raw/p2-residuals-v1/text-floor-margins.json` + `TEXT_FLOOR_GRADUATED`）；
+`feed-selftest` 的「不可链接条目」与 `vendor-page-selftest` 的候选集合断言按 60 条 `ended`
+与 NinjaPipe 的新现实重算（两者都改成现算，不写死条数）。
+
+**门禁与独立复查（本机终版代码 + 重建 dist）**：`gate:build`（L1–L3，40 个脚本）**0 失败**；
+L4 浏览器层 `verify`（325.2s）+ `verify:regress`（322.0s）**0 失败**（本机 Chromium，
+`DSH_EDGE` 指定可执行文件 + `LD_LIBRARY_PATH` 补齐 nss/nspr 依赖）；`build` 自检全过
+（285 个可索引页 / sitemap 282 / 档案详情页 60 / 厂商页 26 / 详情页 118）；`seo-verify`
+18/0（orphan 0 · 死链 0 · noindex 0）；`archive-selftest` 84/0、`changes-selftest` 120/0、
+`history-selftest` 84/0、`check:history` 155 事件通过。另做一次**独立对抗性复查**
+（fresh-context teammate，只读，数据文件前后 sha256 不变）：根因 / 补记 / 60 条证据链 /
+用户可见产物全部 PASS；提出 1 项中危潜在缺陷（补记证据源过宽：上一轮零产出/骤降不能算
+「成功运行」——即上面的 F1 加固）与 3 项低危措辞/口径项（F2 CI Summary grep、F3 /changes/
+措辞、F4 最后有效时间），均已修；另 2 项存量提示（AppSumo `sourceUrl` 抖动产生噪音事件、
+`deals.json` 落盘顺序不可复现）记为后续独立议题，不影响本批判定。
+
 **展示**：详情弹层与 80 个静态详情页共用同一个 `historyBlockHtml()`（RENDER-CORE，措辞表 `HISTORY_WORDING`
 与后端逐字节比对）；无历史时明说「暂无变更记录」＋「起算日之前的状态没有历史记录」，**不用空白冒充「没有变化」**。
-首页**一行未改**。
+v1.4 交付时首页**一行未改**（2026-11-12 的「变化雷达条带独占一行」是另一项设计改动，不涉及历史层）。
 
 **门禁**：新增 `selftest:history`（**52 项**）与 `check:history`，双双进 CI 门禁（action.yml +2 步、
 `check-ci-consistency.js` 冻结序列同步；`--expect-checks` 不变，因为它数的是 check-ci 自己的断言）。

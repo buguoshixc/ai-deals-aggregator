@@ -50,6 +50,10 @@
 const path = require('path');
 const core = require('./history-core');
 const { CURATED_SOURCES } = require('./provenance');
+// 补记缺席的证据要按**北京日期**折算：`lastSuccessAt` 存的是 UTC，03:19 CST 的成功运行
+// 写成 `2026-11-11T19:19:…Z`，按 UTC 切日期会差一天（详见 `priorSuccessfulRunDatesOf()`）。
+// `todayCN()` 是全站唯一的时间口径，这里不另写一份 +8h。
+const { todayCN } = require('./schema');
 
 const HISTORY_FILE = path.join(__dirname, '..', 'data', 'deal-history.json');
 const SCHEMA_VERSION = 1;
@@ -147,6 +151,80 @@ const RENDER_LIMIT = 20;
 
 /** 观测状态（absence）保留窗口：已 ended 且离开数据集超过这么多天的条目不再保留 */
 const ABSENCE_RETENTION_DAYS = 365;
+
+/** 日期形状（与内核的 DATE_RE 同义；这里只在「补记缺席」一处用到，不再导出一份公共常量） */
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * 「允许参与『未见』计数的来源」—— **生产接线的唯一实现**（collect.js 调用，自测咬它）。
+ *
+ * 输入是 `health.build()` 产出的本轮健康行。输出是**记录侧的来源名**（= `deal.source`，
+ * 也等于 health 行的 `name`），不是采集器 id。这一行字是 2026-11-12 根治的 bug 的全部：
+ *
+ *   历史层写进 `absence` 的键是 `deal.source`（展示名：`aitools.fyi` / `AppSumo` / `Futuretools`），
+ *   而 v1.4 起生产接线一直是 `rows.map(row => row.source)` —— health 行的 `source` 是**采集器 id**
+ *   （`aitools` / `appsumo` / `futuretools`）。两个命名空间从来没有交集，于是
+ *   `eligible.has(deal.source)` 恒为 false，「连续未见」分支从上线起一次都没执行过：
+ *   `deal-history.json` 的 `absence` 五周都是 0 条、`ended` 事件 0 条，而自测夹具用的是展示名
+ *   ⇒ 自测全绿。这是本项目反复踩到的同一类形态：**判定公式在生产接线里另写一份**。
+ *
+ * 所以这里把「过滤 + 取哪个字段」收成唯一实现，生产只调用它；selftest 用真实形状的
+ * health 行（`source` 是 id、`name` 是展示名）咬住，回退成 id 会立刻变红。
+ *
+ * 判据（与 v1.4 契约逐条一致）：
+ *   · `status === 'healthy'`：失败 / 条数骤降 / 零产出升级后的来源不参与（一次坏采集不能把整片条目判成消失）；
+ *   · `!row.stale`：上一轮遗留（本轮根本没跑，如无头来源在普通采集里）不参与；
+ *   · `lastItemCount > 0`：本轮确实跑出了条目；零产出来源（含按设计空转的线索雷达）不参与。
+ */
+function absenceEligibleSourcesOf(rows = []) {
+  const names = new Set();
+  for (const row of rows || []) {
+    if (!row || typeof row !== 'object') continue;
+    if (row.status !== 'healthy') continue;
+    if (row.stale) continue;
+    if (!(Number(row.lastItemCount) > 0)) continue;
+    if (typeof row.name !== 'string' || !row.name) continue;
+    names.add(row.name);
+  }
+  return [...names].sort();
+}
+
+/**
+ * 历史层「补记缺席」的**唯一证据来源**：来源名（= `deal.source` = health 行的 `name`）→
+ * 上一轮**成功运行**的北京时间日期（YYYY-MM-DD）。
+ *
+ * 口径与 `absenceEligibleSourcesOf()` 同一条边：来源身份必须用 health 行的 `name`（展示名），
+ * 不是采集器 id。日期必须是**北京日期**而不是 ISO 字符串 `slice(0,10)` —— `lastSuccessAt` 存
+ * UTC，03:19 CST 的成功运行写成 `2026-11-11T19:19:…Z`，按 UTC 切会得到 11-11（差一天），
+ * 「上一轮到底见没见过它」就会判反（实跑里恰好有 4 条记录依赖这次换算）。
+ *
+ * **「成功运行」不等于「没抛错」**（2026-11-12 独立复查 F1 的加固）：`health.build()` 在
+ * 零产出 / 条数骤降时仍会推进 `lastSuccessAt`（那是「最近成功采集」的时间戳，不是「这轮
+ * 可信地列出了它该列的东西」）。用它当补记证据的隐含前提是「上一轮确实完整地跑出了条目」，
+ * 而一次零产出 / 骤降的坏采集恰恰不能证明「上一轮没列出它」—— 否则恢复后的第一次健康运行
+ * 就会把整片记录误判成 ended。所以证据源只取：
+ *   · `status === 'healthy'`（degraded / failed 的运行不算）；
+ *   · `lastItemCount > 0`（零产出什么都证明不了，含按设计空转的线索雷达）；
+ *   · 有可解析的 `lastSuccessAt`。
+ * `stale` 不限：它的 status / lastItemCount / lastSuccessAt 仍是「最近一次真实运行」的读数，
+ * 而「最近一次真实运行没列出它」正是这条证据要断言的事。
+ *
+ * @param {{byId?: Object<string, object>}} healthStore 采集循环**之前**读到的健康文件
+ * @returns {Map<string,string>} 只含「有过可信成功运行」的来源；从没成功过的来源不出现
+ */
+function priorSuccessfulRunDatesOf(healthStore) {
+  const out = new Map();
+  const byId = (healthStore && healthStore.byId) || {};
+  for (const row of Object.values(byId)) {
+    if (!row || typeof row.name !== 'string' || !row.name || !row.lastSuccessAt) continue;
+    if (row.status !== 'healthy') continue;
+    if (!(Number(row.lastItemCount) > 0)) continue;
+    const at = new Date(row.lastSuccessAt);
+    if (!Number.isFinite(at.getTime())) continue;
+    out.set(row.name, todayCN(at));
+  }
+  return out;
+}
 
 // [T5-history-201-disclaimer-tail]
 // T5 删除（census B · 重复）：删尾句「最终以厂商官方页面为准。」—— 它与共享页脚（每页都有「优惠信息来自各厂商官方页面与公开折扣页，最终以官方页面为准。」）同义，属 B 类「同一句话的第二个容器」。保留前半句（「不再收录」的必要解释，C 类口径）。⚠️ 这条常量当时还被 Feed 产物消费（feeds.js 对 ended 事件推入）⇒ 曾经是「改它就是全站同改」；**订阅子系统整体下架后那条消费者已经不存在**（`lib/feeds.js` 已删除、产物里不再有 `dist/feed/**`），所以现在改这句话只落在页面侧。门禁：无既有断言引用这句；台账/清单由 noteDeclare 自动同步。
@@ -349,6 +427,16 @@ function diffStates(previous, next, ctx = {}) {
  *        对读者没有价值。标签是**快照**，不是被跟踪的值：不参与链校验、不参与重放，
  *        只回答「这条是谁」。v1.5 起可选写入；缺席的 `ended` 依然完全合法（向后兼容）。
  * @param {Set<string>} [params.derivedFields] 本轮由规则推导（而非直接观测）的字段
+ * @param {Map<string,string>} [params.priorSuccessfulRunDates]
+ *        v1.4 修复（2026-11-12）：来源名 → **上一次成功运行**的北京时间日期（YYYY-MM-DD）。
+ *        用途只有一个：当某条记录**没有**观测态（新记录之外的「从未数过」）时，用
+ *        `lastSeen < 上一次成功运行日` 证明「上一轮成功运行也没见到它」——这是真实证据，
+ *        不是猜测（`lastSeen` 只在观测到该记录时刷新；上一轮成功运行若见到它，日期就会等于上一轮）。
+ *        为什么需要：生产接线的来源名错位让观测态从 v1.4 上线起一直没建立（见
+ *        `absenceEligibleSourcesOf()` 注释），于是历史上「早已连续多轮未见」的记录
+ *        没有可用的 `misses` 计数。补记（seeded）把已有证据折进计数，使一次成功运行
+ *        就能让这些积压记录进入 `ended`，而不是再等两轮把握手重新走一遍。
+ *        不传 = 关闭补记（v1.4 原行为，自测与旧调用点逐字节不变）。
  * @returns {{store:object, stats:object}}
  */
 function record(store, params = {}) {
@@ -361,6 +449,7 @@ function record(store, params = {}) {
   const eligible = new Set(params.absenceEligibleSources || []);
   const removed = params.removed instanceof Map ? params.removed : new Map();
   const labels = params.labels instanceof Map ? params.labels : new Map();
+  const priorSuccessDates = params.priorSuccessfulRunDates instanceof Map ? params.priorSuccessfulRunDates : new Map();
 
   /** 归一墓碑标签：只保留非空 title 与可选 vendor；拿不到就当作没有（不写半个空对象） */
   const labelOf = id => {
@@ -429,6 +518,7 @@ function record(store, params = {}) {
   // ---- ④ 来源不再列出（连续多次成功采集未见）-----------------------------
   const absence = { ...(base.absence || {}) };
   const absentEvents = [];
+  let absenceSeeded = 0;                       // 由上一轮成功运行证据补记的条数（日志/报告要能看见）
   for (const deal of next) {
     if (!deal || !deal.id) continue;
     const source = deal.source || '';
@@ -447,8 +537,25 @@ function record(store, params = {}) {
     }
     if (!eligibleSource) continue;               // 来源本轮不可信 → 不推进、不清除
     if (state && state.endedAt) continue;        // 已经记过 ended，不再重复计数
-    const misses = (state && state.misses ? state.misses : 0) + 1;
-    const since = (state && state.since) || at;
+
+    // 没有观测态时的「补记」：上一轮成功运行日已晚于 lastSeen ⇒ 上一轮成功运行没见到它。
+    // 证据链：lastSeen 只在观测到时刷新（来源类型 = 采集器记录，不是策展；策展已在上面排除），
+    // 所以「上一轮成功运行日 > lastSeen」等价于「上一轮成功运行确实没列出它」。
+    // 补记只加 1：上一轮 + 本轮 = 两次连续成功运行未见。不把「补记」写成直接满足阈值：
+    // MISS_CONFIRM_RUNS 若将来从 2 上调，补记过的记录会停在 misses=2 继续等下一轮，
+    // 而不是被一个旧常量直接判成 ended（证据只支持两次，不能替它编第三次）。
+    // 不补的情况（没传日期 / lastSeen 缺失 / lastSeen 就是上一轮）走原逻辑，本轮最多记 1 次。
+    const priorRunDate = state ? null : (priorSuccessDates.get(source) || null);
+    const confirmedMissedBeforeRun = typeof priorRunDate === 'string'
+      && DATE_RE.test(priorRunDate)
+      && DATE_RE.test(String(deal.lastSeen || ''))
+      && deal.lastSeen < priorRunDate;
+    const priorMisses = state
+      ? (state.misses ? state.misses : 0)
+      : (confirmedMissedBeforeRun ? 1 : 0);
+    const misses = priorMisses + 1;
+    const since = (state && state.since) || (confirmedMissedBeforeRun ? priorRunDate : at);
+    if (confirmedMissedBeforeRun) absenceSeeded++;
     if (misses >= MISS_CONFIRM_RUNS) {
       // 来源不再列出：记录**仍在** deals.json 里，但将来它若被 prune，这个墓碑标签就是
       // 雷达上「它叫什么」的唯一来源 —— 因此在这里也一并写上（此刻拿得到标题）。
@@ -494,18 +601,24 @@ function record(store, params = {}) {
     events
   };
 
-  return { store: out, stats: statsOf(appended, { absenceNext }) };
+  return { store: out, stats: statsOf(appended, { absenceNext, absenceSeeded }) };
 }
 
 function withRun(event, runAt) {
   return runAt ? { ...event, runAt } : event;
 }
 
-function statsOf(events, { absenceNext } = {}) {
+function statsOf(events, { absenceNext, absenceSeeded = 0 } = {}) {
   const byType = {};
   for (const type of EVENT_TYPES) byType[type] = 0;
   for (const event of events) byType[event.type] = (byType[event.type] || 0) + 1;
-  return { appended: events.length, byType, absenceTracked: Object.keys(absenceNext || {}).length };
+  return {
+    appended: events.length,
+    byType,
+    absenceTracked: Object.keys(absenceNext || {}).length,
+    // 由上一轮成功运行证据补记缺席的记录数（≠ ended 数：补记后本轮就会 ended；0 是常态）
+    absenceSeeded
+  };
 }
 
 /* ------------------------------------------------------------------ */
@@ -559,6 +672,9 @@ module.exports = {
   LIMITS,
   RENDER_LIMIT,
   ABSENCE_RETENTION_DAYS,
+  // 生产接线的唯一实现（collect.js 用；自测用真实形状的 health 行咬它）
+  absenceEligibleSourcesOf,
+  priorSuccessfulRunDatesOf,
   BASELINE_NOTE,
   HISTORY_WORDING,
   emptyStore,

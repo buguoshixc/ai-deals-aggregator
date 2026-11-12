@@ -130,11 +130,21 @@ async function collectFrom(collector, report) {
  *   · absenceEligibleSources —— 允许参与「未见」计数的来源：本轮心跳 healthy、
  *     不是上一轮遗留（stale）、且确实跑出了条目。失败 / 骤降 / 零产出的来源一律不计 ——
  *     否则一次坏采集（无头浏览器装不上、页面改版）会把整片条目误判成「消失」。
+ *     **判据只有一处实现**：`history.absenceEligibleSourcesOf(rows)`（2026-11-12 起）。
+ *     它返回的是记录侧的来源名（`deal.source` = health 行的 `name`），**不是采集器 id**。
+ *     此前这里直接取 health 行的 `source` 字段（采集器 id：`aitools` / `appsumo`），与
+ *     `deal.source`（展示名：`aitools.fyi` / `AppSumo`）从未有交集 ⇒ 该分支上线起从未执行。
+ *   · priorSuccessfulRunDates —— 来源名 → 上一轮**成功运行**的北京日期；历史层只在记录
+ *     没有观测态时用它把「上一轮成功运行也没见到它」这条证据折进缺席计数（见 lib/history.js
+ *     的 `record()` 注释）。没有它，历史欠账要再等两轮才能进入 `ended`。
+ *     **判据只有一处实现**：`history.priorSuccessfulRunDatesOf(healthStore)` —— 来源身份用
+ *     展示名（不是采集器 id）；「成功运行」要求上一轮 `status === 'healthy'` 且真的跑出了
+ *     条目（零产出 / 骤降的坏采集不能证明「上一轮没列出它」，2026-11-12 独立复查 F1 加固）。
  *   · removed —— id → 移除原因，直接取 mergeAll 手里已有的对象（不在历史层重写规则）。
  *   · labels  —— v1.5：id → 标题 / 厂商快照，挂在 `ended` 事件上（记录离开数据集后，
  *     它是变化雷达回答「这条是谁」的唯一来源）。
  */
-function recordHistory({ previous, next, fresh, stats, healthSummary, today, only }) {
+function recordHistory({ previous, next, fresh, stats, healthSummary, priorSuccessfulRunDates, today, only }) {
   if (only) {
     console.log('历史层: 本次为 --only 子集运行，跳过（避免把未跑的来源误判成「不再列出」）');
     return null;
@@ -167,9 +177,9 @@ function recordHistory({ previous, next, fresh, stats, healthSummary, today, onl
   if (stats.reclassified > 0) derivedFields.add('type');
 
   const rows = (healthSummary && healthSummary.rows) || [];
-  const absenceEligibleSources = rows
-    .filter(row => row && row.status === 'healthy' && !row.stale && Number(row.lastItemCount) > 0)
-    .map(row => row.source);
+  // 来源身份必须用**展示名**（deal.source）：health 行的 `source` 是采集器 id，两个命名空间
+  // 没有交集。细则与 2026-11-12 的根因写在 `lib/history.js` 的 `absenceEligibleSourcesOf()`。
+  const absenceEligibleSources = history.absenceEligibleSourcesOf(rows);
 
   // v1.5 墓碑标签：`ended` 事件上的标题 / 厂商快照。记录**离开数据集**之后，
   // `deals.json` 里就查不到它是谁了（title/vendor 是身份字段、刻意不被跟踪），
@@ -187,6 +197,7 @@ function recordHistory({ previous, next, fresh, stats, healthSummary, today, onl
     runAt: new Date().toISOString(),
     freshIds: fresh.map(deal => deal.id).filter(Boolean),
     absenceEligibleSources,
+    priorSuccessfulRunDates,
     removed: removal,
     labels,
     derivedFields
@@ -199,6 +210,11 @@ function printHistoryStats({ stats, store, eligibleSources }) {
   console.log(`历史层: 新增事件 ${stats.appended} 条（` +
     `${history.EVENT_TYPES.map(type => `${type} ${byType[type] || 0}`).join(' · ')}）· ` +
     `观测态 ${stats.absenceTracked} 条 · 可判定「未见」的来源 ${eligibleSources} 个`);
+  if (stats.absenceSeeded > 0) {
+    // 0 不打印（常态）；>0 时必须在日志与 CI Summary 里看得见：这些 ended 是「补记既往证据」
+    // 得到的，不是这次采集新攒够的两轮。
+    console.log(`        其中 ${stats.absenceSeeded} 条按上一轮成功运行的证据补记缺席（lastSeen 早于上一成功运行日）`);
+  }
   if (stats.appended === 0) {
     console.log('        （本次没有任何重要字段变化——description 文案微调与 lastSeen 刷新不记事件）');
   }
@@ -240,6 +256,11 @@ async function main() {  const headless = flag('headless');
   if (healthStore.broken) {
     console.warn(`⚠️  ${health.HEALTH_FILE} 解析失败（${healthStore.broken}），本轮按空历史重算`);
   }
+  // 历史层补记的证据在**采集循环之前**取：lastSuccessAt 此刻还是「上一轮」的值；
+  // 采集与 health.build() 之后它会被本轮覆盖，那就再也回答不了「上一轮见没见过」。
+  // 判据（来源身份 = 展示名、日期按北京时间、且上一轮必须 healthy 且真跑出条目）收在
+  // `history.priorSuccessfulRunDatesOf()` 一处；2026-11-12 独立复查 F1 加固。
+  const priorSuccessfulRunDates = history.priorSuccessfulRunDatesOf(healthStore);
   const pausedSkipped = [];
   const halfOpenRetries = [];
   const runnable = picked.filter(collector => {
@@ -477,7 +498,7 @@ async function main() {  const headless = flag('headless');
     console.log('\n(dry-run，未写盘)');
     // 历史层也做一次**只读**预览：record() 是纯函数，这里不落盘。
     // 预览里能看到「这一轮将记下哪些事件」，正是 dry-run 存在的意义。
-    const preview = recordHistory({ previous: existing, next: deals, fresh, stats, healthSummary, today, only });
+    const preview = recordHistory({ previous: existing, next: deals, fresh, stats, healthSummary, priorSuccessfulRunDates, today, only });
     if (preview) console.log('历史层预览（未写盘）:');
     if (preview) printHistoryStats(preview);
     console.log('\n新增/变更预览（前 15 条优惠）：');
@@ -520,7 +541,7 @@ async function main() {  const headless = flag('headless');
   //     的条目整片误判成「来源不再列出」；
   //   · 历史文件缺失 —— 只告警，**不自动生成基线**（无人看见地把当前状态冻成
   //     「起始状态」正是本层最该避免的伪造历史；缺文件由 CI 的 check:history 拦）。
-  const historyStats = recordHistory({ previous: existing, next: deals, fresh, stats, healthSummary, today, only });
+  const historyStats = recordHistory({ previous: existing, next: deals, fresh, stats, healthSummary, priorSuccessfulRunDates, today, only });
   const payload = writeDeals(localized);
   // 心跳与数据同批写盘：`source-health.json` 入库（dist/ 是 gitignore 的，存不了跨运行状态）。
   // 注意：唯一的硬拦（零产出）会让本次提前退出，于是**这一次**的来源结果不会落盘——

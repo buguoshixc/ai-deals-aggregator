@@ -212,6 +212,181 @@ section('⑤ ended：数据集移除与来源不再列出');
 }
 
 /* ------------------------------------------------------------------ */
+section('⑤′ 生产接线与缺席补记（2026-11-12 根治）');
+
+{
+  // 真实形状的健康行：`source` 是**采集器 id**，`name` 是记录里的 `deal.source`（展示名）。
+  // 这正是生产 bug 的形状 —— v1.4 起 collect.js 内联的是 `.map(row => row.source)`，
+  // 于是白名单里全是 id，`eligible.has(deal.source)` 永远 false，缺席分支一次都没跑过。
+  const rows = [
+    { source: 'aitools', name: 'aitools.fyi', status: 'healthy', stale: false, lastItemCount: 15 },
+    { source: 'appsumo', name: 'AppSumo', status: 'healthy', stale: false, lastItemCount: 24 },
+    { source: 'futurepedia', name: 'Futurepedia', status: 'failed', stale: false, lastItemCount: 0 },
+    { source: 'cn_volc_ark', name: '火山方舟', status: 'healthy', stale: true, lastItemCount: 12 },
+    { source: 'leads_ithome', name: 'IT之家', status: 'healthy', stale: false, lastItemCount: 0 },
+    { source: 'futuretools', name: 'Futuretools', status: 'degraded', stale: false, lastItemCount: 9 },
+    { source: 'broken_row', status: 'healthy', lastItemCount: 3 }
+  ];
+  const eligible = history.absenceEligibleSourcesOf(rows);
+  check('来源接线输出展示名（= deal.source 的口径）',
+    JSON.stringify(eligible) === JSON.stringify(['AppSumo', 'aitools.fyi']), JSON.stringify(eligible));
+  check('采集器 id 不会被当成来源名（旧生产 bug 的复现条件）',
+    !eligible.includes('aitools') && !eligible.includes('appsumo'));
+  check('失败 / stale / 零产出 / 降级 / 缺 name 的行都不参与未见计数',
+    !eligible.includes('Futurepedia') && !eligible.includes('火山方舟') &&
+    !eligible.includes('IT之家') && !eligible.includes('Futuretools') && !eligible.includes('broken_row'));
+
+  // 旧行为的直接反证：把采集器 id 当白名单传进来，一条缺席都不会记。
+  const before = deal();
+  const byId = history.record(seeded([before]), {
+    previous: [before], next: [before],
+    ...run({ freshIds: [], absenceEligibleSources: ['futuretools'] })
+  });
+  check('用采集器 id 当白名单 ⇒ 缺席计数为 0（2026-11-12 前的真实行为）',
+    byId.stats.absenceTracked === 0, `实得 ${byId.stats.absenceTracked}`);
+
+  // 生产接线的静态牙：接线必须调唯一实现，且不许再内联 `.map(row => row.source)`。
+  const collectSrc = fs.readFileSync(path.join(ROOT, 'scripts', 'collect.js'), 'utf8');
+  check('生产接线调用 history.absenceEligibleSourcesOf()（唯一实现）',
+    collectSrc.includes('history.absenceEligibleSourcesOf(rows)'));
+  check('生产接线不再把采集器 id（row.source）当来源名',
+    !collectSrc.includes('.map(row => row.source)'));
+}
+
+{
+  // 观测态缺失（生产从 v1.4 起就是这种状态）+ 上一轮成功运行日已晚于 lastSeen
+  // ⇒ 已有证据的缺席 1 次 + 本轮 1 次 = 连续两次成功运行未见 ⇒ 一轮就 ended。
+  const before = deal({ lastSeen: '2026-09-28' });
+  const prior = new Map([['Futuretools', '2026-09-29']]);
+  const one = history.record(seeded([before]), {
+    previous: [before], next: [before],
+    ...run({ freshIds: [], priorSuccessfulRunDates: prior })
+  });
+  const ended = history.eventsOf(one.store).find(event => event.type === 'ended');
+  check('补记：一次运行就把「上一轮已确认缺席」的记录记成 ended',
+    one.stats.byType.ended === 1 && ended && ended.reason === 'source_no_longer_lists');
+  check('补记的 ended 带 firstMissedAt = 有证据的那次成功运行日', ended && ended.firstMissedAt === '2026-09-29');
+  check('补记后的观测态自洽（misses=2 / since=上一轮 / endedAt=今天）',
+    one.store.absence[ID_A] && one.store.absence[ID_A].misses === 2 &&
+    one.store.absence[ID_A].since === '2026-09-29' && one.store.absence[ID_A].endedAt === '2026-09-30');
+  check('补记条数进 stats.absenceSeeded（日志与 CI Summary 要看得见）', one.stats.absenceSeeded === 1);
+  check('补记后 verifyStore 仍通过（记录还在数据集里）',
+    history.verifyStore(one.store, [before], { today: '2026-09-30' }).length === 0);
+}
+
+{
+  // 上一轮**见过**它（lastSeen == 上一成功运行日）⇒ 不能补记；只记本轮 1 次，等下一轮。
+  const before = deal({ lastSeen: '2026-09-29' });
+  const prior = new Map([['Futuretools', '2026-09-29']]);
+  const one = history.record(seeded([before]), {
+    previous: [before], next: [before],
+    ...run({ freshIds: [], priorSuccessfulRunDates: prior })
+  });
+  check('上一轮见过（lastSeen = 上一成功运行日）⇒ 不补记、不 ended',
+    one.stats.byType.ended === 0 && one.stats.absenceSeeded === 0 &&
+    one.store.absence[ID_A] && one.store.absence[ID_A].misses === 1);
+}
+
+{
+  // 不传 priorSuccessfulRunDates = v1.4 原行为：一轮只记 1 次，第二轮才 ended。
+  const before = deal({ lastSeen: '2026-09-28' });
+  const first = history.record(seeded([before]), { previous: [before], next: [before], ...run({ freshIds: [] }) });
+  check('不传补记证据 ⇒ 一轮不 ended（向后兼容）', first.stats.byType.ended === 0 && first.stats.absenceSeeded === 0);
+  const second = history.record(first.store, {
+    previous: [before], next: [before],
+    ...run({ freshIds: [], runAt: '2026-09-30T02:00:00.000Z' })
+  });
+  check('两轮正常推进仍能 ended（补记只补历史欠账，不替代常规计数）',
+    second.stats.byType.ended === 1 && second.stats.absenceSeeded === 0);
+}
+
+{
+  // 来源本轮不可信 / 人工策展：即使有「上一轮缺席」的证据也不参与。
+  const before = deal({ lastSeen: '2026-09-28' });
+  const prior = new Map([['Futuretools', '2026-09-29']]);
+  const untrusted = history.record(seeded([before]), {
+    previous: [before], next: [before],
+    ...run({ freshIds: [], absenceEligibleSources: [], priorSuccessfulRunDates: prior })
+  });
+  check('来源本轮不可信 ⇒ 补记证据也不推进（不 ended）',
+    untrusted.stats.byType.ended === 0 && untrusted.stats.absenceTracked === 0);
+
+  const curatedDeal = deal({ id: ID_C, source: 'Curated-CN', lastSeen: '2026-09-28' });
+  const curated = history.record(seeded([curatedDeal]), {
+    previous: [curatedDeal], next: [curatedDeal],
+    ...run({ freshIds: [], absenceEligibleSources: ['Curated-CN'], priorSuccessfulRunDates: new Map([['Curated-CN', '2026-09-29']]) })
+  });
+  check('人工策展条目 ⇒ 补记证据也不参与（沿用 v1.4 边界）',
+    curated.stats.byType.ended === 0 && curated.stats.absenceTracked === 0);
+}
+
+/* ------------------------------------------------------------------ */
+section('⑤″ 补记证据源：「上一轮成功运行」必须可信（2026-11-12 独立复查 F1）');
+
+{
+  // health.build() 在**零产出 / 条数骤降**时仍会推进 lastSuccessAt（那是「最近成功采集」的
+  // 时间戳，不是「这轮可信地列出了它该列的东西」）。若补记只看 lastSuccessAt，恢复后的
+  // 第一次健康运行就会把上一轮坏采集漏掉的整片记录误判成 ended。证据源必须与
+  // `absenceEligibleSourcesOf()` 同一条边：healthy + lastItemCount > 0。
+  const healthStore = {
+    byId: {
+      aitools: {
+        source: 'aitools', name: 'aitools.fyi', status: 'healthy', stale: false,
+        lastItemCount: 15, lastSuccessAt: '2026-09-29T19:19:00.000Z'
+      },
+      futurepedia: {
+        source: 'futurepedia', name: 'Futurepedia', status: 'failed', reason: 'zero_output',
+        lastItemCount: 0, lastSuccessAt: '2026-09-29T19:19:00.000Z'
+      },
+      appsumo: {
+        source: 'appsumo', name: 'AppSumo', status: 'degraded', reason: 'sharp_drop',
+        lastItemCount: 9, lastSuccessAt: '2026-09-29T19:19:00.000Z'
+      },
+      leads_ithome: {
+        source: 'leads_ithome', name: 'IT之家', status: 'healthy', reason: null,
+        lastItemCount: 0, lastSuccessAt: '2026-09-29T19:19:00.000Z'
+      },
+      cn_volc_ark: {
+        source: 'cn_volc_ark', name: '火山方舟', status: 'healthy', stale: true,
+        lastItemCount: 12, lastSuccessAt: '2026-09-28T19:19:00.000Z'
+      }
+    }
+  };
+  const prior = history.priorSuccessfulRunDatesOf(healthStore);
+  check('补记证据只取「上一轮 healthy 且真跑出条目」的来源（失败 / 零产出 / 骤降都不算）',
+    JSON.stringify([...prior.keys()].sort()) === JSON.stringify(['aitools.fyi', '火山方舟']),
+    JSON.stringify([...prior]));
+  check('补记证据的日期按北京时间折算（UTC 19:19Z ⇒ 北京次日）',
+    prior.get('aitools.fyi') === '2026-09-30' && prior.get('火山方舟') === '2026-09-29');
+
+  // 端到端：同一份证据里，上一轮零产出的来源不补记（misses=1，不 ended）；
+  // 上一轮健康的来源照常补记（一轮 ended）—— 加固不能把正常路径一起关掉。
+  const zeroBefore = deal({ source: 'Futurepedia', lastSeen: '2026-09-28' });
+  const zeroRun = history.record(seeded([zeroBefore]), {
+    previous: [zeroBefore], next: [zeroBefore],
+    ...run({ freshIds: [], absenceEligibleSources: ['Futurepedia'], priorSuccessfulRunDates: prior })
+  });
+  check('上一轮零产出 / 骤降 ⇒ 补记不成立（misses 停在 1，不 ended）',
+    zeroRun.stats.byType.ended === 0 && zeroRun.stats.absenceSeeded === 0 &&
+    Boolean(zeroRun.store.absence[ID_A]) && zeroRun.store.absence[ID_A].misses === 1);
+
+  const okBefore = deal({ source: 'aitools.fyi', lastSeen: '2026-09-28' });
+  const okRun = history.record(seeded([okBefore]), {
+    previous: [okBefore], next: [okBefore],
+    ...run({ freshIds: [], absenceEligibleSources: ['aitools.fyi'], priorSuccessfulRunDates: prior })
+  });
+  check('同一份证据里健康来源照常补记 ⇒ 一轮 ended（正常路径没被加固关掉）',
+    okRun.stats.byType.ended === 1 && okRun.stats.absenceSeeded === 1);
+
+  // 生产接线的静态牙：必须调唯一实现，且 collect.js 里不许再留一份本地实现。
+  const collectSrc = fs.readFileSync(path.join(ROOT, 'scripts', 'collect.js'), 'utf8');
+  check('生产接线调用 history.priorSuccessfulRunDatesOf()（唯一实现）',
+    collectSrc.includes('history.priorSuccessfulRunDatesOf(healthStore)'));
+  check('collect.js 不再内联补记证据的过滤公式',
+    !collectSrc.includes('function priorSuccessfulRunDatesOf('));
+}
+
+/* ------------------------------------------------------------------ */
 section('⑥ restored：消失后重现');
 
 {

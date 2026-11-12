@@ -1970,7 +1970,12 @@
       // 不合并会让 /vendor/minimax/ 少收一条、并在筛选条里出现两家。
       // 这一家没有取到官方品牌图形（见 assets/logos/README.md 的缺口表），
       // 因此 logo key 为 null ⇒ 走既有的「名称缩写兜底」路径，不冒充品牌图形。
-      [/minimax|海螺/i, 'minimax', 'MiniMax（稀宇科技）', null]
+      [/minimax|海螺/i, 'minimax', 'MiniMax（稀宇科技）', null],
+      // 2026-11-12：AppSumo 采集新增厂商 NinjaPipe（1 条有效优惠 / 3 条历史事件）。
+      // 它没有官方品牌图形（assets/logos/ 未登记）⇒ logo key 为 null，走「名称缩写」兜底。
+      // 新厂商进入 A 空间（身份来源）后，`scripts/data/vendor-slugs.json` 才允许有同名键 ——
+      // 两条都由 `selftest:seo` / `selftest:plans` 的冻结表把守。
+      [/ninjapipe/i, 'ninjapipe', 'NinjaPipe', null]
     ];
 
     /** [匹配模型名的正则, logo key, 显示名]：用于折叠卡上的模型家族 logo */

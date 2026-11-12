@@ -119,8 +119,15 @@ const TEXT_FLOOR_RESIDUALS = [
   //     此后的 P1（207 条）与 P2 首轮（210 条）读数都停在 7 / 7）。下限公式
   //     `textFloor(kind, count)` 一个字没动；`category/` 与 `category/agent/` 的读数
   //     与上次登记逐字相同（52 / 129），原样保留。
-  { route: 'category/', kind: 'hub', count: 5, chars: 852, floor: 800, margin: 52, registeredAt: '2026-11-04' },
-  { route: 'category/agent/', kind: 'category', count: 4, chars: 969, floor: 840, margin: 129, registeredAt: '2026-11-04' }
+  { route: 'category/', kind: 'hub', count: 5, chars: 852, floor: 800, margin: 52, registeredAt: '2026-11-04' }
+  // ⚠️ 2026-11-12 数据驱动退役一条（**不是下限被调低，也不是判据放宽**）：
+  //   · `category/agent/`：条数 4 → 5、可见正文 969 → 1107 字、下限随条数 840 → 900，
+  //     余量 129 → **207**；已离开「余量 < 150」的射程，留在表里会变成
+  //     `seo-verify.js` §③′ 的「过期登记」而判红 ⇒ 按双向不变式的既定动作退役，
+  //     退役理由与读数记在下面的 `TEXT_FLOOR_GRADUATED`（不静默消失）。
+  //   · 触发源是**存量数据增长**：AppSumo 新增条目把 agent 分类从 4 条推到 5 条。
+  //     下限公式 `textFloor(kind, count)` 一个字没动。
+  //   · 读数由 `node scripts/tools/seo-verify.js --print-floor-margins` 在产物上复核。
 ];
 
 /**
@@ -161,6 +168,13 @@ const TEXT_FLOOR_GRADUATED = [
     route: 'category/image/', kind: 'category', count: 7, chars: 1287, floor: 1020, margin: 267,
     graduatedAt: '2026-11-10',
     reason: '同上：条数 5 → 7、可见正文 1036 → 1287 字，余量 136 → 267，离开「余量 < 150」的射程'
+  },
+  {
+    // 2026-11-12：数据驱动退役（AppSumo 新增条目把 agent 分类 4 → 5 条、正文 969 → 1107 字）。
+    // 退役不是删判据：floor 仍 = textFloor('category', 5) = 900，这一页的下限一个字没动。
+    route: 'category/agent/', kind: 'category', count: 5, chars: 1107, floor: 900, margin: 207,
+    graduatedAt: '2026-11-12',
+    reason: '条数 4 → 5、可见正文 969 → 1107 字（seo-verify --print-floor-margins 在产物上重读），余量 129 → 207，离开「余量 < 150」的射程'
   }
 ];
 

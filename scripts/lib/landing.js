@@ -34,6 +34,38 @@ const ALIASES_FILE = path.join(DATA_DIR, 'landing-aliases.json');
 const SLUG_RE = /^[a-z0-9][a-z0-9-]*$/;
 
 /**
+ * 厂商 → 历史事件数（`VENDOR_THRESHOLDS.minEvents` 那条门槛的唯一输入）。
+ *
+ * 为什么要有这一处：厂商页资格是三条 OR —— 有效优惠条数 / **历史事件数** / 非优惠资料。
+ * 前两条的读数以前由各调用点自己算（构建期一份、独立验收一份、三个 selftest 各传 `() => 0`），
+ * 2026-11-12 第一次出现**只靠事件数达标**的厂商（NinjaPipe：1 条优惠 / 3 条事件），
+ * 于是独立门禁重算的计划比产物少一页（`vendor/ninjapipe/`），判 `rowMismatches` 与
+ * ItemList 成员双红 —— 判据分家的代价。现在只有这一份实现：
+ *   · 身份归一仍然只从调用方注入的 `vendorKeyOf`（RENDER-CORE 的 `vendorOf()`，唯一入口）；
+ *   · 事件按记录 id 归到厂商；记录不在 `deals` 里的事件不计（与构建期口径相同）。
+ *
+ * @param {{deals?: object[], events?: object[], vendorKeyOf: Function}} params
+ * @returns {Map<string, number>} 厂商显示名 → 事件数；零事件的厂商不出现（调用方按 0 兜底）
+ */
+function vendorEventCountsOf({ deals = [], events = [], vendorKeyOf } = {}) {
+  if (typeof vendorKeyOf !== 'function') {
+    throw new Error('vendorEventCountsOf 需要 vendorKeyOf（厂商归一的唯一入口是 RENDER-CORE 的 vendorOf）');
+  }
+  const vendorOfId = new Map();
+  for (const deal of deals || []) {
+    if (deal && deal.id) vendorOfId.set(deal.id, vendorKeyOf(deal) || '');
+  }
+  const counts = new Map();
+  for (const event of events || []) {
+    const key = event && (event.id !== undefined ? event.id : event.planId);
+    const name = vendorOfId.get(key);
+    if (!name) continue;
+    counts.set(name, (counts.get(name) || 0) + 1);
+  }
+  return counts;
+}
+
+/**
  * 生成门槛。厂商那一档**刻意复用站点常量的门槛**（调用方从 `lib/site.js` 的 `VENDOR_THRESHOLDS`
  * 传进来，本层不写第二份数值），这样「页面生成」与「构建期回读断言」读的是同一个门槛 ——
  * 两处各改一半的话，门禁会看着绿，而页面已经少了一族。
@@ -901,6 +933,7 @@ module.exports = {
   itemsOf,
   itemKeyOf,
   planLandingPages,
+  vendorEventCountsOf,
   summaryOf,
   summaryValues,
   topicChangesOf,
