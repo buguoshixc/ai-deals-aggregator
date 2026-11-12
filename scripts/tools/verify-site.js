@@ -4597,6 +4597,24 @@ function noJsControlExemptionFor(route) {
       empty: Boolean(nav.querySelector('.rnone')),
       unavailable: nav.textContent.includes('没有拿到历史日志'),
       noChange: nav.textContent.includes('当前没有观测到变化'),
+      // 常驻线索入口（B 类未核验线索，2026-11）：不在 `.rscroll` 里、不随日期消失。
+      // `data-lead-count` 是 N 的**真值**；可见文本只显示 min(N, 上限)（N>上限时带「+」）。
+      leadChip: (() => {
+        const chips = [...nav.querySelectorAll('a.rleadcount')];
+        if (!chips.length) return null;
+        const chip = chips[0];
+        const box = chip.getBoundingClientRect();
+        return {
+          count: Number(chip.dataset.leadCount || -1),
+          href: chip.getAttribute('href') || '',
+          text: (chip.textContent || '').replace(/\s+/g, ' ').trim(),
+          total: chips.length,
+          external: /^https?:\/\//i.test(chip.getAttribute('href') || ''),
+          // 「不抢正文区槽位」的页面侧证据：入口必须在横滑容器**外**
+          insideScroll: Boolean(scroll && scroll.contains(chip)),
+          fullyInViewport: box.left >= -1 && box.right <= window.innerWidth + 1 && box.width > 0
+        };
+      })(),
       moreHref: more ? more.getAttribute('href') : null,
       moreInViewport: more ? more.getBoundingClientRect().right <= window.innerWidth + 1 : false,
       controls: nav.querySelectorAll('button, input, select').length,
@@ -4901,14 +4919,73 @@ function noJsControlExemptionFor(route) {
     }
   }
 
-  // 首页条带 → /changes/ 的线索锚点必须真的落在这一页上（否则首页那个链接是死锚）。
+  // ---- 首页条带的常驻线索入口（B 类未核验线索，2026-11）---------------------------------
+  //
+  // 契约：线索**不占**条带的 `.ritem` 槽位（数据层 home 池排除），改由一条常驻入口
+  // `a.rleadcount` 呈现；它不在横滑容器里、不随日期消失，`data-lead-count` 是 N 的真值。
+  // 真值 = `/changes/` 实际渲染出的 `.leadcard` 张数（两把尺子同源：入口的 N 与卡片集都来自
+  // 「五个分栏里 lead === true 的条目」）。数据侧再算一遍窗口内线索，防「数据有线索、页面没卡、
+  // 入口也不见」被两侧同时判绿。
   {
-    const stripLeadAnchors = radarHome && Array.isArray(radarHome.items)
-      ? radarHome.items.filter(item => item.lead).map(item => (item.href.split('#')[1] || ''))
-      : [];
-    check('首页条带 → /changes/ 的线索锚点在目标页真实存在（无死锚）',
-      stripLeadAnchors.every(anchor => (changesPage.leadAnchorIds || []).includes(anchor)),
-      stripLeadAnchors.length ? `${stripLeadAnchors.length} 条锚点` : '本轮条带无线索项');
+    const chip = radarHome ? radarHome.leadChip : null;
+    const cards = changesPage.leadCards || [];
+    const leadAsOf = String(radarDealsDoc.updatedAt || '').slice(0, 10);
+    const leadRecentFrom = Number.isFinite(Date.parse(`${leadAsOf}T00:00:00Z`))
+      ? new Date(Date.parse(`${leadAsOf}T00:00:00Z`) - 6 * 86400000).toISOString().slice(0, 10)
+      : null;
+    const leadsInWindowCount = !leadRecentFrom ? 0 : radarLeadDeals.filter(deal =>
+      typeof deal.firstSeen === 'string' && deal.firstSeen >= leadRecentFrom && deal.firstSeen <= leadAsOf).length;
+    const leadsInWindow = leadsInWindowCount > 0;
+    const N = cards.length;   // 页面侧真值 = /changes/ 的 .leadcard 张数
+
+    // ① 窗口内有线索 ⇒ 恰好一个入口，且 data-lead-count == /changes/ 的线索卡张数
+    check('窗口内有线索 ⇒ 首页条带恰好一个线索入口，data-lead-count == /changes/ 线索卡张数',
+      !leadsInWindow || (Boolean(chip) && chip.total === 1 && chip.count === N && N > 0),
+      leadsInWindow
+        ? `窗口内线索 ${leadsInWindowCount} 条 · 入口 ${chip ? chip.total : 0} 个` +
+          ` · data-lead-count=${chip ? chip.count : '缺失'} · /changes/ 卡 ${N} 张`
+        : `窗口内 0 条线索 · 入口 ${chip ? chip.total : 0} 个 · /changes/ 卡 ${N} 张`);
+
+    // ② 显示值 = min(N, 上限)；「+」当且仅当 N 超上限（真值永远在 data-lead-count 上）
+    {
+      const MAX = changesLib.LIMITS.LEAD_CHIP_MAX;
+      const WORD = changesLib.CHANGES_WORDING.CHANGES_LEAD;
+      const expected = (chip && chip.count > MAX ? WORD.countMore : WORD.count)
+        .replace('{n}', String(Math.min(chip ? chip.count : 0, MAX)));
+      const badge = audienceLib.WORDING_CONTRACT.SOURCE_TYPE.lead;
+      check('线索入口显示值 = min(N, 上限)，「+」当且仅当 N 超上限（真值在 data-lead-count）',
+        chip ? (chip.text === `${badge} ${expected}` && chip.count === N) : N === 0,
+        chip
+          ? `文本「${chip.text}」 · N=${chip.count} · 上限 ${MAX} · 期望「${badge} ${expected}」`
+          : `本轮无入口（N=${N}）`);
+    }
+
+    // ③ N=0 ⇒ 入口不存在
+    check('N=0（/changes/ 没有线索卡）⇒ 条带上没有线索入口',
+      N > 0 || chip === null,
+      chip ? `入口存在 · data-lead-count=${chip.count} · /changes/ 卡 ${N} 张` : 'N=0 · 入口不存在');
+
+    // ④ 入口 href 是站内 `changes/#<anchor>`，锚点在 /changes/ 真实存在
+    //    （并入原「条带线索项死锚」断言：线索项已退出 .ritem，死锚检查改读常驻入口）
+    {
+      const chipAnchor = chip ? (chip.href.split('#')[1] || '') : '';
+      const anchorExists = (changesPage.leadAnchorIds || []).includes(chipAnchor);
+      check('线索入口 → /changes/ 的锚点在目标页真实存在（无死锚，且完整可见/不是外链/不在横滑区）',
+        !chip || (!chip.external && /^changes\/#lead-/.test(chip.href) && anchorExists && !chip.insideScroll && chip.fullyInViewport),
+        chip
+          ? `href=${chip.href} · 锚点 ${chipAnchor} · 落点=${anchorExists} · 在横滑区=${chip.insideScroll}` +
+            ` · 完整可见=${chip.fullyInViewport}`
+          : '本轮无线索入口');
+    }
+
+    // ⑤ 线索不再占 `.ritem` 槽位（数据层排除的页面侧证据；防「渲染层偷偷放回来」）
+    const leadRitems = (radarHome && Array.isArray(radarHome.items) ? radarHome.items : [])
+      .filter(item => item.lead);
+    check('线索不占条带 .ritem 槽位（只走常驻入口；正文区里没有线索项）',
+      leadRitems.length === 0,
+      leadRitems.length
+        ? `${leadRitems.length} 条线索仍占正文槽位：${leadRitems.slice(0, 3).map(item => item.id).join(', ')}`
+        : `${(radarHome ? radarHome.items : []).length} 项均为普通变化`);
   }
 
   // ---- 线索卡：结构 / 顺序 / 唯一 CTA（2026-11 的验收主体）------------------------------

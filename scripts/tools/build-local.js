@@ -6890,6 +6890,19 @@ function selfCheck(built) {
     const pageFile = path.join(OUT, 'changes', 'index.html');
     const highValueTotal = SECTION_KEYS.reduce((sum, key) => sum + (Number(radar.totals[key]) || 0), 0);
 
+    // 常驻线索入口的真值（2026-11）：五个分栏 items 里 `lead === true` 的**去重**条数 ——
+    // 也就是 `/changes/` 会渲染出的 `.leadcard` 集合（与 RENDER-CORE 的 `radarLeadEntryOf()`
+    // 同一判据的构建期实现）。⚠️ 不能拿 deals.json 全量算：`itemsPerSection` 的截断会让
+    // 它大于页面实际卡数，入口上的数字就会与读者数到的卡数对不上。
+    const leadIdsInSections = new Set();
+    for (const key of SECTION_KEYS) {
+      const section = radar.sections && radar.sections[key];
+      for (const item of (section && section.items) || []) {
+        if (item && item.lead === true) leadIdsInSections.add(item.id);
+      }
+    }
+    const leadCount = leadIdsInSections.size;
+
     // ① 首页条带：存在、总数与分栏一致、只有链接没有控件、入口在横滑区外
     if (!strip) {
       problems.push('首页没有变化雷达条带（预渲染标记没被替换？）');
@@ -6911,7 +6924,56 @@ function selfCheck(built) {
       if (JSON.stringify(stripIds) !== JSON.stringify(homeIds)) {
         problems.push(`条带条目与 radar.home 不一致（条带 ${stripIds.join(',') || '空'} / 数据 ${homeIds.join(',') || '空'}）`);
       }
-      if (!radar.home.items.length && !/class="rnone"/.test(strip)) problems.push('条带没有条目时也没有明确空态');
+      if (!radar.home.items.length && !leadCount && !/class="rnone"/.test(strip)) {
+        problems.push('条带没有条目（也没有线索入口）时也没有明确空态');
+      }
+      // ---- 常驻线索入口（B 类未核验线索，2026-11）-------------------------------
+      // 坏法全部是「页面看起来正常」：入口没了 / 计数与页面卡数对不上 / N=0 时还挂着入口 /
+      // 显示封顶与数据层漂移。真值在 radar（构建期直接算），页面侧再数一遍 `.leadcard`。
+      {
+        const chip = strip.match(/class="rleadcount" data-lead-count="(\d+)"/);
+        const changesHtml = fs.readFileSync(pageFile, 'utf8');
+        const leadCardsOnPage = (changesHtml.match(/<article class="leadcard"/g) || []).length;
+        if (leadCount > 0) {
+          if (!chip) {
+            problems.push(`条带缺少常驻线索入口（雷达五栏里 ${leadCount} 条线索）`);
+          } else if (Number(chip[1]) !== leadCount) {
+            problems.push(`条带 data-lead-count=${chip[1]} ≠ 雷达五栏去重后的线索 ${leadCount} 条`);
+          }
+        } else if (chip) {
+          problems.push(`条带挂了线索入口（data-lead-count=${chip[1]}），但雷达五栏里一条线索都没有 —— N=0 时整块不渲染`);
+        }
+        if (leadCardsOnPage !== leadCount) {
+          problems.push(`/changes/ 的 .leadcard ${leadCardsOnPage} 张 ≠ 雷达线索真值 ${leadCount} 条（入口计数会与页面卡数对不上）`);
+        }
+        if (chip && leadCount > 0) {
+          // 锚点必须真的落在 /changes/ 上（否则首页那个链接是死锚）。锚点身份来自 identityOf()。
+          const anchor = (strip.match(/class="rleadcount"[^>]*href="changes\/#([^"]+)"/) || [])[1] || '';
+          if (!anchor || !changesHtml.includes(`id="${anchor}"`)) {
+            problems.push(`线索入口的 changes/ 锚点${anchor ? `「${anchor}」` : '缺失'}在 /changes/ 页上没有落点（死锚）`);
+          }
+          // 显示封顶必须与数据层同值：用 `LIMITS.LEAD_CHIP_MAX + 1` 条合成线索现渲染一次，
+          // 文案应是 countMore 的封顶形式（「3+ 条 →」）。两边漂移 = 读者看到的数字错。
+          const cap = changes.LIMITS.LEAD_CHIP_MAX;
+          const synthetic = {
+            availability: 'ok', asOf: radar.asOf, startedAt: radar.startedAt,
+            totals: { created: 0, changed: 0, endingSoon: 0, ended: 0, restored: 0, other: 0 },
+            home: { items: [] },
+            sections: Object.fromEntries(SECTION_KEYS.map(key => [key, { items: [], truncated: 0 }]))
+          };
+          synthetic.sections.created.items = Array.from({ length: cap + 1 }, (_, index) => {
+            const id = `fffffffff${String(index).padStart(3, '0')}`;
+            return { id, kind: 'created', lead: true, titled: true, title: '合成线索', anchor: `lead-${id}` };
+          });
+          const syntheticStrip = rc.changesStripHtml(synthetic);
+          const syntheticCount = (syntheticStrip.match(/data-lead-count="(\d+)"/) || [])[1];
+          const expectedText = W.CHANGES_LEAD.countMore.replace('{n}', String(cap));
+          if (syntheticCount !== String(cap + 1) || !syntheticStrip.includes(expectedText)) {
+            problems.push(`线索入口的显示封顶与 LIMITS.LEAD_CHIP_MAX=${cap} 不一致` +
+              `（合成 ${cap + 1} 条时 data-lead-count=${syntheticCount || '缺失'}，文案应含「${expectedText}」）`);
+          }
+        }
+      }
     }
 
     // ② 覆盖不变量：窗口内的事件必须**一条不漏**地出现在某个分栏或「其他变化」里。
@@ -7188,7 +7250,7 @@ function selfCheck(built) {
       }
     }
     // 模板必须真的带槽位（有人把 {date} / {n} 删掉、改成写死一句话时，两端字符串仍然「相等」）
-    for (const [group, key] of [['CHANGES_LABELS', 'base'], ['CHANGES_LABELS', 'more'], ['CHANGES_LABELS', 'homeEmptyShort'], ['CHANGES_EMPTY', 'endingSoonLater'], ['CHANGES_SOON', 'days']]) {
+    for (const [group, key] of [['CHANGES_LABELS', 'base'], ['CHANGES_LABELS', 'more'], ['CHANGES_LABELS', 'homeEmptyShort'], ['CHANGES_EMPTY', 'endingSoonLater'], ['CHANGES_SOON', 'days'], ['CHANGES_LEAD', 'count'], ['CHANGES_LEAD', 'countMore']]) {
       if (!String(W[group][key]).includes('{')) problems.push(`${group}.${key} 的槽位丢了（退化成写死的一句话）`);
     }
 
