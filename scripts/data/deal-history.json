@@ -2754,11 +2754,17 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
-    "2f0c03c32d8d": {
+    "2e5118bcd2c1": {
       "source": "AppSumo",
       "misses": 1,
-      "since": "2026-11-12",
+      "since": "2026-11-13",
       "endedAt": null
+    },
+    "2f0c03c32d8d": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-13"
     },
     "31232ad4315e": {
       "source": "aitools.fyi",
@@ -2786,9 +2792,9 @@
     },
     "3eac4b6acccb": {
       "source": "快科技",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-12",
-      "endedAt": null
+      "endedAt": "2026-11-13"
     },
     "3fa2cec73c43": {
       "source": "aitools.fyi",
@@ -2868,6 +2874,12 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
+    "717bfce842bf": {
+      "source": "快科技",
+      "misses": 1,
+      "since": "2026-11-13",
+      "endedAt": null
+    },
     "72048178d658": {
       "source": "Futuretools",
       "misses": 2,
@@ -2939,12 +2951,6 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
-    },
-    "8e4af3df250c": {
-      "source": "AppSumo",
-      "misses": 1,
-      "since": "2026-11-12",
-      "endedAt": null
     },
     "90ef368f720d": {
       "source": "aitools.fyi",
@@ -3072,12 +3078,6 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
-    "ee446d349239": {
-      "source": "AppSumo",
-      "misses": 2,
-      "since": "2026-11-12",
-      "endedAt": "2026-11-12"
-    },
     "ef3cba339a72": {
       "source": "OpenRouter",
       "misses": 2,
@@ -3095,6 +3095,12 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
+    },
+    "fef21feaac71": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-13",
+      "endedAt": null
     }
   },
   "events": [
@@ -5765,6 +5771,130 @@
         "title": "GLM-5.3-Flash 限时五折",
         "vendor": "智谱AI"
       }
+    },
+    {
+      "id": "10c203c3a80e",
+      "at": "2026-11-13",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $145（省 59%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $145）",
+        "expiresAt": "2026-11-20",
+        "type": "deal",
+        "category": "办公效率",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-12T19:37:35.005Z"
+    },
+    {
+      "id": "26a04b07193d",
+      "at": "2026-11-13",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "其他",
+        "region": "cn",
+        "source": "钛媒体",
+        "sourceUrl": "https://www.tmtpost.com/rss",
+        "verified": false
+      },
+      "runAt": "2026-11-12T19:37:35.005Z"
+    },
+    {
+      "id": "2f0c03c32d8d",
+      "at": "2026-11-13",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T19:37:35.005Z",
+      "label": {
+        "title": "AutomateNexus CRM",
+        "vendor": "AutomateNexus CRM"
+      }
+    },
+    {
+      "id": "3c435ea3c1e1",
+      "at": "2026-11-13",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "其他",
+        "region": "cn",
+        "source": "快科技",
+        "sourceUrl": "https://rss.mydrivers.com/rss.aspx?Tid=1",
+        "verified": false
+      },
+      "runAt": "2026-11-12T19:37:35.005Z"
+    },
+    {
+      "id": "3eac4b6acccb",
+      "at": "2026-11-13",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T19:37:35.005Z",
+      "label": {
+        "title": "每天白赚几百 AI大模型免费薅羊毛：DeepSeek、GPT等全都有",
+        "vendor": "每天白赚几百 AI大模型免费薅羊毛：DeepSeek、GPT等全都有"
+      }
+    },
+    {
+      "id": "9e43fb1945c3",
+      "at": "2026-11-13",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-12",
+      "to": "2026-11-16",
+      "origin": "observed",
+      "runAt": "2026-11-12T19:37:35.005Z"
+    },
+    {
+      "id": "ee446d349239",
+      "at": "2026-11-13",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-12T19:37:35.005Z"
+    },
+    {
+      "id": "f1323ce17329",
+      "at": "2026-11-13",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": null,
+      "to": "2026-11-14",
+      "origin": "observed",
+      "runAt": "2026-11-12T19:37:35.005Z"
+    },
+    {
+      "id": "f1323ce17329",
+      "at": "2026-11-13",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/new/",
+      "to": "https://appsumo.com/collections/ending-soon/",
+      "origin": "observed",
+      "runAt": "2026-11-12T19:37:35.005Z"
     }
   ]
 }
