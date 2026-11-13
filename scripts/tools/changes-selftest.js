@@ -406,6 +406,35 @@ section('⑩ 渲染器：条带与页面的形态由 RENDER-CORE 现渲染断言
     stripFiveLeads.includes('data-lead-count="5"') &&
     stripFiveLeads.includes(changes.LIMITS.LEAD_CHIP_MAX + '+ 条 →') &&
     stripFiveLeads.includes('5 条 →') === false);
+
+  // ---- 同一线索跨分栏：一条记录只画一张卡（2026-11-13）-------------------------
+  //
+  // 真实形态：`created` 在 7 天窗口内（进「最近 7 天变化」）+ 同一记录的 `ended`
+  // （来源不再列出）在 30 天窗口内（也进「已结束」）⇒ 同一 id 会在两栏各出现一次。
+  // 线索卡的身份是 `article.leadcard id="lead-<id>"`：一条记录一个锚点，画两张会产生
+  // 重复 id，而首页常驻入口的 `data-lead-count`（按 id 去重）会与读者数到的卡数分家。
+  //
+  // 三件事同时断言，缺一条这个承诺就没被守住：
+  //   ① 渲染集合里只出现一次（后出现的整行移除）；
+  //   ② 页面上确实只有一张卡、锚点唯一；
+  //   ③ `totals` 仍是**事件数**（覆盖不变量拿事件对账 —— 去重不许把 ended 事件从账上抹掉）。
+  {
+    const crossId = '666666666666';
+    const crossRadar = radarOf([
+      event({ id: crossId, at: day(-2), type: 'created', field: null, from: null, to: null, fields: {} }),
+      event({ id: crossId, at: day(0), type: 'ended', field: null, from: null, to: null, reason: 'source_no_longer_lists' })
+    ], [leadDeal(crossId)]);
+    const crossPage = rc.changesPageHtml(crossRadar, '../');
+    check('跨分栏线索只在**先出现的分栏**保留一行（changed 有 / ended 无）',
+      crossRadar.sections.changed.items.some(item => item.id === crossId) &&
+      crossRadar.sections.ended.items.some(item => item.id === crossId) === false);
+    check('跨分栏线索在页面上只有一张卡、锚点不重复（重复 id 会让入口锚点指向第一张而数出两张）',
+      (crossPage.match(/<article class="leadcard"/g) || []).length === 1 &&
+      (crossPage.match(new RegExp(`id="lead-${crossId}"`, 'g')) || []).length === 1);
+    check('去重不抹掉事件账：totals 仍是事件数（changed 1 + ended 1），页面行数与 renderOrderOf 相同',
+      crossRadar.totals.changed === 1 && crossRadar.totals.ended === 1 &&
+      (crossPage.match(/<li class="chgi" /g) || []).length === changes.renderOrderOf(crossRadar).length);
+  }
 }
 
 /* ------------------------------------------------------------------ */

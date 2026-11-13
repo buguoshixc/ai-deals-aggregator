@@ -574,25 +574,40 @@ function buildRadar({ deals = [], store = null, asOf = null, availability = 'ok'
 
   for (const key of Object.keys(all)) all[key].sort(compareByRecency);
 
-  // ---- 组装分栏（有界）-------------------------------------------------
-  const capInto = list => {
-    const capped = list.slice(0, cfg.itemsPerSection);
-    return { items: capped, truncated: Math.max(0, list.length - capped.length) };
-  };
-  base.sections.created = capInto(all.created);
-  base.sections.changed = capInto(all.changed);
-  base.sections.endingSoon = capInto(endingSoon);
-  base.sections.ended = capInto(all.ended);
-  base.sections.restored = capInto(all.restored);
-  base.other = {
-    cosmetic: all.cosmetic.slice(0, cfg.itemsPerSection),
-    metadata: all.metadata.slice(0, cfg.itemsPerSection),
-    truncated: {
-      cosmetic: Math.max(0, all.cosmetic.length - cfg.itemsPerSection),
-      metadata: Math.max(0, all.metadata.length - cfg.itemsPerSection)
-    }
-  };
-  base.totals = {
+  // ---- B 类线索按记录去重（2026-11-13）---------------------------------
+  //
+  // 同一条线索可能在两个分栏里都有**真实**事件：`created` 在 7 天窗口内 ⇒「最近 7 天变化」，
+  // 同一记录的 `ended`（来源不再列出）在 30 天窗口内 ⇒「已结束」。分栏本身没错，但线索卡的
+  // 身份是 `article.leadcard id="lead-<id>"`（一条记录一个锚点）：画两张会让 `/changes/`
+  // 出现重复 id，而首页常驻入口 `data-lead-count` 的真值按 id 去重（RENDER-CORE 的
+  // `radarLeadEntryOf()`）⇒ 入口数字与读者数到的卡数分家（构建期产物自检当场红）。
+  //
+  // 判据与 `radarLeadEntryOf()` 同源：按**渲染顺序**（SECTION_ORDER）扫，第一次出现保留，
+  // 之后出现的**整行移除** —— 不降级成普通变化行：普通行没有「线索 · 未核验」声明，
+  // 把一条未核验的资讯画成普通优惠行是更坏的谎。
+  //
+  // `totals` 仍是**事件数**：构建期自检的覆盖不变量（`covered === 窗口内事件数`）拿事件
+  // 对账，不能因去重而少算。`truncated` 在去重之后现算（「窗口内还有多少条没展示」以
+  // **渲染集合**为分母）。
+  const seenLeadIds = new Set();
+  const dedupeLeadRows = list => list.filter(item => {
+    if (!item || item.lead !== true) return true;
+    const id = String(item.id || '');
+    if (!id) return true;
+    if (seenLeadIds.has(id)) return false;
+    seenLeadIds.add(id);
+    return true;
+  });
+  const createdRows = dedupeLeadRows(all.created);
+  const changedRows = dedupeLeadRows(all.changed);
+  const endingSoonRows = dedupeLeadRows(endingSoon);
+  const endedRows = dedupeLeadRows(all.ended);
+  const restoredRows = dedupeLeadRows(all.restored);
+  // 「其他变化」在页面上排在五个分栏之后，同样受「一条记录一张卡」约束。
+  const cosmeticRows = dedupeLeadRows(all.cosmetic);
+  const metadataRows = dedupeLeadRows(all.metadata);
+  // 事件数真值（去重前）：分栏标题、覆盖不变量与「其他变化（n）」都读它。
+  const eventTotals = {
     created: all.created.length,
     changed: all.changed.length,
     endingSoon: endingSoon.length,
@@ -601,15 +616,35 @@ function buildRadar({ deals = [], store = null, asOf = null, availability = 'ok'
     other: all.cosmetic.length + all.metadata.length
   };
 
+  // ---- 组装分栏（有界）-------------------------------------------------
+  const capInto = list => {
+    const capped = list.slice(0, cfg.itemsPerSection);
+    return { items: capped, truncated: Math.max(0, list.length - capped.length) };
+  };
+  base.sections.created = capInto(createdRows);
+  base.sections.changed = capInto(changedRows);
+  base.sections.endingSoon = capInto(endingSoonRows);
+  base.sections.ended = capInto(endedRows);
+  base.sections.restored = capInto(restoredRows);
+  base.other = {
+    cosmetic: cosmeticRows.slice(0, cfg.itemsPerSection),
+    metadata: metadataRows.slice(0, cfg.itemsPerSection),
+    truncated: {
+      cosmetic: Math.max(0, cosmeticRows.length - cfg.itemsPerSection),
+      metadata: Math.max(0, metadataRows.length - cfg.itemsPerSection)
+    }
+  };
+  base.totals = eventTotals;
+
   // ---- 首页条带：只取高价值，按优先级取（桶内已是时间倒序）---------------
   const pools = {
-    created: all.created,
-    ended: all.ended,
-    restored: all.restored,
-    benefit_changed: all.changed.filter(item => item.type === 'benefit_changed'),
-    expiry_changed: all.changed.filter(item => item.type === 'expiry_changed'),
-    eligibility_changed: all.changed.filter(item => item.type === 'eligibility_changed'),
-    endingSoon
+    created: createdRows,
+    ended: endedRows,
+    restored: restoredRows,
+    benefit_changed: changedRows.filter(item => item.type === 'benefit_changed'),
+    expiry_changed: changedRows.filter(item => item.type === 'expiry_changed'),
+    eligibility_changed: changedRows.filter(item => item.type === 'eligibility_changed'),
+    endingSoon: endingSoonRows
   };
   const home = [];
   for (const key of HOME_PRIORITY) {
