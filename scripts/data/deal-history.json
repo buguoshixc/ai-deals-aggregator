@@ -2724,12 +2724,6 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
-    "0750a3061d72": {
-      "source": "Futuretools",
-      "misses": 2,
-      "since": "2026-11-12",
-      "endedAt": "2026-11-12"
-    },
     "0a2fc31c76cc": {
       "source": "IT之家",
       "misses": 1,
@@ -2756,9 +2750,9 @@
     },
     "2e5118bcd2c1": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-13",
-      "endedAt": null
+      "endedAt": "2026-11-13"
     },
     "2f0c03c32d8d": {
       "source": "AppSumo",
@@ -2994,6 +2988,12 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
+    "a67c07bf4993": {
+      "source": "Futuretools",
+      "misses": 1,
+      "since": "2026-11-13",
+      "endedAt": null
+    },
     "a9053ca847fb": {
       "source": "aitools.fyi",
       "misses": 2,
@@ -3078,6 +3078,12 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
+    "ee446d349239": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-13",
+      "endedAt": null
+    },
     "ef3cba339a72": {
       "source": "OpenRouter",
       "misses": 2,
@@ -3098,9 +3104,9 @@
     },
     "fef21feaac71": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-13",
-      "endedAt": null
+      "endedAt": "2026-11-13"
     }
   },
   "events": [
@@ -5895,6 +5901,91 @@
       "to": "https://appsumo.com/collections/ending-soon/",
       "origin": "observed",
       "runAt": "2026-11-12T19:37:35.005Z"
+    },
+    {
+      "id": "0750a3061d72",
+      "at": "2026-11-13",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-13T05:14:52.149Z"
+    },
+    {
+      "id": "2e5118bcd2c1",
+      "at": "2026-11-13",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-13",
+      "runAt": "2026-11-13T05:14:52.149Z",
+      "label": {
+        "title": "Pretty Prompt",
+        "vendor": "Pretty Prompt"
+      }
+    },
+    {
+      "id": "762a098836d7",
+      "at": "2026-11-13",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "OpenRouter 免费模型：prompt / completion 价格均为 $0；限流：20 次/分钟；每日 50 次（累计购买 <10 credits）或 1000 次（≥10 credits）—— 出自 OpenRouter 官方限流文档；官方未标注免费截止日期",
+        "pricingModel": "free",
+        "priceLine": "$0 输入 / $0 输出（免费）",
+        "features": [
+          "免费 API",
+          "20 RPM / 50 RPD",
+          ":free 路由"
+        ],
+        "validity": "官方未标注免费截止日期",
+        "type": "deal",
+        "category": "API服务",
+        "region": "global",
+        "source": "OpenRouter",
+        "sourceUrl": "https://openrouter.ai/api/v1/models",
+        "verified": false
+      },
+      "runAt": "2026-11-13T05:14:52.149Z"
+    },
+    {
+      "id": "864a916dc7d3",
+      "at": "2026-11-13",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $199（省 70%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $199）",
+        "type": "deal",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-13T05:14:52.149Z"
+    },
+    {
+      "id": "fef21feaac71",
+      "at": "2026-11-13",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-13",
+      "runAt": "2026-11-13T05:14:52.149Z",
+      "label": {
+        "title": "NinjaPipe",
+        "vendor": "NinjaPipe"
+      }
     }
   ]
 }
