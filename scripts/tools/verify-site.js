@@ -5114,11 +5114,30 @@ function noJsControlExemptionFor(route) {
         return { status: 0, body: '' };
       }
     }, new URL('sitemap.xml', base).href);
-    const sitemapLeadHits = [...leadIds].filter(id => sitemapProbe.body.includes(id));
-    check('/changes/ 的线索不进 sitemap（无 /deal/<lead-id>/ 或线索独立页）',
+    // ⚠️ 判据的形状（2026-11-13 修正）：**不能拿「sitemap 文本里有没有这个 id」当判据** ——
+    // 那是「代理量」，不是「线索内容页」。`/archive/deal/<lead-id>/` 是**归档墓碑页**
+    // （记录曾经被收录、来源不再列出），它属于数据层不变量「含 ended/restored 的事件链必须
+    // 可回查」的合法产物 —— 归档页里出现 lead id 是应该的，把它判成「线索进了 sitemap」
+    // 是判据与它自己声称的东西（`/deal/<lead-id>/` 或线索独立页）不一致。
+    // 这条断言要守的是「线索没有**自己的内容页**」⇒ 判 `<loc>` 的**路由形状**：
+    //   · `deal/<lead-id>/` —— 线索被当成 deal 建了站内详情页；
+    //   · `lead/<lead-id>/` —— 将来若给线索单开独立页。
+    // 其它路由（含归档墓碑页）即使路径里带这个 id，也不是线索内容页。
+    const sitemapLocs = [...sitemapProbe.body.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => match[1].trim());
+    const leadPageRouteOf = id => new RegExp(`^(?:deal|lead)/${id}/$`);
+    const sitemapLeadHits = [...leadIds]
+      .map(id => {
+        const rel = sitemapLocs.map(loc => loc.replace(SITE_URL, '')).find(route => leadPageRouteOf(id).test(route));
+        return rel ? `${id}@${rel}` : null;
+      })
+      .filter(Boolean);
+    check('/changes/ 的线索不进 sitemap（无 deal/<lead-id>/ 详情页或 lead/<lead-id>/ 独立页；归档墓碑页不算线索页）',
       sitemapProbe.status === 200 && sitemapLeadHits.length === 0,
       sitemapProbe.status === 200
-        ? (sitemapLeadHits.length ? `混入 ${sitemapLeadHits.slice(0, 3).join(', ')}` : 'sitemap 里没有线索 id')
+        ? (sitemapLeadHits.length
+          ? `混入 ${sitemapLeadHits.slice(0, 3).join(', ')}`
+          : `sitemap ${sitemapLocs.length} 条 loc · 线索 ${leadIds.size} 条都没有自己的内容页` +
+            `（归档墓碑页 ${sitemapLocs.filter(loc => /archive\/deal\//.test(loc)).length} 条不计入）`)
         : `读不到 sitemap（HTTP ${sitemapProbe.status}）`);
   }
 

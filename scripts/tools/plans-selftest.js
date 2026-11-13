@@ -671,7 +671,12 @@ const FROZEN_VENDOR_KEYS = [
   ['together', 'Together AI'],
   ['minimax', 'MiniMax（稀宇科技）'],
   // 2026-11-12：AppSumo 新增厂商 NinjaPipe（新增路由 /vendor/ninjapipe/，既有路由一字未改）
-  ['ninjapipe', 'NinjaPipe']
+  ['ninjapipe', 'NinjaPipe'],
+  // 2026-11-13：AppSumo 新增三家只靠历史事件数达标的厂商（各 1 条有效优惠 / 3 条事件，
+  // 均为**新增路由** /vendor/alttext-ai/ · /vendor/notiq/ · /vendor/pretty-prompt/）
+  ['alttextai', 'AltText.ai'],
+  ['notiq', 'NotiQ'],
+  ['prettyprompt', 'Pretty Prompt']
 ];
 
 /**
@@ -722,7 +727,11 @@ const FROZEN_VENDOR_SLUGS = {
   /* 2026-11-12：AppSumo 采集新增厂商 NinjaPipe（1 条有效优惠 / 3 条历史事件）——
    * 落地页门槛已达标（`lib/landing.js` 的 assertVendorSlugDeclared 会在没登记 slug 时
    * 让构建直接失败），按冻结表纪律**新增一行**（既有 `/vendor/` 路由一个字节未改）。 */
-  'NinjaPipe': 'ninjapipe'
+  'NinjaPipe': 'ninjapipe',
+  /* 2026-11-13：同上三家新增厂商（只靠历史事件数达标，全部是**新增路由**，既有 /vendor/ 路由一字未改） */
+  'AltText.ai': 'alttext-ai',
+  'NotiQ': 'notiq',
+  'Pretty Prompt': 'pretty-prompt'
 };
 
 /** 逐条比对 A 空间的 `[键, 显示名]` 序列（顺序也算）；返回漂移列表（空 = 未漂移） */

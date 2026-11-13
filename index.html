@@ -1985,7 +1985,15 @@
       // 它没有官方品牌图形（assets/logos/ 未登记）⇒ logo key 为 null，走「名称缩写」兜底。
       // 新厂商进入 A 空间（身份来源）后，`scripts/data/vendor-slugs.json` 才允许有同名键 ——
       // 两条都由 `selftest:seo` / `selftest:plans` 的冻结表把守。
-      [/ninjapipe/i, 'ninjapipe', 'NinjaPipe', null]
+      [/ninjapipe/i, 'ninjapipe', 'NinjaPipe', null],
+      // 2026-11-13：AppSumo 采集新增三家**只靠历史事件数达标**的厂商（各 1 条有效优惠 / 3 条事件）：
+      // AltText.ai / NotiQ / Pretty Prompt。三家都没有官方品牌图形（assets/logos/ 未登记）
+      // ⇒ logo key 为 null，走既有的「名称缩写」兜底。
+      // 新厂商进入 A 空间（身份来源）后，`scripts/data/vendor-slugs.json` 才允许有同名键 ——
+      // 两条都由 `selftest:seo` / `selftest:plans` 的冻结表把守。
+      [/alttext/i, 'alttextai', 'AltText.ai', null],
+      [/notiq/i, 'notiq', 'NotiQ', null],
+      [/pretty\s*prompt/i, 'prettyprompt', 'Pretty Prompt', null]
     ];
 
     /** [匹配模型名的正则, logo key, 显示名]：用于折叠卡上的模型家族 logo */
