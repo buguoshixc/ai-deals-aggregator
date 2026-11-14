@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-11-14T03:17:58+08:00",
-  "count": 231,
+  "updatedAt": "2026-11-14T13:04:12+08:00",
+  "count": 233,
   "deals": [
     {
       "id": "2eae0e246de2",
@@ -2701,6 +2701,29 @@
       "verifiedAt": null
     },
     {
+      "id": "ff8cbecdd5f6",
+      "title": "MagicCanvas",
+      "vendor": "MagicCanvas",
+      "url": "https://appsumo.com/products/magiccanvas/",
+      "source": "AppSumo",
+      "sourceUrl": "https://appsumo.com/collections/new/",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $199（省 70%）",
+      "pricingModel": "paid",
+      "priceLine": "$59 终身（原价 $199）",
+      "features": null,
+      "category": "视频",
+      "description": "Tap into Google Veo, Seedance, Wan, and more with this all-in-one AI video and image generator",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-11-09",
+      "lastSeen": "2026-11-14",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
       "id": "c61916544faf",
       "title": "Acti",
       "vendor": "Acti",
@@ -2747,20 +2770,20 @@
       "verifiedAt": null
     },
     {
-      "id": "ff8cbecdd5f6",
-      "title": "MagicCanvas",
-      "vendor": "MagicCanvas",
-      "url": "https://appsumo.com/products/magiccanvas/",
+      "id": "620ef4290482",
+      "title": "VidTechy",
+      "vendor": "VidTechy",
+      "url": "https://appsumo.com/products/vidtechy/",
       "source": "AppSumo",
       "sourceUrl": "https://appsumo.com/collections/new/",
       "region": "global",
       "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $199（省 70%）",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $144（省 59%）",
       "pricingModel": "paid",
-      "priceLine": "$59 终身（原价 $199）",
+      "priceLine": "$59 终身（原价 $144）",
       "features": null,
       "category": "视频",
-      "description": "Tap into Google Veo, Seedance, Wan, and more with this all-in-one AI video and image generator",
+      "description": "Boost video rankings and views with an AI-powered YouTube marketing toolkit",
       "eligibility": null,
       "validity": null,
       "expiresAt": null,
@@ -2788,29 +2811,6 @@
       "validity": null,
       "expiresAt": "2026-11-16",
       "firstSeen": "2026-11-12",
-      "lastSeen": "2026-11-14",
-      "verified": false,
-      "verifiedAt": null
-    },
-    {
-      "id": "36fdb826204d",
-      "title": "ClearCrowds",
-      "vendor": "ClearCrowds",
-      "url": "https://appsumo.com/products/clearcrowds/",
-      "source": "AppSumo",
-      "sourceUrl": "https://appsumo.com/collections/new/",
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $49，原价 $199（省 75%）",
-      "pricingModel": "paid",
-      "priceLine": "$49 终身（原价 $199）",
-      "features": null,
-      "category": "图像绘画",
-      "description": "Clean up photos by removing people, objects, and unwanted text with this AI-powered photo editor",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": "2026-11-21",
-      "firstSeen": "2026-11-14",
       "lastSeen": "2026-11-14",
       "verified": false,
       "verifiedAt": null
@@ -2885,43 +2885,20 @@
       "verifiedAt": null
     },
     {
-      "id": "620ef4290482",
-      "title": "VidTechy",
-      "vendor": "VidTechy",
-      "url": "https://appsumo.com/products/vidtechy/",
+      "id": "36fdb826204d",
+      "title": "ClearCrowds",
+      "vendor": "ClearCrowds",
+      "url": "https://appsumo.com/products/clearcrowds/",
       "source": "AppSumo",
       "sourceUrl": "https://appsumo.com/collections/new/",
       "region": "global",
       "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $144（省 59%）",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $49，原价 $199（省 75%）",
       "pricingModel": "paid",
-      "priceLine": "$59 终身（原价 $144）",
+      "priceLine": "$49 终身（原价 $199）",
       "features": null,
-      "category": "视频",
-      "description": "Boost video rankings and views with an AI-powered YouTube marketing toolkit",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-11-09",
-      "lastSeen": "2026-11-14",
-      "verified": false,
-      "verifiedAt": null
-    },
-    {
-      "id": "cfb47a6dd6fa",
-      "title": "weDocs",
-      "vendor": "weDocs",
-      "url": "https://appsumo.com/products/wedocs/",
-      "source": "AppSumo",
-      "sourceUrl": "https://appsumo.com/collections/new/",
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $39，原价 $299（省 87%）",
-      "pricingModel": "paid",
-      "priceLine": "$39 终身（原价 $299）",
-      "features": null,
-      "category": "设计创意",
-      "description": "Publish self-hosted docs, FAQs, and changelogs with this AI-powered WordPress knowledge base plugin",
+      "category": "图像绘画",
+      "description": "Clean up photos by removing people, objects, and unwanted text with this AI-powered photo editor",
       "eligibility": null,
       "validity": null,
       "expiresAt": "2026-11-21",
@@ -3155,6 +3132,33 @@
       "eligibility": null,
       "validity": null,
       "expiresAt": "2026-11-28",
+      "firstSeen": "2026-11-14",
+      "lastSeen": "2026-11-14",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
+      "id": "f9844047fe7c",
+      "title": "inclusionAI: Ling 3.2 Flash (free)",
+      "vendor": "inclusionAI",
+      "url": "https://openrouter.ai/inclusionai/ling-3.2-flash:free",
+      "source": "OpenRouter",
+      "sourceUrl": "https://openrouter.ai/api/v1/models",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "OpenRouter 免费模型：prompt / completion 价格均为 $0；限流：20 次/分钟；每日 50 次（累计购买 <10 credits）或 1000 次（≥10 credits）—— 出自 OpenRouter 官方限流文档；官方未标注免费截止日期",
+      "pricingModel": "free",
+      "priceLine": "$0 输入 / $0 输出（免费）",
+      "features": [
+        "免费 API",
+        "20 RPM / 50 RPD",
+        ":free 路由"
+      ],
+      "category": "API服务",
+      "description": "Ling 3.2 Flash is a hybrid reasoning model from inclusionAI that accepts text and image input, with a 1M-token context window and up to 200 images per request. Thinking can…",
+      "eligibility": null,
+      "validity": "官方未标注免费截止日期",
+      "expiresAt": null,
       "firstSeen": "2026-11-14",
       "lastSeen": "2026-11-14",
       "verified": false,
@@ -3694,6 +3698,32 @@
       }
     },
     {
+      "id": "ec17511a4284",
+      "title": "Copilot 3D",
+      "vendor": "Copilot 3D",
+      "url": "https://copilot.microsoft.com/labs/experiments/3d-generations",
+      "source": "Futuretools",
+      "sourceUrl": "https://futuretools.io/tools/copilot-3d",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "图像绘画",
+      "description": "A tool to convert 2D images into 3D models",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-11-14",
+      "verified": false,
+      "verifiedAt": null,
+      "zh": {
+        "description": "把 2D 图片转成 3D 模型。"
+      }
+    },
+    {
       "id": "9fdccd9de525",
       "title": "Humva",
       "vendor": "Humva",
@@ -3767,32 +3797,6 @@
       "lastSeen": "2026-11-14",
       "verified": false,
       "verifiedAt": null
-    },
-    {
-      "id": "ec17511a4284",
-      "title": "Copilot 3D",
-      "vendor": "Copilot 3D",
-      "url": "https://copilot.microsoft.com/labs/experiments/3d-generations",
-      "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/copilot-3d",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "图像绘画",
-      "description": "A tool to convert 2D images into 3D models",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-14",
-      "verified": false,
-      "verifiedAt": null,
-      "zh": {
-        "description": "把 2D 图片转成 3D 模型。"
-      }
     },
     {
       "id": "3f1708dd5905",
@@ -3967,6 +3971,29 @@
       }
     },
     {
+      "id": "9c94811e7f17",
+      "title": "DocsMint",
+      "vendor": "DocsMint",
+      "url": "https://docsmint.com/",
+      "source": "Futuretools",
+      "sourceUrl": "https://futuretools.io/tools/docsmint-5f906736",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "办公效率",
+      "description": "AI-powered document and knowledge workspace for teams and agents.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-11-14",
+      "lastSeen": "2026-11-14",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
       "id": "2608e4a555a7",
       "title": "Atypica AI",
       "vendor": "Atypica AI",
@@ -4091,32 +4118,6 @@
       "verifiedAt": null,
       "zh": {
         "description": "整合多个 AI 模型，用于生成图像、视频与角色设计。"
-      }
-    },
-    {
-      "id": "a67c07bf4993",
-      "title": "Ankon AI",
-      "vendor": "Ankon AI",
-      "url": "https://ankonai.com/",
-      "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/ankon-ai-kos341",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "视频",
-      "description": "Turns topics, scripts, or PDFs into narrated whiteboard videos.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-14",
-      "verified": false,
-      "verifiedAt": null,
-      "zh": {
-        "description": "把选题、脚本或 PDF 变成带解说的白板动画视频。"
       }
     },
     {
@@ -4451,88 +4452,6 @@
       }
     },
     {
-      "id": "97d21ff73d3e",
-      "title": "智谱AI 新用户注册专享 2000万 免费 Tokens 资源包",
-      "vendor": "智谱AI",
-      "url": "https://bigmodel.cn/pricing",
-      "source": "智谱AI活动页",
-      "sourceUrl": null,
-      "region": "cn",
-      "type": "deal",
-      "discountInfo": "新用户注册专享 2000万 免费 Tokens 资源包，并含 120 次图像和视频资源包。",
-      "pricingModel": "free",
-      "priceLine": null,
-      "features": null,
-      "category": "API服务",
-      "description": "来源：智谱开放平台官方价格页营销位与活动说明。",
-      "eligibility": "智谱开放平台新注册用户（需实名认证）",
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-14",
-      "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
-    },
-    {
       "id": "1688614d6669",
       "title": "智谱AI 邀请好友注册赠送 Tokens 资源包",
       "vendor": "智谱AI",
@@ -4608,126 +4527,6 @@
             "derived": "stated"
           },
           "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
-    },
-    {
-      "id": "adcb6471a512",
-      "title": "智谱AI Batch API 批量调用五折",
-      "vendor": "智谱AI",
-      "url": "https://bigmodel.cn/pricing",
-      "source": "智谱AI活动页",
-      "sourceUrl": null,
-      "region": "cn",
-      "type": "deal",
-      "discountInfo": "批量调用五折特惠：Batch API 面向大规模离线数据处理任务，按标准 API 价格的五折计费，适合批量分析、数据清洗等非实时场景",
-      "pricingModel": "paid",
-      "priceLine": null,
-      "features": null,
-      "category": "API服务",
-      "description": "来源：智谱开放平台官方价格页营销位与活动说明。",
-      "eligibility": "所有开发者（批量离线任务）",
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-14",
-      "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "discount"
-      ],
-      "eligibilityDetail": {
-        "newUserOnly": false
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
-    },
-    {
-      "id": "ead998e58cd9",
-      "title": "智谱AI 上下文缓存存储限时免费",
-      "vendor": "智谱AI",
-      "url": "https://bigmodel.cn/pricing",
-      "source": "智谱AI活动页",
-      "sourceUrl": null,
-      "region": "cn",
-      "type": "deal",
-      "discountInfo": "上下文缓存存储限时免费：将上下文缓存起来，按“元/百万tokens/小时”计费，目前多数模型为限时免费",
-      "pricingModel": "free",
-      "priceLine": null,
-      "features": null,
-      "category": "API服务",
-      "description": "来源：智谱开放平台官方价格页营销位与活动说明。",
-      "eligibility": "所有调用智谱 API 的开发者",
-      "validity": "限时免费（官方未标注截止日期）",
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-14",
-      "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "trial"
-      ],
-      "eligibilityDetail": {
-        "newUserOnly": false
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
             "basis": "source",
             "derived": "stated"
           }
@@ -5379,6 +5178,257 @@
             "derived": "stated"
           },
           "claimRequirements": {
+            "basis": "source",
+            "derived": "stated"
+          }
+        }
+      }
+    },
+    {
+      "id": "cfb47a6dd6fa",
+      "title": "weDocs",
+      "vendor": "weDocs",
+      "url": "https://appsumo.com/products/wedocs/",
+      "source": "AppSumo",
+      "sourceUrl": "https://appsumo.com/collections/new/",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $39，原价 $299（省 87%）",
+      "pricingModel": "paid",
+      "priceLine": "$39 终身（原价 $299）",
+      "features": null,
+      "category": "设计创意",
+      "description": "Publish self-hosted docs, FAQs, and changelogs with this AI-powered WordPress knowledge base plugin",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": "2026-11-21",
+      "firstSeen": "2026-11-14",
+      "lastSeen": "2026-11-14",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
+      "id": "a67c07bf4993",
+      "title": "Ankon AI",
+      "vendor": "Ankon AI",
+      "url": "https://ankonai.com/",
+      "source": "Futuretools",
+      "sourceUrl": "https://futuretools.io/tools/ankon-ai-kos341",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "视频",
+      "description": "Turns topics, scripts, or PDFs into narrated whiteboard videos.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-11-14",
+      "verified": false,
+      "verifiedAt": null,
+      "zh": {
+        "description": "把选题、脚本或 PDF 变成带解说的白板动画视频。"
+      }
+    },
+    {
+      "id": "97d21ff73d3e",
+      "title": "智谱AI 新用户注册专享 2000万 免费 Tokens 资源包",
+      "vendor": "智谱AI",
+      "url": "https://bigmodel.cn/pricing",
+      "source": "智谱AI活动页",
+      "sourceUrl": null,
+      "region": "cn",
+      "type": "deal",
+      "discountInfo": "新用户注册专享 2000万 免费 Tokens 资源包，并含 120 次图像和视频资源包。",
+      "pricingModel": "free",
+      "priceLine": null,
+      "features": null,
+      "category": "API服务",
+      "description": "来源：智谱开放平台官方价格页营销位与活动说明。",
+      "eligibility": "智谱开放平台新注册用户（需实名认证）",
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-11-14",
+      "verified": false,
+      "verifiedAt": null,
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "identityVerificationRequired": true,
+        "newUserOnly": true
+      },
+      "claimRequirements": {
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "provenance": {
+        "credibility": "curated",
+        "contrib": {
+          "audience": [
+            "curated"
+          ],
+          "benefitType": [
+            "curated"
+          ],
+          "eligibilityDetail": [
+            "curated"
+          ],
+          "claimRequirements": [
+            "curated"
+          ],
+          "availability": [
+            "curated"
+          ]
+        },
+        "fields": {
+          "audience": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "benefitType": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "eligibilityDetail": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "claimRequirements": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "availability": {
+            "basis": "source",
+            "derived": "stated"
+          }
+        }
+      }
+    },
+    {
+      "id": "adcb6471a512",
+      "title": "智谱AI Batch API 批量调用五折",
+      "vendor": "智谱AI",
+      "url": "https://bigmodel.cn/pricing",
+      "source": "智谱AI活动页",
+      "sourceUrl": null,
+      "region": "cn",
+      "type": "deal",
+      "discountInfo": "批量调用五折特惠：Batch API 面向大规模离线数据处理任务，按标准 API 价格的五折计费，适合批量分析、数据清洗等非实时场景",
+      "pricingModel": "paid",
+      "priceLine": null,
+      "features": null,
+      "category": "API服务",
+      "description": "来源：智谱开放平台官方价格页营销位与活动说明。",
+      "eligibility": "所有开发者（批量离线任务）",
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-11-14",
+      "verified": false,
+      "verifiedAt": null,
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "discount"
+      ],
+      "eligibilityDetail": {
+        "newUserOnly": false
+      },
+      "provenance": {
+        "credibility": "curated",
+        "contrib": {
+          "audience": [
+            "curated"
+          ],
+          "benefitType": [
+            "curated"
+          ],
+          "eligibilityDetail": [
+            "curated"
+          ]
+        },
+        "fields": {
+          "audience": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "benefitType": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "eligibilityDetail": {
+            "basis": "source",
+            "derived": "stated"
+          }
+        }
+      }
+    },
+    {
+      "id": "ead998e58cd9",
+      "title": "智谱AI 上下文缓存存储限时免费",
+      "vendor": "智谱AI",
+      "url": "https://bigmodel.cn/pricing",
+      "source": "智谱AI活动页",
+      "sourceUrl": null,
+      "region": "cn",
+      "type": "deal",
+      "discountInfo": "上下文缓存存储限时免费：将上下文缓存起来，按“元/百万tokens/小时”计费，目前多数模型为限时免费",
+      "pricingModel": "free",
+      "priceLine": null,
+      "features": null,
+      "category": "API服务",
+      "description": "来源：智谱开放平台官方价格页营销位与活动说明。",
+      "eligibility": "所有调用智谱 API 的开发者",
+      "validity": "限时免费（官方未标注截止日期）",
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-11-14",
+      "verified": false,
+      "verifiedAt": null,
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "trial"
+      ],
+      "eligibilityDetail": {
+        "newUserOnly": false
+      },
+      "provenance": {
+        "credibility": "curated",
+        "contrib": {
+          "audience": [
+            "curated"
+          ],
+          "benefitType": [
+            "curated"
+          ],
+          "eligibilityDetail": [
+            "curated"
+          ]
+        },
+        "fields": {
+          "audience": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "benefitType": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "eligibilityDetail": {
             "basis": "source",
             "derived": "stated"
           }

@@ -2738,9 +2738,9 @@
     },
     "10c203c3a80e": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-14",
-      "endedAt": null
+      "endedAt": "2026-11-14"
     },
     "1fff4784ec9d": {
       "source": "aitools.fyi",
@@ -2756,9 +2756,9 @@
     },
     "29ff7f061d59": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-14",
-      "endedAt": null
+      "endedAt": "2026-11-14"
     },
     "2e5118bcd2c1": {
       "source": "AppSumo",
@@ -2786,9 +2786,9 @@
     },
     "318a050a84bb": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-14",
-      "endedAt": null
+      "endedAt": "2026-11-14"
     },
     "33d4fd34f78f": {
       "source": "AppSumo",
@@ -2858,9 +2858,9 @@
     },
     "5791cccec315": {
       "source": "Futuretools",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-14",
-      "endedAt": null
+      "endedAt": "2026-11-14"
     },
     "5975c73aa115": {
       "source": "Futuretools",
@@ -2948,9 +2948,9 @@
     },
     "864a916dc7d3": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-14",
-      "endedAt": null
+      "endedAt": "2026-11-14"
     },
     "8797caa10aea": {
       "source": "AppSumo",
@@ -3018,6 +3018,12 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
+    "a67c07bf4993": {
+      "source": "Futuretools",
+      "misses": 1,
+      "since": "2026-11-14",
+      "endedAt": null
+    },
     "a9053ca847fb": {
       "source": "aitools.fyi",
       "misses": 2,
@@ -3066,6 +3072,12 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
+    "cfb47a6dd6fa": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-14",
+      "endedAt": null
+    },
     "d338170e86af": {
       "source": "aitools.fyi",
       "misses": 2,
@@ -3092,9 +3104,9 @@
     },
     "e2bea3790e12": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-14",
-      "endedAt": null
+      "endedAt": "2026-11-14"
     },
     "e4bd8003b3d6": {
       "source": "智谱AI活动页",
@@ -6135,6 +6147,139 @@
       "to": "2026-11-28",
       "origin": "observed",
       "runAt": "2026-11-13T19:17:58.546Z"
+    },
+    {
+      "id": "10c203c3a80e",
+      "at": "2026-11-14",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-14",
+      "runAt": "2026-11-14T05:04:12.986Z",
+      "label": {
+        "title": "Kaptr.me",
+        "vendor": "Kaptr.me"
+      }
+    },
+    {
+      "id": "29ff7f061d59",
+      "at": "2026-11-14",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-14",
+      "runAt": "2026-11-14T05:04:12.986Z",
+      "label": {
+        "title": "VistaCreate",
+        "vendor": "VistaCreate"
+      }
+    },
+    {
+      "id": "318a050a84bb",
+      "at": "2026-11-14",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-14",
+      "runAt": "2026-11-14T05:04:12.986Z",
+      "label": {
+        "title": "ResumeUp.AI",
+        "vendor": "ResumeUp.AI"
+      }
+    },
+    {
+      "id": "5791cccec315",
+      "at": "2026-11-14",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-14",
+      "runAt": "2026-11-14T05:04:12.986Z",
+      "label": {
+        "title": "ProposAI",
+        "vendor": "ProposAI"
+      }
+    },
+    {
+      "id": "864a916dc7d3",
+      "at": "2026-11-14",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-14",
+      "runAt": "2026-11-14T05:04:12.986Z",
+      "label": {
+        "title": "Snappyit",
+        "vendor": "Snappyit"
+      }
+    },
+    {
+      "id": "9c94811e7f17",
+      "at": "2026-11-14",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "办公效率",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/docsmint-5f906736",
+        "verified": false
+      },
+      "runAt": "2026-11-14T05:04:12.986Z"
+    },
+    {
+      "id": "e2bea3790e12",
+      "at": "2026-11-14",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-14",
+      "runAt": "2026-11-14T05:04:12.986Z",
+      "label": {
+        "title": "AdaptlyPost",
+        "vendor": "AdaptlyPost"
+      }
+    },
+    {
+      "id": "f9844047fe7c",
+      "at": "2026-11-14",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "OpenRouter 免费模型：prompt / completion 价格均为 $0；限流：20 次/分钟；每日 50 次（累计购买 <10 credits）或 1000 次（≥10 credits）—— 出自 OpenRouter 官方限流文档；官方未标注免费截止日期",
+        "pricingModel": "free",
+        "priceLine": "$0 输入 / $0 输出（免费）",
+        "features": [
+          "免费 API",
+          "20 RPM / 50 RPD",
+          ":free 路由"
+        ],
+        "validity": "官方未标注免费截止日期",
+        "type": "deal",
+        "category": "API服务",
+        "region": "global",
+        "source": "OpenRouter",
+        "sourceUrl": "https://openrouter.ai/api/v1/models",
+        "verified": false
+      },
+      "runAt": "2026-11-14T05:04:12.986Z"
     }
   ]
 }
