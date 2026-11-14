@@ -2006,7 +2006,11 @@
       // 两条都由 `selftest:seo` / `selftest:plans` 的冻结表把守。
       [/alttext/i, 'alttextai', 'AltText.ai', null],
       [/notiq/i, 'notiq', 'NotiQ', null],
-      [/pretty\s*prompt/i, 'prettyprompt', 'Pretty Prompt', null]
+      [/pretty\s*prompt/i, 'prettyprompt', 'Pretty Prompt', null],
+      // 2026-11-14：AppSumo 数据更新后 ResumeUp.AI 达标（1 条有效优惠 / 3 条历史事件）。
+      // 与上面四家同一情形：新厂商进入 A 空间（身份来源）后，`scripts/data/vendor-slugs.json`
+      // 才允许有同名键；没有官方品牌图形（assets/logos/ 未登记）⇒ logo key 为 null，走名称缩写兜底。
+      [/resumeup/i, 'resumeup', 'ResumeUp.AI', null]
     ];
 
     /** [匹配模型名的正则, logo key, 显示名]：用于折叠卡上的模型家族 logo */
