@@ -1,13 +1,120 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-14T05:04:12.995Z",
+  "updatedAt": "2026-11-14T17:44:04.938Z",
   "note": "每个来源保留两代页面结构摘要（不含页面正文）。用于 AI 诊断与人工排查；`npm run selftest:ai` 守着体积上限。",
   "sources": [
     {
       "source": "aitools",
       "name": "aitools.fyi",
-      "updatedAt": "2026-11-14T05:04:12.995Z",
+      "updatedAt": "2026-11-14T17:44:04.938Z",
       "current": {
+        "capturedAt": "2026-11-14T17:44:04.938Z",
+        "itemCount": 1,
+        "items": [
+          {
+            "v": 1,
+            "url": "https://aitools.fyi/",
+            "capturedAt": "2026-11-14T17:43:22.379Z",
+            "httpStatus": 200,
+            "bytes": 328188,
+            "htmlSha256": "2be1c462e0ee2c8a",
+            "titleSha256": "2e672bf8da775099",
+            "markers": {
+              "login": true,
+              "captcha": false,
+              "cloudflare": false,
+              "errorPage": false,
+              "consentOnly": false,
+              "spaShell": false,
+              "noDataTable": true
+            },
+            "counts": {
+              "table": 0,
+              "tr": 0,
+              "td": 0,
+              "card": 0,
+              "listItem": 0,
+              "heading": 16,
+              "heading1": 1,
+              "link": 114,
+              "form": 1,
+              "input": 1,
+              "script": 19,
+              "div": 210
+            },
+            "shape": {
+              "hasDataTable": false,
+              "hasCards": false,
+              "scriptToTextRatio": 74.68
+            },
+            "textLength": 2977,
+            "textSha256": "e4e6ccdf89742e53",
+            "keywordHits": {
+              "tool": 2,
+              "free": 0,
+              "discount": 0
+            },
+            "selectorHits": {
+              "script#__NEXT_DATA__[type=\"application/json\"]": 1,
+              "a[href*=\"/tool/\"]": 0
+            },
+            "regexHits": {
+              "next-data": 1
+            },
+            "topClasses": [
+              {
+                "name": "flex",
+                "count": 108
+              },
+              {
+                "name": "items-center",
+                "count": 103
+              },
+              {
+                "name": "w-full",
+                "count": 91
+              },
+              {
+                "name": "relative",
+                "count": 84
+              },
+              {
+                "name": "text-primary",
+                "count": 82
+              },
+              {
+                "name": "rounded",
+                "count": 80
+              },
+              {
+                "name": "text-sm",
+                "count": 68
+              },
+              {
+                "name": "px-2",
+                "count": 64
+              },
+              {
+                "name": "border",
+                "count": 62
+              },
+              {
+                "name": "py-1",
+                "count": 56
+              },
+              {
+                "name": "justify-between",
+                "count": 46
+              },
+              {
+                "name": "sm:font-medium",
+                "count": 44
+              }
+            ]
+          }
+        ]
+      },
+      "previous": {
         "capturedAt": "2026-11-14T05:04:12.995Z",
         "itemCount": 1,
         "items": [
@@ -113,21 +220,26 @@
             ]
           }
         ]
-      },
-      "previous": {
-        "capturedAt": "2026-11-13T19:17:58.558Z",
-        "itemCount": 1,
+      }
+    },
+    {
+      "source": "appsumo",
+      "name": "AppSumo",
+      "updatedAt": "2026-11-14T17:44:04.938Z",
+      "current": {
+        "capturedAt": "2026-11-14T17:44:04.938Z",
+        "itemCount": 2,
         "items": [
           {
             "v": 1,
-            "url": "https://aitools.fyi/",
-            "capturedAt": "2026-11-13T19:16:37.834Z",
+            "url": "https://appsumo.com/collections/new/",
+            "capturedAt": "2026-11-14T17:42:53.368Z",
             "httpStatus": 200,
-            "bytes": 328188,
-            "htmlSha256": "2be1c462e0ee2c8a",
-            "titleSha256": "2e672bf8da775099",
+            "bytes": 582571,
+            "htmlSha256": "623f8f29f97a47a7",
+            "titleSha256": "a8f0130d7543b187",
             "markers": {
-              "login": true,
+              "login": false,
               "captcha": false,
               "cloudflare": false,
               "errorPage": false,
@@ -139,94 +251,192 @@
               "table": 0,
               "tr": 0,
               "td": 0,
-              "card": 0,
-              "listItem": 0,
-              "heading": 16,
+              "card": 20,
+              "listItem": 34,
+              "heading": 1,
               "heading1": 1,
-              "link": 114,
-              "form": 1,
-              "input": 1,
-              "script": 19,
-              "div": 210
+              "link": 142,
+              "form": 0,
+              "input": 2,
+              "script": 37,
+              "div": 592
             },
             "shape": {
               "hasDataTable": false,
-              "hasCards": false,
-              "scriptToTextRatio": 74.68
+              "hasCards": true,
+              "scriptToTextRatio": 51.62
             },
-            "textLength": 2977,
-            "textSha256": "e4e6ccdf89742e53",
+            "textLength": 4492,
+            "textSha256": "22af86c034d045be",
             "keywordHits": {
-              "tool": 2,
-              "free": 0,
-              "discount": 0
+              "Lifetime Deal": 0,
+              "AppSumo": 6,
+              "ending-soon": 0
             },
             "selectorHits": {
               "script#__NEXT_DATA__[type=\"application/json\"]": 1,
-              "a[href*=\"/tool/\"]": 0
+              "a[href^=\"/products/\"]": 80
             },
             "regexHits": {
-              "next-data": 1
+              "next-data": 1,
+              "product-link": 101
             },
             "topClasses": [
               {
                 "name": "flex",
-                "count": 108
+                "count": 238
+              },
+              {
+                "name": "h-full",
+                "count": 222
               },
               {
                 "name": "items-center",
-                "count": 103
+                "count": 194
               },
               {
                 "name": "w-full",
-                "count": 91
+                "count": 178
               },
               {
                 "name": "relative",
-                "count": 84
+                "count": 168
               },
               {
-                "name": "text-primary",
-                "count": 82
+                "name": "z-2",
+                "count": 121
               },
               {
-                "name": "rounded",
-                "count": 80
+                "name": "absolute",
+                "count": 117
               },
               {
                 "name": "text-sm",
-                "count": 68
+                "count": 104
               },
               {
-                "name": "px-2",
+                "name": "contents",
+                "count": 81
+              },
+              {
+                "name": "left-0",
+                "count": 77
+              },
+              {
+                "name": "whitespace-nowrap",
+                "count": 77
+              },
+              {
+                "name": "overflow-hidden",
+                "count": 74
+              }
+            ]
+          },
+          {
+            "v": 1,
+            "url": "https://appsumo.com/collections/ending-soon/",
+            "capturedAt": "2026-11-14T17:42:53.833Z",
+            "httpStatus": 200,
+            "bytes": 431907,
+            "htmlSha256": "d1794d9aeeb10471",
+            "titleSha256": "8c36f7591fa97f3b",
+            "markers": {
+              "login": false,
+              "captcha": false,
+              "cloudflare": false,
+              "errorPage": false,
+              "consentOnly": false,
+              "spaShell": false,
+              "noDataTable": true
+            },
+            "counts": {
+              "table": 0,
+              "tr": 0,
+              "td": 0,
+              "card": 12,
+              "listItem": 34,
+              "heading": 1,
+              "heading1": 1,
+              "link": 102,
+              "form": 0,
+              "input": 2,
+              "script": 37,
+              "div": 381
+            },
+            "shape": {
+              "hasDataTable": false,
+              "hasCards": true,
+              "scriptToTextRatio": 57.99
+            },
+            "textLength": 3157,
+            "textSha256": "3073447793001b81",
+            "keywordHits": {
+              "Lifetime Deal": 0,
+              "AppSumo": 6,
+              "ending-soon": 0
+            },
+            "selectorHits": {
+              "script#__NEXT_DATA__[type=\"application/json\"]": 1,
+              "a[href^=\"/products/\"]": 48
+            },
+            "regexHits": {
+              "next-data": 1,
+              "product-link": 60
+            },
+            "topClasses": [
+              {
+                "name": "flex",
+                "count": 162
+              },
+              {
+                "name": "h-full",
+                "count": 144
+              },
+              {
+                "name": "items-center",
+                "count": 131
+              },
+              {
+                "name": "w-full",
+                "count": 117
+              },
+              {
+                "name": "relative",
+                "count": 104
+              },
+              {
+                "name": "z-2",
+                "count": 84
+              },
+              {
+                "name": "absolute",
+                "count": 73
+              },
+              {
+                "name": "text-sm",
                 "count": 64
               },
               {
-                "name": "border",
-                "count": 62
+                "name": "whitespace-nowrap",
+                "count": 51
               },
               {
-                "name": "py-1",
-                "count": 56
+                "name": "contents",
+                "count": 49
               },
               {
-                "name": "justify-between",
-                "count": 46
+                "name": "left-0",
+                "count": 49
               },
               {
-                "name": "sm:font-medium",
-                "count": 44
+                "name": "overflow-hidden",
+                "count": 48
               }
             ]
           }
         ]
-      }
-    },
-    {
-      "source": "appsumo",
-      "name": "AppSumo",
-      "updatedAt": "2026-11-14T05:04:12.995Z",
-      "current": {
+      },
+      "previous": {
         "capturedAt": "2026-11-14T05:04:12.995Z",
         "itemCount": 2,
         "items": [
@@ -435,19 +645,24 @@
             ]
           }
         ]
-      },
-      "previous": {
-        "capturedAt": "2026-11-13T19:17:58.558Z",
-        "itemCount": 2,
+      }
+    },
+    {
+      "source": "cn_aliyun",
+      "name": "阿里云百炼",
+      "updatedAt": "2026-11-14T17:44:04.938Z",
+      "current": {
+        "capturedAt": "2026-11-14T17:44:04.938Z",
+        "itemCount": 1,
         "items": [
           {
             "v": 1,
-            "url": "https://appsumo.com/collections/new/",
-            "capturedAt": "2026-11-13T19:16:24.068Z",
+            "url": "https://help.aliyun.com/zh/model-studio/new-free-quota",
+            "capturedAt": "2026-11-14T17:42:51.362Z",
             "httpStatus": 200,
-            "bytes": 572657,
-            "htmlSha256": "8e9cdc09edc5aa88",
-            "titleSha256": "a8f0130d7543b187",
+            "bytes": 95529,
+            "htmlSha256": "56e646a137267e09",
+            "titleSha256": "645631f20b7050a3",
             "markers": {
               "login": false,
               "captcha": false,
@@ -461,197 +676,92 @@
               "table": 0,
               "tr": 0,
               "td": 0,
-              "card": 20,
-              "listItem": 34,
-              "heading": 1,
+              "card": 0,
+              "listItem": 420,
+              "heading": 35,
               "heading1": 1,
-              "link": 142,
+              "link": 134,
               "form": 0,
               "input": 2,
-              "script": 37,
-              "div": 590
+              "script": 23,
+              "div": 88
             },
             "shape": {
               "hasDataTable": false,
-              "hasCards": true,
-              "scriptToTextRatio": 51.15
+              "hasCards": false,
+              "scriptToTextRatio": 2.28
             },
-            "textLength": 4555,
-            "textSha256": "eeb6500479f46ea4",
+            "textLength": 14511,
+            "textSha256": "fb84c875e6fee498",
             "keywordHits": {
-              "Lifetime Deal": 0,
-              "AppSumo": 6,
-              "ending-soon": 0
+              "免费额度": 65,
+              "新用户": 1,
+              "有效期": 8,
+              "模型": 74
             },
             "selectorHits": {
-              "script#__NEXT_DATA__[type=\"application/json\"]": 1,
-              "a[href^=\"/products/\"]": 80
-            },
-            "regexHits": {
-              "next-data": 1,
-              "product-link": 101
-            },
-            "topClasses": [
-              {
-                "name": "h-full",
-                "count": 222
-              },
-              {
-                "name": "flex",
-                "count": 185
-              },
-              {
-                "name": "w-full",
-                "count": 178
-              },
-              {
-                "name": "relative",
-                "count": 168
-              },
-              {
-                "name": "items-center",
-                "count": 137
-              },
-              {
-                "name": "z-2",
-                "count": 122
-              },
-              {
-                "name": "absolute",
-                "count": 116
-              },
-              {
-                "name": "text-sm",
-                "count": 100
-              },
-              {
-                "name": "contents",
-                "count": 81
-              },
-              {
-                "name": "whitespace-nowrap",
-                "count": 77
-              },
-              {
-                "name": "left-0",
-                "count": 76
-              },
-              {
-                "name": "overflow-hidden",
-                "count": 74
-              }
-            ]
-          },
-          {
-            "v": 1,
-            "url": "https://appsumo.com/collections/ending-soon/",
-            "capturedAt": "2026-11-13T19:16:24.342Z",
-            "httpStatus": 200,
-            "bytes": 410842,
-            "htmlSha256": "52ebceaa4a407497",
-            "titleSha256": "8c36f7591fa97f3b",
-            "markers": {
-              "login": true,
-              "captcha": false,
-              "cloudflare": false,
-              "errorPage": false,
-              "consentOnly": false,
-              "spaShell": false,
-              "noDataTable": true
-            },
-            "counts": {
               "table": 0,
-              "tr": 0,
-              "td": 0,
-              "card": 11,
-              "listItem": 34,
-              "heading": 1,
-              "heading1": 1,
-              "link": 97,
-              "form": 0,
-              "input": 2,
-              "script": 37,
-              "div": 353
-            },
-            "shape": {
-              "hasDataTable": false,
-              "hasCards": true,
-              "scriptToTextRatio": 59.02
-            },
-            "textLength": 2987,
-            "textSha256": "0fbe36f58e77464c",
-            "keywordHits": {
-              "Lifetime Deal": 0,
-              "AppSumo": 6,
-              "ending-soon": 0
-            },
-            "selectorHits": {
-              "script#__NEXT_DATA__[type=\"application/json\"]": 1,
-              "a[href^=\"/products/\"]": 44
+              "table tr": 0,
+              "table td": 0,
+              "body": 1
             },
             "regexHits": {
-              "next-data": 1,
-              "product-link": 55
+              "free-quota": 278
             },
             "topClasses": [
               {
-                "name": "h-full",
-                "count": 132
+                "name": "help-letter-space",
+                "count": 48
               },
               {
-                "name": "flex",
-                "count": 119
+                "name": "_2cdcedb5935313401458d214540870bc_menu",
+                "count": 9
               },
               {
-                "name": "w-full",
-                "count": 108
+                "name": "iconfont",
+                "count": 9
               },
               {
-                "name": "relative",
-                "count": 96
+                "name": "help-iconfont",
+                "count": 8
               },
               {
-                "name": "items-center",
-                "count": 88
+                "name": "_174801eef2caf75aeaee91c72b19c09a_item",
+                "count": 7
               },
               {
-                "name": "z-2",
-                "count": 77
+                "name": "icon-close-arrow",
+                "count": 7
               },
               {
-                "name": "absolute",
-                "count": 67
+                "name": "Menu--level1--UN3zYr3",
+                "count": 7
               },
               {
-                "name": "text-sm",
-                "count": 59
+                "name": "Menu--menuItemText--a6B4ZGH",
+                "count": 7
               },
               {
-                "name": "whitespace-nowrap",
-                "count": 47
+                "name": "BreadCrumb--arrow--FD7AzzB",
+                "count": 4
               },
               {
-                "name": "contents",
-                "count": 45
+                "name": "ee52067fb65534cb06d3b35f654f5441_icon",
+                "count": 4
               },
               {
-                "name": "left-0",
-                "count": 45
+                "name": "help-icon-right-arrow",
+                "count": 4
               },
               {
-                "name": "overflow-hidden",
-                "count": 44
+                "name": "_18a32969382a277c44015217fbc5cb5a_box",
+                "count": 3
               }
             ]
           }
         ]
-      }
-    },
-    {
-      "source": "cn_aliyun",
-      "name": "阿里云百炼",
-      "updatedAt": "2026-11-14T05:04:12.995Z",
-      "current": {
+      },
+      "previous": {
         "capturedAt": "2026-11-14T05:04:12.995Z",
         "itemCount": 1,
         "items": [
@@ -760,19 +870,24 @@
             ]
           }
         ]
-      },
-      "previous": {
-        "capturedAt": "2026-11-13T19:17:58.558Z",
+      }
+    },
+    {
+      "source": "cn_qianfan",
+      "name": "百度千帆",
+      "updatedAt": "2026-11-14T17:44:04.938Z",
+      "current": {
+        "capturedAt": "2026-11-14T17:44:04.938Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
-            "url": "https://help.aliyun.com/zh/model-studio/new-free-quota",
-            "capturedAt": "2026-11-13T19:16:22.889Z",
+            "url": "https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg",
+            "capturedAt": "2026-11-14T17:42:49.158Z",
             "httpStatus": 200,
-            "bytes": 95569,
-            "htmlSha256": "1e30da129e0e3641",
-            "titleSha256": "645631f20b7050a3",
+            "bytes": 290602,
+            "htmlSha256": "d7fa914622b0611c",
+            "titleSha256": "b6d7bbe6c415ad35",
             "markers": {
               "login": false,
               "captcha": false,
@@ -780,103 +895,98 @@
               "errorPage": false,
               "consentOnly": false,
               "spaShell": false,
-              "noDataTable": true
+              "noDataTable": false
             },
             "counts": {
-              "table": 0,
-              "tr": 0,
-              "td": 0,
+              "table": 1,
+              "tr": 18,
+              "td": 68,
               "card": 0,
-              "listItem": 420,
-              "heading": 35,
-              "heading1": 1,
-              "link": 134,
+              "listItem": 1496,
+              "heading": 33,
+              "heading1": 2,
+              "link": 1198,
               "form": 0,
-              "input": 2,
-              "script": 23,
-              "div": 88
+              "input": 3,
+              "script": 9,
+              "div": 50
             },
             "shape": {
-              "hasDataTable": false,
+              "hasDataTable": true,
               "hasCards": false,
-              "scriptToTextRatio": 2.28
+              "scriptToTextRatio": 0.06
             },
-            "textLength": 14475,
-            "textSha256": "4fc61e0200707ff2",
+            "textLength": 13065,
+            "textSha256": "9de131d7b8f06fe8",
             "keywordHits": {
-              "免费额度": 65,
-              "新用户": 1,
-              "有效期": 7,
-              "模型": 73
+              "免费": 3,
+              "赠送": 1,
+              "Tokens": 1,
+              "有效期": 0,
+              "新用户": 4
             },
             "selectorHits": {
-              "table": 0,
-              "table tr": 0,
-              "table td": 0,
-              "body": 1
+              "table": 1,
+              "table tr": 18,
+              "table td": 68
             },
             "regexHits": {
-              "free-quota": 278
+              "token-grant": 6
             },
             "topClasses": [
               {
-                "name": "help-letter-space",
-                "count": 49
+                "name": "menu-item",
+                "count": 996
               },
               {
-                "name": "_2cdcedb5935313401458d214540870bc_menu",
-                "count": 9
+                "name": "level-3",
+                "count": 520
               },
               {
-                "name": "iconfont",
-                "count": 9
+                "name": "submenu",
+                "count": 268
               },
               {
-                "name": "help-iconfont",
-                "count": 8
+                "name": "submenu__items",
+                "count": 268
               },
               {
-                "name": "_174801eef2caf75aeaee91c72b19c09a_item",
-                "count": 7
+                "name": "submenu__title",
+                "count": 268
               },
               {
-                "name": "icon-close-arrow",
-                "count": 7
+                "name": "level-2",
+                "count": 264
               },
               {
-                "name": "Menu--level1--UN3zYr3",
-                "count": 7
+                "name": "level-4",
+                "count": 234
               },
               {
-                "name": "Menu--menuItemText--a6B4ZGH",
-                "count": 7
+                "name": "level-5",
+                "count": 118
               },
               {
-                "name": "BreadCrumb--arrow--FD7AzzB",
-                "count": 4
+                "name": "level-1",
+                "count": 74
               },
               {
-                "name": "ee52067fb65534cb06d3b35f654f5441_icon",
-                "count": 4
+                "name": "level-6",
+                "count": 32
               },
               {
-                "name": "help-icon-right-arrow",
-                "count": 4
+                "name": "breadcrumb__item",
+                "count": 13
               },
               {
-                "name": "_18a32969382a277c44015217fbc5cb5a_box",
-                "count": 3
+                "name": "level-7",
+                "count": 12
               }
             ]
           }
         ]
-      }
-    },
-    {
-      "source": "cn_qianfan",
-      "name": "百度千帆",
-      "updatedAt": "2026-11-14T05:04:12.995Z",
-      "current": {
+      },
+      "previous": {
         "capturedAt": "2026-11-14T05:04:12.995Z",
         "itemCount": 1,
         "items": [
@@ -985,19 +1095,24 @@
             ]
           }
         ]
-      },
-      "previous": {
-        "capturedAt": "2026-11-13T19:17:58.558Z",
+      }
+    },
+    {
+      "source": "cn_volc_ark",
+      "name": "火山方舟",
+      "updatedAt": "2026-11-14T17:44:04.938Z",
+      "current": {
+        "capturedAt": "2026-11-14T17:44:04.938Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
-            "url": "https://cloud.baidu.com/doc/qianfan/s/Imi2rpirg",
-            "capturedAt": "2026-11-13T19:16:21.059Z",
-            "httpStatus": 200,
-            "bytes": 290602,
-            "htmlSha256": "d7fa914622b0611c",
-            "titleSha256": "b6d7bbe6c415ad35",
+            "url": "https://www.volcengine.com/product/ark",
+            "capturedAt": "2026-11-14T17:44:04.329Z",
+            "httpStatus": null,
+            "bytes": 2434754,
+            "htmlSha256": "692a307276e86a6d",
+            "titleSha256": "e08d1beecacc59dd",
             "markers": {
               "login": false,
               "captcha": false,
@@ -1008,100 +1123,94 @@
               "noDataTable": false
             },
             "counts": {
-              "table": 1,
-              "tr": 18,
-              "td": 68,
-              "card": 0,
-              "listItem": 1496,
-              "heading": 33,
-              "heading1": 2,
-              "link": 1198,
+              "table": 22,
+              "tr": 54,
+              "td": 187,
+              "card": 564,
+              "listItem": 5,
+              "heading": 35,
+              "heading1": 1,
+              "link": 198,
               "form": 0,
-              "input": 3,
-              "script": 9,
-              "div": 50
+              "input": 2,
+              "script": 41,
+              "div": 2057
             },
             "shape": {
               "hasDataTable": true,
-              "hasCards": false,
-              "scriptToTextRatio": 0.06
+              "hasCards": true,
+              "scriptToTextRatio": 13.59
             },
-            "textLength": 13065,
-            "textSha256": "9de131d7b8f06fe8",
+            "textLength": 12472,
+            "textSha256": "2de124253d9cf470",
             "keywordHits": {
-              "免费": 3,
-              "赠送": 1,
-              "Tokens": 1,
-              "有效期": 0,
-              "新用户": 4
+              "免费": 13,
+              "额度": 8,
+              "Token": 69,
+              "活动": 7
             },
             "selectorHits": {
-              "table": 1,
-              "table tr": 18,
-              "table td": 68
+              "table": 22,
+              "table tr": 54,
+              "div": 2057
             },
             "regexHits": {
-              "token-grant": 6
+              "free-word": 15
             },
             "topClasses": [
               {
-                "name": "menu-item",
-                "count": 996
+                "name": "item_707bf",
+                "count": 340
               },
               {
-                "name": "level-3",
-                "count": 520
+                "name": "contentItem_78bd9",
+                "count": 169
               },
               {
-                "name": "submenu",
-                "count": 268
+                "name": "textEle_78bd9",
+                "count": 169
               },
               {
-                "name": "submenu__items",
-                "count": 268
+                "name": "Card__StyledCard-sc-12di61t-1",
+                "count": 148
               },
               {
-                "name": "submenu__title",
-                "count": 268
+                "name": "card_707bf",
+                "count": 148
               },
               {
-                "name": "level-2",
-                "count": 264
+                "name": "card-content_707bf",
+                "count": 148
               },
               {
-                "name": "level-4",
-                "count": 234
+                "name": "card-content-inner_707bf",
+                "count": 148
               },
               {
-                "name": "level-5",
-                "count": 118
+                "name": "size-all_707bf",
+                "count": 148
               },
               {
-                "name": "level-1",
-                "count": 74
+                "name": "title_707bf",
+                "count": 148
               },
               {
-                "name": "level-6",
-                "count": 32
+                "name": "Card__LineClampDiv-sc-12di61t-0",
+                "count": 120
               },
               {
-                "name": "breadcrumb__item",
-                "count": 13
+                "name": "description_707bf",
+                "count": 120
               },
               {
-                "name": "level-7",
-                "count": 12
+                "name": "description-wrap_707bf",
+                "count": 120
               }
             ]
           }
         ]
-      }
-    },
-    {
-      "source": "cn_volc_ark",
-      "name": "火山方舟",
-      "updatedAt": "2026-11-14T05:04:12.995Z",
-      "current": {
+      },
+      "previous": {
         "capturedAt": "2026-11-14T05:04:12.995Z",
         "itemCount": 1,
         "items": [
@@ -1209,19 +1318,24 @@
             ]
           }
         ]
-      },
-      "previous": {
-        "capturedAt": "2026-11-13T19:17:58.558Z",
+      }
+    },
+    {
+      "source": "cn_zhipu",
+      "name": "智谱AI",
+      "updatedAt": "2026-11-14T17:44:04.938Z",
+      "current": {
+        "capturedAt": "2026-11-14T17:44:04.938Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
-            "url": "https://www.volcengine.com/product/ark",
-            "capturedAt": "2026-11-13T19:17:57.877Z",
-            "httpStatus": null,
-            "bytes": 2434087,
-            "htmlSha256": "c65f02a864c09bee",
-            "titleSha256": "e08d1beecacc59dd",
+            "url": "https://docs.bigmodel.cn/cn/guide/start/model-overview",
+            "capturedAt": "2026-11-14T17:42:52.133Z",
+            "httpStatus": 200,
+            "bytes": 234554,
+            "htmlSha256": "9a6ffcc674dc5d1d",
+            "titleSha256": "1eb5be638a21ce44",
             "markers": {
               "login": false,
               "captcha": false,
@@ -1232,99 +1346,93 @@
               "noDataTable": false
             },
             "counts": {
-              "table": 22,
-              "tr": 54,
-              "td": 187,
-              "card": 564,
-              "listItem": 5,
-              "heading": 35,
+              "table": 7,
+              "tr": 49,
+              "td": 160,
+              "card": 3,
+              "listItem": 37,
+              "heading": 18,
               "heading1": 1,
-              "link": 198,
+              "link": 94,
               "form": 0,
-              "input": 2,
-              "script": 43,
-              "div": 2051
+              "input": 0,
+              "script": 19,
+              "div": 183
             },
             "shape": {
               "hasDataTable": true,
               "hasCards": true,
-              "scriptToTextRatio": 13.68
+              "scriptToTextRatio": 0.33
             },
-            "textLength": 12394,
-            "textSha256": "0631a0821cd594e5",
+            "textLength": 62173,
+            "textSha256": "311ccae7bb4e9d9c",
             "keywordHits": {
-              "免费": 13,
-              "额度": 8,
-              "Token": 69,
-              "活动": 7
+              "免费": 8,
+              "模型": 69,
+              "额度": 0
             },
             "selectorHits": {
-              "table": 22,
-              "table tr": 54,
-              "div": 2051
+              "table": 7,
+              "table tr": 49,
+              "table td": 160
             },
             "regexHits": {
-              "free-word": 15
+              "free-word": 16
             },
             "topClasses": [
               {
-                "name": "item_707bf",
-                "count": 340
+                "name": "flex",
+                "count": 163
               },
               {
-                "name": "contentItem_78bd9",
-                "count": 169
+                "name": "min-w-0",
+                "count": 110
               },
               {
-                "name": "textEle_78bd9",
-                "count": 169
+                "name": "items-center",
+                "count": 80
               },
               {
-                "name": "Card__StyledCard-sc-12di61t-1",
-                "count": 148
+                "name": "w-full",
+                "count": 61
               },
               {
-                "name": "card_707bf",
-                "count": 148
+                "name": "break-words",
+                "count": 59
               },
               {
-                "name": "card-content_707bf",
-                "count": 148
+                "name": "flex-1",
+                "count": 57
               },
               {
-                "name": "card-content-inner_707bf",
-                "count": 148
+                "name": "items-start",
+                "count": 55
               },
               {
-                "name": "size-all_707bf",
-                "count": 148
+                "name": "relative",
+                "count": 54
               },
               {
-                "name": "title_707bf",
-                "count": 148
+                "name": "hyphens-auto",
+                "count": 51
               },
               {
-                "name": "Card__LineClampDiv-sc-12di61t-0",
-                "count": 120
+                "name": "dark:text-gray-400",
+                "count": 50
               },
               {
-                "name": "description_707bf",
-                "count": 120
+                "name": "group",
+                "count": 49
               },
               {
-                "name": "description-wrap_707bf",
-                "count": 120
+                "name": "link",
+                "count": 47
               }
             ]
           }
         ]
-      }
-    },
-    {
-      "source": "cn_zhipu",
-      "name": "智谱AI",
-      "updatedAt": "2026-11-14T05:04:12.995Z",
-      "current": {
+      },
+      "previous": {
         "capturedAt": "2026-11-14T05:04:12.995Z",
         "itemCount": 1,
         "items": [
@@ -1431,19 +1539,24 @@
             ]
           }
         ]
-      },
-      "previous": {
-        "capturedAt": "2026-11-13T19:17:58.558Z",
+      }
+    },
+    {
+      "source": "cn_zhipu_pricing",
+      "name": "智谱AI活动页",
+      "updatedAt": "2026-11-14T17:44:04.938Z",
+      "current": {
+        "capturedAt": "2026-11-14T17:44:04.938Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
-            "url": "https://docs.bigmodel.cn/cn/guide/start/model-overview",
-            "capturedAt": "2026-11-13T19:16:23.449Z",
-            "httpStatus": 200,
-            "bytes": 234554,
-            "htmlSha256": "e05368dc1990987a",
-            "titleSha256": "1eb5be638a21ce44",
+            "url": "https://bigmodel.cn/pricing",
+            "capturedAt": "2026-11-14T17:43:56.038Z",
+            "httpStatus": null,
+            "bytes": 720132,
+            "htmlSha256": "d6466e68f62bff74",
+            "titleSha256": "5e48a507d22998aa",
             "markers": {
               "login": false,
               "captcha": false,
@@ -1454,98 +1567,94 @@
               "noDataTable": false
             },
             "counts": {
-              "table": 7,
-              "tr": 49,
-              "td": 160,
-              "card": 3,
-              "listItem": 37,
-              "heading": 18,
+              "table": 2,
+              "tr": 12,
+              "td": 24,
+              "card": 33,
+              "listItem": 89,
+              "heading": 13,
               "heading1": 1,
-              "link": 94,
+              "link": 87,
               "form": 0,
-              "input": 0,
-              "script": 19,
-              "div": 183
+              "input": 1,
+              "script": 28,
+              "div": 307
             },
             "shape": {
               "hasDataTable": true,
               "hasCards": true,
-              "scriptToTextRatio": 0.33
+              "scriptToTextRatio": 0.13
             },
-            "textLength": 62173,
-            "textSha256": "8f5352f0a8d7827a",
+            "textLength": 3260,
+            "textSha256": "52d56cb7fd620704",
             "keywordHits": {
-              "免费": 8,
-              "模型": 69,
-              "额度": 0
+              "免费": 20,
+              "Tokens": 18,
+              "资源包": 3,
+              "新用户注册专享": 1
             },
             "selectorHits": {
-              "table": 7,
-              "table tr": 49,
-              "table td": 160
+              "table": 2,
+              "table tr": 12,
+              "table td": 24
             },
             "regexHits": {
-              "free-word": 16
+              "new-user-package": 0
             },
             "topClasses": [
               {
                 "name": "flex",
-                "count": 163
+                "count": 101
               },
               {
-                "name": "min-w-0",
-                "count": 110
-              },
-              {
-                "name": "items-center",
-                "count": 80
-              },
-              {
-                "name": "w-full",
-                "count": 61
-              },
-              {
-                "name": "break-words",
-                "count": 59
-              },
-              {
-                "name": "flex-1",
+                "name": "fs16",
                 "count": 57
               },
               {
-                "name": "items-start",
-                "count": 55
-              },
-              {
-                "name": "relative",
-                "count": 54
-              },
-              {
-                "name": "hyphens-auto",
-                "count": 51
-              },
-              {
-                "name": "dark:text-gray-400",
-                "count": 50
-              },
-              {
-                "name": "group",
-                "count": 49
-              },
-              {
-                "name": "link",
+                "name": "iconfont",
                 "count": 47
+              },
+              {
+                "name": "hover-line-mixin",
+                "count": 40
+              },
+              {
+                "name": "icon-a-Left-small-upzuoshang-xiao",
+                "count": 38
+              },
+              {
+                "name": "menu-link-item",
+                "count": 38
+              },
+              {
+                "name": "menu-link-label",
+                "count": 38
+              },
+              {
+                "name": "cancel-color",
+                "count": 33
+              },
+              {
+                "name": "lh30",
+                "count": 28
+              },
+              {
+                "name": "items-center",
+                "count": 26
+              },
+              {
+                "name": "flex-col",
+                "count": 25
+              },
+              {
+                "name": "cell-line",
+                "count": 24
               }
             ]
           }
         ]
-      }
-    },
-    {
-      "source": "cn_zhipu_pricing",
-      "name": "智谱AI活动页",
-      "updatedAt": "2026-11-14T05:04:12.995Z",
-      "current": {
+      },
+      "previous": {
         "capturedAt": "2026-11-14T05:04:12.995Z",
         "itemCount": 1,
         "items": [
@@ -1653,345 +1762,423 @@
             ]
           }
         ]
-      },
-      "previous": {
-        "capturedAt": "2026-11-13T19:17:58.558Z",
-        "itemCount": 1,
-        "items": [
-          {
-            "v": 1,
-            "url": "https://bigmodel.cn/pricing",
-            "capturedAt": "2026-11-13T19:17:49.977Z",
-            "httpStatus": null,
-            "bytes": 720131,
-            "htmlSha256": "37b37ed0a24e8316",
-            "titleSha256": "5e48a507d22998aa",
-            "markers": {
-              "login": false,
-              "captcha": false,
-              "cloudflare": false,
-              "errorPage": false,
-              "consentOnly": false,
-              "spaShell": false,
-              "noDataTable": false
-            },
-            "counts": {
-              "table": 2,
-              "tr": 12,
-              "td": 24,
-              "card": 33,
-              "listItem": 89,
-              "heading": 13,
-              "heading1": 1,
-              "link": 87,
-              "form": 0,
-              "input": 1,
-              "script": 28,
-              "div": 307
-            },
-            "shape": {
-              "hasDataTable": true,
-              "hasCards": true,
-              "scriptToTextRatio": 0.13
-            },
-            "textLength": 3260,
-            "textSha256": "52d56cb7fd620704",
-            "keywordHits": {
-              "免费": 20,
-              "Tokens": 18,
-              "资源包": 3,
-              "新用户注册专享": 1
-            },
-            "selectorHits": {
-              "table": 2,
-              "table tr": 12,
-              "table td": 24
-            },
-            "regexHits": {
-              "new-user-package": 0
-            },
-            "topClasses": [
-              {
-                "name": "flex",
-                "count": 101
-              },
-              {
-                "name": "fs16",
-                "count": 57
-              },
-              {
-                "name": "iconfont",
-                "count": 47
-              },
-              {
-                "name": "hover-line-mixin",
-                "count": 40
-              },
-              {
-                "name": "icon-a-Left-small-upzuoshang-xiao",
-                "count": 38
-              },
-              {
-                "name": "menu-link-item",
-                "count": 38
-              },
-              {
-                "name": "menu-link-label",
-                "count": 38
-              },
-              {
-                "name": "cancel-color",
-                "count": 33
-              },
-              {
-                "name": "lh30",
-                "count": 28
-              },
-              {
-                "name": "items-center",
-                "count": 26
-              },
-              {
-                "name": "flex-col",
-                "count": 25
-              },
-              {
-                "name": "cell-line",
-                "count": 24
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "source": "futurepedia",
-      "name": "Futurepedia",
-      "updatedAt": "2026-11-14T05:04:12.995Z",
-      "current": {
-        "capturedAt": "2026-11-12T02:09:31.350Z",
-        "itemCount": 1,
-        "items": [
-          {
-            "v": 1,
-            "url": "https://www.futurepedia.io/",
-            "capturedAt": "2026-11-12T02:09:21.456Z",
-            "httpStatus": 200,
-            "bytes": 203456,
-            "htmlSha256": "20dcee30adaadcf0",
-            "titleSha256": "1f9878c086490340",
-            "markers": {
-              "login": false,
-              "captcha": false,
-              "cloudflare": false,
-              "errorPage": false,
-              "consentOnly": false,
-              "spaShell": false,
-              "noDataTable": true
-            },
-            "counts": {
-              "table": 0,
-              "tr": 0,
-              "td": 0,
-              "card": 9,
-              "listItem": 17,
-              "heading": 12,
-              "heading1": 1,
-              "link": 27,
-              "form": 0,
-              "input": 0,
-              "script": 84,
-              "div": 133
-            },
-            "shape": {
-              "hasDataTable": false,
-              "hasCards": true,
-              "scriptToTextRatio": 38.89
-            },
-            "textLength": 3111,
-            "textSha256": "867562ceff6b21fb",
-            "keywordHits": {
-              "free": 5,
-              "deal": 0,
-              "discount": 0,
-              "pricing": 0
-            },
-            "selectorHits": {
-              "a[href*=\"utm_source=futurepedia\"]": 0,
-              "meta[name=\"description\"]": 1,
-              "span": 48
-            },
-            "regexHits": {
-              "deal-word": 14
-            },
-            "topClasses": [
-              {
-                "name": "items-center",
-                "count": 79
-              },
-              {
-                "name": "flex",
-                "count": 77
-              },
-              {
-                "name": "lucide",
-                "count": 58
-              },
-              {
-                "name": "h-4",
-                "count": 57
-              },
-              {
-                "name": "text-sm",
-                "count": 49
-              },
-              {
-                "name": "w-4",
-                "count": 45
-              },
-              {
-                "name": "gap-2",
-                "count": 42
-              },
-              {
-                "name": "text-muted-foreground",
-                "count": 41
-              },
-              {
-                "name": "justify-center",
-                "count": 36
-              },
-              {
-                "name": "text-primary",
-                "count": 36
-              },
-              {
-                "name": "font-medium",
-                "count": 27
-              },
-              {
-                "name": "cursor-pointer",
-                "count": 20
-              }
-            ]
-          }
-        ]
-      },
-      "previous": {
-        "capturedAt": "2026-11-09T16:38:06.637Z",
-        "itemCount": 1,
-        "items": [
-          {
-            "v": 1,
-            "url": "https://www.futurepedia.io/",
-            "capturedAt": "2026-11-09T16:37:53.583Z",
-            "httpStatus": 200,
-            "bytes": 203574,
-            "htmlSha256": "afe51f92a54580fe",
-            "titleSha256": "1f9878c086490340",
-            "markers": {
-              "login": false,
-              "captcha": false,
-              "cloudflare": false,
-              "errorPage": false,
-              "consentOnly": false,
-              "spaShell": false,
-              "noDataTable": true
-            },
-            "counts": {
-              "table": 0,
-              "tr": 0,
-              "td": 0,
-              "card": 9,
-              "listItem": 17,
-              "heading": 12,
-              "heading1": 1,
-              "link": 27,
-              "form": 0,
-              "input": 0,
-              "script": 85,
-              "div": 133
-            },
-            "shape": {
-              "hasDataTable": false,
-              "hasCards": true,
-              "scriptToTextRatio": 38.89
-            },
-            "textLength": 3111,
-            "textSha256": "867562ceff6b21fb",
-            "keywordHits": {
-              "free": 5,
-              "deal": 0,
-              "discount": 0,
-              "pricing": 0
-            },
-            "selectorHits": {
-              "a[href*=\"utm_source=futurepedia\"]": 0,
-              "meta[name=\"description\"]": 1,
-              "span": 48
-            },
-            "regexHits": {
-              "deal-word": 14
-            },
-            "topClasses": [
-              {
-                "name": "items-center",
-                "count": 79
-              },
-              {
-                "name": "flex",
-                "count": 77
-              },
-              {
-                "name": "lucide",
-                "count": 58
-              },
-              {
-                "name": "h-4",
-                "count": 57
-              },
-              {
-                "name": "text-sm",
-                "count": 49
-              },
-              {
-                "name": "w-4",
-                "count": 45
-              },
-              {
-                "name": "gap-2",
-                "count": 42
-              },
-              {
-                "name": "text-muted-foreground",
-                "count": 41
-              },
-              {
-                "name": "justify-center",
-                "count": 36
-              },
-              {
-                "name": "text-primary",
-                "count": 36
-              },
-              {
-                "name": "font-medium",
-                "count": 27
-              },
-              {
-                "name": "cursor-pointer",
-                "count": 20
-              }
-            ]
-          }
-        ]
       }
     },
     {
       "source": "futuretools",
       "name": "Futuretools",
-      "updatedAt": "2026-11-14T05:04:12.995Z",
+      "updatedAt": "2026-11-14T17:44:04.938Z",
       "current": {
+        "capturedAt": "2026-11-14T17:44:04.938Z",
+        "itemCount": 38,
+        "items": [
+          {
+            "v": 1,
+            "url": "https://www.futuretools.io/",
+            "capturedAt": "2026-11-14T17:43:23.360Z",
+            "httpStatus": 200,
+            "bytes": 440995,
+            "htmlSha256": "f99815ae252e07cc",
+            "titleSha256": "e042c9a77d0f9e16",
+            "markers": {
+              "login": false,
+              "captcha": false,
+              "cloudflare": false,
+              "errorPage": false,
+              "consentOnly": false,
+              "spaShell": false,
+              "noDataTable": true
+            },
+            "counts": {
+              "table": 0,
+              "tr": 0,
+              "td": 0,
+              "card": 37,
+              "listItem": 25,
+              "heading": 24,
+              "heading1": 1,
+              "link": 102,
+              "form": 2,
+              "input": 4,
+              "script": 93,
+              "div": 227
+            },
+            "shape": {
+              "hasDataTable": false,
+              "hasCards": true,
+              "scriptToTextRatio": 17.84
+            },
+            "textLength": 9881,
+            "textSha256": "63aa01e5d1ca0f2d",
+            "keywordHits": {
+              "free": 0,
+              "deal": 0,
+              "discount": 0
+            },
+            "selectorHits": {
+              "a[href^=\"/tools/\"]": 40,
+              "a[href^=\"/go/\"]": 1
+            },
+            "regexHits": {
+              "deal-word": 10
+            },
+            "topClasses": [
+              {
+                "name": "transition-colors",
+                "count": 186
+              },
+              {
+                "name": "flex",
+                "count": 161
+              },
+              {
+                "name": "text-sm",
+                "count": 157
+              },
+              {
+                "name": "shrink-0",
+                "count": 147
+              },
+              {
+                "name": "group-hover:text-primary",
+                "count": 140
+              },
+              {
+                "name": "text-muted-foreground",
+                "count": 121
+              },
+              {
+                "name": "items-center",
+                "count": 116
+              },
+              {
+                "name": "border",
+                "count": 101
+              },
+              {
+                "name": "font-semibold",
+                "count": 97
+              },
+              {
+                "name": "rounded-lg",
+                "count": 95
+              },
+              {
+                "name": "font-display",
+                "count": 82
+              },
+              {
+                "name": "overflow-hidden",
+                "count": 82
+              }
+            ]
+          },
+          {
+            "v": 1,
+            "url": "https://futuretools.io/tools/cliphi-w0gfbv",
+            "capturedAt": "2026-11-14T17:43:23.550Z",
+            "httpStatus": 200,
+            "bytes": 92568,
+            "htmlSha256": "41e37db3c5fc5830",
+            "titleSha256": "fb85ca5dc8045183",
+            "markers": {
+              "login": true,
+              "captcha": false,
+              "cloudflare": false,
+              "errorPage": false,
+              "consentOnly": false,
+              "spaShell": false,
+              "noDataTable": true
+            },
+            "counts": {
+              "table": 0,
+              "tr": 0,
+              "td": 0,
+              "card": 13,
+              "listItem": 27,
+              "heading": 11,
+              "heading1": 1,
+              "link": 47,
+              "form": 2,
+              "input": 4,
+              "script": 40,
+              "div": 86
+            },
+            "shape": {
+              "hasDataTable": false,
+              "hasCards": true,
+              "scriptToTextRatio": 27.4
+            },
+            "textLength": 1747,
+            "textSha256": "b65bba6948c1f375",
+            "keywordHits": {
+              "free": 2,
+              "deal": 0,
+              "discount": 0
+            },
+            "selectorHits": {
+              "a[href^=\"/tools/\"]": 0,
+              "a[href^=\"/go/\"]": 2
+            },
+            "regexHits": {
+              "deal-word": 4
+            },
+            "topClasses": [
+              {
+                "name": "transition-colors",
+                "count": 56
+              },
+              {
+                "name": "text-muted-foreground",
+                "count": 52
+              },
+              {
+                "name": "text-sm",
+                "count": 47
+              },
+              {
+                "name": "flex",
+                "count": 43
+              },
+              {
+                "name": "items-center",
+                "count": 42
+              },
+              {
+                "name": "font-medium",
+                "count": 34
+              },
+              {
+                "name": "rounded-lg",
+                "count": 30
+              },
+              {
+                "name": "px-3",
+                "count": 28
+              },
+              {
+                "name": "hover:text-primary",
+                "count": 25
+              },
+              {
+                "name": "border",
+                "count": 21
+              },
+              {
+                "name": "gap-2",
+                "count": 20
+              },
+              {
+                "name": "py-2",
+                "count": 20
+              }
+            ]
+          },
+          {
+            "v": 1,
+            "url": "https://futuretools.io/tools/copilot-3d",
+            "capturedAt": "2026-11-14T17:43:23.602Z",
+            "httpStatus": 200,
+            "bytes": 89269,
+            "htmlSha256": "383943e6eff4f79b",
+            "titleSha256": "cd6ae293a0ddc97f",
+            "markers": {
+              "login": true,
+              "captcha": false,
+              "cloudflare": false,
+              "errorPage": false,
+              "consentOnly": false,
+              "spaShell": false,
+              "noDataTable": true
+            },
+            "counts": {
+              "table": 0,
+              "tr": 0,
+              "td": 0,
+              "card": 12,
+              "listItem": 27,
+              "heading": 12,
+              "heading1": 1,
+              "link": 46,
+              "form": 2,
+              "input": 4,
+              "script": 41,
+              "div": 86
+            },
+            "shape": {
+              "hasDataTable": false,
+              "hasCards": true,
+              "scriptToTextRatio": 20.57
+            },
+            "textLength": 2384,
+            "textSha256": "1429cd2090432aae",
+            "keywordHits": {
+              "free": 5,
+              "deal": 0,
+              "discount": 0
+            },
+            "selectorHits": {
+              "a[href^=\"/tools/\"]": 0,
+              "a[href^=\"/go/\"]": 2
+            },
+            "regexHits": {
+              "deal-word": 10
+            },
+            "topClasses": [
+              {
+                "name": "transition-colors",
+                "count": 55
+              },
+              {
+                "name": "text-muted-foreground",
+                "count": 52
+              },
+              {
+                "name": "text-sm",
+                "count": 49
+              },
+              {
+                "name": "flex",
+                "count": 44
+              },
+              {
+                "name": "items-center",
+                "count": 44
+              },
+              {
+                "name": "font-medium",
+                "count": 34
+              },
+              {
+                "name": "rounded-lg",
+                "count": 31
+              },
+              {
+                "name": "px-3",
+                "count": 28
+              },
+              {
+                "name": "hover:text-primary",
+                "count": 24
+              },
+              {
+                "name": "border",
+                "count": 21
+              },
+              {
+                "name": "py-2",
+                "count": 21
+              },
+              {
+                "name": "gap-2",
+                "count": 20
+              }
+            ]
+          },
+          {
+            "v": 1,
+            "url": "https://futuretools.io/tools/humva",
+            "capturedAt": "2026-11-14T17:43:23.617Z",
+            "httpStatus": 200,
+            "bytes": 92251,
+            "htmlSha256": "c560c3e4c4bbc6e6",
+            "titleSha256": "2f2e701ba10327bd",
+            "markers": {
+              "login": true,
+              "captcha": false,
+              "cloudflare": false,
+              "errorPage": false,
+              "consentOnly": false,
+              "spaShell": false,
+              "noDataTable": true
+            },
+            "counts": {
+              "table": 0,
+              "tr": 0,
+              "td": 0,
+              "card": 13,
+              "listItem": 27,
+              "heading": 11,
+              "heading1": 1,
+              "link": 47,
+              "form": 2,
+              "input": 4,
+              "script": 40,
+              "div": 86
+            },
+            "shape": {
+              "hasDataTable": false,
+              "hasCards": true,
+              "scriptToTextRatio": 26.8
+            },
+            "textLength": 1784,
+            "textSha256": "01d13ed0520433d0",
+            "keywordHits": {
+              "free": 2,
+              "deal": 0,
+              "discount": 0
+            },
+            "selectorHits": {
+              "a[href^=\"/tools/\"]": 0,
+              "a[href^=\"/go/\"]": 2
+            },
+            "regexHits": {
+              "deal-word": 4
+            },
+            "topClasses": [
+              {
+                "name": "transition-colors",
+                "count": 56
+              },
+              {
+                "name": "text-muted-foreground",
+                "count": 52
+              },
+              {
+                "name": "text-sm",
+                "count": 47
+              },
+              {
+                "name": "flex",
+                "count": 43
+              },
+              {
+                "name": "items-center",
+                "count": 42
+              },
+              {
+                "name": "font-medium",
+                "count": 34
+              },
+              {
+                "name": "rounded-lg",
+                "count": 30
+              },
+              {
+                "name": "px-3",
+                "count": 28
+              },
+              {
+                "name": "hover:text-primary",
+                "count": 25
+              },
+              {
+                "name": "border",
+                "count": 21
+              },
+              {
+                "name": "gap-2",
+                "count": 20
+              },
+              {
+                "name": "py-2",
+                "count": 20
+              }
+            ]
+          }
+        ]
+      },
+      "previous": {
         "capturedAt": "2026-11-14T05:04:12.995Z",
         "itemCount": 38,
         "items": [
@@ -2400,19 +2587,24 @@
             ]
           }
         ]
-      },
-      "previous": {
-        "capturedAt": "2026-11-13T19:17:58.558Z",
-        "itemCount": 38,
+      }
+    },
+    {
+      "source": "layer3labs",
+      "name": "Layer3Labs",
+      "updatedAt": "2026-11-14T17:44:04.938Z",
+      "current": {
+        "capturedAt": "2026-11-14T17:44:04.938Z",
+        "itemCount": 1,
         "items": [
           {
             "v": 1,
-            "url": "https://www.futuretools.io/",
-            "capturedAt": "2026-11-13T19:16:40.998Z",
+            "url": "https://www.layer3labs.io/ai-discounts",
+            "capturedAt": "2026-11-14T17:42:52.443Z",
             "httpStatus": 200,
-            "bytes": 443637,
-            "htmlSha256": "d8e4278578032c8b",
-            "titleSha256": "e042c9a77d0f9e16",
+            "bytes": 55249,
+            "htmlSha256": "03743179d7300adb",
+            "titleSha256": "c0d54efbb51eb330",
             "markers": {
               "login": false,
               "captcha": false,
@@ -2420,403 +2612,98 @@
               "errorPage": false,
               "consentOnly": false,
               "spaShell": false,
-              "noDataTable": true
+              "noDataTable": false
             },
             "counts": {
-              "table": 0,
-              "tr": 0,
-              "td": 0,
-              "card": 37,
-              "listItem": 25,
-              "heading": 24,
+              "table": 2,
+              "tr": 20,
+              "td": 80,
+              "card": 61,
+              "listItem": 54,
+              "heading": 17,
               "heading1": 1,
-              "link": 102,
-              "form": 2,
-              "input": 4,
-              "script": 92,
-              "div": 227
+              "link": 133,
+              "form": 0,
+              "input": 0,
+              "script": 19,
+              "div": 68
             },
             "shape": {
-              "hasDataTable": false,
+              "hasDataTable": true,
               "hasCards": true,
-              "scriptToTextRatio": 16.99
+              "scriptToTextRatio": 0.4
             },
-            "textLength": 10456,
-            "textSha256": "c589e2a6e3ef1375",
+            "textLength": 17939,
+            "textSha256": "33f2d446cb22f661",
             "keywordHits": {
-              "free": 0,
-              "deal": 0,
-              "discount": 0
+              "Provider": 4,
+              "discount": 25,
+              "Best for": 1,
+              "How to get": 1
             },
             "selectorHits": {
-              "a[href^=\"/tools/\"]": 40,
-              "a[href^=\"/go/\"]": 1
+              "table": 2,
+              "table tr": 20,
+              "table td": 80,
+              "a[href^=\"http\"]": 32
             },
             "regexHits": {
-              "deal-word": 16
+              "deal-table-header": 1
             },
             "topClasses": [
               {
-                "name": "transition-colors",
-                "count": 186
+                "name": "Pillar_pillar__p__QOEwr",
+                "count": 10
               },
               {
-                "name": "flex",
-                "count": 161
+                "name": "FaqSection_faq__answer__C1wre",
+                "count": 9
               },
               {
-                "name": "text-sm",
-                "count": 157
+                "name": "FaqSection_faq__answer-inner__ku45e",
+                "count": 9
               },
               {
-                "name": "shrink-0",
-                "count": 147
+                "name": "FaqSection_faq__icon__esy84",
+                "count": 9
               },
               {
-                "name": "group-hover:text-primary",
-                "count": 140
+                "name": "FaqSection_faq__item__zduQy",
+                "count": 9
               },
               {
-                "name": "text-muted-foreground",
-                "count": 121
+                "name": "FaqSection_faq__question__Hu04R",
+                "count": 9
               },
               {
-                "name": "items-center",
-                "count": 117
+                "name": "RelatedResources_related__card__uJcZ0",
+                "count": 9
               },
               {
-                "name": "border",
-                "count": 101
+                "name": "Pillar_pillar__section__monQV",
+                "count": 8
               },
               {
-                "name": "font-semibold",
-                "count": 97
+                "name": "TableOfContents_toc__item__1HkyI",
+                "count": 8
               },
               {
-                "name": "rounded-lg",
-                "count": 95
+                "name": "Footer_footer__col__UsD2_",
+                "count": 7
               },
               {
-                "name": "font-display",
-                "count": 82
+                "name": "Pillar_pillar__h2__Lar__",
+                "count": 7
               },
               {
-                "name": "overflow-hidden",
-                "count": 82
-              }
-            ]
-          },
-          {
-            "v": 1,
-            "url": "https://futuretools.io/tools/cliphi-w0gfbv",
-            "capturedAt": "2026-11-13T19:16:41.312Z",
-            "httpStatus": 200,
-            "bytes": 93800,
-            "htmlSha256": "eb50916aa55a6db9",
-            "titleSha256": "fb85ca5dc8045183",
-            "markers": {
-              "login": true,
-              "captcha": false,
-              "cloudflare": false,
-              "errorPage": false,
-              "consentOnly": false,
-              "spaShell": false,
-              "noDataTable": true
-            },
-            "counts": {
-              "table": 0,
-              "tr": 0,
-              "td": 0,
-              "card": 13,
-              "listItem": 27,
-              "heading": 11,
-              "heading1": 1,
-              "link": 47,
-              "form": 2,
-              "input": 4,
-              "script": 44,
-              "div": 88
-            },
-            "shape": {
-              "hasDataTable": false,
-              "hasCards": true,
-              "scriptToTextRatio": 27.67
-            },
-            "textLength": 1768,
-            "textSha256": "7bf4a93c6630d938",
-            "keywordHits": {
-              "free": 2,
-              "deal": 0,
-              "discount": 0
-            },
-            "selectorHits": {
-              "a[href^=\"/tools/\"]": 0,
-              "a[href^=\"/go/\"]": 2
-            },
-            "regexHits": {
-              "deal-word": 4
-            },
-            "topClasses": [
-              {
-                "name": "transition-colors",
-                "count": 56
-              },
-              {
-                "name": "text-muted-foreground",
-                "count": 52
-              },
-              {
-                "name": "text-sm",
-                "count": 47
-              },
-              {
-                "name": "flex",
-                "count": 43
-              },
-              {
-                "name": "items-center",
-                "count": 42
-              },
-              {
-                "name": "font-medium",
-                "count": 34
-              },
-              {
-                "name": "rounded-lg",
-                "count": 30
-              },
-              {
-                "name": "px-3",
-                "count": 28
-              },
-              {
-                "name": "hover:text-primary",
-                "count": 25
-              },
-              {
-                "name": "border",
-                "count": 21
-              },
-              {
-                "name": "gap-2",
-                "count": 20
-              },
-              {
-                "name": "py-2",
-                "count": 20
-              }
-            ]
-          },
-          {
-            "v": 1,
-            "url": "https://futuretools.io/tools/oreate-ai-i9rqli",
-            "capturedAt": "2026-11-13T19:16:41.439Z",
-            "httpStatus": 200,
-            "bytes": 95164,
-            "htmlSha256": "bc5e7bcd5abf00bc",
-            "titleSha256": "af07df3bf126b87a",
-            "markers": {
-              "login": true,
-              "captcha": false,
-              "cloudflare": false,
-              "errorPage": false,
-              "consentOnly": false,
-              "spaShell": false,
-              "noDataTable": true
-            },
-            "counts": {
-              "table": 0,
-              "tr": 0,
-              "td": 0,
-              "card": 15,
-              "listItem": 27,
-              "heading": 11,
-              "heading1": 1,
-              "link": 51,
-              "form": 2,
-              "input": 4,
-              "script": 41,
-              "div": 86
-            },
-            "shape": {
-              "hasDataTable": false,
-              "hasCards": true,
-              "scriptToTextRatio": 28.13
-            },
-            "textLength": 1754,
-            "textSha256": "d48b6e627e082973",
-            "keywordHits": {
-              "free": 2,
-              "deal": 0,
-              "discount": 0
-            },
-            "selectorHits": {
-              "a[href^=\"/tools/\"]": 0,
-              "a[href^=\"/go/\"]": 2
-            },
-            "regexHits": {
-              "deal-word": 4
-            },
-            "topClasses": [
-              {
-                "name": "transition-colors",
-                "count": 60
-              },
-              {
-                "name": "text-muted-foreground",
-                "count": 56
-              },
-              {
-                "name": "text-sm",
-                "count": 47
-              },
-              {
-                "name": "flex",
-                "count": 43
-              },
-              {
-                "name": "items-center",
-                "count": 42
-              },
-              {
-                "name": "font-medium",
-                "count": 38
-              },
-              {
-                "name": "rounded-lg",
-                "count": 32
-              },
-              {
-                "name": "px-3",
-                "count": 30
-              },
-              {
-                "name": "hover:text-primary",
-                "count": 29
-              },
-              {
-                "name": "border",
-                "count": 25
-              },
-              {
-                "name": "gap-2",
-                "count": 20
-              },
-              {
-                "name": "py-2",
-                "count": 20
-              }
-            ]
-          },
-          {
-            "v": 1,
-            "url": "https://futuretools.io/tools/call-annie",
-            "capturedAt": "2026-11-13T19:16:41.452Z",
-            "httpStatus": 200,
-            "bytes": 92512,
-            "htmlSha256": "27f517b7282ddac0",
-            "titleSha256": "6735eb0f79a625ab",
-            "markers": {
-              "login": true,
-              "captcha": false,
-              "cloudflare": false,
-              "errorPage": false,
-              "consentOnly": false,
-              "spaShell": false,
-              "noDataTable": true
-            },
-            "counts": {
-              "table": 0,
-              "tr": 0,
-              "td": 0,
-              "card": 13,
-              "listItem": 27,
-              "heading": 11,
-              "heading1": 1,
-              "link": 47,
-              "form": 2,
-              "input": 4,
-              "script": 39,
-              "div": 86
-            },
-            "shape": {
-              "hasDataTable": false,
-              "hasCards": true,
-              "scriptToTextRatio": 27.03
-            },
-            "textLength": 1771,
-            "textSha256": "d6ae2e91a0787938",
-            "keywordHits": {
-              "free": 6,
-              "deal": 0,
-              "discount": 0
-            },
-            "selectorHits": {
-              "a[href^=\"/tools/\"]": 0,
-              "a[href^=\"/go/\"]": 2
-            },
-            "regexHits": {
-              "deal-word": 12
-            },
-            "topClasses": [
-              {
-                "name": "transition-colors",
-                "count": 56
-              },
-              {
-                "name": "text-muted-foreground",
-                "count": 53
-              },
-              {
-                "name": "text-sm",
-                "count": 47
-              },
-              {
-                "name": "flex",
-                "count": 43
-              },
-              {
-                "name": "items-center",
-                "count": 42
-              },
-              {
-                "name": "font-medium",
-                "count": 34
-              },
-              {
-                "name": "rounded-lg",
-                "count": 30
-              },
-              {
-                "name": "px-3",
-                "count": 28
-              },
-              {
-                "name": "hover:text-primary",
-                "count": 25
-              },
-              {
-                "name": "border",
-                "count": 21
-              },
-              {
-                "name": "gap-2",
-                "count": 20
-              },
-              {
-                "name": "py-2",
-                "count": 20
+                "name": "Footer_footer__heading__AEDCE",
+                "count": 6
               }
             ]
           }
         ]
-      }
-    },
-    {
-      "source": "layer3labs",
-      "name": "Layer3Labs",
-      "updatedAt": "2026-11-14T05:04:12.995Z",
-      "current": {
+      },
+      "previous": {
         "capturedAt": "2026-11-14T05:04:12.995Z",
         "itemCount": 1,
         "items": [
@@ -2925,19 +2812,24 @@
             ]
           }
         ]
-      },
-      "previous": {
-        "capturedAt": "2026-11-13T19:17:58.558Z",
+      }
+    },
+    {
+      "source": "leads_36kr",
+      "name": "36氪",
+      "updatedAt": "2026-11-14T17:44:04.938Z",
+      "current": {
+        "capturedAt": "2026-11-14T17:44:04.938Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
-            "url": "https://www.layer3labs.io/ai-discounts",
-            "capturedAt": "2026-11-13T19:16:23.648Z",
+            "url": "https://www.36kr.com/feed",
+            "capturedAt": "2026-11-14T17:42:57.749Z",
             "httpStatus": 200,
-            "bytes": 55249,
-            "htmlSha256": "9b38e7003324b687",
-            "titleSha256": "c0d54efbb51eb330",
+            "bytes": 63268,
+            "htmlSha256": "3d930ce0ea84b0b9",
+            "titleSha256": "b888b9bfd6b78d16",
             "markers": {
               "login": false,
               "captcha": false,
@@ -2945,103 +2837,57 @@
               "errorPage": false,
               "consentOnly": false,
               "spaShell": false,
-              "noDataTable": false
+              "noDataTable": true
             },
             "counts": {
-              "table": 2,
-              "tr": 20,
-              "td": 80,
-              "card": 61,
-              "listItem": 54,
-              "heading": 17,
-              "heading1": 1,
-              "link": 133,
+              "table": 0,
+              "tr": 0,
+              "td": 0,
+              "card": 0,
+              "listItem": 35,
+              "heading": 25,
+              "heading1": 0,
+              "link": 1,
               "form": 0,
               "input": 0,
-              "script": 19,
-              "div": 68
+              "script": 0,
+              "div": 0
             },
             "shape": {
-              "hasDataTable": true,
-              "hasCards": true,
-              "scriptToTextRatio": 0.4
+              "hasDataTable": false,
+              "hasCards": false,
+              "scriptToTextRatio": 0
             },
-            "textLength": 17939,
-            "textSha256": "33f2d446cb22f661",
+            "textLength": 39165,
+            "textSha256": "d8c6aac1bbe65783",
             "keywordHits": {
-              "Provider": 4,
-              "discount": 25,
-              "Best for": 1,
-              "How to get": 1
+              "item": 0,
+              "title": 0,
+              "link": 0,
+              "pubDate": 0
             },
             "selectorHits": {
-              "table": 2,
-              "table tr": 20,
-              "table td": 80,
-              "a[href^=\"http\"]": 32
+              "item": 30,
+              "item title": 30,
+              "item link": 30
             },
             "regexHits": {
-              "deal-table-header": 1
+              "rss-items": 30
             },
             "topClasses": [
               {
-                "name": "Pillar_pillar__p__QOEwr",
-                "count": 10
+                "name": "image-wrapper",
+                "count": 21
               },
               {
-                "name": "FaqSection_faq__answer__C1wre",
-                "count": 9
-              },
-              {
-                "name": "FaqSection_faq__answer-inner__ku45e",
-                "count": 9
-              },
-              {
-                "name": "FaqSection_faq__icon__esy84",
-                "count": 9
-              },
-              {
-                "name": "FaqSection_faq__item__zduQy",
-                "count": 9
-              },
-              {
-                "name": "FaqSection_faq__question__Hu04R",
-                "count": 9
-              },
-              {
-                "name": "RelatedResources_related__card__uJcZ0",
-                "count": 9
-              },
-              {
-                "name": "Pillar_pillar__section__monQV",
-                "count": 8
-              },
-              {
-                "name": "TableOfContents_toc__item__1HkyI",
-                "count": 8
-              },
-              {
-                "name": "Footer_footer__col__UsD2_",
-                "count": 7
-              },
-              {
-                "name": "Pillar_pillar__h2__Lar__",
-                "count": 7
-              },
-              {
-                "name": "Footer_footer__heading__AEDCE",
-                "count": 6
+                "name": "img-desc",
+                "count": 14
               }
             ]
           }
         ]
-      }
-    },
-    {
-      "source": "leads_36kr",
-      "name": "36氪",
-      "updatedAt": "2026-11-14T05:04:12.995Z",
-      "current": {
+      },
+      "previous": {
         "capturedAt": "2026-11-14T05:04:12.995Z",
         "itemCount": 1,
         "items": [
@@ -3109,19 +2955,24 @@
             ]
           }
         ]
-      },
-      "previous": {
-        "capturedAt": "2026-11-13T19:17:58.558Z",
+      }
+    },
+    {
+      "source": "leads_geekpark",
+      "name": "极客公园",
+      "updatedAt": "2026-11-14T17:44:04.938Z",
+      "current": {
+        "capturedAt": "2026-11-14T17:44:04.938Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
-            "url": "https://www.36kr.com/feed",
-            "capturedAt": "2026-11-13T19:16:28.073Z",
+            "url": "https://www.geekpark.net/rss",
+            "capturedAt": "2026-11-14T17:43:16.522Z",
             "httpStatus": 200,
-            "bytes": 60100,
-            "htmlSha256": "7248241be245b514",
-            "titleSha256": "b888b9bfd6b78d16",
+            "bytes": 229618,
+            "htmlSha256": "27a1aadc5a9cf9d6",
+            "titleSha256": "690c20a7a3b8b384",
             "markers": {
               "login": false,
               "captcha": false,
@@ -3136,22 +2987,22 @@
               "tr": 0,
               "td": 0,
               "card": 0,
-              "listItem": 35,
-              "heading": 17,
-              "heading1": 0,
-              "link": 2,
+              "listItem": 24,
+              "heading": 172,
+              "heading1": 100,
+              "link": 0,
               "form": 0,
               "input": 0,
               "script": 0,
-              "div": 0
+              "div": 86
             },
             "shape": {
               "hasDataTable": false,
               "hasCards": false,
               "scriptToTextRatio": 0
             },
-            "textLength": 35498,
-            "textSha256": "a470666f11ea8ff8",
+            "textLength": 132284,
+            "textSha256": "9889a1274fefbb53",
             "keywordHits": {
               "item": 0,
               "title": 0,
@@ -3168,23 +3019,34 @@
             },
             "topClasses": [
               {
-                "name": "image-wrapper",
-                "count": 31
+                "name": "ace-line",
+                "count": 153
               },
               {
-                "name": "img-desc",
-                "count": 24
+                "name": "gallery",
+                "count": 9
+              },
+              {
+                "name": "image-uploaded",
+                "count": 9
+              },
+              {
+                "name": "heading-1",
+                "count": 7
+              },
+              {
+                "name": "Apple-converted-space",
+                "count": 1
+              },
+              {
+                "name": "list-paddingleft-2",
+                "count": 1
               }
             ]
           }
         ]
-      }
-    },
-    {
-      "source": "leads_geekpark",
-      "name": "极客公园",
-      "updatedAt": "2026-11-14T05:04:12.995Z",
-      "current": {
+      },
+      "previous": {
         "capturedAt": "2026-11-14T05:04:12.995Z",
         "itemCount": 1,
         "items": [
@@ -3268,19 +3130,24 @@
             ]
           }
         ]
-      },
-      "previous": {
-        "capturedAt": "2026-11-13T19:17:58.558Z",
+      }
+    },
+    {
+      "source": "leads_ifanr",
+      "name": "爱范儿",
+      "updatedAt": "2026-11-14T17:44:04.938Z",
+      "current": {
+        "capturedAt": "2026-11-14T17:44:04.938Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
-            "url": "https://www.geekpark.net/rss",
-            "capturedAt": "2026-11-13T19:16:33.212Z",
+            "url": "https://www.ifanr.com/feed",
+            "capturedAt": "2026-11-14T17:43:01.371Z",
             "httpStatus": 200,
-            "bytes": 229618,
-            "htmlSha256": "27a1aadc5a9cf9d6",
-            "titleSha256": "690c20a7a3b8b384",
+            "bytes": 334976,
+            "htmlSha256": "7ea03234a2471617",
+            "titleSha256": "203b559a3a2a9005",
             "markers": {
               "login": false,
               "captcha": false,
@@ -3295,22 +3162,22 @@
               "tr": 0,
               "td": 0,
               "card": 0,
-              "listItem": 24,
-              "heading": 172,
-              "heading1": 100,
-              "link": 0,
+              "listItem": 14,
+              "heading": 125,
+              "heading1": 0,
+              "link": 9,
               "form": 0,
               "input": 0,
               "script": 0,
-              "div": 86
+              "div": 60
             },
             "shape": {
               "hasDataTable": false,
               "hasCards": false,
               "scriptToTextRatio": 0
             },
-            "textLength": 132284,
-            "textSha256": "9889a1274fefbb53",
+            "textLength": 96653,
+            "textSha256": "865d8dc8c466939c",
             "keywordHits": {
               "item": 0,
               "title": 0,
@@ -3318,48 +3185,67 @@
               "pubDate": 0
             },
             "selectorHits": {
-              "item": 30,
-              "item title": 30,
-              "item link": 30
+              "item": 20,
+              "item title": 20,
+              "item link": 20
             },
             "regexHits": {
-              "rss-items": 30
+              "rss-items": 20
             },
             "topClasses": [
               {
-                "name": "ace-line",
-                "count": 153
+                "name": "wp-smiley",
+                "count": 107
               },
               {
-                "name": "gallery",
-                "count": 9
+                "name": "size-full",
+                "count": 93
               },
               {
-                "name": "image-uploaded",
-                "count": 9
+                "name": "alignnone",
+                "count": 74
               },
               {
-                "name": "heading-1",
-                "count": 7
+                "name": "editor-image-source",
+                "count": 48
               },
               {
-                "name": "Apple-converted-space",
+                "name": "aligncenter",
+                "count": 19
+              },
+              {
+                "name": "wp-image-1689049",
                 "count": 1
               },
               {
-                "name": "list-paddingleft-2",
+                "name": "wp-image-1689081",
+                "count": 1
+              },
+              {
+                "name": "wp-image-1689094",
+                "count": 1
+              },
+              {
+                "name": "wp-image-1689098",
+                "count": 1
+              },
+              {
+                "name": "wp-image-1689099",
+                "count": 1
+              },
+              {
+                "name": "wp-image-1689100",
+                "count": 1
+              },
+              {
+                "name": "wp-image-1689101",
                 "count": 1
               }
             ]
           }
         ]
-      }
-    },
-    {
-      "source": "leads_ifanr",
-      "name": "爱范儿",
-      "updatedAt": "2026-11-14T05:04:12.995Z",
-      "current": {
+      },
+      "previous": {
         "capturedAt": "2026-11-14T05:04:12.995Z",
         "itemCount": 1,
         "items": [
@@ -3467,19 +3353,24 @@
             ]
           }
         ]
-      },
-      "previous": {
-        "capturedAt": "2026-11-13T19:17:58.558Z",
+      }
+    },
+    {
+      "source": "leads_ithome",
+      "name": "IT之家",
+      "updatedAt": "2026-11-14T17:44:04.938Z",
+      "current": {
+        "capturedAt": "2026-11-14T17:44:04.938Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
-            "url": "https://www.ifanr.com/feed",
-            "capturedAt": "2026-11-13T19:16:30.607Z",
+            "url": "https://www.ithome.com/rss/",
+            "capturedAt": "2026-11-14T17:42:55.013Z",
             "httpStatus": 200,
-            "bytes": 317101,
-            "htmlSha256": "9e8c4a3d2c0cf9c0",
-            "titleSha256": "203b559a3a2a9005",
+            "bytes": 130563,
+            "htmlSha256": "2fc5e019aea08e49",
+            "titleSha256": "7dd91dd2e34dbe31",
             "markers": {
               "login": false,
               "captcha": false,
@@ -3494,22 +3385,22 @@
               "tr": 0,
               "td": 0,
               "card": 0,
-              "listItem": 14,
-              "heading": 103,
+              "listItem": 0,
+              "heading": 0,
               "heading1": 0,
-              "link": 6,
+              "link": 0,
               "form": 0,
               "input": 0,
               "script": 0,
-              "div": 60
+              "div": 0
             },
             "shape": {
               "hasDataTable": false,
               "hasCards": false,
               "scriptToTextRatio": 0
             },
-            "textLength": 93093,
-            "textSha256": "681d1ad23e12cced",
+            "textLength": 108892,
+            "textSha256": "b508a3efa86936a9",
             "keywordHits": {
               "item": 0,
               "title": 0,
@@ -3517,72 +3408,18 @@
               "pubDate": 0
             },
             "selectorHits": {
-              "item": 20,
-              "item title": 20,
-              "item link": 20
+              "item": 60,
+              "item title": 60,
+              "item link": 60
             },
             "regexHits": {
-              "rss-items": 20
+              "rss-items": 60
             },
-            "topClasses": [
-              {
-                "name": "size-full",
-                "count": 94
-              },
-              {
-                "name": "alignnone",
-                "count": 76
-              },
-              {
-                "name": "wp-smiley",
-                "count": 76
-              },
-              {
-                "name": "editor-image-source",
-                "count": 48
-              },
-              {
-                "name": "aligncenter",
-                "count": 19
-              },
-              {
-                "name": "size-medium",
-                "count": 1
-              },
-              {
-                "name": "wp-image-1688898",
-                "count": 1
-              },
-              {
-                "name": "wp-image-1688929",
-                "count": 1
-              },
-              {
-                "name": "wp-image-1688931",
-                "count": 1
-              },
-              {
-                "name": "wp-image-1689049",
-                "count": 1
-              },
-              {
-                "name": "wp-image-1689081",
-                "count": 1
-              },
-              {
-                "name": "wp-image-1689094",
-                "count": 1
-              }
-            ]
+            "topClasses": []
           }
         ]
-      }
-    },
-    {
-      "source": "leads_ithome",
-      "name": "IT之家",
-      "updatedAt": "2026-11-14T05:04:12.995Z",
-      "current": {
+      },
+      "previous": {
         "capturedAt": "2026-11-14T05:04:12.995Z",
         "itemCount": 1,
         "items": [
@@ -3641,19 +3478,24 @@
             "topClasses": []
           }
         ]
-      },
-      "previous": {
-        "capturedAt": "2026-11-13T19:17:58.558Z",
+      }
+    },
+    {
+      "source": "leads_mydrivers",
+      "name": "快科技",
+      "updatedAt": "2026-11-14T17:44:04.938Z",
+      "current": {
+        "capturedAt": "2026-11-14T17:44:04.938Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
-            "url": "https://www.ithome.com/rss/",
-            "capturedAt": "2026-11-13T19:16:25.764Z",
+            "url": "https://rss.mydrivers.com/rss.aspx?Tid=1",
+            "capturedAt": "2026-11-14T17:43:19.161Z",
             "httpStatus": 200,
-            "bytes": 147503,
-            "htmlSha256": "e9ea3f4c36c24264",
-            "titleSha256": "7dd91dd2e34dbe31",
+            "bytes": 219138,
+            "htmlSha256": "418c25b43839155b",
+            "titleSha256": "9ab3aa2f7fcc1f5a",
             "markers": {
               "login": false,
               "captcha": false,
@@ -3671,7 +3513,7 @@
               "listItem": 0,
               "heading": 0,
               "heading1": 0,
-              "link": 0,
+              "link": 240,
               "form": 0,
               "input": 0,
               "script": 0,
@@ -3682,32 +3524,36 @@
               "hasCards": false,
               "scriptToTextRatio": 0
             },
-            "textLength": 122325,
-            "textSha256": "d643a765c17073c0",
+            "textLength": 94982,
+            "textSha256": "ee320eebf04b4bfb",
             "keywordHits": {
               "item": 0,
               "title": 0,
-              "link": 5,
+              "link": 0,
               "pubDate": 0
             },
             "selectorHits": {
-              "item": 60,
-              "item title": 60,
-              "item link": 60
+              "item": 100,
+              "item title": 100,
+              "item link": 100
             },
             "regexHits": {
-              "rss-items": 60
+              "rss-items": 100
             },
-            "topClasses": []
+            "topClasses": [
+              {
+                "name": "f14_link",
+                "count": 4
+              },
+              {
+                "name": "mydrivers_recommended_goods",
+                "count": 2
+              }
+            ]
           }
         ]
-      }
-    },
-    {
-      "source": "leads_mydrivers",
-      "name": "快科技",
-      "updatedAt": "2026-11-14T05:04:12.995Z",
-      "current": {
+      },
+      "previous": {
         "capturedAt": "2026-11-14T05:04:12.995Z",
         "itemCount": 1,
         "items": [
@@ -3775,19 +3621,24 @@
             ]
           }
         ]
-      },
-      "previous": {
-        "capturedAt": "2026-11-13T19:17:58.558Z",
+      }
+    },
+    {
+      "source": "leads_qbitai",
+      "name": "量子位",
+      "updatedAt": "2026-11-14T17:44:04.938Z",
+      "current": {
+        "capturedAt": "2026-11-14T17:44:04.938Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
-            "url": "https://rss.mydrivers.com/rss.aspx?Tid=1",
-            "capturedAt": "2026-11-13T19:16:35.141Z",
+            "url": "https://www.qbitai.com/feed",
+            "capturedAt": "2026-11-14T17:42:59.663Z",
             "httpStatus": 200,
-            "bytes": 217010,
-            "htmlSha256": "4949e367ee95a22f",
-            "titleSha256": "9ab3aa2f7fcc1f5a",
+            "bytes": 5801,
+            "htmlSha256": "a599d6f280e3cc88",
+            "titleSha256": "8ed19a583f73981b",
             "markers": {
               "login": false,
               "captcha": false,
@@ -3805,7 +3656,7 @@
               "listItem": 0,
               "heading": 0,
               "heading1": 0,
-              "link": 247,
+              "link": 0,
               "form": 0,
               "input": 0,
               "script": 0,
@@ -3816,8 +3667,8 @@
               "hasCards": false,
               "scriptToTextRatio": 0
             },
-            "textLength": 89372,
-            "textSha256": "1fb1f447f3818fa9",
+            "textLength": 1488,
+            "textSha256": "b6dc98514ad9f06e",
             "keywordHits": {
               "item": 0,
               "title": 0,
@@ -3825,32 +3676,18 @@
               "pubDate": 0
             },
             "selectorHits": {
-              "item": 100,
-              "item title": 100,
-              "item link": 100
+              "item": 10,
+              "item title": 10,
+              "item link": 10
             },
             "regexHits": {
-              "rss-items": 100
+              "rss-items": 10
             },
-            "topClasses": [
-              {
-                "name": "f14_link",
-                "count": 5
-              },
-              {
-                "name": "mydrivers_recommended_goods",
-                "count": 4
-              }
-            ]
+            "topClasses": []
           }
         ]
-      }
-    },
-    {
-      "source": "leads_qbitai",
-      "name": "量子位",
-      "updatedAt": "2026-11-14T05:04:12.995Z",
-      "current": {
+      },
+      "previous": {
         "capturedAt": "2026-11-14T05:04:12.995Z",
         "itemCount": 1,
         "items": [
@@ -3909,19 +3746,24 @@
             "topClasses": []
           }
         ]
-      },
-      "previous": {
-        "capturedAt": "2026-11-13T19:17:58.558Z",
+      }
+    },
+    {
+      "source": "leads_sspai",
+      "name": "少数派",
+      "updatedAt": "2026-11-14T17:44:04.938Z",
+      "current": {
+        "capturedAt": "2026-11-14T17:44:04.938Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
-            "url": "https://www.qbitai.com/feed",
-            "capturedAt": "2026-11-13T19:16:29.508Z",
+            "url": "https://sspai.com/feed",
+            "capturedAt": "2026-11-14T17:43:03.115Z",
             "httpStatus": 200,
-            "bytes": 5833,
-            "htmlSha256": "b37aa9633f28ef32",
-            "titleSha256": "8ed19a583f73981b",
+            "bytes": 4277,
+            "htmlSha256": "6f8e5204fec872df",
+            "titleSha256": "4e46b434e5c83ec4",
             "markers": {
               "login": false,
               "captcha": false,
@@ -3950,8 +3792,8 @@
               "hasCards": false,
               "scriptToTextRatio": 0
             },
-            "textLength": 1559,
-            "textSha256": "0c213d893cfd1702",
+            "textLength": 2480,
+            "textSha256": "9ee496c08509ffd4",
             "keywordHits": {
               "item": 0,
               "title": 0,
@@ -3969,13 +3811,8 @@
             "topClasses": []
           }
         ]
-      }
-    },
-    {
-      "source": "leads_sspai",
-      "name": "少数派",
-      "updatedAt": "2026-11-14T05:04:12.995Z",
-      "current": {
+      },
+      "previous": {
         "capturedAt": "2026-11-14T05:04:12.995Z",
         "itemCount": 1,
         "items": [
@@ -4034,19 +3871,24 @@
             "topClasses": []
           }
         ]
-      },
-      "previous": {
-        "capturedAt": "2026-11-13T19:17:58.558Z",
+      }
+    },
+    {
+      "source": "leads_tmtpost",
+      "name": "钛媒体",
+      "updatedAt": "2026-11-14T17:44:04.938Z",
+      "current": {
+        "capturedAt": "2026-11-14T17:44:04.938Z",
         "itemCount": 1,
         "items": [
           {
             "v": 1,
-            "url": "https://sspai.com/feed",
-            "capturedAt": "2026-11-13T19:16:31.655Z",
+            "url": "https://www.tmtpost.com/rss",
+            "capturedAt": "2026-11-14T17:43:21.846Z",
             "httpStatus": 200,
-            "bytes": 4204,
-            "htmlSha256": "dde91a1dcea882ae",
-            "titleSha256": "4e46b434e5c83ec4",
+            "bytes": 107733,
+            "htmlSha256": "02579ea1803beb1d",
+            "titleSha256": "a41d8277d1a6a9c2",
             "markers": {
               "login": false,
               "captcha": false,
@@ -4061,22 +3903,22 @@
               "tr": 0,
               "td": 0,
               "card": 0,
-              "listItem": 0,
-              "heading": 0,
+              "listItem": 3,
+              "heading": 52,
               "heading1": 0,
-              "link": 0,
+              "link": 7,
               "form": 0,
               "input": 0,
               "script": 0,
-              "div": 0
+              "div": 9
             },
             "shape": {
               "hasDataTable": false,
               "hasCards": false,
               "scriptToTextRatio": 0
             },
-            "textLength": 2407,
-            "textSha256": "37d7d7dd7cac2fb0",
+            "textLength": 73959,
+            "textSha256": "0a61e60edb3084c6",
             "keywordHits": {
               "item": 0,
               "title": 0,
@@ -4084,23 +3926,39 @@
               "pubDate": 0
             },
             "selectorHits": {
-              "item": 10,
-              "item title": 10,
-              "item link": 10
+              "item": 17,
+              "item title": 17,
+              "item link": 17
             },
             "regexHits": {
-              "rss-items": 10
+              "rss-items": 17
             },
-            "topClasses": []
+            "topClasses": [
+              {
+                "name": "aligncenter",
+                "count": 70
+              },
+              {
+                "name": "h5_image_link",
+                "count": 2
+              },
+              {
+                "name": "js_jump_icon",
+                "count": 2
+              },
+              {
+                "name": "rich_pages",
+                "count": 2
+              },
+              {
+                "name": "wxw-img",
+                "count": 2
+              }
+            ]
           }
         ]
-      }
-    },
-    {
-      "source": "leads_tmtpost",
-      "name": "钛媒体",
-      "updatedAt": "2026-11-14T05:04:12.995Z",
-      "current": {
+      },
+      "previous": {
         "capturedAt": "2026-11-14T05:04:12.995Z",
         "itemCount": 1,
         "items": [
@@ -4180,19 +4038,24 @@
             ]
           }
         ]
-      },
-      "previous": {
-        "capturedAt": "2026-11-13T19:17:58.558Z",
-        "itemCount": 1,
+      }
+    },
+    {
+      "source": "openrouter",
+      "name": "OpenRouter",
+      "updatedAt": "2026-11-14T17:44:04.938Z",
+      "current": {
+        "capturedAt": "2026-11-14T17:44:04.938Z",
+        "itemCount": 2,
         "items": [
           {
             "v": 1,
-            "url": "https://www.tmtpost.com/rss",
-            "capturedAt": "2026-11-13T19:16:36.978Z",
+            "url": "https://openrouter.ai/api/v1/models",
+            "capturedAt": "2026-11-14T17:42:54.024Z",
             "httpStatus": 200,
-            "bytes": 107591,
-            "htmlSha256": "70ca8ca036b124f7",
-            "titleSha256": "a41d8277d1a6a9c2",
+            "bytes": 852356,
+            "htmlSha256": "f422650ba44d2b4d",
+            "titleSha256": null,
             "markers": {
               "login": false,
               "captcha": false,
@@ -4208,7 +4071,7 @@
               "td": 0,
               "card": 0,
               "listItem": 0,
-              "heading": 58,
+              "heading": 0,
               "heading1": 0,
               "link": 0,
               "form": 0,
@@ -4221,53 +4084,124 @@
               "hasCards": false,
               "scriptToTextRatio": 0
             },
-            "textLength": 66927,
-            "textSha256": "1da96f72c71a482d",
+            "textLength": 852161,
+            "textSha256": "a80d888d25c1581c",
             "keywordHits": {
-              "item": 0,
-              "title": 0,
-              "link": 0,
-              "pubDate": 0
+              "pricing": 3,
+              "expiration_date": 3,
+              "created": 3,
+              "per_request_limits": 3
             },
-            "selectorHits": {
-              "item": 18,
-              "item title": 18,
-              "item link": 18
-            },
+            "selectorHits": {},
             "regexHits": {
-              "rss-items": 18
+              "models-data": 1,
+              "free-price": 17
+            },
+            "topClasses": []
+          },
+          {
+            "v": 1,
+            "url": "https://openrouter.ai/docs/api-reference/limits",
+            "capturedAt": "2026-11-14T17:42:54.534Z",
+            "httpStatus": 200,
+            "bytes": 436909,
+            "htmlSha256": "2fddd810ee134229",
+            "titleSha256": "0e7ba75d029cd940",
+            "markers": {
+              "login": false,
+              "captcha": false,
+              "cloudflare": false,
+              "errorPage": false,
+              "consentOnly": false,
+              "spaShell": false,
+              "noDataTable": false
+            },
+            "counts": {
+              "table": 2,
+              "tr": 7,
+              "td": 18,
+              "card": 0,
+              "listItem": 104,
+              "heading": 15,
+              "heading1": 1,
+              "link": 65,
+              "form": 0,
+              "input": 1,
+              "script": 23,
+              "div": 315
+            },
+            "shape": {
+              "hasDataTable": true,
+              "hasCards": false,
+              "scriptToTextRatio": 0.1
+            },
+            "textLength": 188505,
+            "textSha256": "e37ab10b8f0816af",
+            "keywordHits": {
+              "pricing": 1,
+              "expiration_date": 0,
+              "created": 0,
+              "per_request_limits": 0
+            },
+            "selectorHits": {},
+            "regexHits": {
+              "models-data": 0,
+              "free-price": 0
             },
             "topClasses": [
               {
-                "name": "aligncenter",
-                "count": 21
+                "name": "flex",
+                "count": 251
               },
               {
-                "name": "caption",
-                "count": 16
+                "name": "items-center",
+                "count": 158
               },
               {
-                "name": "stockcode_kegu",
-                "count": 4
+                "name": "line",
+                "count": 149
               },
               {
-                "name": "stockcode_kegu_first",
-                "count": 4
+                "name": "shrink-0",
+                "count": 144
               },
               {
-                "name": "wp-block-paragraph",
-                "count": 2
+                "name": "h-[1lh]",
+                "count": 92
+              },
+              {
+                "name": "group",
+                "count": 86
+              },
+              {
+                "name": "dark:text-gray-400",
+                "count": 79
+              },
+              {
+                "name": "w-full",
+                "count": 79
+              },
+              {
+                "name": "dark:hover:text-gray-300",
+                "count": 69
+              },
+              {
+                "name": "min-w-0",
+                "count": 67
+              },
+              {
+                "name": "text-gray-400",
+                "count": 67
+              },
+              {
+                "name": "focus-visible:-outline-offset-2",
+                "count": 64
               }
             ]
           }
         ]
-      }
-    },
-    {
-      "source": "openrouter",
-      "name": "OpenRouter",
-      "updatedAt": "2026-11-14T05:04:12.995Z",
-      "current": {
+      },
+      "previous": {
         "capturedAt": "2026-11-14T05:04:12.995Z",
         "itemCount": 2,
         "items": [
@@ -4419,163 +4353,6 @@
               {
                 "name": "focus-visible:-outline-offset-2",
                 "count": 64
-              }
-            ]
-          }
-        ]
-      },
-      "previous": {
-        "capturedAt": "2026-11-13T19:17:58.558Z",
-        "itemCount": 2,
-        "items": [
-          {
-            "v": 1,
-            "url": "https://openrouter.ai/api/v1/models",
-            "capturedAt": "2026-11-13T19:16:24.604Z",
-            "httpStatus": 200,
-            "bytes": 848934,
-            "htmlSha256": "938aed462be33fc7",
-            "titleSha256": null,
-            "markers": {
-              "login": false,
-              "captcha": false,
-              "cloudflare": false,
-              "errorPage": false,
-              "consentOnly": false,
-              "spaShell": false,
-              "noDataTable": true
-            },
-            "counts": {
-              "table": 0,
-              "tr": 0,
-              "td": 0,
-              "card": 0,
-              "listItem": 0,
-              "heading": 0,
-              "heading1": 0,
-              "link": 0,
-              "form": 0,
-              "input": 0,
-              "script": 0,
-              "div": 0
-            },
-            "shape": {
-              "hasDataTable": false,
-              "hasCards": false,
-              "scriptToTextRatio": 0
-            },
-            "textLength": 848739,
-            "textSha256": "4684bc0983072d56",
-            "keywordHits": {
-              "pricing": 3,
-              "expiration_date": 3,
-              "created": 3,
-              "per_request_limits": 3
-            },
-            "selectorHits": {},
-            "regexHits": {
-              "models-data": 1,
-              "free-price": 16
-            },
-            "topClasses": []
-          },
-          {
-            "v": 1,
-            "url": "https://openrouter.ai/docs/api-reference/limits",
-            "capturedAt": "2026-11-13T19:16:25.455Z",
-            "httpStatus": 200,
-            "bytes": 434086,
-            "htmlSha256": "774acb73eb89f8ae",
-            "titleSha256": "0e7ba75d029cd940",
-            "markers": {
-              "login": false,
-              "captcha": false,
-              "cloudflare": false,
-              "errorPage": false,
-              "consentOnly": false,
-              "spaShell": false,
-              "noDataTable": false
-            },
-            "counts": {
-              "table": 2,
-              "tr": 7,
-              "td": 18,
-              "card": 0,
-              "listItem": 102,
-              "heading": 15,
-              "heading1": 1,
-              "link": 63,
-              "form": 0,
-              "input": 1,
-              "script": 23,
-              "div": 309
-            },
-            "shape": {
-              "hasDataTable": true,
-              "hasCards": false,
-              "scriptToTextRatio": 0.1
-            },
-            "textLength": 188117,
-            "textSha256": "d184e089747effc7",
-            "keywordHits": {
-              "pricing": 1,
-              "expiration_date": 0,
-              "created": 0,
-              "per_request_limits": 0
-            },
-            "selectorHits": {},
-            "regexHits": {
-              "models-data": 0,
-              "free-price": 0
-            },
-            "topClasses": [
-              {
-                "name": "flex",
-                "count": 243
-              },
-              {
-                "name": "items-center",
-                "count": 154
-              },
-              {
-                "name": "line",
-                "count": 149
-              },
-              {
-                "name": "shrink-0",
-                "count": 142
-              },
-              {
-                "name": "h-[1lh]",
-                "count": 90
-              },
-              {
-                "name": "group",
-                "count": 84
-              },
-              {
-                "name": "dark:text-gray-400",
-                "count": 77
-              },
-              {
-                "name": "w-full",
-                "count": 77
-              },
-              {
-                "name": "dark:hover:text-gray-300",
-                "count": 67
-              },
-              {
-                "name": "text-gray-400",
-                "count": 67
-              },
-              {
-                "name": "focus-visible:-outline-offset-2",
-                "count": 62
-              },
-              {
-                "name": "min-w-0",
-                "count": 61
               }
             ]
           }

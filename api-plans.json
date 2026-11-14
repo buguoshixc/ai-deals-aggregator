@@ -550,7 +550,7 @@
       "verified": true,
       "verifiedAt": "2026-10-05",
       "checkMethod": "static",
-      "lastVerifiedAt": "2026-11-14",
+      "lastVerifiedAt": "2026-11-15",
       "evidence": [
         {
           "field": "pricing.unit",
@@ -845,7 +845,7 @@
       "verified": true,
       "verifiedAt": "2026-10-01",
       "checkMethod": "static",
-      "lastVerifiedAt": "2026-11-14",
+      "lastVerifiedAt": "2026-11-15",
       "evidence": [
         {
           "field": "models.deepseek-flash",
@@ -947,7 +947,7 @@
       "verified": true,
       "verifiedAt": "2026-10-01",
       "checkMethod": "static",
-      "lastVerifiedAt": "2026-11-14",
+      "lastVerifiedAt": "2026-11-15",
       "evidence": [
         {
           "field": "limits",
@@ -1179,7 +1179,7 @@
       "verified": true,
       "verifiedAt": "2026-10-04",
       "checkMethod": "static",
-      "lastVerifiedAt": "2026-11-14",
+      "lastVerifiedAt": "2026-11-15",
       "evidence": [
         {
           "field": "pricing.currency",
@@ -2200,7 +2200,7 @@
       "verified": true,
       "verifiedAt": "2026-10-05",
       "checkMethod": "static",
-      "lastVerifiedAt": "2026-11-14",
+      "lastVerifiedAt": "2026-11-15",
       "evidence": [
         {
           "field": "pricing.unit",
@@ -2372,7 +2372,7 @@
       "verified": true,
       "verifiedAt": "2026-10-01",
       "checkMethod": "static",
-      "lastVerifiedAt": "2026-11-14",
+      "lastVerifiedAt": "2026-11-15",
       "evidence": [
         {
           "field": "pricing.unit",
@@ -2646,7 +2646,7 @@
       "verified": true,
       "verifiedAt": "2026-10-01",
       "checkMethod": "static",
-      "lastVerifiedAt": "2026-11-14",
+      "lastVerifiedAt": "2026-11-15",
       "evidence": [
         {
           "field": "pricing.unit",
