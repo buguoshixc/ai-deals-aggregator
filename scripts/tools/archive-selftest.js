@@ -131,8 +131,20 @@ check('完整性断言在真实日志上为零问题（断言不是恒红）',
   const notAliased = (dealArchive ? dealArchive.entries : []).filter(entry =>
     entry.endDiscoveredAt && entry.lastChangedAt === entry.endDiscoveredAt &&
     entry.lastEffectiveAt !== entry.lastChangedAt);
-  check('真实数据：lastEffectiveAt 与 lastChangedAt 不是同一个读数（历史记录只给 sitemap 用）',
-    notAliased.length > 0 && (dealArchive.entries.every(entry => entry.lastEffectiveAt <= entry.lastChangedAt)));
+  // 大小关系只对「没有 live lastSeen 的条目」成立：lastEffectiveAt 在仍在数据集里的条目上
+  // 取的是 record.lastSeen（采集器最近一次真的列出它的日期），而 lastChangedAt 是「最后一条
+  // 事件日」——一条 restored 回来、之后每天照常被看到的记录，lastSeen 晚于最后一条事件日是
+  // **设计内**的常态（2026-11-14 数据里 Flora AI 就是 firstMissed 11-12 → restored 11-13 →
+  // lastSeen 11-14）。旧断言把两个**不同语义**的读数混成大小关系，数据一走到这种形态就假红。
+  // 收紧方式：对无 lastSeen 的条目（已离库，lastEffectiveAt 回退为最后事件日）仍判
+  // lastEffectiveAt <= lastChangedAt；对 live 条目则单独判「lastEffectiveAt == record.lastSeen」
+  // （上面那条断言），两个方向都判，而不是删掉判据。
+  const noLiveSeen = (dealArchive ? dealArchive.entries : []).filter(entry => entry.lastEffectiveAtSource !== 'lastSeen');
+  const orderViolations = noLiveSeen.filter(entry => !(entry.lastEffectiveAt <= entry.lastChangedAt));
+  check('真实数据：lastEffectiveAt 与 lastChangedAt 不是同一个读数（历史记录只给 sitemap 用）；无 lastSeen 的条目不得晚于最后事件日',
+    notAliased.length > 0 && orderViolations.length === 0,
+    `差异读数 ${notAliased.length} 条 · 顺序违规 ${orderViolations.length} 条` +
+      (orderViolations.length ? `（${orderViolations.slice(0, 2).map(entry => entry.id).join(',')}）` : ''));
 }
 
 // 「0 条时断言不是恒红」的承诺仍要守住（用显式空夹具，不依赖真实日志恰好为 0）。
