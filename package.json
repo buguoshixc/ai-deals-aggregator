@@ -14,6 +14,7 @@
     "collect:headless": "node scripts/collect.js --headless",
     "collect:headless:dry": "node scripts/collect.js --headless --dry-run",
     "collect:headless:list": "node scripts/collect.js --headless --list",
+    "collect:codex": "node scripts/collectors/codex-resets.js",
     "migrate": "node scripts/migrate.js",
     "migrate:audience": "node scripts/migrate.js --audience",
     "migrate:audience:dry": "node scripts/migrate.js --audience --dry-run",

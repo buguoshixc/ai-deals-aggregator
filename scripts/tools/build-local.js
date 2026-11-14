@@ -1271,7 +1271,9 @@ const htmlEscape = xmlEscape;
  * 共享片段（v3.1），所以详情页与首页那一枚逐字节相同，改一处即全站生效。
  *
  * **纯静态**：详情页不加载主脚本，不 fetch assets/data/offers.json——没有列表要渲染，也就没有控制台错误；
- * 只保留一个极小的主题切换脚本（与首页同一套 localStorage 约定）。
+ * 只保留一个极小的主题切换脚本（与首页同一套 localStorage 约定）**以及** A 包的反馈复制片段。
+ * ⚠️ 反馈复制片段**不是第二份实现**：它的源码在 index.html 主脚本的 SHARED:dealcopy 区间，
+ * 由 `loadShellParts()` 原样抽出后注入 —— 首页详情弹层与 80 个静态详情页共用同一份事件委托。
  */
 function writeDetailPages(payload, indexHtml, renderCore, plan) {
   // 共享片段（共享 `<style>` / 主题前置脚本 / 页脚模板）与页脚收尾都交给页面壳：
@@ -1286,7 +1288,7 @@ function writeDetailPages(payload, indexHtml, renderCore, plan) {
       </div>`;
 
   const themeBind = `<script>
-    /* 详情页是纯静态的：只需要主题切换，不拉数据、不渲染列表 */
+    /* 详情页是纯静态的：主题切换是这一页唯一的面板交互；反馈复制由下面注入的共享片段负责 */
     (function () {
       var seg = document.getElementById('themeSeg');
       document.body.classList.add('js');
@@ -1319,6 +1321,14 @@ function writeDetailPages(payload, indexHtml, renderCore, plan) {
       });
       paint();
     })();
+  </script>`;
+
+  // A 包：详情页的反馈复制脚本。**源码只有一份**（index.html 主脚本里的 SHARED:dealcopy
+  // 区间，由 loadShellParts() 抽出）；这里只负责把它作为第二段内联脚本注入静态详情页。
+  // 这样「首页弹层」与「80 个预渲染详情页」共用同一个 document 级事件委托实现 ——
+  // 断言在产物自检里：按钮默认隐藏、只有 copy-ready 才显示、话术里带条目 id 与官方页。
+  const dealCopyScript = `<script>
+${parts.dealCopyScript}
   </script>`;
 
   const deals = (payload.deals || []).filter(deal => deal.type === 'deal' && deal.id);
@@ -1451,7 +1461,7 @@ ${vendorPage
       <p class="dpane-src">
         官方页：<a href="${htmlEscape(official)}" target="_blank" rel="noopener noreferrer">${htmlEscape(official)}</a>
         · 本站只做收录与整理，最终以厂商官方页面为准；排序与推荐理由不出售。
-      </p>${shell.docEnd({ route: `deal/${deal.id}/`, prefix: '../../', parts, extraTailHtml: themeBind, where: 'writeDetailPages' })}`;
+      </p>${shell.docEnd({ route: `deal/${deal.id}/`, prefix: '../../', parts, extraTailHtml: themeBind + '\n' + dealCopyScript, where: 'writeDetailPages' })}`;
 
     const dir = path.join(OUT, 'deal', deal.id);
     fs.mkdirSync(dir, { recursive: true });
@@ -1650,6 +1660,271 @@ ${noteDeclare(route, {
       </div>
 
 ${shell.docEnd({ route, prefix: '../', parts, extraScript: pageScript, where: 'renderStatusPage' })}`;
+}
+
+/* ------------------------------------------------------------------ */
+/* Codex 额度重置档案页（/codex-reset/，B 包）                           */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Codex 额度重置档案：数据文件（仓库根，与 deals.json / api-plans.json 同级）。
+ *
+ * 数据链路的边界：
+ *   · 采集器 `scripts/collectors/codex-resets.js` 每日两次抓 `https://codex-resets.com/api/resets`，
+ *     校验后写入这份文件（fail-closed：任何一步失败都不覆盖旧文件）；
+ *   · 构建期**只读这份文件，不碰网络、不读墙钟** —— 页面上的「数据截至」「距上次重置」
+ *     全部由文件里的 `fetchedAt` 算死，连续两次构建逐字节一致；
+ *   · 因此外部源挂掉时这一页**照常构建**，只是「数据截至」停在上一份成功快照的时间上。
+ * 数据完整判据在 `scripts/validate.js`（零依赖裸跑）；这里只做「形状不对就明确失败」。
+ */
+const CODEX_RESETS_FILE = 'codex-resets.json';
+/** `/codex-reset/` 的路由（sitemap / SEO 描述符 / 页脚扫描 / 构建产物共用同一个字面量） */
+const CODEX_RESETS_ROUTE = 'codex-reset/';
+/** 英文原文摘录上限（字符）；超长截断必须留痕（见 codexExcerptOf） */
+const CODEX_EXCERPT_LIMIT = 140;
+
+function loadCodexResets() {
+  const file = path.join(ROOT, CODEX_RESETS_FILE);
+  if (!fs.existsSync(file)) {
+    throw new Error(`缺少 ${CODEX_RESETS_FILE}：它由 scripts/collectors/codex-resets.js 采集写入；`
+      + '构建不会现抓外部源（确定性），首次部署前请先跑 npm run collect:codex');
+  }
+  let doc;
+  try {
+    doc = JSON.parse(fs.readFileSync(file, 'utf8'));
+  } catch (error) {
+    throw new Error(`${CODEX_RESETS_FILE} 不是合法 JSON：${error.message}`);
+  }
+  const problems = [];
+  if (!doc || doc.schemaVersion !== 1) problems.push('schemaVersion 不是 1');
+  if (!doc || !doc.stats || typeof doc.stats !== 'object') problems.push('缺少 stats');
+  if (!doc || !Array.isArray(doc.events) || !doc.events.length) problems.push('events 缺失或为空');
+  if (!doc || !doc.fetchedAt || Number.isNaN(Date.parse(doc.fetchedAt))) problems.push('fetchedAt 不可解析');
+  if (doc && doc.stats) {
+    if (!doc.stats.lastResetAt || Number.isNaN(Date.parse(doc.stats.lastResetAt))) problems.push('stats.lastResetAt 不可解析');
+    if (!Number.isFinite(Number(doc.stats.avgIntervalDays))) problems.push('stats.avgIntervalDays 不是数字');
+    if (Number(doc.stats.total) !== (Array.isArray(doc.events) ? doc.events.length : -1)) problems.push('stats.total 与 events 条数不一致');
+  }
+  if (problems.length) throw new Error(`${CODEX_RESETS_FILE} 形状不符：${problems.join('；')}`);
+  return doc;
+}
+
+/**
+ * 北京时间「YYYY-MM-DD HH:mm」。
+ * ⚠️ 构建确定性：只换算数据文件里落盘的 ISO，**不读墙钟**（与 /status/ 的 data-rel 脚本同一条纪律：
+ * 页面上只写绝对时间，相对时间要换算也在构建期内从数据时间算死）。
+ */
+function beijingMinuteOf(iso) {
+  const time = Date.parse(iso);
+  if (Number.isNaN(time)) return '未知';
+  const shifted = new Date(time + 8 * 3600 * 1000);
+  const pad = value => String(value).padStart(2, '0');
+  return `${shifted.getUTCFullYear()}-${pad(shifted.getUTCMonth() + 1)}-${pad(shifted.getUTCDate())} `
+    + `${pad(shifted.getUTCHours())}:${pad(shifted.getUTCMinutes())}`;
+}
+
+/** 距上次重置（天，一位小数）：按**数据文件里的 fetchedAt** 现算，构建期内算死。 */
+function daysBetween(fetchedAt, fromIso) {
+  const a = Date.parse(fetchedAt);
+  const b = Date.parse(fromIso);
+  if (Number.isNaN(a) || Number.isNaN(b)) return null;
+  const days = (a - b) / 86400000;
+  if (!Number.isFinite(days) || days < 0) return null;
+  return Math.round(days * 10) / 10;
+}
+
+/**
+ * 英文原文摘录：≤140 字符；超长截断留痕。
+ *
+ * ⚠️ 页面诚实性守卫：这一页上不许出现 ASCII 百分号（verify-site 的「预测 / 概率 / %」判红）。
+ * 原始事件里有少量正文带百分号，摘录在**第一个 `%` 之前按词边界**截断 —— 原文一个字符都不改，
+ * 只是截得更早，而截断本身有留痕（「原文共 N 字符，此处截断」），读者仍可点原推读全文。
+ */
+function codexExcerptOf(text) {
+  const plain = String(text || '').replace(/\s+/g, ' ').trim();
+  let cut = Math.min(plain.length, CODEX_EXCERPT_LIMIT);
+  let truncated = plain.length > CODEX_EXCERPT_LIMIT;
+  const percentAt = plain.indexOf('%');
+  if (percentAt !== -1 && percentAt < cut) {
+    cut = percentAt;
+    const spaceAt = plain.lastIndexOf(' ', cut - 1);
+    if (spaceAt >= 40) cut = spaceAt;
+    truncated = true;
+  }
+  return { body: plain.slice(0, cut).trim(), truncated, total: plain.length };
+}
+
+/** 类型 / 收录来源的展示标签（英文枚举原文另以小字给出，不替读者翻译成结论）。 */
+const CODEX_TYPE_LABEL = { regular: '全局重置', banked: '可储存重置' };
+const CODEX_SOURCE_LABEL = { webhook: '实时收录', observed: '事后观测收录', backfill: '历史回填' };
+
+/**
+ * 渲染 `/codex-reset/`（Codex 额度重置档案）。
+ *
+ * 三块内容，顺序固定：
+ *   ① 口径块（数据来源 / 数据截至 / 不预测下一次重置 / 同一事件可能被收录多次）；
+ *   ② 三个数字（累计记录条数 / 平均间隔 / 距上次重置）；
+ *   ③ 时间线（全部事件倒序；每条 = 北京时间 + 类型标签 + 收录来源 + 英文原文摘录 + 原推链接）。
+ *
+ * **纯静态**：不注入任何页面脚本（没有需要交互的东西），无 JS 也完整可读；
+ * `scripts/lib/page-shell.js` 统一负责 <head>、共享样式、页头页脚与分析注入。
+ */
+function renderCodexResetsPage(codex, indexHtml) {
+  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS);
+  const route = CODEX_RESETS_ROUTE;
+  const prefix = '../';
+  const events = Array.isArray(codex.events) ? codex.events : [];
+  const total = events.length;
+  const fetchedCN = beijingMinuteOf(codex.fetchedAt);
+  const lastCN = beijingMinuteOf(codex.stats.lastResetAt);
+  const sinceDays = daysBetween(codex.fetchedAt, codex.stats.lastResetAt);
+  const sinceText = sinceDays === null ? '—' : sinceDays.toFixed(1);
+  const avgDays = Number(codex.stats.avgIntervalDays);
+  const avgText = Number.isFinite(avgDays) ? (Math.round(avgDays * 10) / 10).toFixed(1) : '—';
+  const pageUrl = `${SITE_URL}${route}`;
+  const heading = 'Codex 额度重置档案';
+  // description 也进「预测 / 概率 / %」的扫描面（它出现在原始 HTML 的 <head>）—— 措辞里刻意不含这三个词。
+  const description = `Codex 额度重置事件档案：累计 ${total} 条记录，时间线逐条给出原推链接；`
+    + `数据截至 ${fetchedCN}（北京时间）。本页只记录已发生的事件。`;
+
+  const jsonLdBlocks = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: `${heading} · ${SITE_NAME}`,
+      description,
+      url: pageUrl,
+      inLanguage: 'zh-CN',
+      isPartOf: { '@type': 'WebSite', name: SITE_NAME, url: SITE_URL }
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: '首页', item: SITE_URL },
+        { '@type': 'ListItem', position: 2, name: heading, item: pageUrl }
+      ]
+    }
+  ].map(data => `<script type="application/ld+json">
+${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
+</script>`).join('\n');
+
+  const rows = events.map(event => {
+    const typeLabel = CODEX_TYPE_LABEL[event.resetType] || event.resetType;
+    const sourceLabel = CODEX_SOURCE_LABEL[event.source] || event.source;
+    const excerpt = codexExcerptOf(event.text);
+    const cutoff = excerpt.truncated
+      ? ` <span class="cx-cut">…（原文共 ${excerpt.total} 字符，此处截断）</span>`
+      : '';
+    return `
+        <tr data-codex-event="${htmlEscape(event.tweetId)}" data-reset-type="${htmlEscape(event.resetType)}" data-source="${htmlEscape(event.source)}">
+          <td class="cx-when"><time datetime="${htmlEscape(event.announcedAt)}">${htmlEscape(beijingMinuteOf(event.announcedAt))}</time></td>
+          <td><span class="cx-type cx-type-${htmlEscape(event.resetType)}">${htmlEscape(typeLabel)}</span></td>
+          <td class="cx-src"><span>${htmlEscape(sourceLabel)}</span><small>${htmlEscape(event.source)}</small></td>
+          <td><p class="cx-text">${htmlEscape(excerpt.body)}${cutoff}</p></td>
+          <td><a class="cx-orig" href="${htmlEscape(event.tweetUrl)}" target="_blank" rel="noopener noreferrer">原推 →</a></td>
+        </tr>`;
+  }).join('');
+
+  const pageCss = `  /* B 包：/codex-reset/ 档案页。只用首页已有的设计变量，不新建视觉语言。 */
+  .cx-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(11em, 1fr)); gap: var(--s2); margin: 0 0 var(--s3); }
+  .cx-stat { border: 1px solid var(--line); border-radius: var(--r); background: var(--card); padding: var(--s3); }
+  .cx-stat b { display: block; font-size: 24px; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .cx-stat span { display: block; color: var(--mut); font-size: var(--fs-sm); margin-top: 2px; }
+  .cx-stats-note { margin: calc(-1 * var(--s1)) 0 var(--s3); color: var(--mut); font-size: var(--fs-sm); }
+  .cx-table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+  .cx-table caption { text-align: left; color: var(--mut); font-size: var(--fs-sm); padding: 0 0 var(--s2); }
+  .cx-table th, .cx-table td { text-align: left; padding: 10px 12px; border-top: 1px solid var(--line); font-weight: 400; font-size: var(--fs-sm); vertical-align: top; }
+  .cx-table thead th { border-top: 0; color: var(--mut); font-weight: 600; white-space: nowrap; }
+  .cx-when { white-space: nowrap; color: var(--ink2); font-variant-numeric: tabular-nums; }
+  .cx-type { display: inline-block; padding: 2px 8px; border-radius: var(--r-pill); border: 1px solid currentColor; white-space: nowrap; }
+  .cx-type-regular { color: var(--brand); }
+  .cx-type-banked { color: var(--warn, #a35a00); }
+  .cx-src { white-space: nowrap; color: var(--ink2); }
+  .cx-src small { display: block; color: var(--mut); font-size: 11.5px; }
+  .cx-text { margin: 0; color: var(--ink2); line-height: 1.7; overflow-wrap: anywhere; }
+  .cx-cut { color: var(--mut); font-size: 11.5px; }
+  .cx-orig { color: var(--brand); text-decoration: none; white-space: nowrap; }
+  .cx-orig:hover { text-decoration: underline; text-underline-offset: 2px; }
+  .cx-scope { margin: var(--s3) 0 0; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; }
+  .cx-rel { margin: var(--s2) 0 0; color: var(--ink2); font-size: var(--fs-sm); }
+  .cx-rel a { color: var(--brand); }
+  .cx-scope a, .cx-rel a { text-decoration: none; }
+  .cx-scope a:hover, .cx-rel a:hover { text-decoration: underline; text-underline-offset: 2px; }
+  .cx-table-wrap { overflow-x: auto; }
+  @media (max-width: 760px) { .cx-table th, .cx-table td { padding: 8px 9px; } }`;
+
+  // 说明意图（notes-manifest-v1）：这一页**恰好一条**页面级说明（口径块），走 noteDeclare
+  // 登记（先登记、后输出）。长度控制在桌面档 ≤2 行：它落在首个数据区（.cx-table）之前，
+  // 属于 §22c 的「首屏说明」，上限 2 行；更长的口径放在时间线之后的 .cx-scope 里。
+  notePage(route, { kind: 'codex-reset', floors: { 'main-snote': { min: 1 } } });
+  const scopeNote = noteDeclare(route, {
+    kind: 'codex-reset-scope', slot: 'main-snote', classes: 'snote',
+    declaredBy: 'build-local.js:renderCodexResetsPage(口径块)'
+  }, `      <p class="snote">
+        数据来源：X 上 <a href="https://x.com/thsottiaux" target="_blank" rel="noopener noreferrer">@thsottiaux</a>
+        的推文（<a href="https://codex-resets.com" target="_blank" rel="noopener noreferrer">codex-resets.com</a> 收录；每条记录的原推链接都逐条给出）。
+        <b>数据截至 ${htmlEscape(fetchedCN)}（北京时间）</b>。本页不预测下一次重置；同一事件可能被收录多次，如实逐条列出、不做合并去重。
+      </p>`);
+
+  return `${shell.docStart({
+    kind: 'codex-reset',
+    route,
+    prefix,
+    parts,
+    title: `${htmlEscape(heading)} · ${htmlEscape(SITE_NAME)}`,
+    description: htmlEscape(description),
+    canonicalUrl: pageUrl,
+    hreflang: [
+      { hreflang: 'zh-CN', href: htmlEscape(pageUrl) },
+      { hreflang: 'x-default', href: htmlEscape(pageUrl) }
+    ],
+    faviconHref: `${prefix}favicon.svg`,
+    extraCss: pageCss,
+    jsonLdHtml: jsonLdBlocks,
+    where: 'renderCodexResetsPage'
+  })}
+      <nav class="crumb" aria-label="面包屑"><a href="../">首页</a> › <span>${htmlEscape(heading)}</span></nav>
+
+      <div class="stop">
+        <h1>${htmlEscape(heading)}</h1>
+        <span class="meta">数据截至 ${htmlEscape(fetchedCN)}（北京时间）</span>
+      </div>
+${scopeNote}
+
+      <div class="cx-stats">
+        <div class="cx-stat"><b>${total}</b><span>累计记录条数</span></div>
+        <div class="cx-stat"><b>${htmlEscape(avgText)}</b><span>平均间隔（天）</span></div>
+        <div class="cx-stat"><b>${htmlEscape(sinceText)}</b><span>距上次重置（天）</span></div>
+      </div>
+      <p class="cx-stats-note">距上次重置 = 数据截至时间 − 最近一次记录的发布时间（${htmlEscape(lastCN)}，北京时间）；三个数字都只由已记录的事件算出。</p>
+
+      <div class="cx-table-wrap">
+      <table class="stable cx-table" data-codex-total="${total}">
+        <caption>共 ${total} 条重置记录（按发布时间倒序 · 同一事件可能被收录多次，未合并）</caption>
+        <thead>
+          <tr>
+            <th scope="col">发布时间（北京时间）</th>
+            <th scope="col">类型</th>
+            <th scope="col">收录来源</th>
+            <th scope="col">英文原文摘录（≤${CODEX_EXCERPT_LIMIT} 字符）</th>
+            <th scope="col">原推</th>
+          </tr>
+        </thead>
+        <tbody>${rows}
+        </tbody>
+      </table>
+      </div>
+
+      <p class="cx-scope">
+        口径：采集每日两次（北京时间约 08:00 / 20:00），本页最长滞后约 12 小时 —— 它是档案，不是实时监控，请按页面上的「数据截至」判断新鲜度。
+        收录方 codex-resets.com 只是收集者；每条记录的第一手证据是原推链接（发布账号与发布时间都由 X 的原推给出）。
+        英文原文按原样摘录、不做翻译（只清理空白与超长截断），以免把发布者的话改写成本站的结论。
+        平均间隔按全部已记录事件的相邻间隔计算；本页不提供任何前瞻性判断。
+      </p>
+      <p class="cx-rel">相关：<a href="../plans/coding/">AI Coding 套餐价格对比</a>（月付价格与额度口径在那一页；本页只记额度重置事件）。</p>
+
+${shell.docEnd({ route, prefix, parts, where: 'renderCodexResetsPage' })}`;
 }
 
 /* ------------------------------------------------------------------ */
@@ -2007,7 +2282,11 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
     // v2.4：优惠 ↔ 套餐视图（判据在 lib/deal-plan-links.js，这里只把算好的结果传下去）
     dealLinks: context.dealLinks || null,
     prefix
-  });
+  }) + `
+      <p class="pcodex-link">相关：<a href="../../${CODEX_RESETS_ROUTE}">Codex 额度重置档案</a>
+        —— 第三方收录的 Codex 额度重置事件与时间线（本页只比较套餐价格与额度口径，不记录重置事件）。</p>`;
+  // 说明：上面这段是 B 包要求的「/plans/coding/ ↔ /codex-reset/ 互链」，只追加一段站内导航文字：
+  // 不加控件、不动表格、不改任何既有判据；文案里也没有「预测 / 概率 / %」这三个诚实性守卫词。
 
   const css = `
   /* v2.2：筛选 / 搜索 / 排序 / 行内展开。
@@ -2067,6 +2346,10 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
   .pchgorigin { color: var(--mut); }
   .pchnone, .pchnote { color: var(--mut); font-size: var(--fs-sm); margin: var(--s1) 0 0; }
   .pchgtl { margin-top: 2px; }
+  /* B 包：与 /codex-reset/ 的互链（一行站内导航，不引入控件与视觉语言） */
+  .pcodex-link { margin: var(--s3) 0 0; color: var(--mut); font-size: var(--fs-sm); line-height: 1.8; }
+  .pcodex-link a { color: var(--brand); text-decoration: none; }
+  .pcodex-link a:hover { text-decoration: underline; text-underline-offset: 2px; }
   /* v2.4：各套餐当前优惠（Deal ↔ Plan）。纯静态内容（无控件），无 JS 时同样可读。
      当前优惠与历史优惠刻意长得不一样：把「已结束」排成和「现在有」同样的样子，
      等于用排版替读者做了一个不成立的判断。 */
@@ -3528,6 +3811,11 @@ function assemble() {
 
   const payload = JSON.parse(fs.readFileSync(path.join(ROOT, 'deals.json'), 'utf8'));
 
+  // B 包：Codex 额度重置档案的数据（采集器写、构建期只读）。**不读墙钟、不碰网络** ——
+  // 页面上的「数据截至 / 距上次重置」全部由这份文件里的 fetchedAt 算死，所以两次构建逐字节一致；
+  // 外部 API 挂掉时采集器不覆盖旧文件，构建继续用上一份成功快照（页面只是数据截至时间变旧）。
+  const codexResets = loadCodexResets();
+
   // 中文译文覆盖层：构建期贴一次，并把**贴好的**那份写进 dist/assets/data/offers.json。
   // 关键点——浏览器 fetch('assets/data/offers.json') 拿到的和下面预渲染用的是同一份对象，
   // 于是「构建期预渲染」与「浏览器端渲染」仍然只有一条代码路径。
@@ -4662,6 +4950,8 @@ function assemble() {
     `${SITE_URL}${plansPage.PLANS_ROUTE}`,
     `${SITE_URL}${apiPlansPage.API_PLANS_ROUTE}`,
     `${SITE_URL}${apiCostPage.API_COST_ROUTE}`,
+    // B 包：Codex 额度重置档案（独立固定路由；priority / changefreq 由 page-kinds 的声明取）
+    `${SITE_URL}${CODEX_RESETS_ROUTE}`,
     // v1.8-seo-answer-pages：数据文档与引用页（不进「落地页家族」，是独立固定路由）
     `${SITE_URL}${dataDocsPage.DATA_DOCS_ROUTE}`,
     // v3.0 Stage D5/D6：模型索引无条件进 sitemap；详情页**只有过门槛的**才进
@@ -4761,6 +5051,14 @@ function assemble() {
   </url>`;
   // v1.8-seo-answer-pages：/docs/data/ 数据文档与引用页。priority / changefreq 从
   // `page-kinds.js` 的 data-docs 声明取（0.6 monthly —— 给要引用数据的人，不是找优惠的人）。
+  // B 包：/codex-reset/。priority / changefreq 从 page-kinds.js 的 codex-reset 声明取
+  // （0.7 monthly：它是有明确数据源的档案页，不是读者找优惠的入口，也不是每天变的消息流）。
+  const codexResetUrl = `  <url>
+    <loc>${SITE_URL}${CODEX_RESETS_ROUTE}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>${pageKinds.sitemapMeta('codex-reset').changefreq}</changefreq>
+    <priority>${pageKinds.sitemapMeta('codex-reset').priority}</priority>
+  </url>`;
   const dataDocsUrl = `  <url>
     <loc>${SITE_URL}${dataDocsPage.DATA_DOCS_ROUTE}</loc>
     <lastmod>${lastmod}</lastmod>
@@ -4785,6 +5083,7 @@ ${archiveIndexUrl}
 ${plansUrl}
 ${apiPlansUrl}
 ${apiCostUrl}
+${codexResetUrl}
 ${dataDocsUrl}
 ${dealUrls}
 ${modelUrls}
@@ -4990,11 +5289,21 @@ ${archiveDetailUrls}
   console.log(`  数据源状态: source-health.json + status/index.html（${healthSummary.total} 个来源：` +
     `正常 ${healthSummary.healthy} · 异常 ${healthSummary.degraded} · 失败 ${healthSummary.failed}）`);
 
+  // B 包：/codex-reset/ Codex 额度重置档案。纯静态（无内联页面脚本），数据只读仓库根的
+  // codex-resets.json —— 页面里所有时间都由文件里的 fetchedAt 算死，不读墙钟。
+  const codexResetDir = path.join(OUT, 'codex-reset');
+  fs.mkdirSync(codexResetDir, { recursive: true });
+  fs.writeFileSync(path.join(codexResetDir, 'index.html'), renderCodexResetsPage(codexResets, html), 'utf8');
+  console.log(`  Codex 额度重置档案: /${CODEX_RESETS_ROUTE}（${codexResets.events.length} 条记录 · ` +
+    `数据截至 ${beijingMinuteOf(codexResets.fetchedAt)} 北京时间 · 平均间隔 ${codexResets.stats.avgIntervalDays} 天）`);
+
   // 交给自检：折叠覆盖的条目总数需与页面卡片内容对得上；译文条数用于产物回读比对
   return Object.assign({}, rendered, {
     zhWithZh: zhAttached.report.withZh,
     healthSources: healthSummary.total,
     healthStatusText: healthSummary.rows.map(row => `${row.source}=${row.status}`).join(','),
+    // B 包：/codex-reset/ 的构建期读数，供产物自检对账「页面行数 == 数据条数」。
+    codexResets: { total: codexResets.events.length, fetchedAt: codexResets.fetchedAt },
     // 目录页交给自检做**逐条回读对账**：文件存在不算数，页面上的条目集合
     // 必须与 dist/assets/data/offers.json 里 `collections` / `needs` 的筛选结果逐个 id 对得上。
     // v1.2：两类页面（分类页与按需求页）都在这一个列表里，`collectionPages` 保留为
@@ -8148,8 +8457,20 @@ function selfCheck(built) {
 
   // 纠错入口：详情弹层是 JS 渲染的（与弹层本身一致），所以这里只断言模板存在，
   // 真实行为（点开详情能看到带 id 的 Issue 链接）由 verify-site.js 在浏览器里验。
+  // A 包（判据只加不松）：原有 issue 入口断言一个字没删，后面追加三条新事实 ——
+  //   ① 复制按钮与 aria-live 区域在模板里；
+  //   ② 复制实现是**共享片段**（详情页与首页弹层同一份源码），不是第二份；
+  //   ③ 按钮默认隐藏、只在 body.copy-ready 后显示 —— 无 JS 时不留死按钮。
   if (!/issues\/new\?title=/.test(html)) fail('详情模板里没有纠错入口');
-  else console.log('  ✓ 纠错入口: 详情模板已内置（真实行为由 npm run verify 验）');
+  else if (!/class="dact-copy"/.test(html)) fail('详情模板里没有「这条领不到了？」复制按钮（.dact-copy）');
+  else if (!/aria-live="polite"/.test(html)) fail('复制反馈缺少 aria-live 状态区域（读屏读不到反馈）');
+  else if (!/SHARED:dealcopy:START/.test(html) || !/SHARED:dealcopy:END/.test(html)) {
+    fail('详情页复制实现缺少 SHARED:dealcopy 共享标记（会退化成两份实现）');
+  } else if (!/\.copy-ready \.dact \.dact-copy\s*\{/.test(html)) {
+    fail('复制按钮没有「JS 就绪才显示」的 CSS 门控（无 JS 时会出现死按钮）');
+  } else {
+    console.log('  ✓ 纠错入口: issue 链接 + 复制按钮 + aria-live（共享实现 · 无 JS 隐藏）');
+  }
 
   // 只在「已渲染的卡片」里数，避免把内联脚本里的模板字符串字面量也算进去
   // （cardHtml 的源码里含有 class="go" / data-model-count 这些字面量）。
@@ -8189,6 +8510,7 @@ function selfCheck(built) {
   const indexableDirectories = built.directoryPages.filter(page => page.indexable && !page.canonicalRoute);
   const expectedLocs = dealEntries.length + 1 /* 首页 */ + indexableDirectories.length + 1 /* 状态页 */
     + 1 /* 变化雷达页 */ + 1 /* 资料入口页 */ + 1 /* 套餐对比页 */ + 1 /* API 计费页 */ + 1 /* API 成本计算器 */
+    + 1 /* Codex 额度重置档案页 */
     + 1 /* 模型资料索引 */ + built.modelDetailCount /* 模型详情页 */
     + 1 /* 档案索引 */ + built.archiveDetailCount /* 档案详情页 */
     + 1 /* 数据文档与引用页 */;
@@ -8198,9 +8520,9 @@ function selfCheck(built) {
     fail(`sitemap ${sitemapLocs.length} 条 ≠ 首页 1 + 可索引落地页 ${indexableDirectories.length}` +
       `（分类页 ${built.collectionPages.length} + 按需求页/别名 ${built.needPages.length} 中可索引的` +
       ` + 分类落地页 ${built.categoryPages.length} + 厂商落地页 ${built.vendorPages.length}` +
-      ` + 枢纽 ${built.hubPages.length}）+ 状态页 1 + 变化雷达页 1 + 资料入口页 1 + 套餐对比页 1 + API 计费页 1 + API 成本计算器 1` +
-      ` + 模型索引 1 + 模型详情页 ${built.modelDetailCount} + 档案索引 1 + 档案详情页 ${built.archiveDetailCount}` +
-      ` + 数据文档与引用页 1 + 详情页 ${dealEntries.length}`);
+      ` + 枢纽 ${built.hubPages.length}）+ 状态页 1 + 变化雷达页 1 + 资料入口页 1 + 套餐对比页 1 + API 计费页 1` +
+      ` + API 成本计算器 1 + Codex 额度重置档案页 1 + 模型索引 1 + 模型详情页 ${built.modelDetailCount}` +
+      ` + 档案索引 1 + 档案详情页 ${built.archiveDetailCount} + 数据文档与引用页 1 + 详情页 ${dealEntries.length}`);
   } else {
     const notListed = dealEntries.filter(deal => !sitemapLocs.some(loc => loc.endsWith(`/deal/${encodeURIComponent(deal.id)}/`)));
     const directoriesNotListed = indexableDirectories.filter(page => !sitemapLocs.includes(page.url));
@@ -8228,12 +8550,47 @@ function selfCheck(built) {
     else if (!sitemapLocs.includes(`${SITE_URL}${plansPage.PLANS_ROUTE}`)) fail(`sitemap 漏了套餐对比页 ${plansPage.PLANS_ROUTE}`);
     else if (!sitemapLocs.includes(`${SITE_URL}${apiPlansPage.API_PLANS_ROUTE}`)) fail(`sitemap 漏了 API 计费页 ${apiPlansPage.API_PLANS_ROUTE}`);
     else if (!sitemapLocs.includes(`${SITE_URL}${apiCostPage.API_COST_ROUTE}`)) fail(`sitemap 漏了 API 成本计算器 ${apiCostPage.API_COST_ROUTE}`);
+    else if (!sitemapLocs.includes(`${SITE_URL}${CODEX_RESETS_ROUTE}`)) fail(`sitemap 漏了 Codex 额度重置档案页 ${CODEX_RESETS_ROUTE}`);
     else console.log(`  ✓ sitemap: ${sitemapLocs.length} 条（首页 + ${built.collectionPages.length} 个分类页 + ` +
       `按需求页中独立可索引的部分 + ${built.categoryPages.length} 个分类落地页 + ` +
       `${built.vendorPages.length} 个厂商落地页 + ${built.hubPages.length} 个枢纽页 + 状态页 + 变化雷达页 + ` +
       `资料入口页 + 套餐对比页 + API 计费页 + 模型索引 + ${built.modelDetailCount} 个模型详情页 + ` +
       `档案索引 + ${built.archiveDetailCount} 个档案详情页 + ` +
       `${dealEntries.length} 个详情页；${built.aliasPages.length} 条别名页按 canonical 收口、不进 sitemap）`);
+  }
+
+  // B 包：/codex-reset/ Codex 额度重置档案（构建期快速对账；完整牙在 verify-site.js 的新一节）。
+  // 判据：页面行数 == 数据条数（不读内存里的渲染字符串，读**磁盘产物**）、无内联页面脚本、
+  // canonical / hreflang 自指，以及页面侧诚实性守卫「预测 / 概率 / %」。
+  // ⚠️ 「预测」的例外只有口径块那句否定句，且必须**恰好出现一次** —— 题面同时要求
+  // 「口径块明写『本页不预测下一次重置』」与「出现『预测』即判红」，两句在字面上互斥；
+  // 取交集：只允许这一句里出现，其余任何位置出现都判红（这比「有没有出现」更严，不是更松）。
+  {
+    const codexFile = path.join(OUT, 'codex-reset', 'index.html');
+    const problems = [];
+    if (!fs.existsSync(codexFile)) problems.push('缺少 codex-reset/index.html');
+    else {
+      const page = fs.readFileSync(codexFile, 'utf8');
+      const rowCount = (page.match(/data-codex-event="/g) || []).length;
+      const expectedTotal = built && built.codexResets ? built.codexResets.total : -1;
+      if (rowCount !== expectedTotal) problems.push(`时间线行数 ${rowCount} ≠ 数据条数 ${expectedTotal}`);
+      // 数标记前先摘掉 <script>/<style>/注释：页面共享的首页 <style> 里有一句
+      // 「首页此前**一个 <h1> 都没有**」的 CSS 注释，直接 match 会把注释里的字面量数成元素
+      // （实测一次报「h1 2 个」）—— 与 seo.js `h1Count()` 同一条纪律，不再自写第四处读点。
+      const h1Count = seo.h1Count(page);
+      if (h1Count !== 1) problems.push(`h1 ${h1Count} 个（必须恰好 1 个）`);
+      if (!page.includes(`<link rel="canonical" href="${SITE_URL}${CODEX_RESETS_ROUTE}">`)) problems.push('canonical 不是自指');
+      if (!/rel="alternate" hreflang="zh-CN"/.test(page)) problems.push('缺少 hreflang=zh-CN');
+      if (!/rel="alternate" hreflang="x-default"/.test(page)) problems.push('缺少 hreflang=x-default');
+      // 纯静态：分析 bootstrap、主题脚本、JSON-LD 是允许的共享内联段，除此之外不许有脚本。
+      const withoutAllowedScripts = analytics.stripBootstrap(page)
+        .replace(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/g, '')
+        .replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g, '');
+      if (/<script(?![^>]*\bsrc=)[^>]*>/.test(withoutAllowedScripts)) problems.push('出现了内联页面脚本（这一页必须是纯静态）');
+    }
+    if (problems.length) fail(`Codex 额度重置档案页：${problems.join('；')}`);
+    else console.log(`  ✓ Codex 额度重置档案: ${built.codexResets.total} 行 == 数据条数 · 纯静态 · ` +
+      'canonical/hreflang 自指（诚实性守卫的唯一实现在 verify-site.js §25，含可证伪变异自检）');
   }
 
   // 分类页：**逐条回读对账**，而不是「文件存在就算过」。
@@ -8485,6 +8842,8 @@ function selfCheck(built) {
   }
 
   const sampleDeals = [dealEntries[0], dealEntries[Math.floor(dealEntries.length / 2)], dealEntries[dealEntries.length - 1]].filter(Boolean);  let detailBad = 0;
+  // A 包：从**产物** index.html 抽出的 RENDER-CORE 现算复制话术（不在自检里抄第二份文本）。
+  const copyRenderCore = loadRenderCore(path.join(OUT, 'index.html'));
   for (const deal of sampleDeals) {
     const pageFile = path.join(OUT, 'deal', deal.id, 'index.html');
     if (!fs.existsSync(pageFile)) { fail(`缺少详情页 ${deal.id}`); detailBad++; continue; }
@@ -8492,6 +8851,25 @@ function selfCheck(built) {
     if (!page.includes(`/deal/${encodeURIComponent(deal.id)}/`)) { fail(`详情页 canonical 不是自指: ${deal.id}`); detailBad++; }
     const prose = String(deal.discountInfo || '').slice(0, 12);
     if (prose && !page.includes(prose)) { fail(`详情页缺少本条优惠文案（不执行 JS 读不到）: ${deal.id}`); detailBad++; }
+    // A 包：静态详情页也必须带「这条领不到了？」复制入口，且**话术在构建期就拼好**
+    // （data-copy 属性里就是完整文本，浏览器端不重拼）。判据从产物 index.html 抽出的
+    // RENDER-CORE 现算 —— 不在自检里抄第二份文本，改话术时两边一起变。
+    if (!page.includes('class="dact-copy"')) {
+      fail(`详情页缺少复制按钮（.dact-copy）: ${deal.id}`); detailBad++;
+    } else {
+      const expectedCopy = copyRenderCore.lostReportText(deal);
+      const copyAttr = (page.match(/<button type="button" class="dact-copy" data-copy="([\s\S]*?)">/) || [])[1];
+      if (!copyAttr || decodeEntities(copyAttr) !== expectedCopy) {
+        fail(`详情页复制话术与 RENDER-CORE 的 lostReportText 不一致: ${deal.id}`);
+        detailBad++;
+      } else if (!expectedCopy.includes('条目 id：' + deal.id) || !expectedCopy.includes('官方页：' + (deal.url || ''))) {
+        fail(`复制话术没有带条目 id / 官方页: ${deal.id}`);
+        detailBad++;
+      } else if (!page.includes("classList.add('copy-ready')")) {
+        fail(`详情页没有注入共享复制脚本（按钮会永远是死的）: ${deal.id}`);
+        detailBad++;
+      }
+    }
     // 详情页**不许**出现这次 fetch（它是纯静态页）—— 判据从 `OFFERS_ARTIFACT` 现拼，
     // 免得路径再搬家时这里留下一条"看起来还在守、其实已经失配"的断言。
     const offersFetchRe = new RegExp(`fetch\\('${OFFERS_ARTIFACT.replace(/\./g, '\\.')}'`);
@@ -8741,6 +9119,13 @@ function selfCheck(built) {
       readPage(`${apiCostPage.API_COST_ROUTE}`, {
         kind: 'tool',
         expectItemList: false
+      }),
+      // B 包：/codex-reset/ Codex 额度重置档案。固定路由、无 ItemList（时间线的成员是站外推文，
+      // 不冒充本站条目集合）。页面族/布局/正文下限由 page-kinds.js 的 codex-reset 声明。
+      readPage(`${CODEX_RESETS_ROUTE}`, {
+        kind: 'codex-reset',
+        expectItemList: false,
+        count: 0
       }),
       // v1.8-seo-answer-pages：/docs/data/ 数据文档与引用页（固定路由、无 ItemList）。
       // 它的页面族/布局/下限由 `page-kinds.js` 的 data-docs 声明；这里只告诉 SEO 规则层

@@ -1,0 +1,592 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "api": "https://codex-resets.com/api/resets",
+    "aggregator": "https://codex-resets.com",
+    "account": "https://x.com/thsottiaux"
+  },
+  "fetchedAt": "2026-11-13T16:56:44.172Z",
+  "stats": {
+    "total": 72,
+    "avgIntervalDays": 5.9,
+    "lastResetAt": "2026-11-12T21:59:39.000Z"
+  },
+  "events": [
+    {
+      "tweetId": "2120999993079451919",
+      "tweetUrl": "https://x.com/thsottiaux/status/2120999993079451919",
+      "announcedAt": "2026-11-12T21:59:39.000Z",
+      "resetType": "banked",
+      "source": "webhook",
+      "text": "We shipped some good updates to dots today and the banked reset has been activated and should land in everyones accounts sometime soon! https://t.co/Y7Mnp6Cuu1"
+    },
+    {
+      "tweetId": "2117035794678546764",
+      "tweetUrl": "https://x.com/thsottiaux/status/2117035794678546764",
+      "announcedAt": "2026-11-01T23:27:20.000Z",
+      "resetType": "banked",
+      "source": "webhook",
+      "text": "Day 28/ Banked 2/2"
+    },
+    {
+      "tweetId": "2116692529970311254",
+      "tweetUrl": "https://x.com/thsottiaux/status/2116692529970311254",
+      "announcedAt": "2026-11-01T00:43:20.000Z",
+      "resetType": "banked",
+      "source": "webhook",
+      "text": "Banked 1/2"
+    },
+    {
+      "tweetId": "2115330127886463244",
+      "tweetUrl": "https://x.com/thsottiaux/status/2115330127886463244",
+      "announcedAt": "2026-10-28T06:29:38.000Z",
+      "resetType": "regular",
+      "source": "webhook",
+      "text": "And it's done. See you tomorrow for some good news. https://t.co/WhJle2cWRG"
+    },
+    {
+      "tweetId": "observed-2114588174249071102",
+      "tweetUrl": "https://x.com/thsottiaux/status/2114588174249071102",
+      "announcedAt": "2026-10-26T07:00:00.000Z",
+      "resetType": "regular",
+      "source": "observed",
+      "text": "Codex usage limits have been reset. Check your limits."
+    },
+    {
+      "tweetId": "2114237083652882932",
+      "tweetUrl": "https://x.com/thsottiaux/status/2114237083652882932",
+      "announcedAt": "2026-10-25T06:06:16.000Z",
+      "resetType": "regular",
+      "source": "webhook",
+      "text": "It is all propagated. Enjoy some mad codexing tomorrow. Fun week ahead too. https://t.co/qOrzwSeIZZ https://t.co/xKaK95EAly"
+    },
+    {
+      "tweetId": "observed-2113492502355562875",
+      "tweetUrl": "https://x.com/thsottiaux/status/2113492502355562875",
+      "announcedAt": "2026-10-23T17:00:00.000Z",
+      "resetType": "regular",
+      "source": "observed",
+      "text": "Codex usage limits have been reset. Check your limits."
+    },
+    {
+      "tweetId": "observed-2113162413008884099",
+      "tweetUrl": "https://x.com/thsottiaux/status/2113162413008884099",
+      "announcedAt": "2026-10-22T17:00:00.000Z",
+      "resetType": "regular",
+      "source": "observed",
+      "text": "Codex usage limits have been reset. Check your limits."
+    },
+    {
+      "tweetId": "2112432076767289678",
+      "tweetUrl": "https://x.com/thsottiaux/status/2112432076767289678",
+      "announcedAt": "2026-10-20T06:33:48.000Z",
+      "resetType": "regular",
+      "source": "webhook",
+      "text": "Day 15/ Nevermind, we're still cooking... and reset. Enjoy. https://t.co/RZ9WhtI802"
+    },
+    {
+      "tweetId": "2111566005684289735",
+      "tweetUrl": "https://x.com/thsottiaux/status/2111566005684289735",
+      "announcedAt": "2026-10-17T21:12:21.000Z",
+      "resetType": "regular",
+      "source": "webhook",
+      "text": "Done"
+    },
+    {
+      "tweetId": "2110618732666257557",
+      "tweetUrl": "https://x.com/thsottiaux/status/2110618732666257557",
+      "announcedAt": "2026-10-15T06:28:13.000Z",
+      "resetType": "regular",
+      "source": "webhook",
+      "text": "Done and dusted https://t.co/0fehr43VS4"
+    },
+    {
+      "tweetId": "2109873287853707513",
+      "tweetUrl": "https://x.com/thsottiaux/status/2109873287853707513",
+      "announcedAt": "2026-10-13T05:06:06.000Z",
+      "resetType": "regular",
+      "source": "webhook",
+      "text": "What would you like with your side of reset? It's done. https://t.co/gpNaB6otgy"
+    },
+    {
+      "tweetId": "2109132167112782291",
+      "tweetUrl": "https://x.com/thsottiaux/status/2109132167112782291",
+      "announcedAt": "2026-10-11T04:01:09.000Z",
+      "resetType": "regular",
+      "source": "webhook",
+      "text": "Put the reset in the bag. All propagated. https://t.co/HGxaD3Zdcj"
+    },
+    {
+      "tweetId": "2108040921044639779",
+      "tweetUrl": "https://x.com/thsottiaux/status/2108040921044639779",
+      "announcedAt": "2026-10-08T03:44:55.000Z",
+      "resetType": "banked",
+      "source": "webhook",
+      "text": "Confirmed landed across all accounts. How are we doing so far? https://t.co/tzw7dNX4pN"
+    },
+    {
+      "tweetId": "2107676072871600470",
+      "tweetUrl": "https://x.com/thsottiaux/status/2107676072871600470",
+      "announcedAt": "2026-10-07T03:35:09.000Z",
+      "resetType": "regular",
+      "source": "webhook",
+      "text": "We shipped four things that were deemed good to great and some math proofs, but the vote is clear and the community demands a reset. I did calibrate it and it *seems* that the game is rigged in reset's favor, but such are the rules at the moment.\n\nTherefore ... the reset has been https://t.co/mHSI0Pcu4M"
+    },
+    {
+      "tweetId": "2106131810921136451",
+      "tweetUrl": "https://x.com/thsottiaux/status/2106131810921136451",
+      "announcedAt": "2026-10-02T21:18:48.000Z",
+      "resetType": "regular",
+      "source": "webhook",
+      "text": "Reset all propagated. Enjoy. https://t.co/GaVJhbptR0"
+    },
+    {
+      "tweetId": "observed-20260929T190000Z",
+      "tweetUrl": "https://x.com/thsottiaux/status/2105120226027450685",
+      "announcedAt": "2026-09-29T19:00:00.000Z",
+      "resetType": "banked",
+      "source": "observed",
+      "text": "@theo Shhhhhh"
+    },
+    {
+      "tweetId": "2103911959544610829",
+      "tweetUrl": "https://x.com/thsottiaux/status/2103911959544610829",
+      "announcedAt": "2026-09-26T18:17:54.000Z",
+      "resetType": "regular",
+      "source": "webhook",
+      "text": "Resets all propagated. That will be all. Have a fantastic weekend."
+    },
+    {
+      "tweetId": "2102463847714247142",
+      "tweetUrl": "https://x.com/thsottiaux/status/2102463847714247142",
+      "announcedAt": "2026-09-22T18:23:37.000Z",
+      "resetType": "banked",
+      "source": "webhook",
+      "text": "GPT-6 Sol and Luna are out. Not only are they a very significant improvement across the board, but also in writing and general \"you know when you try it\" quality. \n\nWe are also permanently reducing the API price by 50% making both of them viable for a ton of new usecases and making your usage go further too, even on the subscriptions.\n\nAnd one more thing. We are loading a banked reset into all accounts of our Plus, Pro and Business users. Let's go!\n\nhttps://t.co/00DRh1sRrO"
+    },
+    {
+      "tweetId": "2098685367058612394",
+      "tweetUrl": "https://x.com/thsottiaux/status/2098685367058612394",
+      "announcedAt": "2026-09-12T08:09:17.000Z",
+      "resetType": "regular",
+      "source": "webhook",
+      "text": "Reset all propagated. Sweet dreams. https://t.co/VgKVUixoJG"
+    },
+    {
+      "tweetId": "observed-2097043464538264003",
+      "tweetUrl": "https://x.com/thsottiaux/status/2097174560412246215",
+      "announcedAt": "2026-09-08T01:56:57.501Z",
+      "resetType": "regular",
+      "source": "observed",
+      "text": "All reset for everyone. Enjoy the week with Astra. https://t.co/WBM38JotGO"
+    },
+    {
+      "tweetId": "2096035437299237298",
+      "tweetUrl": "https://x.com/thsottiaux/status/2096035437299237298",
+      "announcedAt": "2026-09-05T00:39:25.000Z",
+      "resetType": "banked",
+      "source": "webhook",
+      "text": "Because we are beyond happy to have Astra rolled out today ahead of schedule and you have been super patient with us (not really, but it’s ok!)… we will do the full banked reset today too for all Plus, Pro and Business users. Lands end of day.\n\nHappy Astra day and enjoy a phenomenal weekend. \n\nPS: If you create the account or upgrade before 8pm PT you will get it too. Still time!"
+    },
+    {
+      "tweetId": "2095651088502591861",
+      "tweetUrl": "https://x.com/thsottiaux/status/2095651088502591861",
+      "announcedAt": "2026-09-03T23:12:09.000Z",
+      "resetType": "banked",
+      "source": "webhook",
+      "text": "We will give one banked reset for every day you don't have access to Astra on your paid ChatGPT plan, starting today.  Team is moving mountains to give access as fast as we can.\n\nFirst one will land in ~ 3 hours. There is still time to create your account if you don't have one."
+    },
+    {
+      "tweetId": "2094251180121854309",
+      "tweetUrl": "https://x.com/thsottiaux/status/2094251180121854309",
+      "announcedAt": "2026-08-31T02:29:25.000Z",
+      "resetType": "regular",
+      "source": "webhook",
+      "text": "What I wanted to say yesterday is that we hit 25M active users and to celebrate we have now reset usage for all paid subscriptions for ChatGPT Work and Codex.\n\nSee you see for more news from The Reset Company. https://t.co/7Yc5znAJIc"
+    },
+    {
+      "tweetId": "2093801758665715784",
+      "tweetUrl": "https://x.com/thsottiaux/status/2093801758665715784",
+      "announcedAt": "2026-08-29T20:43:34.000Z",
+      "resetType": "regular",
+      "source": "webhook",
+      "text": "We are reseting usage for all paid users of Codex and ChatGPT Work.\n\nPlease continue reading for an update on Codex usage limits. The team has been working around the clock, going through thousands of reports and shipping fixes.\n\nDepending on how you use Codex, you should see your usage go between 10% and 50% further than before.\n\nWe really went with a fine comb, with many uncovered small things being longstanding and here is what we found and fixed:\n- Compaction. We were keeping old images during compaction, sometimes making the context large enough to trigger compaction again. After the fix, usage dropped around 10% for users making heavy use of images. Fixed.\n- Memory. Background memory workers could inherit Stop hooks and keep running when the hook wouldn’t let them finish. This affected fewer than 1% of users, with the long tail being pretty bad and we saw one example thread check whether it could stop 15,000 times. Fixed.\n- Goals. In some cases, a set /goal could finish and then keep going past the intended stop condition, or the model would keep retrying broken tools without stopping. We saw examples consume anywhere from 15% to 70% of a weekly allowance. Fixed.\n- Automations. Some custom schedules could run more frequently than configured. Fixed.\n- Subagents. Smaller models (e.g. Luna) sometimes picked more capable helpers without being explicitly asked. The same was true where the orchestrating model not running in /fast mode could request sub-agents to run /fast. Fixed.\n- Computer History. The older implementation could lead to repeatedly summarizing overlapping activity. For some cases we saw it consume up to one fifth of the weekly usage per week. Fixed.\n- Rolling task summaries. Ordinary turns were triggering extra background requests. These added about 1% to token usage. Small each time, but it adds up. We have disabled this.\n- MCP. Some tool results could be encoded twice. We also found tool instructions getting cut off and fetched again. Fixed.\n\nWe’ve also made architectural changes to prevent these from regressing and our teams will get paged if it happens regardless. We are also working on showing you directly in the app where your usage goes so you don’t have to guess.\n\nGoes without saying that we’re resetting usage limits and I hope you enjoy a very nice Saturday!"
+    },
+    {
+      "tweetId": "2093014447833116908",
+      "tweetUrl": "https://x.com/thsottiaux/status/2093014447833116908",
+      "announcedAt": "2026-08-27T16:35:05.000Z",
+      "resetType": "regular",
+      "source": "webhook",
+      "text": "Never slept better and feeling reseted. Brand new me and brand new usage for all ChatGPT Work and Codex users. Regaining my youth one button press at a time.\n\nHappy Thursday"
+    },
+    {
+      "tweetId": "observed-20260825T143200Z",
+      "tweetUrl": "https://x.com/thsottiaux/status/2092311059197808936",
+      "announcedAt": "2026-08-25T14:30:00.000Z",
+      "resetType": "regular",
+      "source": "observed",
+      "text": "@dtzy_88 Ah yeah, forgot to say"
+    },
+    {
+      "tweetId": "2091688655828246890",
+      "tweetUrl": "https://x.com/thsottiaux/status/2091688655828246890",
+      "announcedAt": "2026-08-24T00:46:51.000Z",
+      "resetType": "regular",
+      "source": "webhook",
+      "text": "Good Sunday. Reset has been propagated to accounts and we landed some fixes to usage for things mentioned yesterday as issues we found. You should feel a positive difference. More to come tomorrow and will keep communicating. https://t.co/6mgUetJnhg"
+    },
+    {
+      "tweetId": "2090766694897619318",
+      "tweetUrl": "https://x.com/thsottiaux/status/2090766694897619318",
+      "announcedAt": "2026-08-21T11:43:19.000Z",
+      "resetType": "banked",
+      "source": "webhook",
+      "text": "It's me again. I come bearing great news. \n\nFirst of all, we have hit 20M active users for Codex some time this week. Second of all, this is cause for celebration and during the day we will credit every Codex and ChatGPT Work user with a BANKED reset that you can use at your own https://t.co/mooGnI0KJO"
+    },
+    {
+      "tweetId": "2087706104814023111",
+      "tweetUrl": "https://x.com/thsottiaux/status/2087706104814023111",
+      "announcedAt": "2026-08-13T01:01:37.000Z",
+      "resetType": "regular",
+      "source": "webhook",
+      "text": "Old news actually from a bunch of days ago, but crossed that 15M. Enjoy a nice reset everyone. Landing in the next hour or so, go /fast. https://t.co/TFRN2SrpCi"
+    },
+    {
+      "tweetId": "2086972802457063486",
+      "tweetUrl": "https://x.com/thsottiaux/status/2086972802457063486",
+      "announcedAt": "2026-08-11T00:27:44.000Z",
+      "resetType": "regular",
+      "source": "webhook",
+      "text": "Hi.\n\nIt is done. https://t.co/JRYltKvT0v"
+    },
+    {
+      "tweetId": "2086188036493344823",
+      "tweetUrl": "https://x.com/thsottiaux/status/2086188036493344823",
+      "announcedAt": "2026-08-08T20:29:22.000Z",
+      "resetType": "regular",
+      "source": "webhook",
+      "text": "That's right, GPT-5.6 Sol is awesome and can be used pretty much anywhere, including in the CC harness. \n\nTo celebrate this, together with the fact that I'm not going anywhere... I have reset usage limits for all paid users of ChatGPT Work and Codex. \n\nHave fun out there! https://t.co/2rtjtOxFt0"
+    },
+    {
+      "tweetId": "2083395449814229287",
+      "tweetUrl": "https://x.com/thsottiaux/status/2083395449814229287",
+      "announcedAt": "2026-08-01T03:32:37.000Z",
+      "resetType": "regular",
+      "source": "webhook",
+      "text": "To celebrate a week of efficiency and let you run 100'000 Luna threads this weekend... that's right... wait for it... I have reset usage limits for Codex and ChatGPT Work.\n\nEnjoy."
+    },
+    {
+      "tweetId": "2082317452755751098",
+      "tweetUrl": "https://x.com/thsottiaux/status/2082317452755751098",
+      "announcedAt": "2026-07-29T04:09:02.000Z",
+      "resetType": "regular",
+      "source": "webhook",
+      "text": "Hello people of Sol! I've reset usage limits for all ChatGPT Work and Codex users. Together with that, a quick update on GPT-5.6 Sol usage limits.\n\nOver the past few weeks, many of you have told us that Sol was using your Codex limits faster than expected. To be clear, we have"
+    },
+    {
+      "tweetId": "2081940052154933696",
+      "tweetUrl": "https://x.com/thsottiaux/status/2081940052154933696",
+      "announcedAt": "2026-07-28T03:09:23.000Z",
+      "resetType": "regular",
+      "source": "webhook",
+      "text": "Back at the laptop. The usage limits have been reset for all paid users of Codex and ChatGPT Work. Weeeeeeeee. It's a good day! https://t.co/Li7De9EDHz"
+    },
+    {
+      "tweetId": "2081096447718723984",
+      "tweetUrl": "https://x.com/thsottiaux/status/2081096447718723984",
+      "announcedAt": "2026-07-25T19:17:12.000Z",
+      "resetType": "regular",
+      "source": "webhook",
+      "text": "We have reset usage limits for all Codex and ChatGPT Work users.\n\nLast night around 2am to 4am we suffered an almost global outage. All well and recovered, but you know what comes next.\n\nWe learn. We reset. Enjoy. https://t.co/rAPzefTyaa"
+    },
+    {
+      "tweetId": "2079609157934886975",
+      "tweetUrl": "https://x.com/thsottiaux/status/2079609157934886975",
+      "announcedAt": "2026-07-21T16:47:15.000Z",
+      "resetType": "regular",
+      "source": "webhook",
+      "text": "10M! \n\nNew day, new usage reset for paid users of Codex and ChatGPT Work. Lands in the next hour. Enjoy. https://t.co/VUJ4S3vKDG"
+    },
+    {
+      "tweetId": "2078320950488297917",
+      "tweetUrl": "https://x.com/thsottiaux/status/2078320950488297917",
+      "announcedAt": "2026-07-18T03:28:22.000Z",
+      "resetType": "regular",
+      "source": "webhook",
+      "text": "Oops... I did it again. \n\nEnjoy reset usage limits for all paid users for Codex and ChatGPT Work. Super grateful for an incredible team who is iterating at lightspeed and keeping the infra up as we scale faster than ever.\n\nEnjoy the weekend! https://t.co/WIuS07doKA https://t.co/3NwNqHG7TV"
+    },
+    {
+      "tweetId": "2077607697487188198",
+      "tweetUrl": "https://x.com/thsottiaux/status/2077607697487188198",
+      "announcedAt": "2026-07-16T04:14:09.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "Another reset for our Codex and ChatGPT Work users. Actually hit 9M active users way earlier today, but then got distracted by the approximately millions of things the team is doing to keep the systems up and reliable.\n\nShould have that sweet 100% weekly usage limit back in a few"
+    },
+    {
+      "tweetId": "2077114635308986427",
+      "tweetUrl": "https://x.com/thsottiaux/status/2077114635308986427",
+      "announcedAt": "2026-07-14T19:34:54.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "Hello. We have reached 8M active users across Codex and ChatGPT Work.\n\nWe are once again resetting the usage limits for all. And we continue to not have the 5h rate limit as well, allowing everyone to explore the boundaries of GPT-5.6 Sol and discover how ambitious you can be. https://t.co/pKunziOGRm"
+    },
+    {
+      "tweetId": "2076735790567338203",
+      "tweetUrl": "https://x.com/thsottiaux/status/2076735790567338203",
+      "announcedAt": "2026-07-13T18:29:31.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "Thank you to the 7M active users who are now using Codex and ChatGPT Work.\n\nWe have added a banked reset to everyone's account to celebrate the milestone. You can apply the reset in the desktop app or on web and it will replenish the weekly usage for you.\n\nHave fun out there."
+    },
+    {
+      "tweetId": "2076418567143408112",
+      "tweetUrl": "https://x.com/thsottiaux/status/2076418567143408112",
+      "announcedAt": "2026-07-12T21:28:59.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "Added a banked reset to 500k users of ChatGPT Work and Codex.\n\nWhat’s been happening:\n- Just released the ability to use a banked reset from web and mobile. Before today you could only do it in the desktop app\n- Had an issue where less than 10% of users who used a banked reset"
+    },
+    {
+      "tweetId": "2075820987833274448",
+      "tweetUrl": "https://x.com/thsottiaux/status/2075820987833274448",
+      "announcedAt": "2026-07-11T05:54:25.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "Introducing... another usage limit reset for all our ChatGPT Work and Codex users. Should land over next 30 minutes. Hope you have an awesome weekend.\n\nThank you for pushing our systems to the absolute limit, we have never seen traffic increase so quickly. Keep the feedback https://t.co/WOd7fr2viS"
+    },
+    {
+      "tweetId": "2075641131002700120",
+      "tweetUrl": "https://x.com/thsottiaux/status/2075641131002700120",
+      "announcedAt": "2026-07-10T17:59:43.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "Hello beautiful people! We have reset usage limits across Codex and ChatGPT Work. And another one will come later in the day. Rejoice.\n\nNow that I have your attention, a quick update on ChatGPT Work, Codex and all the updates we shared yesterday.\n\nWe’ve spent the last 24 hours"
+    },
+    {
+      "tweetId": "2075330198887940337",
+      "tweetUrl": "https://x.com/thsottiaux/status/2075330198887940337",
+      "announcedAt": "2026-07-09T21:24:11.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "Enjoy a full reset of your usage limits for ChatGPT Work and Codex. Propagating in the next hour.\n\n@_rajanagarwal just joined to work on model research and push on coding capabilities. You can thank him for pressing the button today. https://t.co/vMMwKJibBI"
+    },
+    {
+      "tweetId": "2071740419030053227",
+      "tweetUrl": "https://x.com/thsottiaux/status/2071740419030053227",
+      "announcedAt": "2026-06-29T23:39:41.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "Codex usage limits will be fully reset again in the next hour and we will credit one additional reset into your bank for your own usage over the next 24 hours.\n\nWe investigated reports that Codex usage was being consumed faster than expected. There wasn't one central issue, but a https://t.co/UdCSbW0BGs"
+    },
+    {
+      "tweetId": "2071381664853319742",
+      "tweetUrl": "https://x.com/thsottiaux/status/2071381664853319742",
+      "announcedAt": "2026-06-28T23:54:07.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "As we are still investigating, I have reset everyone's Codex usage limits. This is a hard reset given some users had stacked up to three banked resets already that they can apply on their own schedule.\n\nFunnily enough, this week at OpenAI is called the RESET week, which is meant https://t.co/UdCSbW03QU"
+    },
+    {
+      "tweetId": "2070653282440405046",
+      "tweetUrl": "https://x.com/thsottiaux/status/2070653282440405046",
+      "announcedAt": "2026-06-26T23:39:48.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "We are giving all Codex users a usage reset on the house. Should be showing in your accounts in the next few hours.\n\nWe have applied some mitigations, but our investigation hasn't shown users being impacted at large. We are continuing to monitor the situation. https://t.co/rLJrQdI1ks"
+    },
+    {
+      "tweetId": "2067399435009622521",
+      "tweetUrl": "https://x.com/thsottiaux/status/2067399435009622521",
+      "announcedAt": "2026-06-18T00:10:10.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "Dearest gentle codexer.\n\nWe did a sneaky double reset. Not only do you get a full reset on us. But you are also getting one into the reset bank to use at your own leisure. \n\nEnjoy https://t.co/eORoaKb3pL"
+    },
+    {
+      "tweetId": "2062329981548802523",
+      "tweetUrl": "https://x.com/thsottiaux/status/2062329981548802523",
+      "announcedAt": "2026-06-04T00:25:58.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "Hi. Over the last 24 hours we had three separate small incidents that affected Codex reliability. Those are three too many and we are taking active steps for them to not reproduce.\n\nI have reset usage limits for Codex across all paid plans. May the tokens flow again."
+    },
+    {
+      "tweetId": "2061106703446450392",
+      "tweetUrl": "https://x.com/thsottiaux/status/2061106703446450392",
+      "announcedAt": "2026-05-31T15:25:06.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "The Codex usage limits have been reset for all paid ChatGPT subscriptions. You should be back to 100% weekly and 100% hourly limits.\n\nLet the tokens do incredible things today and have fun. https://t.co/e7iJcJ1iHy"
+    },
+    {
+      "tweetId": "2058280452851638313",
+      "tweetUrl": "https://x.com/thsottiaux/status/2058280452851638313",
+      "announcedAt": "2026-05-23T20:14:35.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "Some of you noticed limits drained faster in Codex, we root caused it to an optimization that we rolled back that had an impact on cache hit rates when compacting across long running sessions. \n\nWe fixed this and have now reset usage limits for all accounts. Enjoy the weekend. https://t.co/t1O8jCd4PB"
+    },
+    {
+      "tweetId": "2055707616605835333",
+      "tweetUrl": "https://x.com/thsottiaux/status/2055707616605835333",
+      "announcedAt": "2026-05-16T17:51:03.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "Codex usage limits have now been reset across all paid plans. Enjoy the weekend! https://t.co/VnYKZ7ND3b"
+    },
+    {
+      "tweetId": "2048997818673537399",
+      "tweetUrl": "https://x.com/thsottiaux/status/2048997818673537399",
+      "announcedAt": "2026-04-28T05:28:43.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "Don't just reset Codex rate limits for fun, it costs money.\nDon't just reset Codex rate limits for fun, it costs money.\n\n... but the vibes are good ...\n\nI have reset Codex rate limits for ALL paid plans to celebrate a good week and allow everyone to build more with GPT-5.5. Enjoy"
+    },
+    {
+      "tweetId": "2046367145588916687",
+      "tweetUrl": "https://x.com/thsottiaux/status/2046367145588916687",
+      "announcedAt": "2026-04-20T23:15:21.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "Codex incident is mitigated, seeing recovery. Lasted about 10 mins, Codex itself helped with the remediation, but ultimately the insight came from a human this time. \n\nApologies for the disruption and rate limit reset incoming. https://t.co/RiuRnNsH2u https://t.co/efVDAsHrBa"
+    },
+    {
+      "tweetId": "2044943514832871564",
+      "tweetUrl": "https://x.com/thsottiaux/status/2044943514832871564",
+      "announcedAt": "2026-04-17T00:58:21.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "Hi! To celebrate its 1-year anniversary, I have allowed Codex to reset its own rate limits across all plans. Enjoy all the new features. https://t.co/xIGXQwMzpa"
+    },
+    {
+      "tweetId": "2042299371602264319",
+      "tweetUrl": "https://x.com/thsottiaux/status/2042299371602264319",
+      "announcedAt": "2026-04-09T17:51:28.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "We did it, say hi to the $100 plan! \n\nIt should be the sweet spot for a ton of you. It comes with a ton of codex usage. And yes we are resetting the limits again too as I mentioned yesterday. Let’s keep building! https://t.co/eX25QBuWqV"
+    },
+    {
+      "tweetId": "2041655710346572085",
+      "tweetUrl": "https://x.com/thsottiaux/status/2041655710346572085",
+      "announcedAt": "2026-04-07T23:13:48.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "Three million people are now using Codex weekly - up from two million a little under a month ago. Incredible to see the growth. Thank you to all of you and to the ecosystem we’re part of. To celebrate, we’re resetting rate limits so you can keep building, and we’ll reset them"
+    },
+    {
+      "tweetId": "2039248564967424483",
+      "tweetUrl": "https://x.com/thsottiaux/status/2039248564967424483",
+      "announcedAt": "2026-04-01T07:48:39.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "Our Codex dashboards are showing increased rate of users hitting rate limits and since we don't fully understand why I have made the cautious decision of resetting the usage limits for all plans. Enjoy.\n\nI also wanted to celebrate us finding a pocket of fraudulent accounts that"
+    },
+    {
+      "tweetId": "2037346989244096581",
+      "tweetUrl": "https://x.com/thsottiaux/status/2037346989244096581",
+      "announcedAt": "2026-03-27T01:52:28.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "Hello. We have reset Codex usage limits across all plans to let everyone experiment with the magnificent plugins we just launched, and because it had been a while! \n\nYou can just build unlimited things with Codex. Have fun!"
+    },
+    {
+      "tweetId": "2031605592352313567",
+      "tweetUrl": "https://x.com/thsottiaux/status/2031605592352313567",
+      "announcedAt": "2026-03-11T05:38:13.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "OK, Codex is back and stable and we should be good for a while. \n\nReset button pressed, should see it in a bit https://t.co/cuVrFiFkep"
+    },
+    {
+      "tweetId": "2031216405266481489",
+      "tweetUrl": "https://x.com/thsottiaux/status/2031216405266481489",
+      "announcedAt": "2026-03-10T03:51:43.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "This codex issue is now fully resolved and stable for the last couple of hours. \n\nYou have come to expect it, but yes, that means we will be reseting rate limits in a bit. Enjoy. https://t.co/QSCRLGK4kJ"
+    },
+    {
+      "tweetId": "2030474136024400173",
+      "tweetUrl": "https://x.com/thsottiaux/status/2030474136024400173",
+      "announcedAt": "2026-03-08T02:42:13.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "We don’t have evidence of a widespread issue with codex usage being drained faster than it should but there are enough reports and we have reset rate limits for plus &amp; pro subscriptions while we work towards wrapping up our investigation over the coming 1-3 days. https://t.co/yhr8K8pOjf"
+    },
+    {
+      "tweetId": "2029308599835738218",
+      "tweetUrl": "https://x.com/thsottiaux/status/2029308599835738218",
+      "announcedAt": "2026-03-04T21:30:47.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "We caught an issue that was causing the 2X promotional increase in limits to not be applied to an estimated 9% of plus and pro users for Codex. \n\nWe have now fixed this issue and are reseting the rate limit for all plus and pro users to compensate. Apologies and thank you for the"
+    },
+    {
+      "tweetId": "2028649088594436225",
+      "tweetUrl": "https://x.com/thsottiaux/status/2028649088594436225",
+      "announcedAt": "2026-03-03T01:50:07.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "Codex is back up. We introduced an issue that caused requests to be blocked and rejected as high cyber risk. This was fixed in ~8 mins and we are now back online and fully operational.\n\nTeam will reset rate limits, that’s been a while. Enjoy one on us."
+    },
+    {
+      "tweetId": "2004100061933064395",
+      "tweetUrl": "https://x.com/thsottiaux/status/2004100061933064395",
+      "announcedAt": "2025-12-25T08:01:03.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "For Codex users, to thank you all for the fun we've had over the last months, our first gift is that we have **reset rate limits and are lifting the usage limits to 2X the usual limits until the 1st of Jan**. Wish you all a merry holiday and lots of coding!!\n\nSpread the word 👀 https://t.co/uKAZLhpp7r https://t.co/eN919zx84y"
+    },
+    {
+      "tweetId": "2002137269134819610",
+      "tweetUrl": "https://x.com/thsottiaux/status/2002137269134819610",
+      "announcedAt": "2025-12-19T22:01:37.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "We rewrote the underlying system to track and bill usage in Codex and we have reset usage limits in the process. Backfilling is time consuming and it’s more fun to give free usage. Enjoy! https://t.co/bFwu9mb4RI"
+    },
+    {
+      "tweetId": "2001114683047317723",
+      "tweetUrl": "https://x.com/thsottiaux/status/2001114683047317723",
+      "announcedAt": "2025-12-17T02:18:14.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "Didn’t need to do this in a while, but you know the drill. We have reset everyone’s usage limits, enjoy more Codex and apologies for the disruption. https://t.co/zv4A8hWXzB"
+    },
+    {
+      "tweetId": "1995988609896513743",
+      "tweetUrl": "https://x.com/thsottiaux/status/1995988609896513743",
+      "announcedAt": "2025-12-02T22:49:02.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "We have reset the usage limits for everyone in Codex, which helps us mitigate the issue the fastest and the team will continue to work on the underlying cause. This should propagate to all users over the next 10 mins, enjoy and apologies for the confusion! https://t.co/UdHowMWBoz"
+    },
+    {
+      "tweetId": "1992370994028388670",
+      "tweetUrl": "https://x.com/thsottiaux/status/1992370994028388670",
+      "announcedAt": "2025-11-22T23:13:56.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "We have reset rate limits for all Codex users to compensate for the unusual high latencies in or near the US in the previous hours. Grateful for the team working hard behind the scenes to keep Codex running 24/7.\n\nI do recommend trying out GPT-5.1-Codex-Max too if you haven’t! https://t.co/xVe5IC4VFs"
+    },
+    {
+      "tweetId": "1986166501435711936",
+      "tweetUrl": "https://x.com/thsottiaux/status/1986166501435711936",
+      "announcedAt": "2025-11-05T20:19:29.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "Codex outage resolved.\n\nWe suffered a minor outage for last 45 minutes which turned into a global outage for last 30 minutes, this is now resolved and we have reset the rate limits. Please let me know if you still see issues. https://t.co/ZkvIOaVMv2"
+    },
+    {
+      "tweetId": "1968163721034994139",
+      "tweetUrl": "https://x.com/thsottiaux/status/1968163721034994139",
+      "announcedAt": "2025-09-17T04:02:52.000Z",
+      "resetType": "regular",
+      "source": "backfill",
+      "text": "We have reset everyone's limits for gpt-5-codex to allow you all to benefit more from it today and as a way to make up for the slowdowns earlier while we were provisioning additional GPUs. We'll continue to add capacity throughout the week to maintain the speed.\n\nEnjoy!"
+    }
+  ]
+}

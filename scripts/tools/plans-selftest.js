@@ -676,7 +676,10 @@ const FROZEN_VENDOR_KEYS = [
   // 均为**新增路由** /vendor/alttext-ai/ · /vendor/notiq/ · /vendor/pretty-prompt/）
   ['alttextai', 'AltText.ai'],
   ['notiq', 'NotiQ'],
-  ['prettyprompt', 'Pretty Prompt']
+  ['prettyprompt', 'Pretty Prompt'],
+  // 2026-11-14：AppSumo 数据更新后 ResumeUp.AI 达标（1 条有效优惠 / 3 条事件，
+  // **新增路由** /vendor/resumeup-ai/，既有 /vendor/ 路由一字未改）
+  ['resumeup', 'ResumeUp.AI']
 ];
 
 /**
@@ -731,7 +734,11 @@ const FROZEN_VENDOR_SLUGS = {
   /* 2026-11-13：同上三家新增厂商（只靠历史事件数达标，全部是**新增路由**，既有 /vendor/ 路由一字未改） */
   'AltText.ai': 'alttext-ai',
   'NotiQ': 'notiq',
-  'Pretty Prompt': 'pretty-prompt'
+  'Pretty Prompt': 'pretty-prompt',
+  /* 2026-11-14：AppSumo 数据更新后 ResumeUp.AI 达标（1 条有效优惠 / 3 条历史事件）——
+   * 与上面三条同一情形：**新增路由** `/vendor/resumeup-ai/`，既有 `/vendor/` 路由一字未改，
+   * 因此不需要 landing-aliases.json 登记；按冻结表纪律新增一行。 */
+  'ResumeUp.AI': 'resumeup-ai'
 };
 
 /** 逐条比对 A 空间的 `[键, 显示名]` 序列（顺序也算）；返回漂移列表（空 = 未漂移） */

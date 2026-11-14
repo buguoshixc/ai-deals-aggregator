@@ -2183,6 +2183,75 @@ function noJsControlExemptionFor(route) {
     Boolean(report) && report.blank && report.prefilled && /github\.com\/.+\/issues\/new/.test(report.href),
     report ? `${report.href.slice(0, 76)}…（rel=${report.rel}）` : '未找到纠错链接');
 
+  // A 包（判据只加不松）：原来的 issue 入口断言一个字没删，这里**追加**两条新事实：
+  //   ① .dact 里多了一个 <button type="button">「这条领不到了？」，
+  //      data-copy 里是构建期拼好的完整话术（条目 id / 官方页 / issue 地址都在）；
+  //   ② 点击后出现可见且 aria-live=polite 的反馈，约 4 秒后收回 —— 三级剪贴板降级链
+  //      无论走到哪一级都必须给读者一句话，不许静默失败。
+  // 弹层与静态详情页是两条渲染路径：这里验弹层（js 渲染）；静态页的无 JS 形态在 §15 追加验。
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], {
+    origin: new URL(base).origin
+  }).catch(() => { /* 浏览器不支持授权时：只放弃「剪贴板内容逐字比对」的读数，断言不降级 */ });
+  const copyProbe = await page.evaluate(async () => {
+    document.querySelector('article.g').click();
+    await new Promise(r => setTimeout(r, 350));
+    const btn = document.querySelector('#detail .dact button.dact-copy');
+    const issue = [...document.querySelectorAll('#detail .dact a')].find(a => /issues\/new/.test(a.href));
+    const box = document.querySelector('#detail .dact-copy-status');
+    const text = btn ? (btn.getAttribute('data-copy') || '') : '';
+    const out = {
+      exists: Boolean(btn),
+      type: btn ? btn.getAttribute('type') : '',
+      issueStillThere: Boolean(issue),
+      text,
+      ariaLive: box ? box.getAttribute('aria-live') : '',
+      role: box ? box.getAttribute('role') : '',
+      idLine: (text.match(/条目 id：(\S+)/) || [])[1] || '',
+      statusText: '',
+      statusState: '',
+      statusVisible: false,
+      clip: '__not_read__'
+    };
+    if (btn) {
+      btn.click();
+      await new Promise(r => setTimeout(r, 450));
+      const liveBox = document.querySelector('#detail .dact-copy-status');
+      out.statusText = liveBox ? liveBox.textContent.trim() : '';
+      out.statusState = liveBox ? (liveBox.getAttribute('data-copy-state') || '') : '';
+      out.statusVisible = Boolean(liveBox) && (liveBox.offsetWidth > 0 || liveBox.offsetHeight > 0
+        || liveBox.getClientRects().length > 0);
+      try { out.clip = await navigator.clipboard.readText(); } catch (error) { out.clip = '__not_read__'; }
+    }
+    document.querySelector('#detail .x').click();
+    await new Promise(r => setTimeout(r, 250));
+    return out;
+  });
+  const copyIdFromText = copyProbe.idLine;
+  check('详情里新增「这条领不到了？」复制按钮：issue 入口仍在 + type=button + 预置话术含条目 id / 官方页 / issue 地址',
+    copyProbe.exists && copyProbe.type === 'button' && copyProbe.issueStillThere
+      && /条目 id：\S+/.test(copyProbe.text) && copyProbe.text.includes('官方页：')
+      && copyProbe.text.includes('/issues/new') && Boolean(copyIdFromText),
+    copyProbe.exists
+      ? `id=${copyIdFromText || '缺失'} · 话术 ${copyProbe.text.length} 字 · 剪贴板读数 ${
+        copyProbe.clip === '__not_read__' ? '未授权（不参与判定）' : (copyProbe.clip === copyProbe.text ? '逐字一致' : '不一致')}`
+      : '未找到 .dact-copy 按钮');
+  check('点击复制后出现可见且 aria-live 可读的反馈（role=status / polite）',
+    copyProbe.statusState === 'copied' && copyProbe.statusText.length > 0 && copyProbe.statusVisible
+      && copyProbe.ariaLive === 'polite' && copyProbe.role === 'status',
+    `state=${copyProbe.statusState || '无'} · 文本「${copyProbe.statusText.slice(0, 40)}」 · 可见=${copyProbe.statusVisible}`
+      + ` · aria-live=${copyProbe.ariaLive || '无'} / role=${copyProbe.role || '无'}`);
+  await page.waitForTimeout(4500);
+  const copyRetracted = await page.evaluate(() => {
+    const box = document.querySelector('#detail .dact-copy-status');
+    return {
+      text: box ? box.textContent.trim() : '',
+      state: box ? (box.getAttribute('data-copy-state') || '') : ''
+    };
+  });
+  check('复制反馈几秒后收回（4 秒计时器真的在跑，不残留一条常驻提示）',
+    copyRetracted.text === '' && copyRetracted.state === '',
+    `4.5 秒后 status=「${copyRetracted.text.slice(0, 30)}」 / state=${copyRetracted.state || '无'}`);
+
   /* ------------------------------------------------------------------ */
   /* t5 删除：订阅发现（首页 8 条 rel="alternate" + 每个 feed 的探针）        */
   /* ------------------------------------------------------------------ */
@@ -2317,11 +2386,19 @@ function noJsControlExemptionFor(route) {
   const noJsContext = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1440, height: 900 } });
   const noJsPage = await noJsContext.newPage();
   await noJsPage.goto(detailUrl, { waitUntil: 'load' });
-  const noJsDetail = await noJsPage.evaluate(() => ({
-    chars: document.body ? document.body.innerText.replace(/\s+/g, ' ').trim().length : 0,
-    heading: (document.querySelector('#detailTitle') || {}).textContent || '',
-    official: [...document.querySelectorAll('a')].filter(a => /^https?:/.test(a.getAttribute('href') || '')).length
-  }));
+  const noJsDetail = await noJsPage.evaluate(() => {
+    const copyBtn = document.querySelector('.dact-copy');
+    return {
+      chars: document.body ? document.body.innerText.replace(/\s+/g, ' ').trim().length : 0,
+      heading: (document.querySelector('#detailTitle') || {}).textContent || '',
+      official: [...document.querySelectorAll('a')].filter(a => /^https?:/.test(a.getAttribute('href') || '')).length,
+      // A 包：无 JS 时复制按钮**在 DOM 里但不可见**（默认 display:none，只有 body.copy-ready 才显示）。
+      // 这是「无 JS 不给死控件」在静态详情页上的形态；断言两面都判，避免把「按钮被删了」当通过。
+      copyInDom: Boolean(copyBtn),
+      copyDisplay: copyBtn ? getComputedStyle(copyBtn).display : 'missing',
+      copyVisible: Boolean(copyBtn) && copyBtn.getClientRects().length > 0
+    };
+  });
   // ⚠️ 取样必须在 `noJsContext.close()` **之前**做完（页面随 context 一起销毁）。
   // ⚠️ 路径必须**解析自站点根**（`DEALS_URL`），不能写相对路径也不能写死 `/deals.json`：
   //    此刻页面停在 `deal/<id>/` 下，`deals.json` 会解析成 `deal/<id>/deals.json` → 404；
@@ -2348,6 +2425,10 @@ function noJsControlExemptionFor(route) {
   check('详情页不执行 JS 也能读到内容',
     noJsDetail.chars > 400 && Boolean(noJsDetail.heading) && noJsDetail.official >= 1,
     `正文 ${noJsDetail.chars} 字符 · 标题「${noJsDetail.heading.slice(0, 22)}」· 官方链接 ${noJsDetail.official} 个`);
+  // A 包：预渲染详情页**带**复制按钮，但无 JS 时它必须不可见（不是删掉按钮、也不是留死按钮）。
+  check('静态详情页无 JS 时复制按钮存在但不可见（JS 就绪信号 copy-ready 才显示）',
+    noJsDetail.copyInDom && noJsDetail.copyDisplay === 'none' && !noJsDetail.copyVisible,
+    `在 DOM=${noJsDetail.copyInDom} · display=${noJsDetail.copyDisplay} · 可见=${noJsDetail.copyVisible}`);
 
   /**
    * v1.1 受众字段的结构化行（学生 / 开发者模型）。
@@ -11165,6 +11246,220 @@ function noJsControlExemptionFor(route) {
   // 一起下架 ⇒ **被测对象与真值来源同时消失**，留在这里只会得到一串 404 造成的假红。
   // 读者面的新契约（页面不出现数据文件名 / JSON / 「开放数据」入口）由构建期的
   // `lib/published-assets.js` fail-closed 扫描 + 产物级断言守着，不再需要一个浏览器节。
+
+  /* ================================================================== */
+  /* §25：/codex-reset/ Codex 额度重置档案（B 包）                        */
+  /* ================================================================== */
+  //
+  // 这一节的牙分两侧，都能被证伪：
+  //   数据侧 —— codex-resets.json 的字段契约（与 scripts/validate.js 的判据**同源事实、独立实现**：
+  //            即使 validate.js 被改成空转，这里在真产物上仍会红）；
+  //   页面侧 —— 行数 == 数据条数、每条时间/类型/来源/摘录/原推五件齐全、四档宽度无横向溢出、
+  //            纯静态（无内联页面脚本）、sitemap/canonical/hreflang、与 /plans/coding/ 互链。
+  // 本页诚实性的**唯一守卫**：「预测 / 概率 / %」判红。口径块按题面要求必须明写
+  // 「本页不预测下一次重置」—— 这与「出现『预测』即判红」字面互斥，取交集：
+  // 页面上「预测」只允许出现在这一句里，且**恰好一次**；其余位置出现、或出现「概率」/「%」都红。
+  // 下面用变异副本证明这条判定式真的会咬（不是永远为真的空转）。
+  console.log('\n=== 25) /codex-reset/ Codex 额度重置档案 ===');
+  {
+    const codexData = readRoot('codex-resets.json');
+    const codexEvents = Array.isArray(codexData.events) ? codexData.events : [];
+    const beijingMinute = iso => {
+      const time = Date.parse(iso);
+      if (Number.isNaN(time)) return '未知';
+      const shifted = new Date(time + 8 * 3600 * 1000);
+      const pad = value => String(value).padStart(2, '0');
+      return `${shifted.getUTCFullYear()}-${pad(shifted.getUTCMonth() + 1)}-${pad(shifted.getUTCDate())} `
+        + `${pad(shifted.getUTCHours())}:${pad(shifted.getUTCMinutes())}`;
+    };
+    /** 页面诚实性判定式（唯一实现；本节的磁盘扫描与变异自检都走它）。返回违规说明数组。 */
+    const codexHonestyViolations = html => {
+      const problems = [];
+      const scope = String(html)
+        .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+        .replace(/<style[\s\S]*?<\/style>/gi, ' ');
+      const disclaimer = '本页不预测下一次重置';
+      const count = scope.split(disclaimer).length - 1;
+      const rest = scope.split(disclaimer).join('');
+      if (count !== 1) problems.push(`口径句「${disclaimer}」出现 ${count} 次（必须恰好 1 次）`);
+      if (rest.includes('预测')) problems.push('出现了口径句之外的「预测」');
+      if (scope.includes('概率')) problems.push('出现了「概率」');
+      if (scope.includes('%')) problems.push('出现了 ASCII 百分号 %');
+      return problems;
+    };
+
+    // ── 数据侧 ①：条数与枚举（逐条，不抽样）──────────────────────────────
+    const dataProblems = [];
+    let lastAnnounced = null;
+    codexEvents.forEach((event, index) => {
+      const where = `第 ${index + 1} 条`;
+      if (!event || typeof event !== 'object') { dataProblems.push(`${where} 不是对象`); return; }
+      if (!event.tweetId) dataProblems.push(`${where} tweetId 为空`);
+      if (typeof event.tweetUrl !== 'string' || !/^https:\/\/(?:www\.)?(?:x|twitter|mobile\.twitter)\.com\//.test(event.tweetUrl)) {
+        dataProblems.push(`${where} tweetUrl 不是 https 的 x.com/twitter.com 链接`);
+      }
+      if (Number.isNaN(Date.parse(event.announcedAt))) dataProblems.push(`${where} announcedAt 不可解析`);
+      if (!['regular', 'banked'].includes(event.resetType)) dataProblems.push(`${where} reset_type 非法（${event.resetType}）`);
+      if (!['webhook', 'observed', 'backfill'].includes(event.source)) dataProblems.push(`${where} source 非法（${event.source}）`);
+      if (typeof event.text !== 'string' || !event.text.trim()) dataProblems.push(`${where} text 为空`);
+      const announced = Date.parse(event.announcedAt);
+      if (lastAnnounced !== null && Number.isFinite(announced) && announced > lastAnnounced) {
+        dataProblems.push(`${where} 没有按 announcedAt 倒序（第 ${index} 条比前一条更新）`);
+      }
+      if (Number.isFinite(announced)) lastAnnounced = announced;
+    });
+    check('§25 数据侧：codex-resets.json 每条都是 https 的 x/twitter 原推链接 + 可解析 announced_at + reset_type/source 枚举合法 + 按时间倒序',
+      codexEvents.length > 0 && dataProblems.length === 0,
+      dataProblems.length ? `${dataProblems.length} 处问题：${dataProblems.slice(0, 3).join('；')}` : `${codexEvents.length} 条全过`);
+
+    // ── 数据侧 ②：统计口径自洽（total / avg / lastResetAt / fetchedAt）────────
+    const statProblems = [];
+    if (Number(codexData.stats && codexData.stats.total) !== codexEvents.length) {
+      statProblems.push(`stats.total ${codexData.stats && codexData.stats.total} ≠ events ${codexEvents.length}`);
+    }
+    const avgInterval = Number(codexData.stats && codexData.stats.avgIntervalDays);
+    if (!Number.isFinite(avgInterval) || avgInterval <= 0) statProblems.push('stats.avgIntervalDays 不是有限正数');
+    if (Number.isNaN(Date.parse(codexData.fetchedAt))) statProblems.push('fetchedAt 不可解析');
+    const lastResetAt = codexData.stats && codexData.stats.lastResetAt;
+    if (Number.isNaN(Date.parse(lastResetAt))) statProblems.push('stats.lastResetAt 不可解析');
+    else if (codexEvents.length && Date.parse(lastResetAt) !== Math.max(...codexEvents.map(event => Date.parse(event.announcedAt)))) {
+      statProblems.push('stats.lastResetAt ≠ 最新一条记录的 announcedAt');
+    }
+    check('§25 数据侧：stats.total == 条数 · avgIntervalDays 为正数 · lastResetAt == 最新事件时间 · fetchedAt 可解析',
+      statProblems.length === 0, statProblems.join('；') || `total=${codexEvents.length} · avg=${avgInterval} 天`);
+
+    // ── 页面体检（复用资料库页套件：h1 / canonical / sitemap / 无 JS / 无外部请求）──
+    const { data: codexPageData } = await auditLibraryPage({
+      label: '/codex-reset/',
+      route: 'codex-reset/',
+      noJsText: ['数据截至', '本页不预测下一次重置', '同一事件可能被收录多次', '原推'],
+      minText: 2000,
+      itemList: false,
+      // 每条记录都有**原推**这条站外链接（一手证据）；收录方与发布账号的链接也在这条分支里。
+      official: codexEvents.length,
+      footerLink: false
+    });
+    check('§25 /codex-reset/ 恰好一个 h1 且标题就是档案名',
+      codexPageData.title.includes('Codex 额度重置档案'), `「${codexPageData.title}」`);
+
+    // ── 页面侧 ③：行数 == 数据条数；每条五件齐全、顺序与数据一致 ────────────
+    await page.goto(new URL('codex-reset/', base).href, { waitUntil: 'load' });
+    const rendered = await page.evaluate(`(() => {
+      const rows = [...document.querySelectorAll('[data-codex-event]')].map(row => ({
+        tweetId: row.getAttribute('data-codex-event'),
+        resetType: row.getAttribute('data-reset-type'),
+        source: row.getAttribute('data-source'),
+        datetime: (row.querySelector('time') || {}).getAttribute ? row.querySelector('time').getAttribute('datetime') : '',
+        timeText: ((row.querySelector('time') || {}).textContent || '').trim(),
+        typeText: ((row.querySelector('.cx-type') || {}).textContent || '').trim(),
+        sourceText: ((row.querySelector('.cx-src') || {}).textContent || '').replace(/\\s+/g, ' ').trim(),
+        excerpt: ((row.querySelector('.cx-text') || {}).textContent || '').trim(),
+        href: (row.querySelector('a.cx-orig') || {}).href || '',
+        cells: row.querySelectorAll('td').length
+      }));
+      const stats = [...document.querySelectorAll('.cx-stat b')].map(node => node.textContent.trim());
+      const meta = ((document.querySelector('.stop .meta') || {}).textContent || '').trim();
+      const pageText = document.body ? document.body.innerText.replace(/\\s+/g, ' ').trim() : '';
+      return { rows, stats, meta, pageText };
+    })()`);
+    check('§25 页面时间线行数 == 数据条数（多/少一条都红）',
+      rendered.rows.length === codexEvents.length,
+      `页面 ${rendered.rows.length} 行 / 数据 ${codexEvents.length} 条`);
+    const rowProblems = [];
+    rendered.rows.forEach((row, index) => {
+      const event = codexEvents[index];
+      if (!event) { rowProblems.push(`第 ${index + 1} 行没有对应数据`); return; }
+      const where = `第 ${index + 1} 行`;
+      if (row.tweetId !== event.tweetId) rowProblems.push(`${where} tweetId 与数据顺序不一致`);
+      if (!/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(row.timeText)) rowProblems.push(`${where} 时间不是北京时间「YYYY-MM-DD HH:mm」`);
+      if (row.datetime !== event.announcedAt) rowProblems.push(`${where} <time datetime> ≠ announcedAt`);
+      const typeLabel = event.resetType === 'regular' ? '全局重置' : '可储存重置';
+      if (!row.typeText.includes(typeLabel)) rowProblems.push(`${where} 类型标签不是「${typeLabel}」`);
+      const sourceLabel = { webhook: '实时收录', observed: '事后观测收录', backfill: '历史回填' }[event.source];
+      if (!row.sourceText.includes(sourceLabel)) rowProblems.push(`${where} 收录来源标签不是「${sourceLabel}」`);
+      if (row.href !== event.tweetUrl) rowProblems.push(`${where} 原推链接 ≠ tweet_url`);
+      if (row.cells !== 5) rowProblems.push(`${where} 不是五列（时间/类型/来源/摘录/原推）`);
+      // 摘录：必须是原文的**前缀**且 ≤140 字符；有截断就必须留痕，没有截断就不许画蛇添足。
+      const normalized = String(event.text || '').replace(/\s+/g, ' ').trim();
+      const hasMarker = row.excerpt.includes('此处截断');
+      const bodyText = (row.excerpt.split(/…（原文共 \d+ 字符，此处截断）/)[0] || '').trim();
+      if (!bodyText || bodyText.length > 140) rowProblems.push(`${where} 摘录长度 ${bodyText.length}（应 1–140）`);
+      else if (!normalized.startsWith(bodyText)) rowProblems.push(`${where} 摘录不是英文原文的前缀（改写了原文）`);
+      if (hasMarker === (bodyText === normalized)) rowProblems.push(`${where} 截断留痕与实际是否截断不一致`);
+    });
+    check('§25 时间线每条五件齐全：北京时间 + 类型标签 + 收录来源 + 英文原文前缀摘录（≤140，截断留痕）+ 原推链接',
+      rendered.rows.length > 0 && rowProblems.length === 0,
+      rowProblems.length ? `${rowProblems.length} 处问题：${rowProblems.slice(0, 3).join('；')}` : `${rendered.rows.length} 条逐条对账一致`);
+
+    // ── 页面侧 ④：三个数字 + 数据截至（按 fetchedAt 现算，构建期算死）────────
+    const expectedFetchedCN = beijingMinute(codexData.fetchedAt);
+    const diffDays = (Date.parse(codexData.fetchedAt) - Date.parse(lastResetAt)) / 86400000;
+    const expectedSince = (Math.max(0, Math.round(diffDays * 10) / 10)).toFixed(1);
+    const expectedAvg = (Math.round(avgInterval * 10) / 10).toFixed(1);
+    check('§25 三个数字与数据一致：累计记录条数 / 平均间隔（avg_interval_days）/ 距上次重置（fetchedAt − lastResetAt，构建期算死）',
+      rendered.stats.length === 3
+        && rendered.stats[0] === String(codexEvents.length)
+        && rendered.stats[1] === expectedAvg
+        && rendered.stats[2] === expectedSince,
+      `页面 [${rendered.stats.join(' / ')}] · 期望 [${codexEvents.length} / ${expectedAvg} / ${expectedSince}]`);
+    check('§25 「数据截至」= fetchedAt 的北京时间（不是构建时钟、不是 X 小时前）',
+      rendered.meta.includes(`数据截至 ${expectedFetchedCN}（北京时间）`),
+      `页面「${rendered.meta}」 · 期望 ${expectedFetchedCN}`);
+    check('§25 口径块四件事都在：数据来源 / 数据截至 / 本页不预测下一次重置 / 同一事件可能被收录多次',
+      rendered.pageText.includes('@thsottiaux') && rendered.pageText.includes('codex-resets.com')
+        && rendered.pageText.includes('数据截至') && rendered.pageText.includes('本页不预测下一次重置')
+        && rendered.pageText.includes('同一事件可能被收录多次'),
+      '四个片段逐个命中');
+
+    // ── 页面侧 ⑤：四档宽度无页面级横向溢出（题面 390/761/940/1280）──────────
+    const codexOverflow = [];
+    for (const width of [390, 761, 940, 1280]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(new URL('codex-reset/', base).href, { waitUntil: 'load' });
+      const overflow = await page.evaluate('document.documentElement.scrollWidth - document.documentElement.clientWidth');
+      if (overflow > 0) codexOverflow.push(`${width}px:${overflow}px`);
+    }
+    await page.setViewportSize({ width: 1440, height: 900 });
+    check('§25 390 / 761 / 940 / 1280 四档都没有页面级横向溢出',
+      codexOverflow.length === 0, codexOverflow.join(' · ') || '四档全部 0px');
+
+    // ── 页面侧 ⑥：纯静态（无内联页面脚本）+ hreflang + 互链 + 守卫（磁盘字节）──
+    const codexHtml = fs.readFileSync(path.join(DIR, 'codex-reset', 'index.html'), 'utf8');
+    const withoutAllowedScripts = analytics.stripBootstrap(codexHtml)
+      .replace(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/g, '')
+      .replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g, '');
+    check('§25 纯静态：去掉分析 bootstrap / 主题前置脚本 / JSON-LD 后没有任何内联脚本',
+      !/<script(?![^>]*\bsrc=)[^>]*>/.test(withoutAllowedScripts),
+      '允许的共享内联段之外 script 0 个');
+    const codexHreflang = [...codexHtml.matchAll(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)">/g)]
+      .map(match => ({ lang: match[1], href: match[2] }));
+    check('§25 hreflang 进页面：zh-CN 与 x-default 各自指向本页 canonical',
+      codexHreflang.length === 2
+        && codexHreflang.some(item => item.lang === 'zh-CN')
+        && codexHreflang.some(item => item.lang === 'x-default')
+        && codexHreflang.every(item => item.href === `https://buguoshixc.github.io/ai-deals-aggregator/codex-reset/`),
+      codexHreflang.map(item => `${item.lang}=${item.href}`).join(' · ') || '没有 hreflang');
+    const plansCodingHtml = fs.readFileSync(path.join(DIR, 'plans', 'coding', 'index.html'), 'utf8');
+    check('§25 与 /plans/coding/ 互链（两页互相都有站内链接，不是单边）',
+      codexHtml.includes('href="../plans/coding/"') && plansCodingHtml.includes('href="../../codex-reset/"'),
+      `codex→plans=${codexHtml.includes('../plans/coding/')} · plans→codex=${plansCodingHtml.includes('../../codex-reset/')}`);
+
+    // ── 页面侧 ⑦：诚实性守卫（预测 / 概率 / %）+ 判定式可证伪 ──────────────────
+    const cleanProblems = codexHonestyViolations(codexHtml);
+    check('§25 诚实性守卫：页面上「预测」只出现在口径句里恰好 1 次；「概率」与「%」零出现',
+      cleanProblems.length === 0,
+      cleanProblems.join('；') || '口径句 1 次 · 概率 0 · % 0');
+    const mutated = {
+      probability: codexHtml.replace('累计记录条数', '累计记录条数（发生概率）'),
+      percent: codexHtml.replace('累计记录条数', '累计记录条数 20%'),
+      extraForecast: codexHtml.replace('</main>', '<p>下一次预测</p></main>')
+    };
+    const falsifiable = Object.entries(mutated)
+      .filter(([, html]) => codexHonestyViolations(html).length > 0)
+      .map(([name]) => name);
+    check('§25 守卫可证伪：注入「概率」/「20%」/第二处「预测」的三个变异副本都必须被判红（不是永远为真的空转）',
+      falsifiable.length === 3, `被判红的变异：${falsifiable.join(', ') || '0 个'}`);
+  }
 
   /* ------------------------------------------------------------------ */
   /* 私有站点分析（private-analytics-v1）                                 */

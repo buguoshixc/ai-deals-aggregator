@@ -139,6 +139,12 @@ const ROUTE_RULES = [
     trackable: true,
     kind: 'data-docs',
     why: '数据文档与引用页：判断「可引用数据集」这个钩子有没有被外部人真的打开过'
+  },
+  {
+    re: /^codex-reset\/$/,
+    trackable: true,
+    kind: 'codex-reset',
+    why: 'Codex 额度重置档案：判断这个有明确数据源的档案域值不值得继续维护'
   }
 ];
 
