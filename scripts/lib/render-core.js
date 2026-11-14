@@ -33,7 +33,10 @@ const REQUIRED = [
   'changesTopicHtml',
   // v2.4：Deal → Plan 的「关联的正常套餐」块。构建期要用它给静态详情页渲染这一块、
   // 并断言前缀（'' / '../../'）与字段名，所以它必须是对外可见的纯函数。
-  'relatedPlansHtml'
+  'relatedPlansHtml',
+  // A 包：详情页「这条领不到了？」的一键复制话术。构建期要直接调用它断言文本形状
+  // （标题 / 条目 id / 官方页 / issue 地址五段），所以它必须是对外可见的纯函数。
+  'lostReportText'
 ];
 
 function load(htmlPath = path.join(ROOT, 'index.html')) {

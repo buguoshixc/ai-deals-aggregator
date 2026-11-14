@@ -83,11 +83,16 @@ function loadShellParts(indexHtml, routeHrefs) {
   const themeScript = (indexHtml.match(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/) || [''])[0];
   const footerRaw = (indexHtml.match(/<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/) || [])[1] || '';
   const ghLinkRaw = (indexHtml.match(/<!--SHARED:ghlink:START-->([\s\S]*?)<!--SHARED:ghlink:END-->/) || [])[1] || '';
+  // A 包：详情页「这条领不到了？」复制反馈的**唯一实现**（`index.html` 主脚本里的
+  // `/* SHARED:dealcopy:START */ … END */` 区间）。详情页不加载主脚本，所以这一份片段
+  // 必须原样注入 —— 抽不到就抛错，否则详情页上会留一个永远点不动的死按钮。
+  const dealCopyRaw = (indexHtml.match(/\/\* SHARED:dealcopy:START \*\/([\s\S]*?)\/\* SHARED:dealcopy:END \*\//) || [])[1] || '';
   const missing = [];
   if (!sharedStyle) missing.push('共享 <style>');
   if (!themeScript) missing.push('主题前置脚本');
   if (!footerRaw) missing.push('共享页脚片段（<!--SHARED:footer:START-->…END-->）');
   if (!ghLinkRaw) missing.push('页头图标入口（<!--SHARED:ghlink:START-->…END-->）');
+  if (!dealCopyRaw.trim()) missing.push('详情页复制反馈共享片段（/* SHARED:dealcopy:START */…END */）');
   if (missing.length) {
     throw new Error(`index.html 里抽不到 ${missing.join(' / ')} —— 页面壳失去共享来源，拒绝继续构建`
       + '（页面壳的样式、页脚与页头入口纪律：共享规则只有一处出处，见 docs/ARCHITECTURE.md）');
@@ -99,6 +104,8 @@ function loadShellParts(indexHtml, routeHrefs) {
     // `.trim()`：片段是从两个标记之间切出来的，首尾各带一个换行与缩进，
     // 不裁掉会在每个页头里多出空行（页脚那边用的是同一个手法）。
     headerGhLink: ghLinkRaw.trim(),
+    // A 包：详情页复制反馈的唯一实现（预渲染详情页与首页弹层共用这一份源码）。
+    dealCopyScript: dealCopyRaw.trim(),
     routeHrefs
   };
 }

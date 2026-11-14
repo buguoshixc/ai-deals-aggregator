@@ -104,6 +104,36 @@ jobs:
           set -o pipefail
           node scripts/collect.js --headless 2>&1 | tee /tmp/collect.log
 
+      # Codex 额度重置档案（B 包）：第三方 API → 严格校验 → 原子写 codex-resets.json。
+      # 采集器自身 fail-closed（网络/解析/校验失败或条数骤降都不覆盖旧文件、exit 1）；
+      # 这里 continue-on-error 的理由与下面「Failed sources (advisory)」同一套：**单个外部源
+      # 失败是常态**，不能因为它阻断别的数据入库（数据正确性硬门禁在提交前，仍照常拦坏数据）。
+      # 失败不静默：紧随其后的 if: always() 留痕步读 steps.codex_resets.outcome 与日志末尾。
+      - name: Collect Codex quota resets (fail-closed)
+        id: codex_resets
+        continue-on-error: true
+        timeout-minutes: 3
+        run: |
+          set -o pipefail
+          node scripts/collectors/codex-resets.js 2>&1 | tee /tmp/codex-resets.log
+
+      - name: Codex quota resets summary (advisory trace)
+        if: always()
+        continue-on-error: true
+        run: |
+          {
+            echo "### Codex 额度重置采集（fail-closed，不阻断数据提交）"
+            echo '```'
+            echo "outcome: ${{ steps.codex_resets.outcome }}"
+            if [ -f /tmp/codex-resets.log ]; then
+              echo "--- 日志末尾 20 行 ---"
+              tail -n 20 /tmp/codex-resets.log
+            else
+              echo "(没有 /tmp/codex-resets.log —— 采集步骤没有执行或没有留下日志)"
+            fi
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
       # 每日静态校验：只跑 `checkMethod === "static"` 的 API 计费条目（裸 GET 可读的价目表）。
       # 价格未变 ⇒ **0 条历史事件**，只推进 lastVerifiedAt；价格变了 ⇒ 采纳新价 + 追加事件 +
       # 同步写出 api-plans.json。单源失败默认 exit 0（只有 --strict 才非 0），不拖垮采集链；
@@ -223,7 +253,7 @@ jobs:
           #  · api-plans.json / curated_api_plans.json / api-plan-history.json（W1 起）——
           #    verifier 写入的 lastVerifiedAt、采纳后的新价与变化事件必须与数据同批入库；
           #    否则下一轮拿「已变的 curated」对「上一轮的历史」，check:api-plan-history 会红。
-          git add deals.json scripts/data/source-health.json scripts/data/zh-pending.json scripts/data/deal-history.json scripts/data/source-snapshots.json api-plans.json scripts/data/curated_api_plans.json scripts/data/api-plan-history.json
+          git add deals.json scripts/data/source-health.json scripts/data/zh-pending.json scripts/data/deal-history.json scripts/data/source-snapshots.json api-plans.json scripts/data/curated_api_plans.json scripts/data/api-plan-history.json codex-resets.json
           if git diff --cached --quiet; then
             echo "数据无变化，跳过提交"
           else

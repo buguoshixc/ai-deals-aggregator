@@ -1123,11 +1123,24 @@
     .dplans .dpl-go { font-size: 12.5px; color: var(--brand); text-decoration: none; }
     .dplans .dpl-go:hover { text-decoration: underline; text-underline-offset: 2px; }
     .dplans .dsrc-note { margin: var(--s2) 0 0; }
-    .dact { margin-top: 20px; display: flex; gap: 10px; }
+    .dact { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
     .dact .pri { flex: 1; text-align: center; background: var(--brand); color: var(--on-accent); text-decoration: none; font-weight: 600; font-size: 14px; padding: 12px; border-radius: var(--r); }
     .dact .pri:hover { background: var(--ink); color: var(--card); }
     .dact .sec { border: 1px solid var(--line); color: var(--ink2); text-decoration: none; font-size: 13px; padding: 12px 16px; border-radius: var(--r); white-space: nowrap; }
     .dact .sec:hover { border-color: #c3ceff; color: var(--brand); }
+    /* A 包：详情页「这条领不到了？」反馈复制（零门槛，不投票、不显示票数）。
+       默认 display:none —— 只有共享脚本给 <body> 加上 .copy-ready 之后才出现；
+       无 JS / 脚本报错时页面上不留一个「点了没反应」的死按钮（既有零死控件判据）。
+       颜色只用 ink2 on card：与 .sec 同源，正文对比度 > 8:1（远高于 4.5:1 门槛）。 */
+    .dact .dact-copy { display: none; border: 1px solid var(--line); background: var(--card); color: var(--ink2); font: inherit; font-size: 13px; padding: 12px 16px; border-radius: var(--r); white-space: nowrap; cursor: pointer; }
+    .copy-ready .dact .dact-copy { display: inline-block; }
+    .dact .dact-copy:hover { border-color: #c3ceff; color: var(--brand); }
+    .dact .dact-copy:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+    .dact .dact-copy-status { flex-basis: 100%; color: var(--ink2); font-size: 12.5px; line-height: 1.7; }
+    .dact .dact-copy-status:empty { display: none; }
+    .dact .dact-copy-status.done { color: var(--ok, #137a4b); }
+    .dact .dact-copy-status.fallback { color: var(--warn, #a35a00); }
+    .dact .dact-copy-manual { display: block; width: 100%; min-height: 6.5em; margin-top: 6px; padding: 8px; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--bg); color: var(--ink); font: inherit; font-size: 12px; line-height: 1.6; resize: vertical; }
     .dsrc { margin-top: 14px; font-size: 11.5px; color: var(--mut); line-height: 1.7; }
     /* ---------- v1.3 信息来源块 ----------
        固定标签行 + 明确缺失状态。用现有 token，不新增视觉语言；不做折叠（这本来就是
@@ -3463,6 +3476,30 @@
     }
 
     /**
+     * A 包：详情页「这条领不到了？」的一键复制话术（纯字符串拼接，零网络、零依赖）。
+     *
+     * 为什么是「复制话术」而不是表单 / 投票 / 站内落地页：复制是唯一对所有读者都成立、
+     * 零配置、且反馈会落回真实流量渠道（发布渠道的评论区 / 仓库 issue）的形态。
+     * 这里**不显示任何票数**：一旦显示就要处理 0 票、2 票 50% 与样本量解释，还会越过
+     * 「本站不替厂商下有效性结论」的红线。按钮只把读者自己看到的情况转成一段可粘贴的文字。
+     *
+     * 文本形状是**冻结契约**（构建期与浏览器验收都按它断言，见 verify-site.js §14）：
+     *   【疑似失效】<title>
+     *   条目 id：<id>
+     *   官方页：<url>
+     *   情况：（改成你遇到的，或不改）
+     *   贴到本站帖子评论区，或直接提 issue：<REPO_URL>/issues/new
+     */
+    function lostReportText(deal) {
+      const row = deal || {};
+      return '【疑似失效】' + (row.title || '未命名条目') + '\n' +
+        '条目 id：' + (row.id || '') + '\n' +
+        '官方页：' + (row.url || '') + '\n' +
+        '情况：（改成你遇到的，或不改）\n' +
+        '贴到本站帖子评论区，或直接提 issue：' + REPO_URL + '/issues/new';
+    }
+
+    /**
      * 独立详情页的站内路径。相对路径（`deal/<id>/`）在本地预览与 GitHub Pages
      * 项目站点下都成立，不需要知道站点前缀。
      */
@@ -3724,7 +3761,12 @@
           ? '<a class="pri" href="' + escapeAttr(url) + '" target="_blank" rel="noopener noreferrer">前往官方页面' +
             (deal.type === 'deal' ? '领取' : '查看') + ' →</a>'
           : '') +
-        '<a class="sec" href="' + escapeAttr(reportUrl(deal)) + '" target="_blank" rel="noopener noreferrer">信息有误 / 提交反馈</a></div>' +
+        '<a class="sec" href="' + escapeAttr(reportUrl(deal)) + '" target="_blank" rel="noopener noreferrer">信息有误 / 提交反馈</a>' +
+        // A 包：零门槛反馈。按钮默认由 CSS 隐藏（见 .dact-copy 注释），共享复制脚本就绪后
+        // 才出现；data-copy 里是**渲染期就拼好的**完整话术，复制层不重新拼一遍（同一份事实）。
+        '<button type="button" class="dact-copy" data-copy="' + escapeAttr(lostReportText(deal)) + '">这条领不到了？</button>' +
+        '<span class="dact-copy-status" role="status" aria-live="polite"></span>' +
+        '</div>' +
         // v1.3：信息来源块（来源 / 新鲜度 / 断言依据 / 官方原文片段）。
         // 它取代了旧的一行「来源：… · 首次收录 … · 最近采集 …」——那一行把客观事实、
         // 缺失状态和出处混在一句里，读者没法判断「最近成功采集」到底有没有发生过。
@@ -4648,6 +4690,134 @@
     /* ================================================================
      * RENDER-CORE:END
      * ================================================================ */
+
+    /* ================================================================
+     * A 包：详情页「这条领不到了？」复制反馈 —— **唯一实现**
+     *
+     * 详情页有两条渲染路径：① 首页详情弹层（本脚本把 detailHtml 写进 #detailBody）；
+     * ② 80 个预渲染的静态详情页（不加载本脚本，只带主题切换那一小段）。
+     * 所以监听必须用 **document 级事件委托**，且实现只有这一份：
+     * `scripts/lib/page-shell.js` 的 `loadShellParts()` 按下面的 SHARED:dealcopy 标记
+     * 把这一段原样抽出来，注入每个静态详情页 —— 两份宿主、一份源码，不许抄第二份。
+     *
+     * 约束（构建期与人工共同遵守）：只允许 ES5 语法（var / function，无箭头函数、
+     * 无模板字符串、无 let/const），不 require / process / fs —— 它跑在浏览器里。
+     *
+     * 剪贴板三级降级链，每一级都给读者**可见且能被读屏读到**的反馈：
+     *   ① navigator.clipboard.writeText（安全上下文）；
+     *   ② 临时 textarea + document.execCommand('copy')（旧浏览器 / 权限被拒）；
+     *   ③ 把话术放进可全选 textarea 并提示手动复制（绝不静默失败）。
+     * 成功提示与降级提示都写进 role="status" aria-live="polite" 的区域，4 秒后收回。
+     * ================================================================ */
+    /* SHARED:dealcopy:START */
+    (function () {
+      var STATUS_CLEAR_MS = 4000;
+      var clearTimer = null;
+
+      function statusOf(button) {
+        var row = button && button.parentNode;
+        if (!row || !row.querySelector) return null;
+        return row.querySelector('.dact-copy-status');
+      }
+
+      function resetStatus(button) {
+        var box = statusOf(button);
+        if (!box) return;
+        box.className = 'dact-copy-status';
+        box.removeAttribute('data-copy-state');
+        box.textContent = '';
+      }
+
+      function showStatus(button, state, message, manualText) {
+        var box = statusOf(button);
+        if (!box) return;
+        box.className = 'dact-copy-status ' + (state === 'copied' ? 'done' : 'fallback');
+        box.setAttribute('data-copy-state', state);
+        box.textContent = message;
+        // 第三级：正文放进可全选元素并在提示里说清怎么手动复制（不许只剩一句“失败”）。
+        if (state === 'manual' && manualText) {
+          var area = document.createElement('textarea');
+          area.className = 'dact-copy-manual';
+          area.setAttribute('readonly', 'readonly');
+          area.setAttribute('aria-label', '疑似失效反馈话术（可全选复制）');
+          area.value = manualText;
+          box.appendChild(area);
+          area.focus();
+          try { area.select(); } catch (error) { /* 老浏览器：文本仍可见，可手动选中 */ }
+        }
+        if (clearTimer) { clearTimeout(clearTimer); clearTimer = null; }
+        clearTimer = setTimeout(function () { resetStatus(button); clearTimer = null; }, STATUS_CLEAR_MS);
+      }
+
+      function copyWithExecCommand(text) {
+        var area = document.createElement('textarea');
+        area.value = text;
+        area.setAttribute('readonly', 'readonly');
+        area.style.position = 'fixed';
+        area.style.top = '0';
+        area.style.left = '0';
+        area.style.opacity = '0';
+        document.body.appendChild(area);
+        var copied = false;
+        try {
+          area.focus();
+          area.select();
+          copied = document.execCommand('copy') === true;
+        } catch (error) {
+          copied = false;
+        }
+        document.body.removeChild(area);
+        return copied;
+      }
+
+      function copyWithClipboard(text, done) {
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+          try {
+            navigator.clipboard.writeText(text).then(function () {
+              done(true);
+            }, function () {
+              done(false);
+            });
+            return;
+          } catch (error) { /* 同步抛错：落到下一级 */ }
+        }
+        done(false);
+      }
+
+      function handleCopy(button) {
+        var text = button.getAttribute('data-copy') || '';
+        resetStatus(button);
+        if (!text) {
+          showStatus(button, 'manual', '没有可复制的话术：请手动把条目 id 与官方页写进反馈。', '');
+          return;
+        }
+        copyWithClipboard(text, function (clipboardOk) {
+          var ok = clipboardOk || copyWithExecCommand(text);
+          if (ok) {
+            showStatus(button, 'copied', '已复制反馈话术：可以贴到本站帖子评论区，或直接提 issue。', '');
+          } else {
+            showStatus(button, 'manual',
+              '自动复制不可用：话术已在下面显示并选中，请按 Ctrl+C（macOS 为 ⌘C）手动复制。', text);
+          }
+        });
+      }
+
+      document.addEventListener('click', function (event) {
+        var node = event.target;
+        while (node && node !== document.body) {
+          if (node.nodeType === 1 && node.classList && node.classList.contains('dact-copy')) {
+            handleCopy(node);
+            return;
+          }
+          node = node.parentNode;
+        }
+      });
+
+      // JS 就绪信号：CSS 只在 <body class="copy-ready"> 时显示复制按钮。
+      // 无 JS / 本脚本抛错时按钮保持 display:none —— 不出现“点了没反应”的死控件。
+      document.body.classList.add('copy-ready');
+    })();
+    /* SHARED:dealcopy:END */
 
     document.body.classList.add('js');
 

@@ -1186,6 +1186,147 @@ function checkModelRegistryFile() {
   });
 }
 
+/* ---------------- codex-resets.json（Codex 额度重置档案 · B 包数据侧） ---------------- */
+
+/**
+ * Codex 额度重置档案的数据门禁。
+ *
+ * 数据链路：`scripts/collectors/codex-resets.js` 抓第三方 API → 严格校验 → 原子写
+ * 仓库根 `codex-resets.json`（与 deals.json 同级，随数据提交入库）；页面侧只读这份文件。
+ *
+ * 判据与采集器的 `parseResets()` **故意各写一份**（不是复制粘贴的疏忽）：
+ *   · 采集器那一份守的是「**写盘之前**」——它拦不住别人手改文件、也拦不住旧版本的坏文件；
+ *   · 这一份守的是「**仓库里最终那份文件**」——零依赖裸跑，CI 在采集之前（Validate current
+ *     data）与数据门禁两处都会跑。两份判据看同一个契约，任何一份单独放宽都只影响自己那一层。
+ *
+ * 报错一律 error 级（任务口径：这是要随仓库提交的数据，不是建议项）；每一类问题聚合成一条，
+ * 带条数 + 前几处位置，避免 72 条事件里一处字段漂移刷出 72 行同样的错误把 40 条展示上限挤满。
+ * events 的时间戳**允许相等**：同一时刻被收录多次是上游口径，去重是刻意不做的（见采集器文件头）。
+ */
+const CODEX_RESETS_FILE = path.join(ROOT, 'codex-resets.json');
+const CODEX_RESETS_TWEET_HOSTS = new Set(['x.com', 'www.x.com', 'twitter.com', 'www.twitter.com', 'mobile.twitter.com']);
+const CODEX_RESETS_TYPES = new Set(['regular', 'banked']);
+const CODEX_RESETS_SOURCES = new Set(['webhook', 'observed', 'backfill']);
+/** 每类问题最多列几处位置（其余只给条数） */
+const CODEX_RESETS_SAMPLE_SIZE = 3;
+
+function checkCodexResetsFile() {
+  const doc = readJson(CODEX_RESETS_FILE, 'codex-resets.json');
+  if (!doc) return null;
+  if (typeof doc !== 'object' || Array.isArray(doc)) {
+    error('codex-resets.json 顶层必须是对象');
+    return null;
+  }
+
+  if (doc.schemaVersion !== 1) {
+    error(`codex-resets.json schemaVersion 应为 1，实际 ${JSON.stringify(doc.schemaVersion)}`);
+  }
+
+  // source.api：页面署名的「事实来源」API。只接受 https（http / 相对地址 / 协议相对都红）。
+  const api = doc.source && typeof doc.source.api === 'string' ? doc.source.api : '';
+  let apiHttps = false;
+  try {
+    apiHttps = new URL(api).protocol === 'https:';
+  } catch (e) {
+    apiHttps = false;
+  }
+  if (!apiHttps) {
+    error(`codex-resets.json source.api 必须是 https URL（实际 ${JSON.stringify(doc.source && doc.source.api)}）`);
+  }
+
+  if (!doc.fetchedAt || Number.isNaN(Date.parse(doc.fetchedAt))) {
+    error(`codex-resets.json fetchedAt 缺失或不可解析（实际 ${JSON.stringify(doc.fetchedAt)}）`);
+  }
+
+  const stats = doc.stats && typeof doc.stats === 'object' && !Array.isArray(doc.stats) ? doc.stats : null;
+  if (!stats) error('codex-resets.json stats 缺失或不是对象');
+
+  if (!Array.isArray(doc.events)) {
+    error('codex-resets.json events 必须是数组');
+    return null;
+  }
+  if (doc.events.length === 0) {
+    // 空档案不是「今天没有重置」：采集器契约要求非空（API 返回 0 条时采集失败、旧文件保留），
+    // 所以提交进仓库的 codex-resets.json 为 0 条只可能是坏数据/手误清空。
+    error('codex-resets.json events 为空（采集器契约要求非空数组；0 条应保留旧快照而不是提交空档案）');
+  }
+
+  // 逐条字段问题：按类别聚合（kind -> 位置列表），每类只报一条带样本的 error
+  const problems = new Map();
+  const addProblem = (kind, where) => {
+    if (!problems.has(kind)) problems.set(kind, []);
+    problems.get(kind).push(where);
+  };
+  const announcedAtMs = [];
+  let orderBreaks = 0;
+  let lastMs = null;
+  doc.events.forEach((event, index) => {
+    const where = `events[${index}]`;
+    if (!event || typeof event !== 'object' || Array.isArray(event)) {
+      addProblem('不是对象', where);
+      return;
+    }
+    if (typeof event.tweetId !== 'string' || !event.tweetId.trim()) addProblem('tweetId 为空', where);
+    let parsed = null;
+    try {
+      parsed = typeof event.tweetUrl === 'string' ? new URL(event.tweetUrl) : null;
+    } catch (e) {
+      parsed = null;
+    }
+    if (!parsed || parsed.protocol !== 'https:' || !CODEX_RESETS_TWEET_HOSTS.has(parsed.hostname.toLowerCase())) {
+      addProblem('tweetUrl 不是 https 且 host 属于 x.com/twitter.com 家族', where);
+    }
+    const ms = typeof event.announcedAt === 'string' ? Date.parse(event.announcedAt) : NaN;
+    if (!Number.isFinite(ms)) {
+      addProblem('announcedAt 不可解析', where);
+    } else {
+      announcedAtMs.push(ms);
+      // 时序判据：严格非递增（允许相等）。只在相邻两个时间都可解析时判定 ——
+      // 不可解析的位置已经单独报过，不能拿 NaN 参与比较（NaN 比较恒 false 会静默放过乱序）。
+      if (lastMs !== null && ms > lastMs) orderBreaks += 1;
+      lastMs = ms;
+    }
+    if (!CODEX_RESETS_TYPES.has(event.resetType)) addProblem('resetType 不在 regular/banked', where);
+    if (!CODEX_RESETS_SOURCES.has(event.source)) addProblem('source 不在 webhook/observed/backfill', where);
+    if (typeof event.text !== 'string' || !event.text.trim()) addProblem('text 为空', where);
+  });
+  for (const [kind, positions] of problems) {
+    const sample = positions.slice(0, CODEX_RESETS_SAMPLE_SIZE).join('、');
+    error(`codex-resets.json ${kind}：${positions.length} 处（${sample}${positions.length > CODEX_RESETS_SAMPLE_SIZE ? ' …' : ''}）`);
+  }
+
+  if (stats) {
+    if (stats.total !== doc.events.length) {
+      error(`codex-resets.json stats.total(${JSON.stringify(stats.total)}) 与 events 条数(${doc.events.length}) 不一致`);
+    }
+    if (typeof stats.avgIntervalDays !== 'number' || !Number.isFinite(stats.avgIntervalDays) || stats.avgIntervalDays <= 0) {
+      error(`codex-resets.json stats.avgIntervalDays 不是有限正数（实际 ${JSON.stringify(stats.avgIntervalDays)}）`);
+    }
+    const lastResetAtMs = typeof stats.lastResetAt === 'string' ? Date.parse(stats.lastResetAt) : NaN;
+    if (!Number.isFinite(lastResetAtMs)) {
+      error(`codex-resets.json stats.lastResetAt 缺失或不可解析（实际 ${JSON.stringify(stats.lastResetAt)}）`);
+    } else if (announcedAtMs.length === doc.events.length) {
+      // 只有全部 announcedAt 都可解析时才能算「最大值」；否则均值/最大值来自残缺分母，结论会误导。
+      const maxMs = Math.max(...announcedAtMs);
+      if (lastResetAtMs !== maxMs) {
+        error(`codex-resets.json stats.lastResetAt(${new Date(lastResetAtMs).toISOString()})`
+          + ` 不等于 events 最大的 announcedAt(${new Date(maxMs).toISOString()})`);
+      }
+    }
+  }
+
+  if (orderBreaks > 0) {
+    error(`codex-resets.json events 未按 announcedAt 非递增排序：${orderBreaks} 处相邻逆序（页面直接按文件顺序渲染，乱序会破坏时间线）`);
+  }
+
+  return {
+    total: doc.events.length,
+    fetchedAt: doc.fetchedAt,
+    lastResetAt: stats ? stats.lastResetAt : null,
+    avgIntervalDays: stats ? stats.avgIntervalDays : null
+  };
+}
+
 /* ---------------- 主流程 ---------------- */
 
 function main() {
@@ -1200,6 +1341,8 @@ function main() {
   checkApiPlanHistoryFile();
   const { stats: dealLinkStats } = checkDealPlanLinks({ strict });
   checkIndex();
+  // B 包：Codex 额度重置档案（采集器写入、随数据提交的独立数据集；判据见 checkCodexResetsFile）
+  const codexResetsStats = checkCodexResetsFile();
   // v3.0 A1：身份层的交叉门禁。放在这里是因为它同时需要三个数据集（deals / providers / 前端规则表），
   // 而上面那些单数据集的门禁各自都看不到这条裂缝。
   checkIdentitySpaces(deals);
@@ -1262,6 +1405,13 @@ function main() {
       ` · 覆盖 ${dealLinkStats.plansWithCurrent}/${dealLinkStats.plans} 条套餐` +
       `（当前 ${dealLinkStats.currentRows} 行 / 历史 ${dealLinkStats.historyRows} 行）` +
       ` · 人工判断 ${dealLinkStats.editorial} 条 · 基准日 ${dealLinkStats.asOf || '未知'}`);
+  }
+  // B 包：Codex 额度重置档案。条数照实打印（含「为什么页面上的记录数不是重置次数」这件事的读法：
+  // 它统计的是**收录记录**，不是去重后的重置事件；见采集器文件头「为什么不合并不去重」）。
+  if (codexResetsStats) {
+    console.log(`Codex 重置档案: ${codexResetsStats.total} 条记录 · 数据截至 ${codexResetsStats.fetchedAt}` +
+      ` · 最近重置 ${codexResetsStats.lastResetAt}` +
+      ` · 历史平均间隔 ${codexResetsStats.avgIntervalDays} 天（描述统计，不预测下一次）`);
   }
   // v3.0 Stage D：Model Registry。「未映射 N 条」也打印 —— 它是事实陈述，不是故障；
   // 0 与 N 在日志里必须长得不一样（与"受众字段落空/官方引文落空"同一条纪律）。
