@@ -35,6 +35,7 @@ function run() {
   return {
     code: typeof r.status === 'number' ? r.status : 1,
     out: `${r.stdout || ''}${r.stderr || ''}`,
+    errFirst: String(r.stderr || '').split('\n').map(s => s.trim()).find(Boolean) || '',
     signal: r.signal
   };
 }
@@ -74,6 +75,23 @@ function runCheck(extra = []) {
 
 const original = fs.readFileSync(FILE, 'utf8');
 const results = [];
+
+/**
+ * 先跑一次**干净数据**的构建：构建本身坏掉时（例如厂商 slug 死锁、产物下限不足），
+ * 后面 13 个用例+2 条复原检查会集体变红，汇总成一句「演练 15 项，失败 N 项」，
+ * 真正的原因（构建 stderr 的第一行）被埋在 record() 的详情里，读的人先看到的是
+ * 「译文演练失败」——错误归因。所以：构建坏 → 立刻把 stderr 第一行提到最前面并退出，
+ * 明确写「不是译文问题」。代价是多一次干净构建（CI 一分钟级），换来根因第一屏可见。
+ */
+const baseline = run();
+if (baseline.code !== 0) {
+  const firstErr = baseline.errFirst
+    || baseline.out.split('\n').map(s => s.trim()).find(Boolean)
+    || '(构建没有输出任何错误行)';
+  console.log(`\n❌ 构建失败（不是译文问题）：${firstErr}`);
+  console.log('  ↳ 构建在干净数据上就红了；译文演练不再执行（先修构建，再跑本演练）');
+  process.exit(1);
+}
 
 /** 覆盖层里**真的有译文**的字段数（空字符串是 --scaffold 留下的空槽位，normalizeZh 当没译处理） */
 const overlayFieldCount = () => Object.keys(JSON.parse(original).byId)
