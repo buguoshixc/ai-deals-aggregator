@@ -341,7 +341,7 @@ const GATE_STEP_NAMES = [
   'Prepare browser for the real-browser gate',
   'Browser availability decision (never silent)',
   'Real-browser acceptance (verify-site.js)',
-  'Regression verify (baseline compare)',
+  'Regression verify (current-data budget)',
   'Gate conclusion'
 ];
 
@@ -545,28 +545,87 @@ const GATE_STEP_RUN = {
  + '\n' + "exit 1",
   "Real-browser acceptance (verify-site.js)":
     "node scripts/tools/verify-site.js",
-  "Regression verify (baseline compare)":
-    "node scripts/tools/verify-site.js --compare=research/_raw/ours-baseline/verify.json",
+  "Regression verify (current-data budget)":
+    "node scripts/tools/verify-site.js --compare",
   "Gate conclusion":
-    "{"
- + '\n' + "echo \"\""
- + '\n' + "echo \"### 门禁结论\""
- + '\n' + "echo \"\""
- + '\n' + "if [ \"${{ steps.decision.outputs.mode }}\" = \"full\" ]; then"
- + '\n' + "echo \"- 静态门禁 + **真浏览器验收 + 回归比对**都跑了\""
- + '\n' + "elif [ \"${{ steps.decision.outputs.mode }}\" = \"degraded\" ]; then"
- + '\n' + "echo \"- ⚠️ 只跑了静态门禁（**未做真浏览器验收**，显式降级）\""
- + '\n' + "else"
- + '\n' + "echo \"- ❌ 真浏览器验收没有执行（见上一条注解与 Summary 顶部原因）\""
- + '\n' + "fi"
- + '\n' + "echo \"- 触发事件：\\`${{ github.event_name }}\\` @ \\`${{ github.ref }}\\`\""
- + '\n' + "} >> \"$GITHUB_STEP_SUMMARY\"",
+      "failed=''"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s01.outcome }}\" = \"failure\" ]; then failed='Install dependencies'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s02.outcome }}\" = \"failure\" ]; then failed='Architecture fitness (structure invariants)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s03.outcome }}\" = \"failure\" ]; then failed='Evidence policy (Tier-3 interception)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s04.outcome }}\" = \"failure\" ]; then failed='Validate data (strict)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s05.outcome }}\" = \"failure\" ]; then failed='Reproducibility gate (no value without a source)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s06.outcome }}\" = \"failure\" ]; then failed='History verify (log consistent with deals.json)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s07.outcome }}\" = \"failure\" ]; then failed='Migration verifier (audience provenance backfill)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s08.outcome }}\" = \"failure\" ]; then failed='Translation coverage (advisory, English fallback, never blocks)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s09.outcome }}\" = \"failure\" ]; then failed='Translation self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s10.outcome }}\" = \"failure\" ]; then failed='Expiry self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s11.outcome }}\" = \"failure\" ]; then failed='Text / cleanText self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s12.outcome }}\" = \"failure\" ]; then failed='Source-health self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s13.outcome }}\" = \"failure\" ]; then failed='Provenance self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s14.outcome }}\" = \"failure\" ]; then failed='Deal-history self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s15.outcome }}\" = \"failure\" ]; then failed='Change-radar self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s16.outcome }}\" = \"failure\" ]; then failed='SEO self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s17.outcome }}\" = \"failure\" ]; then failed='Audience self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s18.outcome }}\" = \"failure\" ]; then failed='Roles-note self-test (official_urls note vs live wording)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s19.outcome }}\" = \"failure\" ]; then failed='App-token self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s20.outcome }}\" = \"failure\" ]; then failed='AI layer self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s21.outcome }}\" = \"failure\" ]; then failed='Collector fixtures (offline replay)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s22.outcome }}\" = \"failure\" ]; then failed='Plans self-test (data + page)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s23.outcome }}\" = \"failure\" ]; then failed='Plan-history self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s24.outcome }}\" = \"failure\" ]; then failed='Deal-plan-links self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s25.outcome }}\" = \"failure\" ]; then failed='API-plans self-test (data + page)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s26.outcome }}\" = \"failure\" ]; then failed='API-cost self-test (calculator logic + teeth)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s27.outcome }}\" = \"failure\" ]; then failed='API-plans reproducibility (curated → api-plans.json, byte-compare)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s28.outcome }}\" = \"failure\" ]; then failed='API-plan-history verify (log consistent with api-plans.json)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s29.outcome }}\" = \"failure\" ]; then failed='Model-registry self-test (identity + explicit mapping)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s30.outcome }}\" = \"failure\" ]; then failed='Models reproducibility (registry → models.json, byte-compare)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s31.outcome }}\" = \"failure\" ]; then failed='Model-registry links check (explicit mapping only, no similarity)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s32.outcome }}\" = \"failure\" ]; then failed='Coverage report (gap list consistent with data)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s33.outcome }}\" = \"failure\" ]; then failed='Coverage-targets self-test (intent layer + seven derived states)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s34.outcome }}\" = \"failure\" ]; then failed='Model-role vocabulary self-test (registry ↔ freshness contract)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s35.outcome }}\" = \"failure\" ]; then failed='Freshness self-test (catalogStatus branches)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s36.outcome }}\" = \"failure\" ]; then failed='Freshness threshold sensitivity (±90 days, baseline invariants)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s37.outcome }}\" = \"failure\" ]; then failed='Feed self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s38.outcome }}\" = \"failure\" ]; then failed='IndexNow self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s39.outcome }}\" = \"failure\" ]; then failed='Assemble site (same path as deploy.yml)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s40.outcome }}\" = \"failure\" ]; then failed='Models-page self-test (index + detail pages)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s41.outcome }}\" = \"failure\" ]; then failed='Plans-hub self-test (/plans/)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s42.outcome }}\" = \"failure\" ]; then failed='Vendor-pages self-test (/vendor/)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s43.outcome }}\" = \"failure\" ]; then failed='Archive self-test (/archive/, synthetic ended/restored fixtures)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s44.outcome }}\" = \"failure\" ]; then failed='Analytics self-test (bootstrap count / production guard / provider)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s45.outcome }}\" = \"failure\" ]; then failed='Residue guard (deleted copy must not return; container floors)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s46.outcome }}\" = \"failure\" ]; then failed='Feed reproducibility (build twice, byte-compare)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s47.outcome }}\" = \"failure\" ]; then failed='Plans reproducibility (curated → plans.json, byte-compare)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s48.outcome }}\" = \"failure\" ]; then failed='Plan-history verify (log consistent with plans.json)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s49.outcome }}\" = \"failure\" ]; then failed='SEO verification (independent, from dist/)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.browser.outcome }}\" = \"failure\" ]; then failed='Prepare browser for the real-browser gate'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.decision.outcome }}\" = \"failure\" ]; then failed='Browser availability decision (never silent)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s50.outcome }}\" = \"failure\" ]; then failed='Real-browser acceptance (verify-site.js)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s51.outcome }}\" = \"failure\" ]; then failed='Regression verify (current-data budget)'; fi"
+  + '\n' + "{"
+  + '\n' + "echo \"\""
+  + '\n' + "echo \"### 门禁结论\""
+  + '\n' + "echo \"\""
+  + '\n' + "if [ \"$failed\" = \"Browser availability decision (never silent)\" ]; then"
+  + '\n' + "echo \"- ❌ 真浏览器验收没有执行（见上一条注解与 Summary 顶部原因）\""
+  + '\n' + "elif [ -n \"$failed\" ]; then"
+  + '\n' + "echo \"- ⛔ **Gate @ $failed 失败**（后续步骤因此被跳过，不是浏览器不可用）\""
+  + '\n' + "elif [ \"${{ steps.decision.outputs.mode }}\" = \"full\" ]; then"
+  + '\n' + "echo \"- 静态门禁 + **真浏览器验收 + 回归比对**都跑了\""
+  + '\n' + "elif [ \"${{ steps.decision.outputs.mode }}\" = \"degraded\" ]; then"
+  + '\n' + "echo \"- ⚠️ 只跑了静态门禁（**未做真浏览器验收**，显式降级）\""
+  + '\n' + "else"
+  + '\n' + "echo \"- ⛔ **门禁没有走到浏览器结论**（mode 为空：前面的步骤被跳过/取消，不是「浏览器不可用」——见日志里第一个 skipped / cancelled 步骤）\""
+  + '\n' + "fi"
+  + '\n' + "echo \"- 触发事件：\\`${{ github.event_name }}\\` @ \\`${{ github.ref }}\\`\""
+  + '\n' + "} >> \"$GITHUB_STEP_SUMMARY\""
+  + '\n' + "echo \"failed_step=$failed\" >> \"$GITHUB_OUTPUT\"",
 };
 
 /** 步骤级 `if:` 的冻结值（含键**存在性**：`if: false` 这类"静默跳过"必须红） */
 const GATE_STEP_IF = {
   "Real-browser acceptance (verify-site.js)": "steps.decision.outputs.mode == 'full'",
-  "Regression verify (baseline compare)": "steps.decision.outputs.mode == 'full'",
+  "Regression verify (current-data budget)": "steps.decision.outputs.mode == 'full'",
   "Gate conclusion": "always()",
 };
 
@@ -1523,6 +1582,7 @@ const idxGateRef = collectRaw.indexOf(`uses: ${GATE_ACTION_REF}`);
 const idxPush = collectRaw.indexOf('git push');
 const idxDataGate = collectRaw.indexOf(`- name: ${DATA_CORRECTNESS_STEP}`);
 const idxRecord = collectRaw.indexOf(`- name: ${RELEASE_RECORD_STEP}`);
+const idxLedgerSync = collectRaw.indexOf('scripts/tools/sync-vendor-slug-ledger.js');
 const commitStepCount = (collectRaw.match(/name: Commit and push if changed/g) || []).length;
 const collectProblems = [];
 
@@ -1579,6 +1639,17 @@ if (!releaseRecordStep) {
     collectProblems.push(`「${RELEASE_RECORD_STEP}」没有引用 steps.${RELEASE_GATE_ID}.outcome —— `
       + '留痕必须基于真实结论，不能只写一句「见日志」');
   }
+  // P4（诊断可见性）：只报 outcome 还是不够 —— 红在「第 9 步 zh-selftest」和红在
+  // 「浏览器装不上」在 Actions 页看起来一样。gate action 已把第一个失败步骤名写进
+  // outputs.failed_step，留痕步必须把它写进 Summary / ::warning，否则又退回「猜」。
+  if (!recordSlice.includes(`steps.${RELEASE_GATE_ID}.outputs.failed_step`)) {
+    collectProblems.push(`「${RELEASE_RECORD_STEP}」没有引用 steps.${RELEASE_GATE_ID}.outputs.failed_step —— `
+      + '失败步骤名必须出现在 Summary（否则「哪一步红了」又只能靠猜）');
+  }
+  if (!recordSlice.includes('失败步骤')) {
+    collectProblems.push(`「${RELEASE_RECORD_STEP}」的 Summary 没有「失败步骤」行 —— `
+      + '只写 outcome 不写步骤名，等于没解决误导');
+  }
   if (!recordSlice.includes('GITHUB_STEP_SUMMARY')) {
     collectProblems.push(`「${RELEASE_RECORD_STEP}」没有写 $GITHUB_STEP_SUMMARY —— 不在 Summary 留痕就不算「不静默」`);
   }
@@ -1595,8 +1666,17 @@ if (commitStepCount !== 1) collectProblems.push(`「Commit and push」步骤出�
 //「译文年龄退回 firstSeen，一失效就超期」，或 v1.4 实测差点放过去的那种最坏形态：
 //**采集把变更日志写进磁盘却没提交** —— 下一轮门禁拿「已更新的 deals.json」比「上一轮的日志」，
 // check:history 当场变红，整条采集链被自己的日志卡死。
-for (const needed of ['deals.json', 'scripts/data/source-health.json', 'scripts/data/zh-pending.json', 'scripts/data/deal-history.json']) {
+for (const needed of ['deals.json', 'scripts/data/source-health.json', 'scripts/data/zh-pending.json', 'scripts/data/deal-history.json', 'scripts/data/vendor-slug-ledger.json']) {
   if (!collectRaw.includes(needed)) collectProblems.push(`collect.yml 的提交里没有 ${needed}`);
+}
+// P1（slug 死锁机器化）：光把账本加进 git add 还不够 —— 没有写盘步骤，账本永远是空的，
+// 构建每次都会「首次分配」，而且不会有任何门禁红。位置也必须在 git push 之前：
+// 本轮写下的账本要跟本轮数据同一批入库，否则新厂商的 slug 下一轮才会稳定。
+if (idxLedgerSync < 0) {
+  collectProblems.push('collect.yml 没有运行 scripts/tools/sync-vendor-slug-ledger.js'
+    + '（机器账本永远不会落盘，slug 会每轮重新分配且无门禁红）');
+} else if (idxPush >= 0 && idxLedgerSync > idxPush) {
+  collectProblems.push('厂商 slug 账本的写盘步骤排在 git push 之后（本轮分配的 slug 不能随本轮数据入库）');
 }
 check('(13) collect.yml 的数据正确性硬门禁在提交之前、完整 gate 在提交之后且失败可见',
   collectProblems.length === 0,
@@ -1604,8 +1684,8 @@ check('(13) collect.yml 的数据正确性硬门禁在提交之前、完整 gate
     : `数据正确性 ${DATA_CORRECTNESS_COMMANDS.length} 条在字节 ${idxDataGate}（逐条核对，无 if / 无 continue-on-error）`
       + ` → git push 在字节 ${idxPush}`
       + ` → 完整 gate 在字节 ${idxGateRef}（continue-on-error + id=${RELEASE_GATE_ID}）`
-      + ` → 留痕步在字节 ${idxRecord}（if: always()，引用 steps.${RELEASE_GATE_ID}.outcome 写 Summary 与 ::warning）`
-      + '；提交步骤唯一且仍带齐 deals / source-health / zh-pending / deal-history');
+      + ` → 留痕步在字节 ${idxRecord}（if: always()，引用 steps.${RELEASE_GATE_ID}.outcome 与 outputs.failed_step 写 Summary 与 ::warning）`
+      + '；提交步骤唯一且仍带齐 deals / source-health / zh-pending / deal-history / vendor-slug-ledger');
 
 /* ─────────── (20) 无人值守链路里的外部安装步骤必须**有界** ─────────── */
 

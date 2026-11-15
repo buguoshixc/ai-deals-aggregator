@@ -3724,7 +3724,11 @@ ${extraCss}`;
     // v1.8-seo-answer-pages：目录页家族（含别名页）**一律不 noindex**。
     // 别名页改用 canonical 指向正本收口（见 pageUrl 的注释），sitemap 成员资格另由
     // 「canonical 是否自指」判（`lib/seo.js` 的 sitemap-policy），不靠 robots。
-    robots: 'index, follow, max-image-preview:large',
+    //
+    // P2（路由死锁机器化）是**唯一例外**：钉住路由在本次数据下掉出门槛时，计划层不硬拦，
+    // 而是生成同 URL 的降级页（`spec.indexable === false`）—— 保住已发布 URL 优先于保持可索引。
+    // 降级页按约定 noindex,follow（canonical 自指、不进 sitemap），其它页面输出逐字节不变。
+    robots: spec.indexable === false ? 'noindex, follow' : 'index, follow, max-image-preview:large',
     faviconHref: `${prefix}favicon.svg`,
     extraCss: pageCss,
     jsonLdHtml: jsonLdBlocks,
@@ -4173,6 +4177,15 @@ function assemble() {
       `${row.nonDealMaterial !== undefined ? ` nonDeal=${row.nonDealMaterial}` : ''}` +
       `${row.detail ? ` · ${row.detail}` : ''}`);
   }
+
+  // P1（slug 死锁机器化）：首次遇到的新厂商由 suggestSlug() 现场分配 slug。构建过程**不写源数据**，
+  // 落盘交给 collect 侧的 scripts/tools/sync-vendor-slug-ledger.js（与计划层共用同一个解析函数）。
+  for (const row of PLAN.autoSlugVendors) {
+    console.log(`    auto-slug: vendor/${row.slug}/  ← 厂商「${row.vendorName}」首次分配（账本待写盘工具落盘）`);
+  }
+  // P2（路由死锁机器化）：钉住路由自动降级、非拉丁厂商名哈希 slug ⇒ 只告警、不停机；
+  // Summary / 日志里点名，长尾厂商不该让发布停下来等人补登记。
+  for (const line of PLAN.warnings) console.log(`    ${line}`);
 
   // ---- v2.4：优惠 ↔ 套餐关系（Deal → Plan / Plan → Deal）--------------------------------
   //
@@ -8924,11 +8937,19 @@ function selfCheck(built) {
   // 内存里的对象与盘上的产物必须互相印证，否则「构建期算对了、写盘写错了」不会有任何东西红。
   {
     const providerTableDisk = providers.load().table;
+    // P1（slug 死锁机器化）：把机器账本与「本轮首次分配、待写盘工具落盘」的厂商名一起交给断言。
+    // 权威链与计划层是同一份实现：人工覆盖表 → providers.json → 机器账本 → suggestSlug()。
+    const planDoc = built.plan || PLAN;
+    const ledgerSlugs = {};
+    for (const row of (planDoc.vendorSlugLedger && planDoc.vendorSlugLedger.vendors) || []) ledgerSlugs[row.vendorName] = row.slug;
+    const autoSlugNames = (planDoc.autoSlugVendors || []).map(row => row.vendorName);
     const problems = [
-      ...vendorPage.assertVendorSlugCanonical(built.directoryPages, { providerTable: providerTableDisk, vendorSlugs: site.VENDOR_SLUGS }),
-      // slug 必须来自**权威表**（不能只靠 providers.json 的隐式兜底）：补表不改变 URL，
+      ...vendorPage.assertVendorSlugCanonical(built.directoryPages, { providerTable: providerTableDisk, vendorSlugs: site.VENDOR_SLUGS, ledgerSlugs }),
+      // slug 必须来自**权威链**（覆盖表 / providers.json / 机器账本 / 本轮首次分配）：补表不改变 URL，
       // 只是把「隐式兜底」换成「显式登记」——没有这条，改 slug 表也不会有人发现。
-      ...vendorPage.assertVendorSlugDeclared(built.directoryPages, { vendorSlugs: site.VENDOR_SLUGS }),
+      ...vendorPage.assertVendorSlugDeclared(built.directoryPages, {
+        vendorSlugs: site.VENDOR_SLUGS, ledgerSlugs, autoSlugNames, providerTable: providerTableDisk
+      }),
       ...vendorPage.assertVendorCandidateIdentity(built.directoryPages, { providerTable: providerTableDisk }),
       ...vendorPage.assertNoParallelProviderRoutes(built.directoryPages)
     ];

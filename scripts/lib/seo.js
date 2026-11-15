@@ -712,7 +712,14 @@ function validate(pages, opts = {}) {
     for (const page of list) {
       if (page.kind !== 'vendor' && page.kind !== 'category') continue;
       if (page.pinned) {
-        if (!page.count) fail('gate-pinned-empty', page.route, '钉住的页面条数为 0');
+        /**
+         * P2（路由死锁机器化）：钉住路由在本次数据下掉出门槛时，计划层不再硬拦等人补别名，
+         * 而是继续生成**同 URL 的降级页**（`indexable:false`、canonical 自指、不进 sitemap）。
+         * 那类页面的 count=0 是**降级的结果**，不是数据事故 —— 门禁不能再拿「钉住页面不许为空」
+         * 判它死，否则降级机制第一次生效就会把 SEO 门禁自己弄红。
+         * 可索引页仍然一条不松（下一行就是原判据）。
+         */
+        if (!page.count && page.indexable !== false) fail('gate-pinned-empty', page.route, '钉住的页面条数为 0');
         continue;
       }
       if (page.kind === 'vendor') {

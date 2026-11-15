@@ -152,13 +152,18 @@ check(`真实数据上厂商页从 ${basePlan.pages.filter(p => p.kind === 'vend
  */
 function candidateSetProblems(pages) {
   const problems = [];
-  // 身份来源 = **A 空间规范名**（RENDER-CORE 的 `vendorKeyNames()`，与 `selftest:seo` 同一条判据）。
+  // 身份来源 = **A 空间规范名**：`vendorOf()` 对每条 deal 的归一结果（静态 `VENDOR_RULES` 只是
+  // 品牌归一化表，不是身份全集 —— P1 起新厂商没有规则也会被原样归一成自己的名字进入 A 空间）。
   // 这里原先是「providers.json 里 vendorKey 非 null 的 name」—— 那只是 A 空间的一个子集：
   // 2026-11-12 出现的 NinjaPipe 是**只有优惠记录、没有 provider 条目**的新厂商
   // （A 空间身份已登记、`/vendor/ninjapipe/` 已生成），于是「页面不许超出身份集合」
   // 这条把真实页面误判成越权。身份判据与页面计划必须读同一个集合，不能各取一份子集。
+  // P1（slug 死锁机器化）再补一条：AutomateNexus CRM 这类**刚出现、还没有品牌规则**的厂商
+  // 同样有 A 空间身份（`vendorOf()` 返回原始名），机器账本会为它分配 slug —— 不能因为
+  // 静态规则表里没有它就判页面越权。
   const aSpaceNames = renderCoreBundle.vendorKeyNames().map(pair => pair.name);
-  const identityNames = new Set(aSpaceNames);
+  const dealNames = deals.map(deal => vendorKeyOf(deal)).filter(Boolean);
+  const identityNames = new Set([...aSpaceNames, ...dealNames]);
   // 正向（必须有页）只判**有 provider 条目且 vendorKey 非 null** 的身份 —— 那是
   // providers.json 层的责任；只有优惠记录、没有 provider 条目的新厂商（NinjaPipe）
   // 由计划层（`landing.planLandingPages`）与 `seo-verify` 的行集合对账负责，不在这里重复判。
@@ -384,9 +389,17 @@ section('③ 牙 #6：同一 provider 两个 canonical slug');
   check('【R5】候选厂商名全部在 A 空间有身份（vendorKey 非 null）',
     vendorPage.assertVendorCandidateIdentity(vendorPages, { providerTable }).length === 0);
 
-  // 队长补充：slug 必须来自权威表（不能只靠 providers.json 兜底）
-  const declared = vendorPage.assertVendorSlugDeclared(vendorPages, { vendorSlugs: site.VENDOR_SLUGS });
-  check(`【R5 续】${vendorPages.length} 个厂商页的 slug 全部来自 vendor-slugs.json（权威表，不靠 provider 兜底）`,
+  // 队长补充 → P1（slug 死锁机器化）之后升级为**权威链**判据：
+  // 人工覆盖表 → providers.json → 机器账本（collect 侧写盘工具维护）→ 本轮首次分配（待落盘）。
+  // 判据从「必须在 vendor-slugs.json」变成「必须在权威链上，且已登记的值与页面 slug 逐字一致」——
+  // 新厂商不再需要人先补表才能发布，但改名换 slug 仍然会被牙抓到。
+  const ledgerSlugs = {};
+  for (const row of (extPlan.vendorSlugLedger && extPlan.vendorSlugLedger.vendors) || []) ledgerSlugs[row.vendorName] = row.slug;
+  const autoSlugNames = (extPlan.autoSlugVendors || []).map(row => row.vendorName);
+  const declared = vendorPage.assertVendorSlugDeclared(vendorPages, {
+    vendorSlugs: site.VENDOR_SLUGS, ledgerSlugs, autoSlugNames, providerTable
+  });
+  check(`【R5 续】${vendorPages.length} 个厂商页的 slug 全部来自权威链（vendor-slugs.json / providers.json / 机器账本 / 本轮首次分配），且已登记的逐字一致`,
     declared.length === 0, declared.slice(0, 2).join('；'));
   check('【R5 续牙】某家未登记 slug（只靠 provider 兜底）→ 红',
     vendorPage.assertVendorSlugDeclared([
@@ -402,10 +415,16 @@ section('③ 牙 #6：同一 provider 两个 canonical slug');
       { kind: 'vendor', key: 'Trae', slug: 'trae', route: 'vendor/trae/' }
     ], { providerTable }).some(problem => problem.includes('A 空间厂商名')));
   {
-    const aSpaceNames = renderCoreBundle.vendorKeyNames().map(pair => pair.name);
-    check(`【R5】用 index.html 的真实 A 空间厂商名表（${aSpaceNames.length} 个）核验：页面厂商名全部命中`,
-      vendorPage.assertVendorCandidateIdentity(vendorPages, { providerTable, vendorNames: aSpaceNames }).length === 0,
-      vendorPage.assertVendorCandidateIdentity(vendorPages, { providerTable, vendorNames: aSpaceNames }).slice(0, 1).join('；'));
+    // P1：A 空间身份 = 静态品牌规则 ∪ 每条 deal 经 `vendorOf()` 归一出的名字
+    // （新厂商没有规则时就是原始名；机器账本会为它分配 slug）。
+    const aSpaceNames = [
+      ...renderCoreBundle.vendorKeyNames().map(pair => pair.name),
+      ...deals.map(deal => vendorKeyOf(deal)).filter(Boolean)
+    ];
+    const uniqueASpaceNames = [...new Set(aSpaceNames)];
+    check(`【R5】用 index.html 的真实 A 空间厂商名表（${uniqueASpaceNames.length} 个）核验：页面厂商名全部命中`,
+      vendorPage.assertVendorCandidateIdentity(vendorPages, { providerTable, vendorNames: uniqueASpaceNames }).length === 0,
+      vendorPage.assertVendorCandidateIdentity(vendorPages, { providerTable, vendorNames: uniqueASpaceNames }).slice(0, 1).join('；'));
   }
 
   const duplicated = vendorPage.assertVendorSlugCanonical([
@@ -581,7 +600,9 @@ section('⑧ 真实产物（接线后才有；未接线时如实跳过）');
       const file = path.join(DIST, spec.route, 'index.html');
       if (!fs.existsSync(file)) { problems.push(`${spec.route}: 缺少产物`); continue; }
       const html = fs.readFileSync(file, 'utf8');
-      if (!sitemap.includes(`<loc>${SITE_URL}${spec.route}</loc>`)) problems.push(`${spec.route}: sitemap 漏了`);
+      // P2（路由死锁机器化）：钉住路由掉出门槛时自动降级为 noindex 页（canonical 自指、不进 sitemap）——
+      // 保住 URL 优先于保持可索引。只有可索引页才该出现在 sitemap 里。
+      if (spec.indexable !== false && !sitemap.includes(`<loc>${SITE_URL}${spec.route}</loc>`)) problems.push(`${spec.route}: sitemap 漏了`);
       const ctx = {
         ...ctxFor(spec), apiPlans: diskApiPlans, plans: diskPlans, models: diskModels, modelLinks: diskLinks
       };
