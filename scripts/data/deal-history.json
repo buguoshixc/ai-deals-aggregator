@@ -2750,15 +2750,15 @@
     },
     "2374288880c3": {
       "source": "OpenRouter",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-15",
-      "endedAt": null
+      "endedAt": "2026-11-15"
     },
     "2608e4a555a7": {
       "source": "Futuretools",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-15",
-      "endedAt": null
+      "endedAt": "2026-11-15"
     },
     "27b4acca203a": {
       "source": "aitools.fyi",
@@ -2772,16 +2772,16 @@
       "since": "2026-11-14",
       "endedAt": "2026-11-14"
     },
+    "2add85b3877d": {
+      "source": "aitools.fyi",
+      "misses": 1,
+      "since": "2026-11-15",
+      "endedAt": null
+    },
     "2e5118bcd2c1": {
       "source": "AppSumo",
       "misses": 2,
       "since": "2026-11-13",
-      "endedAt": "2026-11-13"
-    },
-    "2f0c03c32d8d": {
-      "source": "AppSumo",
-      "misses": 2,
-      "since": "2026-11-12",
       "endedAt": "2026-11-13"
     },
     "31232ad4315e": {
@@ -2807,6 +2807,12 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
+    },
+    "36fdb826204d": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-15",
+      "endedAt": null
     },
     "39d2832e3c8f": {
       "source": "Futuretools",
@@ -2928,11 +2934,17 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
-    "7f06124571e2": {
-      "source": "AppSumo",
+    "7d8921eb5c47": {
+      "source": "aitools.fyi",
       "misses": 1,
       "since": "2026-11-15",
       "endedAt": null
+    },
+    "7f06124571e2": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-15",
+      "endedAt": "2026-11-15"
     },
     "7f1250402ebb": {
       "source": "Futuretools",
@@ -2976,6 +2988,12 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
+    "87a5685a4153": {
+      "source": "aitools.fyi",
+      "misses": 1,
+      "since": "2026-11-15",
+      "endedAt": null
+    },
     "8b8b44476f52": {
       "source": "AppSumo",
       "misses": 2,
@@ -2999,6 +3017,12 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
+    },
+    "98b5e610f7bc": {
+      "source": "aitools.fyi",
+      "misses": 1,
+      "since": "2026-11-15",
+      "endedAt": null
     },
     "9b734ca08ce5": {
       "source": "aitools.fyi",
@@ -3030,11 +3054,23 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
+    "a3f18a7a4b9d": {
+      "source": "aitools.fyi",
+      "misses": 1,
+      "since": "2026-11-15",
+      "endedAt": null
+    },
     "a4dc88711e74": {
       "source": "aitools.fyi",
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
+    },
+    "a67c07bf4993": {
+      "source": "Futuretools",
+      "misses": 1,
+      "since": "2026-11-15",
+      "endedAt": null
     },
     "a9053ca847fb": {
       "source": "aitools.fyi",
@@ -3078,12 +3114,6 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
-    "cbfce04c5556": {
-      "source": "Futuretools",
-      "misses": 2,
-      "since": "2026-11-12",
-      "endedAt": "2026-11-12"
-    },
     "cfb47a6dd6fa": {
       "source": "AppSumo",
       "misses": 2,
@@ -3096,6 +3126,12 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
+    "d65084e7f76f": {
+      "source": "aitools.fyi",
+      "misses": 1,
+      "since": "2026-11-15",
+      "endedAt": null
+    },
     "d6cd29e05603": {
       "source": "aitools.fyi",
       "misses": 2,
@@ -3107,6 +3143,12 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
+    },
+    "de0587956f33": {
+      "source": "aitools.fyi",
+      "misses": 1,
+      "since": "2026-11-15",
+      "endedAt": null
     },
     "dfa07fdc244d": {
       "source": "AppSumo",
@@ -3126,11 +3168,23 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
+    "e6da58501e1d": {
+      "source": "aitools.fyi",
+      "misses": 1,
+      "since": "2026-11-15",
+      "endedAt": null
+    },
     "e7f286155de9": {
       "source": "AppSumo",
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
+    },
+    "edcba5e8a6d2": {
+      "source": "aitools.fyi",
+      "misses": 1,
+      "since": "2026-11-15",
+      "endedAt": null
     },
     "ef3cba339a72": {
       "source": "OpenRouter",
@@ -6351,6 +6405,232 @@
       "from": null,
       "to": null,
       "runAt": "2026-11-14T17:44:04.926Z"
+    },
+    {
+      "id": "2374288880c3",
+      "at": "2026-11-15",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-15",
+      "runAt": "2026-11-15T04:58:14.619Z",
+      "label": {
+        "title": "NVIDIA: Nemotron 3.5 Super VL (free)",
+        "vendor": "NVIDIA"
+      }
+    },
+    {
+      "id": "2608e4a555a7",
+      "at": "2026-11-15",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-15",
+      "runAt": "2026-11-15T04:58:14.619Z",
+      "label": {
+        "title": "Atypica AI",
+        "vendor": "Atypica AI"
+      }
+    },
+    {
+      "id": "2f0c03c32d8d",
+      "at": "2026-11-15",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-15T04:58:14.619Z"
+    },
+    {
+      "id": "3dd8269967a8",
+      "at": "2026-11-15",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "音频语音",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-15T04:58:14.619Z"
+    },
+    {
+      "id": "3e0abe88eb9f",
+      "at": "2026-11-15",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/ending-soon/",
+      "to": "https://appsumo.com/collections/new/",
+      "origin": "observed",
+      "runAt": "2026-11-15T04:58:14.619Z"
+    },
+    {
+      "id": "4de51b8410b0",
+      "at": "2026-11-15",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-15T04:58:14.619Z"
+    },
+    {
+      "id": "68c524738cc0",
+      "at": "2026-11-15",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-15T04:58:14.619Z"
+    },
+    {
+      "id": "72e26c06162b",
+      "at": "2026-11-15",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-15T04:58:14.619Z"
+    },
+    {
+      "id": "7f06124571e2",
+      "at": "2026-11-15",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-15",
+      "runAt": "2026-11-15T04:58:14.619Z",
+      "label": {
+        "title": "NudgeForMe",
+        "vendor": "NudgeForMe"
+      }
+    },
+    {
+      "id": "8642f235cf91",
+      "at": "2026-11-15",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "paid",
+        "type": "tool",
+        "category": "智能体",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-15T04:58:14.619Z"
+    },
+    {
+      "id": "88e36f3c0ff8",
+      "at": "2026-11-15",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "智能体",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-15T04:58:14.619Z"
+    },
+    {
+      "id": "b5bc4094b875",
+      "at": "2026-11-15",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "paid",
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-15T04:58:14.619Z"
+    },
+    {
+      "id": "cbfce04c5556",
+      "at": "2026-11-15",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-15T04:58:14.619Z"
+    },
+    {
+      "id": "d63a45102b28",
+      "at": "2026-11-15",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-15T04:58:14.619Z"
+    },
+    {
+      "id": "e2a77341770d",
+      "at": "2026-11-15",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-15T04:58:14.619Z"
     }
   ]
 }
