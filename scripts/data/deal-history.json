@@ -2774,9 +2774,9 @@
     },
     "2add85b3877d": {
       "source": "aitools.fyi",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-15",
-      "endedAt": null
+      "endedAt": "2026-11-16"
     },
     "2e5118bcd2c1": {
       "source": "AppSumo",
@@ -2807,12 +2807,6 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
-    },
-    "36fdb826204d": {
-      "source": "AppSumo",
-      "misses": 1,
-      "since": "2026-11-15",
-      "endedAt": null
     },
     "39d2832e3c8f": {
       "source": "Futuretools",
@@ -2936,9 +2930,9 @@
     },
     "7d8921eb5c47": {
       "source": "aitools.fyi",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-15",
-      "endedAt": null
+      "endedAt": "2026-11-16"
     },
     "7f06124571e2": {
       "source": "AppSumo",
@@ -2990,9 +2984,9 @@
     },
     "87a5685a4153": {
       "source": "aitools.fyi",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-15",
-      "endedAt": null
+      "endedAt": "2026-11-16"
     },
     "8b8b44476f52": {
       "source": "AppSumo",
@@ -3020,9 +3014,9 @@
     },
     "98b5e610f7bc": {
       "source": "aitools.fyi",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-15",
-      "endedAt": null
+      "endedAt": "2026-11-16"
     },
     "9b734ca08ce5": {
       "source": "aitools.fyi",
@@ -3056,9 +3050,9 @@
     },
     "a3f18a7a4b9d": {
       "source": "aitools.fyi",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-15",
-      "endedAt": null
+      "endedAt": "2026-11-16"
     },
     "a4dc88711e74": {
       "source": "aitools.fyi",
@@ -3068,9 +3062,9 @@
     },
     "a67c07bf4993": {
       "source": "Futuretools",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-15",
-      "endedAt": null
+      "endedAt": "2026-11-16"
     },
     "a9053ca847fb": {
       "source": "aitools.fyi",
@@ -3128,9 +3122,9 @@
     },
     "d65084e7f76f": {
       "source": "aitools.fyi",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-15",
-      "endedAt": null
+      "endedAt": "2026-11-16"
     },
     "d6cd29e05603": {
       "source": "aitools.fyi",
@@ -3146,9 +3140,9 @@
     },
     "de0587956f33": {
       "source": "aitools.fyi",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-15",
-      "endedAt": null
+      "endedAt": "2026-11-16"
     },
     "dfa07fdc244d": {
       "source": "AppSumo",
@@ -3170,9 +3164,9 @@
     },
     "e6da58501e1d": {
       "source": "aitools.fyi",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-15",
-      "endedAt": null
+      "endedAt": "2026-11-16"
     },
     "e7f286155de9": {
       "source": "AppSumo",
@@ -3182,9 +3176,9 @@
     },
     "edcba5e8a6d2": {
       "source": "aitools.fyi",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-15",
-      "endedAt": null
+      "endedAt": "2026-11-16"
     },
     "ef3cba339a72": {
       "source": "OpenRouter",
@@ -6631,6 +6625,166 @@
         "verified": false
       },
       "runAt": "2026-11-15T04:58:14.619Z"
+    },
+    {
+      "id": "2add85b3877d",
+      "at": "2026-11-16",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-15",
+      "runAt": "2026-11-15T18:32:59.684Z",
+      "label": {
+        "title": "MusicGenerator",
+        "vendor": "MusicGenerator"
+      }
+    },
+    {
+      "id": "3e0abe88eb9f",
+      "at": "2026-11-16",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/new/",
+      "to": "https://appsumo.com/collections/ending-soon/",
+      "origin": "observed",
+      "runAt": "2026-11-15T18:32:59.684Z"
+    },
+    {
+      "id": "7d8921eb5c47",
+      "at": "2026-11-16",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-15",
+      "runAt": "2026-11-15T18:32:59.684Z",
+      "label": {
+        "title": "Nano Banana 3",
+        "vendor": "Nano Banana"
+      }
+    },
+    {
+      "id": "87a5685a4153",
+      "at": "2026-11-16",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-15",
+      "runAt": "2026-11-15T18:32:59.684Z",
+      "label": {
+        "title": "Angry Dance",
+        "vendor": "Angry Dance"
+      }
+    },
+    {
+      "id": "98b5e610f7bc",
+      "at": "2026-11-16",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-15",
+      "runAt": "2026-11-15T18:32:59.684Z",
+      "label": {
+        "title": "Seedance 3.0 AI Video Generator",
+        "vendor": "Seedance 3.0"
+      }
+    },
+    {
+      "id": "a3f18a7a4b9d",
+      "at": "2026-11-16",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-15",
+      "runAt": "2026-11-15T18:32:59.684Z",
+      "label": {
+        "title": "Lip Sync AI (lipsyncai.org)",
+        "vendor": "Lip Sync"
+      }
+    },
+    {
+      "id": "a67c07bf4993",
+      "at": "2026-11-16",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-15",
+      "runAt": "2026-11-15T18:32:59.684Z",
+      "label": {
+        "title": "Ankon AI",
+        "vendor": "Ankon AI"
+      }
+    },
+    {
+      "id": "d65084e7f76f",
+      "at": "2026-11-16",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-15",
+      "runAt": "2026-11-15T18:32:59.684Z",
+      "label": {
+        "title": "Inkwell Plot",
+        "vendor": "Inkwell Plot"
+      }
+    },
+    {
+      "id": "de0587956f33",
+      "at": "2026-11-16",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-15",
+      "runAt": "2026-11-15T18:32:59.684Z",
+      "label": {
+        "title": "Plimo",
+        "vendor": "Plimo"
+      }
+    },
+    {
+      "id": "e6da58501e1d",
+      "at": "2026-11-16",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-15",
+      "runAt": "2026-11-15T18:32:59.684Z",
+      "label": {
+        "title": "Dezhou Poker AI",
+        "vendor": "Dezhou Poker"
+      }
+    },
+    {
+      "id": "edcba5e8a6d2",
+      "at": "2026-11-16",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-15",
+      "runAt": "2026-11-15T18:32:59.684Z",
+      "label": {
+        "title": "Beacn",
+        "vendor": "Beacn"
+      }
     }
   ]
 }

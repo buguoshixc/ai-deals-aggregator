@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-15T09:25:13.229Z",
+  "generatedAt": "2026-11-15T18:33:13.931Z",
   "_note": "机器账本（collect 侧 scripts/tools/sync-vendor-slug-ledger.js 维护，**禁止手改**）：记录 /vendor/<slug>/ 已发布过的厂商 slug 与首次路由时间。人工要改 slug 时改 scripts/data/vendor-slugs.json（覆盖表），并在 scripts/data/landing-aliases.json 登记旧路由 → 新路由，让本工具迁移账本。构建过程不写这份文件。",
   "vendors": [
     {
@@ -103,6 +103,12 @@
       "vendorName": "AWS",
       "slug": "aws",
       "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "BetterClaw",
+      "slug": "betterclaw",
+      "firstRoutedAt": "2026-11-15T18:33:13.930Z",
       "status": "active"
     },
     {
