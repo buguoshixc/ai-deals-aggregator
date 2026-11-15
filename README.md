@@ -1082,9 +1082,9 @@ t10 按发现逐条收紧 —— **豁免机制整段移除**（实测它当时�
 
 卡片是**固定高度**的，任何一处内容变高都会被 `overflow:hidden` 静默裁掉；logo 簇是 hover
 展开的，很容易把标题挤到换行、把网格行高顶动。这两类问题静态检查都看不见，所以有
-`npm run verify`：起一个本地服务器 + Edge 无头浏览器，跑 **281 项断言**；带基线回归比对的
-`npm run verify:regress` 共 **287 项**（多出的 6 条是回归比对：覆盖条数、卡片数、首屏完整可见、
-页高、外部请求、JS 错误）。
+`npm run verify`：起一个本地服务器 + Edge 无头浏览器，跑 **987 项断言**；带回归预算的
+`npm run verify:regress` 共 **993 项**（多出的 6 条判据：覆盖条数、卡片数、首屏完整可见、
+页高、外部请求、JS 错误。预算由当前 `deals.json` 现算，不读冻结基线）。
 这两个数字由工具自己打印（`✅ 验收 N 项，失败 0 项`），跑一次就能核。**不要拿源码里 `check(`
 的调用点数去反推**：按行首 `check(` 计是 190 处，与执行项数并不相等 —— 有的调用在循环里
 （分类页 3 条路由 × 5 类断言、10 条需求页 × 7 类断言、状态页 2 个视口各一轮、变化雷达 2 个视口各一轮），
@@ -1180,7 +1180,7 @@ Install dependencies → Architecture fitness (structure invariants) → Evidenc
 → Plans reproducibility (curated → plans.json, byte-compare)
 → Plan-history verify (log consistent with plans.json) → SEO verification (independent, from dist/)
 → Prepare browser for the real-browser gate → Browser availability decision (never silent)
-→ Real-browser acceptance (verify-site.js) → Regression verify (baseline compare) → Gate conclusion
+→ Real-browser acceptance (verify-site.js) → Regression verify (current-data budget) → Gate conclusion
 ```
 
 三条 workflow 共用它，没有第二套测试链。
@@ -1267,10 +1267,10 @@ Install dependencies → Architecture fitness (structure invariants) → Evidenc
 > 采集侧不再需要人工勾选降级（自动降级 + `<GITHUB_STEP_SUMMARY>` 留痕）；`verify.yml` 上那个
 > 人工 `allow_degraded_run` 开关只作用于 PR/push 门禁的浏览器验收，与发布链无关。
 
-> ⚠️ **回归比对的代价**：`verify --compare` 对覆盖条数 / 卡片数 / 首屏完整可见条数只允许
-> 「不减少」。合法的数据缩减（过期下架、重新折叠）会拦发布，处置方式是**人工、留痕**地
-> 重刷基线：`npm run verify:baseline`（基线文件 `research/_raw/ours-baseline/verify.json` 在 git 里，
-> 改它必然出现在 diff 里，无法静默绕过）。
+> ⚠️ **回归判据（v3.3）**：`verify --compare` 不再读冻结基线。期望的覆盖条数 / 卡片数 /
+> 页高预算都由当前 `deals.json` 现算：数据合法缩减（过期下架）只要重新构建就通过；数据与
+> 产物不是同一份（例如数据删了 20% 但 dist 还是旧的）会红。**不再有「刷基线」这个动作**，
+> 也没有可以悄悄调低的基线文件。
 
 ### 采集机器人的身份（专用 GitHub App）
 

@@ -11,7 +11,7 @@
  *   node scripts/tools/verify-site.js --dir=dist --keep        # 保留浏览器窗口（调试用）
  *   node scripts/tools/verify-site.js --url=https://…/         # 直接验收线上站点（部署后冒烟）
  *   node scripts/tools/verify-site.js --json=out.json          # 顺带写出机器可读指标（密度/页高/请求数/断言明细）
- *   node scripts/tools/verify-site.js --compare=base.json      # 与基线比回归：密度不得降、页高/请求不得涨
+ *   node scripts/tools/verify-site.js --compare                # 用当前 deals.json 现算预算判回归（不读基线文件）
  *
  * 退出码非 0 = 有断言失败。
  */
@@ -371,18 +371,23 @@ async function waitForApp(page, timeout = 20000) {
 }
 
 /**
- * 机器可读指标：`--json=` 把它写成文件，`--compare=` 拿它跟基线比。
+ * 机器可读指标：`--json=` 把它写成文件；`--compare` 用**当前 deals.json 现算的预算**判回归。
  *
  * 为什么要有这个：改动前后的「密度有没有退、页高有没有涨、请求有没有多」必须是**脚本产出的数字**，
  * 不能手抄进文档（手抄的数字没人复核，也没有回归保护）。用法：
- *   node scripts/tools/verify-site.js --json=research/_raw/ours-baseline/verify.json
- *   node scripts/tools/verify-site.js --compare=research/_raw/ours-baseline/verify.json
+ *   node scripts/tools/verify-site.js --json=/tmp/verify.json
+ *   node scripts/tools/verify-site.js --compare
+ *
+ * v3.3 起 `--compare` **不再读 research/_raw/ours-baseline/verify.json**：冻结基线只能靠人刷，
+ * 而「刷基线」正是把报警器关掉的动作。现在每次都用当前数据现算期望值，数据与产物不是同一份才红
+ * （例如：数据删了 20% 但 dist 没重建 —— 页面上还是旧内容）。
  */
 const metrics = {};
 // 首页顶栏那一枚「AI Coding 套餐对比」的现场量测，留给 §19 与套餐页的 h1 对账用
 let topPlansEntry = null;
 const jsonArg = process.argv.find(a => a.startsWith('--json='));
-const compareArg = process.argv.find(a => a.startsWith('--compare='));
+const compareRawArg = process.argv.find(a => a === '--compare' || a.startsWith('--compare='));
+const compareArg = Boolean(compareRawArg);
 
 /*
  * ============================ CLS 门禁（cls-gate-v1）============================
@@ -561,7 +566,7 @@ const CLS_PROBE = () => {
  * ⚠️ 为什么**不是**让豁免依赖 `--allow-control-exemption`（`ALLOW_CONTROL_EXEMPTION`）：
  * 那个开关是「我知道这一轮的 `--dir=` 是形态注入副本」的声明，只在证据复跑时才会带；
  * 而 CI（`.github/actions/gate/action.yml`）跑的是**裸** `node scripts/tools/verify-site.js`
- * 与 `--compare=` 两行，一个开关都不带。若把本豁免挂在那个开关上，CI 就会**永久长红**，
+ * 与 `--compare` 两行，一个开关都不带。若把本豁免挂在那个开关上，CI 就会**永久长红**，
  * 于是所有人学会忽略这一条 —— 那正是「豁免默认即红」要避免的反面。所以这里的「显式登记」
  * 落在**登记表**上（它进 git、可 review、可 grep），而开关只用来**收回**，不用来**开启**。
  *
@@ -11593,29 +11598,64 @@ function noJsControlExemptionFor(route) {
     generatedAt: new Date().toISOString()
   });
 
-  // 回归比对：只比「改了之后不能倒退」的量。密度不得下降，页高/请求不得增加，错误必须仍为 0。
+  // 回归比对（--compare）：预算从**当前 deals.json** 现算，不再读冻结基线文件。
+  //
+  // 为什么不是「基线随发布前进」：deploy job 不能 checkout 仓库、build job 只有 contents:read，
+  // 而让 collect 写回基线会出现「发布没成功、基线已经前进」——报警器被静默关掉。
+  // 所以这里只回答一个问题：**这份产物是否忠实渲染了当前这份数据**。
+  // 数据合法缩减（过期下架）只要重新构建就通过；数据与产物不是同一份（少了/多了）才红。
+  //
+  // 期望值用构建同一份 renderer（dist/index.html 里的 RENDER-CORE）从当前数据现算，
+  // 不拿「deals.json 总条数」硬乘系数：244 条里有 116 条是 lead（type=tool），
+  // 它们本来就不渲染成卡；按总数算会把正常发布永久判红。
   if (compareArg) {
-    console.log('\n=== 12) 回归比对（--compare）===');
-    const baselineFile = path.resolve(ROOT, compareArg.slice('--compare='.length));
-    if (!fs.existsSync(baselineFile)) {
-      check('回归基线文件存在', false, `找不到 ${path.relative(ROOT, baselineFile)}`);
-    } else {
-      const parsed = JSON.parse(fs.readFileSync(baselineFile, 'utf8'));
-      const ref = parsed.metrics || parsed;
-      const num = v => (typeof v === 'number' ? v : 0);
-      // 卡片数会随折叠口径变化（同一家公司的同类优惠并成一张卡时就该下降），
-      // 所以「不减少」这条盯的是**覆盖的优惠条数**——那才是丢了数据的信号。
-      check('回归：覆盖的优惠条数不减少', metrics.coveredDeals >= num(ref.coveredDeals),
-        `${num(ref.coveredDeals)} → ${metrics.coveredDeals}`);
-      check('回归：卡片数不减少', metrics.cards >= num(ref.cards), `${num(ref.cards)} → ${metrics.cards}`);
-      check('回归：首屏完整可见不减少', metrics.firstScreenFull >= num(ref.firstScreenFull),
-        `${num(ref.firstScreenFull)} → ${metrics.firstScreenFull}`);
-      check('回归：页高不增加（容差 15%）', metrics.pageHeight <= Math.round(num(ref.pageHeight) * 1.15),
-        `${num(ref.pageHeight)}px → ${metrics.pageHeight}px`);
-      check('回归：外部请求不增加', metrics.externalRequests <= num(ref.externalRequests),
-        `${num(ref.externalRequests)} → ${metrics.externalRequests}`);
+    console.log('\n=== 12) 回归比对（--compare：从当前数据现算预算）===');
+    if (compareRawArg.startsWith('--compare=')) {
+      console.log('     注意：--compare=<文件> 已废弃，基线文件不再参与判定；现在一律从当前 deals.json 现算预算。');
+    }
+    // 底数常量：2026-11-15 用当时最新数据（deals.json 244 条 / coveredDeals 122 / cards 92）
+    // 在本机真实 Chromium 实测 pageHeight=7856px → 64.39px/条。取 66 留约 2.5% 余量，
+    // 再乘 1.05 的渲染容差；不要改回去拿 235 条时代的基线换算。
+    const BASE_PX_PER_DEAL = 66;
+    const HEIGHT_TOLERANCE = 1.05;
+    // 首屏完整可见是固定下限：首屏高度不随数据量增长，6 是 2026-10-05 专题卡改造后
+    // 在正常桌面视口实测到的临界值（数据再多也只影响下方滚动区）。
+    const FIRST_SCREEN_FULL_FLOOR = 6;
+    // 本地静态站不允许任何外部请求；这是产品保证，与数据量无关（线上模式另有断言）。
+    const EXTERNAL_REQUEST_CAP = 0;
+    try {
+      const dealsFile = path.join(ROOT, 'deals.json');
+      const dealsDoc = JSON.parse(fs.readFileSync(dealsFile, 'utf8'));
+      const renderCore = loadRenderCore(path.join(DIR, 'index.html'));
+      const expectedCards = renderCore.defaultCards(Array.isArray(dealsDoc.deals) ? dealsDoc.deals : []);
+      const expectedCoverage = expectedCards.reduce((n, card) => {
+        const count = Number(card.modelCount);
+        return n + (Number.isFinite(count) && count > 1 ? count : 1);
+      }, 0);
+      const expectedCardCount = expectedCards.length;
+      // 双边界：下界抓「本该渲染的没渲染」，上界抓「产物还是上一份数据」（B4 注入的关键）。
+      // 只判下界时，删掉 20% 数据但没重建的 dist 因为「页面上更多」反而永远绿。
+      const low = n => Math.floor(n * 0.98);
+      const high = n => Math.ceil(n * 1.02);
+      const range = (min, max) => `${min}–${max}`;
+      check('回归：覆盖的优惠条数与当前数据一致（±2%）',
+        metrics.coveredDeals >= low(expectedCoverage) && metrics.coveredDeals <= high(expectedCoverage),
+        `当前数据应有 ${expectedCoverage} 条被覆盖（允许 ${range(low(expectedCoverage), high(expectedCoverage))}），页面实测 ${metrics.coveredDeals} 条`);
+      check('回归：卡片数与当前数据一致（±2%）',
+        metrics.cards >= low(expectedCardCount) && metrics.cards <= high(expectedCardCount),
+        `当前数据应有 ${expectedCardCount} 张卡（允许 ${range(low(expectedCardCount), high(expectedCardCount))}），页面实测 ${metrics.cards} 张`);
+      check('回归：首屏完整可见不减少', metrics.firstScreenFull >= FIRST_SCREEN_FULL_FLOOR,
+        `下限 ${FIRST_SCREEN_FULL_FLOOR}，实测 ${metrics.firstScreenFull}`);
+      const heightBudget = Math.round(BASE_PX_PER_DEAL * Math.max(metrics.coveredDeals, 1) * HEIGHT_TOLERANCE);
+      check('回归：页高不超过每条覆盖的固定预算', metrics.pageHeight <= heightBudget,
+        `${metrics.pageHeight}px ≤ ${heightBudget}px（${metrics.coveredDeals} 条 × ${BASE_PX_PER_DEAL}px × ${HEIGHT_TOLERANCE}）`);
+      check('回归：外部请求不超过固定上限', metrics.externalRequests <= EXTERNAL_REQUEST_CAP,
+        `${metrics.externalRequests} ≤ ${EXTERNAL_REQUEST_CAP}`);
       check('回归：JS 错误仍为 0', metrics.jsErrors === 0, `${metrics.jsErrors} 个`);
-      console.log(`     基线：${path.relative(ROOT, baselineFile)}（生成于 ${parsed.generatedAt || '未知时间'}）`);
+      console.log(`     预算来源：当前 deals.json（期望覆盖 ${expectedCoverage} 条 · 期望卡片 ${expectedCardCount} 张）`);
+    } catch (error) {
+      check('回归：能从当前数据现算预算', false,
+        `读不到 deals.json 或 dist/index.html 的渲染器：${(error && error.message) || error}`);
     }
   }
 
