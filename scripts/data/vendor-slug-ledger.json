@@ -1,0 +1,193 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-15T09:25:13.229Z",
+  "_note": "机器账本（collect 侧 scripts/tools/sync-vendor-slug-ledger.js 维护，**禁止手改**）：记录 /vendor/<slug>/ 已发布过的厂商 slug 与首次路由时间。人工要改 slug 时改 scripts/data/vendor-slugs.json（覆盖表），并在 scripts/data/landing-aliases.json 登记旧路由 → 新路由，让本工具迁移账本。构建过程不写这份文件。",
+  "vendors": [
+    {
+      "vendorName": "360智脑",
+      "slug": "ai360",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "阿里云",
+      "slug": "aliyun",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "百川智能",
+      "slug": "baichuan",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "百度智能云",
+      "slug": "baidu-ai-cloud",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "硅基流动",
+      "slug": "siliconflow",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "火山引擎",
+      "slug": "volcengine",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "阶跃星辰",
+      "slug": "stepfun",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "科大讯飞",
+      "slug": "iflytek",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "扣子 Coze",
+      "slug": "coze",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "商汤科技",
+      "slug": "sensetime",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "腾讯云",
+      "slug": "tencent-cloud",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "月之暗面",
+      "slug": "moonshot",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "智谱AI",
+      "slug": "zhipu",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "AltText.ai",
+      "slug": "alttext-ai",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "Anthropic",
+      "slug": "anthropic",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "AutomateNexus CRM",
+      "slug": "automatenexus-crm",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "AWS",
+      "slug": "aws",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "Cursor",
+      "slug": "cursor",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "DeepSeek",
+      "slug": "deepseek",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "GitHub",
+      "slug": "github",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "Google",
+      "slug": "google",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "Microsoft",
+      "slug": "microsoft",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "MiniMax（稀宇科技）",
+      "slug": "minimax",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "NinjaPipe",
+      "slug": "ninjapipe",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "Notion",
+      "slug": "notion",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "NotiQ",
+      "slug": "notiq",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "OpenAI",
+      "slug": "openai",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "Pretty Prompt",
+      "slug": "pretty-prompt",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "Replit",
+      "slug": "replit",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "ResumeUp.AI",
+      "slug": "resumeup-ai",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "Windsurf",
+      "slug": "windsurf",
+      "firstRoutedAt": "2026-11-15T09:25:13.229Z",
+      "status": "active"
+    }
+  ]
+}

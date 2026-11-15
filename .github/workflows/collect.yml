@@ -228,6 +228,14 @@ jobs:
           node scripts/tools/ai-selftest.js
           node scripts/tools/fixture-test.js
 
+      # P1（slug 死锁机器化）：把本轮**已路由厂商**的 slug 落进机器账本
+      # （首次遇到的新厂商自动分配、钉住路由降级状态同步、改名且登记了旧→新别名时迁移）。
+      # 构建过程绝不写源数据；账本只由这一步维护，随下面的数据提交同批入库。
+      # 写盘工具只告警、不吞问题：改名未登记别名等硬问题会由紧随其后的 release gate
+      # 用**同一份**落地页计划判据红出来（诊断优先于严格度）。
+      - name: Sync vendor slug ledger (machine-maintained)
+        run: node scripts/tools/sync-vendor-slug-ledger.js
+
       - name: Commit and push if changed
         id: commit
         env:
@@ -253,7 +261,11 @@ jobs:
           #  · api-plans.json / curated_api_plans.json / api-plan-history.json（W1 起）——
           #    verifier 写入的 lastVerifiedAt、采纳后的新价与变化事件必须与数据同批入库；
           #    否则下一轮拿「已变的 curated」对「上一轮的历史」，check:api-plan-history 会红。
-          git add deals.json scripts/data/source-health.json scripts/data/zh-pending.json scripts/data/deal-history.json scripts/data/source-snapshots.json api-plans.json scripts/data/curated_api_plans.json scripts/data/api-plan-history.json codex-resets.json
+          #  · vendor-slug-ledger.json（P1 起）—— **机器账本**：已发布 /vendor/<slug>/ 的
+          #    slug 与首次路由时间。不把它加进这里的白名单，写盘工具等于白跑 —— 下一轮
+          #    新厂商又从「首次分配」开始，而且**不会有任何门禁红**（最危险的那种静默退化）。
+          #    它只由上面那一步 scripts/tools/sync-vendor-slug-ledger.js 写，禁止手改。
+          git add deals.json scripts/data/source-health.json scripts/data/zh-pending.json scripts/data/deal-history.json scripts/data/source-snapshots.json scripts/data/vendor-slug-ledger.json api-plans.json scripts/data/curated_api_plans.json scripts/data/api-plan-history.json codex-resets.json
           if git diff --cached --quiet; then
             echo "数据无变化，跳过提交"
           else
@@ -297,9 +309,10 @@ jobs:
       # ─────────────────── 发布就绪门禁的**留痕**（绝不静默降级） ───────────────────
       # 为什么需要这一步：上面的 gate 是 continue-on-error —— job 保持绿色，但「这一轮到底
       # 有没有做真浏览器验收 / 发布就绪类有没有红」必须写进 Summary，否则降级就是静默的。
-      # 本步骤读不到复合 action 子步骤的内部结论（gate 没有暴露 outputs），所以它只如实报告
-      # outcome，并把「哪几步没跑 / 为什么」指向 Gate 步骤日志与 Summary 原文（那里的
-      # 「浏览器可用性判定」是唯一权威记录），绝不假装自己验证过。
+      # 本步骤读不到复合 action 子步骤的内部结论时，至少拿到 gate 汇总的 `failed_step`
+      # 输出（P4：action 末尾的 `if: always()` 汇总步会按步骤 id 顺序找出**第一个失败步骤**
+      # 的登记名，写进 action outputs）。所以这里能直接写「Gate @ <步骤名> 失败」，
+      # 而不是让人去猜「是不是浏览器没装好」。其余降级/跳过原因仍以 Gate 步骤 Summary 为权威。
       # 失败（含 skipped/cancelled）时额外发一条 ::warning 注解，保证在 Actions 页也看得见。
       - name: Release-readiness gate record (never silent)
         if: always()
@@ -307,6 +320,7 @@ jobs:
           DATA_GATE_OUTCOME: ${{ steps.data_gate.outcome }}
           COMMIT_OUTCOME: ${{ steps.commit.outcome }}
           RELEASE_GATE_OUTCOME: ${{ steps.release_gate.outcome }}
+          RELEASE_GATE_FAILED_STEP: ${{ steps.release_gate.outputs.failed_step }}
         run: |
           set -uo pipefail
           {
@@ -323,6 +337,11 @@ jobs:
             echo "- **提交/推送步骤结论**：'$COMMIT_OUTCOME'（success = 已推送，或本次数据无变化跳过提交；"
             echo "  skipped / failure = 数据未入库，见该步骤日志）"
             echo "- **完整 gate 结论**：'$RELEASE_GATE_OUTCOME'（success / failure / skipped / cancelled）"
+            if [ -n "${RELEASE_GATE_FAILED_STEP:-}" ]; then
+              echo "- **失败步骤**：Gate @ $RELEASE_GATE_FAILED_STEP 失败（后续步骤因此被跳过）"
+            elif [ "$RELEASE_GATE_OUTCOME" = "failure" ]; then
+              echo "- **失败步骤**：未提供（见 Gate 步骤日志；action 汇总步在失败时也会写 failed_step）"
+            fi
             echo ""
             echo "发布就绪类检查项（本次结论以 Gate 步骤日志与 Summary 为准）："
             echo "- 真浏览器验收（verify-site.js）与回归比对"
@@ -339,6 +358,6 @@ jobs:
           case "$RELEASE_GATE_OUTCOME" in
             success) ;;
             *)
-              echo "::warning title=发布就绪门禁未通过（数据已入库）::Gate 结论 $RELEASE_GATE_OUTCOME；数据正确性已在提交前硬过并入库，发布由 deploy.yml 的 prepublish 严格门禁裁定"
+              echo "::warning title=发布就绪门禁未通过（数据已入库）::Gate 结论 $RELEASE_GATE_OUTCOME${RELEASE_GATE_FAILED_STEP:+ · Gate @ $RELEASE_GATE_FAILED_STEP 失败}；数据正确性已在提交前硬过并入库，发布由 deploy.yml 的 prepublish 严格门禁裁定"
               ;;
           esac

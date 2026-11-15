@@ -498,10 +498,14 @@ function assertVendorPageHonesty(html, spec, ctx = {}) {
  *
  * 判据分两层：
  *   · 页面上：两个厂商页不能共用同一个 slug（slug 唯一性）；
- *   · 数据上：同一家公司的 `vendor-slugs.json` 与 `providers.json` 两份 slug 必须逐字相同，
- *     且页面用的就是它 —— 这正是 `providers.validateSlugAgreement` 的页面侧投影。
+ *   · 数据上：同一家公司的 `vendor-slugs.json` / `providers.json` / 机器账本
+ *     （`vendor-slug-ledger.json`）三份 slug 必须一致，且页面用的就是它 ——
+ *     这正是 `providers.validateSlugAgreement` 的页面侧投影。
+ *
+ * P1（slug 死锁机器化）之后权威顺序是 **人工覆盖表 → providers.json → 机器账本 → suggestSlug()**：
+ * 账本由 collect 侧写盘工具自动维护，这里只做「三份登记不得互相矛盾」的对账。
  */
-function assertVendorSlugCanonical(pages, { providerTable = {}, vendorSlugs = {} } = {}) {
+function assertVendorSlugCanonical(pages, { providerTable = {}, vendorSlugs = {}, ledgerSlugs = {} } = {}) {
   const problems = [];
   const seen = new Map();
   for (const page of pages || []) {
@@ -515,10 +519,17 @@ function assertVendorSlugCanonical(pages, { providerTable = {}, vendorSlugs = {}
     const providerEntry = Object.values(providerTable).find(entry => entry && String(entry.name || '') === String(page.key || '')) || null;
     const fromProviders = providerEntry ? String(providerEntry.slug || '') : '';
     const fromVendorSlugs = String(vendorSlugs[page.key] || '');
+    const fromLedger = String(ledgerSlugs[page.key] || '');
     if (fromProviders && fromVendorSlugs && fromProviders !== fromVendorSlugs) {
       problems.push(`${page.key}: providers.json 的 slug「${fromProviders}」与 vendor-slugs.json 的「${fromVendorSlugs}」不一致`);
     }
-    const canonical = fromVendorSlugs || fromProviders;
+    if (fromLedger && fromVendorSlugs && fromLedger !== fromVendorSlugs) {
+      problems.push(`${page.key}: 机器账本 scripts/data/vendor-slug-ledger.json 的 slug「${fromLedger}」与 vendor-slugs.json 的「${fromVendorSlugs}」不一致（账本不许手改：先改人工覆盖表，再让写盘工具迁移账本）`);
+    }
+    if (fromLedger && fromProviders && fromLedger !== fromProviders) {
+      problems.push(`${page.key}: 机器账本的 slug「${fromLedger}」与 providers.json 的「${fromProviders}」不一致`);
+    }
+    const canonical = fromVendorSlugs || fromProviders || fromLedger;
     if (canonical && canonical !== slug) {
       problems.push(`${page.key}: 页面用的 slug「${slug}」与 canonical「${canonical}」不一致（路由 ${route}）`);
     }
@@ -629,30 +640,59 @@ function renderVendorKnowledgeBundle(spec, ctx = {}) {
 }
 
 /**
- * 队长补充（R5 后续）：**19 个厂商页的 slug 必须都能在 `vendor-slugs.json` 里查到**。
+ * 队长补充（R5 后续）→ P1（slug 死锁机器化）之后升级为**权威链**判据。
  *
- * 为什么单列一条：`landing.js` 里 `vendorSlugs[name] || providerEntry.slug` 的兜底
- * 让"没登记的厂商也能出页"，于是 `vendor-slugs.json` 从"路由 slug 的**唯一权威**"
- * 悄悄退化成"可选覆盖表"—— 而 `/vendor/<slug>/` 是**已发布的 URL 空间**，
- * 这类静默退化正是 v1.6「URL 稳定性只兜住一半」踩过的坑。
+ * 背景：`/vendor/<slug>/` 是**已发布的 URL 空间**，slug 不能被静默兜底或每次重新分配。
+ * P1 把权威顺序固定成四层（两边共用同一个解析函数 `landing.resolveVendorSlug`）：
  *
- * 判据：每个厂商页的 `key`（厂商显示名）必须出现在 `vendorSlugs` 里，
- * 且登记值与页面实际使用的 slug **逐字相同**。缺一条就红，报错里直接给建议。
+ *   1. `vendor-slugs.json`（人工覆盖表；改名换 slug 时才动它）
+ *   2. `providers.json` 同名 provider 条目的 slug（历史事实，只读）
+ *   3. `scripts/data/vendor-slug-ledger.json`（机器账本；collect 侧写盘工具自动维护，禁止手改）
+ *   4. `suggestSlug()`（首次遇到的新厂商现场分配；落盘由写盘工具下一轮完成）
+ *
+ * 判据：每个厂商页的 `key`（厂商显示名）必须能在这条链上查到，且**已登记的取值与页面
+ * slug 逐字相同**：
+ *   · 覆盖表有 ⇒ 必须等于页面 slug（改名换 slug 却忘了登记 = 旧 URL 404）；
+ *   · 账本有 ⇒ 必须等于页面 slug（账本不许手改，改覆盖表再让写盘工具迁移）；
+ *   · 都没有但本轮 `autoSlugNames` 里有 ⇒ 合法（首次分配；构建过程不写源数据，待落盘）；
+ *   · 都没有但 providers.json 给了同值 slug ⇒ 合法（四层里的第二层）；
+ *   · 其余情况 ⇒ 红（页面 slug 没有来源）。
+ *
+ * 兼容提示：两条老牙按错误文案子串断言（`没有在 scripts/data/vendor-slugs.json 里登记` /
+ * `登记的是`），改文案时必须保留这两个子串。
  */
-function assertVendorSlugDeclared(pages, { vendorSlugs = {} } = {}) {
+function assertVendorSlugDeclared(pages, { vendorSlugs = {}, ledgerSlugs = {}, autoSlugNames = [], providerTable = {} } = {}) {
+  const pending = new Set((autoSlugNames || []).map(name => String(name)));
   const problems = [];
   for (const page of pages || []) {
     if (!page || page.kind !== 'vendor') continue;
     const name = String(page.key || '');
     const slug = String(page.slug || '');
-    if (!Object.prototype.hasOwnProperty.call(vendorSlugs, name)) {
-      problems.push(`厂商「${name}」没有在 scripts/data/vendor-slugs.json 里登记 slug（页面用的是「${slug}」，`
-        + '目前来自 providers.json 的兜底）—— 路由 slug 的权威表不该被隐式兜底绕过，请补一行');
+    const hasOwn = key => Object.prototype.hasOwnProperty.call(vendorSlugs, key);
+    if (hasOwn(name)) {
+      if (String(vendorSlugs[name]) !== slug) {
+        problems.push(`厂商「${name}」在 vendor-slugs.json 里登记的是「${vendorSlugs[name]}」，页面用的是「${slug}」`);
+      }
       continue;
     }
-    if (String(vendorSlugs[name]) !== slug) {
-      problems.push(`厂商「${name}」在 vendor-slugs.json 里登记的是「${vendorSlugs[name]}」，页面用的是「${slug}」`);
+    const ledgerSlug = String(ledgerSlugs[name] || '');
+    if (ledgerSlug) {
+      if (ledgerSlug !== slug) {
+        problems.push(`厂商「${name}」在机器账本 scripts/data/vendor-slug-ledger.json 里记的是「${ledgerSlug}」，页面用的是「${slug}」`
+          + '（账本不许手改：先在覆盖表登记新 slug，再由 collect 侧写盘工具迁移账本）');
+      }
+      continue;
     }
+    if (pending.has(name)) continue; // 本轮首次分配：账本待写盘工具落盘
+    const providerEntry = Object.values(providerTable).find(entry => entry && String(entry.name || '') === name) || null;
+    const providerSlug = providerEntry ? String(providerEntry.slug || '') : '';
+    if (providerSlug && providerSlug === slug) continue; // 四层里的第二层：providers.json 的历史 slug
+    if (providerSlug) {
+      problems.push(`厂商「${name}」: providers.json 的 slug「${providerSlug}」与页面用的「${slug}」不一致`);
+      continue;
+    }
+    problems.push(`厂商「${name}」没有在 scripts/data/vendor-slugs.json 里登记 slug，也不在机器账本里`
+      + `（页面用的是「${slug}」）—— 人工起的 slug 请补覆盖表；机器分配的 slug 由 collect 侧写盘工具落盘，账本不许手改`);
   }
   return problems;
 }
