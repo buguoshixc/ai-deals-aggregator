@@ -3006,11 +3006,23 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
+    "8e4af3df250c": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-16",
+      "endedAt": null
+    },
     "90ef368f720d": {
       "source": "aitools.fyi",
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
+    },
+    "97d21ff73d3e": {
+      "source": "智谱AI活动页",
+      "misses": 1,
+      "since": "2026-11-16",
+      "endedAt": null
     },
     "98b5e610f7bc": {
       "source": "aitools.fyi",
@@ -3179,6 +3191,12 @@
       "misses": 2,
       "since": "2026-11-15",
       "endedAt": "2026-11-16"
+    },
+    "ee446d349239": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-16",
+      "endedAt": null
     },
     "ef3cba339a72": {
       "source": "OpenRouter",

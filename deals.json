@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-11-16T02:32:59+08:00",
+  "updatedAt": "2026-11-16T12:54:46+08:00",
   "count": 244,
   "deals": [
     {
@@ -2678,29 +2678,6 @@
       }
     },
     {
-      "id": "8a8c3bdc2b05",
-      "title": "Rerun",
-      "vendor": "Rerun",
-      "url": "https://appsumo.com/products/rerun/",
-      "source": "AppSumo",
-      "sourceUrl": "https://appsumo.com/collections/new/",
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $99，原价 $348（省 72%）",
-      "pricingModel": "paid",
-      "priceLine": "$99 终身（原价 $348）",
-      "features": null,
-      "category": "办公效率",
-      "description": "Turn your subscription plan or AI API key into Capable Coworkers",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-11-15",
-      "lastSeen": "2026-11-16",
-      "verified": false,
-      "verifiedAt": null
-    },
-    {
       "id": "2b95f56ce3a1",
       "title": "Boost.space AgentOS",
       "vendor": "Boost.space AgentOS",
@@ -2724,6 +2701,29 @@
       "verifiedAt": null
     },
     {
+      "id": "8a8c3bdc2b05",
+      "title": "Rerun",
+      "vendor": "Rerun",
+      "url": "https://appsumo.com/products/rerun/",
+      "source": "AppSumo",
+      "sourceUrl": "https://appsumo.com/collections/new/",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $99，原价 $348（省 72%）",
+      "pricingModel": "paid",
+      "priceLine": "$99 终身（原价 $348）",
+      "features": null,
+      "category": "办公效率",
+      "description": "Turn your subscription plan or AI API key into Capable Coworkers",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-11-15",
+      "lastSeen": "2026-11-16",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
       "id": "e5fcacad308b",
       "title": "Creator Lookup",
       "vendor": "Creator Lookup",
@@ -2741,29 +2741,6 @@
       "eligibility": null,
       "validity": null,
       "expiresAt": "2026-12-08",
-      "firstSeen": "2026-11-09",
-      "lastSeen": "2026-11-16",
-      "verified": false,
-      "verifiedAt": null
-    },
-    {
-      "id": "ff8cbecdd5f6",
-      "title": "MagicCanvas",
-      "vendor": "MagicCanvas",
-      "url": "https://appsumo.com/products/magiccanvas/",
-      "source": "AppSumo",
-      "sourceUrl": "https://appsumo.com/collections/new/",
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $199（省 70%）",
-      "pricingModel": "paid",
-      "priceLine": "$59 终身（原价 $199）",
-      "features": null,
-      "category": "视频",
-      "description": "Tap into Google Veo, Seedance, Wan, and more with this all-in-one AI video and image generator",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
       "firstSeen": "2026-11-09",
       "lastSeen": "2026-11-16",
       "verified": false,
@@ -2816,6 +2793,29 @@
       "verifiedAt": null
     },
     {
+      "id": "ff8cbecdd5f6",
+      "title": "MagicCanvas",
+      "vendor": "MagicCanvas",
+      "url": "https://appsumo.com/products/magiccanvas/",
+      "source": "AppSumo",
+      "sourceUrl": "https://appsumo.com/collections/new/",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $199（省 70%）",
+      "pricingModel": "paid",
+      "priceLine": "$59 终身（原价 $199）",
+      "features": null,
+      "category": "视频",
+      "description": "Tap into Google Veo, Seedance, Wan, and more with this all-in-one AI video and image generator",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-11-09",
+      "lastSeen": "2026-11-16",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
       "id": "72100a42eb69",
       "title": "Hedy AI",
       "vendor": "Hedy AI",
@@ -2830,52 +2830,6 @@
       "features": null,
       "category": "办公效率",
       "description": "Your AI-powered assistant for navigating professional conversations with confidence",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-11-09",
-      "lastSeen": "2026-11-16",
-      "verified": false,
-      "verifiedAt": null
-    },
-    {
-      "id": "36fdb826204d",
-      "title": "ClearCrowds",
-      "vendor": "ClearCrowds",
-      "url": "https://appsumo.com/products/clearcrowds/",
-      "source": "AppSumo",
-      "sourceUrl": "https://appsumo.com/collections/new/",
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $49，原价 $199（省 75%）",
-      "pricingModel": "paid",
-      "priceLine": "$49 终身（原价 $199）",
-      "features": null,
-      "category": "图像绘画",
-      "description": "Clean up photos by removing people, objects, and unwanted text with this AI-powered photo editor",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": "2026-11-21",
-      "firstSeen": "2026-11-14",
-      "lastSeen": "2026-11-16",
-      "verified": false,
-      "verifiedAt": null
-    },
-    {
-      "id": "620ef4290482",
-      "title": "VidTechy",
-      "vendor": "VidTechy",
-      "url": "https://appsumo.com/products/vidtechy/",
-      "source": "AppSumo",
-      "sourceUrl": "https://appsumo.com/collections/new/",
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $144（省 59%）",
-      "pricingModel": "paid",
-      "priceLine": "$59 终身（原价 $144）",
-      "features": null,
-      "category": "视频",
-      "description": "Boost video rankings and views with an AI-powered YouTube marketing toolkit",
       "eligibility": null,
       "validity": null,
       "expiresAt": null,
@@ -2908,6 +2862,52 @@
       "verifiedAt": null
     },
     {
+      "id": "620ef4290482",
+      "title": "VidTechy",
+      "vendor": "VidTechy",
+      "url": "https://appsumo.com/products/vidtechy/",
+      "source": "AppSumo",
+      "sourceUrl": "https://appsumo.com/collections/new/",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $144（省 59%）",
+      "pricingModel": "paid",
+      "priceLine": "$59 终身（原价 $144）",
+      "features": null,
+      "category": "视频",
+      "description": "Boost video rankings and views with an AI-powered YouTube marketing toolkit",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-11-09",
+      "lastSeen": "2026-11-16",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
+      "id": "36fdb826204d",
+      "title": "ClearCrowds",
+      "vendor": "ClearCrowds",
+      "url": "https://appsumo.com/products/clearcrowds/",
+      "source": "AppSumo",
+      "sourceUrl": "https://appsumo.com/collections/new/",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $49，原价 $199（省 75%）",
+      "pricingModel": "paid",
+      "priceLine": "$49 终身（原价 $199）",
+      "features": null,
+      "category": "图像绘画",
+      "description": "Clean up photos by removing people, objects, and unwanted text with this AI-powered photo editor",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": "2026-11-21",
+      "firstSeen": "2026-11-14",
+      "lastSeen": "2026-11-16",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
       "id": "2f0c03c32d8d",
       "title": "AutomateNexus CRM",
       "vendor": "AutomateNexus CRM",
@@ -2926,52 +2926,6 @@
       "validity": null,
       "expiresAt": null,
       "firstSeen": "2026-11-12",
-      "lastSeen": "2026-11-16",
-      "verified": false,
-      "verifiedAt": null
-    },
-    {
-      "id": "ee446d349239",
-      "title": "AltText.ai",
-      "vendor": "AltText.ai",
-      "url": "https://appsumo.com/products/alttextai/",
-      "source": "AppSumo",
-      "sourceUrl": "https://appsumo.com/collections/new/",
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $69，原价 $90（省 23%）",
-      "pricingModel": "paid",
-      "priceLine": "$69 终身（原价 $90）",
-      "features": null,
-      "category": "图像绘画",
-      "description": "Automatically generate alt text for images to improve your website’s SEO and accessibility",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-11-11",
-      "lastSeen": "2026-11-16",
-      "verified": false,
-      "verifiedAt": null
-    },
-    {
-      "id": "8e4af3df250c",
-      "title": "Preuve AI",
-      "vendor": "Preuve AI",
-      "url": "https://appsumo.com/products/preuve-ai/",
-      "source": "AppSumo",
-      "sourceUrl": "https://appsumo.com/collections/new/",
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $148（省 60%）",
-      "pricingModel": "paid",
-      "priceLine": "$59 终身（原价 $148）",
-      "features": null,
-      "category": "教育学习",
-      "description": "Research your startup idea with AI agents, size up demand, competitors and pricing, and plan the MVP",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-11-09",
       "lastSeen": "2026-11-16",
       "verified": false,
       "verifiedAt": null
@@ -3792,29 +3746,6 @@
       }
     },
     {
-      "id": "29be3db37d5c",
-      "title": "Call Annie",
-      "vendor": "Call Annie",
-      "url": "https://callannie.ai/",
-      "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/call-annie",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "对话模型",
-      "description": "An app for video call to learn and befriend.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-11-10",
-      "lastSeen": "2026-11-16",
-      "verified": false,
-      "verifiedAt": null
-    },
-    {
       "id": "3f1708dd5905",
       "title": "Thiings",
       "vendor": "Thiings",
@@ -3985,6 +3916,29 @@
       "zh": {
         "description": "画画版的自动纠错。"
       }
+    },
+    {
+      "id": "29be3db37d5c",
+      "title": "Call Annie",
+      "vendor": "Call Annie",
+      "url": "https://callannie.ai/",
+      "source": "Futuretools",
+      "sourceUrl": "https://futuretools.io/tools/call-annie",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "对话模型",
+      "description": "An app for video call to learn and befriend.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-11-10",
+      "lastSeen": "2026-11-16",
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "5e3897face03",
@@ -4491,88 +4445,6 @@
       "verifiedAt": null,
       "zh": {
         "description": "一个 AI 基准测试：考察语言模型用 SVG 画出 Gary Busey 肖像的水平。"
-      }
-    },
-    {
-      "id": "97d21ff73d3e",
-      "title": "智谱AI 新用户注册专享 2000万 免费 Tokens 资源包",
-      "vendor": "智谱AI",
-      "url": "https://bigmodel.cn/pricing",
-      "source": "智谱AI活动页",
-      "sourceUrl": null,
-      "region": "cn",
-      "type": "deal",
-      "discountInfo": "新用户注册专享 2000万 免费 Tokens 资源包，并含 120 次图像和视频资源包。",
-      "pricingModel": "free",
-      "priceLine": null,
-      "features": null,
-      "category": "API服务",
-      "description": "来源：智谱开放平台官方价格页营销位与活动说明。",
-      "eligibility": "智谱开放平台新注册用户（需实名认证）",
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-16",
-      "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
       }
     },
     {
@@ -5422,6 +5294,134 @@
             "derived": "stated"
           },
           "claimRequirements": {
+            "basis": "source",
+            "derived": "stated"
+          }
+        }
+      }
+    },
+    {
+      "id": "ee446d349239",
+      "title": "AltText.ai",
+      "vendor": "AltText.ai",
+      "url": "https://appsumo.com/products/alttextai/",
+      "source": "AppSumo",
+      "sourceUrl": "https://appsumo.com/collections/new/",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $69，原价 $90（省 23%）",
+      "pricingModel": "paid",
+      "priceLine": "$69 终身（原价 $90）",
+      "features": null,
+      "category": "图像绘画",
+      "description": "Automatically generate alt text for images to improve your website’s SEO and accessibility",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-11-11",
+      "lastSeen": "2026-11-16",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
+      "id": "8e4af3df250c",
+      "title": "Preuve AI",
+      "vendor": "Preuve AI",
+      "url": "https://appsumo.com/products/preuve-ai/",
+      "source": "AppSumo",
+      "sourceUrl": "https://appsumo.com/collections/new/",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $148（省 60%）",
+      "pricingModel": "paid",
+      "priceLine": "$59 终身（原价 $148）",
+      "features": null,
+      "category": "教育学习",
+      "description": "Research your startup idea with AI agents, size up demand, competitors and pricing, and plan the MVP",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-11-09",
+      "lastSeen": "2026-11-16",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
+      "id": "97d21ff73d3e",
+      "title": "智谱AI 新用户注册专享 2000万 免费 Tokens 资源包",
+      "vendor": "智谱AI",
+      "url": "https://bigmodel.cn/pricing",
+      "source": "智谱AI活动页",
+      "sourceUrl": null,
+      "region": "cn",
+      "type": "deal",
+      "discountInfo": "新用户注册专享 2000万 免费 Tokens 资源包，并含 120 次图像和视频资源包。",
+      "pricingModel": "free",
+      "priceLine": null,
+      "features": null,
+      "category": "API服务",
+      "description": "来源：智谱开放平台官方价格页营销位与活动说明。",
+      "eligibility": "智谱开放平台新注册用户（需实名认证）",
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-11-16",
+      "verified": false,
+      "verifiedAt": null,
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "identityVerificationRequired": true,
+        "newUserOnly": true
+      },
+      "claimRequirements": {
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "provenance": {
+        "credibility": "curated",
+        "contrib": {
+          "audience": [
+            "curated"
+          ],
+          "benefitType": [
+            "curated"
+          ],
+          "eligibilityDetail": [
+            "curated"
+          ],
+          "claimRequirements": [
+            "curated"
+          ],
+          "availability": [
+            "curated"
+          ]
+        },
+        "fields": {
+          "audience": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "benefitType": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "eligibilityDetail": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "claimRequirements": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "availability": {
             "basis": "source",
             "derived": "stated"
           }
