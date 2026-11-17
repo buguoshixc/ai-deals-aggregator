@@ -4,7 +4,7 @@
  *
  * 两件事必须同时对，否则页面上的「剩 N 天 / 长期活动 / 未标注截止日期」会互相打架：
  *   ① 外侧抽取器（scripts/lib/expiry.js）：只认文案里写死的绝对截止日，不猜；
- *   ② 前端三分类（index.html 的 RENDER-CORE.expiryState）：三档归类与排序次序。
+ *   ② 前端三分类（assets/app.js 的 RENDER-CORE.expiryState）：三档归类与排序次序。
  *
  * 用法：node scripts/tools/expiry-selftest.js
  */
@@ -15,9 +15,9 @@ const { load: loadRenderCore } = require('../lib/render-core');
 const { extractDeadline, isOngoing, ONGOING_PATTERNS, applyDeadline } = require('../lib/expiry');
 const { loadDeals } = require('../lib/store');
 const { todayCN } = require('../lib/schema');
+const appAsset = require('../lib/app-asset');
 
 const ROOT = path.join(__dirname, '..', '..');
-const INDEX_FILE = path.join(ROOT, 'index.html');
 
 let pass = 0;
 const failures = [];
@@ -196,14 +196,13 @@ for (const text of WORDLIST_SAMPLES) {
  * 比行为更强的防漂移：两条正则的**源文本**必须逐字节相同。
  *
  * 为什么需要它：ONGOING_RE 是 `const`，不会挂到 vm 沙箱的全局对象上
- * （index.html 里那段注释已说明只有 function/var 会挂上去），所以上面的行为比对是
+ * （app 源码里那段注释已说明只有 function/var 会挂上去），所以上面的行为比对是
  * **唯一**的耦合，而它只覆盖样例表——旧实现就是这样让 9 条真实违规从缝里漏过去的。
- * 这里直接读 index.html 的 ONGOING:START/END 标记块，与 classify.js 导出的源文本对账。
+ * 这里直接读 assets/app.js 的 ONGOING:START/END 标记块，与 classify.js 导出的源文本对账。
  * 只改一边（哪怕改得更严格）都会立刻红。
  */
 function ongoingFromIndex() {
-  const html = fs.readFileSync(INDEX_FILE, 'utf8');
-  const block = /\/\* ONGOING:START \*\/([\s\S]*?)\/\* ONGOING:END \*\//.exec(html);
+  const block = /\/\* ONGOING:START \*\/([\s\S]*?)\/\* ONGOING:END \*\//.exec(appAsset.SOURCE);
   if (!block) return null;
   const pick = name => {
     const m = new RegExp(`${name}\\s*=\\s*/([^/]*)/([a-z]*)\\s*;`).exec(block[1]);
@@ -213,7 +212,7 @@ function ongoingFromIndex() {
 }
 
 const indexPatterns = ongoingFromIndex();
-check('index.html 里有 ONGOING:START/END 标记块', indexPatterns !== null, '找不到标记块');
+check('assets/app.js 里有 ONGOING:START/END 标记块', indexPatterns !== null, '找不到标记块');
 if (indexPatterns) {
   check(
     '正向判据：前后端源文本逐字节相同',
