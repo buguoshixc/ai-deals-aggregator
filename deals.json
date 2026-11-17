@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-11-17T05:42:46+08:00",
-  "count": 249,
+  "updatedAt": "2026-11-17T14:42:44+08:00",
+  "count": 250,
   "deals": [
     {
       "id": "2eae0e246de2",
@@ -1581,89 +1581,6 @@
       }
     },
     {
-      "id": "e7e8f538456c",
-      "title": "GLM-4.5-Flash 免费模型",
-      "vendor": "智谱AI",
-      "url": "https://docs.bigmodel.cn/cn/guide/models/free/glm-4.5-flash",
-      "source": "智谱AI",
-      "sourceUrl": null,
-      "region": "cn",
-      "type": "deal",
-      "discountInfo": "官方模型列表标注为免费模型，调用价格 0 元：免费文本模型 支持最长 128K 的上下文处理",
-      "pricingModel": "free",
-      "priceLine": null,
-      "features": null,
-      "category": "对话模型",
-      "description": "智谱开放平台（bigmodel.cn）注册并创建 API Key 后可直接调用，无需单独领取额度。",
-      "eligibility": "所有注册开发者（需实名认证开通）",
-      "validity": "官方模型列表未标注截止日期",
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-17",
-      "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_model",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": false
-      },
-      "claimRequirements": {
-        "manualApplication": false,
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
-    },
-    {
       "id": "6798f78de5ce",
       "title": "GLM-4.6V-Flash 免费模型",
       "vendor": "智谱AI",
@@ -1747,15 +1664,15 @@
       }
     },
     {
-      "id": "f22e3cd094ad",
-      "title": "GLM-4.1V-Thinking-Flash 免费模型",
+      "id": "e7e8f538456c",
+      "title": "GLM-4.5-Flash 免费模型",
       "vendor": "智谱AI",
-      "url": "https://docs.bigmodel.cn/cn/guide/models/free/glm-4.1v-thinking-flash",
+      "url": "https://docs.bigmodel.cn/cn/guide/models/free/glm-4.5-flash",
       "source": "智谱AI",
       "sourceUrl": null,
       "region": "cn",
       "type": "deal",
-      "discountInfo": "官方模型列表标注为免费模型，调用价格 0 元：免费模型，支持视觉推理",
+      "discountInfo": "官方模型列表标注为免费模型，调用价格 0 元：免费文本模型 支持最长 128K 的上下文处理",
       "pricingModel": "free",
       "priceLine": null,
       "features": null,
@@ -1830,15 +1747,15 @@
       }
     },
     {
-      "id": "62e3166acec0",
-      "title": "GLM-4V-Flash 免费模型",
+      "id": "f22e3cd094ad",
+      "title": "GLM-4.1V-Thinking-Flash 免费模型",
       "vendor": "智谱AI",
-      "url": "https://docs.bigmodel.cn/cn/guide/models/free/glm-4v-flash",
+      "url": "https://docs.bigmodel.cn/cn/guide/models/free/glm-4.1v-thinking-flash",
       "source": "智谱AI",
       "sourceUrl": null,
       "region": "cn",
       "type": "deal",
-      "discountInfo": "官方模型列表标注为免费模型，调用价格 0 元：免费模型，支持图像理解",
+      "discountInfo": "官方模型列表标注为免费模型，调用价格 0 元：免费模型，支持视觉推理",
       "pricingModel": "free",
       "priceLine": null,
       "features": null,
@@ -2678,52 +2595,6 @@
       }
     },
     {
-      "id": "fa69020c164a",
-      "title": "RobinReach",
-      "vendor": "RobinReach",
-      "url": "https://appsumo.com/products/robinreach/",
-      "source": "AppSumo",
-      "sourceUrl": "https://appsumo.com/collections/new/",
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $69，原价 $99（省 30%）",
-      "pricingModel": "paid",
-      "priceLine": "$69 终身（原价 $99）",
-      "features": null,
-      "category": "其他",
-      "description": "Automate social media across 13 platforms with AI content creation, MCP integration, and repurposing",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": "2026-11-18",
-      "firstSeen": "2026-11-17",
-      "lastSeen": "2026-11-17",
-      "verified": false,
-      "verifiedAt": null
-    },
-    {
-      "id": "5c45f40df3ed",
-      "title": "CluGTM (formerly Cleanlist AI)",
-      "vendor": "CluGTM",
-      "url": "https://appsumo.com/products/clugtm/",
-      "source": "AppSumo",
-      "sourceUrl": "https://appsumo.com/collections/new/",
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $79，原价 $104（省 24%）",
-      "pricingModel": "paid",
-      "priceLine": "$79 终身（原价 $104）",
-      "features": null,
-      "category": "编程开发",
-      "description": "Search 1B+ profiles, enrich from 25+ providers, and research leads with AI in one GTM platform",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": "2026-11-18",
-      "firstSeen": "2026-11-17",
-      "lastSeen": "2026-11-17",
-      "verified": false,
-      "verifiedAt": null
-    },
-    {
       "id": "bce5afb96302",
       "title": "Visby",
       "vendor": "Visby",
@@ -2738,6 +2609,29 @@
       "features": null,
       "category": "搜索研究",
       "description": "Track AI brand mentions, benchmark competitors’ share of voice, and close SEO and GEO content gaps",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": "2026-11-18",
+      "firstSeen": "2026-11-17",
+      "lastSeen": "2026-11-17",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
+      "id": "fa69020c164a",
+      "title": "RobinReach",
+      "vendor": "RobinReach",
+      "url": "https://appsumo.com/products/robinreach/",
+      "source": "AppSumo",
+      "sourceUrl": "https://appsumo.com/collections/new/",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $69，原价 $99（省 30%）",
+      "pricingModel": "paid",
+      "priceLine": "$69 终身（原价 $99）",
+      "features": null,
+      "category": "其他",
+      "description": "Automate social media across 13 platforms with AI content creation, MCP integration, and repurposing",
       "eligibility": null,
       "validity": null,
       "expiresAt": "2026-11-18",
@@ -2765,6 +2659,29 @@
       "validity": null,
       "expiresAt": "2026-12-02",
       "firstSeen": "2026-11-12",
+      "lastSeen": "2026-11-17",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
+      "id": "5c45f40df3ed",
+      "title": "CluGTM (formerly Cleanlist AI)",
+      "vendor": "CluGTM",
+      "url": "https://appsumo.com/products/clugtm/",
+      "source": "AppSumo",
+      "sourceUrl": "https://appsumo.com/collections/new/",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $79，原价 $104（省 24%）",
+      "pricingModel": "paid",
+      "priceLine": "$79 终身（原价 $104）",
+      "features": null,
+      "category": "编程开发",
+      "description": "Search 1B+ profiles, enrich from 25+ providers, and research leads with AI in one GTM platform",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": "2026-11-18",
+      "firstSeen": "2026-11-17",
       "lastSeen": "2026-11-17",
       "verified": false,
       "verifiedAt": null
@@ -2839,6 +2756,29 @@
       "verifiedAt": null
     },
     {
+      "id": "620ef4290482",
+      "title": "VidTechy",
+      "vendor": "VidTechy",
+      "url": "https://appsumo.com/products/vidtechy/",
+      "source": "AppSumo",
+      "sourceUrl": "https://appsumo.com/collections/new/",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $144（省 59%）",
+      "pricingModel": "paid",
+      "priceLine": "$59 终身（原价 $144）",
+      "features": null,
+      "category": "视频",
+      "description": "Boost video rankings and views with an AI-powered YouTube marketing toolkit",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-11-09",
+      "lastSeen": "2026-11-17",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
       "id": "d175c32f71fd",
       "title": "Press Ranger",
       "vendor": "Press Ranger",
@@ -2885,29 +2825,6 @@
       "verifiedAt": null
     },
     {
-      "id": "f34797ef8750",
-      "title": "ScrollHaus",
-      "vendor": "ScrollHaus",
-      "url": "https://appsumo.com/products/scrollhaus/",
-      "source": "AppSumo",
-      "sourceUrl": "https://appsumo.com/collections/new/",
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $99，原价 $299（省 67%）",
-      "pricingModel": "paid",
-      "priceLine": "$99 终身（原价 $299）",
-      "features": null,
-      "category": "设计创意",
-      "description": "Animated website templates with 3D effects, scroll animations, and prompts for AI builders",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-11-09",
-      "lastSeen": "2026-11-17",
-      "verified": false,
-      "verifiedAt": null
-    },
-    {
       "id": "72100a42eb69",
       "title": "Hedy AI",
       "vendor": "Hedy AI",
@@ -2925,75 +2842,6 @@
       "eligibility": null,
       "validity": null,
       "expiresAt": null,
-      "firstSeen": "2026-11-09",
-      "lastSeen": "2026-11-17",
-      "verified": false,
-      "verifiedAt": null
-    },
-    {
-      "id": "620ef4290482",
-      "title": "VidTechy",
-      "vendor": "VidTechy",
-      "url": "https://appsumo.com/products/vidtechy/",
-      "source": "AppSumo",
-      "sourceUrl": "https://appsumo.com/collections/new/",
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $144（省 59%）",
-      "pricingModel": "paid",
-      "priceLine": "$59 终身（原价 $144）",
-      "features": null,
-      "category": "视频",
-      "description": "Boost video rankings and views with an AI-powered YouTube marketing toolkit",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-11-09",
-      "lastSeen": "2026-11-17",
-      "verified": false,
-      "verifiedAt": null
-    },
-    {
-      "id": "44848acd19f3",
-      "title": "Brandolia",
-      "vendor": "Brandolia",
-      "url": "https://appsumo.com/products/brandolia/",
-      "source": "AppSumo",
-      "sourceUrl": "https://appsumo.com/collections/ending-soon/",
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $55，原价 $150（省 63%）",
-      "pricingModel": "paid",
-      "priceLine": "$55 终身（原价 $150）",
-      "features": null,
-      "category": "设计创意",
-      "description": "Build a complete brand identity, website, and marketing visuals with AI from one idea",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": "2026-11-17",
-      "firstSeen": "2026-11-09",
-      "lastSeen": "2026-11-17",
-      "verified": false,
-      "verifiedAt": null
-    },
-    {
-      "id": "49f87d205620",
-      "title": "Keyshift AI",
-      "vendor": "Keyshift AI",
-      "url": "https://appsumo.com/products/keyshift-ai/",
-      "source": "AppSumo",
-      "sourceUrl": "https://appsumo.com/collections/ending-soon/",
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $19，原价 $70（省 73%）",
-      "pricingModel": "paid",
-      "priceLine": "$19 终身（原价 $70）",
-      "features": null,
-      "category": "图像绘画",
-      "description": "Write smarter on Windows and Mac with AI shortcuts that rewrite, translate, or summarize in any app",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": "2026-11-17",
       "firstSeen": "2026-11-09",
       "lastSeen": "2026-11-17",
       "verified": false,
@@ -3040,6 +2888,29 @@
       "eligibility": null,
       "validity": null,
       "expiresAt": "2026-11-19",
+      "firstSeen": "2026-11-09",
+      "lastSeen": "2026-11-17",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
+      "id": "49f87d205620",
+      "title": "Keyshift AI",
+      "vendor": "Keyshift AI",
+      "url": "https://appsumo.com/products/keyshift-ai/",
+      "source": "AppSumo",
+      "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $19，原价 $70（省 73%）",
+      "pricingModel": "paid",
+      "priceLine": "$19 终身（原价 $70）",
+      "features": null,
+      "category": "图像绘画",
+      "description": "Write smarter on Windows and Mac with AI shortcuts that rewrite, translate, or summarize in any app",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": "2026-11-20",
       "firstSeen": "2026-11-09",
       "lastSeen": "2026-11-17",
       "verified": false,
@@ -3390,6 +3261,30 @@
       "lastSeen": "2026-11-17",
       "verified": false,
       "verifiedAt": null
+    },
+    {
+      "id": "08220811a35d",
+      "title": "早报｜iPhone Duo新增外屏人脸解锁/曝英伟达董事会无意请回黄仁勋/华为Mate X8定档11月24日",
+      "vendor": "早报｜iPhone Duo新增外屏人脸解锁",
+      "url": "https://www.ifanr.com/1689760",
+      "source": "爱范儿",
+      "sourceUrl": "https://www.ifanr.com/feed",
+      "region": "cn",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "其他",
+      "description": "",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-11-17",
+      "lastSeen": "2026-11-17",
+      "verified": false,
+      "verifiedAt": null,
+      "excerpt": "· 阿里发布 Qwen4-Max，缓存命中价格低至每百万 Token 0.5 元 · 腾讯混元推出 Hy4 flash，WorkBuddy 限时开放免费使用 · 腾讯公开司庆讲话，要求核心业务团队面向 AI 再创业#欢迎关注爱范儿官方微信公众号：爱范儿（微信号：ifanr），更多精彩内容第一时间为您奉上。"
     },
     {
       "id": "8642f235cf91",
@@ -5450,6 +5345,135 @@
           }
         }
       }
+    },
+    {
+      "id": "62e3166acec0",
+      "title": "GLM-4V-Flash 免费模型",
+      "vendor": "智谱AI",
+      "url": "https://docs.bigmodel.cn/cn/guide/models/free/glm-4v-flash",
+      "source": "智谱AI",
+      "sourceUrl": null,
+      "region": "cn",
+      "type": "deal",
+      "discountInfo": "官方模型列表标注为免费模型，调用价格 0 元：免费模型，支持图像理解",
+      "pricingModel": "free",
+      "priceLine": null,
+      "features": null,
+      "category": "对话模型",
+      "description": "智谱开放平台（bigmodel.cn）注册并创建 API Key 后可直接调用，无需单独领取额度。",
+      "eligibility": "所有注册开发者（需实名认证开通）",
+      "validity": "官方模型列表未标注截止日期",
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-11-17",
+      "verified": false,
+      "verifiedAt": null,
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_model",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "identityVerificationRequired": true,
+        "newUserOnly": false
+      },
+      "claimRequirements": {
+        "manualApplication": false,
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "provenance": {
+        "credibility": "curated",
+        "contrib": {
+          "audience": [
+            "curated"
+          ],
+          "benefitType": [
+            "curated"
+          ],
+          "eligibilityDetail": [
+            "curated"
+          ],
+          "claimRequirements": [
+            "curated"
+          ],
+          "availability": [
+            "curated"
+          ]
+        },
+        "fields": {
+          "audience": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "benefitType": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "eligibilityDetail": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "claimRequirements": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "availability": {
+            "basis": "source",
+            "derived": "stated"
+          }
+        }
+      }
+    },
+    {
+      "id": "f34797ef8750",
+      "title": "ScrollHaus",
+      "vendor": "ScrollHaus",
+      "url": "https://appsumo.com/products/scrollhaus/",
+      "source": "AppSumo",
+      "sourceUrl": "https://appsumo.com/collections/new/",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $99，原价 $299（省 67%）",
+      "pricingModel": "paid",
+      "priceLine": "$99 终身（原价 $299）",
+      "features": null,
+      "category": "设计创意",
+      "description": "Animated website templates with 3D effects, scroll animations, and prompts for AI builders",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-11-09",
+      "lastSeen": "2026-11-17",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
+      "id": "44848acd19f3",
+      "title": "Brandolia",
+      "vendor": "Brandolia",
+      "url": "https://appsumo.com/products/brandolia/",
+      "source": "AppSumo",
+      "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $55，原价 $150（省 63%）",
+      "pricingModel": "paid",
+      "priceLine": "$55 终身（原价 $150）",
+      "features": null,
+      "category": "设计创意",
+      "description": "Build a complete brand identity, website, and marketing visuals with AI from one idea",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": "2026-11-17",
+      "firstSeen": "2026-11-09",
+      "lastSeen": "2026-11-17",
+      "verified": false,
+      "verifiedAt": null
     },
     {
       "id": "086534ebceeb",

@@ -2726,9 +2726,9 @@
     },
     "086534ebceeb": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-17",
-      "endedAt": null
+      "endedAt": "2026-11-17"
     },
     "0a2fc31c76cc": {
       "source": "IT之家",
@@ -2786,9 +2786,9 @@
     },
     "2f0c03c32d8d": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-17",
-      "endedAt": null
+      "endedAt": "2026-11-17"
     },
     "31232ad4315e": {
       "source": "aitools.fyi",
@@ -2816,9 +2816,9 @@
     },
     "36fdb826204d": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-17",
-      "endedAt": null
+      "endedAt": "2026-11-17"
     },
     "39d2832e3c8f": {
       "source": "Futuretools",
@@ -2843,6 +2843,12 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
+    },
+    "44848acd19f3": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-17",
+      "endedAt": null
     },
     "44a401cd8f13": {
       "source": "aitools.fyi",
@@ -2897,6 +2903,12 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
+    },
+    "62e3166acec0": {
+      "source": "智谱AI",
+      "misses": 1,
+      "since": "2026-11-17",
+      "endedAt": null
     },
     "654e05ed3453": {
       "source": "aitools.fyi",
@@ -3056,9 +3068,9 @@
     },
     "9e43fb1945c3": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-17",
-      "endedAt": null
+      "endedAt": "2026-11-17"
     },
     "9e63611224ef": {
       "source": "aitools.fyi",
@@ -3215,6 +3227,12 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
+    },
+    "f34797ef8750": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-17",
+      "endedAt": null
     },
     "f6e6f3b1c820": {
       "source": "AppSumo",
@@ -7050,6 +7068,93 @@
         "verified": false
       },
       "runAt": "2026-11-16T21:42:46.066Z"
+    },
+    {
+      "id": "08220811a35d",
+      "at": "2026-11-17",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "其他",
+        "region": "cn",
+        "source": "爱范儿",
+        "sourceUrl": "https://www.ifanr.com/feed",
+        "verified": false
+      },
+      "runAt": "2026-11-17T06:42:44.029Z"
+    },
+    {
+      "id": "086534ebceeb",
+      "at": "2026-11-17",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-17",
+      "runAt": "2026-11-17T06:42:44.029Z",
+      "label": {
+        "title": "DomScan",
+        "vendor": "DomScan"
+      }
+    },
+    {
+      "id": "2f0c03c32d8d",
+      "at": "2026-11-17",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-17",
+      "runAt": "2026-11-17T06:42:44.029Z",
+      "label": {
+        "title": "AutomateNexus CRM",
+        "vendor": "AutomateNexus CRM"
+      }
+    },
+    {
+      "id": "36fdb826204d",
+      "at": "2026-11-17",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-17",
+      "runAt": "2026-11-17T06:42:44.029Z",
+      "label": {
+        "title": "ClearCrowds",
+        "vendor": "ClearCrowds"
+      }
+    },
+    {
+      "id": "49f87d205620",
+      "at": "2026-11-17",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-17",
+      "to": "2026-11-20",
+      "origin": "observed",
+      "runAt": "2026-11-17T06:42:44.029Z"
+    },
+    {
+      "id": "9e43fb1945c3",
+      "at": "2026-11-17",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-17",
+      "runAt": "2026-11-17T06:42:44.029Z",
+      "label": {
+        "title": "Tough Tongue AI",
+        "vendor": "Tough Tongue"
+      }
     }
   ]
 }
