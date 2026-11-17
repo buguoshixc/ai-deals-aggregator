@@ -1,6 +1,6 @@
 # v6 首页改版 · 最终报告
 
-分支：`fix/v6-homepage`（base `master`）。PR：待创建。
+分支：`fix/v6-homepage`（base `master`）。PR：https://github.com/buguoshixc/ai-deals-aggregator/pull/149
 
 ## 1. 做了什么（A → B → C → D，按依赖顺序）
 
