@@ -31,6 +31,9 @@ const apiPlanSchema = require('./lib/api-plan-schema');
 const apiPlanHistory = require('./lib/api-plan-history');
 // v3.0 Stage D：Model Registry（身份/索引层）。判据只在 lib/model-registry.js 一处。
 const modelRegistry = require('./lib/model-registry');
+// v6：首页主脚本外链到 assets/app.js。数据资源名 / RENDER-CORE 标记 / 语法检查
+// 都要跟着源文件走 —— 否则「外链化」会让 checkIndex 的这几条断言静默失去扫描面。
+const appAsset = require('./lib/app-asset');
 
 const ROOT = path.join(__dirname, '..');
 const DEALS_FILE = path.join(ROOT, 'deals.json');
@@ -398,13 +401,13 @@ function checkAudienceGuard() {
     error('受众字段红线失守：chinaUsableLine() 对 false 不再是「中国大陆用户不可用」（确定值必须照直说）');
   }
 
-  // ③ 措辞跨层一致
-  if (fs.existsSync(INDEX_FILE)) {
-    const wording = au.checkWordingContract(fs.readFileSync(INDEX_FILE, 'utf8'));
+  // ③ 措辞跨层一致（B：主脚本已外链到 assets/app.js，措辞块随 RENDER-CORE 一起搬过去）
+  if (appAsset.SOURCE) {
+    const wording = au.checkWordingContract(appAsset.SOURCE);
     if (!wording.ok) {
       error(
         `受众字段措辞跨层漂移：${wording.reasons.join('；')}。` +
-        'index.html 的 /* AUDIENCE:START */ 块与 lib/audience.js 的 WORDING_CONTRACT 必须逐项一致 —— ' +
+        'assets/app.js 的 /* AUDIENCE:START */ 块与 lib/audience.js 的 WORDING_CONTRACT 必须逐项一致 —— ' +
         '两侧各有一份实现在所难免（RENDER-CORE 在 vm 沙箱里跑、不能 require），文本比对是唯一的牙。'
       );
     }
@@ -1023,13 +1026,17 @@ function checkIndex() {
     return;
   }
   const html = fs.readFileSync(INDEX_FILE, 'utf8');
+  // v6：主脚本已外链；数据资源、RENDER-CORE 与语法检查的扫描面是 assets/app.js。
+  // 如果 HTML 仍把脚本内联着（过渡态 / 旧检出），退回用 html 本身，断言条数不变。
+  const appScript = appAsset.SOURCE || html;
+  const appScriptLabel = 'assets/app.js';
   // t3：首页数据资源从 `deals.json` 搬到 `assets/data/offers.json`（产物里的路径），断言跟着搬。
   // 它守的事没变：首页必须真的引用一份数据资源。
   // ⚠️ 别写回裸 `deals.json`：仓库根那份数据真值文件也叫这个名字，裸子串断言会永远为真，
   // 于是「首页根本没引用数据资源」这件事再也报不出来（这条断言就变成了装饰）。
-  if (!/assets\/data\/offers\.json/.test(html)) error('index.html 未引用 assets/data/offers.json');
-  if (!/payload\.deals/.test(html) && !/schemaVersion/.test(html)) {
-    warn('index.html 似乎没有按 v2 结构（payload.deals）读取数据');
+  if (!/assets\/data\/offers\.json/.test(appScript)) error('assets/app.js 未引用 assets/data/offers.json');
+  if (!/payload\.deals/.test(appScript) && !/schemaVersion/.test(appScript)) {
+    warn('assets/app.js 似乎没有按 v2 结构（payload.deals）读取数据');
   }
 
   // 预渲染标记：删掉它们会让 SEO 静态骨架静默失效（构建期才会报错），这里提前告警
@@ -1043,8 +1050,8 @@ function checkIndex() {
       warn(`index.html 缺少预渲染标记 ${marker}（会让构建期静态骨架失效）`);
     }
   }
-  if (!/RENDER-CORE:START/.test(html) || !/RENDER-CORE:END/.test(html)) {
-    warn('index.html 缺少 RENDER-CORE 标记区块（构建期无法抽取渲染核心）');
+  if (!/RENDER-CORE:START/.test(appScript) || !/RENDER-CORE:END/.test(appScript)) {
+    warn(`${appScriptLabel} 缺少 RENDER-CORE 标记区块（构建期无法抽取渲染核心）`);
   }
   if (!/logos\.css/.test(html)) {
     warn('index.html 未引用 logos.css（厂商 logo 不会显示）');
@@ -1055,15 +1062,20 @@ function checkIndex() {
 
   // 内联脚本语法校验（能抓出拼写/括号类低级错误）
   const scripts = [...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi)].map(m => m[1]);
-  if (!scripts.length) {
-    warn('index.html 未找到内联脚本');
-    return;
-  }
   for (const [index, source] of scripts.entries()) {
     try {
       new vm.Script(source, { filename: `index.html#script[${index}]` });
     } catch (e) {
       error(`index.html 内联脚本第 ${index + 1} 段语法错误: ${e.message}`);
+    }
+  }
+
+  // v6：外链主脚本也做一次语法校验（它不再被上面的内联扫描覆盖）。
+  if (appAsset.SOURCE) {
+    try {
+      new vm.Script(appAsset.SOURCE, { filename: 'assets/app.js' });
+    } catch (e) {
+      error(`assets/app.js 语法错误: ${e.message}`);
     }
   }
 

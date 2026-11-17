@@ -645,6 +645,8 @@ const FROZEN_VENDOR_KEYS = [
   ['google', 'Google'],
   ['anthropic', 'Anthropic'],
   ['openai', 'OpenAI'],
+  // v6：OpenRouter 免费模型合并卡需要官方品牌图形；新增 A 空间厂商键（不新增 /vendor/ 路由）
+  ['openrouter', 'OpenRouter'],
   ['perplexity', 'Perplexity'],
   ['canva', 'Canva'],
   ['cursor', 'Cursor'],

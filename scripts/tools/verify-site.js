@@ -663,6 +663,26 @@ function noJsControlExemptionFor(route) {
     else { externalRequests.push(url); forbiddenRequests.push(url); }
   });
 
+  console.log('\n=== 0) 首页主脚本外链（v6 / B） ===');
+  if (!urlArg) {
+    const homeHtml = fs.readFileSync(path.join(DIR, 'index.html'), 'utf8');
+    const appScripts = [...homeHtml.matchAll(/<script\b[^>]*\bsrc="([^"]+)"[^>]*>/gi)]
+      .map(m => ({ tag: m[0], src: m[1] }))
+      .filter(item => /(?:^|\/)app\.[a-f0-9]{16}\.js$/.test(item.src));
+    check('首页恰好加载 1 个内容哈希应用脚本（app.<16hex>.js）', appScripts.length === 1, appScripts.map(item => item.src).join(', '));
+    check('应用脚本带 defer（首屏解析不阻塞渲染）', appScripts.length === 1 && /\bdefer\b/.test(appScripts[0].tag), appScripts[0] ? appScripts[0].tag : '未找到');
+    check('首页没有内联 RENDER-CORE（176KB 已移出首屏 HTML）', !/RENDER-CORE:START/.test(homeHtml));
+    if (appScripts.length === 1) {
+      const assetPath = path.join(DIR, appScripts[0].src);
+      check('外链应用脚本文件真实存在', fs.existsSync(assetPath), path.relative(ROOT, assetPath));
+      const bytes = fs.existsSync(assetPath) ? fs.statSync(assetPath).size : 0;
+      check('外链应用脚本不是空壳（>100KB）', bytes > 100 * 1024, `${bytes} B`);
+      check('dist 里没有源码路径 assets/app.js（只有哈希产物）', !fs.existsSync(path.join(DIR, 'assets', 'app.js')));
+    }
+  } else {
+    console.log('  · 线上目标：跳过静态文件断言（改由 HTTP 响应验证）');
+  }
+
   console.log('\n=== 1) 无 JS：预渲染骨架 ===');
   await page.route('**/assets/data/offers.json', route => route.abort());   // 断掉数据，只看静态 HTML
   await page.goto(base, { waitUntil: 'load' });
@@ -805,7 +825,15 @@ function noJsControlExemptionFor(route) {
       fg: style ? style.color : '',
       weight: style ? style.fontWeight : '',
       brand: getComputedStyle(document.documentElement).getPropertyValue('--brand').trim(),
-      onAccent: getComputedStyle(document.documentElement).getPropertyValue('--on-accent').trim()
+      onAccent: getComputedStyle(document.documentElement).getPropertyValue('--on-accent').trim(),
+      secondary: ['.plansnav-api', '.plansnav-cost'].map(sel => {
+        const el = document.querySelector(sel);
+        if (!el) return { sel, missing: true };
+        const s = getComputedStyle(el);
+        return { sel, text: el.textContent.trim(), bg: s.backgroundColor, weight: s.fontWeight,
+          border: s.borderTopWidth, color: s.color, display: s.display };
+      }),
+      themeButtons: [...document.querySelectorAll('#themeSeg button')].map(b => b.textContent.trim())
     };
   });
   check('首页顶栏的入口整簇在配色切换器**右边**且不越过汇总条（几何判定，不是"还在页面上"）',
@@ -827,6 +855,22 @@ function noJsControlExemptionFor(route) {
       topPlansEntry.bg === toRgb(topPlansEntry.brand) && topPlansEntry.fg === toRgb(topPlansEntry.onAccent) &&
       Number(topPlansEntry.weight) >= 600,
       `填充 ${topPlansEntry.bg}（--brand ${topPlansEntry.brand}）· 文字 ${topPlansEntry.fg}（--on-accent ${topPlansEntry.onAccent}）· 字重 ${topPlansEntry.weight}`);
+
+  /* v6（C2）：第二、三枚必须从实心药丸降为普通文字链，且文案恢复全称。
+     这条判的是「降权」本身（透明底 / 无边框 / 非加粗）与「名字写全」——
+     只判"入口还在"会让改回药丸也绿。 */
+  check('首页顶栏两枚次级入口是普通文字链（透明底、无边框、非加粗），且恢复全称',
+    topPlansEntry.secondary.length === 2 && topPlansEntry.secondary.every(item =>
+      !item.missing && item.bg === 'rgba(0, 0, 0, 0)' && item.border === '0px' && Number(item.weight) < 600),
+    topPlansEntry.secondary.map(item => `${item.sel}: ${item.text || '(缺)'} ${item.bg} / ${item.border} / ${item.weight}`).join(' · '));
+  check('首页顶栏次级入口文案是「API / Token 计费对比」「API 成本计算器」',
+    topPlansEntry.secondary.length === 2 &&
+    topPlansEntry.secondary[0].text === 'API / Token 计费对比' &&
+    topPlansEntry.secondary[1].text === 'API 成本计算器',
+    topPlansEntry.secondary.map(item => item.text).join(' / '));
+  check('首页顶栏主题切换器仍恰好是三段（跟随系统 / 浅色 / 深色）',
+    topPlansEntry.themeButtons.length === 3 && topPlansEntry.themeButtons.join('|') === '跟随系统|浅色|深色',
+    topPlansEntry.themeButtons.join(' / '));
   }
 
   /* 761–940px：顶栏一行放不下，整页会横向滚动。
@@ -1209,6 +1253,16 @@ function noJsControlExemptionFor(route) {
       };
       const foldedHits = hits.filter(card => card.declared > 1);
       if (!foldedHits.length) continue;
+      // v6（D1）：同源折叠卡的成员本来就跨厂商（OpenRouter 的 8 个模型分属 Baidu/NVIDIA/…），
+      // 厂商词当然不会出现在卡标题里。这些卡由下面「同源卡成员共享同一 sourceUrl」单独判，
+      // 不能再用厂商词判红；厂商词只对 sourceUrl 为空的 legacy 折叠卡负责。
+      const isSourceCard = card => {
+        const members = card.ids.map(id => byId.get(id)).filter(Boolean);
+        if (!members.length) return false;
+        const srcs = members.map(d => String(d.sourceUrl || '').trim());
+        return srcs.every(Boolean) && new Set(srcs).size === 1;
+      };
+      if (foldedHits.some(isSourceCard)) continue;
       const vendorWords = wordsOf(deal.vendor);
       const ok = foldedHits.some(card => {
         const t = card.title.toLowerCase();
@@ -1237,6 +1291,11 @@ function noJsControlExemptionFor(route) {
         offer: card.offer,
         memberLinks: card.memberLinks.filter(Boolean),
         memberTextChars: card.memberText.length,
+        // 同源卡：所有成员都必须来自同一 sourceUrl；sourceUrl 为空的是 legacy 厂商折叠卡。
+        sourceUrl: (() => {
+          const srcs = members.map(d => String(d.sourceUrl || '').trim());
+          return srcs.length === members.length && srcs.every(Boolean) && new Set(srcs).size === 1 ? srcs[0] : '';
+        })(),
         // 预渲染的成员原文：**每种不同的文案**至少要在卡片静态正文里出现一次（无 JS 也读得到）。
         // 分母是「不同文案数」——同一份文案覆盖 N 个型号时说一遍就够（那正是 modelOffers 的口径）。
         prerenderedTexts: [...distinct].filter(t => card.memberText.includes(t.slice(0, 12))).length,
@@ -1251,7 +1310,8 @@ function noJsControlExemptionFor(route) {
       multiOwned,
       crossVendor,
       ghostIds,
-      foldedCards
+      foldedCards,
+      sourceCards: foldedCards.filter(card => card.sourceUrl)
     };
   }, JSON.parse(DEALS_URL));
 
@@ -1260,10 +1320,14 @@ function noJsControlExemptionFor(route) {
     `未认领 ${folded.unmatched.length} 条 / 被多张卡认领 ${folded.multiOwned.length} 条 / 卡片上不存在的 id ${folded.ghostIds.length} 个` +
     (folded.unmatched.length ? ` · 例：${folded.unmatched.slice(0, 3).join('、')}` : ''));
 
-  check('认领关系同厂商（折叠键把厂商算进去了，不是只按优惠文案并卡）',
+  check('认领关系同厂商或同源（legacy 卡按厂商，sourceUrl 卡按来源分组）',
     folded.crossVendor.length === 0,
     folded.crossVendor.length ? `跨厂商 ${folded.crossVendor.length} 条 · 例：${folded.crossVendor.slice(0, 2).join(' / ')}`
-      : `全部 ${folded.deals} 条都落在同一厂商的卡片上`);
+      : `全部 ${folded.deals} 条都落在同一厂商或同一来源的卡片上`);
+
+  check('同源折叠卡的成员确实共享同一 sourceUrl（sourceUrl 为空时不许冒充同源）',
+    folded.sourceCards.every(card => card.sourceUrl && card.memberLinks.length === card.declared),
+    folded.sourceCards.map(card => `${card.title}：${card.sourceUrl}`).join(' · ') || '本页没有同源折叠卡');
 
   // 这条断言的牙口是**实跑验过**的：把折叠键里的厂商抹掉（`foldKey` 只返回 type+条件+有效期）
   // 后，重建产物仍能过构建自检，但这条当场变红「跨厂商 11 条」。
@@ -1572,6 +1636,45 @@ function noJsControlExemptionFor(route) {
   check('无横向溢出', mobile.overflowX <= 0, `溢出 ${mobile.overflowX}px`);
   check('移动端单列', mobile.cols === 1, `${mobile.cols} 列`);
   check('移动端卡片完整', mobile.cards >= 45 && mobile.tiles >= 20, `${mobile.cards} 卡片 / ${mobile.tiles} tile`);
+
+  /* v6（C1）：≤560px 的十条「按需求找优惠」入口卡必须整块移到优惠网格**之后**，
+     并让 390×900 首屏至少出现 1 张完整优惠卡。旧读数：入口卡块占 758px，
+     网格起点 1135.75/1148.75px，首屏 0 张。这里用 900（任务书口径）而不是上面
+     那条移动端断言的 844，量的是同一件事：首屏能不能看到优惠。
+     ⚠️ nav.needs 进 main 后宽度会吃 .wrap 的 16px 内边距；-16px 外边距是修复，
+     所以这里同时钉「整块宽 390」与「卡片仍 358」，防止以后又被包含块悄悄收窄。 */
+  await page.setViewportSize({ width: 390, height: 900 });
+  await page.waitForTimeout(200);
+  const c1Mobile = await page.evaluate(() => {
+    const grid = document.getElementById('dealsList');
+    const needs = document.querySelector('nav.needs');
+    const cards = [...document.querySelectorAll('#dealsList article.g')];
+    const gb = grid.getBoundingClientRect();
+    const nb = needs ? needs.getBoundingClientRect() : null;
+    const after = Boolean(needs) && Boolean(grid.compareDocumentPosition(needs) & Node.DOCUMENT_POSITION_FOLLOWING);
+    return {
+      gridTop: Math.round(gb.top * 100) / 100,
+      full: cards.filter(c => { const r = c.getBoundingClientRect(); return r.top >= -1 && r.bottom <= 900; }).length,
+      navAfter: after,
+      navPrev: needs && needs.previousElementSibling ? (needs.previousElementSibling.id || needs.previousElementSibling.className) : '',
+      navW: nb ? Math.round(nb.width * 100) / 100 : 0,
+      navH: nb ? Math.round(nb.height * 100) / 100 : 0,
+      needCards: needs ? needs.querySelectorAll('.need-card').length : 0,
+      firstCardW: cards[0] ? Math.round(cards[0].getBoundingClientRect().width * 100) / 100 : 0,
+      overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth
+    };
+  });
+  check('390×900 首屏至少 1 张完整优惠卡（C1：入口卡移到网格之后）',
+    c1Mobile.full >= 1 && c1Mobile.gridTop < 900,
+    `首屏完整 ${c1Mobile.full} 张 · 网格起点 ${c1Mobile.gridTop}px · 入口卡块 ${c1Mobile.navH}px`);
+  check('390：入口卡整块在优惠网格之后，仍 10 张、宽 390、无横向溢出',
+    c1Mobile.navAfter && c1Mobile.navPrev === 'dealsList' && c1Mobile.needCards === 10 &&
+    Math.abs(c1Mobile.navW - 390) <= 0.5 && c1Mobile.overflow <= 0,
+    `nav 在 grid 后=${c1Mobile.navAfter} · 前一项=${c1Mobile.navPrev} · ${c1Mobile.needCards} 张 · 宽 ${c1Mobile.navW}px · 溢出 ${c1Mobile.overflow}px`);
+  check('390：入口卡进 main 后，卡片宽度仍是 358（负外边距抵消 .wrap 的内边距）',
+    Math.abs(c1Mobile.firstCardW - 358) <= 0.5,
+    `首卡 ${c1Mobile.firstCardW}px（期望 358）`);
+  await page.setViewportSize({ width: 390, height: 844 });
 
   // 控制带逐个控件体检 + 跳转 chip 折行 + **更窄视口的页面级溢出** —— 补的是门禁的两个盲区：
   // ① 上面那条「无横向溢出」只看**页面级** scrollWidth：控件被父容器 `overflow:hidden` 切掉一截时，

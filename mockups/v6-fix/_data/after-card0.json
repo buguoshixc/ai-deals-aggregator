@@ -1,0 +1,359 @@
+{
+  "url": "http://127.0.0.1:8081/mockups/v6-fix/after.html",
+  "viewport": {
+    "w": 1440,
+    "h": 1800
+  },
+  "doc": {
+    "scrollW": 1440,
+    "scrollH": 7651
+  },
+  "topbar": {
+    "rect": {
+      "top": 0,
+      "bottom": 58,
+      "left": 10,
+      "right": 1430,
+      "w": 1420,
+      "h": 58
+    },
+    "clientW": 1420,
+    "scrollW": 1420,
+    "overflow": 0,
+    "searchW": 379.8,
+    "gap": "18px",
+    "items": [
+      {
+        "tag": "A",
+        "cls": "brand",
+        "text": "AI 优惠聚合器真实优惠 · 每日更新",
+        "display": "flex",
+        "w": 145.09,
+        "left": 30,
+        "right": 175.09
+      },
+      {
+        "tag": "LABEL",
+        "cls": "search",
+        "text": "",
+        "display": "flex",
+        "w": 379.8,
+        "left": 193.09,
+        "right": 572.89
+      },
+      {
+        "tag": "DIV",
+        "cls": "seg",
+        "text": "跟随系统 浅色 深色",
+        "display": "flex",
+        "w": 172,
+        "left": 590.89,
+        "right": 762.89
+      },
+      {
+        "tag": "A",
+        "cls": "plansnav",
+        "text": "AI Coding 套餐对比",
+        "display": "block",
+        "w": 152.75,
+        "left": 780.89,
+        "right": 933.64
+      },
+      {
+        "tag": "A",
+        "cls": "plansnav plansnav-api",
+        "text": "API / Token 计费对比",
+        "display": "block",
+        "w": 116.63,
+        "left": 951.64,
+        "right": 1068.27
+      },
+      {
+        "tag": "A",
+        "cls": "plansnav plansnav-cost",
+        "text": "API 成本计算器",
+        "display": "block",
+        "w": 82.81,
+        "left": 1086.27,
+        "right": 1169.08
+      },
+      {
+        "tag": "DIV",
+        "cls": "topstat",
+        "text": "96 条优惠 · 更新 2026-11-17",
+        "display": "block",
+        "w": 174.92,
+        "left": 1187.08,
+        "right": 1362
+      },
+      {
+        "tag": "A",
+        "cls": "ghlink",
+        "text": "",
+        "display": "flex",
+        "w": 30,
+        "left": 1380,
+        "right": 1410
+      }
+    ]
+  },
+  "facets": {
+    "scrollW": 1426,
+    "clientW": 1420,
+    "overflow": 6,
+    "mask": "linear-gradient(90deg, rgba(0, 0, 0, 0) 0px, rgb(0, 0, 0) 30px, rgb(0, 0, 0) calc(100% - 30px), rgba(0, 0, 0, 0) 100%)"
+  },
+  "fm": [
+    {
+      "card": "OpenRouter · 免费模型（9 个）",
+      "links": 9,
+      "scrollW": 1709,
+      "clientW": 422,
+      "offsetH": 15,
+      "clientH": 15,
+      "scrollbarH": 0,
+      "scrollbarW": 0,
+      "overflowX": "hidden",
+      "whiteSpace": "nowrap",
+      "textOverflow": "ellipsis",
+      "rect": {
+        "top": 479.09,
+        "bottom": 494.09,
+        "left": 45,
+        "right": 467,
+        "w": 422,
+        "h": 15
+      }
+    },
+    {
+      "card": "智谱AI 免费模型",
+      "links": 7,
+      "scrollW": 3063,
+      "clientW": 422,
+      "offsetH": 15,
+      "clientH": 15,
+      "scrollbarH": 0,
+      "scrollbarW": 0,
+      "overflowX": "hidden",
+      "whiteSpace": "nowrap",
+      "textOverflow": "ellipsis",
+      "rect": {
+        "top": 683.09,
+        "bottom": 698.09,
+        "left": 509,
+        "right": 931,
+        "w": 422,
+        "h": 15
+      }
+    },
+    {
+      "card": "百度千帆 新用户免费额度",
+      "links": 17,
+      "scrollW": 2213,
+      "clientW": 422,
+      "offsetH": 15,
+      "clientH": 15,
+      "scrollbarH": 0,
+      "scrollbarW": 0,
+      "overflowX": "hidden",
+      "whiteSpace": "nowrap",
+      "textOverflow": "ellipsis",
+      "rect": {
+        "top": 1127.09,
+        "bottom": 1142.09,
+        "left": 973,
+        "right": 1395,
+        "w": 422,
+        "h": 15
+      }
+    },
+    {
+      "card": "火山方舟 免费额度",
+      "links": 9,
+      "scrollW": 2882,
+      "clientW": 422,
+      "offsetH": 15,
+      "clientH": 15,
+      "scrollbarH": 0,
+      "scrollbarW": 0,
+      "overflowX": "hidden",
+      "whiteSpace": "nowrap",
+      "textOverflow": "ellipsis",
+      "rect": {
+        "top": 1331.09,
+        "bottom": 1346.09,
+        "left": 509,
+        "right": 931,
+        "w": 422,
+        "h": 15
+      }
+    }
+  ],
+  "cardCount": 88,
+  "openrouterCards": 1,
+  "mergedCard": {
+    "title": "OpenRouter · 免费模型（9 个）",
+    "ids": "98cfbb26c5cc,f9844047fe7c,14f39f10f728,762a098836d7,6637868284f5,940d872f9eac,2374288880c3,75c584a4d6a2,ef3cba339a72",
+    "members": 9,
+    "rect": {
+      "top": 426,
+      "bottom": 618,
+      "left": 30,
+      "right": 482,
+      "w": 452,
+      "h": 192
+    }
+  },
+  "titles": {
+    "total": 88,
+    "wrapped": 21,
+    "samples": [
+      {
+        "title": "百川智能 海纳百川计划 免费使用 M3Plus API",
+        "h": 39.19,
+        "lh": 19.6,
+        "lines": 2,
+        "rect": {
+          "top": 439,
+          "bottom": 478.19,
+          "left": 553,
+          "right": 841,
+          "w": 288,
+          "h": 39.19
+        }
+      },
+      {
+        "title": "ElevenLabs 免费计划 每月 10000 credits",
+        "h": 39.19,
+        "lh": 19.6,
+        "lines": 2,
+        "rect": {
+          "top": 847,
+          "bottom": 886.19,
+          "left": 89,
+          "right": 367,
+          "w": 278,
+          "h": 39.19
+        }
+      },
+      {
+        "title": "360智脑开放平台 新用户获赠体验券/代金券（官方协议条款）",
+        "h": 39.19,
+        "lh": 19.6,
+        "lines": 2,
+        "rect": {
+          "top": 1087,
+          "bottom": 1126.19,
+          "left": 89,
+          "right": 377,
+          "w": 288,
+          "h": 39.19
+        }
+      },
+      {
+        "title": "火山方舟 豆包全系模型 个人开发者 50 万 tokens 免费额度",
+        "h": 39.19,
+        "lh": 19.6,
+        "lines": 2,
+        "rect": {
+          "top": 1291,
+          "bottom": 1330.19,
+          "left": 89,
+          "right": 377,
+          "w": 288,
+          "h": 39.19
+        }
+      },
+      {
+        "title": "火山方舟 协作奖励计划：每日免费领取单模型最高 500 万 Tokens",
+        "h": 39.19,
+        "lh": 19.6,
+        "lines": 2,
+        "rect": {
+          "top": 1291,
+          "bottom": 1330.19,
+          "left": 1017,
+          "right": 1305,
+          "w": 288,
+          "h": 39.19
+        }
+      },
+      {
+        "title": "扣子 Coze 部分模型限时免费 每模型 100 次/天",
+        "h": 39.19,
+        "lh": 19.6,
+        "lines": 2,
+        "rect": {
+          "top": 1495,
+          "bottom": 1534.19,
+          "left": 553,
+          "right": 841,
+          "w": 288,
+          "h": 39.19
+        }
+      }
+    ]
+  },
+  "layout": {
+    "top": {
+      "top": 0,
+      "bottom": 59,
+      "left": 0,
+      "right": 1440,
+      "w": 1440,
+      "h": 59
+    },
+    "facets": {
+      "top": 59,
+      "bottom": 105,
+      "left": 0,
+      "right": 1440,
+      "w": 1440,
+      "h": 46
+    },
+    "needs": {
+      "rect": {
+        "top": 105,
+        "bottom": 258,
+        "left": 10,
+        "right": 1430,
+        "w": 1420,
+        "h": 153
+      },
+      "previous": "facets",
+      "next": "wrap"
+    },
+    "grid": {
+      "rect": {
+        "top": 390,
+        "bottom": 6846,
+        "left": 30,
+        "right": 1410,
+        "w": 1380,
+        "h": 6456
+      },
+      "prev": "cmpbar"
+    },
+    "firstCard": {
+      "top": 426,
+      "bottom": 618,
+      "left": 30,
+      "right": 482,
+      "w": 452,
+      "h": 192
+    }
+  },
+  "cardShot": {
+    "index": 0,
+    "path": "_data/after-card0.png",
+    "box": {
+      "x": 30,
+      "y": 426,
+      "width": 452,
+      "height": 192
+    }
+  },
+  "errors": [],
+  "blockedExternal": [],
+  "patched": true
+}

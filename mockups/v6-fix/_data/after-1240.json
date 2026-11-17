@@ -1,0 +1,349 @@
+{
+  "url": "http://127.0.0.1:8081/mockups/v6-fix/after.html",
+  "viewport": {
+    "w": 1240,
+    "h": 900
+  },
+  "doc": {
+    "scrollW": 1240,
+    "scrollH": 7651
+  },
+  "topbar": {
+    "rect": {
+      "top": 0,
+      "bottom": 58,
+      "left": 0,
+      "right": 1240,
+      "w": 1240,
+      "h": 58
+    },
+    "clientW": 1240,
+    "scrollW": 1240,
+    "overflow": 0,
+    "searchW": 180,
+    "gap": "18px",
+    "items": [
+      {
+        "tag": "A",
+        "cls": "brand",
+        "text": "AI 优惠聚合器真实优惠 · 每日更新",
+        "display": "flex",
+        "w": 145.09,
+        "left": 20,
+        "right": 165.09
+      },
+      {
+        "tag": "LABEL",
+        "cls": "search",
+        "text": "",
+        "display": "flex",
+        "w": 180,
+        "left": 183.09,
+        "right": 363.09
+      },
+      {
+        "tag": "DIV",
+        "cls": "seg",
+        "text": "跟随系统 浅色 深色",
+        "display": "flex",
+        "w": 172,
+        "left": 381.09,
+        "right": 553.09
+      },
+      {
+        "tag": "A",
+        "cls": "plansnav",
+        "text": "AI Coding 套餐对比",
+        "display": "block",
+        "w": 152.75,
+        "left": 571.09,
+        "right": 723.84
+      },
+      {
+        "tag": "A",
+        "cls": "plansnav plansnav-api",
+        "text": "API / Token 计费对比",
+        "display": "block",
+        "w": 130.34,
+        "left": 741.84,
+        "right": 872.19
+      },
+      {
+        "tag": "A",
+        "cls": "plansnav plansnav-cost",
+        "text": "API 成本计算器",
+        "display": "block",
+        "w": 93.7,
+        "left": 890.19,
+        "right": 983.89
+      },
+      {
+        "tag": "DIV",
+        "cls": "topstat",
+        "text": "96 条优惠 · 更新 2026-11-17",
+        "display": "block",
+        "w": 174.92,
+        "left": 1001.89,
+        "right": 1176.81
+      },
+      {
+        "tag": "A",
+        "cls": "ghlink",
+        "text": "",
+        "display": "flex",
+        "w": 30,
+        "left": 1194.81,
+        "right": 1224.81
+      }
+    ]
+  },
+  "facets": {
+    "scrollW": 1426,
+    "clientW": 1240,
+    "overflow": 186,
+    "mask": "linear-gradient(90deg, rgba(0, 0, 0, 0) 0px, rgb(0, 0, 0) 30px, rgb(0, 0, 0) calc(100% - 30px), rgba(0, 0, 0, 0) 100%)"
+  },
+  "fm": [
+    {
+      "card": "OpenRouter · 免费模型（9 个）",
+      "links": 9,
+      "scrollW": 1684,
+      "clientW": 362,
+      "offsetH": 15,
+      "clientH": 15,
+      "scrollbarH": 0,
+      "scrollbarW": 0,
+      "overflowX": "hidden",
+      "whiteSpace": "nowrap",
+      "textOverflow": "ellipsis",
+      "rect": {
+        "top": 479.09,
+        "bottom": 494.09,
+        "left": 35,
+        "right": 397,
+        "w": 362,
+        "h": 15
+      }
+    },
+    {
+      "card": "智谱AI 免费模型",
+      "links": 7,
+      "scrollW": 3063,
+      "clientW": 362,
+      "offsetH": 15,
+      "clientH": 15,
+      "scrollbarH": 0,
+      "scrollbarW": 0,
+      "overflowX": "hidden",
+      "whiteSpace": "nowrap",
+      "textOverflow": "ellipsis",
+      "rect": {
+        "top": 683.09,
+        "bottom": 698.09,
+        "left": 439,
+        "right": 801,
+        "w": 362,
+        "h": 15
+      }
+    },
+    {
+      "card": "百度千帆 新用户免费额度",
+      "links": 17,
+      "scrollW": 2213,
+      "clientW": 362,
+      "offsetH": 15,
+      "clientH": 15,
+      "scrollbarH": 0,
+      "scrollbarW": 0,
+      "overflowX": "hidden",
+      "whiteSpace": "nowrap",
+      "textOverflow": "ellipsis",
+      "rect": {
+        "top": 1146.69,
+        "bottom": 1161.69,
+        "left": 843,
+        "right": 1205,
+        "w": 362,
+        "h": 15
+      }
+    },
+    {
+      "card": "火山方舟 免费额度",
+      "links": 9,
+      "scrollW": 2882,
+      "clientW": 362,
+      "offsetH": 15,
+      "clientH": 15,
+      "scrollbarH": 0,
+      "scrollbarW": 0,
+      "overflowX": "hidden",
+      "whiteSpace": "nowrap",
+      "textOverflow": "ellipsis",
+      "rect": {
+        "top": 1331.09,
+        "bottom": 1346.09,
+        "left": 439,
+        "right": 801,
+        "w": 362,
+        "h": 15
+      }
+    }
+  ],
+  "cardCount": 88,
+  "openrouterCards": 1,
+  "mergedCard": {
+    "title": "OpenRouter · 免费模型（9 个）",
+    "ids": "98cfbb26c5cc,f9844047fe7c,14f39f10f728,762a098836d7,6637868284f5,940d872f9eac,2374288880c3,75c584a4d6a2,ef3cba339a72",
+    "members": 9,
+    "rect": {
+      "top": 426,
+      "bottom": 618,
+      "left": 20,
+      "right": 412,
+      "w": 392,
+      "h": 192
+    }
+  },
+  "titles": {
+    "total": 88,
+    "wrapped": 36,
+    "samples": [
+      {
+        "title": "百川智能 海纳百川计划 免费使用 M3Plus API",
+        "h": 39.19,
+        "lh": 19.6,
+        "lines": 2,
+        "rect": {
+          "top": 439,
+          "bottom": 478.19,
+          "left": 483,
+          "right": 711,
+          "w": 228,
+          "h": 39.19
+        }
+      },
+      {
+        "title": "讯飞星火 Spark Lite 轻量级大模型免费使用",
+        "h": 39.19,
+        "lh": 19.6,
+        "lines": 2,
+        "rect": {
+          "top": 643,
+          "bottom": 682.19,
+          "left": 79,
+          "right": 307,
+          "w": 228,
+          "h": 39.19
+        }
+      },
+      {
+        "title": "ElevenLabs 免费计划 每月 10000 credits",
+        "h": 39.19,
+        "lh": 19.6,
+        "lines": 2,
+        "rect": {
+          "top": 847,
+          "bottom": 886.19,
+          "left": 79,
+          "right": 297,
+          "w": 218,
+          "h": 39.19
+        }
+      },
+      {
+        "title": "360智脑开放平台 新用户获赠体验券/代金券（官方协议条款）",
+        "h": 39.19,
+        "lh": 19.6,
+        "lines": 2,
+        "rect": {
+          "top": 1087,
+          "bottom": 1126.19,
+          "left": 79,
+          "right": 307,
+          "w": 228,
+          "h": 39.19
+        }
+      },
+      {
+        "title": "百度千帆 新用户免费额度",
+        "h": 39.19,
+        "lh": 19.6,
+        "lines": 2,
+        "rect": {
+          "top": 1087,
+          "bottom": 1126.19,
+          "left": 968,
+          "right": 1115,
+          "w": 147,
+          "h": 39.19
+        }
+      },
+      {
+        "title": "火山方舟 豆包全系模型 个人开发者 50 万 tokens 免费额度",
+        "h": 39.19,
+        "lh": 19.6,
+        "lines": 2,
+        "rect": {
+          "top": 1291,
+          "bottom": 1330.19,
+          "left": 79,
+          "right": 307,
+          "w": 228,
+          "h": 39.19
+        }
+      }
+    ]
+  },
+  "layout": {
+    "top": {
+      "top": 0,
+      "bottom": 59,
+      "left": 0,
+      "right": 1240,
+      "w": 1240,
+      "h": 59
+    },
+    "facets": {
+      "top": 59,
+      "bottom": 105,
+      "left": 0,
+      "right": 1240,
+      "w": 1240,
+      "h": 46
+    },
+    "needs": {
+      "rect": {
+        "top": 105,
+        "bottom": 258,
+        "left": 0,
+        "right": 1240,
+        "w": 1240,
+        "h": 153
+      },
+      "previous": "facets",
+      "next": "wrap"
+    },
+    "grid": {
+      "rect": {
+        "top": 390,
+        "bottom": 6846,
+        "left": 20,
+        "right": 1220,
+        "w": 1200,
+        "h": 6456
+      },
+      "prev": "cmpbar"
+    },
+    "firstCard": {
+      "top": 426,
+      "bottom": 618,
+      "left": 20,
+      "right": 412,
+      "w": 392,
+      "h": 192
+    }
+  },
+  "errors": [],
+  "blockedExternal": [],
+  "patched": true
+}

@@ -13,7 +13,7 @@
  * 用法：node scripts/tools/text-selftest.js
  */
 
-const { cleanText } = require('../lib/schema');
+const { cleanText, MAX_DESCRIPTION_LENGTH } = require('../lib/schema');
 const { loadDeals } = require('../lib/store');
 
 let pass = 0;
@@ -92,7 +92,7 @@ checkEqual('首尾空白', cleanText('  a b  '), 'a b');
 console.log('\n=== 4) 数据不变量：存进 deals.json 的文本必须已经是规范形态 ===');
 
 const CAPS = {
-  title: 150, description: 200, discountInfo: 240, vendor: 60,
+  title: 150, description: MAX_DESCRIPTION_LENGTH, discountInfo: 240, vendor: 60,
   source: 40, priceLine: 60, eligibility: 120, validity: 60
 };
 const deals = loadDeals();

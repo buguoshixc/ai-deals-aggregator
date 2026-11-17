@@ -80,7 +80,7 @@
  */
 
 const { getText } = require('../lib/http');
-const { cleanText, todayCN } = require('../lib/schema');
+const { cleanText, todayCN, MAX_DESCRIPTION_LENGTH } = require('../lib/schema');
 
 const API_URL = 'https://openrouter.ai/api/v1/models';
 /** 官方限流文档：免费档的四个常量就在这份页面的正文里（每次运行现读，不硬编码） */
@@ -136,7 +136,7 @@ function parseModels(text) {
       completionPrice: typeof pricing.completion === 'string' ? pricing.completion : null,
       perRequestLimits: raw.per_request_limits === undefined ? null : raw.per_request_limits,
       contextLength,
-      description: cleanText(raw.description, 200),
+      description: cleanText(raw.description, MAX_DESCRIPTION_LENGTH),
       /** `:free` 只是路由变体命名，**不是**免费判据；仅用于展示标签 */
       freeVariant: /:free$/i.test(id),
       isFree: typeof pricing.prompt === 'string' && pricing.prompt === '0'

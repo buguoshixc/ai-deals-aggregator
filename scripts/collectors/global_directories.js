@@ -7,7 +7,7 @@
 
 const cheerio = require('cheerio');
 const { getText, followRedirect, mapLimit, describeError } = require('../lib/http');
-const { cleanText, inferPricingModel } = require('../lib/schema');
+const { cleanText, inferPricingModel, MAX_DESCRIPTION_LENGTH } = require('../lib/schema');
 
 const PRICING_MAP = {
   free: '免费',
@@ -128,7 +128,7 @@ async function fetchFuturepediaDetail(pageUrl, headers) {
     if (!website && href && !href.includes('futurepedia.io')) website = href;
   });
 
-  return { description: cleanText(description, 200), pricing: cleanText(pricing, 60), website };
+  return { description: cleanText(description, MAX_DESCRIPTION_LENGTH), pricing: cleanText(pricing, 60), website };
 }
 
 /** Futuretools：列表页卡片（纯解析，不碰网络） */

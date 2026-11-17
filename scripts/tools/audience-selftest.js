@@ -31,6 +31,7 @@ const { migrationCredibility, buildProvenance } = require('../lib/migrate-audien
 
 const ROOT = path.join(__dirname, '..', '..');
 const INDEX_FILE = path.join(ROOT, 'index.html');
+const appAsset = require('../lib/app-asset');
 
 let pass = 0;
 const failures = [];
@@ -236,9 +237,10 @@ check('RENDER-CORE 暴露 audienceRows()（构建期与浏览器共用这一份�
 /* ================================================================== */
 console.log('\n=== 5) 措辞跨层比对（文本级）：改坏任何一边都必须红 ===');
 
-const html = fs.readFileSync(INDEX_FILE, 'utf8');
+// v6：主脚本外链后，AUDIENCE:START/END 块在 assets/app.js 里；测试仍按「前端源码」对待它。
+const html = appAsset.SOURCE;
 const contract = au.checkWordingContract(html);
-check('index.html 的 AUDIENCE:START/END 块与 WORDING_CONTRACT 逐项一致',
+check('assets/app.js 的 AUDIENCE:START/END 块与 WORDING_CONTRACT 逐项一致',
   contract.ok, contract.reasons.slice(0, 3).join(' | '));
 check('标记块存在且可解析（解析不出 = 漂移，不是「没写」）',
   au.extractWordingBlock(html) !== null && au.parseWordingBlock(au.extractWordingBlock(html)) !== null);
@@ -977,7 +979,7 @@ console.log('\n=== 10) 断言依据的档位（t7：第三方收录 / 推断不�
  */
 {
   const provenanceLib = require('../lib/provenance');
-  const wording = au.parseWordingBlock(au.extractWordingBlock(fs.readFileSync(INDEX_FILE, 'utf8')));
+  const wording = au.parseWordingBlock(au.extractWordingBlock(appAsset.SOURCE));
   check('措辞块里 SOURCE_BASIS 有 `collected` 档（第三方收录页原文）',
     Boolean(wording && wording.SOURCE_BASIS && wording.SOURCE_BASIS.collected), JSON.stringify(wording && wording.SOURCE_BASIS));
 

@@ -77,16 +77,19 @@ const DETAIL_MAIN_CLASS = 'detail-main';
  *
  * @param {string} indexHtml 已组装好的首页 HTML（含共享 `<style>` / 主题脚本 / 页脚 / 图标入口）
  * @param {Array<[string,string]>} routeHrefs 路由占位符表（`build-local.js` 的 ROUTE_HREFS）
+ * @param {string} [appScript] 首页外链主脚本的源码（v6 起 RENDER-CORE 不再内联在 HTML 里；
+ *   `SHARED:dealcopy` 区间在这份源码里。构建期传 `appAsset.SOURCE`，不传则只认 HTML 内联块）。
  */
-function loadShellParts(indexHtml, routeHrefs) {
+function loadShellParts(indexHtml, routeHrefs, appScript = '') {
   const sharedStyle = (indexHtml.match(/<style>[\s\S]*?<\/style>/) || [''])[0];
   const themeScript = (indexHtml.match(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/) || [''])[0];
   const footerRaw = (indexHtml.match(/<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/) || [])[1] || '';
   const ghLinkRaw = (indexHtml.match(/<!--SHARED:ghlink:START-->([\s\S]*?)<!--SHARED:ghlink:END-->/) || [])[1] || '';
-  // A 包：详情页「这条领不到了？」复制反馈的**唯一实现**（`index.html` 主脚本里的
-  // `/* SHARED:dealcopy:START */ … END */` 区间）。详情页不加载主脚本，所以这一份片段
-  // 必须原样注入 —— 抽不到就抛错，否则详情页上会留一个永远点不动的死按钮。
-  const dealCopyRaw = (indexHtml.match(/\/\* SHARED:dealcopy:START \*\/([\s\S]*?)\/\* SHARED:dealcopy:END \*\//) || [])[1] || '';
+  // A 包：详情页「这条领不到了？」复制反馈的**唯一实现**。v6 之前它在首页内联脚本里，
+  // 外链化之后从 `appScript`（assets/app.js 的源码）抽 —— 详情页仍然与首页弹层共用同一份
+  // 事件委托，不是第二份实现。
+  const dealCopySource = appScript || indexHtml;
+  const dealCopyRaw = (dealCopySource.match(/\/\* SHARED:dealcopy:START \*\/([\s\S]*?)\/\* SHARED:dealcopy:END \*\//) || [])[1] || '';
   const missing = [];
   if (!sharedStyle) missing.push('共享 <style>');
   if (!themeScript) missing.push('主题前置脚本');

@@ -35,6 +35,15 @@ const MAX_PRICE_LINE_LENGTH = 60;
  */
 const MAX_EXCERPT_LENGTH = 240;
 
+/**
+ * 详情描述（description）的最大长度。
+ * v6（D2）：原先把 description 和卡片摘要一起卡在 200，详情弹层里出现
+ * 「It has 280 billion tota…」这种断句；这是**采集期**切出来的，不是前端 clamp。
+ * 这里单独给详情一个更高的上限，excerpt（240）与卡片摘要口径不动 ——
+ * 上游本来就短就保持短，绝不为了好看补句子。
+ */
+const MAX_DESCRIPTION_LENGTH = 600;
+
 /* ---------------- v1.1 学生 / 开发者模型 ---------------- */
 
 /**
@@ -468,7 +477,7 @@ function makeDeal(raw = {}, opts = {}) {
   const url = normalizeUrl(raw.url) || normalizeUrl(raw.sourceUrl) || normalizeUrl(opts.sourceUrl);
   if (!url) return null;
 
-  const description = cleanText(raw.description, 200);
+  const description = cleanText(raw.description, MAX_DESCRIPTION_LENGTH);
   if (description && isGarbage(description)) {
     // 描述是垃圾但标题正常：保留记录、丢弃描述
   }
@@ -927,6 +936,7 @@ module.exports = {
   MAX_FEATURE_LENGTH,
   MAX_PRICE_LINE_LENGTH,
   MAX_EXCERPT_LENGTH,
+  MAX_DESCRIPTION_LENGTH,
   AUDIENCE_FIELD_ORDER,
   MAX_REGION_RESTRICTION_LENGTH,
   MAX_PROVENANCE_NOTE_LENGTH,

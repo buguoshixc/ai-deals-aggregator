@@ -52,7 +52,7 @@
  */
 
 const { getText } = require('../lib/http');
-const { cleanText } = require('../lib/schema');
+const { cleanText, MAX_DESCRIPTION_LENGTH } = require('../lib/schema');
 
 const ORIGIN = 'https://appsumo.com';
 
@@ -264,7 +264,7 @@ function parseWithReport(html) {
       source: 'AppSumo',
       region: 'global',
       category: categoryParts.join(' · '),
-      description: cleanText(raw.card_description, 200),
+      description: cleanText(raw.card_description, MAX_DESCRIPTION_LENGTH),
       discountInfo: `AppSumo 终身授权限时折扣：现价 ${money(price)}，原价 ${money(original)}（省 ${percent}%）`,
       priceLine: `${money(price)} 终身（原价 ${money(original)}）`,
       pricingModel: 'paid',
