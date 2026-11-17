@@ -1979,7 +1979,9 @@ function noJsControlExemptionFor(route) {
 
   const lightContrast = await page.evaluate(contrastProbe);
   const worstText = probe => probe.worst.map(w => `${w.selector}「${w.text}」${w.ratio}`).join(' · ') || '无';
-  check('亮色主题：低于 4.5:1 的文本 ≤ 20', lightContrast.below <= 20,
+  // 闸门就是承诺：DESIGN-RULES C1 写的是「0 条不达标」，此前放宽到 ≤20 等于给 20 个节点留回退空间。
+  // 无障碍预算不该被数据/样式演进以「还有名额」的方式吃掉；收紧到 0，坏了就必须修色。
+  check('亮色主题：低于 WCAG 阈值的文本 == 0（normal 4.5:1 / large 3:1）', lightContrast.below === 0,
     `抽样 ${lightContrast.sampled} · 跳过复杂背景 ${lightContrast.skipped} · 低于要求 ${lightContrast.below} · 最低 ${lightContrast.min} · 最差 ${worstText(lightContrast)}`);
 
   // v5 识别层（Tooth：浏览器侧）——**事实数字是页面唯一的高音**。
@@ -2029,7 +2031,7 @@ function noJsControlExemptionFor(route) {
     `data-theme=${darkAfterReload.attr} body=${darkAfterReload.bodyBg}`);
 
   const darkContrast = await page.evaluate(contrastProbe);
-  check('暗色主题：低于 4.5:1 的文本 ≤ 20', darkContrast.below <= 20,
+  check('暗色主题：低于 WCAG 阈值的文本 == 0（normal 4.5:1 / large 3:1）', darkContrast.below === 0,
     `抽样 ${darkContrast.sampled} · 低于要求 ${darkContrast.below} · 最低 ${darkContrast.min} · 最差 ${worstText(darkContrast)}`);
 
   check('两种主题下抽样量相当（深色不是把内容藏起来）',
