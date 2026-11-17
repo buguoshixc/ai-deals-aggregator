@@ -30,7 +30,7 @@ const PROBLEM_CODES = [
   'canonical-self', 'canonical-unique', 'h1-count', 'robots-policy', 'deal-index-policy',
   'itemlist-arity', 'itemlist-members',
   'breadcrumb-target-exists', 'sitemap-target-exists', 'sitemap-policy',
-  'orphan', 'internal-link-exists', 'thin-content', 'thin-content-margin',
+  'orphan', 'internal-link-exists', 'thin-content',
   'duplicate-item-set',
   'summary-source'
 ];
@@ -48,157 +48,6 @@ const PROBLEM_CODES = [
  */
 function dealIndexable({ homepageVisible, archivedLinked } = {}) {
   return Boolean(homepageVisible || archivedLinked);
-}
-
-/**
- * 正文下限**余量**登记（P2 残留 e1）—— 「这些页离红线多远」的唯一出处。
- *
- * ## 它解决什么
- *
- * `thin-content` 只在**跌破下限**时响：`/need/no-card/` 实测 710 字 / 下限 660（`600 + 60×1`）
- * ⇒ 它要再掉 **51** 个字才第一次变红。而这一页正是全站最薄的一页（次薄 123 字），
- * 也是唯一在文档里被点名「余量只剩 50 字」的那一条残留 —— 「还没红」不等于「没事」。
- *
- * 下限公式**不许调低**（`page-kinds.js` 的口径 + `v3.0-antigaming` 的下限单调性规则），
- * 所以真正的风险只有一个方向：**正文继续变薄**。这张表把「当前余量」登记成一条底线，
- * 跌破它就在**还没到红线之前**变红，并点名是哪一页、掉了多少。
- *
- * ## 语义（三个数字要分清）
- *
- *   · `chars` / `floor` / `margin` —— **登记当天**的读数（`margin = chars − floor`）。
- *     它是登记的依据，不是判据；判据只有下面一条。
- *   · `kind` / `count`            —— 登记时这一页的 kind 与「条数」（下限公式的两个入参）。
- *     自测逐条重算 `textFloor(kind, count) === floor`，公式改了这里立刻红。
- *   · 判据：**实时 `margin ≥ 登记值 margin`**（相等算过）。两个来源都会跑这条：
- *     构建期把刚写下的页面交给 `validate()`，独立门禁 `seo-verify.js` 从 dist 重新解析。
- *
- * 余量会变小有两条路，两条都该被人看见：① 正文变少（内容被删/被折叠）；② 条数变多
- * （`count` 涨 ⇒ 下限涨得比正文快）。所以跌破登记值时的处置**只有一条**：
- * 要么补回内容，要么**显式重新登记**（`node scripts/tools/seo-verify.js --print-floor-margins`
- * 会打印一张可以逐字贴回来的登记块）—— 重新登记是一次可见、可评审的动作，这就是它存在的意义。
- *
- * ## 为什么写在代码里，而不是读 `research/_raw/` 的 JSON
- *
- * `seo.js` 的纪律是「纯函数、不读盘」（见文件头）。登记表因此是**这份声明**；
- * 机器可读的 JSON 转写放在 `research/_raw/p2-residuals-v1/text-floor-margins.json`，
- * 由 `seo-selftest.js` 与声明**逐字节对账**（两条不许漂移）。改登记只能改这里。
- *
- * 登记范围：全站余量 < 150 字的全部页面（下一档是 409 字）。机器可读的**全站普查**
- * 见 `research/_raw/p2-residuals-v1/floor-census.json`。
- */
-const TEXT_FLOOR_RESIDUALS = [
-  // ⚠️ t3 一次性重新登记（六条一起，理由是**正文被有意删掉**，不是下限被调低）：
-  //   · 六页共同的 −20 字：页脚删掉了「优惠变化：变化雷达 · 订阅这些优惠」那一行
-  //     （去数据暴露：t3 删了页脚的订阅那整行 = −20 字；t4 又删了页脚最后一枚「开放数据」入口 = −7 字。
-  //      见 `index.html` 的 t4 注释与 `build-local.js` 的 `ROUTE_HREFS`）。
-  //     页脚是一份共享片段，所以每一页的可见正文都同步短了 20 字。
-  //   · `/category/` 额外的 −58 字：枢纽表删掉了第 4 列「订阅」（RSS / JSON 地址），
-  //     5 行的那一格文本加上表头随之下线。
-  // **下限一个字没动**（下面的 `floor` 与 `kind` / `count` 全部保持原值），判据也仍是
-  // 「实时余量 ≥ 登记值」—— 变的只是"登记当天读到的那一串数字"。
-  // 机器可读的 JSON 转写（`research/_raw/p2-residuals-v1/text-floor-margins.json`）必须同步，
-  // 否则 `seo-selftest` 的「逐字节相同」当场红；重新登记块由
-  // `node scripts/tools/seo-verify.js --print-floor-margins` 打印（唯一出处仍是本表）。
-  // ⚠️ v3.1 一次性重新登记（六条一起，理由与上一次同形：**正文被有意删掉**，不是下限被调低）：
-  //   · 六页共同的 −12 字：页脚那枚指向仓库的文字链（「 · GitHub 仓库」连同它前面的间隔点）
-  //     被删除，改成**页头最右侧的图标入口**（同一改动；图形与地址的唯一出处是 index.html 的
-  //     `SHARED:ghlink` 标记区间，由 `lib/page-shell.js` 抽进全部页面族）。页脚是一份共享片段
-  //     ⇒ 每一页的可见正文同步短 12 字 —— 这与上面 t3 那一次是**同一类**后果，处置也相同。
-  //   · 口径完全不动：**下限一个字没动**（floor / kind / count 全部保持原值），判据仍是
-  //     「实时余量 ≥ 登记值」；变的只是"登记当天读到的那一串数字"。
-  //   · 读数取自构建期自检在这六页上报出的实际值（671 / 826 / 1044 / 937 / 1000 / 943，
-  //     即原读数各 −12），并由 `node scripts/tools/seo-verify.js --print-floor-margins`
-  //     在产物上逐页复核（`--registered-at=2026-10-12`）。
-  //   · 机器可读的 JSON 转写（`research/_raw/p2-residuals-v1/text-floor-margins.json`）必须同步，
-  //     否则 `seo-selftest` 的「逐字节相同」当场红。
-  // 下面这条登记仍然只覆盖「余量 < 150 字」的那几页 —— 这个改动对全站每页都是 −12 字，
-  // 但只有这六页的余量本来就在登记射程内（其余页面离自己的下限还有 150 字以上）。
-  // ⚠️ search-intent-v1（W2）一次性重新登记（2026-11-04）：**两条退役、四条更新读数**，
-  //   下限（floor / kind / count）一个字没动，判据仍是「实时余量 ≥ 登记值」与
-  //   「登记集合 == 实时余量 < 150 的集合」两条并行。
-  //   · 退役 `need/no-card/`（余量 11 → **313**）与 `need/ai-coding/`（97 → **417**）：
-  //     这两页本轮新增「事实摘要」（`aside.factsum`，5 行事实 + 一行口径），可见正文各涨
-  //     ≈300 字，余量因此**离开 < 150 的射程**。退役是那条双向不变式要求的动作
-  //     （登记了却已不薄 ⇒ 属于「过期登记」，同样判红），不是把判据放宽：
-  //     两页的下限 660 / 840 原样保留，`seo.textFloor('need', n)` 仍按原值判。
-  //   · 四条 category 页按今天的产物重读（数据日推进带来的读数漂移，与上一次同类）。
-  //   · 读数由 `node scripts/tools/seo-verify.js --print-floor-margins` 在产物上打印。
-  // ⚠️ 2026-11-10 数据驱动退役两条（**不是下限被调低，也不是判据放宽**）：
-  //   · `category/audio/`：条数 6 → 7、可见正文 1070 → 1188 字、下限随条数 960 → 1020，
-  //     余量 110 → **168**；`category/image/`：条数 5 → 7、1036 → 1287 字、下限 900 → 1020，
-  //     余量 136 → **267**。两页都已离开「余量 < 150」的射程，留在表里会变成
-  //     `seo-verify.js` §③′ 的「过期登记」而判红 ⇒ 按双向不变式的既定动作退役，
-  //     退役理由与读数记在下面的 `TEXT_FLOOR_GRADUATED`（不静默消失）。
-  //   · 触发源是**存量数据增长**（本轮 git 历史实测：master 基点 `ebdd0a8` 179 条时两页
-  //     是 6 / 5 条，与登记一致；P0 的 AppSumo 23 条（`6badae2`，202 条）之后变成 7 / 7，
-  //     此后的 P1（207 条）与 P2 首轮（210 条）读数都停在 7 / 7）。下限公式
-  //     `textFloor(kind, count)` 一个字没动；`category/` 与 `category/agent/` 的读数
-  //     与上次登记逐字相同（52 / 129），原样保留。
-  { route: 'category/', kind: 'hub', count: 5, chars: 852, floor: 800, margin: 52, registeredAt: '2026-11-04' }
-  // ⚠️ 2026-11-12 数据驱动退役一条（**不是下限被调低，也不是判据放宽**）：
-  //   · `category/agent/`：条数 4 → 5、可见正文 969 → 1107 字、下限随条数 840 → 900，
-  //     余量 129 → **207**；已离开「余量 < 150」的射程，留在表里会变成
-  //     `seo-verify.js` §③′ 的「过期登记」而判红 ⇒ 按双向不变式的既定动作退役，
-  //     退役理由与读数记在下面的 `TEXT_FLOOR_GRADUATED`（不静默消失）。
-  //   · 触发源是**存量数据增长**：AppSumo 新增条目把 agent 分类从 4 条推到 5 条。
-  //     下限公式 `textFloor(kind, count)` 一个字没动。
-  //   · 读数由 `node scripts/tools/seo-verify.js --print-floor-margins` 在产物上复核。
-];
-
-/**
- * 已经「毕业」的登记（`search-intent-v1` · W2，2026-11-04）。
- *
- * 为什么需要这一栏：登记表的不变式是**双向**的（`seo-verify.js` §③′）——
- * 「登记集合 == 实时余量 < 150 的集合」。一页补内容补到余量够厚之后，它就不再属于
- * 「最薄的那一档」，**留在表里会变成「过期登记」而判红**，所以必须从表里下来。
- * 但另一条判据（`seo-selftest.js`）要求被点名的那条残留「不许静默下架」——
- * 两条判据在「补内容」这件事上会互相打架。
- *
- * 这一栏就是解法：**毕业不是消失，是登记搬家**。规则三条，都由 selftest 判：
- *   ① 毕业记录里的路由**不许**还留在 `TEXT_FLOOR_RESIDUALS`（否则两条表各说各话）；
- *   ② 毕业当天的余量必须 **≥ 150**（拿「毕业」当挡箭牌去藏一页变薄的内容，判红）；
- *   ③ `floor` 与 `textFloor(kind, count)` 必须相等（下限口径原样，毕业不改判据）。
- *
- * 也就是说：判据的**下限**一个字没动，动的是「这一页还薄不薄」这个事实。
- */
-const TEXT_FLOOR_GRADUATED = [
-  {
-    route: 'need/no-card/', kind: 'need', count: 1, chars: 973, floor: 660, margin: 313,
-    graduatedAt: '2026-11-04',
-    reason: 'search-intent-v1 W2 给 10 个 /need/* 页加了「事实摘要」（5 行现算事实 + 一行口径），本页可见正文 671 → 973，余量 11 → 313'
-  },
-  {
-    route: 'need/ai-coding/', kind: 'need', count: 4, chars: 1257, floor: 840, margin: 417,
-    graduatedAt: '2026-11-04',
-    reason: '同上：事实摘要让本页余量 97 → 417，离开「余量 < 150」的射程'
-  },
-  // 2026-11-10（**存量数据增长**导致的数据驱动退役，与上面两条同形：页面变厚离开射程）：
-  // 条数与可见正文都随数据推进而增长，下限 `textFloor(kind, count)` 原样跟着条数算，未调低。
-  {
-    route: 'category/audio/', kind: 'category', count: 7, chars: 1188, floor: 1020, margin: 168,
-    graduatedAt: '2026-11-10',
-    reason: '条数 6 → 7、可见正文 1070 → 1188 字（`node scripts/tools/seo-verify.js --print-floor-margins` 在 dist 上重读），余量 110 → 168，离开「余量 < 150」的射程'
-  },
-  {
-    route: 'category/image/', kind: 'category', count: 7, chars: 1287, floor: 1020, margin: 267,
-    graduatedAt: '2026-11-10',
-    reason: '同上：条数 5 → 7、可见正文 1036 → 1287 字，余量 136 → 267，离开「余量 < 150」的射程'
-  },
-  {
-    // 2026-11-12：数据驱动退役（AppSumo 新增条目把 agent 分类 4 → 5 条、正文 969 → 1107 字）。
-    // 退役不是删判据：floor 仍 = textFloor('category', 5) = 900，这一页的下限一个字没动。
-    route: 'category/agent/', kind: 'category', count: 5, chars: 1107, floor: 900, margin: 207,
-    graduatedAt: '2026-11-12',
-    reason: '条数 4 → 5、可见正文 969 → 1107 字（seo-verify --print-floor-margins 在产物上重读），余量 129 → 207，离开「余量 < 150」的射程'
-  }
-];
-
-/** 路由 → 登记项（登记表很小，线性查；重复登记由 `seo-selftest` 断言） */
-function floorResidualOf(route) {
-  for (const row of TEXT_FLOOR_RESIDUALS) {
-    if (row.route === route) return row;
-  }
-  return null;
 }
 
 /**
@@ -570,26 +419,6 @@ function validate(pages, opts = {}) {
       fail('thin-content', route, `可见正文 ${text.length} 字符 < 下限 ${textFloor(page.kind, page.count)}（kind=${page.kind} count=${page.count}）`);
     }
 
-    // ---- 正文下限**余量**（P2 残留 e1）--------------------------------
-    // 只对已登记的路由判：这些页的余量已经收窄（`/need/no-card/` 只剩 50 字），
-    // 而下限公式不许调低 ⇒ 风险全在「正文继续变薄」这一侧。
-    // ⚠️ 登记表里**没有**的路由这里一行都不判（`validate()` 不该因为某页没登记就多说话）；
-    // 「登记的路由还在不在产物里」由 `seo-verify.js` 对着 dist 查（那边才知道全站有哪些页）。
-    const residual = floorResidualOf(route);
-    if (residual) {
-      const floor = textFloor(page.kind, page.count);
-      const margin = text.length - floor;
-      if (margin < residual.margin) {
-        const kindNote = page.kind === residual.kind && Number(page.count) === residual.count
-          ? `（登记于 ${residual.registeredAt}：本页 ${residual.chars} 字 − 下限 ${residual.floor} = 余量 ${residual.margin}）`
-          : `（登记于 ${residual.registeredAt} 的基准是 kind=${residual.kind} count=${residual.count}，本页是 kind=${page.kind} count=${page.count}）`;
-        fail('thin-content-margin', route,
-          `可见正文 ${text.length} 字符，下限 ${floor}，余量 ${margin} < 登记值 ${residual.margin}${kindNote}；`
-          + '余量已跌破登记底线（还没到 thin-content 的红线，但这一页是全站最薄的几页之一）——'
-          + '补回内容，或显式重新登记：node scripts/tools/seo-verify.js --print-floor-margins');
-      }
-    }
-
     // ---- JSON-LD / ItemList / 面包屑 ----
     const { blocks, broken } = jsonLdBlocks(html);
     for (const message of broken) fail('itemlist-arity', route, `JSON-LD 解析失败：${message}`);
@@ -874,10 +703,6 @@ module.exports = {
   PROBLEM_CODES,
   dealIndexable,
   textFloor,
-  // 正文下限**余量**登记（P2 残留 e1）：构建期、独立门禁、自测三处读同一份声明
-  TEXT_FLOOR_RESIDUALS,
-  TEXT_FLOOR_GRADUATED,
-  floorResidualOf,
   validate,
   recomputeSummary,
   summarize,
