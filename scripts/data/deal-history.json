@@ -2846,9 +2846,9 @@
     },
     "44848acd19f3": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-17",
-      "endedAt": null
+      "endedAt": "2026-11-18"
     },
     "44a401cd8f13": {
       "source": "aitools.fyi",
@@ -2904,11 +2904,17 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
+    "620ef4290482": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-18",
+      "endedAt": null
+    },
     "62e3166acec0": {
       "source": "智谱AI",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-17",
-      "endedAt": null
+      "endedAt": "2026-11-18"
     },
     "654e05ed3453": {
       "source": "aitools.fyi",
@@ -3012,6 +3018,12 @@
       "since": "2026-11-15",
       "endedAt": "2026-11-16"
     },
+    "8a8c3bdc2b05": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-18",
+      "endedAt": null
+    },
     "8b8b44476f52": {
       "source": "AppSumo",
       "misses": 2,
@@ -3095,12 +3107,6 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
-    },
-    "a67c07bf4993": {
-      "source": "Futuretools",
-      "misses": 2,
-      "since": "2026-11-15",
-      "endedAt": "2026-11-16"
     },
     "a9053ca847fb": {
       "source": "aitools.fyi",
@@ -3230,9 +3236,9 @@
     },
     "f34797ef8750": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-17",
-      "endedAt": null
+      "endedAt": "2026-11-18"
     },
     "f6e6f3b1c820": {
       "source": "AppSumo",
@@ -7154,6 +7160,80 @@
       "label": {
         "title": "Tough Tongue AI",
         "vendor": "Tough Tongue"
+      }
+    },
+    {
+      "id": "44848acd19f3",
+      "at": "2026-11-18",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-17",
+      "runAt": "2026-11-17T20:32:28.248Z",
+      "label": {
+        "title": "Brandolia",
+        "vendor": "Brandolia"
+      }
+    },
+    {
+      "id": "62e3166acec0",
+      "at": "2026-11-18",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-17",
+      "runAt": "2026-11-17T20:32:28.248Z",
+      "label": {
+        "title": "GLM-4V-Flash 免费模型",
+        "vendor": "智谱AI"
+      }
+    },
+    {
+      "id": "a157ed655587",
+      "at": "2026-11-18",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $99，原价 $348（省 72%）",
+        "pricingModel": "paid",
+        "priceLine": "$99 终身（原价 $348）",
+        "type": "deal",
+        "category": "办公效率",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-17T20:32:28.248Z"
+    },
+    {
+      "id": "a67c07bf4993",
+      "at": "2026-11-18",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-17T20:32:28.248Z"
+    },
+    {
+      "id": "f34797ef8750",
+      "at": "2026-11-18",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-17",
+      "runAt": "2026-11-17T20:32:28.248Z",
+      "label": {
+        "title": "ScrollHaus",
+        "vendor": "ScrollHaus"
       }
     }
   ]
