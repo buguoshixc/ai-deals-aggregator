@@ -1,0 +1,2314 @@
+{
+ "counts": {
+  "articles": 97,
+  "tierheads": 4,
+  "needs": 10,
+  "fmembers": 3,
+  "uns": 66,
+  "due": 21,
+  "long": 10
+ },
+ "cards": [
+  {
+   "i": 0,
+   "tier": "1",
+   "rule": "free",
+   "ids": "98cfbb26c5cc",
+   "title": "Baidu: ERNIE-5.5-Flash-Preview (free)",
+   "vendor": "Baidu · API服务",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 1,
+   "tier": "1",
+   "rule": "free",
+   "ids": "f9844047fe7c",
+   "title": "inclusionAI: Ling 3.2 Flash (free)",
+   "vendor": "inclusionAI · API服务",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 2,
+   "tier": "1",
+   "rule": "free",
+   "ids": "14f39f10f728",
+   "title": "LiquidAI: LFM3-1.7B (free)",
+   "vendor": "LiquidAI · API服务",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 3,
+   "tier": "1",
+   "rule": "free",
+   "ids": "762a098836d7",
+   "title": "Particle AI: Particle-1 (free)",
+   "vendor": "Particle AI · API服务",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 4,
+   "tier": "1",
+   "rule": "free",
+   "ids": "6637868284f5",
+   "title": "Recursive: Flint (free)",
+   "vendor": "Recursive · API服务",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 5,
+   "tier": "1",
+   "rule": "free",
+   "ids": "940d872f9eac",
+   "title": "Thinking Machines: Inkling 2 Small (free)",
+   "vendor": "Thinking Machines · API服务",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 6,
+   "tier": "1",
+   "rule": "free",
+   "ids": "c59299cdc88e",
+   "title": "百川智能 海纳百川计划 免费使用 M3Plus API",
+   "vendor": "百川智能 · 对话模型",
+   "badges": [
+    "国内",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 7,
+   "tier": "1",
+   "rule": "free",
+   "ids": "d8d0ba522315",
+   "title": "硅基流动 免费模型专区",
+   "vendor": "硅基流动 · API服务",
+   "badges": [
+    "国内",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 8,
+   "tier": "1",
+   "rule": "free",
+   "ids": "6869e7866510",
+   "title": "讯飞星火 Spark Lite 轻量级大模型免费使用",
+   "vendor": "科大讯飞 · 对话模型",
+   "badges": [
+    "国内",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 9,
+   "tier": "1",
+   "rule": "free",
+   "ids": "ebd47f6d2522,6798f78de5ce,e7e8f538456c,f22e3cd094ad,62e3166acec0,5dedb9455508,df1210f69a39",
+   "title": "智谱AI 免费模型",
+   "vendor": "智谱AI · 对话模型",
+   "badges": [
+    "国内",
+    "未标注截止日期"
+   ],
+   "fmembers": 7,
+   "fmemberText": "GLM-4.7-Flash：官方模型列表标注为免费模型，调用价格 0 元：免费文本模型 延续 GLM-4.7 基座的通用能力GLM-4.6V-Flash：官方模型列表标注为免费模型，调用价格 0 元：免费模型，支持视觉推理GLM-4.5-Flash：官方模型列表标注为免费模型，调用价格 0 元：免费文本模型 支持最长 ",
+   "modelCount": "7",
+   "quota": "varies",
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 10,
+   "tier": "1",
+   "rule": "free",
+   "ids": "ead998e58cd9",
+   "title": "智谱AI 上下文缓存存储限时免费",
+   "vendor": "智谱AI · API服务",
+   "badges": [
+    "国内",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 11,
+   "tier": "1",
+   "rule": "free",
+   "ids": "4bda0ebbb091",
+   "title": "ElevenLabs 免费计划 每月 10000 credits",
+   "vendor": "ElevenLabs · 音频语音",
+   "badges": [
+    "国外",
+    "长期活动"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 12,
+   "tier": "1",
+   "rule": "free",
+   "ids": "2374288880c3",
+   "title": "NVIDIA: Nemotron 3.5 Super VL (free)",
+   "vendor": "NVIDIA · API服务",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 13,
+   "tier": "1",
+   "rule": "free",
+   "ids": "75c584a4d6a2",
+   "title": "XingChen: Xing4.0 29B A4B (free)",
+   "vendor": "XingChen · API服务",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 14,
+   "tier": "1",
+   "rule": "free",
+   "ids": "ef3cba339a72",
+   "title": "Crouton Alpha",
+   "vendor": "Crouton · API服务",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 15,
+   "tier": "2",
+   "rule": "grant",
+   "ids": "4987c183fc1a",
+   "title": "360智脑开放平台 新用户获赠体验券/代金券（官方协议条款）",
+   "vendor": "360智脑 · API服务",
+   "badges": [
+    "国内",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 16,
+   "tier": "2",
+   "rule": "grant",
+   "ids": "e237cab7c007",
+   "title": "阿里云百炼 新用户免费额度",
+   "vendor": "阿里云 · API服务",
+   "badges": [
+    "国内",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 17,
+   "tier": "2",
+   "rule": "grant",
+   "ids": "4d4bcb5b6829,bf156583e97c,8814355d59e1,e384895f5935,e65f54470862,2eae0e246de2,9c12f13df3ba,ad1d0c83909d,8b2e8d64f11f,9180073deef1,017bdbc04e70,8b609cb05116,78384299b660,c4ab5c5d8101,5c38e515a3ae,4c7952115477,a1255b2fbae2",
+   "title": "百度千帆 新用户免费额度",
+   "vendor": "百度智能云 · API服务",
+   "badges": [
+    "国内",
+    "未标注截止日期"
+   ],
+   "fmembers": 17,
+   "fmemberText": "DeepSeek-R1：首次开通千帆即自动发放免费额度：赠送 100万 Tokens，有效期 3个月DeepSeek-R1-250528DeepSeek-V3-250324DeepSeek-V3.1-250821DeepSeek-V3.1-Think-250821ERNIE-4.5-Turbo-128KERNIE-4.",
+   "modelCount": "17",
+   "quota": "shared",
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 18,
+   "tier": "2",
+   "rule": "grant",
+   "ids": "913211f6d165",
+   "title": "火山方舟 豆包全系模型 个人开发者 50 万 tokens 免费额度",
+   "vendor": "火山引擎 · 对话模型",
+   "badges": [
+    "国内",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 19,
+   "tier": "2",
+   "rule": "grant",
+   "ids": "1888ab62bd67,d6aaee8c7379,45ead69d60cc,7f8c32f6a327,47a4c57f3a15,57847fbcc1ed,2db62eb1a8a0,8dada3205ed8,407572a1e046",
+   "title": "火山方舟 免费额度",
+   "vendor": "火山引擎 · 对话模型",
+   "badges": [
+    "国内",
+    "未标注截止日期"
+   ],
+   "fmembers": 9,
+   "fmemberText": "Doubao-Seed-Character：火山方舟免费额度（文本生成）：50万tokens。Doubao-Seedream-5.0-lite：火山方舟免费额度（图像生成）：50张。Doubao-Seedream-4.5：火山方舟免费额度（图像生成）：200张。Doubao-Seedream-4.0：火山方舟免费额度（",
+   "modelCount": "9",
+   "quota": "varies",
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 20,
+   "tier": "2",
+   "rule": "grant",
+   "ids": "4caf88e30671",
+   "title": "火山方舟 协作奖励计划：每日免费领取单模型最高 500 万 Tokens",
+   "vendor": "火山引擎 · API服务",
+   "badges": [
+    "国内",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 21,
+   "tier": "2",
+   "rule": "grant",
+   "ids": "bcba406ed9ff",
+   "title": "阶跃星辰 StepAudio 3 语音大模型限时免费",
+   "vendor": "阶跃星辰 · 音频语音",
+   "badges": [
+    "国内",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 22,
+   "tier": "2",
+   "rule": "grant",
+   "ids": "e91f65960877",
+   "title": "扣子 Coze 部分模型限时免费 每模型 100 次/天",
+   "vendor": "扣子 Coze · 对话模型",
+   "badges": [
+    "国内",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 23,
+   "tier": "2",
+   "rule": "grant",
+   "ids": "b8f11a235591",
+   "title": "扣子 Coze 个人版每日登录赠送 1500 活动积分",
+   "vendor": "扣子 Coze · 智能体",
+   "badges": [
+    "国内",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 24,
+   "tier": "2",
+   "rule": "grant",
+   "ids": "0273d8b23412",
+   "title": "扣子 Coze 官方付费插件每日免费额度 10-30 次/天",
+   "vendor": "扣子 Coze · 智能体",
+   "badges": [
+    "国内",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 25,
+   "tier": "2",
+   "rule": "grant",
+   "ids": "176234a80147",
+   "title": "扣子 Coze 新用户首次注册赠送 1500 活动积分",
+   "vendor": "扣子 Coze · 智能体",
+   "badges": [
+    "国内",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 26,
+   "tier": "2",
+   "rule": "grant",
+   "ids": "4e659666cbb2",
+   "title": "联网资源 免费额度",
+   "vendor": "火山引擎 · 搜索研究",
+   "badges": [
+    "国内",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 27,
+   "tier": "2",
+   "rule": "grant",
+   "ids": "0c30d79a5016",
+   "title": "商汤日日新 Token Plan 首月限时免费",
+   "vendor": "商汤科技 · API服务",
+   "badges": [
+    "国内",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 28,
+   "tier": "2",
+   "rule": "grant",
+   "ids": "65f0bdd295ac",
+   "title": "腾讯混元 新用户 100 万 tokens 免费资源包",
+   "vendor": "腾讯云 · 对话模型",
+   "badges": [
+    "国内",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 29,
+   "tier": "2",
+   "rule": "grant",
+   "ids": "833a9889bfb7",
+   "title": "讯飞开放平台 新手免费福利礼包",
+   "vendor": "科大讯飞 · API服务",
+   "badges": [
+    "国内",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 30,
+   "tier": "2",
+   "rule": "grant",
+   "ids": "97d21ff73d3e",
+   "title": "智谱AI 新用户注册专享 2000万 免费 Tokens 资源包",
+   "vendor": "智谱AI · API服务",
+   "badges": [
+    "国内",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 31,
+   "tier": "2",
+   "rule": "grant",
+   "ids": "1688614d6669",
+   "title": "智谱AI 邀请好友注册赠送 Tokens 资源包",
+   "vendor": "智谱AI · API服务",
+   "badges": [
+    "国内",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 32,
+   "tier": "2",
+   "rule": "grant",
+   "ids": "e63402b5cc83",
+   "title": "Kimi 开放平台 新用户 15 元代金券",
+   "vendor": "月之暗面 · API服务",
+   "badges": [
+    "国内",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 33,
+   "tier": "2",
+   "rule": "grant",
+   "ids": "7691c150c8e5",
+   "title": "MiniMax 开放平台 Token Plan 好友邀请 受邀人 9 折",
+   "vendor": "MiniMax（稀宇科技） · API服务",
+   "badges": [
+    "国内",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 34,
+   "tier": "2",
+   "rule": "grant",
+   "ids": "b75b42583ad8",
+   "title": "Runway 免费计划 一次性 125 credits",
+   "vendor": "Runway · 视频",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 35,
+   "tier": "3",
+   "rule": "identity",
+   "ids": "b56f33b3d4f3",
+   "title": "魔搭 ModelScope API-Inference 免费推理 API（动态限流）",
+   "vendor": "魔搭 ModelScope · API服务",
+   "badges": [
+    "国内",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 36,
+   "tier": "3",
+   "rule": "identity",
+   "ids": "e4f7271cf7dc",
+   "title": "AWS Activate 初创公司最高 20 万美元云 credits",
+   "vendor": "AWS · API服务",
+   "badges": [
+    "国外",
+    "长期活动"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 37,
+   "tier": "3",
+   "rule": "identity",
+   "ids": "8e7b0fd03e73",
+   "title": "GitHub Copilot 教师与开源维护者免费 Pro",
+   "vendor": "GitHub · 编程开发",
+   "badges": [
+    "国外",
+    "长期活动"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 38,
+   "tier": "3",
+   "rule": "identity",
+   "ids": "9c553dd82d2d",
+   "title": "Cursor",
+   "vendor": "Cursor · 其他",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 39,
+   "tier": "3",
+   "rule": "identity",
+   "ids": "df8ec56faa17",
+   "title": "GitHub Copilot 学生免费（Copilot Student）",
+   "vendor": "GitHub · 编程开发",
+   "badges": [
+    "国外",
+    "长期活动"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 40,
+   "tier": "3",
+   "rule": "identity",
+   "ids": "219f6fca7f31",
+   "title": "GitHub Student Developer Pack 学生开发者工具包",
+   "vendor": "GitHub · 编程开发",
+   "badges": [
+    "国外",
+    "长期活动"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 41,
+   "tier": "3",
+   "rule": "identity",
+   "ids": "6644f3b43bdb",
+   "title": "Microsoft Azure for Students 学生免费 100 美元额度",
+   "vendor": "Microsoft · API服务",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 42,
+   "tier": "3",
+   "rule": "identity",
+   "ids": "3c8a9a6a9ee9",
+   "title": "Replit",
+   "vendor": "Replit · 教育学习",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 43,
+   "tier": "3",
+   "rule": "identity",
+   "ids": "c433fee91818",
+   "title": "Windsurf 学生折扣订阅 Pro（最长 12 个月）",
+   "vendor": "Windsurf · 编程开发",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 44,
+   "tier": "3",
+   "rule": "identity",
+   "ids": "5253b5ed77b1",
+   "title": "Figma for Education 学生与教师免费",
+   "vendor": "Figma · 设计创意",
+   "badges": [
+    "国外",
+    "长期活动"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 45,
+   "tier": "3",
+   "rule": "identity",
+   "ids": "4a875a435019",
+   "title": "Canva",
+   "vendor": "Canva · 教育学习",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 46,
+   "tier": "3",
+   "rule": "identity",
+   "ids": "514a84a1064a",
+   "title": "微软 Microsoft 365 教育版 学生 5 折（含 Copilot）",
+   "vendor": "Microsoft · 办公效率",
+   "badges": [
+    "国外",
+    "长期活动"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 47,
+   "tier": "3",
+   "rule": "identity",
+   "ids": "c25b0ed788e3",
+   "title": "Notion 教育版 学生与教师免费 Plus",
+   "vendor": "Notion · 办公效率",
+   "badges": [
+    "国外",
+    "长期活动"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 48,
+   "tier": "3",
+   "rule": "identity",
+   "ids": "c05dc74bfd78",
+   "title": "Perplexity",
+   "vendor": "Perplexity · 图像绘画",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 49,
+   "tier": "3",
+   "rule": "identity",
+   "ids": "c789f0a090bf",
+   "title": "Google Gemini",
+   "vendor": "Google · 对话模型",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 50,
+   "tier": "3",
+   "rule": "identity",
+   "ids": "f578493037d4",
+   "title": "Anthropic Claude 非营利组织折扣",
+   "vendor": "Anthropic · 对话模型",
+   "badges": [
+    "国外",
+    "长期活动"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 51,
+   "tier": "3",
+   "rule": "identity",
+   "ids": "c971e33a9cd0",
+   "title": "ChatGPT Plus for Veterans (OpenAI)",
+   "vendor": "OpenAI · 对话模型",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 52,
+   "tier": "3",
+   "rule": "identity",
+   "ids": "aacd5856bba2",
+   "title": "Notion for Nonprofits 非营利组织 Business 折扣",
+   "vendor": "Notion · 办公效率",
+   "badges": [
+    "国外",
+    "长期活动"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 53,
+   "tier": "3",
+   "rule": "identity",
+   "ids": "6013b80f266f",
+   "title": "Zapier",
+   "vendor": "Zapier · API服务",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 54,
+   "tier": "3",
+   "rule": "identity",
+   "ids": "42c65c0d8d9d",
+   "title": "Google AI Pro 学生免费 12 个月（含 Gemini 高级版）",
+   "vendor": "Google · 对话模型",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 55,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "44848acd19f3",
+   "title": "Brandolia",
+   "vendor": "Brandolia · 设计创意",
+   "badges": [
+    "国外",
+    "今天截止"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 56,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "5c45f40df3ed",
+   "title": "CluGTM (formerly Cleanlist AI)",
+   "vendor": "CluGTM · 编程开发",
+   "badges": [
+    "国外",
+    "剩 1 天"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 57,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "d175c32f71fd",
+   "title": "Press Ranger",
+   "vendor": "Press Ranger · 音频语音",
+   "badges": [
+    "国外",
+    "剩 1 天"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 58,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "fa69020c164a",
+   "title": "RobinReach",
+   "vendor": "RobinReach · 其他",
+   "badges": [
+    "国外",
+    "剩 1 天"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 59,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "bce5afb96302",
+   "title": "Visby",
+   "vendor": "Visby · 搜索研究",
+   "badges": [
+    "国外",
+    "剩 1 天"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 60,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "0d9b9646f1a5",
+   "title": "Vocable AI",
+   "vendor": "Vocable AI · 音频语音",
+   "badges": [
+    "国外",
+    "剩 1 天"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 61,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "3f97a29b90e6",
+   "title": "Kortex",
+   "vendor": "Kortex · 办公效率",
+   "badges": [
+    "国外",
+    "剩 2 天"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 62,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "49f87d205620",
+   "title": "Keyshift AI",
+   "vendor": "Keyshift AI · 图像绘画",
+   "badges": [
+    "国外",
+    "剩 3 天"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 63,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "10c203c3a80e",
+   "title": "Kaptr.me",
+   "vendor": "Kaptr.me · 办公效率",
+   "badges": [
+    "国外",
+    "剩 3 天"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 64,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "3e0abe88eb9f",
+   "title": "BetterClaw",
+   "vendor": "BetterClaw · 办公效率",
+   "badges": [
+    "国外",
+    "剩 4 天"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 65,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "36fdb826204d",
+   "title": "ClearCrowds",
+   "vendor": "ClearCrowds · 图像绘画",
+   "badges": [
+    "国外",
+    "剩 4 天"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 66,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "cfb47a6dd6fa",
+   "title": "weDocs",
+   "vendor": "weDocs · 设计创意",
+   "badges": [
+    "国外",
+    "剩 4 天"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 67,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "60c544edd8be",
+   "title": "PlugThis AI",
+   "vendor": "PlugThis AI · 设计创意",
+   "badges": [
+    "国外",
+    "剩 8 天"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 68,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "6e7cfea4dbc1",
+   "title": "AI Emaily",
+   "vendor": "AI Emaily · 对话模型",
+   "badges": [
+    "国外",
+    "剩 11 天"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 69,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "f1323ce17329",
+   "title": "NotiQ",
+   "vendor": "NotiQ · 办公效率",
+   "badges": [
+    "国外",
+    "剩 11 天"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 70,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "c24e115fffed",
+   "title": "SEO Generator",
+   "vendor": "SEO Generator · 其他",
+   "badges": [
+    "国外",
+    "剩 12 天"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 71,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "5d66f28a59b5",
+   "title": "Inkfluence AI",
+   "vendor": "Inkfluence AI · 设计创意",
+   "badges": [
+    "国外",
+    "剩 14 天"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 72,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "a01ebd902884",
+   "title": "SalesBlink",
+   "vendor": "SalesBlink · 办公效率",
+   "badges": [
+    "国外",
+    "剩 14 天"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 73,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "2b95f56ce3a1",
+   "title": "Boost.space AgentOS",
+   "vendor": "Boost.space AgentOS · 编程开发",
+   "badges": [
+    "国外",
+    "剩 15 天"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 74,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "29ff7f061d59",
+   "title": "VistaCreate",
+   "vendor": "VistaCreate · 设计创意",
+   "badges": [
+    "国外",
+    "剩 15 天"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 75,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "e5fcacad308b",
+   "title": "Creator Lookup",
+   "vendor": "Creator Lookup · 搜索研究",
+   "badges": [
+    "国外",
+    "剩 21 天"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 76,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "c61916544faf",
+   "title": "Acti",
+   "vendor": "Acti · 办公效率",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 77,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "72100a42eb69",
+   "title": "Hedy AI",
+   "vendor": "Hedy AI · 办公效率",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 78,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "ff8cbecdd5f6",
+   "title": "MagicCanvas",
+   "vendor": "MagicCanvas · 视频",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 79,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "8a8c3bdc2b05",
+   "title": "Rerun",
+   "vendor": "Rerun · 办公效率",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 80,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "f34797ef8750",
+   "title": "ScrollHaus",
+   "vendor": "ScrollHaus · 设计创意",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 81,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "620ef4290482",
+   "title": "VidTechy",
+   "vendor": "VidTechy · 视频",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 82,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "c694e7c5f125",
+   "title": "火山方舟 Agent Plan 限时 9.9 元起",
+   "vendor": "火山引擎 · 智能体",
+   "badges": [
+    "国内",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 83,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "adcb6471a512",
+   "title": "智谱AI Batch API 批量调用五折",
+   "vendor": "智谱AI · API服务",
+   "badges": [
+    "国内",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 84,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "b4d87c02f4d9",
+   "title": "MiniMax MiniMax-M3 按量计费永久五折",
+   "vendor": "MiniMax（稀宇科技） · API服务",
+   "badges": [
+    "国内",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 85,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "1c057c22422c",
+   "title": "海螺AI 会员限时优惠价 基础会员 55 元/月",
+   "vendor": "MiniMax（稀宇科技） · 对话模型",
+   "badges": [
+    "国内",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 86,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "ee446d349239",
+   "title": "AltText.ai",
+   "vendor": "AltText.ai · 图像绘画",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 87,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "2f0c03c32d8d",
+   "title": "AutomateNexus CRM",
+   "vendor": "AutomateNexus CRM · 智能体",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 88,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "086534ebceeb",
+   "title": "DomScan",
+   "vendor": "DomScan · 编程开发",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 89,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "8e4af3df250c",
+   "title": "Preuve AI",
+   "vendor": "Preuve AI · 教育学习",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 90,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "7f06124571e2",
+   "title": "NudgeForMe",
+   "vendor": "NudgeForMe · 办公效率",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 91,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "e2bea3790e12",
+   "title": "AdaptlyPost",
+   "vendor": "AdaptlyPost · 图像绘画",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 92,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "864a916dc7d3",
+   "title": "Snappyit",
+   "vendor": "Snappyit · 图像绘画",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 93,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "8b8b44476f52",
+   "title": "Webclaw",
+   "vendor": "Webclaw · 编程开发",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 94,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "33d4fd34f78f",
+   "title": "CaptionBolt",
+   "vendor": "CaptionBolt · 视频",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 95,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "e7f286155de9",
+   "title": "NoCodeBackend",
+   "vendor": "NoCodeBackend · 设计创意",
+   "badges": [
+    "国外",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  },
+  {
+   "i": 96,
+   "tier": "4",
+   "rule": "promo",
+   "ids": "e4bd8003b3d6",
+   "title": "GLM-5.3-Flash 限时五折",
+   "vendor": "智谱AI · API服务",
+   "badges": [
+    "国内",
+    "未标注截止日期"
+   ],
+   "fmembers": 0,
+   "fmemberText": "",
+   "modelCount": null,
+   "quota": null,
+   "hasDetails": 0,
+   "id": null
+  }
+ ],
+ "tiers": [
+  {
+   "id": "tier-1",
+   "text": "1完全免费注册就能用，不用等额度到账15条"
+  },
+  {
+   "id": "tier-2",
+   "text": "2免费额度新用户一次性赠送 / 首月免费，够跑一段时间20条"
+  },
+  {
+   "id": "tier-3",
+   "text": "3身份优惠学生 / 教师 / 非营利 / 初创 —— 有资格就不花钱20条"
+  },
+  {
+   "id": "tier-4",
+   "text": "4折扣促销要花钱，但比标准价便宜42条"
+  }
+ ],
+ "landmarks": {
+  "topHeader": 1,
+  "search": 1,
+  "facets": 1,
+  "facetsinHtmlLen": 1954,
+  "needsParent": "BODY",
+  "gridStart": 1,
+  "scripts": [
+   {
+    "i": 0,
+    "src": null,
+    "len": 343,
+    "head": "\n    /* 主题必须在首次绘制前决定，否则会「先亮后暗」闪一下。\n       只读一次 localStorage；"
+   },
+   {
+    "i": 1,
+    "src": null,
+    "len": 2486,
+    "head": "\n/* 私有站点分析（Cloudflare Web Analytics）—— 定义见 docs/PRIVATE-ANAL"
+   },
+   {
+    "i": 2,
+    "src": null,
+    "len": 176420,
+    "head": "\n    'use strict';\n\n    /* ================================="
+   },
+   {
+    "i": 3,
+    "src": null,
+    "len": 381,
+    "head": "\n{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"Organizat"
+   },
+   {
+    "i": 4,
+    "src": null,
+    "len": 420,
+    "head": "\n{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"WebSite\","
+   },
+   {
+    "i": 5,
+    "src": null,
+    "len": 397,
+    "head": "\n{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"Breadcrum"
+   },
+   {
+    "i": 6,
+    "src": null,
+    "len": 1837,
+    "head": "\n{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"FAQPage\","
+   },
+   {
+    "i": 7,
+    "src": null,
+    "len": 16328,
+    "head": "\n{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"ItemList\""
+   }
+  ],
+  "styles": [
+   {
+    "i": 0,
+    "len": 80773
+   }
+  ],
+  "plansnav": [
+   {
+    "cls": "plansnav",
+    "text": "AI Coding 套餐对比",
+    "title": "对比各平台长期在售的 AI Coding 套餐",
+    "href": "plans/coding/"
+   },
+   {
+    "cls": "plansnav plansnav-api",
+    "text": "API 计费对比",
+    "title": "对比各平台按量计费的 API / Token 官方单价",
+    "href": "plans/api/"
+   },
+   {
+    "cls": "plansnav plansnav-cost",
+    "text": "成本计算器",
+    "title": "按已收录官方单价计算 token 用量成本（不排序 / 不推荐 / 不跨币种 / 不折算 credits）",
+    "href": "tools/api-cost/"
+   }
+  ],
+  "needCards": [
+   {
+    "text": "🎓学生专享13条学生套餐与教育折扣，附申请门槛→",
+    "href": "need/student-only/"
+   },
+   {
+    "text": "🏫教育身份可领7条凭学校邮箱可领的教育版与额度→",
+    "href": "need/edu-identity/"
+   },
+   {
+    "text": "🚫无需信用卡1条不用绑卡就能注册领取的条目→",
+    "href": "need/no-card/"
+   },
+   {
+    "text": "🌏国内可用30条已确认大陆可注册使用的条目→",
+    "href": "need/china-usable/"
+   },
+   {
+    "text": "🆓完全免费70条不用付费就能用上的免费档位→",
+    "href": "need/free-tier/"
+   },
+   {
+    "text": "🔌免费 API45条可直接调用的免费接口与试用额度→",
+    "href": "need/free-api/"
+   },
+   {
+    "text": "🎁免费 Tokens44条新用户赠送的额度与活动积分→",
+    "href": "need/free-tokens/"
+   },
+   {
+    "text": "💻AI Coding9条代码补全与编程助手的优惠→",
+    "href": "need/ai-coding/"
+   },
+   {
+    "text": "🧠免费模型12条可以零成本调用的模型清单→",
+    "href": "need/free-model/"
+   },
+   {
+    "text": "💰开发者 Credits67条云平台赠金与创业扶持额度→",
+    "href": "need/dev-credits/"
+   }
+  ],
+  "gridChildren": [
+   {
+    "tag": "div",
+    "cls": "tierhead t1",
+    "id": "tier-1"
+   },
+   {
+    "tag": "article",
+    "cls": "g t1"
+   },
+   {
+    "tag": "article",
+    "cls": "g t1"
+   },
+   {
+    "tag": "article",
+    "cls": "g t1"
+   },
+   {
+    "tag": "article",
+    "cls": "g t1"
+   },
+   {
+    "tag": "article",
+    "cls": "g t1"
+   },
+   {
+    "tag": "article",
+    "cls": "g t1"
+   },
+   {
+    "tag": "article",
+    "cls": "g t1"
+   },
+   {
+    "tag": "article",
+    "cls": "g t1"
+   },
+   {
+    "tag": "article",
+    "cls": "g t1"
+   },
+   {
+    "tag": "article",
+    "cls": "g t1"
+   },
+   {
+    "tag": "article",
+    "cls": "g t1"
+   },
+   {
+    "tag": "article",
+    "cls": "g t1"
+   },
+   {
+    "tag": "article",
+    "cls": "g t1"
+   },
+   {
+    "tag": "article",
+    "cls": "g t1"
+   },
+   {
+    "tag": "article",
+    "cls": "g t1"
+   },
+   {
+    "tag": "div",
+    "cls": "tierhead t2",
+    "id": "tier-2"
+   },
+   {
+    "tag": "article",
+    "cls": "g t2"
+   },
+   {
+    "tag": "article",
+    "cls": "g t2"
+   },
+   {
+    "tag": "article",
+    "cls": "g t2"
+   },
+   {
+    "tag": "article",
+    "cls": "g t2"
+   },
+   {
+    "tag": "article",
+    "cls": "g t2"
+   },
+   {
+    "tag": "article",
+    "cls": "g t2"
+   },
+   {
+    "tag": "article",
+    "cls": "g t2"
+   },
+   {
+    "tag": "article",
+    "cls": "g t2"
+   },
+   {
+    "tag": "article",
+    "cls": "g t2"
+   },
+   {
+    "tag": "article",
+    "cls": "g t2"
+   },
+   {
+    "tag": "article",
+    "cls": "g t2"
+   },
+   {
+    "tag": "article",
+    "cls": "g t2"
+   },
+   {
+    "tag": "article",
+    "cls": "g t2"
+   },
+   {
+    "tag": "article",
+    "cls": "g t2"
+   },
+   {
+    "tag": "article",
+    "cls": "g t2"
+   },
+   {
+    "tag": "article",
+    "cls": "g t2"
+   },
+   {
+    "tag": "article",
+    "cls": "g t2"
+   },
+   {
+    "tag": "article",
+    "cls": "g t2"
+   },
+   {
+    "tag": "article",
+    "cls": "g t2"
+   },
+   {
+    "tag": "article",
+    "cls": "g t2"
+   },
+   {
+    "tag": "div",
+    "cls": "tierhead t3",
+    "id": "tier-3"
+   },
+   {
+    "tag": "article",
+    "cls": "g t3"
+   },
+   {
+    "tag": "article",
+    "cls": "g t3"
+   },
+   {
+    "tag": "article",
+    "cls": "g t3"
+   },
+   {
+    "tag": "article",
+    "cls": "g t3"
+   },
+   {
+    "tag": "article",
+    "cls": "g t3"
+   },
+   {
+    "tag": "article",
+    "cls": "g t3"
+   },
+   {
+    "tag": "article",
+    "cls": "g t3"
+   },
+   {
+    "tag": "article",
+    "cls": "g t3"
+   },
+   {
+    "tag": "article",
+    "cls": "g t3"
+   },
+   {
+    "tag": "article",
+    "cls": "g t3"
+   },
+   {
+    "tag": "article",
+    "cls": "g t3"
+   },
+   {
+    "tag": "article",
+    "cls": "g t3"
+   },
+   {
+    "tag": "article",
+    "cls": "g t3"
+   },
+   {
+    "tag": "article",
+    "cls": "g t3"
+   },
+   {
+    "tag": "article",
+    "cls": "g t3"
+   },
+   {
+    "tag": "article",
+    "cls": "g t3"
+   },
+   {
+    "tag": "article",
+    "cls": "g t3"
+   },
+   {
+    "tag": "article",
+    "cls": "g t3"
+   },
+   {
+    "tag": "article",
+    "cls": "g t3"
+   },
+   {
+    "tag": "article",
+    "cls": "g t3"
+   },
+   {
+    "tag": "div",
+    "cls": "tierhead t4",
+    "id": "tier-4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   },
+   {
+    "tag": "article",
+    "cls": "g t4"
+   }
+  ]
+ },
+ "bytes": 554172
+}

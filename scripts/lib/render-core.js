@@ -39,12 +39,56 @@ const REQUIRED = [
   'lostReportText'
 ];
 
-function load(htmlPath = path.join(ROOT, 'index.html')) {
-  const html = fs.readFileSync(htmlPath, 'utf8');
-  const match = html.match(RENDER_CORE_RE);
-  if (!match) {
-    throw new Error(`${path.relative(ROOT, htmlPath)} 中找不到 RENDER-CORE 标记区块（纯渲染核心）`);
+/**
+ * 从一个文件里取出 RENDER-CORE 源码。
+ *
+ * 首页主脚本在 v6 之前是内联在 `index.html` 的；v6 把它外链成 `app.<hash>.js` 之后，
+ * 这里必须同时认识两种形状：
+ *   · HTML：优先读它引用的 `<script src="…">`（源站是 `assets/app.js`，产物是
+ *     `app.<hash>.js`），只有找不到外链时才回退到内联区块（兼容 mockup / 旧产物）；
+ *   · JS：直接抽（工具显式传 `assets/app.js` 时）。
+ *
+ * 外链的解析基准是**页面文件所在目录**：源站 `index.html` + `assets/app.js`，产物
+ * `dist/index.html` + `dist/app.<hash>.js` 都成立。URL 查询串 / 片段不参与文件解析。
+ */
+function readRenderCoreSource(filePath) {
+  const ext = path.extname(filePath).toLowerCase();
+  if (ext === '.js') {
+    const js = fs.readFileSync(filePath, 'utf8');
+    const match = js.match(RENDER_CORE_RE);
+    if (!match) {
+      throw new Error(`${path.relative(ROOT, filePath)} 中找不到 RENDER-CORE 标记区块（纯渲染核心）`);
+    }
+    return { code: match[0], filename: `${path.basename(filePath)}#RENDER-CORE` };
   }
+
+  const html = fs.readFileSync(filePath, 'utf8');
+  const inline = html.match(RENDER_CORE_RE);
+  if (inline) {
+    return { code: inline[0], filename: `${path.basename(filePath)}#RENDER-CORE` };
+  }
+
+  // 只认页面里的外链脚本；`src` 可能带 `?v=…`，文件解析时去掉。
+  const srcs = [...html.matchAll(/<script\b[^>]*\bsrc\s*=\s*["']([^"']+)["'][^>]*>/gi)]
+    .map(match => match[1]);
+  for (const src of srcs) {
+    if (/^(?:[a-z]+:)?\/\//i.test(src) || src.startsWith('data:')) continue;
+    const rel = src.split(/[?#]/, 1)[0];
+    const abs = path.resolve(path.dirname(filePath), rel);
+    if (!fs.existsSync(abs)) continue;
+    const js = fs.readFileSync(abs, 'utf8');
+    const match = js.match(RENDER_CORE_RE);
+    if (match) {
+      return { code: match[0], filename: `${path.basename(abs)}#RENDER-CORE` };
+    }
+  }
+
+  throw new Error(`${path.relative(ROOT, filePath)} 中找不到 RENDER-CORE 标记区块`
+    + '（内联区块与 <script src> 都没有；首页主脚本 v6 起外链在 assets/app.js）');
+}
+
+function load(htmlPath = path.join(ROOT, 'index.html')) {
+  const { code, filename } = readRenderCoreSource(htmlPath);
 
   const shim = {
     document: {
@@ -65,7 +109,7 @@ function load(htmlPath = path.join(ROOT, 'index.html')) {
   };
 
   const context = vm.createContext(shim);
-  new vm.Script(match[0], { filename: 'index.html#RENDER-CORE' }).runInContext(context);
+  new vm.Script(code, { filename }).runInContext(context);
 
   for (const name of REQUIRED) {
     if (typeof context[name] !== 'function') {

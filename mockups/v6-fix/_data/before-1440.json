@@ -1,0 +1,326 @@
+{
+  "url": "http://127.0.0.1:8081/mockups/v6-fix/before.html",
+  "viewport": {
+    "w": 1440,
+    "h": 1800
+  },
+  "doc": {
+    "scrollW": 1440,
+    "scrollH": 8059
+  },
+  "topbar": {
+    "rect": {
+      "top": 0,
+      "bottom": 58,
+      "left": 10,
+      "right": 1430,
+      "w": 1420,
+      "h": 58
+    },
+    "clientW": 1420,
+    "scrollW": 1420,
+    "overflow": 0,
+    "searchW": 381.28,
+    "gap": "18px",
+    "items": [
+      {
+        "tag": "A",
+        "cls": "brand",
+        "text": "AI 优惠聚合器真实优惠 · 每日更新",
+        "display": "flex",
+        "w": 145.09,
+        "left": 30,
+        "right": 175.09
+      },
+      {
+        "tag": "LABEL",
+        "cls": "search",
+        "text": "",
+        "display": "flex",
+        "w": 381.28,
+        "left": 193.09,
+        "right": 574.38
+      },
+      {
+        "tag": "DIV",
+        "cls": "seg",
+        "text": "跟随系统 浅色 深色",
+        "display": "flex",
+        "w": 172,
+        "left": 592.38,
+        "right": 764.38
+      },
+      {
+        "tag": "A",
+        "cls": "plansnav",
+        "text": "AI Coding 套餐对比",
+        "display": "block",
+        "w": 152.75,
+        "left": 782.38,
+        "right": 935.13
+      },
+      {
+        "tag": "A",
+        "cls": "plansnav plansnav-api",
+        "text": "API 计费对比",
+        "display": "block",
+        "w": 106.95,
+        "left": 953.13,
+        "right": 1060.08
+      },
+      {
+        "tag": "A",
+        "cls": "plansnav plansnav-cost",
+        "text": "成本计算器",
+        "display": "block",
+        "w": 91,
+        "left": 1078.08,
+        "right": 1169.08
+      },
+      {
+        "tag": "DIV",
+        "cls": "topstat",
+        "text": "96 条优惠 · 更新 2026-11-17",
+        "display": "block",
+        "w": 174.92,
+        "left": 1187.08,
+        "right": 1362
+      },
+      {
+        "tag": "A",
+        "cls": "ghlink",
+        "text": "",
+        "display": "flex",
+        "w": 30,
+        "left": 1380,
+        "right": 1410
+      }
+    ]
+  },
+  "facets": {
+    "scrollW": 1426,
+    "clientW": 1420,
+    "overflow": 6,
+    "mask": "none"
+  },
+  "fm": [
+    {
+      "card": "智谱AI 免费模型",
+      "links": 7,
+      "scrollW": 3063,
+      "clientW": 422,
+      "offsetH": 15,
+      "clientH": 15,
+      "scrollbarH": 0,
+      "scrollbarW": 0,
+      "overflowX": "auto",
+      "whiteSpace": "nowrap",
+      "textOverflow": "clip",
+      "rect": {
+        "top": 1091.09,
+        "bottom": 1106.09,
+        "left": 45,
+        "right": 467,
+        "w": 422,
+        "h": 15
+      }
+    },
+    {
+      "card": "百度千帆 新用户免费额度",
+      "links": 17,
+      "scrollW": 2213,
+      "clientW": 422,
+      "offsetH": 15,
+      "clientH": 15,
+      "scrollbarH": 0,
+      "scrollbarW": 0,
+      "overflowX": "auto",
+      "whiteSpace": "nowrap",
+      "textOverflow": "clip",
+      "rect": {
+        "top": 1535.09,
+        "bottom": 1550.09,
+        "left": 973,
+        "right": 1395,
+        "w": 422,
+        "h": 15
+      }
+    },
+    {
+      "card": "火山方舟 免费额度",
+      "links": 9,
+      "scrollW": 2882,
+      "clientW": 422,
+      "offsetH": 15,
+      "clientH": 15,
+      "scrollbarH": 0,
+      "scrollbarW": 0,
+      "overflowX": "auto",
+      "whiteSpace": "nowrap",
+      "textOverflow": "clip",
+      "rect": {
+        "top": 1739.09,
+        "bottom": 1754.09,
+        "left": 509,
+        "right": 931,
+        "w": 422,
+        "h": 15
+      }
+    }
+  ],
+  "cardCount": 96,
+  "openrouterCards": 9,
+  "mergedCard": null,
+  "titles": {
+    "total": 96,
+    "wrapped": 34,
+    "samples": [
+      {
+        "title": "Baidu: ERNIE-5.5-Flash-Preview (free)",
+        "h": 39.19,
+        "lh": 19.6,
+        "lines": 2,
+        "rect": {
+          "top": 439,
+          "bottom": 478.19,
+          "left": 89,
+          "right": 337,
+          "w": 248,
+          "h": 39.19
+        }
+      },
+      {
+        "title": "inclusionAI: Ling 3.2 Flash (free)",
+        "h": 39.19,
+        "lh": 19.6,
+        "lines": 2,
+        "rect": {
+          "top": 439,
+          "bottom": 478.19,
+          "left": 553,
+          "right": 801,
+          "w": 248,
+          "h": 39.19
+        }
+      },
+      {
+        "title": "Thinking Machines: Inkling 2 Small (free)",
+        "h": 39.19,
+        "lh": 19.6,
+        "lines": 2,
+        "rect": {
+          "top": 643,
+          "bottom": 682.19,
+          "left": 1017,
+          "right": 1265,
+          "w": 248,
+          "h": 39.19
+        }
+      },
+      {
+        "title": "百川智能 海纳百川计划 免费使用 M3Plus API",
+        "h": 39.19,
+        "lh": 19.6,
+        "lines": 2,
+        "rect": {
+          "top": 847,
+          "bottom": 886.19,
+          "left": 89,
+          "right": 337,
+          "w": 248,
+          "h": 39.19
+        }
+      },
+      {
+        "title": "讯飞星火 Spark Lite 轻量级大模型免费使用",
+        "h": 39.19,
+        "lh": 19.6,
+        "lines": 2,
+        "rect": {
+          "top": 847,
+          "bottom": 886.19,
+          "left": 1017,
+          "right": 1265,
+          "w": 248,
+          "h": 39.19
+        }
+      },
+      {
+        "title": "ElevenLabs 免费计划 每月 10000 credits",
+        "h": 39.19,
+        "lh": 19.6,
+        "lines": 2,
+        "rect": {
+          "top": 1051,
+          "bottom": 1090.19,
+          "left": 1017,
+          "right": 1295,
+          "w": 278,
+          "h": 39.19
+        }
+      }
+    ]
+  },
+  "layout": {
+    "top": {
+      "top": 0,
+      "bottom": 59,
+      "left": 0,
+      "right": 1440,
+      "w": 1440,
+      "h": 59
+    },
+    "facets": {
+      "top": 59,
+      "bottom": 105,
+      "left": 0,
+      "right": 1440,
+      "w": 1440,
+      "h": 46
+    },
+    "needs": {
+      "rect": {
+        "top": 105,
+        "bottom": 258,
+        "left": 10,
+        "right": 1430,
+        "w": 1420,
+        "h": 153
+      },
+      "previous": "facets",
+      "next": "wrap"
+    },
+    "grid": {
+      "rect": {
+        "top": 390,
+        "bottom": 7254,
+        "left": 30,
+        "right": 1410,
+        "w": 1380,
+        "h": 6864
+      },
+      "prev": "cmpbar"
+    },
+    "firstCard": {
+      "top": 426,
+      "bottom": 618,
+      "left": 30,
+      "right": 482,
+      "w": 452,
+      "h": 192
+    }
+  },
+  "cardShot": {
+    "index": 9,
+    "path": "mockups/v6-fix/_data/before-card9.png",
+    "box": {
+      "x": 30,
+      "y": 1038,
+      "width": 452,
+      "height": 192
+    }
+  },
+  "errors": [],
+  "blockedExternal": [],
+  "patched": false
+}

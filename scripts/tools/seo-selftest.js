@@ -595,15 +595,16 @@ section('七、入口文案契约（P2 残留 e3：「全部变化 →」而不�
 
   // 前端的受控副本（首页条带与无 JS 首屏都读它）：`validate.js --strict` 的
   // checkWordingContract() 会把它与 changes.js 逐项比对，这里再从入口文案这一侧钉一次。
-  const indexHtml = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
-  const wordingMatch = indexHtml.match(/const CHANGES_WORDING = (\{[^\n]*?\});/);
+  // v6：主脚本外链后，CHANGES_WORDING 在 assets/app.js 里。
+  const appSource = fs.readFileSync(path.join(ROOT, 'assets', 'app.js'), 'utf8');
+  const wordingMatch = appSource.match(/const CHANGES_WORDING = (\{[^\n]*?\});/);
   let frontCopy = null;
   try { frontCopy = wordingMatch ? JSON.parse(wordingMatch[1]) : null; } catch (error) { frontCopy = null; }
   check('首页 RENDER-CORE 的受控副本里，入口词同样是「全部变化」（与 changes.js 同词）',
     Boolean(frontCopy && frontCopy.CHANGES_LABELS && frontCopy.CHANGES_LABELS.all === ENTRY_WORD),
     frontCopy && frontCopy.CHANGES_LABELS ? String(frontCopy.CHANGES_LABELS.all) : '解析不到 CHANGES_WORDING');
   check("首页条带的入口是从措辞键拼出来的（escapeHtml(L.all) + 箭头），不是写死的字面量",
-    /escapeHtml\(L\.all\)\s*\+\s*' →/.test(indexHtml));
+    /escapeHtml\(L\.all\)\s*\+\s*' →/.test(appSource));
 
   // 会渲染这条入口的源文件（页面壳 + 措辞表）：一个「查看全部」都不许有。
   // 改名的正确做法是改措辞表，而不是在某处手写一个新词。
@@ -613,7 +614,7 @@ section('七、入口文案契约（P2 残留 e3：「全部变化 →」而不�
   // **不拿 `scripts/lib/site.js` 顶位**：那个文件只放站点常量与 XML 转义，一个面向读者的
   // 措辞都没有，把它列进来会变成一条"看起来在守着措辞、其实永远为真"的空登记。
   const wordingSources = [
-    'index.html',
+    'assets/app.js',
     'scripts/lib/changes.js', 'scripts/lib/plan-changes.js',
     'scripts/lib/plans-hub-page.js', 'scripts/lib/plans-page.js', 'scripts/lib/api-plans-page.js'
   ];

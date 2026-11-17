@@ -21,6 +21,7 @@ const path = require('path');
 const ROOT = path.join(__dirname, '..', '..');
 const provenance = require('../lib/provenance');
 const audience = require('../lib/audience');
+const appAsset = require('../lib/app-asset');
 const { makeDeal, validateDeal } = require('../lib/schema');
 const { load: loadRenderCore } = require('../lib/render-core');
 
@@ -217,9 +218,9 @@ check('比例上限存在且 < 1', provenance.EVIDENCE_BUDGET_RATIO > 0 && prove
 
 console.log('=== ⑦ 渲染（RENDER-CORE） ===');
 const renderCore = loadRenderCore(path.join(ROOT, 'index.html'));
-const wording = audience.parseWordingBlock(audience.extractWordingBlock(fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8')));
+const wording = audience.parseWordingBlock(audience.extractWordingBlock(appAsset.SOURCE));
 check('措辞块可解析（两个常量都在）', Boolean(wording && wording.SOURCE_LABELS && wording.SOURCE_STATE));
-const contract = audience.checkWordingContract(fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8'));
+const contract = audience.checkWordingContract(appAsset.SOURCE);
 check('措辞契约跨层一致', contract.ok, contract.reasons.join('；'));
 
 const renderDeal = (factsPatch, extra = {}) => ({

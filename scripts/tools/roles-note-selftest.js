@@ -28,6 +28,7 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '..', '..');
 const audience = require('../lib/audience');
+const appAsset = require('../lib/app-asset');
 
 const arg = name => (process.argv.find(a => a.startsWith(`--${name}=`)) || '').slice(name.length + 3);
 const ROLES_PATH = arg('roles') ? path.resolve(arg('roles')) : path.join(ROOT, 'scripts', 'data', 'official_urls.json');
@@ -47,7 +48,7 @@ const liveLabel = audience.WORDING_CONTRACT.SOURCE_LABELS.origin;
 const note = JSON.parse(fs.readFileSync(ROLES_PATH, 'utf8'))._roles || '';
 const plansPage = read('scripts/lib/plans-page.js');
 const apiPlansPage = read('scripts/lib/api-plans-page.js');
-const frontend = audience.checkWordingContract(read('index.html'));
+const frontend = audience.checkWordingContract(appAsset.SOURCE);
 
 /** `case '<key>':` 之后 400 字符内是否有原样透传（`String(value)`） */
 function passthroughAfterCase(source, key) {
@@ -91,7 +92,7 @@ check('注里指向本自测（可复核入口）',
 /* ------------------------------------------------------------------ */
 
 console.log('=== ③ 前端副本 ↔ lib 常量 ===');
-check('index.html 的 SOURCE_WORDING 与 lib 常量逐字一致（checkWordingContract）',
+check('assets/app.js 的 SOURCE_WORDING 与 lib 常量逐字一致（checkWordingContract）',
   frontend.ok === true,
   frontend.ok ? '' : frontend.reasons.join(' | '));
 

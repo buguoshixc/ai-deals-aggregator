@@ -32,6 +32,7 @@ const { execFileSync } = require('child_process');
 const { render: renderOgImage, selfCheck: selfCheckOgImage } = require('../lib/og-image');
 const { load: loadLogos, write: writeLogos } = require('../lib/logos');
 const { load: loadRenderCore } = require('../lib/render-core');
+const appAsset = require('../lib/app-asset');
 const { attach: attachZh, summarize: summarizeZh } = require('../lib/zh');
 const health = require('../lib/health');
 const audience = require('../lib/audience');
@@ -290,6 +291,10 @@ const PUBLIC_FILES = ['index.html', 'favicon.svg', 'robots.txt', '.nojekyll', 'B
  */
 const GENERATED_FILES = [
   'logos.css', 'sitemap.xml', 'og-image.png',
+  // v6：首页应用脚本（内容哈希文件名）。源码在 assets/app.js，构建期由
+  // stageAppScript() 复制成 app.<hash>.js，并把 index.html 的 src 改成这个名字。
+  // 名字从 app-asset.js 现取 —— 这里不写第二份哈希/文件名字面量。
+  appAsset.FILE,
   // v3.2：订阅产物（两条）。由唯一表现取 ⇒ 这张表与 `FEED_FILES` 不可能分家。
   ...feed.FEED_FILES.map(([file]) => file),
   // v3.3：IndexNow 密钥文件（`<key>.txt`，内容就是密钥本身）。
@@ -332,9 +337,11 @@ const { SITE_URL, SITE_NAME, SITE_DESCRIPTION, xmlEscape } = site;
  * 构建期生成静态页面需要同一个仓库地址，因此从同一份源码里读。
  */
 const REPO_URL = (() => {
-  const match = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8')
+  // v6：RENDER-CORE 从 index.html 内联搬到了 assets/app.js（外链），常量的唯一出处
+  // 跟着源文件走；不要再从 index.html 读，否则外链化之后构建会当场找不到它。
+  const match = fs.readFileSync(appAsset.SOURCE_PATH, 'utf8')
     .match(/const REPO_URL = '([^']+)'/);
-  if (!match) throw new Error('index.html 里找不到 `const REPO_URL = …`（纠错入口的仓库地址唯一出处）');
+  if (!match) throw new Error('assets/app.js 里找不到 `const REPO_URL = …`（纠错入口的仓库地址唯一出处）');
   return match[1];
 })();
 
@@ -1282,7 +1289,7 @@ function writeDetailPages(payload, indexHtml, renderCore, plan, homepageVisibleI
   // 共享片段（共享 `<style>` / 主题前置脚本 / 页脚模板）与页脚收尾都交给页面壳：
   // 页脚**每页解析一次**这条既有纪律没有变 —— `shell.docEnd()` 会用这一页自己的路由调
   // `finalizePage()`（分析注入要按该页路由判「要不要统计」）。
-  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS);
+  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS, appAsset.SOURCE);
 
   const themeSeg = `<div class="seg" id="themeSeg" role="group" aria-label="配色主题">
         <button type="button" data-theme-value="auto" aria-pressed="true">跟随系统</button>
@@ -1515,7 +1522,7 @@ ${vendorPage
  *  · 数据缺失（还没有过一次成功采集）时生成一页说明，而不是让构建失败。
  */
 function renderStatusPage(healthDoc, indexHtml, route = 'status/') {
-  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS);
+  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS, appAsset.SOURCE);
   const summary = health.summarize(healthDoc);
   const rows = summary.rows;
 
@@ -1788,7 +1795,7 @@ const CODEX_SOURCE_LABEL = { webhook: '实时收录', observed: '事后观测收
  * `scripts/lib/page-shell.js` 统一负责 <head>、共享样式、页头页脚与分析注入。
  */
 function renderCodexResetsPage(codex, indexHtml) {
-  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS);
+  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS, appAsset.SOURCE);
   const route = CODEX_RESETS_ROUTE;
   const prefix = '../';
   const events = Array.isArray(codex.events) ? codex.events : [];
@@ -2012,7 +2019,7 @@ function markChangesRows(body, records, expectedRows) {
 }
 
 function renderChangesPage(radar, indexHtml, renderCore, context = {}) {
-  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS);
+  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS, appAsset.SOURCE);
 
   const W = changes.CHANGES_WORDING;
   const PAGE_HEADING = W.CHANGES_LABELS.pageTitle;
@@ -2275,7 +2282,7 @@ const PLANS_TABLE_CSS = `  /* 只用首页已有的设计变量，不新建一�
  */
 function renderPlansPage(planStore, indexHtml, context = {}) {
   const prefix = '../../'; // /plans/coding/ 是两层路由
-  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS);
+  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS, appAsset.SOURCE);
 
   // 【史述·已下架】v2.3 / v3.0：这一页当年**有专属订阅源**（套餐变化），要求在 `<head>` 里
   // 与根 Feed 并列声明它（而不是替换：读者既可以订全站优惠，也可以只订套餐变化）。
@@ -2453,7 +2460,7 @@ ${plansCompareSource()}
  */
 function renderApiPlansPage(apiStore, indexHtml, context = {}) {
   const prefix = '../../'; // /plans/api/ 同样是两层路由
-  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS);
+  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS, appAsset.SOURCE);
 
   const pageUrl = `${SITE_URL}${apiPlansPage.API_PLANS_ROUTE}`;
   const plans = apiStore.plans || [];
@@ -2606,7 +2613,7 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
  */
 function renderApiCostPage(apiStore, indexHtml, context) {
   const prefix = '../../';
-  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS);
+  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS, appAsset.SOURCE);
 
   const pageUrl = `${SITE_URL}${apiCostPage.API_COST_ROUTE}`;
   const plans = apiStore.plans || [];
@@ -2750,7 +2757,7 @@ ${apiCostSource().replace(/\n$/, '')}
  */
 function renderPlansHubShell(indexHtml, context = {}) {
   const prefix = '../'; // /plans/ 是一层路由
-  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS);
+  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS, appAsset.SOURCE);
 
   const pageUrl = `${SITE_URL}${plansHubPage.PLANS_HUB_ROUTE}`;
   const jsonLdBlocks = plansHubPage.plansHubJsonLd({ siteUrl: SITE_URL })
@@ -2896,7 +2903,7 @@ const STATIC_PAGE_CSS = `  /* 只用首页已有的设计变量，不新建视�
  * 分类页第一版就是这么写的，被自检当场拦下）。
  */
 function renderStaticPage({ kind, route, title, description, body, jsonLd, prefix, extraCss = '', mainClass }, indexHtml) {
-  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS);
+  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS, appAsset.SOURCE);
   const jsonLdHtml = jsonLd
     .map(data => `<script type="application/ld+json">
 ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
@@ -3052,7 +3059,7 @@ function renderDirectoryPage(spec, deals, indexHtml, context) {
    * 这里不写第二份「哪个别名指向谁」的判断。
    */
   const pageUrl = `${SITE_URL}${spec.canonicalRoute || spec.route || `${spec.slug}/`}`;
-  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS);
+  const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS, appAsset.SOURCE);
 
   // v1.7：页面类型。`hub` 列子页面、`alias` 是 noindex 的旧地址，其余列条目。
   const kind = spec.kind || 'collection';
@@ -3801,6 +3808,28 @@ ${notesHtml}${shell.docEnd({ route: spec.route || `${spec.slug}/`, prefix: prefi
 /* 组装                                                                 */
 /* ------------------------------------------------------------------ */
 
+/**
+ * 把首页应用脚本按内容哈希落进产物，并改写暂存 index.html 的外链。
+ *
+ * 为什么必须在 `loadRenderCore(indexFile)` 之前调用：loader 现在从 HTML 的
+ * `<script src>` 解析 RENDER-CORE 源文件；文件名改写与文件落盘必须同时发生。
+ * 只改 HTML 不写文件 ⇒ loader 找不到脚本；只写文件不改 HTML ⇒ 产物指向
+ * `assets/app.js`（一个不会发布到 dist 的源码路径）⇒ 线上 404。
+ */
+function stageAppScript() {
+  const outPath = path.join(OUT, appAsset.FILE);
+  fs.writeFileSync(outPath, appAsset.SOURCE, 'utf8');
+  const htmlPath = path.join(OUT, 'index.html');
+  let html = fs.readFileSync(htmlPath, 'utf8');
+  const needle = 'src="assets/app.js"';
+  const hits = html.split(needle).length - 1;
+  if (hits !== 1) {
+    throw new Error(`index.html 里应恰好有 1 处 ${needle}，实际 ${hits} 处（外链改写失去唯一锚点）`);
+  }
+  html = html.split(needle).join(`src="${appAsset.FILE}"`);
+  fs.writeFileSync(htmlPath, html, 'utf8');
+}
+
 function assemble() {
   console.log(`\n=== 2) 组装产物 ${showOut(FINAL_OUT)} ===`);
   console.log(`  写入暂存目录 ${showOut(STAGE_OUT)}`);
@@ -3815,6 +3844,13 @@ function assemble() {
     if (!fs.existsSync(from)) throw new Error(`缺少发布文件: ${file}`);
     fs.copyFileSync(from, path.join(OUT, file));
   }
+
+  // v6：首页主脚本外链。先把源码按内容哈希写成产物根的 `app.<hash>.js`，
+  // 再把暂存 index.html 的 `src="assets/app.js"` 改写成那个名字。
+  // 顺序不能反：紧接着的 loadRenderCore(indexFile) 会从 HTML 的 <script src> 解析
+  // 到同名文件；如果先加载后改名，loader 会找不到脚本（构建当场失败）。
+  // 只改 `src="…"`，不改注释里的源文件路径（那里写的是源码位置，不是产物 URL）。
+  stageAppScript();
 
   // 厂商 logo：品牌矢量现场生成为独立 SVG，官网文件原样拷贝，规则写进 logos.css。
   // 全部落盘、不热链任何第三方 CDN。
@@ -7016,7 +7052,7 @@ function selfCheck(built) {
 
     const rc = loadRenderCore(path.join(OUT, 'index.html'));
     const indexHtml = fs.readFileSync(path.join(OUT, 'index.html'), 'utf8');
-    const wording = audience.parseWordingBlock(audience.extractWordingBlock(indexHtml)) || {};
+    const wording = audience.parseWordingBlock(audience.extractWordingBlock(appAsset.SOURCE)) || {};
     const ownWords = Object.keys(wording)
       .filter(group => group.startsWith('SOURCE_'))
       .flatMap(group => Object.values(wording[group] || {}))
@@ -7178,7 +7214,7 @@ function selfCheck(built) {
       }
 
       const indexHtml = fs.readFileSync(path.join(OUT, 'index.html'), 'utf8');
-      const wording = audience.parseWordingBlock(audience.extractWordingBlock(indexHtml)) || {};
+      const wording = audience.parseWordingBlock(audience.extractWordingBlock(appAsset.SOURCE)) || {};
       for (const group of Object.keys(history.HISTORY_WORDING)) {
         const expected = history.HISTORY_WORDING[group];
         const actual = wording[group];
@@ -7596,7 +7632,7 @@ function selfCheck(built) {
     }
 
     // ④ 措辞同源：前端那份受控副本与 lib/changes.js 的权威表逐项比对
-    const wording = audience.parseWordingBlock(audience.extractWordingBlock(indexHtml)) || {};
+    const wording = audience.parseWordingBlock(audience.extractWordingBlock(appAsset.SOURCE)) || {};
     for (const group of Object.keys(W)) {
       const expected = W[group];
       const actual = wording[group];
@@ -7769,6 +7805,9 @@ function selfCheck(built) {
 
   // --- 预渲染与 SEO 自检 ---
   const html = fs.readFileSync(path.join(OUT, 'index.html'), 'utf8');
+  // v6：主脚本已外链；下面这些「JS 里写死的口径」从产物里那份 app.<hash>.js 回读，
+  // 而不是从 index.html 的内联脚本里找（后者已被 stageAppScript 搬走）。
+  const appSource = fs.readFileSync(path.join(OUT, appAsset.FILE), 'utf8');
   // 内联脚本里含模板字符串字面量（class="go" / data-logo="…" 之类），
   // 数标记时必须先把 <script> 摘掉，否则会把源码当成已渲染的卡片数进去。
   //
@@ -8499,7 +8538,7 @@ function selfCheck(built) {
   else console.log('  ✓ 收藏/对比: 预渲染 HTML 零控件（整块由 JS 建，无 JS 时不给可点暗示）');
 
   // 字段与表头口径：JS 里写死「最多 4 条」，产物自检跟着对一遍，避免两处漂移
-  if (!/const CMP_MAX = 4;/.test(html)) fail('index.html 里找不到 const CMP_MAX = 4（对比上限口径变了？）');
+  if (!/const CMP_MAX = 4;/.test(appSource)) fail('app 脚本里找不到 const CMP_MAX = 4（对比上限口径变了？）');
   else console.log('  ✓ 对比上限: CMP_MAX = 4（与页脚提示文案同源）');
 
   // 纠错入口：详情弹层是 JS 渲染的（与弹层本身一致），所以这里只断言模板存在，
@@ -8508,10 +8547,10 @@ function selfCheck(built) {
   //   ① 复制按钮与 aria-live 区域在模板里；
   //   ② 复制实现是**共享片段**（详情页与首页弹层同一份源码），不是第二份；
   //   ③ 按钮默认隐藏、只在 body.copy-ready 后显示 —— 无 JS 时不留死按钮。
-  if (!/issues\/new\?title=/.test(html)) fail('详情模板里没有纠错入口');
-  else if (!/class="dact-copy"/.test(html)) fail('详情模板里没有「这条领不到了？」复制按钮（.dact-copy）');
-  else if (!/aria-live="polite"/.test(html)) fail('复制反馈缺少 aria-live 状态区域（读屏读不到反馈）');
-  else if (!/SHARED:dealcopy:START/.test(html) || !/SHARED:dealcopy:END/.test(html)) {
+  if (!/issues\/new\?title=/.test(appSource)) fail('详情模板里没有纠错入口');
+  else if (!/class="dact-copy"/.test(appSource)) fail('详情模板里没有「这条领不到了？」复制按钮（.dact-copy）');
+  else if (!/aria-live="polite"/.test(appSource)) fail('复制反馈缺少 aria-live 状态区域（读屏读不到反馈）');
+  else if (!/SHARED:dealcopy:START/.test(appSource) || !/SHARED:dealcopy:END/.test(appSource)) {
     fail('详情页复制实现缺少 SHARED:dealcopy 共享标记（会退化成两份实现）');
   } else if (!/\.copy-ready \.dact \.dact-copy\s*\{/.test(html)) {
     fail('复制按钮没有「JS 就绪才显示」的 CSS 门控（无 JS 时会出现死按钮）');
@@ -8811,7 +8850,7 @@ function selfCheck(built) {
     // 一处是 `audience.COLLECTION_PAGES`（生成页面），一处是 index.html 的
     // `COLLECTION_FACETS`（渲染按钮）。写错 slug、漏一个、多一个 ——
     // 症状分别是「点了没反应」「入口消失」，两边都不会报错。所以在这里对齐一次。
-    const facetBlock = (html.match(/const COLLECTION_FACETS = \[([\s\S]*?)\];/) || ['', ''])[1];
+    const facetBlock = (appSource.match(/const COLLECTION_FACETS = \[([\s\S]*?)\];/) || ['', ''])[1];
     if (!facetBlock) {
       problems.push('index.html 里找不到 COLLECTION_FACETS（首页分类入口没了？）');
     } else {
