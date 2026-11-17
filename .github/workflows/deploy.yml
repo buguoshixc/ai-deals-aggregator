@@ -30,6 +30,8 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  # 发布失败时 gh 维护 publish-frozen 跟踪 issue（告警是 best-effort，绝不改变 gate 判定）
+  issues: write
 
 concurrency:
   group: pages
@@ -84,9 +86,66 @@ jobs:
 
       # 发布路径**永远严格**：不提供降级开关（allow_degraded_run='false'）。
       - name: Gate (same implementation as verify.yml)
+        id: gate
         uses: ./.github/actions/gate
         with:
           allow_degraded_run: 'false'
+
+      # 失败告警（2026-11-17）：发布门禁本身**保持严格**，红的就是真缺陷；
+      # 但「停版几天等人发现」不可接受，所以失败时用 gh 维护**单一**跟踪 issue。
+      # 刻意 best-effort：告警失败只 warning，不改变 job 结论（job 已经因门禁失败而红）。
+      # 只在 workflow_run 路径告警：push / PR 的红由 verify.yml 与作者自己看到。
+      - name: "Open or update the publish-frozen tracking issue (workflow_run failures only)"
+        if: failure() && github.event_name == 'workflow_run'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          FAILED_STEP: ${{ steps.gate.outputs.failed_step }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          UPSTREAM_RUN_URL: ${{ github.event.workflow_run.html_url }}
+        run: |
+          set -uo pipefail
+          LABEL='publish-frozen'
+          TITLE='发布门禁失败，站点已停版（自动跟踪）'
+          if [ -z "${FAILED_STEP:-}" ]; then
+            FAILED_STEP='（gate 未上报，请打开 run 的 Summary 看第一个失败步骤）'
+          fi
+          BODY_FILE="$(mktemp)"
+          {
+            echo "自动告警：\`Deploy to GitHub Pages\` 的 prepublish 门禁在 workflow_run 路径上失败，本次**没有发布**，线上保留上一份成功版本。"
+            echo ""
+            echo "- 失败步骤：\`$FAILED_STEP\`"
+            echo "- 本次 run：$RUN_URL"
+            echo "- 采集 run：${UPSTREAM_RUN_URL:-（无）}"
+            echo "- 触发事件：\`${{ github.event_name }}\`；分支：\`${{ github.ref_name }}\`"
+            echo ""
+            echo "## 处理指引"
+            echo ""
+            echo "1. 打开本次 run 的 **Summary**，核对「Gate conclusion」；"
+            echo "2. 真缺陷 → 修产品/数据；PR 合并后，下一轮采集会自动重试发布；"
+            echo "3. 过期快照判据误报 → 改判据（不要放宽真正的产品保护），并让它可证伪；"
+            echo "4. **不要**降级发布：发布链上 allow_degraded_run 永远为 false。"
+            echo ""
+            echo "> 发布成功后本工作流会自动关闭此 issue；连续失败会追加评论，不重复开新 issue。"
+          } > "$BODY_FILE"
+          # label 可能尚不存在：先确保存在；已存在时 gh 返回非零，忽略。
+          gh label create "$LABEL" --color 'b60205' --description '发布门禁失败，站点停版跟踪' >/dev/null 2>&1 || true
+          ISSUE="$(gh issue list --label "$LABEL" --state open --limit 1 --json number --jq '.[0].number // empty' 2>/dev/null || true)"
+          if [ -n "$ISSUE" ]; then
+            if gh issue comment "$ISSUE" --body-file "$BODY_FILE" >/dev/null; then
+              echo "已在跟踪 issue #$ISSUE 追加失败记录"
+            else
+              echo "::warning title=publish-frozen issue 未更新::向 #$ISSUE 追加评论失败（发布失败本身已由 run 状态体现）"
+            fi
+          else
+            if gh issue create --title "$TITLE" --body-file "$BODY_FILE" --label "$LABEL" >/dev/null; then
+              echo "已创建 publish-frozen 跟踪 issue"
+            else
+              echo "::warning title=publish-frozen issue 未创建::创建跟踪 issue 失败（检查 issues: write 权限）"
+            fi
+          fi
+          rm -f "$BODY_FILE"
+          exit 0
 
   build:
     # 采集任务失败时（例如 strict 门禁没过）不发布，保留线上上一份好数据。
@@ -193,4 +252,26 @@ jobs:
             200|202) echo "IndexNow 已接收"; exit 0 ;;
           esac
           echo "::warning title=IndexNow 通知未成功::HTTP $STATUS $BODY（发布本身已成功，线上不受影响）"
+          exit 0
+
+      # 发布恢复：关闭跟踪 issue。只在 workflow_run 上做（与失败告警对称），
+      # 人工 dispatch 的成功不替别人关掉仍需要人工确认的告警。
+      - name: "Close the publish-frozen tracking issue after a successful publish"
+        if: success() && github.event_name == 'workflow_run'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -uo pipefail
+          ISSUE="$(gh issue list --label 'publish-frozen' --state open --limit 1 --json number --jq '.[0].number // empty' 2>/dev/null || true)"
+          if [ -z "$ISSUE" ]; then
+            echo "没有打开的 publish-frozen 跟踪 issue，无需关闭"
+            exit 0
+          fi
+          if gh issue close "$ISSUE" --comment "发布已恢复：$RUN_URL 的门禁通过并成功上线，自动关闭此跟踪 issue。" >/dev/null; then
+            echo "已关闭跟踪 issue #$ISSUE"
+          else
+            echo "::warning title=publish-frozen issue 未关闭::#${ISSUE} 关闭失败（发布本身已成功，线上不受影响）"
+          fi
           exit 0
