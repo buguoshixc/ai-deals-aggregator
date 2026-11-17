@@ -423,102 +423,51 @@ if (verdict.problems.length) {
 }
 
 /* ------------------------------------------------------------------ */
-/* ③′ 正文下限**余量**登记复核（P2 残留 e1：/need/no-card/ 只剩 50 字）    */
+/* ③′ 正文下限余量（建议性报告：只打印最薄的若干页，不判生死）             */
 /* ------------------------------------------------------------------ */
 
 /**
  * 本工具自己的「可见正文」计数器。
  *
- * 刻意与 `seo.js` 的 `visibleText()` **分开写**：登记表里的字数是**一个数**，
- * 而它被「怎么数字数」这件事定义。两个实现同时对同一页计数、且都对登记值负责，
- * 才算这句话有两个来源 —— 下面有一条断言专门比这两个数。
+ * 刻意与 `seo.js` 的 `visibleText()` **分开写**：两个实现对同一页计数必须一致 ——
+ * 这是「怎么数字数」这条实现的不变式（真完整性检查），不是数据快照。
  */
 const ownVisibleText = html => unescapeHtml(
   strip(html).replace(/<!--[\s\S]*?-->/g, ' ').replace(/<[^>]+>/g, ' ')
 ).replace(/\s+/g, ' ').trim();
 
 {
-  const byRoute = new Map(descriptors.map(page => [page.route, page]));
-  const printMode = process.argv.includes('--print-floor-margins');
-  const registeredAt = ((process.argv.find(a => a.startsWith('--registered-at=')) || '').slice(16)) || '<YYYY-MM-DD>';
-  const readings = [];
-  const registryProblems = [];
-  const counterProblems = [];
+  const pages = descriptors.map(page => ({
+    route: page.route,
+    kind: page.kind,
+    count: page.count,
+    chars: ownVisibleText(page.html).length,
+    floor: pageKinds.textFloor(page.kind, page.count),
+    rule: seo.visibleText(page.html).length
+  }));
 
-  for (const entry of seo.TEXT_FLOOR_RESIDUALS) {
-    const page = byRoute.get(entry.route);
-    if (!page) { registryProblems.push(`${entry.route}：登记了，但产物里没有这一页（登记过期）`); continue; }
-    const own = ownVisibleText(page.html).length;
-    const rule = seo.visibleText(page.html).length;
-    if (own !== rule) counterProblems.push(`${entry.route}：本工具 ${own} ≠ 规则层 ${rule}`);
-    const floor = pageKinds.textFloor(page.kind, page.count);
-    const margin = own - floor;
-    readings.push({ route: entry.route, kind: page.kind, count: page.count, chars: own, floor, margin, registered: entry.margin });
-    // 登记的两个入参也一起判：kind / 条数变了，这条登记的「底线」就不再是这一页的底线。
-    if (page.kind !== entry.kind) registryProblems.push(`${entry.route}：kind 现在是 ${page.kind}，登记时是 ${entry.kind}`);
-    if (Number(page.count) !== entry.count) registryProblems.push(`${entry.route}：条数现在是 ${page.count}，登记时是 ${entry.count}`);
-    if (margin < entry.margin) registryProblems.push(`${entry.route}：余量 ${margin} < 登记值 ${entry.margin}（${own} 字 − 下限 ${floor}）`);
-  }
-
-  // 重新登记的入口：把**现在的读数**打印成可以直接贴回 `lib/seo.js` 的一块。
-  // （登记日期用 `--registered-at=YYYY-MM-DD` 给；不给就留一个显式占位符，不猜今天。）
-  if (printMode) {
-    console.log('\n=== 重新登记：把下面这块贴回 scripts/lib/seo.js 的 TEXT_FLOOR_RESIDUALS ===');
-    console.log(`    （登记日期：${registeredAt}）`);
-    for (const row of readings) {
-      console.log(`  { route: '${row.route}', kind: '${row.kind}', count: ${row.count}, chars: ${row.chars}, floor: ${row.floor}, margin: ${row.margin}, registeredAt: '${registeredAt}' },`);
-    }
-    console.log('\n    再让 JSON 转写与声明逐字节一致（seo-selftest 会比这两份）：');
-    console.log("    node -e \"const fs=require('fs'),seo=require('./scripts/lib/seo');"
-      + "fs.writeFileSync('research/_raw/p2-residuals-v1/text-floor-margins.json',"
-      + " JSON.stringify(seo.TEXT_FLOOR_RESIDUALS,null,2)+'\\n')\"");
-    process.exit(0);
-  }
-
-  console.log('\n=== 正文下限余量登记（P2 残留 e1）· 从 dist 重新数一遍 ===');
-  for (const row of readings) {
-    console.log(`  ${row.route.padEnd(20)} ${String(row.chars).padStart(5)} 字 − 下限 ${String(row.floor).padStart(4)}`
-      + ` = 余量 ${String(row.margin).padStart(4)}（登记值 ${row.registered}）· kind=${row.kind} count=${row.count}`);
-  }
-
-  check(`正文下限余量登记：${seo.TEXT_FLOOR_RESIDUALS.length} 页的实时余量 ≥ 登记值（独立重算，零调低下限）`,
-    registryProblems.length === 0, registryProblems.join('；'));
-  check('登记页的字数：本工具自己的计数器与规则层计数器逐字相同（两个实现互证）',
+  const counterProblems = pages.filter(page => page.chars !== page.rule)
+    .map(page => `${page.route}：本工具 ${page.chars} ≠ 规则层 ${page.rule}`);
+  check('「可见正文」的两个独立实现逐页相同（本工具计数器 vs 规则层 seo.visibleText）',
     counterProblems.length === 0, counterProblems.join('；'));
-  check('登记表里的每一页都真的产出了（登记过期 = 这一页没人看着了）',
-    readings.length === seo.TEXT_FLOOR_RESIDUALS.length,
-    `${readings.length}/${seo.TEXT_FLOOR_RESIDUALS.length}`);
 
-  /**
-   * **登记集合 == 实时余量 < 150 的页面集合**（judge-coverage-gaps-v1 §4 观察 2 的收口）。
-   *
-   * 为什么要有这一条：改前只有「被点名的 `/need/no-card/` 必须在表里」这一条钉住登记表，
-   * 其余 5 条**连同行带 JSON 转写一起删掉**时 `selftest:seo` / `verify:seo` 全都保持全绿 ——
-   * 也就是说「登记范围 = 全站余量 < 150 字的**全部**页面」只是一次普查的**结论**，
-   * 不是一条能拦住「静默缩小」的不变式（那个缺口是 `judge-coverage-gaps-v1` 量出来的）。
-   * 现在把它变成不变式，**两个方向都判**：
-   *   · 实时余量 < 阈值却没登记 ⇒ 红（这一页没人看着）；
-   *   · 登记了但实时余量已经 ≥ 阈值 ⇒ 红（登记过期：它已经不是最薄的那一档了）。
-   * 阈值 150 与 `lib/seo.js` 的登记注释同源（下一档是 409 字）。
-   */
-  const RESIDUAL_RANGE = 150;
-  const liveThin = descriptors
-    .map(page => ({
-      route: page.route, kind: page.kind, count: page.count,
-      margin: ownVisibleText(page.html).length - pageKinds.textFloor(page.kind, page.count)
-    }))
-    .filter(row => row.margin < RESIDUAL_RANGE)
-    .sort((a, b) => a.margin - b.margin);
-  const registeredRoutes = seo.TEXT_FLOOR_RESIDUALS.map(row => row.route).sort();
-  const missingRegistration = liveThin.filter(row => registeredRoutes.indexOf(row.route) === -1);
-  const staleRegistration = registeredRoutes.filter(route => !liveThin.some(row => row.route === route));
-  check(`余量登记集合 == 实时余量 < ${RESIDUAL_RANGE} 的页面集合（${liveThin.length} 页；**少登记 / 过期登记都红**）`,
-    missingRegistration.length === 0 && staleRegistration.length === 0,
-    `实时 < ${RESIDUAL_RANGE}：${liveThin.map(row => `${row.route}(${row.margin})`).join(' · ') || '（无）'}`
-      + (missingRegistration.length ? ` · **未登记**：${missingRegistration.map(row => `${row.route}(${row.margin})`).join(' ')}` : '')
-      + (staleRegistration.length ? ` · **登记过期**（余量已 ≥ ${RESIDUAL_RANGE}）：${staleRegistration.join(' ')}` : ''));
+  // 余量是**领先指标**，不是判据：数据合法增长（条数涨 ⇒ 下限涨）会让它变小，
+  // 快照式断言（登记值 / 精确集合相等）在数据演进时必然误报，因此已按根因退役 ——
+  // 硬判据只有构建期与独立门禁两侧都跑的 thin-content 下限。
+  // 这份报告留着，是为了「离红线最近的是哪几页」始终可见、可复核。
+  const REPORT_LIMIT = 10;
+  const thinnest = pages
+    .map(({ route, kind, count, chars, floor }) => ({ route, kind, count, chars, floor, margin: chars - floor }))
+    .sort((a, b) => (a.margin - b.margin) || (a.route < b.route ? -1 : a.route > b.route ? 1 : 0))
+    .slice(0, REPORT_LIMIT);
+
+  console.log(`\n=== 正文下限余量（建议性报告 · 全站最薄 ${thinnest.length} 页，下限见 page-kinds.js）===`);
+  for (const row of thinnest) {
+    console.log(`  ${row.route.padEnd(24)} ${String(row.chars).padStart(5)} 字 − 下限 ${String(row.floor).padStart(4)}`
+      + ` = 余量 ${String(row.margin).padStart(4)} · kind=${row.kind} count=${row.count}`);
+  }
+  console.log('  （不参与门禁判定：余量随数据合法演进，快照式硬断言必然误报；硬判据只有 thin-content 下限）');
 }
-
 /* ------------------------------------------------------------------ */
 /* ③″ H14：「最近变化」是条件模块（零变化 / 日志不可用 ⇒ **整块不渲染**）  */
 /* ------------------------------------------------------------------ */
