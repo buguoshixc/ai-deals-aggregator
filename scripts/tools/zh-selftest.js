@@ -89,6 +89,10 @@ if (baseline.code !== 0) {
     || baseline.out.split('\n').map(s => s.trim()).find(Boolean)
     || '(构建没有输出任何错误行)';
   console.log(`\n❌ 构建失败（不是译文问题）：${firstErr}`);
+  // 只印第一行会把「为什么红」丢掉：构建的判据红行是 `✗`/`❌`（可能有好几条，分散在
+  // stdout/stderr），`record()` 在用例失败时也只透传这些行。基线失败同样逐条透传，
+  // 让第一个看见红的人不用再翻一遍任务日志找根因。
+  badLines(baseline.out).forEach(l => console.log('   ' + l));
   console.log('  ↳ 构建在干净数据上就红了；译文演练不再执行（先修构建，再跑本演练）');
   process.exit(1);
 }
