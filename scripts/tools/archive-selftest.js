@@ -730,6 +730,32 @@ section('⑧ 详情页门槛与 sitemap 资格（题面 §4 / §F4）');
   check('【牙】过门槛的条目没进 sitemap → 红',
     archiveLib.assertArchiveSitemapEligibility({ sitemapRoutes: routes.slice(1), gateResults: gates })
       .some(problem => problem.includes('没有进 sitemap')));
+
+  // linkedDealIdsOf：详情页索引策略（seo.dealIndexable）的「档案接住」一侧。
+  // 它必须与 renderArchiveEntry 的回链判据**同源**：只认 kind=deal 且 linkable 的条目。
+  const entryA = okEntries.find(entry => entry.id === 'aaaaaaaaaaa1');
+  const entryB = okEntries.find(entry => entry.id === 'bbbbbbbbbbb2');
+  const linkedIds = archiveLib.linkedDealIdsOf(okEntries);
+  check('linkedDealIdsOf 只收 linkable 的 deal 条目（B 不可链接 ⇒ 不在集合里）',
+    linkedIds.has('aaaaaaaaaaa1') && !linkedIds.has('bbbbbbbbbbb2'), [...linkedIds].join(','));
+  check('entryLinksDeal 与回链判据同源：linkable 的 deal 真、不可链接的 deal 假',
+    archiveLib.entryLinksDeal(entryA) === true && archiveLib.entryLinksDeal(entryB) === false);
+  check('【牙】非 deal 种类（plan）即便 linkable 也不进 linkedDealIdsOf',
+    !archiveLib.linkedDealIdsOf([{ id: '111111111111', kind: 'plan', linkable: true }]).has('111111111111'));
+  // 【牙】契约：linkedDealIdsOf **不自己判门槛** —— 调用方必须喂 gated 集合。
+  // 一条 linkable 但未过门槛（无快照）的条目没有渲染出来的档案详情页、也就没有回链；
+  // 若误喂未 gated 集合，它会被算成「有回链」⇒ 详情页被误判可索引（孤儿页重新暴露）。
+  const ungatedLinkable = archiveLib.buildArchive({
+    kind: 'deal',
+    baseline: { at: '2026-09-01', fields: {} },
+    events: [{ id: 'nnnnnnnnnnnn', at: '2026-09-10', type: 'ended', reason: 'pruned_expired' }],
+    linkableIds: new Set(['nnnnnnnnnnnn']),
+    asOf: '2026-10-01'
+  }).entries[0];
+  check('【牙】未过门槛的 linkable 条目：未 gated 会被算进去，gating 之后必须消失（调用方契约）',
+    archiveLib.archiveDetailGate(ungatedLinkable).ok === false &&
+    archiveLib.linkedDealIdsOf([ungatedLinkable]).has('nnnnnnnnnnnn') &&
+    !archiveLib.linkedDealIdsOf([ungatedLinkable].filter(entry => archiveLib.archiveDetailGate(entry).ok)).has('nnnnnnnnnnnn'));
 }
 
 /* ================================================================== */

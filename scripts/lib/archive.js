@@ -157,6 +157,30 @@ function archiveDetailGate(entry) {
 }
 
 /**
+ * 档案详情页是否给 `/deal/<id>/` 一条站内入链（renderArchiveEntry 的 dealHref 判据，唯一出处）。
+ * 只给 deals：套餐 / API 记录的站内路由不在 `/deal/` 下。`linkable` 由 buildArchive 按
+ * `changes.linkableDealIdsOf()` 打上（只有 type=deal 的记录才有详情页）。
+ */
+function entryLinksDeal(entry) {
+  return Boolean(entry && entry.kind === 'deal' && entry.linkable);
+}
+
+/**
+ * 一组档案条目里「真的会有一条指向 /deal/<id>/ 的入链」的 id 集合。
+ * ⚠️ 调用方必须传**过门槛、会渲染详情页**的条目（gatedArchiveEntries）：未过门槛的条目
+ * 留在索引页但不建独立页（archiveDetailGate），也就没有这条 back-link。用未 gated 的集合
+ * 会把「索引页列了它」误当成「它有入链」，重新打开零入链可索引页的洞。
+ * 详情页索引策略（build-local 的 dealIndexable）用它判断「这条到期优惠是否已被档案接住」。
+ */
+function linkedDealIdsOf(entries) {
+  const ids = new Set();
+  for (const entry of entries || []) {
+    if (entryLinksDeal(entry)) ids.add(entry.id);
+  }
+  return ids;
+}
+
+/**
  * 详情页的 sitemap 资格：**过门槛的必须进、没过门槛的必须不在**。
  * 与 `models-page.assertSitemapEligibility` 同一套口径（同一个错误在两个家族里不该有两种判法）。
  */
@@ -729,7 +753,7 @@ function renderArchiveEntry(entry, ctx = {}) {
   // （产物自检的 SEO[orphan] 会红；2026-11-12 真实数据第一次撞上）。档案页是**只要记录
   // 有生命周期事件就存在**的稳定表面，因此由它承担这条入链。只给 deals：套餐 / API 记录的
   // 站内路由不在 `/deal/` 下，这里不为它们猜第二条路由。
-  const dealHref = entry.kind === 'deal' && entry.linkable
+  const dealHref = entryLinksDeal(entry)
     ? `${prefix}deal/${encodeURIComponent(entry.id)}/`
     : null;
   const sourceLines = [
@@ -964,6 +988,8 @@ module.exports = {
   routePrefixOf,
   archiveEntryPrefix,
   archiveDetailGate,
+  entryLinksDeal,
+  linkedDealIdsOf,
   assertArchiveSitemapEligibility,
   assertArchiveDetailRoutes,
   defaultMassThreshold,
