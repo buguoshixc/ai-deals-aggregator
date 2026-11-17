@@ -401,13 +401,13 @@ function checkAudienceGuard() {
     error('受众字段红线失守：chinaUsableLine() 对 false 不再是「中国大陆用户不可用」（确定值必须照直说）');
   }
 
-  // ③ 措辞跨层一致
-  if (fs.existsSync(INDEX_FILE)) {
-    const wording = au.checkWordingContract(fs.readFileSync(INDEX_FILE, 'utf8'));
+  // ③ 措辞跨层一致（B：主脚本已外链到 assets/app.js，措辞块随 RENDER-CORE 一起搬过去）
+  if (appAsset.SOURCE) {
+    const wording = au.checkWordingContract(appAsset.SOURCE);
     if (!wording.ok) {
       error(
         `受众字段措辞跨层漂移：${wording.reasons.join('；')}。` +
-        'index.html 的 /* AUDIENCE:START */ 块与 lib/audience.js 的 WORDING_CONTRACT 必须逐项一致 —— ' +
+        'assets/app.js 的 /* AUDIENCE:START */ 块与 lib/audience.js 的 WORDING_CONTRACT 必须逐项一致 —— ' +
         '两侧各有一份实现在所难免（RENDER-CORE 在 vm 沙箱里跑、不能 require），文本比对是唯一的牙。'
       );
     }
