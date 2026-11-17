@@ -147,6 +147,36 @@ const deals = payload.deals;
 const dealsById = new Map(deals.map(deal => [deal.id, deal]));
 const asOf = String(payload.updatedAt || '').slice(0, 10);
 
+// 窗口期集合的**独立重算**（与构建期互证的第二把尺子）。
+// 构建期按「内存 payload + buildArchive 的 gated 条目」算 indexable；这里换两个独立来源：
+//   · 首页可见 ← 对**产物里的** offers.json 重跑 renderCore.defaultVisible（同一判据、不同输入副本）；
+//   · 档案接住 ← **扫描产物里已渲染的档案详情页 HTML**，找相对回链 deal/<id>/（不重跑 buildArchive）。
+// 两者都不是 ⇒ 窗口期（dealLimbo）⇒ 该页必须 noindex 且不进 sitemap。
+// 回链只认**相对** href（与 seo.internalLinks 同口径）：档案页的 canonical 是绝对 URL
+// `…/archive/deal/<id>/`，若不排除会把每个归档实体都误判成「有回链」。
+const homepageVisibleIds = new Set(renderCore.defaultVisible(deals).map(deal => deal.id));
+const archivedLinkedIds = new Set();
+const archiveDealRoot = path.join(OUT, 'archive', 'deal');
+if (fs.existsSync(archiveDealRoot)) {
+  for (const entry of fs.readdirSync(archiveDealRoot, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    const file = path.join(archiveDealRoot, entry.name, 'index.html');
+    if (!fs.existsSync(file)) continue;
+    const html = fs.readFileSync(file, 'utf8');
+    for (const match of html.matchAll(/href="([^"]+)"/g)) {
+      const href = match[1];
+      if (/^https?:/i.test(href)) continue;
+      const stripped = href.replace(/^(\.\.\/)+/, '');
+      const dealMatch = /^deal\/([^/]+)\/$/.exec(stripped);
+      if (dealMatch) archivedLinkedIds.add(decodeURIComponent(dealMatch[1]));
+    }
+  }
+}
+const dealLimboOf = id => !seo.dealIndexable({
+  homepageVisible: homepageVisibleIds.has(id),
+  archivedLinked: archivedLinkedIds.has(id)
+});
+
 // 计划**从数据重新算一遍**（不读构建期的 PLAN）
 //
 // v3.0 Stage E：厂商页的门槛从「只有优惠条数」变成三条 OR（条数 / 历史事件 / **非优惠资料**），
@@ -289,6 +319,8 @@ for (const route of routes) {
     html,
     kind,
     indexable,
+    // 窗口期状态从产物独立重算（见上方 dealLimboOf）；规则层用它与 indexable 互证。
+    dealLimbo: kind === 'deal' ? dealLimboOf(itemIds[0]) : undefined,
     // v1.8-seo-answer-pages：别名页的 canonical 目标是正本。规则层用这个字段
     // 判「独立可索引」（canonical 自指）与 sitemap 成员资格，并核对页面上的 canonical。
     // 独立性来源是 `landing-aliases.json`（与构建期同一份表），不是本工具重算一份「谁指向谁」。
@@ -631,12 +663,24 @@ const ownVisibleText = html => unescapeHtml(
 }
 
 {
-  // v1.8：别名页不再 noindex。产物里允许出现的 noindex 页面必须来自策略表
-  // （今天 = 0 条；将来若出现，必须由 `page-kinds.js` 的声明解释，而不是悄悄多出来）。
+  // 窗口期策略（与 seo.dealIndexable / deal-index-policy 同源）：产物里允许的 noindex 页
+  // **只能**是「到期/线索但尚未归档」的优惠详情页，且必须与从产物**独立重算**的窗口期集合
+  // 逐个相等（双向对账）：
+  //   · 多一个 noindex（非窗口期页被 deindex）⇒ 红 —— 防止静默批量 deindex；
+  //   · 少一个 noindex（窗口期页仍可索引）⇒ 红 —— 孤儿页会重新暴露给搜索引擎。
+  // 别名页 v1.8 起用 canonical 收口、不再 noindex，所以非 deal 页一律不许 noindex。
   const noindexPages = descriptors.filter(page => !page.indexable);
-  check(`noindex 页面 ${noindexPages.length} 条（v1.8 起别名页用 canonical 收口，不再 noindex）`,
-    noindexPages.length === 0,
-    noindexPages.map(page => page.route).join(', '));
+  const expectedLimbo = deals
+    .filter(deal => deal.type === 'deal' && deal.id && dealLimboOf(deal.id))
+    .map(deal => `deal/${encodeURIComponent(deal.id)}/`);
+  const noindexRoutes = noindexPages.map(page => page.route).sort();
+  const expectedSorted = expectedLimbo.slice().sort();
+  const nonDealNoindex = noindexPages.filter(page => page.kind !== 'deal');
+  const unexpected = noindexRoutes.filter(route => !expectedSorted.includes(route));
+  const missing = expectedSorted.filter(route => !noindexRoutes.includes(route));
+  check(`noindex 页面 ${noindexPages.length} 条 == 独立重算的窗口期集合 ${expectedLimbo.length} 条（只允许窗口期 deal 页 noindex）`,
+    nonDealNoindex.length === 0 && unexpected.length === 0 && missing.length === 0,
+    `非deal页noindex [${nonDealNoindex.map(p => p.route).join(',')}] / 多 [${unexpected.join(',')}] / 少 [${missing.join(',')}]`);
 }
 
 {

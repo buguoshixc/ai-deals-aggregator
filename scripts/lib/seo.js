@@ -27,13 +27,28 @@ const PROBLEM_CODES = [
   'alias-target-exists', 'alias-item-set', 'alias-canonical',
   'slug-shape', 'slug-unique',
   'title-unique', 'title-length', 'desc-nonempty', 'desc-unique',
-  'canonical-self', 'canonical-unique', 'h1-count', 'robots-policy',
+  'canonical-self', 'canonical-unique', 'h1-count', 'robots-policy', 'deal-index-policy',
   'itemlist-arity', 'itemlist-members',
   'breadcrumb-target-exists', 'sitemap-target-exists', 'sitemap-policy',
   'orphan', 'internal-link-exists', 'thin-content', 'thin-content-margin',
   'duplicate-item-set',
   'summary-source'
 ];
+
+/**
+ * 优惠详情页的索引策略（唯一出处）：一条优惠的详情页可索引，当且仅当
+ *   ① 它还在首页默认视图里（`renderCore.defaultVisible` —— 未到期、非线索），或
+ *   ② 它已被档案接住（有一条**会渲染**的档案详情页给 `/deal/<id>/` 一条站内入链）。
+ * 两者都不满足＝「到期 / 线索但尚未归档」的窗口期：首页剔除按墙钟立即生效，而档案收录要等
+ * `ended` 事件（连续 2 轮来源未见），这 1–2 轮里它可能没有任何站内入链（分类页白名单外 +
+ * 单条厂商 + 雷达截断时必然）。把这类页临时 `noindex`（不进 sitemap），孤儿判据就不会被这个
+ * 结构性时间窗触发；`ended` 事件落地、档案接住它之后自动恢复可索引。
+ * 这不是「把报警器关掉」：活跃页与已归档页照常受 `orphan` 判据保护；独立验收（seo-verify）
+ * 还会从数据重算一遍窗口期集合，`deal-index-policy` 判据守住描述符自洽，防止静默批量 deindex。
+ */
+function dealIndexable({ homepageVisible, archivedLinked } = {}) {
+  return Boolean(homepageVisible || archivedLinked);
+}
 
 /**
  * 正文下限**余量**登记（P2 残留 e1）—— 「这些页离红线多远」的唯一出处。
@@ -526,6 +541,16 @@ function validate(pages, opts = {}) {
         : `策略表判它可索引，但页面带了 robots=${robots}`);
     }
 
+    // 优惠详情页索引策略的自洽判据：描述符声明的窗口期状态（dealLimbo）必须与 indexable 一致。
+    // dealLimbo 由构建期按 dealIndexable() 从数据算出（首页可见 || 档案接住）。这一条守住
+    // 「有人改了 indexable 却没改 dealLimbo（或反之）」的漂移；窗口期集合本身对不对，由
+    // seo-verify 从数据独立重算（两个来源互证）。只对声明了 dealLimbo 的 deal 页判。
+    if (page.kind === 'deal' && page.dealLimbo !== undefined && page.indexable === Boolean(page.dealLimbo)) {
+      fail('deal-index-policy', route,
+        `dealLimbo=${page.dealLimbo} 与 indexable=${page.indexable} 矛盾`
+        + '（窗口期页必须 noindex，非窗口期页必须可索引；见 seo.dealIndexable）');
+    }
+
     // sitemap 与索引策略必须一致：**sitemap = 独立可索引页面的集合**。
     // canonical 收口到别处的别名页可以被抓取、可以传递链接权重，但**不该进 sitemap**
     // （sitemap 是「请索引这些独立 URL」的声明，与 canonical 指向别处直接冲突）。
@@ -847,6 +872,7 @@ function summarize(result) {
 
 module.exports = {
   PROBLEM_CODES,
+  dealIndexable,
   textFloor,
   // 正文下限**余量**登记（P2 残留 e1）：构建期、独立门禁、自测三处读同一份声明
   TEXT_FLOOR_RESIDUALS,

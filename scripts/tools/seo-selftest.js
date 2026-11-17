@@ -146,7 +146,7 @@ function cleanPages() {
       links: ['category/api/', '']
     }),
     ...[['aaa', 'vendor/acme/'], ['bbb', 'category/api/'], ['ccc', 'vendor/acme/']].map(([id, link]) =>
-      mk(`deal/${id}/`, { kind: 'deal', expectItemList: false, itemIds: [id], count: 1, checkItemListRows: false, checkItemListMembers: false }, {
+      mk(`deal/${id}/`, { kind: 'deal', expectItemList: false, itemIds: [id], count: 1, checkItemListRows: false, checkItemListMembers: false, dealLimbo: false }, {
         title: `详情页标题 ${id}`, desc: `详情页描述 ${id}`, rows: [id],
         summary: [{ label: '当前条目', value: 1 }], links: [link, '']
       }))
@@ -310,6 +310,14 @@ section('二、每一条检查码都必须真的会响（逐个定向篡改）')
   fixtures.push(['robots-policy', () => {
     const pages = cleanPages();
     pages[1].html = pages[1].html.replace('content="index, follow"', 'content="noindex, follow"');
+    return run(pages);
+  }]);
+  fixtures.push(['deal-index-policy', () => {
+    const pages = cleanPages();
+    // 窗口期声明与索引策略矛盾：详情页仍可索引（indexable:true），却声明 dealLimbo:true。
+    // 这就是「把一条活跃页悄悄标成窗口期 / 或把窗口期页留着可索引」的漂移形状 ——
+    // 判据必须响，否则批量 deindex（或漏 deindex 孤儿页）就能静默通过。
+    pages[4].dealLimbo = true;
     return run(pages);
   }]);
 

@@ -1044,6 +1044,9 @@ function renderDeals(renderCore, payload) {
     count: cards.length,
     cards: cards,
     visibleCount: visible.length,
+    // 首页默认视图真的收录了的优惠 id（折叠无损 ⇒ 与卡片覆盖同一集合）。详情页索引策略
+    // （seo.dealIndexable）用它判断「这条优惠有没有首页入链」，与首页渲染共用同一份判据。
+    visibleIds: new Set(visible.map(deal => deal.id)),
     dist: distText,
     facets: renderCore.facetBarHtml(payload.deals, filters),
     categories: renderCore.categoryOptionsHtml(payload.deals),
@@ -1275,7 +1278,7 @@ const htmlEscape = xmlEscape;
  * ⚠️ 反馈复制片段**不是第二份实现**：它的源码在 index.html 主脚本的 SHARED:dealcopy 区间，
  * 由 `loadShellParts()` 原样抽出后注入 —— 首页详情弹层与 80 个静态详情页共用同一份事件委托。
  */
-function writeDetailPages(payload, indexHtml, renderCore, plan) {
+function writeDetailPages(payload, indexHtml, renderCore, plan, homepageVisibleIds = new Set(), archivedLinkedIds = new Set()) {
   // 共享片段（共享 `<style>` / 主题前置脚本 / 页脚模板）与页脚收尾都交给页面壳：
   // 页脚**每页解析一次**这条既有纪律没有变 —— `shell.docEnd()` 会用这一页自己的路由调
   // `finalizePage()`（分析注入要按该页路由判「要不要统计」）。
@@ -1333,11 +1336,20 @@ ${parts.dealCopyScript}
 
   const deals = (payload.deals || []).filter(deal => deal.type === 'deal' && deal.id);
   const pages = [];
+  const limboIds = [];
 
   for (const deal of deals) {
     const vendor = renderCore.vendorOf(deal);
     const tier = renderCore.tierOf(deal);
     const pageUrl = `${SITE_URL}deal/${encodeURIComponent(deal.id)}/`;
+    // 索引策略（唯一出处 seo.dealIndexable）：首页默认视图收录了它，或档案已接住它（有会渲染
+    // 的档案详情页给 /deal/<id>/ 入链）⇒ 可索引；两者都不是＝到期/线索但尚未归档的窗口期 ⇒
+    // 临时 noindex（不进 sitemap），避开「首页墙钟剔除 vs 档案事件滞后」之间的零入链窗口。
+    const indexable = seo.dealIndexable({
+      homepageVisible: homepageVisibleIds.has(deal.id),
+      archivedLinked: archivedLinkedIds.has(deal.id)
+    });
+    if (!indexable) limboIds.push(deal.id);
     // 这一页自己的页脚：路由显式给（`deal/<id>/`），分析注入因此按本页路由判定。
     /**
      * search-intent-v1（W3）：免费模型条目的**查询形状**。
@@ -1425,7 +1437,7 @@ ${freeRows.map(row => `          <div class="factsum-row" data-fact-key="${htmlE
       parts,
       title: htmlEscape(title),
       description: htmlEscape(desc),
-      robots: 'index, follow, max-image-preview:large',
+      robots: indexable ? 'index, follow, max-image-preview:large' : 'noindex, follow',
       canonicalUrl: htmlEscape(pageUrl),
       hreflang: [
         { hreflang: 'zh-CN', href: htmlEscape(pageUrl) },
@@ -1470,7 +1482,13 @@ ${vendorPage
     // 清单的路由集与产物页面集是双向对账的，漏登记会被构建期点名。
     notePage(`deal/${deal.id}/`, { kind: 'deal-detail' });
     fs.writeFileSync(path.join(dir, 'index.html'), html, 'utf8');
-    pages.push({ id: deal.id, url: pageUrl, title: deal.title, text: String(deal.discountInfo || '') });
+    pages.push({ id: deal.id, url: pageUrl, title: deal.title, text: String(deal.discountInfo || ''), indexable });
+  }
+
+  // 窗口期 noindex 必须可见（不静默降级）：这些页文件仍在、URL 不 404，只是临时不进索引，
+  // 等 ended 事件落地、档案接住后自动恢复。逐条列出 id，便于核对「是不是只 deindex 了该 deindex 的」。
+  if (limboIds.length) {
+    console.log(`  详情页索引策略: ${limboIds.length} 个窗口期页临时 noindex（到期/线索且尚未归档，不进 sitemap）：${limboIds.join(', ')}`);
   }
 
   return pages;
@@ -4385,7 +4403,33 @@ function assemble() {
 
   // 独立详情页（每条优惠一个静态 URL）+ sitemap
   const lastmod = String(payload.updatedAt || '').slice(0, 10);
-  const detailPages = writeDetailPages(payload, html, renderCore, PLAN);
+  // 档案的**纯推导**提前到写详情页之前：详情页索引策略（seo.dealIndexable）需要知道「哪些
+  // 到期优惠已被档案接住」——即有一条**会渲染**的档案详情页给 /deal/<id>/ 入链。推导只读三份
+  // 日志与数据、不读盘上的详情页文件，因此可以前置；完整性断言、日志与档案页写盘仍在下面
+  // Stage F 原处（消费同一批变量）。archivedLinkedIds 必须取 gated 集合：未过门槛的条目留在
+  // 索引页但不建独立页，也就没有 back-link（见 archive.linkedDealIdsOf 注释）。
+  const archiveAsOf = dealLinksAsOf || lastmod;
+  const archiveLinkableIds = changes.linkableDealIdsOf(payload.deals);
+  const archives = [
+    { kind: 'deal', store: historyStore.store, records: payload.deals, linkableIds: archiveLinkableIds },
+    { kind: 'plan', store: planHistoryStore, records: plansStore.plans },
+    { kind: 'api', store: apiPlanHistoryStore, records: apiPlansStore.plans }
+  ].map(({ kind, store, records, linkableIds }) => archiveLib.buildArchive({
+    kind,
+    baseline: store ? store.baseline : null,
+    events: (store && Array.isArray(store.events)) ? store.events : [],
+    absence: (store && store.absence) || {},
+    anomalies: (store && store.anomalies) || [],
+    records,
+    linkableIds: linkableIds || null,
+    startedAt: (store && store.startedAt) || null,
+    asOf: archiveAsOf
+  }));
+  const archiveEntries = archives.flatMap(archive => archive.entries);
+  const archiveGates = archiveEntries.map(entry => archiveLib.archiveDetailGate(entry));
+  const gatedArchiveEntries = archiveEntries.filter((entry, index) => archiveGates[index].ok);
+  const archivedLinkedIds = archiveLib.linkedDealIdsOf(gatedArchiveEntries);
+  const detailPages = writeDetailPages(payload, html, renderCore, PLAN, rendered.visibleIds, archivedLinkedIds);
   console.log(`  详情页: ${detailPages.length} 个 → deal/<id>/index.html`);
 
   // 落地页（v1.7）：清单与条目归属都来自 `landing.planLandingPages()` 那一份计划，
@@ -4751,28 +4795,10 @@ function assemble() {
   // 因此 `/archive/` **必然 0 条记录** —— 索引页仍无条件生成，三组各写一句"为什么是空的"
   // （含事件类型分解）。ended/restored 分支由 `selftest:archive` 的合成夹具驱动。
   // **绝不为了填满这一页而补造事件。**
-  const archiveAsOf = dealLinksAsOf || lastmod;
-  // 档案条目可挂的「站内详情页」判据与 `/changes/` 完全同源（`changes.linkableDealIdsOf()`）：
-  // 只有 `type === 'deal'` 的记录才有 /deal/<id>/ 详情页，工具条目 / 套餐 / API 记录没有。
-  const archiveLinkableIds = changes.linkableDealIdsOf(payload.deals);
-  const archives = [
-    { kind: 'deal', store: historyStore.store, records: payload.deals, linkableIds: archiveLinkableIds },
-    { kind: 'plan', store: planHistoryStore, records: plansStore.plans },
-    { kind: 'api', store: apiPlanHistoryStore, records: apiPlansStore.plans }
-  ].map(({ kind, store, records, linkableIds }) => archiveLib.buildArchive({
-    kind,
-    baseline: store ? store.baseline : null,
-    events: (store && Array.isArray(store.events)) ? store.events : [],
-    absence: (store && store.absence) || {},
-    anomalies: (store && store.anomalies) || [],
-    records,
-    linkableIds: linkableIds || null,
-    startedAt: (store && store.startedAt) || null,
-    asOf: archiveAsOf
-  }));
-  const archiveEntries = archives.flatMap(archive => archive.entries);
-  const archiveGates = archiveEntries.map(entry => archiveLib.archiveDetailGate(entry));
-  const gatedArchiveEntries = archiveEntries.filter((entry, index) => archiveGates[index].ok);
+  //
+  // 纯推导（archiveAsOf / archives / archiveEntries / archiveGates / gatedArchiveEntries /
+  // archivedLinkedIds）已前置到写详情页之前（详情页索引策略要用 archivedLinkedIds）；
+  // 这里消费同一批变量，只做完整性断言、日志与档案页写盘。
   {
     const integrity = archives.flatMap(archive => archiveLib.assertArchiveIntegrity(archive));
     if (integrity.length) {
@@ -4931,7 +4957,11 @@ function assemble() {
   });
 
 
-  const dealUrls = detailPages.map(page => `  <url>
+  // 窗口期页（到期但归档事件还没落地 → 首页不展示、档案无回链）临时 noindex，
+  // 也就**不进 sitemap**：sitemap = 「请索引这些独立 URL」的声明，noindex 页进 sitemap
+  // 是自相矛盾的。归档事件落地后该页恢复可索引，sitemap 自然把它带回来（自愈）。
+  const indexableDetailPages = detailPages.filter(page => page.indexable);
+  const dealUrls = indexableDetailPages.map(page => `  <url>
     <loc>${page.url}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
@@ -4975,7 +5005,8 @@ function assemble() {
     // （历史 event 本身不生成页面 —— §F4）。
     `${SITE_URL}${archiveLib.ARCHIVE_INDEX_ROUTE}`,
     ...gatedArchiveEntries.map(entry => `${SITE_URL}${archiveLib.archiveEntryRoute(entry)}`),
-    ...detailPages.map(page => page.url)];
+    // 详情页：与 dealUrls 同一口径 —— 只有可索引的进 sitemap（窗口期 noindex 页不进）。
+    ...indexableDetailPages.map(page => page.url)];
 
   // 状态页也进 sitemap（五条既有约定的第三条，v1.1 收口补）。
   //
@@ -5333,6 +5364,9 @@ ${archiveDetailUrls}
     plan: PLAN,
     pageDescriptors,
     sitemapEntries,
+    // 详情页（含 indexable 标记）交给自检：文件全量生成，但 sitemap 只收可索引的那些。
+    // 窗口期页（noindex）必须「文件在、sitemap 不在」，这条对账要有牙。
+    detailPages,
     lastmod,
     // v3.2：订阅产物交给自检做**磁盘回读**断言（结构 / URL 真实性 / 日期 / 禁词 / 元自称）。
     // 这里带下去的只有「构建期才知道的读数」三样：
@@ -8500,6 +8534,10 @@ function selfCheck(built) {
 
   // 独立详情页：数量、canonical 自指、静态正文、纯静态（不拉数据）、sitemap 一致
   const dealEntries = payload.deals.filter(deal => deal.type === 'deal' && deal.id);
+  // 窗口期页（到期但归档事件未落地）临时 noindex：文件仍全量生成，但**不进 sitemap**。
+  // 所以 sitemap 对账只数可索引的那些；noindex 页反过来必须「不在 sitemap 里」（下面有牙）。
+  const indexableDealPages = built.detailPages.filter(page => page.indexable);
+  const limboDealPages = built.detailPages.filter(page => !page.indexable);
   const detailRoot = path.join(OUT, 'deal');
   const detailDirs = fs.existsSync(detailRoot)
     ? fs.readdirSync(detailRoot, { withFileTypes: true }).filter(entry => entry.isDirectory()).length
@@ -8521,7 +8559,7 @@ function selfCheck(built) {
   // `independent`（可索引 && canonical 自指）过滤，条数口径与 sitemap 生成端同一份。
   // 而且条数不再手写公式 —— 直接与构建期生成的那份 `sitemapEntries` 逐条对账。
   const indexableDirectories = built.directoryPages.filter(page => page.indexable && !page.canonicalRoute);
-  const expectedLocs = dealEntries.length + 1 /* 首页 */ + indexableDirectories.length + 1 /* 状态页 */
+  const expectedLocs = indexableDealPages.length + 1 /* 首页 */ + indexableDirectories.length + 1 /* 状态页 */
     + 1 /* 变化雷达页 */ + 1 /* 资料入口页 */ + 1 /* 套餐对比页 */ + 1 /* API 计费页 */ + 1 /* API 成本计算器 */
     + 1 /* Codex 额度重置档案页 */
     + 1 /* 模型资料索引 */ + built.modelDetailCount /* 模型详情页 */
@@ -8535,12 +8573,17 @@ function selfCheck(built) {
       ` + 分类落地页 ${built.categoryPages.length} + 厂商落地页 ${built.vendorPages.length}` +
       ` + 枢纽 ${built.hubPages.length}）+ 状态页 1 + 变化雷达页 1 + 资料入口页 1 + 套餐对比页 1 + API 计费页 1` +
       ` + API 成本计算器 1 + Codex 额度重置档案页 1 + 模型索引 1 + 模型详情页 ${built.modelDetailCount}` +
-      ` + 档案索引 1 + 档案详情页 ${built.archiveDetailCount} + 数据文档与引用页 1 + 详情页 ${dealEntries.length}`);
+      ` + 档案索引 1 + 档案详情页 ${built.archiveDetailCount} + 数据文档与引用页 1 + 详情页 ${indexableDealPages.length}` +
+      `（窗口期 noindex ${limboDealPages.length} 个不进 sitemap）`);
   } else {
-    const notListed = dealEntries.filter(deal => !sitemapLocs.some(loc => loc.endsWith(`/deal/${encodeURIComponent(deal.id)}/`)));
+    const notListed = indexableDealPages.filter(page => !sitemapLocs.some(loc => loc.endsWith(`/deal/${encodeURIComponent(page.id)}/`)));
+    // 反向牙：窗口期 noindex 页**绝不能**出现在 sitemap 里（noindex 进 sitemap 自相矛盾，
+    // 也会把「到期-归档时间窗」的孤儿页重新暴露给搜索引擎）。
+    const limboListed = limboDealPages.filter(page => sitemapLocs.some(loc => loc.endsWith(`/deal/${encodeURIComponent(page.id)}/`)));
     const directoriesNotListed = indexableDirectories.filter(page => !sitemapLocs.includes(page.url));
     const aliasesListed = built.aliasPages.filter(page => sitemapLocs.includes(page.url));
-    if (notListed.length) fail(`sitemap 漏了 ${notListed.length} 个详情页`);
+    if (notListed.length) fail(`sitemap 漏了 ${notListed.length} 个可索引详情页`);
+    else if (limboListed.length) fail(`sitemap 里出现了 ${limboListed.length} 个窗口期 noindex 详情页（应临时排除）: ${limboListed.slice(0, 3).map(p => p.id).join('、')}`);
     else if (directoriesNotListed.length) fail(`sitemap 漏了落地页: ${directoriesNotListed.map(p => p.route).join(', ')}`);
     else if (aliasesListed.length) fail(`sitemap 里出现了 noindex 的别名页: ${aliasesListed.map(p => p.route).join(', ')}`);
     else if (!sitemapLocs.includes(`${SITE_URL}status/`)) fail('sitemap 漏了状态页 status/');
@@ -8569,7 +8612,7 @@ function selfCheck(built) {
       `${built.vendorPages.length} 个厂商落地页 + ${built.hubPages.length} 个枢纽页 + 状态页 + 变化雷达页 + ` +
       `资料入口页 + 套餐对比页 + API 计费页 + 模型索引 + ${built.modelDetailCount} 个模型详情页 + ` +
       `档案索引 + ${built.archiveDetailCount} 个档案详情页 + ` +
-      `${dealEntries.length} 个详情页；${built.aliasPages.length} 条别名页按 canonical 收口、不进 sitemap）`);
+      `${indexableDealPages.length} 个可索引详情页${limboDealPages.length ? `（另 ${limboDealPages.length} 个窗口期页临时 noindex、不进 sitemap）` : ''}；${built.aliasPages.length} 条别名页按 canonical 收口、不进 sitemap）`);
   }
 
   // B 包：/codex-reset/ Codex 额度重置档案（构建期快速对账；完整牙在 verify-site.js 的新一节）。
@@ -9157,9 +9200,15 @@ function selfCheck(built) {
         count: 0
       })
     ].filter(Boolean);
-    const dealDescriptors = dealEntries.map(deal => readPage(`deal/${encodeURIComponent(deal.id)}/`, {
-      kind: 'deal', expectItemList: false, itemIds: [deal.id]
-    })).filter(Boolean);
+    const dealIndexableById = new Map(built.detailPages.map(page => [page.id, page.indexable]));
+    const dealDescriptors = dealEntries.map(deal => {
+      const indexable = dealIndexableById.get(deal.id) !== false;
+      return readPage(`deal/${encodeURIComponent(deal.id)}/`, {
+        kind: 'deal', expectItemList: false, itemIds: [deal.id],
+        // 窗口期页：noindex + dealLimbo 标记，交给 seo.dealIndexable 的一致性判据。
+        indexable, dealLimbo: !indexable
+      });
+    }).filter(Boolean);
     // v3.0 Stage D6：模型详情页。它是**详情叶子**（刻意没有 ItemList），而且是"非优惠实体页" ——
     // 成员对账必须显式关掉（成员判据按 `deal/<id>/` 判，模型页上永远对不上）。
     const modelDescriptors = built.modelDetailRoutes.map(route => readPage(route, {
