@@ -586,6 +586,10 @@
     /* hover 只做三件事：边框变色、背景降一档（--line 是既有的发丝色）、箭头右移 2px。
        刻意不做 scale / 强阴影 / 弹跳：这一块在首屏，十条一起动会盖过内容本身。 */
     .need-card:hover { border-color: var(--brand); background: var(--line); }
+    /* hover 底色从 --card 掉到 --line 后，--mut 压 --line 只有 3.98:1（低于 normal 4.5）。
+       说明行与箭头在 hover 时换到更深的 --ink2（6.58:1），默认态仍是 --mut，视觉层级不变。 */
+    .need-card:hover .need-copy small,
+    .need-card:hover .need-arrow { color: var(--ink2); }
     .need-card:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
     /* 图标：装饰性（渲染时带 aria-hidden），只按 glyph 排版。这里用 --fs-lg 是因为 emoji
        在 12px 上会缩成一个认不出的小点 —— 它是同一条字号阶梯里的既有档位，不是新字号。 */
