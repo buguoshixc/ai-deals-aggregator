@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-11-18T04:32:28+08:00",
-  "count": 251,
+  "updatedAt": "2026-11-18T14:04:01+08:00",
+  "count": 252,
   "deals": [
     {
       "id": "2eae0e246de2",
@@ -2649,9 +2649,9 @@
       "sourceUrl": "https://appsumo.com/collections/new/",
       "region": "global",
       "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $79，原价 $104（省 24%）",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $79，原价 $600（省 87%）",
       "pricingModel": "paid",
-      "priceLine": "$79 终身（原价 $104）",
+      "priceLine": "$79 终身（原价 $600）",
       "features": null,
       "category": "编程开发",
       "description": "Search 1B+ profiles, enrich from 25+ providers, and research leads with AI in one GTM platform",
@@ -2733,29 +2733,6 @@
       "verifiedAt": null
     },
     {
-      "id": "e5fcacad308b",
-      "title": "Creator Lookup",
-      "vendor": "Creator Lookup",
-      "url": "https://appsumo.com/products/creator-lookup/",
-      "source": "AppSumo",
-      "sourceUrl": "https://appsumo.com/collections/new/",
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $299（省 80%）",
-      "pricingModel": "paid",
-      "priceLine": "$59 终身（原价 $299）",
-      "features": null,
-      "category": "搜索研究",
-      "description": "Search an AI-powered influencer database of 400M+ creators across Instagram, TikTok, and YouTube",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": "2026-12-08",
-      "firstSeen": "2026-11-09",
-      "lastSeen": "2026-11-18",
-      "verified": false,
-      "verifiedAt": null
-    },
-    {
       "id": "ff8cbecdd5f6",
       "title": "MagicCanvas",
       "vendor": "MagicCanvas",
@@ -2779,6 +2756,29 @@
       "verifiedAt": null
     },
     {
+      "id": "e5fcacad308b",
+      "title": "Creator Lookup",
+      "vendor": "Creator Lookup",
+      "url": "https://appsumo.com/products/creator-lookup/",
+      "source": "AppSumo",
+      "sourceUrl": "https://appsumo.com/collections/new/",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $299（省 80%）",
+      "pricingModel": "paid",
+      "priceLine": "$59 终身（原价 $299）",
+      "features": null,
+      "category": "搜索研究",
+      "description": "Search an AI-powered influencer database of 400M+ creators across Instagram, TikTok, and YouTube",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": "2026-12-08",
+      "firstSeen": "2026-11-09",
+      "lastSeen": "2026-11-18",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
       "id": "c61916544faf",
       "title": "Acti",
       "vendor": "Acti",
@@ -2793,6 +2793,29 @@
       "features": null,
       "category": "办公效率",
       "description": "Use this agentic mobile keyboard to dictate, translate, and automate tasks across 300+ apps and APIs",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-11-09",
+      "lastSeen": "2026-11-18",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
+      "id": "086534ebceeb",
+      "title": "DomScan",
+      "vendor": "DomScan",
+      "url": "https://appsumo.com/products/domscan/",
+      "source": "AppSumo",
+      "sourceUrl": "https://appsumo.com/collections/new/",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $39，原价 $199（省 80%）",
+      "pricingModel": "paid",
+      "priceLine": "$39 终身（原价 $199）",
+      "features": null,
+      "category": "编程开发",
+      "description": "Pull DNS, WHOIS, web, and security data into apps and AI agents with this domain intelligence API",
       "eligibility": null,
       "validity": null,
       "expiresAt": null,
@@ -3140,7 +3163,7 @@
       "sourceUrl": "https://openrouter.ai/api/v1/models",
       "region": "global",
       "type": "deal",
-      "discountInfo": "OpenRouter 免费模型：prompt / completion 价格均为 $0；限流：20 次/分钟；每日 50 次（累计购买 <10 credits）或 1000 次（≥10 credits）—— 出自 OpenRouter 官方限流文档；官方未标注免费截止日期",
+      "discountInfo": "OpenRouter 免费模型：prompt / completion 价格均为 $0；限流：20 次/分钟；每日 50 次（累计购买 <10 credits）或 1000 次（≥10 credits）—— 出自 OpenRouter 官方限流文档；免费窗口至 2026-11-19（官方 expiration_date）",
       "pricingModel": "free",
       "priceLine": "$0 输入 / $0 输出（免费）",
       "features": [
@@ -3151,8 +3174,8 @@
       "category": "API服务",
       "description": "Inkling 2 Small is an open-weight multimodal mixture-of-experts reasoning model from Thinking Machines Lab, with 17B active parameters out of 594B total. It is the first model in the second…",
       "eligibility": null,
-      "validity": "官方未标注免费截止日期",
-      "expiresAt": null,
+      "validity": "免费窗口至 2026-11-19（官方 expiration_date）",
+      "expiresAt": "2026-11-19",
       "firstSeen": "2026-11-11",
       "lastSeen": "2026-11-18",
       "verified": false,
@@ -3262,6 +3285,30 @@
       "verified": false,
       "verifiedAt": null,
       "excerpt": "· 阿里发布 Qwen4-Max，缓存命中价格低至每百万 Token 0.5 元 · 腾讯混元推出 Hy4 flash，WorkBuddy 限时开放免费使用 · 腾讯公开司庆讲话，要求核心业务团队面向 AI 再创业#欢迎关注爱范儿官方微信公众号：爱范儿（微信号：ifanr），更多精彩内容第一时间为您奉上。"
+    },
+    {
+      "id": "d262c0445b55",
+      "title": "DeepSeek限额引发大量用户不满！长对话7天后受限 网友呼吁取消限制",
+      "vendor": "DeepSeek限额引发大量用户不满！长对话7天后受限 网友呼吁取消限制",
+      "url": "https://news.mydrivers.com/1/1166/1166609.htm",
+      "source": "快科技",
+      "sourceUrl": "https://rss.mydrivers.com/rss.aspx?Tid=1",
+      "region": "cn",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "对话模型",
+      "description": "",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-11-18",
+      "lastSeen": "2026-11-18",
+      "verified": false,
+      "verifiedAt": null,
+      "excerpt": "快科技11月18日消息，近期DeepSeek的使用限制引发用户关注。据媒体报道，今日“DeepSeek用户呼吁取消7天限制”话题登上热搜。不少用户反映，平台近期对App及网页版免费服务进行调整，部分长对话受到使用限制。据悉，自11月16日起，DeepSeek因算力紧张，对C端免费用户实施限额规则。其中，超过7天不活跃的长对话将不再支持继续使用，用户可能无法延续此前积累的对话内容。此外平台还调整了单次输入文字上限，并对每日对话额度进行限制，当用户使用量达到上限时，系统会提示服…"
     },
     {
       "id": "8642f235cf91",
@@ -4415,88 +4462,6 @@
       }
     },
     {
-      "id": "97d21ff73d3e",
-      "title": "智谱AI 新用户注册专享 2000万 免费 Tokens 资源包",
-      "vendor": "智谱AI",
-      "url": "https://bigmodel.cn/pricing",
-      "source": "智谱AI活动页",
-      "sourceUrl": null,
-      "region": "cn",
-      "type": "deal",
-      "discountInfo": "新用户注册专享 2000万 免费 Tokens 资源包，并含 120 次图像和视频资源包。",
-      "pricingModel": "free",
-      "priceLine": null,
-      "features": null,
-      "category": "API服务",
-      "description": "来源：智谱开放平台官方价格页营销位与活动说明。",
-      "eligibility": "智谱开放平台新注册用户（需实名认证）",
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-18",
-      "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
-    },
-    {
       "id": "1688614d6669",
       "title": "智谱AI 邀请好友注册赠送 Tokens 资源包",
       "vendor": "智谱AI",
@@ -4572,126 +4537,6 @@
             "derived": "stated"
           },
           "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
-    },
-    {
-      "id": "adcb6471a512",
-      "title": "智谱AI Batch API 批量调用五折",
-      "vendor": "智谱AI",
-      "url": "https://bigmodel.cn/pricing",
-      "source": "智谱AI活动页",
-      "sourceUrl": null,
-      "region": "cn",
-      "type": "deal",
-      "discountInfo": "批量调用五折特惠：Batch API 面向大规模离线数据处理任务，按标准 API 价格的五折计费，适合批量分析、数据清洗等非实时场景",
-      "pricingModel": "paid",
-      "priceLine": null,
-      "features": null,
-      "category": "API服务",
-      "description": "来源：智谱开放平台官方价格页营销位与活动说明。",
-      "eligibility": "所有开发者（批量离线任务）",
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-18",
-      "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "discount"
-      ],
-      "eligibilityDetail": {
-        "newUserOnly": false
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
-    },
-    {
-      "id": "ead998e58cd9",
-      "title": "智谱AI 上下文缓存存储限时免费",
-      "vendor": "智谱AI",
-      "url": "https://bigmodel.cn/pricing",
-      "source": "智谱AI活动页",
-      "sourceUrl": null,
-      "region": "cn",
-      "type": "deal",
-      "discountInfo": "上下文缓存存储限时免费：将上下文缓存起来，按“元/百万tokens/小时”计费，目前多数模型为限时免费",
-      "pricingModel": "free",
-      "priceLine": null,
-      "features": null,
-      "category": "API服务",
-      "description": "来源：智谱开放平台官方价格页营销位与活动说明。",
-      "eligibility": "所有调用智谱 API 的开发者",
-      "validity": "限时免费（官方未标注截止日期）",
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-18",
-      "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "trial"
-      ],
-      "eligibilityDetail": {
-        "newUserOnly": false
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
             "basis": "source",
             "derived": "stated"
           }
@@ -5350,6 +5195,208 @@
       }
     },
     {
+      "id": "97d21ff73d3e",
+      "title": "智谱AI 新用户注册专享 2000万 免费 Tokens 资源包",
+      "vendor": "智谱AI",
+      "url": "https://bigmodel.cn/pricing",
+      "source": "智谱AI活动页",
+      "sourceUrl": null,
+      "region": "cn",
+      "type": "deal",
+      "discountInfo": "新用户注册专享 2000万 免费 Tokens 资源包，并含 120 次图像和视频资源包。",
+      "pricingModel": "free",
+      "priceLine": null,
+      "features": null,
+      "category": "API服务",
+      "description": "来源：智谱开放平台官方价格页营销位与活动说明。",
+      "eligibility": "智谱开放平台新注册用户（需实名认证）",
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-11-18",
+      "verified": false,
+      "verifiedAt": null,
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "identityVerificationRequired": true,
+        "newUserOnly": true
+      },
+      "claimRequirements": {
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "provenance": {
+        "credibility": "curated",
+        "contrib": {
+          "audience": [
+            "curated"
+          ],
+          "benefitType": [
+            "curated"
+          ],
+          "eligibilityDetail": [
+            "curated"
+          ],
+          "claimRequirements": [
+            "curated"
+          ],
+          "availability": [
+            "curated"
+          ]
+        },
+        "fields": {
+          "audience": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "benefitType": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "eligibilityDetail": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "claimRequirements": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "availability": {
+            "basis": "source",
+            "derived": "stated"
+          }
+        }
+      }
+    },
+    {
+      "id": "adcb6471a512",
+      "title": "智谱AI Batch API 批量调用五折",
+      "vendor": "智谱AI",
+      "url": "https://bigmodel.cn/pricing",
+      "source": "智谱AI活动页",
+      "sourceUrl": null,
+      "region": "cn",
+      "type": "deal",
+      "discountInfo": "批量调用五折特惠：Batch API 面向大规模离线数据处理任务，按标准 API 价格的五折计费，适合批量分析、数据清洗等非实时场景",
+      "pricingModel": "paid",
+      "priceLine": null,
+      "features": null,
+      "category": "API服务",
+      "description": "来源：智谱开放平台官方价格页营销位与活动说明。",
+      "eligibility": "所有开发者（批量离线任务）",
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-11-18",
+      "verified": false,
+      "verifiedAt": null,
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "discount"
+      ],
+      "eligibilityDetail": {
+        "newUserOnly": false
+      },
+      "provenance": {
+        "credibility": "curated",
+        "contrib": {
+          "audience": [
+            "curated"
+          ],
+          "benefitType": [
+            "curated"
+          ],
+          "eligibilityDetail": [
+            "curated"
+          ]
+        },
+        "fields": {
+          "audience": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "benefitType": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "eligibilityDetail": {
+            "basis": "source",
+            "derived": "stated"
+          }
+        }
+      }
+    },
+    {
+      "id": "ead998e58cd9",
+      "title": "智谱AI 上下文缓存存储限时免费",
+      "vendor": "智谱AI",
+      "url": "https://bigmodel.cn/pricing",
+      "source": "智谱AI活动页",
+      "sourceUrl": null,
+      "region": "cn",
+      "type": "deal",
+      "discountInfo": "上下文缓存存储限时免费：将上下文缓存起来，按“元/百万tokens/小时”计费，目前多数模型为限时免费",
+      "pricingModel": "free",
+      "priceLine": null,
+      "features": null,
+      "category": "API服务",
+      "description": "来源：智谱开放平台官方价格页营销位与活动说明。",
+      "eligibility": "所有调用智谱 API 的开发者",
+      "validity": "限时免费（官方未标注截止日期）",
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-11-18",
+      "verified": false,
+      "verifiedAt": null,
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "trial"
+      ],
+      "eligibilityDetail": {
+        "newUserOnly": false
+      },
+      "provenance": {
+        "credibility": "curated",
+        "contrib": {
+          "audience": [
+            "curated"
+          ],
+          "benefitType": [
+            "curated"
+          ],
+          "eligibilityDetail": [
+            "curated"
+          ]
+        },
+        "fields": {
+          "audience": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "benefitType": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "eligibilityDetail": {
+            "basis": "source",
+            "derived": "stated"
+          }
+        }
+      }
+    },
+    {
       "id": "8a8c3bdc2b05",
       "title": "Rerun",
       "vendor": "Rerun",
@@ -5521,29 +5568,6 @@
       "expiresAt": "2026-11-17",
       "firstSeen": "2026-11-09",
       "lastSeen": "2026-11-17",
-      "verified": false,
-      "verifiedAt": null
-    },
-    {
-      "id": "086534ebceeb",
-      "title": "DomScan",
-      "vendor": "DomScan",
-      "url": "https://appsumo.com/products/domscan/",
-      "source": "AppSumo",
-      "sourceUrl": "https://appsumo.com/collections/new/",
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $39，原价 $199（省 80%）",
-      "pricingModel": "paid",
-      "priceLine": "$39 终身（原价 $199）",
-      "features": null,
-      "category": "编程开发",
-      "description": "Pull DNS, WHOIS, web, and security data into apps and AI agents with this domain intelligence API",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-11-09",
-      "lastSeen": "2026-11-16",
       "verified": false,
       "verifiedAt": null
     },

@@ -2724,12 +2724,6 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
-    "086534ebceeb": {
-      "source": "AppSumo",
-      "misses": 2,
-      "since": "2026-11-17",
-      "endedAt": "2026-11-17"
-    },
     "0a2fc31c76cc": {
       "source": "IT之家",
       "misses": 1,
@@ -2826,6 +2820,12 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
+    "3c435ea3c1e1": {
+      "source": "快科技",
+      "misses": 1,
+      "since": "2026-11-18",
+      "endedAt": null
+    },
     "3eac4b6acccb": {
       "source": "快科技",
       "misses": 2,
@@ -2906,9 +2906,9 @@
     },
     "620ef4290482": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-18",
-      "endedAt": null
+      "endedAt": "2026-11-18"
     },
     "62e3166acec0": {
       "source": "智谱AI",
@@ -2936,9 +2936,9 @@
     },
     "717bfce842bf": {
       "source": "快科技",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-13",
-      "endedAt": null
+      "endedAt": "2026-11-18"
     },
     "72048178d658": {
       "source": "Futuretools",
@@ -3020,9 +3020,9 @@
     },
     "8a8c3bdc2b05": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-18",
-      "endedAt": null
+      "endedAt": "2026-11-18"
     },
     "8b8b44476f52": {
       "source": "AppSumo",
@@ -7235,6 +7235,127 @@
         "title": "ScrollHaus",
         "vendor": "ScrollHaus"
       }
+    },
+    {
+      "id": "086534ebceeb",
+      "at": "2026-11-18",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-18T06:04:01.234Z"
+    },
+    {
+      "id": "5c45f40df3ed",
+      "at": "2026-11-18",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "AppSumo 终身授权限时折扣：现价 $79，原价 $104（省 24%）",
+      "to": "AppSumo 终身授权限时折扣：现价 $79，原价 $600（省 87%）",
+      "origin": "observed",
+      "runAt": "2026-11-18T06:04:01.234Z"
+    },
+    {
+      "id": "5c45f40df3ed",
+      "at": "2026-11-18",
+      "type": "benefit_changed",
+      "field": "priceLine",
+      "from": "$79 终身（原价 $104）",
+      "to": "$79 终身（原价 $600）",
+      "origin": "observed",
+      "runAt": "2026-11-18T06:04:01.234Z"
+    },
+    {
+      "id": "620ef4290482",
+      "at": "2026-11-18",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-18",
+      "runAt": "2026-11-18T06:04:01.234Z",
+      "label": {
+        "title": "VidTechy",
+        "vendor": "VidTechy"
+      }
+    },
+    {
+      "id": "717bfce842bf",
+      "at": "2026-11-18",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-13",
+      "runAt": "2026-11-18T06:04:01.234Z",
+      "label": {
+        "title": "豆包工作宣布接入多款第三方模型！含Kimi K3.1 Pro、DeepSeek V4.1 Flash等",
+        "vendor": "豆包工作宣布接入多款第三方模型！含Kimi K3.1"
+      }
+    },
+    {
+      "id": "8a8c3bdc2b05",
+      "at": "2026-11-18",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-18",
+      "runAt": "2026-11-18T06:04:01.234Z",
+      "label": {
+        "title": "Rerun",
+        "vendor": "Rerun"
+      }
+    },
+    {
+      "id": "940d872f9eac",
+      "at": "2026-11-18",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "OpenRouter 免费模型：prompt / completion 价格均为 $0；限流：20 次/分钟；每日 50 次（累计购买 <10 credits）或 1000 次（≥10 credits）—— 出自 OpenRouter 官方限流文档；官方未标注免费截止日期",
+      "to": "OpenRouter 免费模型：prompt / completion 价格均为 $0；限流：20 次/分钟；每日 50 次（累计购买 <10 credits）或 1000 次（≥10 credits）—— 出自 OpenRouter 官方限流文档；免费窗口至 2026-11-19（官方 expiration_date）",
+      "origin": "observed",
+      "runAt": "2026-11-18T06:04:01.234Z"
+    },
+    {
+      "id": "940d872f9eac",
+      "at": "2026-11-18",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": null,
+      "to": "2026-11-19",
+      "origin": "observed",
+      "runAt": "2026-11-18T06:04:01.234Z"
+    },
+    {
+      "id": "940d872f9eac",
+      "at": "2026-11-18",
+      "type": "expiry_changed",
+      "field": "validity",
+      "from": "官方未标注免费截止日期",
+      "to": "免费窗口至 2026-11-19（官方 expiration_date）",
+      "origin": "observed",
+      "runAt": "2026-11-18T06:04:01.234Z"
+    },
+    {
+      "id": "d262c0445b55",
+      "at": "2026-11-18",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "对话模型",
+        "region": "cn",
+        "source": "快科技",
+        "sourceUrl": "https://rss.mydrivers.com/rss.aspx?Tid=1",
+        "verified": false
+      },
+      "runAt": "2026-11-18T06:04:01.234Z"
     }
   ]
 }
