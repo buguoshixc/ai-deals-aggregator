@@ -101,6 +101,8 @@ const LAYERS = {
       'selftest:plan-history',
       'selftest:deal-plan-links',
       'selftest:seo',
+      // v3.4 页面预算：读仓库真实数据 + 复制一份到临时沙箱里构建；不依赖 dist/，所以是 L2。
+      'selftest:page-fit',
       'selftest:coverage-targets',
       'selftest:freshness',
       'selftest:model-roles',

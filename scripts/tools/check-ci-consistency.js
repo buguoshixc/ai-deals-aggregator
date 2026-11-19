@@ -158,9 +158,9 @@ const GATE_STEP_NAMES = [
   'Install dependencies',
   // architecture-modernization-v1 新增两步：都是**不需要数据也不需要 dist** 的结构/纪律门禁，
   // 因此排在数据门禁之前（红的时候是「骨架坏了」而不是「数据不对」，最快定位）。
-  //   · Architecture fitness —— 5 条结构不变量（依赖方向 / renderer 纯度 / 唯一 document 出口 /
-  //     分层表完整性 / 时间口径）；选这 5 条的标准见 scripts/test/fitness.js 头注释（刻意不收
-  //     「无循环依赖」与「布局族声明」，避免同一不变量重复证明）。
+  //   · Architecture fitness —— 6 条结构不变量（依赖方向 / renderer 纯度 / 唯一 document 出口 /
+  //     分层表完整性 / 时间口径 / 页面预算单源）；选这 6 条的标准见 scripts/test/fitness.js 头注释
+  //     （刻意不收「无循环依赖」与「布局族声明」，避免同一不变量重复证明）。
   //     第 5 条（时间口径：不许把未位移的 UTC 当前时间当「今天」）是 2026-10-13 事后加的：
   //     北京时间 00:00–08:00 的定时采集曾因为这一点把整条链红在门禁前。
   //   · Evidence policy —— Tier-3 过程产物不许进 Git，只拦基线之后新进的（grandfather 1,283 个放行）。
@@ -340,6 +340,9 @@ const GATE_STEP_NAMES = [
   'Browser availability decision (never silent)',
   'Real-browser acceptance (verify-site.js)',
   'Regression verify (current-data budget)',
+  // v3.4 页面预算：不读 dist/、不需要浏览器；在临时沙箱里用契约数据真构建一遍，
+  // 所以它排在真浏览器验收之后、结论之前，且没有 if（degraded 也要跑）。
+  'Page-fit self-test (composition budgets, contract corpus)',
   'Gate conclusion'
 ];
 
@@ -545,6 +548,8 @@ const GATE_STEP_RUN = {
     "node scripts/tools/verify-site.js",
   "Regression verify (current-data budget)":
     "node scripts/tools/verify-site.js --compare",
+  "Page-fit self-test (composition budgets, contract corpus)":
+    "node scripts/tools/page-fit-selftest.js",
   "Gate conclusion":
       "failed=''"
   + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s01.outcome }}\" = \"failure\" ]; then failed='Install dependencies'; fi"
@@ -600,6 +605,7 @@ const GATE_STEP_RUN = {
   + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.decision.outcome }}\" = \"failure\" ]; then failed='Browser availability decision (never silent)'; fi"
   + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s50.outcome }}\" = \"failure\" ]; then failed='Real-browser acceptance (verify-site.js)'; fi"
   + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s51.outcome }}\" = \"failure\" ]; then failed='Regression verify (current-data budget)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s52.outcome }}\" = \"failure\" ]; then failed='Page-fit self-test (composition budgets, contract corpus)'; fi"
   + '\n' + "{"
   + '\n' + "echo \"\""
   + '\n' + "echo \"### 门禁结论\""

@@ -90,6 +90,7 @@
     "gate:browser": "node scripts/test/run.js --layers=L1,L2,L3,L4",
     "gate:release": "node scripts/test/run.js --layers=L1,L2,L3,L4,L5",
     "selftest:seo": "node scripts/tools/seo-selftest.js",
+    "selftest:page-fit": "node scripts/tools/page-fit-selftest.js",
     "verify:seo": "node scripts/tools/seo-verify.js",
     "report:seo": "node scripts/tools/seo-report.js",
     "report:coverage": "node scripts/tools/coverage-report.js",

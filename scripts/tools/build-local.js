@@ -57,6 +57,10 @@ const landing = require('../lib/landing');
 // v3.0 Stage E：厂商统一资料页（五个资料区块 + 四条诚实性断言；t3 删掉「订阅」一节）。
 const vendorPage = require('../lib/vendor-page');
 const seo = require('../lib/seo');
+// issue #150：`<title>` / meta description 的预算适配层。它是纯函数，唯一的上限出处是
+// `seo.TITLE_MAX_LENGTH`（80）与 `page-fit.DESC_MAX_LENGTH`（150）。**谁拼后缀，谁必须经过这里**：
+// 原先每个拼接点各自 slice（或不 slice），于是「合法数据」能把产物顶过门禁、让发布停版。
+const pageFit = require('../lib/page-fit');
 const secretScan = require('../lib/secret-scan');
 // v2.1 第二段：Coding Plan 套餐页（/plans/coding/）。正文渲染住在 lib 里，
 // 因为它必须能被离线自测直接调用 —— 这个文件一 require 就跑整条构建链。
@@ -1286,6 +1290,18 @@ const htmlEscape = xmlEscape;
  * 由 `loadShellParts()` 原样抽出后注入 —— 首页详情弹层与 80 个静态详情页共用同一份事件委托。
  */
 function writeDetailPages(payload, indexHtml, renderCore, plan, homepageVisibleIds = new Set(), archivedLinkedIds = new Set()) {
+  /**
+   * 详情页的**查询形状**标题（原 :1376-1378 的内联表达式，抽出来是为了让集合级消歧与逐页
+   * 渲染用同一份输入）。`免费模型：` 前缀是查询意图，不是对事实的改写；它已经在 headline
+   * 内，所以预算把它一起算进去（57 字符）——若在 fit 之后再加前缀，就会凭空多出 5 字符。
+   */
+  function dealHeadlineOf(deal) {
+    const isFreeModel = Array.isArray(deal.benefitType) && deal.benefitType.includes('free_model');
+    return isFreeModel && !/免费模型$/.test(String(deal.title || '').trim())
+      ? `免费模型：${deal.title}`
+      : deal.title;
+  }
+
   // 共享片段（共享 `<style>` / 主题前置脚本 / 页脚模板）与页脚收尾都交给页面壳：
   // 页脚**每页解析一次**这条既有纪律没有变 —— `shell.docEnd()` 会用这一页自己的路由调
   // `finalizePage()`（分析注入要按该页路由判「要不要统计」）。
@@ -1342,6 +1358,23 @@ ${parts.dealCopyScript}
   </script>`;
 
   const deals = (payload.deals || []).filter(deal => deal.type === 'deal' && deal.id);
+  // 详情页 `<title>` 的固定后缀（23 字符）：预算 = 80 − 23 = 57。后缀属于渲染器，所以
+  // 预算也在这里结算；正文由 page-fit 适配后，这里只负责拼接，不再出现第二把尺子。
+  const DEAL_TITLE_SUFFIX = ` — 官方优惠与免费额度 | ${SITE_NAME}`;
+  // 集合级消歧（必需，不是可选）：aliasKey 只剥噪声后缀，不会替截断后的撞车负责。
+  // 两条共享前 57 字符的 150 字符标题能过去重，却会在 fit 之后逐字相同 ⇒ title-unique 红。
+  // 先按 key 排序全体适配，再让撞车组整组带 id 标签；循环里只取映射值。
+  const dealTitles = pageFit.uniqueTitles(deals.map(deal => [deal.id, dealHeadlineOf(deal)]), DEAL_TITLE_SUFFIX);
+  // 描述：厂商 + 标题 + 优惠原文。**为什么要带标题前缀**：80 个详情页里有 17 条
+  // （百度千帆那张表）的 `discountInfo` 是逐字相同的，只取 discountInfo 会让这 17 页
+  // 的 meta description 完全一样 —— 重复描述在搜索结果里等于没有描述。
+  // 前缀是数据本身（厂商名与标题），不是我们写的营销文案；截断沿用 `…` 留痕的规矩。
+  // 但前缀被 150 预算截断后仍可能撞车，所以这里同样按集合消歧（标签用条目 id）。
+  const descriptionRawOf = deal => {
+    const vendor = renderCore.vendorOf(deal);
+    return `${vendor.name ? `${vendor.name}｜` : ''}${deal.title}：${String(deal.discountInfo || deal.description || SITE_NAME).replace(/\s+/g, ' ')}`;
+  };
+  const dealDescriptions = pageFit.uniqueDescriptions(deals.map(deal => [deal.id, descriptionRawOf(deal), deal.id, 'deal']));
   const pages = [];
   const limboIds = [];
 
@@ -1373,9 +1406,7 @@ ${parts.dealCopyScript}
      * 后缀仍是条目原文。
      */
     const isFreeModel = Array.isArray(deal.benefitType) && deal.benefitType.includes('free_model');
-    const headline = isFreeModel && !/免费模型$/.test(String(deal.title || '').trim())
-      ? `免费模型：${deal.title}`
-      : deal.title;
+    const headline = dealHeadlineOf(deal);
     const freeRows = isFreeModel ? factSummary.freeModelRows(deal) : [];
     // 首屏三行（免费到什么程度 / 限制 / 怎么开始）：行值全部来自条目字段，见 lib/fact-summary.js。
     // 复用需求页那个容器（`.factsum`），叶子页用 `.factsum-inline` 变体 —— 不套第二张卡片。
@@ -1388,15 +1419,12 @@ ${freeRows.map(row => `          <div class="factsum-row" data-fact-key="${htmlE
       </section>
 `
       : '';
-    const title = `${headline} — 官方优惠与免费额度 | ${SITE_NAME}`;
-    const desc = (() => {
-      // 描述：厂商 + 标题 + 优惠原文。**为什么要带标题前缀**：80 个详情页里有 17 条
-      // （百度千帆那张表）的 `discountInfo` 是逐字相同的，只取 discountInfo 会让这 17 页
-      // 的 meta description 完全一样 —— 重复描述在搜索结果里等于没有描述。
-      // 前缀是数据本身（厂商名与标题），不是我们写的营销文案；截断沿用 `…` 留痕的规矩。
-      const raw = `${vendor.name ? `${vendor.name}｜` : ''}${deal.title}：${String(deal.discountInfo || deal.description || SITE_NAME).replace(/\s+/g, ' ')}`;
-      return raw.length > 150 ? `${raw.slice(0, 149).trimEnd()}…` : raw;
-    })();
+    // 标题正文已按「80 − 后缀」适配并做过集合级消歧；这里只拼后缀，不再出现第二把尺子。
+    // uniqueTitles 已按 57 预算适配；这里再走一次 fitTitle 是**幂等**的（Part A 有牙），
+    // 既守住「单页路径也不超预算」，也让集合映射未来被替换成 raw 时不会静默顶穿。
+    const title = `${pageFit.fitTitle(dealTitles.get(deal.id), DEAL_TITLE_SUFFIX)}${DEAL_TITLE_SUFFIX}`;
+    // 描述同理：已按 150 预算适配并集合级消歧（raw 的拼法见循环前的 descriptionRawOf）。
+    const desc = dealDescriptions.get(deal.id);
     const official = String(deal.url || '');
     // 站内位置：详情页挂到它自己的分类页（存在时）；厂商页则链在正文里（下面的「这家厂商的其他优惠」）。
     const categoryPage = plan
@@ -1408,6 +1436,9 @@ ${freeRows.map(row => `          <div class="factsum-row" data-fact-key="${htmlE
 
     // 结构化数据：WebPage（说清这一页是什么）+ BreadcrumbList（说清它在站内的位置）。
     // 刻意不用 Product/Offer：我们不是售卖方，标成商品会构成过度声明。
+    // 逐字红线：JSON-LD 的 name 与下面 og:title 都保持完整 `deal.title` / `headline`，不经过
+    // fitTitle —— 80 是**搜索结果**的展示预算，不是内容改写；结构化数据与社交卡片没有长度门禁，
+    // 应显示完整标题。description 例外：它与 meta description 共用同一份已适配值（150 预算）。
     const webPage = {
       '@context': 'https://schema.org',
       '@type': 'WebPage',
@@ -1454,6 +1485,7 @@ ${freeRows.map(row => `          <div class="factsum-row" data-fact-key="${htmlE
         type: 'article',
         siteName: htmlEscape(SITE_NAME),
         url: htmlEscape(pageUrl),
+        // 逐字：og 没有长度门禁，社交卡片应显示完整标题；截断只服务搜索结果预算。
         title: htmlEscape(headline),
         description: htmlEscape(desc),
         image: `${SITE_URL}og-image.png`
@@ -2908,12 +2940,16 @@ function renderStaticPage({ kind, route, title, description, body, jsonLd, prefi
     .map(data => `<script type="application/ld+json">
 ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
 </script>`).join('\n');
+  // 渲染器拥有后缀 ⇒ 渲染器拥有适配：调用方给的是**不含站名后缀**的正文，这里按
+  // 「80 − 后缀」结算后再拼。短标题逐字节不变；档案详情/模型/静态族的超长标题在此截断，
+  // 不需要每个调用点各记一次预算（这是 issue #150 的收口点之一）。
+  const fittedTitle = pageFit.fitTitle(title, ` · ${SITE_NAME}`);
   return shell.renderPageShell({
     kind,
     route,
     prefix,
     parts,
-    title: `${htmlEscape(title)} · ${htmlEscape(SITE_NAME)}`,
+    title: `${htmlEscape(fittedTitle)} · ${htmlEscape(SITE_NAME)}`,
     description: htmlEscape(description),
     canonicalUrl: `${SITE_URL}${route}`,
     faviconHref: `${prefix}favicon.svg`,
@@ -3738,12 +3774,15 @@ ${rows}
   .atable thead th:nth-child(5) { width: 20%; }
   .atable tbody th small { font-weight: 400; }
 ${extraCss}`;
+  // 目录页（含 vendor 落地页）：渲染器持后缀 ⇒ 渲染器适配。description 刻意不动：
+  // 目录页描述没有长度门禁，保持既有字节，避免无意改动已发布页面。
+  const fittedTitle = pageFit.fitTitle(spec.pageTitle || spec.heading, ` · ${SITE_NAME}`);
   return `${shell.docStart({
     kind,
     route: spec.route || `${spec.slug}/`,
     prefix,
     parts,
-    title: `${htmlEscape(spec.pageTitle || spec.heading)} · ${htmlEscape(SITE_NAME)}`,
+    title: `${htmlEscape(fittedTitle)} · ${htmlEscape(SITE_NAME)}`,
     description: htmlEscape(spec.description),
     canonicalUrl: pageUrl,
     // v1.8-seo-answer-pages：目录页家族（含别名页）**一律不 noindex**。
@@ -4798,7 +4837,10 @@ function assemble() {
         kind: 'model',
         route,
         title: `${modelsPage.modelNameOf(model)} · 模型资料`,
-        description: `${modelsPage.modelNameOf(model)}（${model.developer || '开发者未标注'}）在本站收录的 API 计价条目、相关套餐、相关优惠与变化记录。本站只整理事实，不做推荐。`,
+        // 约定收口：模型描述今天没有长度门禁，但仍走同一层适配（否则下一条长开发者名
+        // 会重新长出一个「合法数据顶穿展示位」的洞）。renderStaticPage 不 fit description，
+        // 所以这里必须显式适配；150 预算的唯一出处是 page-fit。
+        description: pageFit.fitDescription(`${modelsPage.modelNameOf(model)}（${model.developer || '开发者未标注'}）在本站收录的 API 计价条目、相关套餐、相关优惠与变化记录。本站只整理事实，不做推荐。`),
         body: modelsPage.renderModelPage(model, detailCtx),
         jsonLd: modelsPage.modelPageJsonLd(model, detailCtx),
         prefix,
@@ -4869,6 +4911,27 @@ function assemble() {
     if (problems.length) {
       throw new Error(`历史档案索引页的诚实性断言未通过（${problems.length} 处）：\n  - ${problems.slice(0, 5).join('\n  - ')}`);
     }
+    // 档案集合消歧（全 kind 一起）：三份日志各自独立，同一个 12-hex id 在两边都合法；
+    // 两条 150 字符墓碑标题截断后可能逐字相同 ⇒ title-unique/desc-unique 会红。
+    // key 用路由（集合内唯一），标签用 entry.id（稳定身份，全局唯一）；suffix 与
+    // renderStaticPage 实际追加的后缀一致，因此其二次 fit 幂等（Part A 有牙证明）。
+    const archiveTitles = pageFit.uniqueTitles(
+      gatedArchiveEntries.map(entry => [
+        archiveLib.archiveEntryRoute(entry),
+        `${entry.title || entry.id} · ${archiveLib.ARCHIVE_HEADING}`,
+        entry.id,
+        entry.kind
+      ]),
+      ` · ${SITE_NAME}`
+    );
+    const archiveDescriptions = pageFit.uniqueDescriptions(
+      gatedArchiveEntries.map(entry => [
+        archiveLib.archiveEntryRoute(entry),
+        `${entry.title || entry.id} 的结束 / 恢复记录：首次发现、最后有效时间、结束发现时间、最后已知内容与变化时间线。资料失效不等于资料删除。`,
+        entry.id,
+        entry.kind
+      ])
+    );
     for (const entry of gatedArchiveEntries) {
       const route = archiveLib.archiveEntryRoute(entry);
       // ⚠️ 相对前缀由 `lib/archive.js` 的 `archiveEntryPrefix()` **按路由深度**派生
@@ -4881,8 +4944,10 @@ function assemble() {
       const entryHtml = renderStaticPage({
         kind: 'archive-detail',
         route,
-        title: `${entry.title || entry.id} · ${archiveLib.ARCHIVE_HEADING}`,
-        description: `${entry.title || entry.id} 的结束 / 恢复记录：首次发现、最后有效时间、结束发现时间、最后已知内容与变化时间线。资料失效不等于资料删除。`,
+        // 集合级消歧后的适配值：同一截断正文的条目整组带 id 标签；renderStaticPage 的
+        // 二次 fit 幂等，只负责补站名后缀。
+        title: archiveTitles.get(route),
+        description: archiveDescriptions.get(route),
         // 说明登记：档案详情页的 `.snote` 由 `lib/archive.js` 的 renderArchiveEntry **逐条登记**
         // （notes-manifest-residual-v1 接管了构造点）。`note` 必须从这里注入 —— 少了它，
         // noteIn() 退化成恒等函数，页面照常输出 `.snote` 却没有登记（构建期「先登记后输出」对账

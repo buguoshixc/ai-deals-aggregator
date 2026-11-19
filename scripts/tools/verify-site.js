@@ -5201,15 +5201,54 @@ function noJsControlExemptionFor(route) {
     const expectLeadCard = Boolean(leadRecentFrom) && radarLeadDeals.some(deal =>
       typeof deal.firstSeen === 'string' && deal.firstSeen >= leadRecentFrom && deal.firstSeen <= leadAsOf);
     const leadSkipDetail = '窗口内 0 条线索（线索判据按 0 条是正常结果，卡片结构断言如实跳过）';
-    // 期望分栏由**历史事件日**推导，不写死 `created`（2026-11-11 上线轮修正）：
-    // 线索的 `created` 历史事件日 = 基准日 ⇒「今日新增」；否则（仍在 7 天窗口内）⇒
-    // 「最近 7 天变化」。写死 created 会在数据日推进后的第二天误报 —— 渲染行为本身是对的，
-    // 错的是判据（见 research/lead-card-insite-v1-self-audit.md §4-1）。
-    const leadCreatedAtById = new Map();
+    // 期望分栏由**历史事件日 + 该事件是否还在渲染窗口里**推导，不写死 `created`
+    //（2026-11-11 上线轮修正；issue #150 的 TTL 线索又暴露了第二处）：
+    //   · created 事件日 = 基准日 ⇒「今日新增」；
+    //   · created 在最近 7 天窗口内（但不在基准日）⇒「最近 7 天变化」；
+    //   · created 已滑出 7 天窗口、ended/restored 仍在 30 天窗口内 ⇒ 该线索只剩
+    //     「已结束 / 已恢复」分栏。它仍是合法线索卡，不能因为 created 不是今天
+    //     就要求它出现在「最近 7 天变化」—— 那会把一条正常归档的线索判成页面错。
+    // 分栏优先级与 `lib/changes.js` 的 dedupe 顺序一致：created > changed >
+    // endingSoon > ended > restored；同一 id 只认第一个仍有窗口内事件的分栏。
+    const leadEndedFrom = Number.isFinite(Date.parse(`${leadAsOf}T00:00:00Z`))
+      ? changesLib.addDays(leadAsOf, -(changesLib.WINDOWS.endedDays - 1))
+      : null;
+    const leadSectionCandidates = new Map();
+    const markLeadSection = (id, section) => {
+      if (!leadSectionCandidates.has(id)) leadSectionCandidates.set(id, new Set());
+      leadSectionCandidates.get(id).add(section);
+    };
     for (const event of (radarHistoryDoc.events || [])) {
-      if (event && event.type === 'created' && leadIds.has(event.id)) leadCreatedAtById.set(event.id, event.at);
+      if (!event || !leadIds.has(event.id)) continue;
+      const at = String(event.at || '');
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(at) || at > leadAsOf) continue;
+      if (event.type === 'created') {
+        if (at === leadAsOf) markLeadSection(event.id, 'created');
+        else if (at >= leadRecentFrom) markLeadSection(event.id, 'changed');
+        continue;
+      }
+      if (event.type === 'ended' || event.type === 'restored') {
+        if (leadEndedFrom && at >= leadEndedFrom) markLeadSection(event.id, event.type);
+        continue;
+      }
+      // 字段事件只活在最近 7 天窗口；它们渲染为「最近 7 天变化」。
+      if (at >= leadRecentFrom) markLeadSection(event.id, 'changed');
     }
-    const expectedLeadSection = dealId => (leadCreatedAtById.get(dealId) === leadAsOf ? 'created' : 'changed');
+    // 「即将结束」是状态量（不是事件）：只有当前记录带 expiresAt 且落在 soonDays 内才会出现。
+    for (const deal of radarLeadDeals) {
+      const daysLeft = changesLib.daysBetween(deal.expiresAt, leadAsOf);
+      if (daysLeft !== null && daysLeft >= 0 && daysLeft <= changesLib.WINDOWS.soonDays) {
+        markLeadSection(deal.id, 'endingSoon');
+      }
+    }
+    // 同一 id 可能在多个分栏都有真实事件；渲染层按 SECTION_ORDER 去重，只保留第一个。
+    // 判据必须用同一顺序，否则「created 已滑出 7 天、字段事件仍在窗口」这类
+    // 合法组合会被判成错栏。
+    const expectedLeadSection = dealId => {
+      const candidates = leadSectionCandidates.get(dealId);
+      if (!candidates) return null;
+      return changesLib.SECTION_ORDER.find(section => candidates.has(section)) || null;
+    };
     check('线索卡在场性：窗口内有线索 ⇒ /changes/ 上必须有线索卡；窗口内没有 ⇒ 卡片也必须为 0',
       expectLeadCard ? cards.length > 0 : cards.length === 0,
       expectLeadCard
