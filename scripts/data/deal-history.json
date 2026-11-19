@@ -2766,6 +2766,12 @@
       "since": "2026-11-15",
       "endedAt": "2026-11-15"
     },
+    "26a04b07193d": {
+      "source": "钛媒体",
+      "misses": 0,
+      "since": "2026-11-20",
+      "endedAt": "2026-11-20"
+    },
     "27b4acca203a": {
       "source": "aitools.fyi",
       "misses": 2,
@@ -2836,7 +2842,7 @@
       "source": "快科技",
       "misses": 1,
       "since": "2026-11-18",
-      "endedAt": null
+      "endedAt": "2026-11-20"
     },
     "3e0abe88eb9f": {
       "source": "AppSumo",
@@ -2867,6 +2873,12 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
+    },
+    "42df4fdc8aa9": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-20",
+      "endedAt": null
     },
     "44848acd19f3": {
       "source": "AppSumo",
@@ -3066,6 +3078,12 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
+    "8c8ed425e7c3": {
+      "source": "IT之家",
+      "misses": 0,
+      "since": "2026-11-20",
+      "endedAt": "2026-11-20"
+    },
     "8c9181f2b117": {
       "source": "aitools.fyi",
       "misses": 2,
@@ -3086,9 +3104,9 @@
     },
     "940d872f9eac": {
       "source": "OpenRouter",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-19",
-      "endedAt": null
+      "endedAt": "2026-11-20"
     },
     "98b5e610f7bc": {
       "source": "aitools.fyi",
@@ -3164,9 +3182,9 @@
     },
     "ad748ed0cf5b": {
       "source": "Futuretools",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-19",
-      "endedAt": null
+      "endedAt": "2026-11-20"
     },
     "b4d191dd0c65": {
       "source": "Futuretools",
@@ -3188,9 +3206,9 @@
     },
     "c61916544faf": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-19",
-      "endedAt": null
+      "endedAt": "2026-11-20"
     },
     "c9c5429f2205": {
       "source": "aitools.fyi",
@@ -3257,6 +3275,12 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
+    },
+    "e5fcacad308b": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-20",
+      "endedAt": null
     },
     "e6da58501e1d": {
       "source": "aitools.fyi",
@@ -7928,6 +7952,110 @@
         "verified": false
       },
       "runAt": "2026-11-19T13:10:07.115Z"
+    },
+    {
+      "id": "26a04b07193d",
+      "at": "2026-11-20",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "pruned_expired",
+      "runAt": "2026-11-19T20:02:36.346Z",
+      "label": {
+        "title": "今天起，豆包工作接入更多模型了",
+        "vendor": "今天起，豆包工作接入更多模型了"
+      }
+    },
+    {
+      "id": "3c435ea3c1e1",
+      "at": "2026-11-20",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "pruned_expired",
+      "runAt": "2026-11-19T20:02:36.346Z",
+      "label": {
+        "title": "千问Go！会员优惠明晚结束：首月最低9.9元 网友用AI蹲机票省下310元",
+        "vendor": "千问Go！会员优惠明晚结束：首月最低9.9元 网友用AI蹲机票省下310元"
+      }
+    },
+    {
+      "id": "8c8ed425e7c3",
+      "at": "2026-11-20",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "pruned_expired",
+      "runAt": "2026-11-19T20:02:36.346Z",
+      "label": {
+        "title": "豆包工作接入 DeepSeek V4.1 Flash、Kimi K3.1 Pro 等第三方模型，同步上线额度消耗倍率与限时优惠",
+        "vendor": "豆包工作接入 DeepSeek"
+      }
+    },
+    {
+      "id": "940d872f9eac",
+      "at": "2026-11-20",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-19",
+      "runAt": "2026-11-19T20:02:36.346Z",
+      "label": {
+        "title": "Thinking Machines: Inkling 2 Small (free)",
+        "vendor": "Thinking Machines"
+      }
+    },
+    {
+      "id": "ad748ed0cf5b",
+      "at": "2026-11-20",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-19",
+      "runAt": "2026-11-19T20:02:36.346Z",
+      "label": {
+        "title": "Any Summary",
+        "vendor": "Any Summary"
+      }
+    },
+    {
+      "id": "c61916544faf",
+      "at": "2026-11-20",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-19",
+      "runAt": "2026-11-19T20:02:36.346Z",
+      "label": {
+        "title": "Acti",
+        "vendor": "Acti"
+      }
+    },
+    {
+      "id": "f68dfc4184bf",
+      "at": "2026-11-20",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "其他",
+        "region": "cn",
+        "source": "IT之家",
+        "sourceUrl": "https://www.ithome.com/rss/",
+        "verified": false
+      },
+      "runAt": "2026-11-19T20:02:36.346Z"
     }
   ]
 }
