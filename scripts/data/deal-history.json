@@ -2724,12 +2724,6 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
-    "0750a3061d72": {
-      "source": "Futuretools",
-      "misses": 2,
-      "since": "2026-11-19",
-      "endedAt": "2026-11-19"
-    },
     "086534ebceeb": {
       "source": "AppSumo",
       "misses": 2,
@@ -2858,9 +2852,9 @@
     },
     "3f97a29b90e6": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-19",
-      "endedAt": null
+      "endedAt": "2026-11-19"
     },
     "3fa2cec73c43": {
       "source": "aitools.fyi",
@@ -2924,9 +2918,9 @@
     },
     "59c7b0179308": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-19",
-      "endedAt": null
+      "endedAt": "2026-11-19"
     },
     "60317b771abf": {
       "source": "Futuretools",
@@ -3090,6 +3084,12 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
+    "940d872f9eac": {
+      "source": "OpenRouter",
+      "misses": 1,
+      "since": "2026-11-19",
+      "endedAt": null
+    },
     "98b5e610f7bc": {
       "source": "aitools.fyi",
       "misses": 2,
@@ -3162,6 +3162,12 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
+    "ad748ed0cf5b": {
+      "source": "Futuretools",
+      "misses": 1,
+      "since": "2026-11-19",
+      "endedAt": null
+    },
     "b4d191dd0c65": {
       "source": "Futuretools",
       "misses": 2,
@@ -3179,6 +3185,12 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
+    },
+    "c61916544faf": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-19",
+      "endedAt": null
     },
     "c9c5429f2205": {
       "source": "aitools.fyi",
@@ -3245,12 +3257,6 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
-    },
-    "e5fcacad308b": {
-      "source": "AppSumo",
-      "misses": 1,
-      "since": "2026-11-19",
-      "endedAt": null
     },
     "e6da58501e1d": {
       "source": "aitools.fyi",
@@ -7841,6 +7847,87 @@
         "title": "MagicCanvas",
         "vendor": "MagicCanvas"
       }
+    },
+    {
+      "id": "0750a3061d72",
+      "at": "2026-11-19",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-19T13:10:07.115Z"
+    },
+    {
+      "id": "3f97a29b90e6",
+      "at": "2026-11-19",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-19",
+      "runAt": "2026-11-19T13:10:07.115Z",
+      "label": {
+        "title": "Kortex",
+        "vendor": "Kortex"
+      }
+    },
+    {
+      "id": "59c7b0179308",
+      "at": "2026-11-19",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-19",
+      "runAt": "2026-11-19T13:10:07.115Z",
+      "label": {
+        "title": "Kavout",
+        "vendor": "Kavout"
+      }
+    },
+    {
+      "id": "6efc1d92dbf1",
+      "at": "2026-11-19",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $144（省 59%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $144）",
+        "expiresAt": "2026-11-20",
+        "type": "deal",
+        "category": "音频语音",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-19T13:10:07.115Z"
+    },
+    {
+      "id": "e174981f60ea",
+      "at": "2026-11-19",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $49，原价 $180（省 73%）",
+        "pricingModel": "paid",
+        "priceLine": "$49 终身（原价 $180）",
+        "expiresAt": "2026-11-20",
+        "type": "deal",
+        "category": "音频语音",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-19T13:10:07.115Z"
     }
   ]
 }
