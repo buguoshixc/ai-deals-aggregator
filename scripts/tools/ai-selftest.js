@@ -869,6 +869,7 @@ function leadRadarTeeth() {
   const leads = require('../collectors/leads');
   const schema = require('../lib/schema');
   const store = require('../lib/store');
+  const history = require('../lib/history');
 
   /** 注入的「现在」：窗口判据一律用注入时间，绝不读墙上时钟（否则这条自测每天结果不同） */
   const NOW = Date.parse('2026-11-10T00:00:00+08:00');
@@ -940,9 +941,12 @@ function leadRadarTeeth() {
       description: cleanedDraftDescription
     },
     leads.__test.FEEDS[0]);
+  // 基础键 = 五事实 + schema 簿记；`vendor` 是**条件键**（见 leads.js toDraft 与下面的 ⑨）：
+  // 仅当三闸命中且认得出平台名时出现。这条草稿三闸全命中，所以键集是 8 个。
+  const BASE_DRAFT_KEYS = 'excerpt,firstSeen,source,sourceUrl,title,type,url';
   const draftKeys = Object.keys(draft).sort().join(',');
-  assert('线索草稿形状：键集合恰好是 excerpt/firstSeen/source/sourceUrl/title/type/url（多一个键少一个键都是错的；excerpt 是线索卡要展示的原文摘要引文，不是优惠/核验结论）',
-    draftKeys === 'excerpt,firstSeen,source,sourceUrl,title,type,url', `实得 ${draftKeys}`);
+  assert('线索草稿形状：三闸命中时键集合 = 基础 7 键 + 条件键 vendor（多一个键少一个键都是错的）',
+    draftKeys === `${BASE_DRAFT_KEYS},vendor`, `实得 ${draftKeys}`);
   assert('线索草稿形状：excerpt 与 lead-radar.summaryOf(description) 逐字一致（清洗 + 240 同一把尺子）',
     draft.excerpt === radar.summaryOf(rawDraftDescription), `实得 ${JSON.stringify(draft.excerpt)}`);
   const noDescriptionDraft = leads.__test.toDraft(
@@ -959,9 +963,22 @@ function leadRadarTeeth() {
     presentForbidden.length === 0, `出现了 ${presentForbidden.join(',')}`);
   const fixtureXml = read('scripts/data/fixtures/leads_qbitai.feeds/page.min.xml');
   const fixtureDrafts = leads.__test.parseFeedAsDrafts(fixtureXml, leads.__test.FEEDS[2]);
-  assert('线索草稿形状：fixture 回放出的每一条都是同一形状（解析器不会偷偷加字段）',
-    fixtureDrafts.length > 0 && fixtureDrafts.every(item =>
-      Object.keys(item).sort().join(',') === 'excerpt,firstSeen,source,sourceUrl,title,type,url' && item.type === 'tool'),
+  // 期望形状由**判据**推导，而不是照抄实现：三闸命中 → 基础 7 键 + vendor=平台名；
+  // 否则严格 7 键、连 vendor:undefined 都不许有。这样 toDraft 少标签、乱贴标签、改用
+  // inferVendor 三种漂移都会红。
+  const expectedVendorOf = item => {
+    const signal = radar.leadSignal({ title: item.title, description: item.excerpt });
+    return signal.ok && signal.platform ? signal.platform : null;
+  };
+  assert('线索草稿形状：fixture 回放逐条符合「基础 7 键 + 条件 vendor」契约（解析器不会偷偷加字段 / 乱贴平台标签）',
+    fixtureDrafts.length > 0 && fixtureDrafts.every(item => {
+      const expectedVendor = expectedVendorOf(item);
+      const expectedKeys = expectedVendor ? `${BASE_DRAFT_KEYS},vendor` : BASE_DRAFT_KEYS;
+      const hasVendor = Object.prototype.hasOwnProperty.call(item, 'vendor');
+      return Object.keys(item).sort().join(',') === expectedKeys
+        && item.type === 'tool'
+        && (expectedVendor ? item.vendor === expectedVendor : !hasVendor);
+    }),
     `fixture 条数 ${fixtureDrafts.length}`);
 
   // ⑥ excerpt 的数据层回归钉：从「草稿有 excerpt」到「deals.json 能存 excerpt」之间还隔着
@@ -1038,6 +1055,108 @@ function leadRadarTeeth() {
   assert('线索 TTL：store.prune 引用同一个常数，而不是自己抄一个 7 天',
     /LEAD_TTL_DAYS/.test(storeSource) && !/LEAD_TTL_DAYS\s*=\s*7/.test(storeSource),
     'store.js 里没有引用 lead-radar 的 LEAD_TTL_DAYS');
+
+  // ⑨ vendor 源头修复（Part 2）：vendor 不再由 inferVendor 从**新闻标题**切词（切出来的是
+  //    「Anthropic 宣布额度免费重置：Pro、Max、Ultra」这类句子），而是雷达三闸**已经算出的**
+  //    平台名。三闸没命中 / 认不出平台时不带键 —— 不通过判据的条目不配拥有平台标签。
+  const anthropicDraft = leads.__test.toDraft({
+    title: 'Anthropic 宣布额度免费重置：Pro、Max、Ultra',
+    url: 'https://example.com/lead-vendor-platform',
+    date: '2026-11-09',
+    description: '活动期间限时免费，额度重置'
+  }, leads.__test.FEEDS[0]);
+  assert('线索 vendor：三闸命中时 vendor 是判据命中的平台名，而不是标题切出的垃圾值',
+    anthropicDraft.vendor === 'Anthropic' && anthropicDraft.vendor !== anthropicDraft.title,
+    JSON.stringify(anthropicDraft.vendor));
+  const nearMissVendorDraft = leads.__test.toDraft({
+    ...noTimeWord,
+    url: 'https://example.com/lead-vendor-near-miss',
+    date: '2026-11-09'
+  }, leads.__test.FEEDS[0]);
+  assert('线索 vendor：平台名 + 免费但差时间词（近失配）→ 不带 vendor 键（没通过三闸就不贴平台标签）',
+    !Object.prototype.hasOwnProperty.call(nearMissVendorDraft, 'vendor'),
+    JSON.stringify(Object.keys(nearMissVendorDraft)));
+  const noPlatformVendorDraft = leads.__test.toDraft({
+    ...noPlatform,
+    url: 'https://example.com/lead-vendor-no-platform',
+    date: '2026-11-09'
+  }, leads.__test.FEEDS[0]);
+  assert('线索 vendor：免费 + 时间词但没有平台名（合集/评测）→ 不带 vendor 键',
+    !Object.prototype.hasOwnProperty.call(noPlatformVendorDraft, 'vendor'),
+    JSON.stringify(Object.keys(noPlatformVendorDraft)));
+
+  // ⑩ 线索 id 稳定（Part 2 的核心副作用）。vendor 是 makeId = sha1(vendor|title|url) 的一部分，
+  //    所以「vendor 改对了」本身会让同一条重现线索算出新 id：旧 id 走 withdrawn ended、
+  //    新 id 走 created，按 id 键的 zh 译文 / audience overrides 变孤儿。生产的解法是在
+  //    collectFrom 里于 makeDeal 之前调 store.resolveLeadId 接回存量 id；这条探针走同一条链
+  //    （resolveLeadId → makeDeal(raw.id) → mergeAll → history.record），反例则证明不加这一步
+  //    伤害确实会发生 —— 两侧都钉，探针才不是永远绿的摆设。
+  const LEAD_URL = 'https://example.com/lead-id-stable';
+  const STABLE_NOW = new Date('2026-11-10T04:00:00Z'); // 北京时间 2026-11-10 12:00
+  const oldLead = schema.makeDeal({
+    title: anthropicDraft.title,
+    url: LEAD_URL,
+    source: LEAD_SOURCE,
+    sourceUrl: 'https://rss.mydrivers.com/rss.aspx?Tid=1',
+    firstSeen: '2026-11-09',
+    lastSeen: '2026-11-09',
+    type: 'tool',
+    vendor: 'Anthropic 宣布额度免费重置',
+    excerpt: '活动期间限时免费'
+  }, { source: LEAD_SOURCE, region: 'cn', now: STABLE_NOW });
+  const reappearingLead = leads.__test.toDraft({
+    title: anthropicDraft.title,
+    url: LEAD_URL,
+    date: '2026-11-10',
+    description: '活动期间限时免费，额度重置'
+  }, leads.__test.FEEDS[0]);
+  const withoutCarry = schema.makeDeal(reappearingLead, {
+    source: LEAD_SOURCE, region: 'cn', sourceUrl: reappearingLead.sourceUrl, now: STABLE_NOW
+  });
+  assert('线索 id 稳定探针的前提：不接存量 id 时 vendor 改名会让 makeDeal 算出不同 id（否则这条探针证明不了什么）',
+    withoutCarry.id !== oldLead.id, `${oldLead.id} vs ${withoutCarry.id}`);
+  const carriedId = store.resolveLeadId([oldLead], reappearingLead);
+  assert('线索 id 稳定：resolveLeadId 按标题 / URL 找到存量 id（媒体改标题但 URL 不变也能接上）',
+    carriedId === oldLead.id &&
+      store.resolveLeadId([oldLead], { ...reappearingLead, title: 'Anthropic 额度重置（更新标题）' }) === oldLead.id,
+    JSON.stringify(carriedId));
+  const freshLead = schema.makeDeal({ ...reappearingLead, id: carriedId }, {
+    source: LEAD_SOURCE, region: 'cn', sourceUrl: reappearingLead.sourceUrl, now: STABLE_NOW
+  });
+  const merged = store.mergeAll({
+    fresh: [freshLead], existing: [oldLead], curated: [], overrides: new Map(), today: '2026-11-10'
+  });
+  const settled = merged.deals.find(deal => deal.id === oldLead.id);
+  assert('线索 id 稳定：合并后沿用存量 id，vendor 原地更新成平台名（同一条记录，不新增 id）',
+    Boolean(settled) && settled.vendor === 'Anthropic' &&
+      !merged.deals.some(deal => deal.id === withoutCarry.id),
+    JSON.stringify(merged.deals.map(deal => [deal.id, deal.vendor])));
+  const stableHistory = history.record(history.emptyStore(), {
+    at: '2026-11-10', previous: [oldLead], next: merged.deals, freshIds: new Set([freshLead.id])
+  });
+  assert('线索 id 稳定：历史层零事件（vendor 属 UNTRACKED 身份字段 ⇒ 原地更新，不产生 withdrawn/created）',
+    stableHistory.stats.appended === 0 && history.eventsOf(stableHistory.store).length === 0,
+    JSON.stringify(stableHistory.stats));
+
+  const rotatedMerge = store.mergeAll({
+    fresh: [withoutCarry], existing: [oldLead], curated: [], overrides: new Map(), today: '2026-11-10'
+  });
+  const rotatedHistory = history.record(history.emptyStore(), {
+    at: '2026-11-10', previous: [oldLead], next: rotatedMerge.deals, freshIds: new Set([withoutCarry.id])
+  });
+  const rotatedEvents = history.eventsOf(rotatedHistory.store);
+  const withdrawn = rotatedEvents.find(event => event.type === 'ended' && event.id === oldLead.id);
+  const created = rotatedEvents.find(event => event.type === 'created' && event.id === withoutCarry.id);
+  assert('线索 id 稳定探针的反例：不接存量 id 会产生 withdrawn ended + created（id 旋转的伤害是真实可复现的）',
+    Boolean(withdrawn) && withdrawn.reason === 'withdrawn' && Boolean(created),
+    JSON.stringify(rotatedEvents.map(event => [event.type, event.id, event.reason || null])));
+
+  // ⑪ 接线牙：上面的探针证明「resolveLeadId 是对的」，这条证明「生产路径真的会调它」。
+  //    只测函数不测接线，等于允许 collectFrom 继续按老路生成 id —— 生产上照样旋转。
+  const collectSource = read('scripts/collect.js');
+  assert('线索 id 稳定：collectFrom 在 makeDeal 之前对线索草稿调用 store.resolveLeadId（接线被删 → 生产上 id 又会旋转）',
+    /resolveLeadId\(existing, entry\)/.test(collectSource) && /collector\.radar === true/.test(collectSource),
+    'collect.js 里没找到 resolveLeadId(existing, entry) 接线');
 }
 
 /* ================================================================== */

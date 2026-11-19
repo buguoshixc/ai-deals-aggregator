@@ -153,13 +153,21 @@ const MAX_DROPPED_LOGGED = 10;
  *   · `sourceUrl` —— 该 feed 的地址（页面「收录渠道」行；点开可复核我们读的是哪一路 RSS）
  *   · `type`      —— `tool`（不是优惠，理由见文件头「记录形态」）；makeDeal 会按无优惠信号保持 tool
  *
+ * 还有一个**条件键** `vendor`：当且仅当三闸已判定它是线索（`signal.ok`）且命中平台名
+ * （`signal.platform`）时出现，值是 `lead-radar.AI_PLATFORM_NAMES` 的首个子串命中。
+ * 为什么不交给 makeDeal 的 `inferVendor(title)`：新闻标题是句子不是厂商名，切出来的是
+ * 「Anthropic 宣布额度免费重置：Pro、Max、Ultra」这种垃圾值（见 Part 2）。平台名本来
+ * 就是判据的一部分，直接沿用；**缺平台名就不带键**，让非线索条目保持 makeDeal 的旧行为。
+ *
  * **刻意不填**：discountInfo / validity / expiresAt / 六字段 / verified ——
  * 「不填六字段、不下结论、不写已核验」是本阶段的硬要求，由 ai-selftest 的「线索草稿形状」断言盯着。
  * 为什么现在要存 excerpt：站内线索卡要展示「原文摘要引文」，也为将来做内容栏目留字段；
  * 它只是引文，不改变「线索未被核验」的定位，也不是给线索编一句优惠说明。
  */
-function toDraft(item, feed) {
-  return {
+function toDraft(item, feed, signal = null) {
+  // 判据只算一次：collectFeed 已经算过（:250 的过滤），传进来复用；fixture 回放没算过则由这里补。
+  const gates = signal || radar.leadSignal(item);
+  const draft = {
     title: item.title,
     url: item.url,
     source: feed.name,
@@ -168,6 +176,10 @@ function toDraft(item, feed) {
     type: 'tool',
     excerpt: item.description
   };
+  // vendor 是判据标签，不是第五个内容事实：只有「确认是线索 + 认得出平台」才写。
+  // 近失配 / 窗口外条目也带平台名，但没通过三闸 —— 不给它们贴平台标签。
+  if (gates.ok && gates.platform) draft.vendor = gates.platform;
+  return draft;
 }
 
 /**
@@ -247,9 +259,13 @@ async function collectFeed(feed) {
     });
   }
 
-  const leads = verified.filter(item => radar.leadSignal(item).ok);
-  logSelection(feed, stats, dropped, nearMisses, leads);
-  return leads.map(item => toDraft(item, feed));
+  // 三闸只算一次：过滤（ok）与 vendor 标签（platform）必须来自同一次判定 ——
+  // 否则日志说「命中 3 条」而草稿里 2 条有 vendor，没人解释得清。
+  const hits = verified
+    .map(item => ({ item, signal: radar.leadSignal(item) }))
+    .filter(row => row.signal.ok);
+  logSelection(feed, stats, dropped, nearMisses, hits.map(row => row.item));
+  return hits.map(row => toDraft(row.item, feed, row.signal));
 }
 
 /**

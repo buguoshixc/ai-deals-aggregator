@@ -43,7 +43,7 @@
  */
 
 const { makeDeal, todayCN } = require('./lib/schema');
-const { loadStore, writeDeals, mergeAll, assertAllValid } = require('./lib/store');
+const { loadStore, writeDeals, mergeAll, assertAllValid, resolveLeadId } = require('./lib/store');
 const { loadCurated } = require('./lib/curated');
 const { attach: attachZh, summarize: summarizeZh, pendingAge, loadPending, writePending, updatePending, PENDING_GRACE_DAYS } = require('./lib/zh');
 const { createReport, printReport, printHealth } = require('./lib/report');
@@ -65,7 +65,7 @@ function option(name, fallback = null) {
   return found ? found.slice(prefix.length) : fallback;
 }
 
-async function collectFrom(collector, report) {
+async function collectFrom(collector, report, existing = []) {
   report.start(collector.id, collector.name, collector.region);
   const items = [];
   let failed = false;
@@ -86,7 +86,12 @@ async function collectFrom(collector, report) {
     let droppedInvalid = 0;
 
     for (const entry of raw || []) {
-      const deal = makeDeal(entry, {
+      // B 类线索 id 稳定（Part 2）：vendor 从标题切词改为雷达平台名后，makeId = sha1(vendor|title|url)
+      // 会变。重现的线索若按新 vendor 重新生成 id，历史会凭空多出 withdrawn ended + created，
+      // 按 id 键的 zh 译文 / audience overrides 变成孤儿。所以在 makeDeal 之前把存量匹配到的 id
+      // 接回来（vendor 在 history.js 属 UNTRACKED 身份字段 ⇒ 原地更新不产生任何事件）。
+      const carryId = collector.radar === true ? resolveLeadId(existing, entry) : null;
+      const deal = makeDeal(carryId ? { ...entry, id: carryId } : entry, {
         source: collector.name,
         region: collector.region,
         sourceUrl: entry.sourceUrl
@@ -286,6 +291,11 @@ async function main() {  const headless = flag('headless');
       + `（${health.pausedLabel(row)}）`);
   }
 
+  // 既有数据必须在采集循环**之前**读：collectFrom 的线索 id 稳定钩子要拿盘上存量
+  // 按标题 / URL 接回 id。放在循环之后读会晚一轮 —— 本轮生成的记录已经旋转了。
+  const store = loadStore();
+  const existing = Array.isArray(store.deals) ? store.deals : [];
+
   const report = createReport();
   const fresh = [];
   const snapshotEntries = [];
@@ -293,7 +303,7 @@ async function main() {  const headless = flag('headless');
   const collectorErrorCodes = new Map();
   for (const collector of runnable) {
     console.log(`→ ${collector.name}`);
-    const { items, failed, digests, errorCode } = await collectFrom(collector, report);
+    const { items, failed, digests, errorCode } = await collectFrom(collector, report, existing);
     if (failed) collectorFailures++;
     if (errorCode) collectorErrorCodes.set(collector.id, errorCode);
     fresh.push(...items);
@@ -370,8 +380,6 @@ async function main() {  const headless = flag('headless');
       `  ⚠️  新字段落空 [${d.field}${d.key ? '.' + d.key : ''}] ${d.title} —— ${d.reason}`));
   }
 
-  const store = loadStore();
-  const existing = Array.isArray(store.deals) ? store.deals : [];
   console.log(`\n既有 deals.json: ${existing.length} 条${store.legacy ? '（v1 格式，将在写入时升级为 v2）' : ''}`);
 
   const { deals, stats } = mergeAll({ fresh, existing, curated: curated.deals, today });

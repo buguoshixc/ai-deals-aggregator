@@ -4,82 +4,82 @@
   "sourceName": "钛媒体",
   "fixture": "leads_tmtpost.feeds",
   "sourceUrl": "https://www.tmtpost.com/rss",
-  "capturedAt": "2026-11-10",
+  "capturedAt": "2026-11-19",
   "trimmed": "解析器/判据真正读的四个字段（title / link / pubDate / description）：三闸全中与近失配条目优先，最多 8 条，description 截到 200 字",
   "note": "expected 是**生产解析器在这个最小片段上的真实输出**；重建后请人工 review diff。",
   "count": 8,
   "items": [
     {
-      "title": "*ST亿晶重整易主引爆五连板：中润光能拟入主，游资击鼓传花",
-      "url": "https://www.tmtpost.com/8198759.html",
+      "title": "从英伟达到苹果、微软：同样拥抱AI，为什么企业的财富命运截然不同？",
+      "url": "https://www.tmtpost.com/8211622.html",
       "source": "钛媒体",
       "sourceUrl": "https://www.tmtpost.com/rss",
-      "firstSeen": "2026-11-09",
+      "firstSeen": "2026-11-19",
       "type": "tool",
-      "excerpt": "不过是又一场借题发挥的游资狂欢。"
+      "excerpt": "本文先讨论AI改变的四条决策前提，再借助七阶行为逻辑，观察不同领导方式可能带来的财富后果。这里讨论的是作用机制，不意味着某一种行为逻辑必然对应某一种财富结果。"
     },
     {
-      "title": "唐山工控集团投资者交流会落地上海，三大上市平台协同构筑产业发展新格局",
-      "url": "https://www.tmtpost.com/8197722.html",
+      "title": "大衣只卖499元，中产在山姆捡漏MaxMara平替",
+      "url": "https://www.tmtpost.com/8211170.html",
       "source": "钛媒体",
       "sourceUrl": "https://www.tmtpost.com/rss",
-      "firstSeen": "2026-11-09",
+      "firstSeen": "2026-11-19",
       "type": "tool",
-      "excerpt": "三家上市平台各据赛道，产业协同逻辑进一步清晰。"
+      "excerpt": "继续改变品类认知。"
     },
     {
-      "title": "光模块龙头股价腰斩之际，天安新材拟2.5亿“追光”｜并购一线",
-      "url": "https://www.tmtpost.com/8198545.html",
+      "title": "国产GPU，风浪越大鱼越贵",
+      "url": "https://www.tmtpost.com/8210657.html",
       "source": "钛媒体",
       "sourceUrl": "https://www.tmtpost.com/rss",
-      "firstSeen": "2026-11-09",
+      "firstSeen": "2026-11-19",
       "type": "tool",
-      "excerpt": "天安新材拟跨界。"
+      "excerpt": "黄仁勋卸任英伟达CEO，全球AI算力格局发生转变，中国AI产业面临供给风险挑战。"
     },
     {
-      "title": "商超重拾散装零食",
-      "url": "https://www.tmtpost.com/8198256.html",
+      "title": "谁吃掉了名创优品的利润？",
+      "url": "https://www.tmtpost.com/8210698.html",
       "source": "钛媒体",
       "sourceUrl": "https://www.tmtpost.com/rss",
-      "firstSeen": "2026-11-09",
+      "firstSeen": "2026-11-19",
       "type": "tool",
-      "excerpt": "商超重拾散装零食"
+      "excerpt": "持续增收不增利。"
     },
     {
-      "title": "AI进不了相亲相爱一家人，怎么办？",
-      "url": "https://www.tmtpost.com/8198165.html",
+      "title": "哈尔滨买了“迪士尼”",
+      "url": "https://www.tmtpost.com/8210987.html",
       "source": "钛媒体",
       "sourceUrl": "https://www.tmtpost.com/rss",
-      "firstSeen": "2026-11-09",
+      "firstSeen": "2026-11-19",
       "type": "tool",
-      "excerpt": "微信不妨学一学？"
+      "excerpt": "哈尔滨第一次向别人借冬天。"
     },
     {
-      "title": "黄仁勋婚外情背后：黄乐的神秘履历、48亿美元芯片生意与美国政策博弈",
-      "url": "https://www.tmtpost.com/8198370.html",
+      "title": "国产芯片正在准备三级跳",
+      "url": "https://www.tmtpost.com/8210830.html",
       "source": "钛媒体",
       "sourceUrl": "https://www.tmtpost.com/rss",
-      "firstSeen": "2026-11-09",
+      "firstSeen": "2026-11-19",
       "type": "tool",
-      "excerpt": "接下来，英伟达要查清这段关系有没有越过公司的制度边界；华盛顿则会借这场风波，重新计算黄仁勋、英伟达与美国AI政策之间的距离。"
+      "excerpt": "国产芯片迎来新一轮资本投入，从产品量产、工艺迭代到争夺客户订单，产业竞争正在升级。长鑫、长江存储加速进入高端市场，国产AI芯片则面临英伟达整套计算系统的挑战。融资只是起点，能否持续迭代、赢得下一代产品订单，才是国产芯片实现“三级跳”的关键。"
     },
     {
-      "title": "AI带得动这届双十一吗？",
-      "url": "https://www.tmtpost.com/8198668.html",
+      "title": "业绩重压下，航天机电继续处理海外亏损光伏项目",
+      "url": "https://www.tmtpost.com/8211254.html",
       "source": "钛媒体",
       "sourceUrl": "https://www.tmtpost.com/rss",
-      "firstSeen": "2026-11-09",
+      "firstSeen": "2026-11-19",
       "type": "tool",
-      "excerpt": "AI省下的效率，还没换来电商对等的增长。"
+      "excerpt": "航天机电的业绩拐点还没到来"
     },
     {
-      "title": "黄仁勋最危险的一次失控",
-      "url": "https://www.tmtpost.com/8198019.html",
+      "title": "腾讯的“存亡时刻”写在利润表与现金流里",
+      "url": "https://www.tmtpost.com/8211143.html",
       "source": "钛媒体",
       "sourceUrl": "https://www.tmtpost.com/rss",
-      "firstSeen": "2026-11-09",
+      "firstSeen": "2026-11-19",
       "type": "tool",
-      "excerpt": "黄仁勋大概没有想到，自己有一天会因为一段婚外情，成为英伟达董事会调查的对象。"
+      "excerpt": "一家年赚2000亿的公司怎么就“生死存亡”了？"
     }
   ]
 }

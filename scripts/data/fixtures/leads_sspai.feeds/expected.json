@@ -4,82 +4,82 @@
   "sourceName": "少数派",
   "fixture": "leads_sspai.feeds",
   "sourceUrl": "https://sspai.com/feed",
-  "capturedAt": "2026-11-10",
+  "capturedAt": "2026-11-19",
   "trimmed": "解析器/判据真正读的四个字段（title / link / pubDate / description）：三闸全中与近失配条目优先，最多 8 条，description 截到 200 字",
   "note": "expected 是**生产解析器在这个最小片段上的真实输出**；重建后请人工 review diff。",
   "count": 8,
   "items": [
     {
-      "title": "派评 | 近期值得关注的 App",
-      "url": "https://sspai.com/post/118833",
+      "title": "给 Apple 的 2026 年打分，请你一起参与",
+      "url": "https://sspai.com/post/119191",
       "source": "少数派",
       "sourceUrl": "https://sspai.com/feed",
-      "firstSeen": "2026-11-09",
+      "firstSeen": "2026-11-19",
       "type": "tool",
-      "excerpt": ">下载少数派客户端、关注少数派公众号，解锁全新阅读体验📰>实用、好用的正版软件，少数派为你呈现🚀查看全文"
+      "excerpt": "2026年以来，Apple在硬件领域明显加快了产品线的拓展。定价亲民、采用A系列芯片的MacBookNeo让Mac触及更广泛的消费群体，也引发了对性能妥协与长期使用价值的讨论。M6芯片继续推进Appl ...查看全文"
     },
     {
-      "title": "双十一 | 少数派会员、正版软件、付费栏目限时优惠",
-      "url": "https://sspai.com/post/118799",
+      "title": "新玩意 256｜少数派的编辑们最近买了啥？",
+      "url": "https://sspai.com/post/119287",
       "source": "少数派",
       "sourceUrl": "https://sspai.com/feed",
-      "firstSeen": "2026-11-09",
+      "firstSeen": "2026-11-19",
       "type": "tool",
-      "excerpt": "多款付费栏目和正版软件上新，以及口碑、质量都非常优秀的现有产品优惠活动，快来看看有没有你需要的吧。查看全文"
+      "excerpt": "编注：很多读者都会好奇少数派的编辑们到底平时都「买了啥」。我们希望通过「编辑部的新玩意」介绍编辑部成员们最近在用的新奇产品，让他们自己来谈谈这些新玩意的使用体验究竟如何。内容声明：《新玩意》栏目如含有 ...查看全文"
     },
     {
-      "title": "一家人的客厅，和一个人的深夜 — Sonos Beam Ultra 与 Ace Ultra 体验",
-      "url": "https://sspai.com/post/118227",
+      "title": "有必要但欠平衡：浅评 macOS 27.3 新版权限控制机制",
+      "url": "https://sspai.com/prime/story/system-app-protection-override-macos-27-3",
       "source": "少数派",
       "sourceUrl": "https://sspai.com/feed",
-      "firstSeen": "2026-11-09",
+      "firstSeen": "2026-11-19",
       "type": "tool",
-      "excerpt": "本文是少数派联合Sonos发起的SonosPlay众测活动（第二期）「最佳体验官」奖项获奖文章，奖品为免费保留送测的SonosAceUltra。除本文外，本期获得优秀体验官的作者及文章是：mivans ...查看全文"
+      "excerpt": "[......]查看全文本文为会员文章，出自《单篇文章》，订阅后可阅读全文。"
     },
     {
-      "title": "天花板上的白色盒子，是怎样保护我们的安全的？",
-      "url": "https://sspai.com/post/118029",
+      "title": "徒步旅行指南 | 玉龙虎跳峡与天堂雨崩",
+      "url": "https://sspai.com/post/119039",
       "source": "少数派",
       "sourceUrl": "https://sspai.com/feed",
-      "firstSeen": "2026-11-09",
-      "type": "tool",
-      "excerpt": "2026 年 11 月 9 日是第 35 个全国消防日。我们来学点消防知识。查看全文"
-    },
-    {
-      "title": "双十一好物精选：Sonos Play 85 折送充电套装，CD 机加赠透明面盖",
-      "url": "https://sspai.com/post/118612",
-      "source": "少数派",
-      "sourceUrl": "https://sspai.com/feed",
-      "firstSeen": "2026-11-09",
-      "type": "tool",
-      "excerpt": "从墨水屏到手机壳，从磁吸信息屏到CD播放器，这些看似平常的数码产品，经过一些新的设计和尝试，也能带来不太一样的使用体验。今年双十一，各大平台的促销活动陆续开始，不过满减、凑单等规则可能还是有些繁琐。所 ...查看全文"
-    },
-    {
-      "title": "派早报：特斯拉将停产 Cybertruck",
-      "url": "https://sspai.com/post/118805",
-      "source": "少数派",
-      "sourceUrl": "https://sspai.com/feed",
-      "firstSeen": "2026-11-09",
-      "type": "tool",
-      "excerpt": "特斯拉将停产 Cybertruck深圳在 APEC 前夕整顿非法市场美国数据中心股持续遭抛售，大量建设项目被取消京津冀三地消协组织敦促航司、平台规范机票退改签FBI 警告冰柜网络安全攻击风险广电总局部署开展新一轮微短剧专项治理工作看看就行的简讯少数派的近期动态你可能错过的好文章查看全文"
-    },
-    {
-      "title": "苹果产品那些不够颠覆，却值得被学习的细节",
-      "url": "https://sspai.com/post/118114",
-      "source": "少数派",
-      "sourceUrl": "https://sspai.com/feed",
-      "firstSeen": "2026-11-08",
+      "firstSeen": "2026-11-19",
       "type": "tool",
       "excerpt": "Matrix首页推荐Matrix是少数派的写作社区，我们主张分享真实的产品体验，有实用价值的经验与思考。我们会不定期挑选Matrix最优质的文章，展示来自用户的最真实的体验和观点。文章代表作者个人观点 ...查看全文"
     },
     {
-      "title": "一个 05 后的个人数码编年史",
-      "url": "https://sspai.com/post/116750",
+      "title": "派早报：Apple 年度应用、TGA 2026 分别公布入围名单等",
+      "url": "https://sspai.com/post/119239",
       "source": "少数派",
       "sourceUrl": "https://sspai.com/feed",
-      "firstSeen": "2026-11-07",
+      "firstSeen": "2026-11-19",
       "type": "tool",
-      "excerpt": "我只想回应自己的感受，自己的记忆，只是因为那时候我满腔少年心气，对一切都充满好奇，对未来充满憧憬。查看全文"
+      "excerpt": "AMD 更新虚幻引擎 FSR 插件、Google Wallet 登陆 iOS 等。查看全文"
+    },
+    {
+      "title": "10 月音乐精选：音乐丰收季，必听这 7 张新专辑",
+      "url": "https://sspai.com/post/118985",
+      "source": "少数派",
+      "sourceUrl": "https://sspai.com/feed",
+      "firstSeen": "2026-11-18",
+      "type": "tool",
+      "excerpt": "编者注：2026年我们将重启少数派音乐推荐栏目FM3.14，特邀资深音乐从业者及爱好者为大家推荐优质的华语独立、流行音乐，今年我们也很荣幸邀请到老朋友飞傲，为本栏目冠名。飞傲目前拥有品牌以音乐发烧友为 ...查看全文"
+    },
+    {
+      "title": "App+1｜NodLink：AirPods 变鼠标，动动脑就能操作电脑",
+      "url": "https://sspai.com/post/118732",
+      "source": "少数派",
+      "sourceUrl": "https://sspai.com/feed",
+      "firstSeen": "2026-11-18",
+      "type": "tool",
+      "excerpt": "转头移动光标，歪头点击，开口说指令。不用摄像头，也不用另外戴什么设备。查看全文"
+    },
+    {
+      "title": "跟着老板自驾去海南是种什么体验？明日公园 vlog 回顾",
+      "url": "https://sspai.com/post/119193",
+      "source": "少数派",
+      "sourceUrl": "https://sspai.com/feed",
+      "firstSeen": "2026-11-18",
+      "type": "tool",
+      "excerpt": "从深圳一路开车到广东最南端的徐闻，再和车分别乘坐渡轮，穿过地理课本里的琼州海峡。终于抵达海南后，老板却告诉我们这趟旅程真正的目的地，竟然是……查看全文"
     }
   ]
 }

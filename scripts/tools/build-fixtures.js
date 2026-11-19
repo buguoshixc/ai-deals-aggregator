@@ -34,7 +34,7 @@ const cheerio = require('cheerio');
 const http = require('../lib/http');
 const registry = require('../collectors');
 const radar = require('../lib/lead-radar');
-const { todayCN } = require('../lib/schema');
+const { todayCN, normalizeUrl } = require('../lib/schema');
 
 const ROOT = path.join(__dirname, '..', '..');
 const FIXTURES_DIR = path.join(__dirname, '..', 'data', 'fixtures');
@@ -321,11 +321,29 @@ function findBySource(sourceId) {
 }
 
 /** 片段上的解析结果必须是整页结果里同一批条目的子集（去掉重复后的逐条相等） */
-function assertSubset(fullItems, trimmedItems) {
+function assertSubset(fullItems, trimmedItems, { allowTruncatedExcerpt = false } = {}) {
   const key = item => JSON.stringify(item);
   const fullKeys = new Set(fullItems.map(key));
   const missing = trimmedItems.filter(item => !fullKeys.has(key(item)));
-  return missing;
+  if (!missing.length || !allowTruncatedExcerpt) return missing;
+
+  // RSS 片段按体积/版权纪律把 description 截到 RSS_FIXTURE_DESCRIPTION_CHARS，所以片段上的
+  // excerpt 本来就会短于整页的 excerpt —— 那是**规则写明的输入裁剪**，不是「剪裁改变了语义」。
+  // 这里按 url 配对后逐字段比较：除 excerpt 外必须逐字节一致；excerpt 只允许是整页结果的前缀
+  // （前缀 = 解析器没有替换/补写文本）。直接删掉这条牙、或把 expected 手改短，都会让
+  // 「片段仍能复现整页输出」这个判据失效，所以宁可在这里写明唯一的例外。
+  const fullByUrl = new Map(fullItems.map(item => [normalizeUrl(item.url), item]));
+  return missing.filter(item => {
+    const full = fullByUrl.get(normalizeUrl(item.url));
+    if (!full) return true;
+    const names = new Set([...Object.keys(full), ...Object.keys(item)]);
+    for (const name of names) {
+      if (name === 'excerpt') continue;
+      if (JSON.stringify(full[name]) !== JSON.stringify(item[name])) return true;
+    }
+    if (!item.excerpt) return Boolean(full.excerpt);
+    return !String(full.excerpt || '').startsWith(item.excerpt);
+  });
 }
 
 async function buildOne(fixtureName, { write = true } = {}) {
@@ -364,7 +382,7 @@ async function buildOne(fixtureName, { write = true } = {}) {
   if (!trimmedItems.length) {
     throw new Error(`${fixtureName}：片段上解析出 0 条 —— 剪裁把解析器需要的东西剪掉了`);
   }
-  const missing = assertSubset(fullItems, trimmedItems);
+  const missing = assertSubset(fullItems, trimmedItems, { allowTruncatedExcerpt: rule.kind === 'xml' });
   if (missing.length) {
     throw new Error(`${fixtureName}：片段解析出的 ${missing.length} 条与整页结果不一致（剪裁改变了语义）`);
   }
