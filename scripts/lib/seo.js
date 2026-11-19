@@ -20,6 +20,16 @@
 
 const pageKinds = require('./page-kinds');
 
+/**
+ * `<title>` 的硬上限（**唯一出处**）。
+ *
+ * 为什么要有这个名字：数据契约允许 150 字符的逐字标题，展示层的 `<title>` 却只有 80；
+ * 两者之间必须有一层预算适配（`lib/page-fit.js`）。历史上 80 是这里的一个字面量，
+ * 展示层各拼接点各自为政，于是「合法数据 + 到期归档」就能把发布门禁冻住（issue #150）。
+ * 常量单源化之后，适配层与门禁读的是同一个数 —— 改上限只改这一处。
+ */
+const TITLE_MAX_LENGTH = 80;
+
 const PROBLEM_CODES = [
   'gate-threshold', 'gate-pinned-missing', 'gate-pinned-empty',
   // v1.8：`alias-indexable` 退役（旧语义是「别名页必须 noindex」，与本轮策略相反），
@@ -351,7 +361,7 @@ function validate(pages, opts = {}) {
     const independent = page.indexable && canonical === expectedUrl;
 
     if (!title) fail('title-length', route, '页面没有 <title>');
-    else if (title.length > 80) fail('title-length', route, `标题 ${title.length} 字符，超过 80：${title}`);
+    else if (title.length > TITLE_MAX_LENGTH) fail('title-length', route, `标题 ${title.length} 字符，超过 ${TITLE_MAX_LENGTH}：${title}`);
     // 唯一性只在**独立可索引**页面之间要求：别名页与目标页共用标题是刻意的
     // ——它就是「同一主题的旧地址」，标题不同反而会让读者以为进错了页。
     if (title && independent) {
@@ -700,6 +710,7 @@ function summarize(result) {
 }
 
 module.exports = {
+  TITLE_MAX_LENGTH,
   PROBLEM_CODES,
   dealIndexable,
   textFloor,

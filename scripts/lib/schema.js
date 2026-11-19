@@ -44,6 +44,19 @@ const MAX_EXCERPT_LENGTH = 240;
  */
 const MAX_DESCRIPTION_LENGTH = 600;
 
+/**
+ * 标题的数据契约上限（**唯一出处**）。
+ *
+ * 这是「逐字事实」的长度上限，不是展示预算：新闻线索标题可以到 150 字符，
+ * 而页面 `<title>` 的硬上限是 80（`lib/seo.js` 的 `TITLE_MAX_LENGTH`）。
+ * 两者刻意**不是同一个数**：数据层允许长标题，展示层负责按页面后缀做适配
+ * （`lib/page-fit.js`）。合并成一个数就等于为了 SEO 改写逐字采集数据。
+ *
+ * 生成器（如 `tools/page-fit-selftest.js` 的契约语料）从这里取上限，
+ * 保证「数据允许的最长标题」与「校验器接受的最长标题」是同一把尺子。
+ */
+const MAX_TITLE_LENGTH = 150;
+
 /* ---------------- v1.1 学生 / 开发者模型 ---------------- */
 
 /**
@@ -471,7 +484,7 @@ function makeId({ vendor, title, url }) {
  * @returns {object|null} 无法构造时返回 null
  */
 function makeDeal(raw = {}, opts = {}) {
-  const title = cleanText(raw.title, 150);
+  const title = cleanText(raw.title, MAX_TITLE_LENGTH);
   if (!title || isGarbage(title)) return null;
 
   const url = normalizeUrl(raw.url) || normalizeUrl(raw.sourceUrl) || normalizeUrl(opts.sourceUrl);
@@ -587,7 +600,7 @@ function validateDeal(deal, index = 0) {
   if (!deal || typeof deal !== 'object') return { ok: false, errors: [`${where}: 不是对象`] };
 
   if (!/^[0-9a-f]{12}$/.test(String(deal.id || ''))) errors.push(`${where}: id 非法`);
-  if (!deal.title || cleanText(deal.title, 150) !== deal.title) errors.push(`${where}: title 缺失或未清洗`);
+  if (!deal.title || cleanText(deal.title, MAX_TITLE_LENGTH) !== deal.title) errors.push(`${where}: title 缺失或未清洗`);
   if (isGarbage(deal.title)) errors.push(`${where}: title 命中垃圾特征`);
   if (!deal.url || !/^https?:\/\//i.test(deal.url)) errors.push(`${where}: url 必须是 http(s)`);
   else if (stripTracking(deal.url) !== deal.url) errors.push(`${where}: url 含追踪参数`);
@@ -937,6 +950,7 @@ module.exports = {
   MAX_PRICE_LINE_LENGTH,
   MAX_EXCERPT_LENGTH,
   MAX_DESCRIPTION_LENGTH,
+  MAX_TITLE_LENGTH,
   AUDIENCE_FIELD_ORDER,
   MAX_REGION_RESTRICTION_LENGTH,
   MAX_PROVENANCE_NOTE_LENGTH,

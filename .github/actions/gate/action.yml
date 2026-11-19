@@ -691,6 +691,14 @@ runs:
         DSH_EDGE: ${{ steps.browser.outputs.executable }}
       run: node scripts/tools/verify-site.js --compare
 
+    # 页面预算自测：标题/描述在**拼接点**的边界与消歧（单元牙），加上一组契约驱动的
+    # 沙箱构建（真实数据 + 合成极值数据）与可证伪牙；产物在临时目录自建，不读 dist/。
+    # 不带 if：它不依赖浏览器/产物，degraded 与 full 都要跑 —— 预算回归与浏览器无关。
+    - name: Page-fit self-test (composition budgets, contract corpus)
+      id: s52
+      shell: bash
+      run: node scripts/tools/page-fit-selftest.js
+
     # 结论落 Summary（if: always() —— 前面的步骤红了也要把结论与"判了什么"写清楚；
     # 这一步只记录，不改变 job 的成败）。
     - name: Gate conclusion
@@ -752,6 +760,7 @@ runs:
         if [ -z "$failed" ] && [ "${{ steps.decision.outcome }}" = "failure" ]; then failed='Browser availability decision (never silent)'; fi
         if [ -z "$failed" ] && [ "${{ steps.s50.outcome }}" = "failure" ]; then failed='Real-browser acceptance (verify-site.js)'; fi
         if [ -z "$failed" ] && [ "${{ steps.s51.outcome }}" = "failure" ]; then failed='Regression verify (current-data budget)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s52.outcome }}" = "failure" ]; then failed='Page-fit self-test (composition budgets, contract corpus)'; fi
         {
           echo ""
           echo "### 门禁结论"

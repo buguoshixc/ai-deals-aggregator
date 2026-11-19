@@ -3,7 +3,7 @@
 /**
  * Architecture Fitness Tests —— 少而高价值的**结构不变量**门禁（本轮新增）。
  *
- * ## 为什么只有 5 条
+ * ## 为什么只有 6 条
  *
  * 架构门禁的价值密度差别极大：一条能抓住「今天还成立、明天会被顺手破坏」的边界，胜过
  * 二十条恒真的形式检查。所以本文件的收录标准是**三条同时成立**：
@@ -20,7 +20,7 @@
  *     `PUBLIC_FILES` / `GENERATED_FILES` / `dataDocs` 注册表内），owner 已是构建自检；
  *   · 「每个测试都被门禁跑到」——owner 是 `check-ci-consistency.js` 的断言 (17)/(19)。
  *
- * ## 5 条各守什么
+ * ## 6 条各守什么
  *
  *   ① **依赖方向**：`scripts/lib/**` 不得 require `scripts/{build,tools,ai}/**`。
  *      今天 0 违规；一旦破坏，domain 层就会被构建脚本反向绑死（那是本轮之前最怕的形态）。
@@ -35,6 +35,12 @@
  *      加它的依据是 2026-10-13 的实测事故：`history-selftest.js` 里那一句让**北京时间
  *      00:00–08:00** 的定时采集整条红在门禁前（数据不入库），而同一条链上的 `history-verify.js`
  *      用的是 `todayCN()` —— 两个读者对「今天」的口径不一致，且只在跨日窗口里露出来。
+ *   ⑥ **页面预算单源**：`seo.js` 的标题上限只能有 `TITLE_MAX_LENGTH` 一个出处，
+ *      任何脚本都不许再写硬编码的 80 比较；`build-local.js` 的标题/描述拼接必须经过
+ *      `lib/page-fit.js`（至少 3 处 fitTitle、1 处 fitDescription）。
+ *      加它的依据是 issue #150：一条合法采集数据（150 字符上限）在档案页拼上后缀后
+ *      顶到 86 字符，而预算字面量散落在各拼接点，SEO 门禁红了两天。单源 + 必经适配
+ *      才是结构性修复；只补一个档案页的洞，下一个拼接点仍会复发。
  */
 const fs = require('fs');
 const path = require('path');
@@ -187,6 +193,37 @@ const read = f => fs.readFileSync(f, 'utf8');
       : (offenders.length
         ? `${offenders.length} 处：${offenders.slice(0, 4).join('；')}`
         : `扫了 ${SCRIPTS.length} 个脚本 · 0 处 · 正反例自检 4/4（北京 00:00–08:00 那一段正是它拦下的）`));
+}
+
+// ---------------------------------------------------------------- ⑥ 页面预算单源
+
+{
+  // 判据一：扫描面里不许再出现「标题长度与硬编码 80 比较」。正例用拼接写，
+  // 避免本文件自己成为被扫描到的违规行（它也在 scripts/** 射程内）。
+  const HARDCODED = /title\.length\s*>\s*80/;
+  const SAMPLE = `if (title.length > ${80}) fail('title-length');`;
+  const sampleHit = HARDCODED.test(SAMPLE);
+  const offenders = [];
+  for (const f of SCRIPTS) {
+    const name = rel(f);
+    read(f).split(/\r?\n/).forEach((line, i) => {
+      if (/^(\/\/|\*|\/\*)/.test(line.trim())) return;   // 注释里的说明不算实现
+      if (HARDCODED.test(line)) offenders.push(`${name}:${i + 1}`);
+    });
+  }
+  const seoLib = require(path.join(ROOT, 'scripts/lib/seo'));
+  const seoHasLimit = seoLib.TITLE_MAX_LENGTH === 80;
+  const buildSrc = read(path.join(ROOT, 'scripts/tools/build-local.js'));
+  const wired = buildSrc.includes("require('../lib/page-fit')");
+  const fitTitleCalls = (buildSrc.match(/pageFit\.fitTitle\(/g) || []).length;
+  const fitDescriptionCalls = (buildSrc.match(/pageFit\.fitDescription\(/g) || []).length;
+  check('⑥ 页面预算单源：无硬编码 80 比较、上限从 seo 导出、build-local 必经 page-fit',
+    sampleHit && offenders.length === 0 && seoHasLimit && wired && fitTitleCalls >= 3 && fitDescriptionCalls >= 1,
+    !sampleHit
+      ? '扫描器自检失败（正例没命中）'
+      : (offenders.length
+        ? `${offenders.length} 处硬编码：${offenders.slice(0, 4).join('；')}`
+        : `扫了 ${SCRIPTS.length} 个脚本 · TITLE_MAX_LENGTH 导出=${seoHasLimit} · page-fit require=${wired} · fitTitle=${fitTitleCalls} 处 · fitDescription=${fitDescriptionCalls} 处`));
 }
 
 const failed = results.filter(r => !r.ok);
