@@ -2726,15 +2726,15 @@
     },
     "0750a3061d72": {
       "source": "Futuretools",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-19",
-      "endedAt": null
+      "endedAt": "2026-11-19"
     },
     "086534ebceeb": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-19",
-      "endedAt": null
+      "endedAt": "2026-11-19"
     },
     "0a2fc31c76cc": {
       "source": "IT之家",
@@ -2780,9 +2780,9 @@
     },
     "29ff7f061d59": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-19",
-      "endedAt": null
+      "endedAt": "2026-11-19"
     },
     "2add85b3877d": {
       "source": "aitools.fyi",
@@ -2846,15 +2846,21 @@
     },
     "3e0abe88eb9f": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-19",
-      "endedAt": null
+      "endedAt": "2026-11-19"
     },
     "3eac4b6acccb": {
       "source": "快科技",
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-13"
+    },
+    "3f97a29b90e6": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-19",
+      "endedAt": null
     },
     "3fa2cec73c43": {
       "source": "aitools.fyi",
@@ -2916,6 +2922,12 @@
       "since": "2026-11-14",
       "endedAt": "2026-11-14"
     },
+    "59c7b0179308": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-19",
+      "endedAt": null
+    },
     "60317b771abf": {
       "source": "Futuretools",
       "misses": 2,
@@ -2966,9 +2978,9 @@
     },
     "72100a42eb69": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-19",
-      "endedAt": null
+      "endedAt": "2026-11-19"
     },
     "72410d92e184": {
       "source": "Futuretools",
@@ -3134,9 +3146,9 @@
     },
     "a67c07bf4993": {
       "source": "Futuretools",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-19",
-      "endedAt": null
+      "endedAt": "2026-11-19"
     },
     "a9053ca847fb": {
       "source": "aitools.fyi",
@@ -3234,6 +3246,12 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
+    "e5fcacad308b": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-19",
+      "endedAt": null
+    },
     "e6da58501e1d": {
       "source": "aitools.fyi",
       "misses": 2,
@@ -3290,9 +3308,9 @@
     },
     "ff8cbecdd5f6": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-19",
-      "endedAt": null
+      "endedAt": "2026-11-19"
     }
   },
   "events": [
@@ -7708,6 +7726,121 @@
       "to": "2026-12-02",
       "origin": "observed",
       "runAt": "2026-11-18T20:03:30.768Z"
+    },
+    {
+      "id": "0750a3061d72",
+      "at": "2026-11-19",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-19",
+      "runAt": "2026-11-19T06:03:31.703Z",
+      "label": {
+        "title": "Flora AI",
+        "vendor": "Flora AI"
+      }
+    },
+    {
+      "id": "086534ebceeb",
+      "at": "2026-11-19",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-19",
+      "runAt": "2026-11-19T06:03:31.703Z",
+      "label": {
+        "title": "DomScan",
+        "vendor": "DomScan"
+      }
+    },
+    {
+      "id": "29ff7f061d59",
+      "at": "2026-11-19",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-19",
+      "runAt": "2026-11-19T06:03:31.703Z",
+      "label": {
+        "title": "VistaCreate",
+        "vendor": "VistaCreate"
+      }
+    },
+    {
+      "id": "3e0abe88eb9f",
+      "at": "2026-11-19",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-19",
+      "runAt": "2026-11-19T06:03:31.703Z",
+      "label": {
+        "title": "BetterClaw",
+        "vendor": "BetterClaw"
+      }
+    },
+    {
+      "id": "72100a42eb69",
+      "at": "2026-11-19",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-19",
+      "runAt": "2026-11-19T06:03:31.703Z",
+      "label": {
+        "title": "Hedy AI",
+        "vendor": "Hedy AI"
+      }
+    },
+    {
+      "id": "a67c07bf4993",
+      "at": "2026-11-19",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-19",
+      "runAt": "2026-11-19T06:03:31.703Z",
+      "label": {
+        "title": "Ankon AI",
+        "vendor": "Ankon AI"
+      }
+    },
+    {
+      "id": "c8784a307734",
+      "at": "2026-11-19",
+      "type": "updated",
+      "field": "category",
+      "from": "设计创意",
+      "to": "对话模型",
+      "origin": "observed",
+      "runAt": "2026-11-19T06:03:31.703Z"
+    },
+    {
+      "id": "ff8cbecdd5f6",
+      "at": "2026-11-19",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-19",
+      "runAt": "2026-11-19T06:03:31.703Z",
+      "label": {
+        "title": "MagicCanvas",
+        "vendor": "MagicCanvas"
+      }
     }
   ]
 }
