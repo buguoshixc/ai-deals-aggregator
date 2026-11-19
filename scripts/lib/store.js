@@ -12,8 +12,8 @@
 
 const fs = require('fs');
 const path = require('path');
-const { SCHEMA_VERSION, nowCN, todayCN, validateDeal, isGarbage, hasDiscountSignal } = require('./schema');
-const { dedup, score } = require('./dedup');
+const { SCHEMA_VERSION, nowCN, todayCN, validateDeal, isGarbage, hasDiscountSignal, normalizeUrl } = require('./schema');
+const { dedup, score, aliasKey } = require('./dedup');
 const { applyDeadline } = require('./expiry');
 const { loadOverrides, applyOverrides } = require('./audience-overrides');
 // B 类资讯线索（beta）：来源类型与 TTL 的判据只有一处 —— provenance 的声明表 + lead-radar 的常数。
@@ -38,6 +38,42 @@ const LEAD_SOURCES = new Set(
 /** 这条记录是不是「线索」（B 类资讯线索雷达，beta） */
 function isLeadDeal(deal) {
   return Boolean(deal && typeof deal.source === 'string' && LEAD_SOURCES.has(deal.source));
+}
+
+/**
+ * 给一条**线索草稿**找存量记录的 id（Part 2 的 id 稳定钩子）。
+ *
+ * 背景：`makeId = sha1(vendor|title|url)`，而线索的 vendor 从本次修复起由
+ * `inferVendor(title)`（新闻标题切词，产出垃圾值）改为「雷达三闸命中的平台名」。
+ * vendor 变了，同一条新闻下次重现时 makeDeal 会算出一个新 id ⇒ mergeAll 里旧 id 走
+ * `withdrawn` ended、新 id 走 `created`（历史凭空多两条事件，读者会以为这条线索被删了又加），
+ * 按 id 键的 zh 译文 / audience overrides 也随之变成孤儿。
+ *
+ * 解法：调用方（`collect.js` 的 `collectFrom`）在 makeDeal **之前**按「归一化 URL 相同」
+ * 或「标题别名相同」在本份存量里找同一条线索，命中就把存量 id 原样塞进 `raw.id`
+ * （schema 保留合法 12-hex id）。于是 vendor 原地更新：`vendor` 在 history.js 属
+ * UNTRACKED_FIELDS（身份字段），不产生任何事件；id / zh / overrides 全部原地不动。
+ *
+ * **只认线索记录**：同标题的商品不该被一条新闻接走 id。匹配口径与 dedup 一致：
+ *   1) 归一化 URL 完全相同（最硬的证据，媒体改标题也能接上）；
+ *   2) `dedup.aliasKey(title)` 相同（复用既有的别名/噪声词规则，不在这里另造一把尺子）。
+ * 找不到 = null，调用方按老路生成新 id（真正的新线索）。
+ *
+ * @param {Array<object>} existing 存量 deals（盘上原样数组，未清洗）
+ * @param {{title?:string,url?:string,sourceUrl?:string}} draft 采集器草稿
+ * @returns {string|null} 存量 id（12 位 hex）或 null
+ */
+function resolveLeadId(existing, draft) {
+  if (!Array.isArray(existing) || !draft) return null;
+  const url = normalizeUrl(draft.url) || normalizeUrl(draft.sourceUrl) || null;
+  const titleKey = aliasKey(draft.title);
+  for (const deal of existing) {
+    if (!deal || !isLeadDeal(deal)) continue;
+    const sameUrl = Boolean(url) && normalizeUrl(deal.url) === url;
+    const sameTitle = Boolean(titleKey) && aliasKey(deal.title) === titleKey;
+    if (sameUrl || sameTitle) return deal.id;
+  }
+  return null;
 }
 
 /** 读取 deals.json；兼容旧的裸数组格式 */
@@ -302,5 +338,6 @@ module.exports = {
   writeDeals,
   prune,
   mergeAll,
+  resolveLeadId,
   assertAllValid
 };
