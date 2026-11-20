@@ -145,6 +145,12 @@ const ROUTE_RULES = [
     trackable: true,
     kind: 'codex-reset',
     why: 'Codex 额度重置档案：判断这个有明确数据源的档案域值不值得继续维护'
+  },
+  {
+    re: /^search\/$/,
+    trackable: true,
+    kind: 'search',
+    why: '全站搜索：判断读者是「直接进想要的页」还是「先搜一遍」，与各家族入口的访问量对照'
   }
 ];
 

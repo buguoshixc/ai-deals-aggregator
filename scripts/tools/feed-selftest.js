@@ -290,10 +290,16 @@ function judgeReturnShape(mod) {
   };
 }
 
-/** 导出表（契约第 5.1 条：就这 5 个名字） */
+/**
+ * 导出表（契约第 5.1 条：5 个名字）。
+ *
+ * v3.4 F3 起多一个 `PLAN_URL_PREFIX`：搜索索引与订阅层必须拼**同一批**站内 URL
+ * （`plans/coding/#plan-<id>` / `plans/api/#plan-<id>`）。导出它，而不是让第二个文件
+ * 复制字面量 —— 这正是唯一表纪律。除这 6 个名字外仍然一个都不许多。
+ */
 function judgeExportTable(mod) {
   const names = Object.keys(mod).sort().join(',');
-  const wanted = ['FEED_FILES', 'FEED_MAX_ITEMS', 'buildFeedEntries', 'renderAtom', 'renderJsonFeed'].sort().join(',');
+  const wanted = ['FEED_FILES', 'FEED_MAX_ITEMS', 'PLAN_URL_PREFIX', 'buildFeedEntries', 'renderAtom', 'renderJsonFeed'].sort().join(',');
   const files = mod.FEED_FILES;
   const pairOk = Array.isArray(files) && files.length === 2
     && files.every(item => Array.isArray(item) && item.length === 2
@@ -898,7 +904,7 @@ function judgeWording(mod) {
 
 const JUDGEMENTS = [
   { name: '返回形状 { entries, stats }（kept === entries.length · stats 键齐全）', run: judgeReturnShape },
-  { name: '导出表（5 个名字 · 2 条产物 · FEED_MAX_ITEMS=40）', run: judgeExportTable },
+  { name: '导出表（6 个名字 · 2 条产物 · FEED_MAX_ITEMS=40）', run: judgeExportTable },
   { name: '条目形状（恰好 5 键 · id 12 位 hex 且两两不同 · url 三种形态）', run: judgeEntryShape },
   { name: '条目 id 的唯一推导（逐条对账 idFromBasis(eventKey)）', run: judgeIdDerivation },
   { name: '排除规则（算不出 url / at 非法 ⇒ 丢弃；未知 kind ⇒ 抛错）', run: judgeExclusions },

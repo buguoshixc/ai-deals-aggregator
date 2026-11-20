@@ -42,6 +42,7 @@ const apiPlansPage = require('./api-plans-page');
 const apiSchema = require('./api-plan-schema');
 const apiPlanHistory = require('./api-plan-history');
 const planHistory = require('./plan-history');
+const priceHistory = require('./price-history');
 
 const VENDOR_ROUTE_PREFIX = 'vendor/';
 const KNOWLEDGE_WRAPPER_ID = 'vendor-knowledge';
@@ -300,6 +301,58 @@ function apiEventLine(event) {
 // ⚠️ 与它一起变的还有一个数字：厂商页**无条件**产出的 `main-vsnote` 从 6 条变成 5 条，
 // `VENDOR_NOTE_COUNT` 从 6 改成 5（`build-local.js` 的说明台账 floors 读的就是它）。
 // 不同步改的下场：16 页 kind=half 的 `main-vsnote` 元素数 5 < floor 6 ⇒ §22c ⑨ 的结构下限当场红。
+
+/**
+ * 厂商页「API 计费」区里的价格历史子块。
+ *
+ * 只画**这家厂商的计费记录里真的有过价格事件**的维度；M = 0 时只出陈述句，
+ * 不铺一排「平线」小图。聚合陈述与图上的 `data-ph-*` 都从同一份推导结果现算，
+ * 所以「页面写 1 次 / 数据里 0 次」这种不一致不可能悄悄发生。
+ */
+function vendorPriceHistoryBlockOf(view, ctx) {
+  if (!view.apiRecords.length) return '';
+  const hasLog = Boolean(ctx.apiPlanHistoryStore);
+  const history = priceHistory.buildPriceHistory({
+    apiStore: ctx.apiPlanHistoryStore || null,
+    apiPlans: ctx.apiPlans || [],
+    asOf: ctx.asOf || null
+  });
+  const ids = new Set(view.apiRecords.map(record => record.id));
+  const units = new Map(view.apiRecords.map(record => [record.id, record.unit]));
+  const allSeries = [...history.api.values()]
+    .filter(series => ids.has(series.planId))
+    .sort((a, b) => {
+      if (a.planId !== b.planId) return a.planId < b.planId ? -1 : 1;
+      if (a.modelKey !== b.modelKey) return a.modelKey < b.modelKey ? -1 : 1;
+      if (String(a.variant) !== String(b.variant)) return String(a.variant) < String(b.variant) ? -1 : 1;
+      return apiSchema.TOKEN_RATE_KEYS.indexOf(a.rateKey) - apiSchema.TOKEN_RATE_KEYS.indexOf(b.rateKey);
+    });
+  const charts = allSeries.filter(series => series.changes.length > 0);
+  const counts = priceHistory.countsOf(allSeries);
+  const plansById = new Map((ctx.apiPlans || []).map(plan => [plan.id, plan]));
+  const labelOf = (series) => {
+    const plan = plansById.get(series.planId) || {};
+    const variant = apiSchema.MODEL_VARIANT_LABEL[series.variant] || series.variant || UNKNOWN_TEXT;
+    return `${plan.planName || series.planId}（${variant}）· ${apiSchema.TOKEN_RATE_LABEL[series.rateKey] || series.rateKey}`;
+  };
+  const summaryText = allSeries.length
+    ? `${counts.entries} 个计价条目 · 基线以来 ${counts.changes} 次价格变化` : '';
+  const emptyText = !hasLog
+    ? '本次构建没有拿到 API 计费日志 —— 这不表示「没有变化」。'
+    : (allSeries.length ? '' : '基线里没有载入这家厂商的计价条目价格 —— 无法绘制走势。');
+  return priceHistory.priceHistoryBlockHtml({
+    seriesList: charts,
+    asOf: ctx.asOf || null,
+    heading: '价格历史',
+    headingTag: 'h4',
+    headingClass: 'ph-h4',
+    summaryText,
+    emptyText,
+    labelOf,
+    unitTextOf: series => units.get(series.planId) || ''
+  });
+}
+
 function renderVendorKnowledgeSections(spec, ctx = {}) {
   if (!spec || spec.kind !== 'vendor') return '';
   const view = ctx.view || vendorViewOf(spec, ctx);
@@ -414,6 +467,7 @@ ${plansBlock}
         <div class="vsec" id="${SECTION_IDS.api}">
           <h3 class="vh3">API 计费（<span ${countMark('api-records-inline', view.apiRecords.length)}>${view.apiRecords.length}</span> 条记录）</h3>
 ${apiBlock}
+${vendorPriceHistoryBlockOf(view, ctx)}
         </div>
         <div class="vsec" id="${SECTION_IDS.models}">
           <h3 class="vh3">模型（Model Registry）</h3>
@@ -636,7 +690,7 @@ const VENDOR_NOTE_COUNT = 5;
  */
 function renderVendorKnowledgeBundle(spec, ctx = {}) {
   const html = renderVendorKnowledgeSections(spec, ctx);
-  return { html, css: html ? VENDOR_KNOWLEDGE_CSS : '' };
+  return { html, css: html ? `${VENDOR_KNOWLEDGE_CSS}\n${priceHistory.PRICE_HISTORY_CSS}` : '' };
 }
 
 /**
@@ -740,6 +794,7 @@ module.exports = {
   providerKeyOf,
   vendorViewOf,
   renderVendorKnowledgeSections,
+  vendorPriceHistoryBlockOf,
   renderVendorKnowledgeBundle,
   assertVendorPageHonesty,
   assertVendorSlugCanonical,

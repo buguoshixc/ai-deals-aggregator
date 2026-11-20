@@ -558,6 +558,9 @@ function renderJsonFeed(entries, meta) {
 module.exports = {
   FEED_FILES,
   FEED_MAX_ITEMS,
+  // v3.4 F3：搜索索引也要拼同一批站内 URL（`plans/coding/#plan-<id>` / `plans/api/#plan-<id>`）。
+  // 前缀是订阅层与搜索层共用的**唯一表**，导出而不是让第二个文件复制字面量。
+  PLAN_URL_PREFIX,
   buildFeedEntries,
   renderAtom,
   renderJsonFeed

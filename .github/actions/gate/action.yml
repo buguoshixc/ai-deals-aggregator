@@ -307,6 +307,30 @@ runs:
       shell: bash
       run: node scripts/tools/api-cost-selftest.js
 
+    # v3.4 F1 新增：价格历史（走势图）自测 —— 只用合成 store，零依赖、离线、秒级。
+    # 它盯的是这一层自己的承诺：阶梯线不做线性插值、没有基线就不画假图、涨跌同时有文字通道
+    # （▼/▲ + 原值 → 新值 + 日期）、单位标签没有第二副本、源码里没有墙钟。五颗牙都实跑变红。
+    - name: Price-history self-test (F1 charts, no-baseline honesty)
+      id: s26a
+      shell: bash
+      run: node scripts/tools/price-history-selftest.js
+
+    # v3.4 F2 新增：到期日历（RFC 5545）自测 —— 同样零依赖、离线、秒级。
+    # 盯的是：CRLF/75 字节折行（中文按 3 字节）、TEXT 转义（逗号/分号/反斜杠/换行）、
+    # 只收「有截止日期且未过期」、UID 稳定、DTEND=次日、DTSTAMP 冻结在数据日期、独立解析往返。
+    - name: Calendar self-test (F2 ICS folding + escaping)
+      id: s26b
+      shell: bash
+      run: node scripts/tools/calendar-selftest.js
+
+    # v3.4 F3：全站搜索索引 + 目录渲染 + 双宿主过滤（纯合成数据，不读 dist）。
+    # 盯的是：URL 只来自唯一表并按 url 去重、type=tool 不发死链、未知 kind 直接抛、
+    # 分组计数 == 条目数、href 全在路由集合内、注入 <script> 被转义、多词查询「全部命中」。
+    - name: Search self-test (F3 index + escaping + filter)
+      id: s26c
+      shell: bash
+      run: node scripts/tools/search-selftest.js
+
     # v2.5 新增：api-plans.json 可重建性（人工来源层 → 派生文件，逐字节）。
     # 与 plans 那一条红的含义相同：问的是「有没有人手改了派生产物 / 改了来源层却忘了重建」。
     - name: API-plans reproducibility (curated → api-plans.json, byte-compare)
@@ -733,6 +757,9 @@ runs:
         if [ -z "$failed" ] && [ "${{ steps.s24.outcome }}" = "failure" ]; then failed='Deal-plan-links self-test'; fi
         if [ -z "$failed" ] && [ "${{ steps.s25.outcome }}" = "failure" ]; then failed='API-plans self-test (data + page)'; fi
         if [ -z "$failed" ] && [ "${{ steps.s26.outcome }}" = "failure" ]; then failed='API-cost self-test (calculator logic + teeth)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s26a.outcome }}" = "failure" ]; then failed='Price-history self-test (F1 charts, no-baseline honesty)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s26b.outcome }}" = "failure" ]; then failed='Calendar self-test (F2 ICS folding + escaping)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s26c.outcome }}" = "failure" ]; then failed='Search self-test (F3 index + escaping + filter)'; fi
         if [ -z "$failed" ] && [ "${{ steps.s27.outcome }}" = "failure" ]; then failed='API-plans reproducibility (curated → api-plans.json, byte-compare)'; fi
         if [ -z "$failed" ] && [ "${{ steps.s28.outcome }}" = "failure" ]; then failed='API-plan-history verify (log consistent with api-plans.json)'; fi
         if [ -z "$failed" ] && [ "${{ steps.s29.outcome }}" = "failure" ]; then failed='Model-registry self-test (identity + explicit mapping)'; fi

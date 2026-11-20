@@ -235,6 +235,12 @@ const GATE_STEP_NAMES = [
   // 另外两条（可重建性、日志一致性）红的含义与 plans 那两条同构，只是换了一份数据。
   'API-plans self-test (data + page)',
   'API-cost self-test (calculator logic + teeth)',
+  // v3.4 F1：价格历史（阶梯线 / 无基线不画 / 文字通道 / 单位单源 / 无墙钟）。纯合成 store，不读 dist。
+  'Price-history self-test (F1 charts, no-baseline honesty)',
+  // v3.4 F2：到期日历（RFC 5545 折行/转义/收录条件/确定性）。纯函数，不读 dist。
+  'Calendar self-test (F2 ICS folding + escaping)',
+  // v3.4 F3：全站搜索（索引唯一表 / 按 url 去重 / 不发死链 / 转义 / 多词全部命中）。纯合成数据，不读 dist。
+  'Search self-test (F3 index + escaping + filter)',
   'API-plans reproducibility (curated → api-plans.json, byte-compare)',
   'API-plan-history verify (log consistent with api-plans.json)',
   // v3.0 新增：六个新页面家族与索引层的离线自测。它们红的含义各自独立 ——
@@ -416,6 +422,12 @@ const GATE_STEP_RUN = {
     "node scripts/tools/api-plans-selftest.js",
   "API-cost self-test (calculator logic + teeth)":
     "node scripts/tools/api-cost-selftest.js",
+  "Price-history self-test (F1 charts, no-baseline honesty)":
+    "node scripts/tools/price-history-selftest.js",
+  "Calendar self-test (F2 ICS folding + escaping)":
+    "node scripts/tools/calendar-selftest.js",
+  "Search self-test (F3 index + escaping + filter)":
+    "node scripts/tools/search-selftest.js",
   "API-plans reproducibility (curated → api-plans.json, byte-compare)":
     "node scripts/tools/check-api-plans-reproducible.js",
   "API-plan-history verify (log consistent with api-plans.json)":
@@ -578,6 +590,9 @@ const GATE_STEP_RUN = {
   + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s24.outcome }}\" = \"failure\" ]; then failed='Deal-plan-links self-test'; fi"
   + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s25.outcome }}\" = \"failure\" ]; then failed='API-plans self-test (data + page)'; fi"
   + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s26.outcome }}\" = \"failure\" ]; then failed='API-cost self-test (calculator logic + teeth)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s26a.outcome }}\" = \"failure\" ]; then failed='Price-history self-test (F1 charts, no-baseline honesty)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s26b.outcome }}\" = \"failure\" ]; then failed='Calendar self-test (F2 ICS folding + escaping)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s26c.outcome }}\" = \"failure\" ]; then failed='Search self-test (F3 index + escaping + filter)'; fi"
   + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s27.outcome }}\" = \"failure\" ]; then failed='API-plans reproducibility (curated → api-plans.json, byte-compare)'; fi"
   + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s28.outcome }}\" = \"failure\" ]; then failed='API-plan-history verify (log consistent with api-plans.json)'; fi"
   + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s29.outcome }}\" = \"failure\" ]; then failed='Model-registry self-test (identity + explicit mapping)'; fi"

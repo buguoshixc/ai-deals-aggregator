@@ -158,13 +158,13 @@
       color-scheme: dark;
 
       --bg: #0b0d10;
-      --card: #14171c;
+      --card: #262e38;
       --ink: #e8ecf2;
       --ink2: #b6bec9;
       --mut: #8d97a5;
       --mut-deco: #6b7280;
-      --line: #242a33;
-      --line2: #1c2129;
+      --line: #303845;
+      --line2: #232935;
       --ring: rgba(255, 255, 255, .07);
 
       --brand: #7c93ff;
@@ -198,15 +198,15 @@
       --mark-to: #2b45d6;
 
       --elev-hover: 0 0 0 1px var(--ring), 0 4px 14px -6px rgba(0, 0, 0, .7);
-      --elev-tile: 0 0 0 1px rgba(255, 255, 255, .08);
+      --elev-tile: 0 0 0 1px rgba(255, 255, 255, .12);
     }
 
     /* 跟随系统：只在用户没手动选过时生效（手动选择写 data-theme） */
     @media (prefers-color-scheme: dark) {
       :root:not([data-theme="light"]):not([data-theme="dark"]) {
         color-scheme: dark;
-        --bg: #0b0d10; --card: #14171c; --ink: #e8ecf2; --ink2: #b6bec9; --mut: #8d97a5;
-        --mut-deco: #6b7280; --line: #242a33; --line2: #1c2129; --ring: rgba(255, 255, 255, .07);
+        --bg: #0b0d10; --card: #262e38; --ink: #e8ecf2; --ink2: #b6bec9; --mut: #8d97a5;
+        --mut-deco: #6b7280; --line: #303845; --line2: #232935; --ring: rgba(255, 255, 255, .07);
         --brand: #7c93ff; --brand-ink: #8fb0ff; --deal: #ff6b81; --deal-ink: #ff8f9f; --dealsoft: #2a1418;
         --cn: #3ddc97; --cnbg: #10231d; --gl: #8fb0ff; --glbg: #141c33; --ok: #3ddc97; --warn: #ffab6b;
         --t1: #4ade80; --t2: #60a5fa; --t3: #22d3ee; --t4: #fbbf24; --t5: #94a3b8;
@@ -214,7 +214,7 @@
         --on-t1: #0b0d10; --on-t2: #0b0d10; --on-t3: #0b0d10; --on-t4: #0b0d10; --on-t5: #0b0d10;
         --on-accent: #0b0d10; --mark-from: #3b5bfd; --mark-to: #2b45d6;
         --elev-hover: 0 0 0 1px var(--ring), 0 4px 14px -6px rgba(0, 0, 0, .7);
-        --elev-tile: 0 0 0 1px rgba(255, 255, 255, .08);
+        --elev-tile: 0 0 0 1px rgba(255, 255, 255, .12);
       }
     }
 
@@ -887,14 +887,21 @@
     .fmembers:focus-within { background: var(--line2); }
     .fmembers a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
     .fmembers a:hover { color: var(--brand); }
-    .of .bar { flex: none; width: 6px; border-radius: var(--r-pill); background: var(--t5); margin-top: 1px; }
-    .of.t1 .bar { background: var(--t1); }
-    .of.t2 .bar { background: var(--t2); }
-    .of.t3 .bar { background: var(--t3); }
-    .of.t4 .bar { background: var(--t4); }
-    .of.t5 .bar { background: var(--t5); }
+    .of .bar {
+      flex: none; width: 3px; border-radius: var(--r-pill); margin-top: 1px;
+      /* v3.4 F4：竖条退成"引文的标点"，不再与标题抢眼；色相仍带档位（色不是唯一通道：
+         档位另有 .tg 文本徽章）。 */
+      background: color-mix(in srgb, var(--cn) 45%, var(--line));
+    }
+    .of.t1 .bar, .of.t2 .bar, .of.t3 .bar, .of.t4 .bar, .of.t5 .bar {
+      background: color-mix(in srgb, var(--cn) 45%, var(--line));
+    }
     .of .tx {
       font-size: 13px; line-height: 1.5; color: var(--ink);
+      /* v3.4 F4：引文行长上限 ≈62 个字符（13px 字号下 1em≈2 字符）。
+         用 em 而不是 ch：本仓的 `ch` 窄列是**必须居中的阅读列**（narrow-reading-columns 登记制），
+         引文左侧有 3px 竖条、不属于那一类；写成 ch 会被正确地判成「未登记的窄阅读列」。 */
+      max-width: 31em;
       display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
     }
     /* v5 引文让位：三批视觉复核都说「引文比标题抢眼」。颜色只留在左侧 6px 竖条上，
@@ -1416,10 +1423,22 @@
       .wrap { padding: 0 16px 50px; }
       .g { height: auto; min-height: 168px; }
       .tierhead { position: static; }
-      .rbar { margin-top: 12px; }
-      /* 结果条右侧现在有三个控件（分类 / 排序 / 视图），窄屏必须允许换行，
-         否则整页会横向溢出（实测 390px 下溢出 45px） */
-      .rright { flex-wrap: wrap; justify-content: flex-end; gap: var(--s2); width: 100%; }
+      /* v3.4 F4：控制带 ≤2 行。汇总句的尾部（覆盖 N 档…）在窄屏隐藏；
+         控件行改成单行横向滚动（两端渐隐，暗示可滑），不再折成 3 行。 */
+      .stats-tail { display: none; }
+      .rbar { margin-top: 12px; flex-wrap: nowrap; gap: 10px; }
+      /* 汇总句可以换行（里面有「清理收藏」按钮，必须留在视口内）；
+         控件组占剩余宽度、自己横向滚动（两端渐隐），不再把整行折成 2–3 行。 */
+      .rbar > #stats { flex: 0 1 auto; min-width: 0; }
+      .rbar > .rright {
+        flex: 1 1 0; min-width: 0; overflow-x: auto; overflow-y: hidden;
+        scrollbar-width: none; gap: var(--s2);
+        mask-image: linear-gradient(to right, transparent 0, #000 10px, #000 calc(100% - 10px), transparent 100%);
+        -webkit-mask-image: linear-gradient(to right, transparent 0, #000 10px, #000 calc(100% - 10px), transparent 100%);
+      }
+      .rright::-webkit-scrollbar { display: none; }
+      .rright { flex-wrap: nowrap; justify-content: flex-end; }
+      .rright > * { flex: 0 0 auto; }
       .sortbox button { padding: 6px 8px; }
       .seg button { padding: 6px 8px; }
       /* 跳到档位：390px 下「跳到 + 4 枚 chip」一行放不下 → 折成 3+1，第二行只剩一枚、
@@ -1657,13 +1676,6 @@
       窄屏（≤760px）原本就是这个换行布局（行距 6px），移动端几何与改动前逐项相同。
     -->
     <div class="hubline">
-      <nav class="jump" id="jumpNav" aria-label="跳到力度档位">
-        <span class="lb">跳到</span>
-        <a href="#tier-1"><span class="jn t1" aria-hidden="true">1</span>完全免费</a>
-        <a href="#tier-2"><span class="jn t2" aria-hidden="true">2</span>免费额度</a>
-        <a href="#tier-3"><span class="jn t3" aria-hidden="true">3</span>身份优惠</a>
-        <a href="#tier-4"><span class="jn t4" aria-hidden="true">4</span>折扣促销</a>
-      </nav>
       <!--PRERENDER:changes-->
     </div>
 
@@ -1675,6 +1687,21 @@
       <!--PRERENDER:deals-->
       <div class="loading">加载数据中…</div>
     </div>
+
+    <!--
+      v3.4 F4：“跳到力度档位”从控制带移到列表之后。
+      理由：≤760px 时顶栏与首卡之间只允许两条控制行（汇总/筛选行 + 变化雷达行）；
+      锚点导航再占一行就是第三条。移到这里后它仍是一行 4 枚 chip（末枚右侧余量
+      ≤8px 的既有断言不变），点击仍滚到列表内的档位分带 —— 只是不再与筛选抢首屏。
+      桌面端同样后移：它是一份“目录”，读完列表再跳比横在筛选行上方更合理。
+    -->
+      <nav class="jump" id="jumpNav" aria-label="跳到力度档位">
+        <span class="lb">跳到</span>
+        <a href="#tier-1"><span class="jn t1" aria-hidden="true">1</span>完全免费</a>
+        <a href="#tier-2"><span class="jn t2" aria-hidden="true">2</span>免费额度</a>
+        <a href="#tier-3"><span class="jn t3" aria-hidden="true">3</span>身份优惠</a>
+        <a href="#tier-4"><span class="jn t4" aria-hidden="true">4</span>折扣促销</a>
+      </nav>
 
     <!--
       按需求找优惠：Topic Entry Card（v1.2 建、v1.8 由标签式 chip 改成整卡）。
@@ -1746,7 +1773,7 @@
            （v1.5 的密度账）。厂商名单由构建期按落地页计划注入，源码里不留第二份清单。
            v2.1：套餐对比页也挂在这一行末尾 —— 它与「按厂商 / 分类浏览」是同一类东西
            （长期在售的产品能力），而不是「今天的优惠」。 -->
-      <p class="catnav" aria-label="按厂商、分类与套餐浏览">按厂商 / 分类浏览：<a href="__VENDOR_HREF__">厂商优惠</a> · <a href="__CATEGORY_HREF__">分类优惠</a> · <a href="__MODELS_HREF__">模型资料</a> · <a href="__PLANSHUB_HREF__">套餐与 API 计费</a> · <a href="__ARCHIVE_HREF__">历史档案</a> · <a href="__PLANS_HREF__">套餐对比</a> · <a href="__APIPLAN_HREF__">API / Token 计费对比</a> · <a href="__APICOST_HREF__">API 成本计算器</a> · <a href="__DATADOCS_HREF__">数据与引用</a><!--PRERENDER:vendorline--></p>
+      <p class="catnav" aria-label="按厂商、分类与套餐浏览">按厂商 / 分类浏览：<a href="__VENDOR_HREF__">厂商优惠</a> · <a href="__CATEGORY_HREF__">分类优惠</a> · <a href="__MODELS_HREF__">模型资料</a> · <a href="__PLANSHUB_HREF__">套餐与 API 计费</a> · <a href="__ARCHIVE_HREF__">历史档案</a> · <a href="__PLANS_HREF__">套餐对比</a> · <a href="__APIPLAN_HREF__">API / Token 计费对比</a> · <a href="__APICOST_HREF__">API 成本计算器</a> · <a href="__DATADOCS_HREF__">数据与引用</a> · <a href="__SEARCH_HREF__">全站搜索</a><!--PRERENDER:vendorline--></p>
       <!-- ⚠️ t4：页脚的三枚入口在这一轮里删干净了；同一行末尾的 vendorline 预渲染标记必须留着 ——
            它不是链接，而是构建期注入点（厂商名单由 replaceMarker() 灌进来），删了就抛
            「index.html 缺少预渲染标记」。配套删掉的还有：
@@ -1773,7 +1800,7 @@
             ⚠️ 写这一带注释的纪律（t3 真的踩过）：不许出现 HTML 注释的定界串（尖括号 + 叹号 +
             两个连字符那种，以及它的闭合形态），也不许复述被删掉的那几个字 —— 注释本身是共享
             页脚的一部分，会逐字进每一个页面。 -->
-      <p>数据每日自动更新 · 最后更新：<span id="lastUpdated">--</span> · <a href="__STATUS_HREF__">数据源状态</a> · <a href="__FEED_HREF__" title="订阅本站更新（Atom / JSON Feed · 每日两次）">订阅源</a></p>
+      <p>数据每日自动更新 · 最后更新：<span id="lastUpdated">--</span> · <a href="__STATUS_HREF__">数据源状态</a> · <a href="__FEED_HREF__" title="订阅本站更新（Atom / JSON Feed · 每日两次）">订阅源</a> · <a href="__CALENDAR_HREF__" type="text/calendar" title="订阅到期日历（.ics）：把即将到期的截止日期加进你自己的日历">到期日历（.ics）</a></p>
       <p>优惠信息来自各厂商官方页面与公开折扣页，最终以官方页面为准。发现过期信息欢迎提交修正。</p>
       <p>本站不收录付费推广位，排序与推荐理由不出售。</p>
       <p>厂商 logo 版权归各厂商所有，仅作标识用途。</p>

@@ -34,6 +34,7 @@ const plansPage = require('./plans-page');
 // 本页的限流 / 商用口径来自 api-plans 的 limits / restrictions；实名认证从 deals join
 // （api-plans 数据里没有这一维），join 键走 providers.json 的归一表，不按名字猜。
 const thresholdSummary = require('./threshold-summary');
+const priceHistory = require('./price-history');
 
 /**
  * 说明登记（notes-manifest-residual-v1）：`.snote` 构造点不再直接写进页面 —— 每个构造点在
@@ -727,6 +728,52 @@ ${rows}
 ${reportUrl ? `      <p class="ansfoot">这一行的数字与官方页不一致？<a href="${escapeHtml(reportUrl)}">提一个数据修正 issue</a>（预填标题与正文，不需要表单服务）。</p>\n` : ''}`;
 }
 
+
+/**
+ * 「价格历史（基线以来）」节。
+ */
+function apiPriceHistoryBlockHtml(store, plans, opts = {}) {
+  const history = priceHistory.buildPriceHistory({
+    apiStore: store || null,
+    apiPlans: Array.isArray(plans) ? plans : [],
+    asOf: opts.asOf || null
+  });
+  const plansById = new Map((Array.isArray(plans) ? plans : []).map(plan => [plan.id, plan]));
+  const allSeries = [...history.api.values()].sort((a, b) => {
+    if (a.planId !== b.planId) return a.planId < b.planId ? -1 : 1;
+    if (a.modelKey !== b.modelKey) return a.modelKey < b.modelKey ? -1 : 1;
+    if (String(a.variant) !== String(b.variant)) return String(a.variant) < String(b.variant) ? -1 : 1;
+    return apiSchema.TOKEN_RATE_KEYS.indexOf(a.rateKey) - apiSchema.TOKEN_RATE_KEYS.indexOf(b.rateKey);
+  });
+  const charts = allSeries.filter(series => series.changes.length > 0);
+  const counts = priceHistory.countsOf(allSeries);
+  const labelOf = (series) => {
+    const plan = plansById.get(series.planId) || {};
+    const variant = apiSchema.MODEL_VARIANT_LABEL[series.variant] || series.variant || '标准';
+    return `${plan.planName || series.planId}（${variant}）· ${apiSchema.TOKEN_RATE_LABEL[series.rateKey] || series.rateKey}`;
+  };
+  const summaryText = allSeries.length
+    ? `${counts.entries} 个计价条目 · 基线以来 ${counts.changes} 次价格变化` : '';
+  const emptyText = !store
+    ? '本次构建没有拿到 API 计费日志 —— 这不表示「没有变化」。'
+    : (allSeries.length ? '' : '基线里没有载入计价条目的价格 —— 无法绘制走势。');
+  return priceHistory.priceHistoryBlockHtml({
+    seriesList: charts,
+    asOf: opts.asOf || null,
+    heading: '价格历史（基线以来）',
+    headingId: 'api-price-history',
+    headingClass: 'ph2',
+    summaryText,
+    intro: '阶梯线只连接日志里真实记录过的价格点；两次记录之间的日子按上一个观测值画平线，不做插值。',
+    emptyText,
+    labelOf,
+    unitTextOf: series => {
+      const plan = plansById.get(series.planId) || {};
+      return unitTextOf(plan);
+    }
+  });
+}
+
 function apiPlansPageBody(plans, opts = {}) {
   const prefix = opts.prefix || '';
   const providerTable = opts.providerTable || null;
@@ -818,6 +865,7 @@ ${body}
 ${freeTierSectionHtml(plans, opts.note)}
 
 ${apiChangesBlockHtml(opts.historyStore || null, plans, {}, opts.note)}
+${apiPriceHistoryBlockHtml(opts.historyStore || null, plans, { asOf: opts.asOf || null })}
 
 ${dealLinksBlockHtml(opts.dealLinks || null, opts.note)}
 
@@ -1168,6 +1216,7 @@ module.exports = {
   apiRowsOf,
   apiRowTextsOf,
   apiPlansPageBody,
+  apiPriceHistoryBlockHtml,
   apiChangesBlockHtml,
   apiPlanChangeTextOf,
   apiPlanChangeItemHtml,

@@ -248,6 +248,16 @@ const KIND_TABLE = {
     itemList: { expect: false, checkRows: false, checkMembers: false, marker: 'item' },
     sitemap: { priority: '0.7', changefreq: 'monthly' }
   },
+  // v3.4 F3：/search/ 全站搜索。构建期写死的**完整目录**（分组 + 计数 + 每条一个链接），
+  // 输入框只是渐进增强；不是 ItemList 页（目录成员是站内各家族，不是一份数据集合）。
+  // sitemap 0.6 / weekly：有检索价值、但不是站内枢纽（那两档是 0.9）。
+  search: {
+    label: '全站搜索',
+    layout: 'wide',
+    textFloor: floor(600),
+    itemList: { expect: false, checkRows: false, checkMembers: false, marker: 'item' },
+    sitemap: { priority: '0.6', changefreq: 'weekly' }
+  },
   // B 包：/codex-reset/ Codex 额度重置档案。数据型档案页：口径块 + 三个数字 + 时间线表。
   // ItemList 刻意没有：时间线的成员是**第三方 X 推文**（站外），不是本站条目，声明成
   // ItemList 只会把「本页的条目集合」说成一件不成立的事。正文下限按表格实测远高于 600。
@@ -280,6 +290,8 @@ const FIXED_ROUTE_KINDS = {
   'archive/': 'archive-index',
   'docs/data/': 'data-docs',
   'tools/api-cost/': 'tool',
+  // v3.4 F3：全站搜索
+  'search/': 'search',
   // B 包：Codex 额度重置档案（独立固定路由）
   'codex-reset/': 'codex-reset'
 };

@@ -255,7 +255,7 @@ function plansHubView(ctx = {}) {
     return a.planId < b.planId ? -1 : a.planId > b.planId ? 1 : 0;
   });
 
-  return { coding, api, codingChanges, apiChanges, currentOffers, asOf, providerTable, codingRadar };
+  return { coding, api, codingChanges, apiChanges, currentOffers, asOf, codingAsOf, providerTable, codingRadar };
 }
 
 /* ------------------------------------------------------------------ */
@@ -316,8 +316,13 @@ function changesSectionHtml(view, prefix, note = null) {
   // 复用 `planChangesBlockHtml`（同一份事件、同一句话）但换掉链接落点，
   // 否则页面上会出现点不动的 `#plan-<id>` 死锚点（真浏览器验收会红）。
   const planHref = item => (item.planId ? `${prefix}plans/coding/#plan-${item.planId}` : null);
+  // 同一句话、同一个算法：/plans/coding/ 的 changes 块里有 F1 的聚合陈述，
+  // 这一页的变化块必须与它逐字相同（planshub-selftest ⑤b 逐条对账）。
+  const priceSummary = plansPage.planPriceHistoryOf(
+    view.plans || [], view.planHistoryStore || null, view.codingAsOf || view.asOf
+  ).summary;
   const coding = plansPage.planChangesBlockHtml(view.codingRadar, {
-    prefix, providerTable: view.providerTable, planHref, note
+    prefix, providerTable: view.providerTable, planHref, note, priceSummary
   });
   const api = apiPlansPage.apiChangesBlockHtml(view.apiPlanHistoryStore || null, view.apiPlans || [], {}, note);
   return `      <section class="phubsec" id="plans-hub-changes">
@@ -402,7 +407,7 @@ ${codingSectionHtml(view, prefix, ctx.note)}
 
 ${apiSectionHtml(view, prefix, ctx.note)}
 
-${changesSectionHtml({ ...view, apiPlanHistoryStore: ctx.apiPlanHistoryStore || null, apiPlans: ctx.apiPlans || [] }, prefix, ctx.note)}
+${changesSectionHtml({ ...view, plans: Array.isArray(ctx.plans) ? ctx.plans : [], planHistoryStore: ctx.planHistoryStore || null, apiPlanHistoryStore: ctx.apiPlanHistoryStore || null, apiPlans: ctx.apiPlans || [] }, prefix, ctx.note)}
 
 ${ctx.dealLinks === undefined || ctx.dealLinks === null ? '' : `${currentOffersHtml(view, prefix, ctx.note)}\n`}
       ${noteIn(ctx)({ kind: 'page-note', slot: 'main-snote', classes: 'snote', declaredBy: NOTES_DECLARED_BY }, `<p class="snote" id="plans-hub-cross">相关资料库：

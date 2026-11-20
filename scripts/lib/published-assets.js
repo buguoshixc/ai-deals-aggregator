@@ -55,6 +55,8 @@ const appAsset = require('./app-asset');
  * 本文件只调 `keyFileName()` 取名字，不写第二份字面量 —— 与上面 `FEED_FILES` 那条同款纪律。
  */
 const indexnow = require('./indexnow');
+// v3.4 F2：到期日历的产物表（文件名 → MIME）唯一出处是 lib/calendar.js。
+const calendar = require('./calendar');
 
 /* ------------------------------------------------------------------ */
 /* 订阅产物登记表（v3.2 · 逐路径登记；名字一律从 feed.js 的 FEED_FILES 取）  */
@@ -118,6 +120,29 @@ const FEED_ASSET_PATHS = (() => {
   return files.map(([file], index) => [file, FEED_ASSET_WHY[index]]);
 })();
 
+/**
+ * 到期日历的产物登记条目（`[路径, 理由]`，路径按 `CALENDAR_FILES` 逐条取）。
+ *
+ * 与订阅产物同一定位：它**不是**「给读者下载的数据集」，而是一份**订阅入口** ——
+ * 用户把 URL 交给自己的日历客户端，客户端才会来取。所以进 `ALLOWED_PATHS`、不进 `ALLOWED_DATA`。
+ * 文件名从 `lib/calendar.js` 现取，本文件不写第二份 `expiry.ics` 字面量；条数不匹配即抛错。
+ */
+const CALENDAR_ASSET_WHY = [
+  '到期日历（RFC 5545 / iCalendar）：构建期由 lib/calendar.js 生成，收录有绝对截止日期且未过期的条目；'
+  + '它是供人订阅的日历入口（.ics），不是可下载的数据集，也没有被任何页面脚本请求'
+];
+const CALENDAR_ASSET_PATHS = (() => {
+  const files = calendar.CALENDAR_FILES;
+  if (!Array.isArray(files) || !files.length) {
+    throw new Error('scripts/lib/calendar.js 的 CALENDAR_FILES 必须是非空数组（日历产物登记表读不出来时不许静默放行）');
+  }
+  if (files.length !== CALENDAR_ASSET_WHY.length) {
+    throw new Error(`CALENDAR_FILES 有 ${files.length} 条，但到期日历登记理由有 ${CALENDAR_ASSET_WHY.length} 条 ——`
+      + '逐路径登记必须一条一理由');
+  }
+  return files.map(([file], index) => [file, CALENDAR_ASSET_WHY[index]]);
+})();
+
 /** 允许出现在产物里的**具体路径**（相对产物目录，POSIX 形式）。逐条写理由。 */
 const ALLOWED_PATHS = [
   ['.nojekyll', 'GitHub Pages 的 Jekyll 关断标记（内容只有一个空行，不是数据）'],
@@ -142,7 +167,8 @@ const ALLOWED_PATHS = [
   // 名字从 `lib/indexnow.js` 现取：本文件不写第二份字面量（同 `FEED_FILES` 那条纪律）。
   [indexnow.keyFileName(), 'IndexNow 密钥文件（文件名与内容都是密钥本身）：参与引擎抓它来证明'
     + '「提交者确实控制着这个子目录」，属于站对外的运维约定而不是数据，也没有任何页面引用它'],
-  ...FEED_ASSET_PATHS
+  ...FEED_ASSET_PATHS,
+  ...CALENDAR_ASSET_PATHS
 ];
 
 /** 允许出现在产物里的**目录前缀**（同样逐条写理由；前缀以 `/` 结尾，只匹配目录内的文件）。 */
