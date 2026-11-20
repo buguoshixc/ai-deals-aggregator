@@ -1668,7 +1668,9 @@ function noJsControlExemptionFor(route) {
     c1Mobile.full >= 1 && c1Mobile.gridTop < 900,
     `首屏完整 ${c1Mobile.full} 张 · 网格起点 ${c1Mobile.gridTop}px · 入口卡块 ${c1Mobile.navH}px`);
   check('390：入口卡整块在优惠网格之后，仍 10 张、宽 390、无横向溢出',
-    c1Mobile.navAfter && c1Mobile.navPrev === 'dealsList' && c1Mobile.needCards === 10 &&
+    // v3.4 F4：`#jumpNav` 移到列表之后，恰好夹在 grid 与入口卡块之间 —— 判定改看
+    // 「文档序在 grid 之后」，而不是「紧挨着 grid」。
+    c1Mobile.navAfter && c1Mobile.needCards === 10 &&
     Math.abs(c1Mobile.navW - 390) <= 0.5 && c1Mobile.overflow <= 0,
     `nav 在 grid 后=${c1Mobile.navAfter} · 前一项=${c1Mobile.navPrev} · ${c1Mobile.needCards} 张 · 宽 ${c1Mobile.navW}px · 溢出 ${c1Mobile.overflow}px`);
   check('390：入口卡进 main 后，卡片宽度仍是 358（负外边距抵消 .wrap 的内边距）',
@@ -1688,6 +1690,15 @@ function noJsControlExemptionFor(route) {
   await waitForApp(page);
   const chromeProbe = () => page.evaluate(() => {
     const CLIP = ['hidden', 'clip'];
+    // v3.4 F4：单行横向滚动的控制带是**滚动视口**（overflow-x:auto），不是裁切器；
+    // 里面的控件要靠滑动才完整可见，按设计允许右边缘超出容器。
+    const SCROLL = ['auto', 'scroll'];
+    const inScrollport = el => {
+      for (let p = el.parentElement; p; p = p.parentElement) {
+        if (SCROLL.includes(getComputedStyle(p).overflowX)) return true;
+      }
+      return false;
+    };
     const label = el => el.tagName.toLowerCase() + (el.id ? '#' + el.id : '') +
       (typeof el.className === 'string' && el.className.trim()
         ? '.' + el.className.trim().split(/\s+/).join('.') : '') +
@@ -1704,14 +1715,16 @@ function noJsControlExemptionFor(route) {
       }
       // ② 被祖先里某个 overflow:hidden/clip 的盒子切掉一截 —— 页面级宽度查不出的那一类
       for (let p = el.parentElement; p; p = p.parentElement) {
-        if (!CLIP.includes(getComputedStyle(p).overflowX)) continue;
+        const px = getComputedStyle(p).overflowX;
+        if (!CLIP.includes(px)) continue;
+        if (inScrollport(el)) break;
         if (box.right > p.getBoundingClientRect().right + 1) {
           cutByAncestor.push(label(el) + ' ← ' + label(p));
           break;
         }
       }
       // ③ 直接越出视口
-      if (box.right > window.innerWidth + 1) pastViewport.push(label(el));
+      if (box.right > window.innerWidth + 1 && !inScrollport(el)) pastViewport.push(label(el));
     }
     const nav = document.getElementById('jumpNav');
     const links = nav ? [...nav.querySelectorAll('a')] : [];
@@ -11722,6 +11735,467 @@ function noJsControlExemptionFor(route) {
         rows.every(row => row.newForbidden === 0) && forbiddenRequests.length === 0,
         forbiddenRequests.slice(0, 3).join(' · ') || '0 个');
     }
+  }
+
+  console.log('\n=== 27) F1 价格历史（阶梯线 / 无基线不画 / 暗色可读）===');
+  {
+    // 第二把尺子：不 require lib/price-history，直接按两份真值文件重算
+    // 「基线以来哪些费率维度真的变过」。页面上的图数必须等于这个集合的大小。
+    const apiPlansDoc = JSON.parse(fs.readFileSync(path.join(ROOT, 'api-plans.json'), 'utf8'));
+    const historyDoc = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts', 'data', 'api-plan-history.json'), 'utf8'));
+    const changedKeys = new Set();
+    let expectedChanges = 0;
+    // 计价条目 = (planId, modelKey, variant)，且至少一个费率不是 null；从基线 + 首次收录快照数。
+    const seedKeys = new Set();
+    const collectEntry = (planId, fields) => {
+      for (const entry of (fields && fields.models) || []) {
+        const rates = entry && entry.rates ? Object.values(entry.rates) : [];
+        if (!rates.some(value => value !== null && value !== undefined)) continue;
+        seedKeys.add(`${planId}|${entry.modelKey}|${entry.variant}`);
+      }
+    };
+    for (const [planId, fields] of Object.entries(historyDoc.baseline && historyDoc.baseline.fields ? historyDoc.baseline.fields : {})) {
+      collectEntry(planId, fields);
+    }
+    for (const event of historyDoc.events || []) if (event.type === 'created') collectEntry(event.planId, event.fields);
+    for (const event of historyDoc.events || []) {
+      if (!event || event.field !== 'models') continue;
+      if (!['price_increased', 'price_decreased', 'model_changed'].includes(event.type)) continue;
+      if (!apiPlansDoc.plans.some(plan => plan.id === event.planId)) continue;
+      const entry = event.to || event.from;
+      if (!entry || !entry.rates || !event.from || !event.from.rates) continue;
+      for (const rateKey of Object.keys(entry.rates)) {
+        const from = event.from.rates[rateKey] === undefined ? null : event.from.rates[rateKey];
+        const to = entry.rates[rateKey] === undefined ? null : entry.rates[rateKey];
+        if (from === to) continue;
+        expectedChanges++;
+        changedKeys.add(`${event.planId}|${entry.modelKey}|${entry.variant}|${rateKey}`);
+      }
+    }
+
+    const beforeErrors = errors.length;
+    await page.goto(`${base}plans/api/`, { waitUntil: 'networkidle' });
+    // /plans/api/ 是构建期静态页（零自研 JS）：等它自己的价格历史节，而不是等首页应用的
+    // `#lastUpdated` —— 二级页页脚写的是「见首页」，等应用信号永远等不到。
+    await page.waitForSelector('#api-price-history', { timeout: 10000 });
+    const apiInfo = await page.evaluate(() => {
+      const block = document.querySelector('#api-price-history');
+      const svgs = block ? [...block.querySelectorAll('svg[data-ph-key]')] : [];
+      return {
+        exists: Boolean(block),
+        series: block ? Number(block.getAttribute('data-ph-series')) : -1,
+        changes: block ? Number(block.getAttribute('data-ph-changes')) : -1,
+        svgs: svgs.length,
+        keys: svgs.map(svg => svg.getAttribute('data-ph-key')),
+        titles: svgs.map(svg => {
+          const title = svg.querySelector('title');
+          return title ? title.textContent.trim() : '';
+        }),
+        summary: block && block.querySelector('.ph-sum') ? block.querySelector('.ph-sum').textContent.trim() : '',
+        externalScripts: [...document.querySelectorAll('script[src]')].map(script => script.getAttribute('src'))
+      };
+    });
+    check('/plans/api/ 有「价格历史（基线以来）」节', apiInfo.exists);
+    check('/plans/api/ 的图数 == 独立重算的「变过的费率维度」数',
+      apiInfo.svgs === changedKeys.size, `页面 ${apiInfo.svgs} vs 重算 ${changedKeys.size}`);
+    check('/plans/api/ 的 data-ph-series / data-ph-changes 与页面内容对账',
+      apiInfo.series === apiInfo.svgs && apiInfo.changes === expectedChanges,
+      `series=${apiInfo.series} svgs=${apiInfo.svgs} changes=${apiInfo.changes} vs ${expectedChanges}`);
+    check('/plans/api/ 每张图的序列键都能在真值里落地、title 非空',
+      apiInfo.keys.every(key => changedKeys.has(key)) && apiInfo.titles.every(Boolean),
+      apiInfo.keys.filter(key => !changedKeys.has(key)).slice(0, 2).join(' · '));
+    check('/plans/api/ 的聚合陈述与独立重算逐字一致',
+      apiInfo.summary === `${seedKeys.size} 个计价条目 · 基线以来 ${expectedChanges} 次价格变化`,
+      `页面「${apiInfo.summary}」 vs 重算 ${seedKeys.size}/${expectedChanges}`);
+    check('/plans/api/ 没有新增外链脚本（内联 SVG 不是 JS）',
+      apiInfo.externalScripts.length === 0, apiInfo.externalScripts.join(' · '));
+
+    // 模型详情：有关联计费的模型页必须有同一块，且 data-ph-series 与页面里的图数一致。
+    const modelsDir = path.join(DIR, 'models');
+    const modelSlug = fs.existsSync(modelsDir)
+      ? fs.readdirSync(modelsDir).find(name => {
+        const file = path.join(modelsDir, name, 'index.html');
+        return fs.existsSync(file) && fs.readFileSync(file, 'utf8').includes('id="model-price-history"');
+      })
+      : null;
+    if (modelSlug) {
+      await page.goto(`${base}models/${modelSlug}/`, { waitUntil: 'networkidle' });
+      await page.waitForSelector('#model-price-history', { timeout: 10000 });
+      const modelInfo = await page.evaluate(() => {
+        const block = document.querySelector('#model-price-history');
+        const svgs = block ? [...block.querySelectorAll('svg[data-ph-key]')] : [];
+        return {
+          exists: Boolean(block),
+          series: block ? Number(block.getAttribute('data-ph-series')) : -1,
+          svgs: svgs.length,
+          titled: svgs.every(svg => svg.querySelector('title') && svg.querySelector('title').textContent.trim())
+        };
+      });
+      check(`模型页（${modelSlug}）有「价格历史（API 计费）」块且计数自洽`,
+        modelInfo.exists && modelInfo.series === modelInfo.svgs && modelInfo.series > 0,
+        JSON.stringify(modelInfo));
+      check(`模型页（${modelSlug}）每张图都有非空 title`, modelInfo.titled);
+    } else {
+      check('dist 里没有带价格历史块的模型页（如实跳过：可能本次没有关联计费）', true);
+    }
+
+    // 暗色：把主题切到 dark，量线条的计算色；线条不能和背景同一个颜色。
+    await page.goto(`${base}plans/api/`, { waitUntil: 'networkidle' });
+    await page.waitForSelector('#api-price-history', { timeout: 10000 });
+    const darkColors = await page.evaluate(() => {
+      document.documentElement.dataset.theme = 'dark';
+      const path = document.querySelector('#api-price-history svg path[stroke]');
+      const bg = getComputedStyle(document.body).backgroundColor;
+      return {
+        stroke: path ? getComputedStyle(path).stroke : '',
+        bg
+      };
+    });
+    check('暗色下价格历史线条的计算色 ≠ 页面背景色',
+      Boolean(darkColors.stroke) && darkColors.stroke !== darkColors.bg,
+      `${darkColors.stroke} vs ${darkColors.bg}`);
+    await page.evaluate(() => { delete document.documentElement.dataset.theme; });
+
+    check('本节 JS 错误 0', errors.length === beforeErrors,
+      errors.slice(beforeErrors, beforeErrors + 2).join(' · ') || '0 个');
+  }
+
+  console.log('\n=== 28) F2 即将到期（due 筛选 / 基准日 / 到期日历）===');
+  {
+    const beforeErrors = errors.length;
+    await page.goto(`${base}`, { waitUntil: 'networkidle' });
+    await waitForApp(page);
+
+    const chipBefore = await page.evaluate(() => {
+      const chip = document.querySelector('.facets [data-facet="due"]');
+      return { exists: Boolean(chip), text: chip ? chip.textContent.trim() : '', pressed: chip ? chip.getAttribute('aria-pressed') : null };
+    });
+    check('首页 facets 行里有「即将到期」chip（默认未选中）',
+      chipBefore.exists && chipBefore.text.includes('即将到期') && chipBefore.pressed === 'false', JSON.stringify(chipBefore));
+
+    await page.evaluate(() => { document.querySelector('.facets [data-facet="due"]').click(); });
+    await page.waitForFunction(() => {
+      const chip = document.querySelector('.facets [data-facet="due"]');
+      return chip && chip.getAttribute('aria-pressed') === 'true';
+    }, null, { timeout: 5000 });
+    await page.waitForTimeout(150);
+
+    // 第二把尺子：在页面里独立 fetch offers.json，按与 RENDER-CORE **不同源**的写法重算
+    // 「今天 + 30 天内到期」的条数；同时读屏幕上真实渲染的卡片与 stats 文案。
+    const dueView = await page.evaluate(async () => {
+      const doc = await (await fetch('assets/data/offers.json')).json();
+      const today = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
+      const WINDOW = 30;
+      const days = date => Math.round((Date.parse(date + 'T00:00:00Z') - Date.parse(today + 'T00:00:00Z')) / 86400000);
+      const expected = (doc.deals || []).filter(deal => {
+        if (!deal || !deal.expiresAt) return false;
+        if (deal.type === 'deal' && days(deal.expiresAt) < 0) return false;
+        return days(deal.expiresAt) >= 0 && days(deal.expiresAt) <= WINDOW;
+      }).length;
+      // 卡片是 `article.g`（网格视图），不是 `.card` —— 首页预渲染的 97 张都在这里。
+      const cards = [...document.querySelectorAll('#dealsList .g')].filter(card => card.offsetParent !== null);
+      const badges = cards.map(card => {
+        const badge = card.querySelector('.tg.due');
+        return badge ? badge.textContent.trim() : null;
+      });
+      return {
+        today,
+        expected,
+        cards: cards.length,
+        badges,
+        stats: (document.querySelector('#stats') || {}).textContent || '',
+        chipText: (document.querySelector('.facets [data-facet="due"]') || {}).textContent || ''
+      };
+    });
+    check('due 筛选后可见卡片数 == 独立重算的「30 天内到期」条数',
+      dueView.cards === dueView.expected && dueView.expected > 0,
+      `页面 ${dueView.cards} vs 重算 ${dueView.expected}`);
+    check('每张可见卡都带 due 徽章（过期/无日期的一条都不许混进来）',
+      dueView.badges.every(Boolean), dueView.badges.filter(badge => !badge).length + ' 张缺徽章');
+    const dayNumbers = dueView.badges.filter(Boolean).map(text => {
+      if (text.includes('今天')) return 0;
+      const match = /剩\s*(\d+)\s*天/.exec(text);
+      return match ? Number(match[1]) : NaN;
+    });
+    check('每张卡的剩余天数都落在 0–30 天（含边界）',
+      dayNumbers.every(value => Number.isFinite(value) && value >= 0 && value <= 30),
+      dayNumbers.filter(value => !(Number.isFinite(value) && value >= 0 && value <= 30)).slice(0, 3).join(' · '));
+    check('stats 行给出「N 条 30 天内到期 · 基准日 YYYY-MM-DD」且基准日就是同一个「今天」',
+      dueView.stats.includes(`${dueView.expected} 条 30 天内到期 · 基准日 ${dueView.today}`), dueView.stats.slice(0, 120));
+    check('stats 行里有到期日历链接（/expiry.ics，无 JS 也能点）',
+      /href="expiry\.ics"/.test(await page.evaluate(() => document.querySelector('#stats').innerHTML)));
+    // 未激活时 chip 上的数字 = 点下去会剩下几条（激活后它反而显示「取消这一步会回到几条」，
+    // 这是全部 facet 的同一套口径，所以这里用点击**前**读到的那个数字）。
+    check('未激活时 chip 上的计数 == 独立重算的条数（同一个 facetModel 管线）',
+      new RegExp(`即将到期\\s*${dueView.expected}\\b`).test(chipBefore.text.replace(/\s+/g, ' ')), chipBefore.text);
+
+    // 到期日历本身：node 侧直接取，验 HTTP 200 + iCalendar 起始行。
+    const calendarRes = await fetch(`${base}expiry.ics`);
+    const calendarText = await calendarRes.text();
+    check('到期日历 /expiry.ics 可取（HTTP 200）', calendarRes.status === 200, `HTTP ${calendarRes.status}`);
+    check('到期日历正文是 iCalendar（BEGIN:VCALENDAR … END:VCALENDAR）',
+      /^BEGIN:VCALENDAR\r?\n/.test(calendarText) && /^END:VCALENDAR\r?$/m.test(calendarText),
+      `${Buffer.byteLength(calendarText, 'utf8')} 字节`);
+    check('到期日历里有事件，且不含已过期条目',
+      /^BEGIN:VEVENT\r?$/m.test(calendarText) && !calendarText.includes('已过期'), '事件数 0 或混入过期');
+
+    // 收尾复位：再点一下 chip，回到默认视图（不影响后面的节）。
+    await page.evaluate(() => { document.querySelector('.facets [data-facet="due"]').click(); });
+    await page.waitForFunction(() => {
+      const chip = document.querySelector('.facets [data-facet="due"]');
+      return chip && chip.getAttribute('aria-pressed') === 'false';
+    }, null, { timeout: 5000 });
+    check('本节 JS 错误 0', errors.length === beforeErrors,
+      errors.slice(beforeErrors, beforeErrors + 2).join(' · ') || '0 个');
+  }
+
+  console.log('\n=== 29) F3 全站搜索（静态目录 / 渐进增强过滤 / 无死链）===');
+  {
+    const beforeErrors = errors.length;
+    // 第二把尺子：不 require lib/search-index。期望值从**真值 + 产物目录**现算：
+    //   · deal：deals.json 里 type==='deal' 且 dist 里真有详情页的；
+    //   · plan / apiPlan：两份真值的 count；
+    //   · model：models.json 里在 dist 有详情页的；
+    //   · vendor / category / need / collection：dist 里真实的目录页；
+    //   · 固定页：本脚本自己列的 10 条（不含首页与 /search/ 自身）。
+    const dealsDoc = JSON.parse(fs.readFileSync(path.join(ROOT, 'deals.json'), 'utf8'));
+    const plansDoc = JSON.parse(fs.readFileSync(path.join(ROOT, 'plans.json'), 'utf8'));
+    const apiPlansDoc2 = JSON.parse(fs.readFileSync(path.join(ROOT, 'api-plans.json'), 'utf8'));
+    const modelsDoc = JSON.parse(fs.readFileSync(path.join(ROOT, 'models.json'), 'utf8'));
+    const distDir = path.resolve(ROOT, DIR);
+    const hasPage = rel => fs.existsSync(path.join(distDir, rel, 'index.html'));
+    // 别名页（canonical 指向正本）不进搜索索引；第二把尺子直接读产物里的 canonical，
+    // 只数「自指 canonical」的目录页 —— 否则会把 /need/student-only/ 这类别名页多算一遍。
+    const selfCanonical = rel => {
+      const file = path.join(distDir, rel, 'index.html');
+      if (!fs.existsSync(file)) return false;
+      const match = /<link rel="canonical" href="([^"]+)"/.exec(fs.readFileSync(file, 'utf8'));
+      return Boolean(match) && match[1] === `https://buguoshixc.github.io/ai-deals-aggregator/${rel}/`;
+    };
+    const countDirs = rel => (fs.existsSync(path.join(distDir, rel))
+      ? fs.readdirSync(path.join(distDir, rel), { withFileTypes: true })
+        .filter(entry => entry.isDirectory() && selfCanonical(`${rel}/${entry.name}`)).length
+      : 0);
+    const expectedDeals = (dealsDoc.deals || []).filter(deal => deal.type === 'deal' && hasPage(`deal/${encodeURIComponent(deal.id)}`)).length;
+    const expectedModels = (modelsDoc.models || []).filter(model => hasPage(`models/${encodeURIComponent(model.slug)}`)).length;
+    const expectedVendors = countDirs('vendor');
+    const expectedCategories = countDirs('category');
+    const expectedNeeds = countDirs('need');
+    const expectedCollections = ['student', 'developer', 'free-api'].filter(route => hasPage(route)).length;
+    // 两个枢纽目录页（/vendor/、/category/）也是 landing spec 的 route，同样进索引；
+    // 它们不是 vendor/<slug>/ 的子目录，单独数。
+    const fixedRoutes = ['status/', 'changes/', 'plans/', 'plans/coding/', 'plans/api/', 'models/', 'archive/', 'docs/data/', 'tools/api-cost/', 'codex-reset/', 'vendor/', 'category/'];
+    const expectedFixed = fixedRoutes.filter(route => hasPage(route.replace(/\/$/, ''))).length;
+    const expectedTotal = expectedDeals + plansDoc.count + apiPlansDoc2.count + expectedModels
+      + expectedVendors + expectedCategories + expectedNeeds + expectedCollections + expectedFixed;
+
+    // ① 无 JS：完整目录可读（渐进增强的反面证明）
+    const noJs = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1280, height: 900 } });
+    const staticPage = await noJs.newPage();
+    await staticPage.goto(`${base}search/`, { waitUntil: 'load' });
+    const staticView = await staticPage.evaluate(() => {
+      const items = [...document.querySelectorAll('.sitem')];
+      const groups = [...document.querySelectorAll('.sgroup')];
+      return {
+        items: items.length,
+        groupCounts: groups.map(group => Number(group.querySelector('[data-search-count]').textContent)),
+        hrefs: items.map(item => item.querySelector('a').getAttribute('href')),
+        input: Boolean(document.querySelector('#siteSearchInput'))
+      };
+    });
+    await noJs.close();
+    check('无 JS 时目录条目数 == 真值 + 产物独立重算',
+      staticView.items === expectedTotal, `${staticView.items} != ${expectedTotal}`);
+    check('分组计数之和 == 条目总数', staticView.groupCounts.reduce((a, b) => a + b, 0) === staticView.items,
+      `${staticView.groupCounts.join('+')} vs ${staticView.items}`);
+    check('每条目录项都有站内相对链接（../ 开头、无外链）',
+      staticView.hrefs.length > 0 && staticView.hrefs.every(href => href.startsWith('../') && !/^https?:/i.test(href)),
+      staticView.hrefs.find(href => !href.startsWith('../')) || '');
+    check('无 JS 也能看到搜索框（渐进增强不是唯一路径）', staticView.input);
+    const sampleHref = staticView.hrefs.find(href => href && !href.includes('#'));
+    if (sampleHref) {
+      const sampleRes = await fetch(`${base}search/${sampleHref}`);
+      check('抽样目录内链 HTTP 200（不发死链）', sampleRes.status === 200, `${sampleHref} → HTTP ${sampleRes.status}`);
+    } else {
+      check('抽样目录内链 HTTP 200（不发死链）', false, '目录里没有可抽样的链接');
+    }
+
+    // ② 有 JS：过滤是渐进增强（只藏东西，不改内容）
+    await page.goto(`${base}search/`, { waitUntil: 'load' });
+    await page.waitForTimeout(200);
+    const before = await page.evaluate(() => [...document.querySelectorAll('.sitem')].filter(item => !item.hidden).length);
+    check('有 JS 时初始目录仍然是全量（不闪空）', before === expectedTotal, `${before} != ${expectedTotal}`);
+    await page.fill('#siteSearchInput', 'deepseek');
+    await page.waitForTimeout(120);
+    const filtered = await page.evaluate(() => {
+      const visible = [...document.querySelectorAll('.sitem')].filter(item => !item.hidden);
+      return {
+        count: visible.length,
+        allMatch: visible.every(item => (item.getAttribute('data-keywords') || '').toLowerCase().includes('deepseek')),
+        status: document.querySelector('#searchStatus').textContent.trim(),
+        emptyHidden: document.querySelector('#searchEmpty').hidden
+      };
+    });
+    check('输入 deepseek ⇒ 可见项 >0 且每一项都真的含该词（不是随便显示）',
+      filtered.count > 0 && filtered.allMatch, `可见 ${filtered.count} · 全匹配 ${filtered.allMatch}`);
+    check('输入 deepseek ⇒ 结果数 live region 写出「显示 N / M 条」',
+      new RegExp(`显示\\s*${filtered.count}\\s*/\\s*${expectedTotal}\\s*条`).test(filtered.status), filtered.status);
+    check('有结果时诚实空态不出现', filtered.emptyHidden === true);
+    await page.fill('#siteSearchInput', 'zzzz-no-such-entry');
+    await page.waitForTimeout(120);
+    const emptyView = await page.evaluate(() => ({
+      visible: [...document.querySelectorAll('.sitem')].filter(item => !item.hidden).length,
+      emptyHidden: document.querySelector('#searchEmpty').hidden
+    }));
+    check('输入不存在的词 ⇒ 0 条可见 + 诚实空态出现', emptyView.visible === 0 && emptyView.emptyHidden === false,
+      `可见 ${emptyView.visible} · 空态隐藏 ${emptyView.emptyHidden}`);
+    await page.fill('#siteSearchInput', '');
+    await page.waitForTimeout(120);
+    const restored = await page.evaluate(() => [...document.querySelectorAll('.sitem')].filter(item => !item.hidden).length);
+    check('清空输入 ⇒ 完整目录还原（渐进增强不丢条目）', restored === expectedTotal, `${restored} != ${expectedTotal}`);
+
+    // ③ 移动端：390 宽度下页面级溢出为 0，输入框不越界
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(`${base}search/`, { waitUntil: 'load' });
+    await page.waitForTimeout(150);
+    const mobileView = await page.evaluate(() => {
+      const input = document.querySelector('#siteSearchInput');
+      const rect = input ? input.getBoundingClientRect() : null;
+      return {
+        overflowX: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        inputWithin: Boolean(rect) && rect.left >= 0 && rect.right <= window.innerWidth + 0.5
+      };
+    });
+    check('移动 390：页面级横向溢出 == 0', mobileView.overflowX <= 0, `${mobileView.overflowX}px`);
+    check('移动 390：搜索框在视口内（不越界）', mobileView.inputWithin);
+    await page.setViewportSize({ width: 1280, height: 900 });
+
+    check('本节 JS 错误 0', errors.length === beforeErrors,
+      errors.slice(beforeErrors, beforeErrors + 2).join(' · ') || '0 个');
+  }
+
+  console.log('\n=== 30) F4 观感（暗色两路一致 / 对比度 / 引文条 / 手机控制带）===');
+  {
+    const beforeErrors = errors.length;
+    // ① 暗色变量两份副本必须逐值一致：一份是 data-theme="dark"，一份是 prefers-color-scheme。
+    //    只比 --card/--line/--line2 —— 这三对是本次改动的对象，也是「两处 copy 忘同步」最容易漏的。
+    const darkByTheme = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    await darkByTheme.goto(base, { waitUntil: 'load' });
+    await darkByTheme.evaluate(() => { document.documentElement.dataset.theme = 'dark'; });
+    const themeVars = await darkByTheme.evaluate(() => {
+      const cs = getComputedStyle(document.documentElement);
+      return ['--card', '--line', '--line2', '--bg'].map(name => [name, cs.getPropertyValue(name).trim()]);
+    });
+    await darkByTheme.close();
+    const darkByMedia = await browser.newPage({ viewport: { width: 1280, height: 900 }, colorScheme: 'dark' });
+    await darkByMedia.goto(base, { waitUntil: 'load' });
+    const mediaVars = await darkByMedia.evaluate(() => {
+      const cs = getComputedStyle(document.documentElement);
+      return ['--card', '--line', '--line2', '--bg'].map(name => [name, cs.getPropertyValue(name).trim()]);
+    });
+    await darkByMedia.close();
+    check('暗色两份副本（data-theme 与 prefers-color-scheme）的 --card/--line/--line2 逐值相同',
+      themeVars.every(([name, value], index) => value === mediaVars[index][1]),
+      themeVars.map(([name, value], index) => `${name}:${value}≠${mediaVars[index][1]}`).filter(text => text.includes('≠')).join(' · '));
+
+    // ② 对比度实算（相对亮度 WCAG 2.x）。阈值：正文/次级文字/弱文字 ≥4.5，卡面 vs 页底 ≥1.4，描边 vs 页底 ≥1.6。
+    const readVars = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    await readVars.goto(base, { waitUntil: 'load' });
+    await readVars.evaluate(() => { document.documentElement.dataset.theme = 'dark'; });
+    const darkValues = await readVars.evaluate(() => {
+      const cs = getComputedStyle(document.documentElement);
+      const get = name => cs.getPropertyValue(name).trim();
+      return { bg: get('--bg'), card: get('--card'), ink: get('--ink'), ink2: get('--ink2'), mut: get('--mut'), line: get('--line') };
+    });
+    await readVars.close();
+    const luminance = hex => {
+      const body = hex.replace('#', '');
+      const channels = [0, 2, 4].map(offset => parseInt(body.slice(offset, offset + 2), 16) / 255)
+        .map(value => (value <= 0.04045 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4)));
+      return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+    };
+    const contrast = (a, b) => {
+      const first = luminance(a);
+      const second = luminance(b);
+      return (Math.max(first, second) + 0.05) / (Math.min(first, second) + 0.05);
+    };
+    check('暗色：ink/card、ink2/card、mut/card 全部 ≥4.5',
+      contrast(darkValues.ink, darkValues.card) >= 4.5
+      && contrast(darkValues.ink2, darkValues.card) >= 4.5
+      && contrast(darkValues.mut, darkValues.card) >= 4.5,
+      `ink ${contrast(darkValues.ink, darkValues.card).toFixed(2)} · ink2 ${contrast(darkValues.ink2, darkValues.card).toFixed(2)} · mut ${contrast(darkValues.mut, darkValues.card).toFixed(2)}`);
+    check('暗色：card/bg ≥1.4（卡面从页底浮起来）',
+      contrast(darkValues.card, darkValues.bg) >= 1.4, contrast(darkValues.card, darkValues.bg).toFixed(2));
+    check('暗色：line/bg ≥1.6（描边可见）',
+      contrast(darkValues.line, darkValues.bg) >= 1.6, contrast(darkValues.line, darkValues.bg).toFixed(2));
+
+    // ③ 引文竖条：computed 宽度 ≤3px（改动前 6px），文字色仍是 --ink（不是弱化色）。
+    await page.goto(base, { waitUntil: 'load' });
+    await waitForApp(page);
+    const quote = await page.evaluate(() => {
+      const bar = document.querySelector('.of .bar');
+      const text = document.querySelector('.of .tx');
+      if (!bar || !text) return null;
+      const barStyle = getComputedStyle(bar);
+      return {
+        width: bar.getBoundingClientRect().width,
+        background: barStyle.backgroundColor,
+        textColor: getComputedStyle(text).color,
+        inkVar: (() => {
+          // `--ink` 在两套主题里不是同一个颜色：断言必须比「是否等于当前主题的 --ink」，
+          // 不能把深色主题的十六进制写死（否则浅色主题下必红）。
+          const probe = document.createElement('span');
+          probe.style.color = 'var(--ink)';
+          document.body.appendChild(probe);
+          const value = getComputedStyle(probe).color;
+          probe.remove();
+          return value;
+        })(),
+        textMaxWidth: getComputedStyle(text).maxWidth,
+        fontSize: parseFloat(getComputedStyle(text).fontSize)
+      };
+    });
+    check('引文竖条 computed 宽度 ≤3px 且不是 6px 旧值', Boolean(quote) && quote.width <= 3.01, quote ? `${quote.width}px` : '页面上没有 .of .bar');
+    check('引文竖条用 color-mix（不再是逐档写死的 --tN）', Boolean(quote) && !/rgb\(74, 222, 128\)|rgb\(96, 165, 250\)|rgb\(251, 191, 36\)/.test(quote.background), quote ? quote.background : '');
+    check('引文文字仍是 --ink，且 .tx 有 ≈62 字符上限（31em）',
+      Boolean(quote) && quote.textColor === quote.inkVar
+      && quote.textMaxWidth !== 'none'
+      && (parseFloat(quote.textMaxWidth) / quote.fontSize) >= 30
+      && (parseFloat(quote.textMaxWidth) / quote.fontSize) <= 32,
+      quote ? `${quote.textColor} / max-width ${quote.textMaxWidth} @ ${quote.fontSize}px` : '');
+
+    // ④ 手机控制带：顶栏底到首卡顶之间最多两条「控制行」（聚合汇总/筛选一行 + 变化雷达一行）。
+    //    用控件 top 的聚类数衡量（同一行 ±10px 算一簇），不数容器高度（容器 padding 会把行数算多）。
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(base, { waitUntil: 'load' });
+    await waitForApp(page);
+    const band = await page.evaluate(() => {
+      const top = document.querySelector('.top').getBoundingClientRect().bottom;
+      const firstCard = document.querySelector('#dealsList .g');
+      const bottom = firstCard ? firstCard.getBoundingClientRect().top : window.innerHeight;
+      const controls = [...document.querySelectorAll('#stats, .rright > *, .radar, #jumpNav')]
+        .filter(el => {
+          const box = el.getBoundingClientRect();
+          return box.height > 0 && box.width > 0 && box.top >= top - 1 && box.bottom <= bottom + 1;
+        })
+        .map(el => Math.round(el.getBoundingClientRect().top))
+        .sort((a, b) => a - b);
+      const clusters = [];
+      for (const value of controls) {
+        if (!clusters.length || value - clusters[clusters.length - 1] > 10) clusters.push(value);
+      }
+      return {
+        top: Math.round(top), bottom: Math.round(bottom), controls, clusters,
+        overflowX: document.documentElement.scrollWidth - document.documentElement.clientWidth
+      };
+    });
+    check('移动 390：顶栏底到首卡顶的控制行聚类数 ≤2', band.clusters.length <= 2,
+      `聚类 ${band.clusters.length}（top=${band.clusters.join('/')}）· 区间 ${band.top}–${band.bottom}`);
+    check('移动 390：控制带仍无页面级横向溢出', band.overflowX <= 0, `${band.overflowX}px`);
+    await page.setViewportSize({ width: 1280, height: 900 });
+
+    check('本节 JS 错误 0', errors.length === beforeErrors,
+      errors.slice(beforeErrors, beforeErrors + 2).join(' · ') || '0 个');
   }
 
   await browser.close();

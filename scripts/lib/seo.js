@@ -292,7 +292,8 @@ function internalLinks(html, route) {
 /** 把站内链接规范化成路由键：'vendor/zhipu/' —— 静态文件保留扩展名，便于分开对账 */
 function normalizeRoute(href) {
   if (!href) return '';
-  if (/\.(xml|json|css|svg|png|txt|ico)$/i.test(href)) return href;
+  // v3.4 F2：`.ics` 与其它静态文件同样按「带扩展名 = 文件，不补尾斜杠」处理。
+  if (/\.(xml|json|css|svg|png|txt|ico|ics)$/i.test(href)) return href;
   return href.endsWith('/') ? href : `${href}/`;
 }
 

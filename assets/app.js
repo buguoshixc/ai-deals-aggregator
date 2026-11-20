@@ -480,6 +480,16 @@
     const ONGOING_HEDGE_RE = /未标(?:注)?截止|未标明截止|以官方[^，。；;]{0,12}为准|以[^，。；;]{0,8}实时[^，。；;]{0,8}为准|随时(?:结束|调整|变更)|不另行通知/;
     /* ONGOING:END */
 
+    /**
+     * 「即将到期」的前瞻窗口（天）：与 scripts/lib/expiry.js 的 DUE_WINDOW_DAYS 同值。
+     * RENDER-CORE 在 vm 沙箱里跑、不能 require，所以这份副本在所难免 —— 比对就是它的牙：
+     * `npm run selftest:expiry` 抽取两边的 DUE_WINDOW:START/END 标记块做文本级比对，
+     * 只改一边（哪怕只改数字）都会立刻红。
+     */
+    /* DUE_WINDOW:START */
+    const DUE_WINDOW_DAYS = 30;
+    /* DUE_WINDOW:END */
+
     /** 「官方写明长期」= 命中正向线索且**没有**否定线索。空文案一律 false。 */
     function isOngoing(validity) {
       const text = String(validity || '');
@@ -1345,6 +1355,9 @@
       // 两份实现的结果，任何一侧改动都会让两个数字分头变化，而两边各自的测试都会是绿的。
       // 这一阶段已经在这一类分歧上栽过（覆盖率口径 vs 分类口径）。判据写一遍，结果当数据传。
       collection: '',
+      // 即将到期：!isExpired && daysUntil(expiresAt) ≤ DUE_WINDOW_DAYS。
+      // 判据与 expiryState/daysUntil 同源（同一个「今天」与同一个窗口常量），不另立一套。
+      due: false,
       fav: false, favIds: []
     };
 
@@ -1441,6 +1454,12 @@
         return false;
       }
       if (deal.type === 'deal' && isExpired(deal)) return false;
+      if (filters.due) {
+        // 「即将到期」= 有绝对截止日期、尚未过期、且落在窗口内。三个条件缺一不可：
+        // 没有 expiresAt 的条目不是「30 天后到期」，是「我们不知道」；已过期的不再是「即将」。
+        const dueDays = deal.expiresAt ? daysUntil(deal.expiresAt) : null;
+        if (dueDays === null || dueDays < 0 || dueDays > DUE_WINDOW_DAYS) return false;
+      }
       if (filters.region && deal.region !== filters.region) return false;
       if (filters.category && deal.category !== filters.category) return false;
       if (filters.vendor && vendorOf(deal).key !== filters.vendor) return false;
@@ -1612,6 +1631,13 @@
         count: count({ collection: item.key === filters.collection ? '' : item.key })
       }));
 
+      // 「即将到期」chip 的计数与真正渲染同源（同一个 count()，即筛选 → 折叠 → 收藏收敛）。
+      // 已经选中时显示「取消这个筛选后」的条数——按钮上的数字始终是「点下去会看到多少条」。
+      const due = {
+        key: 'due', label: '即将到期',
+        count: count({ due: filters.due ? false : true })
+      };
+
       const vendors = new Map();
       for (const deal of scopeFor({ vendor: '' })) {
         const vendor = vendorOf(deal);
@@ -1630,6 +1656,7 @@
       return {
         tabs: tabs,
         regions: regions,
+        due: due,
         collections: collections,
         vendors: vendorList,
         categories: categories,
@@ -1670,6 +1697,13 @@
           escapeAttr(region.key) + '" aria-pressed="' + (filters.region === region.key ? 'true' : 'false') + '">' +
           escapeHtml(region.label) + '<b>' + region.count + '</b></button>');
       });
+
+      // 「即将到期」：不新开条带，直接进这一行。它是**时间维度**的缩小条件，
+      // 紧跟在地区之后、分类之前——先回答「在哪 / 什么时候到期」，再回答「我是谁」。
+      parts.push('<button type="button" class="f due' + (filters.due ? ' on' : '') +
+        '" data-facet="due" data-value="1" aria-pressed="' + (filters.due ? 'true' : 'false') +
+        '" title="只看 ' + DUE_WINDOW_DAYS + ' 天内到期、且当前仍有效的条目">即将到期<b>' +
+        model.due.count + '</b></button>');
 
       // 分类入口（学生 / 开发者 / 免费 API）。刻意紧跟在地区后面：
       // 「国内 / 国外」回答的是「我在哪」，分类回答的是「我是谁、我要什么」——
@@ -1738,13 +1772,21 @@
         if (filters.fav) return '没有符合条件的收藏卡片 · 地区 / 分类 / 厂商 / 搜索等筛选可能把它挡住了' + prune;
         return '没有匹配的条目';
       }
+      if (filters.due) {
+        // 基准日与 expiryState/daysUntil 用同一个 todayCN()——不许在这里另取一次「今天」。
+        // 链接相对首页根（statsHtml 只在首页出现），不进任何脚本：无 JS 也能点开。
+        return '<b>' + cards.length + '</b> 条 ' + DUE_WINDOW_DAYS + ' 天内到期 · 基准日 ' + todayCN() +
+          ' · <a class="cal" href="expiry.ics" type="text/calendar" title="订阅到期日历（.ics）：把这些截止日期加进你自己的日历">到期日历（.ics）</a>' + prune;
+      }
       if (filters.fav) {
         const hidden = info && info.hidden > 0 ? info.hidden : 0;
         return '显示 <b>' + cards.length + '</b> 条收藏卡片' +
           (hidden ? ' · 其余 ' + hidden + ' 条被当前筛选挡住' : '') + prune;
       }
-      return '显示 <b>' + cards.length + '</b> 条卡片 · 国内 ' + cn + ' · 国外 ' + global +
-        ' · 覆盖 <b>' + tiers + '</b> 个力度档位';
+      // v3.4 F4：尾部包进 `.stats-tail` —— ≤760px 隐藏它，控制带才收得进两行。
+      // 桌面端逐字节不变（span 不产生换行/空格）。
+      return '显示 <b>' + cards.length + '</b> 条卡片<span class="stats-tail"> · 国内 ' + cn + ' · 国外 ' + global +
+        ' · 覆盖 <b>' + tiers + '</b> 个力度档位</span>';
     }
 
     /**

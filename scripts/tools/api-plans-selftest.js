@@ -26,6 +26,8 @@ const providers = require('../lib/providers');
 const links = require('../lib/deal-plan-links');
 
 const ROOT = path.join(__dirname, '..', '..');
+const dirArg = process.argv.find(arg => arg.startsWith('--dir='));
+const DIST = path.resolve(ROOT, dirArg ? dirArg.slice('--dir='.length) : (process.env.QC_DIST || path.join(ROOT, 'dist')));
 const PROVIDER_TABLE = providers.load().table;
 
 let passed = 0;
@@ -1239,6 +1241,77 @@ section('⑧ 诚实性：结论性词汇与页面承诺');
 }
 
 /* ================================================================== */
+
+/* ================================================================== */
+section('⑨ F1 价格历史：产物回读与独立重算（/plans/api/）');
+/* ================================================================== */
+
+{
+  const file = path.join(DIST, 'plans', 'api', 'index.html');
+  if (!fs.existsSync(file)) {
+    console.log(`    （${DIST}/plans/api/index.html 不存在 —— 先跑 npm run build，或用 --dir= 指到产物）`);
+  } else {
+    const html = fs.readFileSync(file, 'utf8');
+    // 第二把尺子：不 require lib/price-history，直接按真值文件重算全局口径。
+    const apiPlans = JSON.parse(fs.readFileSync(path.join(ROOT, 'api-plans.json'), 'utf8')).plans;
+    const store = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts', 'data', 'api-plan-history.json'), 'utf8'));
+    const changedKeys = new Set();
+    let changes = 0;
+    for (const event of store.events || []) {
+      if (!event || event.field !== 'models') continue;
+      if (!['price_increased', 'price_decreased', 'model_changed'].includes(event.type)) continue;
+      if (!apiPlans.some(plan => plan.id === event.planId)) continue;
+      const entry = event.to || event.from;
+      if (!entry || !entry.rates || !event.from || !event.from.rates) continue;
+      for (const rateKey of Object.keys(entry.rates)) {
+        const from = event.from.rates[rateKey] === undefined ? null : event.from.rates[rateKey];
+        const to = entry.rates[rateKey] === undefined ? null : entry.rates[rateKey];
+        if (from === to) continue;
+        changes++;
+        changedKeys.add(`${event.planId}|${entry.modelKey}|${entry.variant}|${rateKey}`);
+      }
+    }
+    // 「计价条目」= (planId, modelKey, variant)，且至少有一个费率不是 null；
+    // 直接从 baseline + 首次收录快照数，和页面用的是同一份真值但走独立代码路径。
+    const seedKeys = new Set();
+    const collect = (planId, fields) => {
+      for (const entry of (fields && fields.models) || []) {
+        const rates = entry && entry.rates ? Object.values(entry.rates) : [];
+        if (!rates.some(value => value !== null && value !== undefined)) continue;
+        seedKeys.add(`${planId}|${entry.modelKey}|${entry.variant}`);
+      }
+    };
+    for (const [planId, fields] of Object.entries(store.baseline && store.baseline.fields ? store.baseline.fields : {})) collect(planId, fields);
+    for (const event of store.events || []) if (event.type === 'created') collect(event.planId, event.fields);
+    const entries = seedKeys.size;
+    const block = html.match(/<section class="ph-block" id="api-price-history"[^>]*data-ph-series="(\d+)"[^>]*data-ph-changes="(\d+)"/);
+    check('【F1 /plans/api/】存在「价格历史（基线以来）」节，图数 == 独立重算的变化维度数',
+      Boolean(block) && Number(block[1]) === changedKeys.size,
+      block ? `产物 ${block[1]} vs 重算 ${changedKeys.size}` : '缺 #api-price-history');
+    check('【F1 /plans/api/】变化数 == 独立重算的价格变化次数',
+      Boolean(block) && Number(block[2]) === changes,
+      block ? `产物 ${block[2]} vs 重算 ${changes}` : '缺 #api-price-history');
+    check('【F1 /plans/api/】聚合陈述与独立重算一致',
+      html.includes(`${entries} 个计价条目 · 基线以来 ${changes} 次价格变化`));
+    check('【F1 /plans/api/】页面上没有新增外链 JS（所有 <script> 都没有 src）',
+      [...html.matchAll(/<script([^>]*)>/g)].every(match => !/\ssrc=/.test(match[1])));
+    check('【F1 /plans/api/】页面上没有交互控件（先剥掉 style/script，避免把注释里的字样当控件）', (() => {
+      const markup = html.replace(/<style[\s\S]*?<\/style>/g, '').replace(/<script[\s\S]*?<\/script>/g, '');
+      return !/<button[\s>]|<select[\s>]|<input[\s>]/.test(markup);
+    })());
+    check('【F1 /plans/api/】11 列表没有被改动（仍有一张表头恰好 11 列的表）', (() => {
+      const heads = [...html.matchAll(/<thead[\s\S]*?<\/thead>/g)];
+      return heads.some(match => (match[0].match(/<th[\s>]/g) || []).length === 11);
+    })());
+    // 对照：把产物里的计数改掉，上面这两条判据必须变红（断言不是恒绿摆设）
+    if (block) {
+      const tampered = html.replace(block[0], block[0].replace(`data-ph-series="${block[1]}"`, `data-ph-series="${Number(block[1]) + 1}"`));
+      const tamperedBlock = tampered.match(/<section class="ph-block" id="api-price-history"[^>]*data-ph-series="(\d+)"[^>]*data-ph-changes="(\d+)"/);
+      check('【F1 对照】把产物里的 data-ph-series 改大 1 ⇒ 对账必须变红',
+        !tamperedBlock || Number(tamperedBlock[1]) !== changedKeys.size);
+    }
+  }
+}
 
 console.log(`\n=== v2.5 API / Token 计费演练：${passed} 项通过，${failures.length} 项失败 ===`);
 if (failures.length) {

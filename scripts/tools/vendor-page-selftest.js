@@ -617,6 +617,56 @@ section('⑧ 真实产物（接线后才有；未接线时如实跳过）');
 
 /* ================================================================== */
 
+/* ================================================================== */
+section('⑨ F1 价格历史：产物回读与独立重算（厂商页）');
+/* ================================================================== */
+
+{
+  const file = path.join(DIST, 'vendor', 'anthropic', 'index.html');
+  if (!fs.existsSync(file)) {
+    console.log('    （dist 里没有 vendor/anthropic/index.html —— 先跑 npm run build）');
+  } else {
+    const html = fs.readFileSync(file, 'utf8');
+    const block = html.match(/<section class="ph-block"[^>]*data-ph-series="(\d+)"[^>]*data-ph-changes="(\d+)"/);
+    // 第二把尺子：不 require lib/price-history，直接按两份真值文件重算
+    // 「这家厂商有几个计价条目 / 基线以来有几次价格变化 / 变化落在哪些维度」。
+    const apiPlans = readJson('api-plans.json').plans.filter(plan => plan.provider === 'anthropic');
+    const store = readJson('scripts/data/api-plan-history.json');
+    const entries = apiPlans.reduce((sum, plan) => sum + (Array.isArray(plan.models) ? plan.models.length : 0), 0);
+    const changedKeys = new Set();
+    let changes = 0;
+    for (const event of store.events || []) {
+      if (!event || event.field !== 'models') continue;
+      if (!['price_increased', 'price_decreased', 'model_changed'].includes(event.type)) continue;
+      if (!apiPlans.some(plan => plan.id === event.planId)) continue;
+      const entry = event.to || event.from;
+      if (!entry || !entry.rates || !event.from || !event.from.rates) continue;
+      for (const rateKey of Object.keys(entry.rates)) {
+        const from = event.from.rates[rateKey] === undefined ? null : event.from.rates[rateKey];
+        const to = entry.rates[rateKey] === undefined ? null : entry.rates[rateKey];
+        if (from === to) continue;
+        changes++;
+        changedKeys.add(`${event.planId}|${entry.modelKey}|${entry.variant}|${rateKey}`);
+      }
+    }
+    check('【F1 厂商页】产物里有价格历史块，图数 == 独立重算的变化维度数',
+      Boolean(block) && Number(block[1]) === changedKeys.size,
+      block ? `产物 ${block[1]} vs 重算 ${changedKeys.size}` : '缺 ph-block');
+    check('【F1 厂商页】变化数 == 独立重算的价格变化次数',
+      Boolean(block) && Number(block[2]) === changes,
+      block ? `产物 ${block[2]} vs 重算 ${changes}` : '缺 ph-block');
+    check('【F1 厂商页】聚合陈述与独立重算一致',
+      html.includes(`${entries} 个计价条目 · 基线以来 ${changes} 次价格变化`));
+    check('【F1 厂商页】区块内每个 svg 都有非空标题与 data-ph-key', (() => {
+      if (!block) return false;
+      const end = html.indexOf('</section>', block.index);
+      const section = html.slice(block.index, end < 0 ? html.length : end);
+      const svgs = [...section.matchAll(/<svg class="ph-svg"[^>]*data-ph-key="([^"]*)"[^>]*>[\s\S]*?<\/svg>/g)];
+      return svgs.length > 0 && svgs.every(match => /<title[^>]*>[^<]+<\/title>/.test(match[0]) && match[1].includes('|'));
+    })());
+  }
+}
+
 console.log(`\n=== v3.0 厂商统一资料页演练：${passed} 项通过，${failures.length} 项失败 ===`);
 if (failures.length) {
   console.log('失败项：');

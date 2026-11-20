@@ -42,6 +42,8 @@ const history = require('../lib/history');
 // 两个渲染器全在 `lib/feed.js` 里；本文件**不写第二份文件名 / MIME 字面量** ——
 // 契约第 1.4 条那台机器牙扫的就是这个文件的**代码**（`'feed.xml'` 这类字面量一处就红，见 feed-selftest）。
 const feed = require('../lib/feed');
+// v3.4 F2：到期日历（expiry.ics）的唯一产物表与纯函数构造器。文件名只在 lib/calendar.js 里出现。
+const calendar = require('../lib/calendar');
 // v3.2：引文「元自称」清单（逐字 / 一字不差 / verbatim …）的**唯一出处**。构建期自检用它把两个订阅
 // 产物也纳入扫描面；清单本身不在这里复制一份 —— validate.js 只在作为脚本跑时才执行 main()，
 // require 它拿到的就是那份判据导出（`provenance-selftest` 用的也是它）。
@@ -85,6 +87,7 @@ const factSummary = require('../lib/fact-summary');
 // 正文渲染住在 lib 里（可被离线自测直接调用）；身份 / 映射 / 派生时间线全部走
 // `lib/model-registry.js` 的同一份判据 —— 页面层不自己算 id，也不判"两个名字是不是同一个模型"。
 const modelsPage = require('../lib/models-page');
+const priceHistory = require('../lib/price-history');
 const modelRegistry = require('../lib/model-registry');
 // coverage-expansion-v1：`catalogStatus` / `catalogReason` 是**派生**字段，判据只有一处
 // （`scripts/lib/model-freshness.js`）。构建期必须与 `rebuild-models.js`、
@@ -137,6 +140,9 @@ const thresholdSummary = require('../lib/threshold-summary');
 // v1.8-seo-answer-pages：`/docs/data/` 数据文档与引用页（部分反转 t4 的去数据暴露）。
 // 它**不发布数据文件**，只说明数据集许可 / 引用格式 / 字段口径（数据真值留在公开仓库）。
 const dataDocsPage = require('../lib/data-docs-page');
+// v3.4 F3：全站搜索。索引推导与目录渲染各有唯一实现；过滤脚本与 plans-compare 同款双宿主。
+const searchIndex = require('../lib/search-index');
+const searchPage = require('../lib/search-page');
 
 /**
  * 套餐对比页的交互逻辑**源码**（逐字节内联进页面）。
@@ -152,6 +158,10 @@ function plansCompareSource() {
 /**
  * API 成本计算器的交互逻辑**源码**（逐字节内联进页面，与 plans-compare 同一套路）。
  */
+function searchFilterSource() {
+  return fs.readFileSync(path.join(__dirname, '..', 'lib', 'search-filter.js'), 'utf8');
+}
+
 function apiCostSource() {
   return fs.readFileSync(path.join(__dirname, '..', 'lib', 'api-cost.js'), 'utf8');
 }
@@ -301,6 +311,8 @@ const GENERATED_FILES = [
   appAsset.FILE,
   // v3.2：订阅产物（两条）。由唯一表现取 ⇒ 这张表与 `FEED_FILES` 不可能分家。
   ...feed.FEED_FILES.map(([file]) => file),
+  // v3.4：到期日历（一条）。同样从唯一表现取 —— 这张表里不许出现第二份 `expiry.ics` 字面量。
+  ...calendar.CALENDAR_FILES.map(([file]) => file),
   // v3.3：IndexNow 密钥文件（`<key>.txt`，内容就是密钥本身）。
   // 同样从唯一表现取名字 —— 这张表里不许出现第二份 `<key>.txt` 字面量。
   indexnow.keyFileName()
@@ -791,6 +803,8 @@ const ROUTE_HREFS = [
   // v3.0 Stage D5：模型资料索引。与「按厂商 / 分类浏览」是同一类东西（长期存在的资料维度），
   // 因此挂在同一行末尾；详情页由索引页给入链，不需要逐页进页脚。
   ['__MODELS_HREF__', 'models/'],
+  // v3.4 F3：全站搜索（共享页脚入口；顶栏与跳转 chip 不加控件）
+  ['__SEARCH_HREF__', searchPage.SEARCH_ROUTE],
   // v2.5：API / Token 计费对比页。与套餐对比页**并列**（一个回答"月付多少钱"，
   // 一个回答"每百万 token 多少钱"），因此同样挂在那一行末尾。
   //
@@ -810,6 +824,9 @@ const ROUTE_HREFS = [
   // 这一步同时让下面「页脚路由链接」的**正向**断言自动要求每一种深度都出现
   // `href="<prefix>feed.xml"`：漏一层、页脚那枚链接被悄悄删掉，都会当场红。
   ['__FEED_HREF__', feed.FEED_FILES[0][0]],
+  // v3.4 F2：页脚与 /changes/ 的到期日历入口。路径从唯一表 `calendar.CALENDAR_FILES` 现取，
+  // 本文件不写第二份 `expiry.ics` 字面量；它也是 due 视图 stats 行里那枚链接的站内落点。
+  ['__CALENDAR_HREF__', calendar.CALENDAR_FILES[0][0]],
   // v1.8-seo-answer-pages：数据文档与引用页（/docs/data/）。它是「可引用数据集」这个钩子的
   // 唯一站内入口，挂在页脚「按厂商 / 分类浏览」那一行末尾 —— 与 t4 删掉的「开放数据」入口
   // 不是同一件事：这一页不发布数据文件，只给许可与引用格式。
@@ -2156,8 +2173,18 @@ ${planBlock}
 ${apiPlanBlock}`;
 
   // 面包屑属于**这一页的正文**（页壳只管文档脚手架），与正文拼在一起传给页壳。
+  // v3.4 F2：这一页的**可见**日历入口（不进 <head>：那 2 条 alternate 只登记订阅流）。
+  // 放在面包屑之后、第一个分栏之前 —— 读到「即将结束」那一段时不必再滚到页脚。
+  // 正文里的链接用**本页深度**的相对路径，文件名从唯一表现取（不写第二份字面量）；
+  // 不走 `__CALENDAR_HREF__`：那个占位符只由页壳解析页脚模板，正文里的它不会被替换。
+  const calendarLine = noteDeclare('changes/', {
+    kind: 'calendar-entry', slot: 'main-snote', classes: 'snote chgcal',
+    declaredBy: 'build-local.js:renderChangesPage(calendar-entry)'
+  }, `      <p class="snote chgcal">按截止日期看同一批条目：`
+    + `<a href="../${calendar.CALENDAR_FILES[0][0]}" type="text/calendar" title="订阅到期日历（.ics）：把即将到期的截止日期加进你自己的日历">到期日历（.ics）</a>`
+    + `（收录 30 天内到期、且当前仍有效的记录）。</p>\n`);
   const bodyHtml = `      <nav class="crumb" aria-label="面包屑"><a href="../">首页</a> › <span>${htmlEscape(PAGE_HEADING)}</span></nav>
-${body}`;
+${calendarLine}${body}`;
   return shell.renderWidePageShell({
     kind: 'changes',
     route: 'changes/',
@@ -2170,6 +2197,10 @@ ${body}`;
     // v3.2：这一页的**订阅声明**（两条，绝对 URL）。契约第 2.3 条的固定形态：文件名与 MIME 都从
     // `FEED_FILES` 现取（本文件里 0 个文件名 / MIME 字面量），href 一律 `SITE_URL` 开头。
     // 页壳（`docStart`）把它插在 hreflang 之后、OG 之前；**不传**该参数的页面族产物逐字节不变。
+    // v3.4 F2：日历入口**不进 <head> 的订阅声明面**。那 2 条 alternate 是「订阅流」的登记面，
+    // L4 的 subscriptionDeclarationProblem() 要求带 type 的 alternate 恰好等于 FEED_FILES 的条数；
+    // 日历不是订阅流（它是同一批条目的另一种组织方式），所以入口只放在可见正文与共享页脚：
+    // due 视图的 stats 行 + index.html 页脚 + /changes/ 正文顶部那一行。
     feedTagsHtml: feed.FEED_FILES
       .map(([file, type]) => `<link rel="alternate" type="${type}" href="${SITE_URL}${file}">`)
       .join('\n'),
@@ -2338,6 +2369,8 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
     planHistoryStore: context.planHistoryStore || null,
     // v2.4：优惠 ↔ 套餐视图（判据在 lib/deal-plan-links.js，这里只把算好的结果传下去）
     dealLinks: context.dealLinks || null,
+    // 价格历史的横轴终点：与首页 / 模型页 / API 计费页共用 deals 数据日期（lastmod）。
+    asOf: context.asOf || null,
     prefix
   }) + `
       <p class="pcodex-link">相关：<a href="../../${CODEX_RESETS_ROUTE}">Codex 额度重置档案</a>
@@ -2468,7 +2501,7 @@ ${plansCompareSource()}
     canonicalUrl: pageUrl,
     faviconHref: `${prefix}favicon.svg`,
     // 顺序与迁移前一致：本页静态表格原语在前，`css`（筛选/搜索/展开，由 plans-compare.js 驱动）在后。
-    extraCss: `${PLANS_TABLE_CSS}\n${css}`,
+    extraCss: `${PLANS_TABLE_CSS}\n${css}\n${priceHistory.PRICE_HISTORY_CSS}`,
     extraTailHtml: compareScript,
     jsonLdHtml: jsonLdBlocks,
     bodyHtml: body,
@@ -2518,6 +2551,7 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
     // 以及表下的数据修正 issue 入口。两个字段不传时该表仍成立（实名列显示「数据未收录」）。
     deals: context.deals || [],
     reportUrl: context.reportUrl || '',
+    asOf: context.asOf || null,
     prefix
   });
 
@@ -2610,7 +2644,8 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
       box-shadow: 1px 0 0 var(--line); max-width: 10em; white-space: normal; overflow-wrap: anywhere;
     }
     .ptable th, .ptable td { padding: 8px 9px; }
-  }`,
+  }
+${priceHistory.PRICE_HISTORY_CSS}`,
     jsonLdHtml: jsonLdBlocks,
     bodyHtml: body,
     where: 'renderApiPlansPage'
@@ -2934,7 +2969,7 @@ const STATIC_PAGE_CSS = `  /* 只用首页已有的设计变量，不新建视�
  * （塞成数组时 \`JSON.parse(block)['@type']\` 会得到 undefined，自检既不抛错也不命中 ——
  * 分类页第一版就是这么写的，被自检当场拦下）。
  */
-function renderStaticPage({ kind, route, title, description, body, jsonLd, prefix, extraCss = '', mainClass }, indexHtml) {
+function renderStaticPage({ kind, route, title, description, body, jsonLd, prefix, extraCss = '', extraScript = '', mainClass }, indexHtml) {
   const parts = shell.loadShellParts(indexHtml, ROUTE_HREFS, appAsset.SOURCE);
   const jsonLdHtml = jsonLd
     .map(data => `<script type="application/ld+json">
@@ -2957,9 +2992,30 @@ ${JSON.stringify(data, null, 2).split('\n').map(line => `  ${line}`).join('\n')}
     extraCss: extraCss ? `${STATIC_PAGE_CSS}\n${extraCss}` : STATIC_PAGE_CSS,
     jsonLdHtml,
     bodyHtml: body,
+    extraScript,
     mainClass,
     where: `renderStaticPage/${route}`
   });
+}
+
+/**
+ * `/search/` 全站搜索页：静态目录 + 一个输入框（过滤脚本逐字节内联）。
+ *
+ * 标题/描述走 `page-fit` 的唯一预算；`data-search-count` 是构建期写死的分组计数，
+ * 浏览器侧只改可见性、不改这些数字（自检从盘上回读它们对账）。
+ */
+function renderSearchPageHtml(index, indexHtml) {
+  return renderStaticPage({
+    kind: 'search',
+    route: searchPage.SEARCH_ROUTE,
+    title: searchPage.SEARCH_TITLE,
+    description: pageFit.fitDescription(searchPage.SEARCH_DESCRIPTION),
+    body: searchPage.renderSearchPage({ index, prefix: '../' }),
+    jsonLd: searchPage.searchPageJsonLd(),
+    prefix: '../',
+    extraCss: searchPage.SEARCH_PAGE_CSS,
+    extraScript: searchFilterSource()
+  }, indexHtml);
 }
 
 /**
@@ -4550,6 +4606,9 @@ function assemble() {
           modelLinks: modelLinksDoc.links,
           planHistoryStore,
           apiPlanHistoryStore,
+          // 价格历史的横轴终点：与首页 `/models/` 详情页、`/plans/api/` 共用同一个数据日期
+          //（`deals.json` 的 `updatedAt`）；不在这里另取「今天」。
+          asOf: lastmod,
           providerTable,
           hasTopicChanges: Boolean(topic && topic.sections && topic.sections.length),
           prefix: '../'.repeat(vendorSpec.depth || spec.depth || 1),
@@ -4639,7 +4698,8 @@ function assemble() {
     providerTable,
     planChanges: planRadar,
     planHistoryStore,
-    dealLinks: dealLinksView
+    dealLinks: dealLinksView,
+    asOf: lastmod
   });
   // 说明意图：`/plans/coding/` 的**无 JS 提示**（`.snote.pnoscript`）是这一页对读者的
   // 一条页面级说明，它由 `lib/plans-page.js` 输出（该模块不在本轮 in-scope 路径里），
@@ -4683,6 +4743,8 @@ function assemble() {
     // （api-plans 本身没有实名认证字段），以及一个预填标题的报错入口。
     deals: payload.deals,
     reportUrl: reportIssueUrl('API 计费数据'),
+    // 价格历史的横轴终点：与首页 / 模型页 / 套餐页共用 deals 数据日期（lastmod）。
+    asOf: lastmod,
   });
   notePage(apiPlansPage.API_PLANS_ROUTE, { kind: 'api-plans' });
   fs.writeFileSync(path.join(apiPlansDir, 'index.html'), apiPlansHtml, 'utf8');
@@ -4844,6 +4906,8 @@ function assemble() {
         body: modelsPage.renderModelPage(model, detailCtx),
         jsonLd: modelsPage.modelPageJsonLd(model, detailCtx),
         prefix,
+        // 价格历史图（F1）：与表格/日志同一批判据，样式随页面一起下发；没有块时也只是多几行 CSS。
+        extraCss: priceHistory.PRICE_HISTORY_CSS,
         // 叶子详情页要的是**统一内容列**（与 /deal/<id>/ 同一条 .detail-main 规则）。
         // 索引页 / 档案页 / 数据文档页都不传它，继续吃 .wrap 的 1420px。
         mainClass: 'detail-main'
@@ -5037,6 +5101,30 @@ function assemble() {
       + ` · 数据日期 ${lastmod} · 页面 ${(docsHtml.length / 1024).toFixed(1)} KB）`);
   }
 
+  // ---- v3.4 F3：/search/ 全站搜索（静态目录；无 JS 可读，过滤是渐进增强）----
+  //
+  // 索引推导的唯一实现是 `lib/search-index.js`：URL 前缀全部复用既有唯一表
+  // （feed.PLAN_URL_PREFIX / 路由声明 / landing 计划），本文件不写第二份。
+  // 条目只收**真有站内页面**的东西：deals 里只有 type==='deal' 的才有详情页；
+  // 工具与指南页走固定路由和 landing 计划，不给任何一条发死链。
+  const searchIndexBuilt = searchIndex.buildSearchIndex({
+    deals: payload.deals.filter(deal => deal.type === 'deal'),
+    plans: plansStore.plans,
+    apiPlans: apiPlansStore.plans,
+    models: publishedModels.models,
+    landingSpecs: PLAN.pages,
+    fixedRoutes: Object.keys(pageKinds.FIXED_ROUTE_KINDS)
+  });
+  {
+    const searchHtml = renderSearchPageHtml(searchIndexBuilt, html);
+    notePage(searchPage.SEARCH_ROUTE, { kind: 'search' });
+    fs.mkdirSync(path.join(OUT, searchPage.SEARCH_ROUTE), { recursive: true });
+    fs.writeFileSync(path.join(OUT, searchPage.SEARCH_ROUTE, 'index.html'), searchHtml, 'utf8');
+    console.log(`  全站搜索: /${searchPage.SEARCH_ROUTE}（${searchIndexBuilt.entries.length} 条 · `
+      + `${Object.keys(searchIndexBuilt.counts).filter(k => searchIndexBuilt.counts[k] > 0).length} 个分组`
+      + ` · 页面 ${(searchHtml.length / 1024).toFixed(1)} KB）`);
+  }
+
   // ---- t4：数据出口子系统整体下架（原 v3.0 Stage G：Data Docs / 数据出口）----
   //
   // 这里原先是一整块数据出口设施：注册表形状断言、`buildManifestFromRegistry()`、
@@ -5160,6 +5248,14 @@ function assemble() {
     <priority>${pageKinds.sitemapMeta('models-index').priority}</priority>
   </url>`;
 
+  // v3.4 F3：/search/ 的 sitemap 声明（priority / changefreq 从 page-kinds 的 search 声明取）。
+  const searchUrl = `  <url>
+    <loc>${SITE_URL}${searchPage.SEARCH_ROUTE}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>${pageKinds.sitemapMeta('search').changefreq}</changefreq>
+    <priority>${pageKinds.sitemapMeta('search').priority}</priority>
+  </url>`;
+
   // v3.0 Stage D6：模型详情页与优惠详情页同级（0.7，都是详情叶子）。
   // `lastmod` 用**数据日期**（模型页的最近核对日），不是构建时刻 —— 与全站同一条纪律。
   const modelUrls = gatedModels.map(model => `  <url>
@@ -5224,6 +5320,7 @@ ${statusUrl}
 ${changesUrl}
 ${plansHubUrl}
 ${modelsIndexUrl}
+${searchUrl}
 ${archiveIndexUrl}
 ${plansUrl}
 ${apiPlansUrl}
@@ -5402,6 +5499,7 @@ ${archiveDetailUrls}
       + '）。「空 feed 不算通过」：一份没有条目的订阅产物，订阅者拿到的是一个空列表，'
       + '而那与「本站没有什么可订阅」是两句不同的话。构建停在这里。');
   }
+  let calendarSummary = null;
   {
     // 两条产物各配一个渲染器，顺序 = `FEED_FILES` 的**冻结顺序**（契约第 1.1 条：Atom 在前）。
     // 文件名一律从表里取；数量对不上就抛错 —— 将来加第三种格式时"忘了补渲染器"不许静默少写一条。
@@ -5416,6 +5514,20 @@ ${archiveDetailUrls}
     console.log(`  订阅产物: ${feed.FEED_FILES.map(([file]) =>
       `${file} ${(fs.statSync(path.join(OUT, file)).size / 1024).toFixed(1)} KB`).join(' · ')}`
       + `（条目 ${feedEntries.length} 条 · 数据日期 ${lastmod}）`);
+  }
+
+  // v3.4 F2：到期日历（RFC 5545）。收录条件与判据只有一处：lib/calendar.js。
+  // asOf 用**数据日期**（deals.json 的 updatedAt 日期），不是墙钟 —— 同一份数据重建逐字节相同；
+  // `check-feed:reproducible` 会把这份产物也纳入逐字节对账（比对面 = FEED_FILES + CALENDAR_FILES）。
+  {
+    const asOf = lastmod;
+    const ics = calendar.buildCalendarIcs({ deals: payload.deals, asOf, site });
+    const [file] = calendar.CALENDAR_FILES[0];
+    fs.writeFileSync(path.join(OUT, file), ics, 'utf8');
+    const events = (ics.match(/^BEGIN:VEVENT\r$/gm) || []).length;
+    calendarSummary = { file, bytes: Buffer.byteLength(ics), events, asOf };
+    console.log(`  到期日历: ${file} ${(Buffer.byteLength(ics) / 1024).toFixed(1)} KB`
+      + `（${events} 个事件 · 基准日 ${asOf} · 只收 expiresAt ≥ 基准日且非空的条目）`);
   }
 
   // 数据源状态：把采集写入的心跳文件发布出去（机器可读），并生成一页可读的 /status/。
@@ -5449,6 +5561,8 @@ ${archiveDetailUrls}
     healthStatusText: healthSummary.rows.map(row => `${row.source}=${row.status}`).join(','),
     // B 包：/codex-reset/ 的构建期读数，供产物自检对账「页面行数 == 数据条数」。
     codexResets: { total: codexResets.events.length, fetchedAt: codexResets.fetchedAt },
+    // v3.4 F2：到期日历的构建期读数（自检用它做盘上回读对账，不重新推导一份）。
+    calendar: calendarSummary,
     // 目录页交给自检做**逐条回读对账**：文件存在不算数，页面上的条目集合
     // 必须与 dist/assets/data/offers.json 里 `collections` / `needs` 的筛选结果逐个 id 对得上。
     // v1.2：两类页面（分类页与按需求页）都在这一个列表里，`collectionPages` 保留为
@@ -5532,6 +5646,8 @@ ${archiveDetailUrls}
     // 变化日志的**可用性登记**（自检据此区分「分栏齐」与「如实说没有拿到日志」两支；
     // 规则本体在 lib/changes.js，见 p2-honesty-single-source-v1）。
     logAvailability,
+    // v3.4 F3：全站搜索索引（自检据此从盘上回读 `data-search-count` 与 `<li>` 数对账）
+    searchIndex: searchIndexBuilt,
     // 构建期真实生成的全部站内路由（含首页 '' 与刚才新增的 feeds/）——
     // Feed 里每一条站内链接都要能在这里找到，否则就是一条死链。
     pageRoutes: new Set([
@@ -5542,6 +5658,9 @@ ${archiveDetailUrls}
       plansPage.PLANS_ROUTE,
       apiPlansPage.API_PLANS_ROUTE,
       apiCostPage.API_COST_ROUTE,
+      searchPage.SEARCH_ROUTE,
+      dataDocsPage.DATA_DOCS_ROUTE,
+      CODEX_RESETS_ROUTE,
       modelsPage.MODELS_INDEX_ROUTE,
       ...gatedModels.map(model => modelsPage.modelHrefOf(model)),
       archiveLib.ARCHIVE_INDEX_ROUTE,
@@ -6907,6 +7026,169 @@ function selfCheck(built) {
             ` · 无结论性词汇（查了 ${archiveLib.FORBIDDEN_CLAIM_WORDS.length} 个词）`);
         }
       }
+    }
+  }
+
+  // ---- F1：价格历史（盘上产物回读对账）----------------------------------------
+  //
+  // 走势图的每一张 `<svg>` 都带着 `data-ph-key`（序列键）、`data-ph-changes`（变化次数），
+  // 外层区块带着 `data-ph-series` / `data-ph-changes`。这里**从盘上读回**产物，再与
+  // `lib/price-history.js` 用真值现算的结果对账 —— 页面写「1 次变化」而日志里是 0 次，
+  // 或者图上出现一条推导结果里不存在的序列，都会当场红，而不是等读者发现。
+  {
+    const apiPlans = built.apiPlansStore.plans || [];
+    const plans = built.plansStore.plans || [];
+    const apiStoreDoc = built.apiPlanHistoryLoad ? built.apiPlanHistoryLoad.store : null;
+    const planStoreDoc = built.planHistoryLoad ? built.planHistoryLoad.store : null;
+    const history = priceHistory.buildPriceHistory({
+      apiStore: apiStoreDoc,
+      apiPlans,
+      planStore: planStoreDoc,
+      plans,
+      asOf: built.dealLinksAsOf
+    });
+    const knownKeys = new Set([...history.api.keys(), ...history.plan.keys()]);
+    const unescapeAttr = text => String(text)
+      .replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+      .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+    const problems = [];
+    const htmlFiles = listArtifactFiles(OUT).filter(file => file.endsWith('.html'));
+    for (const rel of htmlFiles) {
+      const html = fs.readFileSync(path.join(OUT, rel), 'utf8');
+      const blocks = [...html.matchAll(/<section class="ph-block"[^>]*data-ph-series="(\d+)" data-ph-changes="(\d+)"/g)];
+      if (!blocks.length) continue;
+      for (const block of blocks) {
+        const end = html.indexOf('</section>', block.index);
+        const section = end < 0 ? html.slice(block.index) : html.slice(block.index, end);
+        const svgCount = (section.match(/class="ph-svg"/g) || []).length;
+        const changeSum = [...section.matchAll(/class="ph-svg"[^>]*data-ph-changes="(\d+)"/g)]
+          .reduce((sum, match) => sum + Number(match[1]), 0);
+        const chartChanges = [...section.matchAll(/class="ph-svg"[^>]*data-ph-key="([^"]*)"/g)]
+          .map(match => unescapeAttr(match[1]));
+        if (Number(block[1]) !== svgCount) {
+          problems.push(`${rel}: 区块 data-ph-series=${block[1]}，但产物里有 ${svgCount} 张图`);
+        }
+        if (Number(block[2]) !== changeSum) {
+          problems.push(`${rel}: 区块 data-ph-changes=${block[2]}，但各图 changes 之和是 ${changeSum}`);
+        }
+        for (const key of chartChanges) {
+          if (!knownKeys.has(key)) problems.push(`${rel}: 图上的序列键不在推导结果里（${key}）`);
+        }
+      }
+    }
+    const apiHtml = fs.readFileSync(path.join(OUT, apiPlansPage.API_PLANS_ROUTE, 'index.html'), 'utf8');
+    const apiBlock = apiHtml.match(/<section class="ph-block" id="api-price-history"[^>]*data-ph-series="(\d+)" data-ph-changes="(\d+)"/);
+    const apiSeries = [...history.api.values()];
+    const apiCharts = apiSeries.filter(series => series.changes.length > 0).length;
+    const apiCounts = priceHistory.countsOf(apiSeries);
+    if (!apiBlock) {
+      problems.push('/plans/api/: 缺少 #api-price-history 价格历史节');
+    } else {
+      if (Number(apiBlock[1]) !== apiCharts) {
+        problems.push(`/plans/api/: 价格历史节图数 ${apiBlock[1]} != 推导出的有事件序列数 ${apiCharts}`);
+      }
+      if (Number(apiBlock[2]) !== apiCounts.changes) {
+        problems.push(`/plans/api/: 价格历史节变化数 ${apiBlock[2]} != 推导出的 ${apiCounts.changes}`);
+      }
+    }
+    const apiSummary = `${apiCounts.entries} 个计价条目 · 基线以来 ${apiCounts.changes} 次价格变化`;
+    if (!apiHtml.includes(apiSummary)) problems.push(`/plans/api/: 聚合陈述与推导结果不一致（应为「${apiSummary}」）`);
+    if (problems.length) {
+      fail(`价格历史盘上对账未通过（${problems.length} 处）：${problems.slice(0, 3).join('；')}`);
+    } else {
+      console.log(`  ✓ 价格历史: ${htmlFiles.length} 个 HTML 回读；` +
+        `${apiSeries.length} 条 API 序列（${apiCharts} 条有价格事件）· ${priceHistory.countsOf(history.plan).series} 条套餐价格序列 · 键全部命中推导结果`);
+    }
+  }
+
+  // ---- F2：到期日历（盘上产物回读对账）----------------------------------------
+  //
+  // 只写文件不算数：这里把 `expiry.ics` 从盘上读回来，独立重算「应有多少个事件」，
+  // 并逐条验 RFC 5545 的硬形态（CRLF / 75 字节折行 / UID / DTSTART-DTEND 相邻日）。
+  // 判据面与生成面刻意不同源：期望值直接从 `dist/assets/data/offers.json` 现数，不调 calendar.js。
+  {
+    const problems = [];
+    const [file] = calendar.CALENDAR_FILES[0];
+    const absolute = path.join(OUT, file);
+    const text = fs.readFileSync(absolute, 'utf8');
+    const offers = JSON.parse(fs.readFileSync(path.join(OUT, 'assets', 'data', 'offers.json'), 'utf8'));
+    const asOf = String(offers.updatedAt || '').slice(0, 10);
+    const expected = (offers.deals || []).filter(deal => deal && typeof deal.expiresAt === 'string' && deal.expiresAt >= asOf);
+    const blocks = [...text.matchAll(/BEGIN:VEVENT\r\n([\s\S]*?)END:VEVENT\r\n/g)];
+    if (!text.startsWith('BEGIN:VCALENDAR\r\n')) problems.push('缺 BEGIN:VCALENDAR 起始行');
+    if (!text.endsWith('END:VCALENDAR\r\n')) problems.push('缺 END:VCALENDAR 结束行');
+    if (/(?<!\r)\n/.test(text)) problems.push('存在裸 LF（RFC 5545 要求 CRLF）');
+    const longLines = text.split('\r\n').slice(0, -1).filter(line => Buffer.byteLength(line, 'utf8') > 75);
+    if (longLines.length) problems.push(`${longLines.length} 行超过 75 字节（中文按 UTF-8 3 字节折行）`);
+    if (blocks.length !== expected.length) problems.push(`事件数 ${blocks.length} != 现算 ${expected.length}`);
+    const byUid = new Map();
+    for (const block of blocks) {
+      const body = block[1];
+      const uid = (/^UID:([^\r]*)$/m.exec(body) || [])[1] || '';
+      const start = (/^DTSTART;VALUE=DATE:(\d{8})$/m.exec(body) || [])[1] || '';
+      const end = (/^DTEND;VALUE=DATE:(\d{8})$/m.exec(body) || [])[1] || '';
+      const stamp = (/^DTSTAMP:(\d{8}T\d{6}Z)$/m.exec(body) || [])[1] || '';
+      const host = new URL(site.SITE_URL).host;
+      if (!/^[0-9a-f]{12}@/.test(uid) || !uid.endsWith(`@${host}`)) problems.push(`UID 不稳定：${uid || '(空)'}`);
+      if (byUid.has(uid)) problems.push(`UID 重复：${uid}`);
+      byUid.set(uid, true);
+      if (!/^\d{8}$/.test(start) || !/^\d{8}$/.test(end)) { problems.push(`${uid}: DTSTART/DTEND 不是 DATE 值`); continue; }
+      const next = new Date(Date.parse(`${start.slice(0, 4)}-${start.slice(4, 6)}-${start.slice(6, 8)}T00:00:00Z`) + 86400000)
+        .toISOString().slice(0, 10).replace(/-/g, '');
+      if (end !== next) problems.push(`${uid}: DTEND ${end} 不是 DTSTART ${start} 的次日`);
+      // DTSTAMP 必须冻结在 asOf 前一日 16:00Z（= 北京时间零点），不许出现别的时刻。
+      const expectedStamp = new Date(Date.parse(`${asOf}T00:00:00+08:00`)).toISOString()
+        .replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
+      if (stamp !== expectedStamp) problems.push(`${uid}: DTSTAMP ${stamp || '(空)'} != 冻结值 ${expectedStamp}`);
+    }
+    if (problems.length) {
+      fail(`到期日历盘上对账未通过（${problems.length} 处）：${problems.slice(0, 3).join('；')}`);
+    } else {
+      console.log(`  ✓ 到期日历: ${file} ${(Buffer.byteLength(text) / 1024).toFixed(1)} KB`
+        + `（${blocks.length} 个事件 · 基准日 ${asOf} · 全部 CRLF / ≤75 字节 / UID 稳定 / DTEND=次日）`);
+    }
+  }
+
+  // ---- F3：全站搜索（盘上产物回读对账）----------------------------------------
+  //
+  // 判据面：页面上的分组计数 `data-search-count` 与 `<li class="sitem">` 数必须等于
+  // 索引推导的分组计数；每个 href 必须是站内路由且真实存在（不许发死链）；
+  // 内联的过滤脚本必须与本文件逐字节相同。
+  {
+    const problems = [];
+    const disk = fs.readFileSync(path.join(OUT, searchPage.SEARCH_ROUTE, 'index.html'), 'utf8');
+    const index = built.searchIndex;
+    const totalLis = (disk.match(/<li class="sitem"/g) || []).length;
+    if (totalLis !== index.entries.length) problems.push(`目录条目数 ${totalLis} != 索引 ${index.entries.length}`);
+    let sum = 0;
+    for (const meta of searchIndex.SEARCH_KINDS) {
+      const expected = index.counts[meta.kind] || 0;
+      const start = disk.indexOf(`data-search-group="${meta.kind}"`);
+      if (expected === 0) {
+        if (start !== -1) problems.push(`空分组 ${meta.kind} 仍然渲染`);
+        continue;
+      }
+      if (start === -1) { problems.push(`缺少分组 ${meta.kind}`); continue; }
+      const end = disk.indexOf('</section>', start);
+      const chunk = disk.slice(start, end);
+      const claimed = Number((/data-search-count="[^"]*">(\d+)</.exec(chunk) || [])[1]);
+      const lis = (chunk.match(/<li class="sitem"/g) || []).length;
+      if (claimed !== expected) problems.push(`分组 ${meta.kind} 声明 ${claimed} != 索引 ${expected}`);
+      if (lis !== expected) problems.push(`分组 ${meta.kind} 条目 ${lis} != 索引 ${expected}`);
+      sum += lis;
+    }
+    if (sum !== totalLis) problems.push(`分组求和 ${sum} != 条目总数 ${totalLis}`);
+    for (const match of disk.matchAll(/<li class="sitem"[^>]*>\s*<a href="\.\.\/([^"]+)"/g)) {
+      const target = match[1].split('#')[0];
+      if (!built.pageRoutes.has(target)) problems.push(`搜索链接不在已生成路由里：${target}`);
+    }
+    if (!disk.includes(searchFilterSource())) problems.push('内联的过滤脚本与 lib/search-filter.js 不是逐字节同一份');
+    if (!/<input type="search" id="siteSearchInput"/.test(disk)) problems.push('缺搜索框 #siteSearchInput');
+    if (problems.length) {
+      fail(`全站搜索盘上对账未通过（${problems.length} 处）：${problems.slice(0, 3).join('；')}`);
+    } else {
+      console.log(`  ✓ 全站搜索: ${index.entries.length} 条 · ${Object.keys(index.counts).filter(k => index.counts[k] > 0).length} 个分组`
+        + ` · 分组计数与条目数一致 · 链接全部落在已生成路由 · 过滤脚本逐字节内联`);
     }
   }
 
@@ -8668,7 +8950,8 @@ function selfCheck(built) {
     + 1 /* Codex 额度重置档案页 */
     + 1 /* 模型资料索引 */ + built.modelDetailCount /* 模型详情页 */
     + 1 /* 档案索引 */ + built.archiveDetailCount /* 档案详情页 */
-    + 1 /* 数据文档与引用页 */;
+    + 1 /* 数据文档与引用页 */
+    + 1 /* 全站搜索页（v3.4 F3） */;
     // t4：公式里去掉「订阅中心 +1」与「数据文档页 +1」—— 那两页随订阅层与数据出口子系统下架。
     // v1.8：数据文档页以**更窄的定位**回来（不发布数据文件，只给许可与引用），公式加回它。
   if (sitemapLocs.length !== expectedLocs) {
@@ -8677,7 +8960,8 @@ function selfCheck(built) {
       ` + 分类落地页 ${built.categoryPages.length} + 厂商落地页 ${built.vendorPages.length}` +
       ` + 枢纽 ${built.hubPages.length}）+ 状态页 1 + 变化雷达页 1 + 资料入口页 1 + 套餐对比页 1 + API 计费页 1` +
       ` + API 成本计算器 1 + Codex 额度重置档案页 1 + 模型索引 1 + 模型详情页 ${built.modelDetailCount}` +
-      ` + 档案索引 1 + 档案详情页 ${built.archiveDetailCount} + 数据文档与引用页 1 + 详情页 ${indexableDealPages.length}` +
+      ` + 档案索引 1 + 档案详情页 ${built.archiveDetailCount} + 数据文档与引用页 1 + 全站搜索页 1` +
+      ` + 详情页 ${indexableDealPages.length}` +
       `（窗口期 noindex ${limboDealPages.length} 个不进 sitemap）`);
   } else {
     const notListed = indexableDealPages.filter(page => !sitemapLocs.some(loc => loc.endsWith(`/deal/${encodeURIComponent(page.id)}/`)));
@@ -9298,6 +9582,10 @@ function selfCheck(built) {
       // v1.8-seo-answer-pages：/docs/data/ 数据文档与引用页（固定路由、无 ItemList）。
       // 它的页面族/布局/下限由 `page-kinds.js` 的 data-docs 声明；这里只告诉 SEO 规则层
       // 「它是一条独立可索引页面」（canonical 自指 + 进 sitemap）。
+      // v3.4 F3：全站搜索。不是 ItemList 页（成员是站内各家族，不是一份数据集合）。
+      readPage(`${searchPage.SEARCH_ROUTE}`, {
+        kind: 'search', expectItemList: false
+      }),
       readPage(`${dataDocsPage.DATA_DOCS_ROUTE}`, {
         kind: 'data-docs',
         expectItemList: false,

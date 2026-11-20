@@ -1521,6 +1521,65 @@ if (DIST_MODELS_OK) {
 
 /* ================================================================== */
 
+/* ================================================================== */
+section('⑨ F1 价格历史：产物回读与独立重算（模型页）');
+/* ================================================================== */
+
+{
+  const modelsDir = path.join(DIST, 'models');
+  const pages = fs.existsSync(modelsDir)
+    ? fs.readdirSync(modelsDir).filter(name => fs.existsSync(path.join(modelsDir, name, 'index.html')))
+    : [];
+  const withBlock = pages.filter(name => fs.readFileSync(path.join(modelsDir, name, 'index.html'), 'utf8').includes('class="ph-block"'));
+  check('dist 现场：至少一个模型页带价格历史块（有关联计费的模型不应是空块）',
+    withBlock.length > 0, `扫描 ${pages.length} 页`);
+  const apiPlans = readJson('api-plans.json').plans;
+  const problems = [];
+  let changedFigures = 0;
+  for (const name of withBlock) {
+    const html = fs.readFileSync(path.join(modelsDir, name, 'index.html'), 'utf8');
+    const block = html.match(/<section class="ph-block"[^>]*data-ph-series="(\d+)"[^>]*data-ph-changes="(\d+)"/);
+    if (!block) { problems.push(`${name}: ph-block 缺 data-*`); continue; }
+    const end = html.indexOf('</section>', block.index);
+    const section = html.slice(block.index, end < 0 ? html.length : end);
+    const svgs = [...section.matchAll(/<svg class="ph-svg" data-ph-key="([^"]*)"[^>]*data-ph-changes="(\d+)"[^>]*>[\s\S]*?<\/svg>/g)];
+    const changeSum = svgs.reduce((sum, match) => sum + Number(match[2]), 0);
+    if (Number(block[1]) !== svgs.length) problems.push(`${name}: data-ph-series=${block[1]} 但 svg=${svgs.length}`);
+    if (Number(block[2]) !== changeSum) problems.push(`${name}: data-ph-changes=${block[2]} 但各图之和=${changeSum}`);
+    for (const match of svgs) {
+      if (!/<title[^>]*>[^<]+<\/title>/.test(match[0]) || !/<desc[^>]*>[^<]+<\/desc>/.test(match[0])) {
+        problems.push(`${name}: 图缺 title/desc（${match[1]}）`);
+      }
+      const parts = match[1].split('|');
+      if (parts.length !== 4) { problems.push(`${name}: 序列键不是四段（${match[1]}）`); continue; }
+      const [planId, modelKey, variant, rateKey] = parts;
+      const plan = apiPlans.find(item => item.id === planId);
+      if (!plan) { problems.push(`${name}: 序列键里的 planId 不存在（${planId}）`); continue; }
+      if (!(plan.models || []).some(entry => entry.modelKey === modelKey && String(entry.variant) === variant)) {
+        problems.push(`${name}: 序列键里的 modelKey/variant 不在该 plan 下（${modelKey}/${variant}）`);
+      }
+      if (!apiSchema.TOKEN_RATE_KEYS.includes(rateKey)) problems.push(`${name}: 未知费率键（${rateKey}）`);
+      if (Number(match[2]) > 0) {
+        changedFigures++;
+        if (!match[0].includes('→')) problems.push(`${name}: 有变化的图没有 from→to 文字`);
+      }
+    }
+  }
+  check('dist 现场：每个模型页 ph-block 的 data-* 与块内 svg 逐项对账，序列键都能在真值里落地',
+    problems.length === 0, problems.slice(0, 3).join('；'));
+  check('数据里那一次真实降价出现在某个模型页上（from→to 是文字，不是只有颜色）',
+    changedFigures > 0, `带变化的图 ${changedFigures} 张`);
+  const sonnet = withBlock.find(name => name.includes('claude-sonnet-5.5'));
+  if (sonnet) {
+    const html = fs.readFileSync(path.join(modelsDir, sonnet, 'index.html'), 'utf8');
+    const seriesAttr = html.match(/data-ph-series="(\d+)"/);
+    check('claude-sonnet-5.5 的模型页：价格历史块存在，且 data-ph-series == 实际 svg 数',
+      Boolean(seriesAttr) && Number(seriesAttr[1]) === (html.match(/class="ph-svg"/g) || []).length);
+  } else {
+    check('claude-sonnet-5.5 的模型页未发布（如实跳过）', true);
+  }
+}
+
 console.log(`\n=== v3.0 Model Registry 页面演练：${passed} 项通过，${failures.length} 项失败 ===`);
 if (failures.length) {
   console.log('失败项：');

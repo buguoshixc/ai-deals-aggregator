@@ -75,6 +75,7 @@ const apiSchema = require('./api-plan-schema');
 const apiPlansPage = require('./api-plans-page');
 const plansPage = require('./plans-page');
 const apiPlanHistory = require('./api-plan-history');
+const priceHistory = require('./price-history');
 const dealPlanLinks = require('./deal-plan-links');
 // 身份派生（`id = sha1('model|' + slug)`）只有一处实现 —— 页面层不自己再 hash 一遍，
 // 否则"两个身份空间"就是这么来的。这里只用纯函数，不触发任何读盘。
@@ -1049,6 +1050,75 @@ function releaseBlockOf(model) {
 // T5 删除（census A · 半句）：同上 —— 删「 —— 本站不用标题关键词猜关系。」（实现自证），保留空态事实。元素保留（kind=half）。
 // [T5-models-1137-derived-view]
 // T5 删除（census A · 自证整条）：整条删 ——「这一节是派生视图 / 不新建第四套历史真值」是**架构自证**（我们在内部怎么组织数据），标题「模型变化记录（派生视图）」已经把「派生」写在读者眼前；下面的列表是数据（C 类）。
+
+/**
+ * 模型页的「价格历史（API 计费）」块。
+ *
+ * 口径：只画本页表格里**真正关联到该模型**的 (计费记录 × 模型 × 变体)；
+ * input / output / cachedInput 三维只要当前有价格就画，其余维度只在真的有过
+ * 价格事件时才画 —— 不把 8 张空图铺满页面。没有关联计价时**整块不渲染**；
+ * 有关联计价但拿不到日志时，如实写「没有可绘制的价格历史」，不画假线。
+ */
+function modelPriceHistoryBlockOf(model, refs, ctx) {
+  if (!refs.apiItems.length) return '';
+  const history = priceHistory.buildPriceHistory({
+    apiStore: ctx.apiPlanHistoryStore || null,
+    apiPlans: ctx.apiPlans || [],
+    asOf: ctx.asOf || null
+  });
+  const plansById = new Map((ctx.apiPlans || []).map(plan => [plan.id, plan]));
+  const entriesById = new Map();
+  const units = new Map();
+  for (const item of refs.apiItems) {
+    const row = apiPricingRowOf(item, ctx);
+    entriesById.set(priceHistory.entryKeyOf({
+      kind: 'api', planId: item.plan.id, modelKey: item.entry.modelKey, variant: item.entry.variant
+    }), row);
+    units.set(item.plan.id, row.unitText);
+  }
+  const rateOrder = apiSchema.TOKEN_RATE_KEYS;
+  const seriesList = [];
+  for (const item of refs.apiItems) {
+    for (const rateKey of rateOrder) {
+      const series = history.api.get(priceHistory.apiSeriesKeyOf(
+        item.plan.id, item.entry.modelKey, item.entry.variant, rateKey
+      ));
+      if (!series) continue;
+      const current = item.entry.rates ? item.entry.rates[rateKey] : null;
+      const hasChanges = series.changes.length > 0;
+      const drawByDefault = priceHistory.API_DRAW_DIMENSIONS.includes(rateKey)
+        && current !== null && current !== undefined;
+      if (!hasChanges && !drawByDefault) continue;
+      seriesList.push(series);
+    }
+  }
+  seriesList.sort((a, b) => {
+    if (a.planId !== b.planId) return a.planId < b.planId ? -1 : 1;
+    if (a.modelKey !== b.modelKey) return a.modelKey < b.modelKey ? -1 : 1;
+    if (String(a.variant) !== String(b.variant)) return String(a.variant) < String(b.variant) ? -1 : 1;
+    return rateOrder.indexOf(a.rateKey) - rateOrder.indexOf(b.rateKey);
+  });
+  const name = modelNameOf(model);
+  const labelOf = (series) => {
+    const plan = plansById.get(series.planId) || {};
+    const row = entriesById.get(series.entryKey) || {};
+    return `${row.provider || providerNameOf(plan.provider, ctx.providerTable || null)} · ${plan.planName || series.planId}`
+      + ` · ${name}（${row.variantLabel || series.variant || UNKNOWN_TEXT}）`
+      + ` · ${apiSchema.TOKEN_RATE_LABEL[series.rateKey] || series.rateKey}`;
+  };
+  return priceHistory.priceHistoryBlockHtml({
+    seriesList,
+    asOf: ctx.asOf || null,
+    heading: '价格历史（API 计费）',
+    headingId: 'model-price-history',
+    headingClass: 'ph2',
+    intro: '阶梯线只连接日志里真实记录过的价格点；两次记录之间的日子按上一个观测值画平线，不做插值。',
+    emptyText: '没有可绘制的价格历史：本次构建没有拿到对应的 API 计费日志，或基线里未载这些维度的价格。',
+    labelOf,
+    unitTextOf: series => units.get(series.planId) || ''
+  });
+}
+
 function renderModelPage(model, ctx = {}) {
   const prefix = ctx.prefix === undefined ? '../../' : ctx.prefix;
   const refs = modelReferenceOfCached(model, ctx);
@@ -1194,7 +1264,7 @@ ${dealsBlock}
 
       <h2 class="ph2" id="model-history">模型变化记录（派生视图）</h2>
 ${historyBlock}
-`;
+${modelPriceHistoryBlockOf(model, refs, ctx)}`;
 }
 
 /** `/models/<slug>/` JSON-LD：DetailPage(Thing) + BreadcrumbList。详情页刻意没有 ItemList。 */
@@ -1649,6 +1719,7 @@ module.exports = {
   renderModelsIndex,
   modelsIndexJsonLd,
   renderModelPage,
+  modelPriceHistoryBlockOf,
   modelPricingRowHtml,
   modelPageJsonLd,
   markupOnly,

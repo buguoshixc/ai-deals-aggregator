@@ -47,6 +47,35 @@ v3.0（`v3.0-ai-deals-knowledge-base`）把站点从「优惠 + 套餐 + API 价
 新增契约见 [`docs/SCHEMA-v3.0.md`](docs/SCHEMA-v3.0.md)（v3.0 只写新增/改动，既有契约引用旧文档）。
 交付报告与阶段台账见 [`research/v3.0-ai-deals-knowledge-base-report.md`](research/v3.0-ai-deals-knowledge-base-report.md)。
 
+## v3.4：价格历史 / 到期日历 / 全站搜索 / 暗色与移动观感
+
+v3.4（`v3.4-price-history-calendar-search`）是四件事的收口，不改数据契约、不新增数据文件：
+
+1. **价格历史（派生视图）**。判据全部在 `scripts/lib/price-history.js`：从三份变化日志
+   （`api-plan-history.json` / `plan-history.json` / `deal-history.json`）重放「基线以来的价格点」，
+   画成**阶梯线**（不做线性插值、不预测），每个变化点同时给 `from → to` 数值与日期（颜色不是唯一通道）。
+   挂载四处：模型页「价格历史（API 计费）」、厂商页 API 资料区、`/plans/api/`「价格历史（基线以来）」、
+   `/plans/coding/` 套餐详情的时间线旁（当前真实数据里套餐价格变化为 0，只出「N 个套餐 · 基线以来 0 次价格变化」；
+   渲染路径由离线自测用合成事件证明可用）。没有基线、或维度价格从未被记录时，如实写「未载该维度价格」，
+   不画假线。
+2. **到期日历**。首页筛选行加「即将到期」chip（窗口常量 `DUE_WINDOW_DAYS = 30`，与到期徽章、基准日同一个
+   `todayCN()` 判据）；`/expiry.ics` 是按 RFC 5545 生成的订阅文件（CRLF、75 字节折行、TEXT 转义、
+   `DTSTART;VALUE=DATE` + `DTEND` 次日、`VALARM -P3D`），只收「有截止日期且未过期」的记录。
+   入口只有两处：due 视图的汇总行、共享页脚（所有页面都有一条 `.ics` 链接）。
+3. **全站搜索 `/search/`**。构建期把优惠（只收有详情页的 `type: deal`）、Coding 套餐、API 计费、模型、
+   厂商 / 分类 / 需求 / 集合页、固定资料页编成一份静态目录（`scripts/lib/search-index.js`），
+   **无 JS 也能读全量**；输入框只是渐进增强，过滤在本地完成（`scripts/lib/search-filter.js` 逐字节内联），
+   不发请求、不新增数据资产。入口只在共享页脚。
+4. **暗色与移动观感**。暗色变量的两份副本（手动主题 / 跟随系统）逐值一致，正文与卡面对比度按 WCAG 实算并纳入
+   浏览器验收（`ink/ink2/mut` vs `--card` ≥4.5、`--card` vs `--bg` ≥1.4、`--line` vs `--bg` ≥1.6）；
+   引文竖条从 6px 收到 3px 并改用 `color-mix`（档位仍由文本徽章表达），引文行长上限 62ch；
+   ≤760px 时顶栏与首卡之间只保留两条控制行（汇总/筛选行 + 变化雷达行），「跳到力度档位」移到列表之后，
+   chip 行改为单行横向滚动（两端渐隐）。
+
+新增门禁命令：`npm run selftest:price-history`、`npm run selftest:calendar`、`npm run selftest:search`
+（三者都是纯合成数据、不读 `dist/`，已进 CI 的 L2）。交付报告见
+[`research/v3.4-polish-report.md`](research/v3.4-polish-report.md)。
+
 ## 设计原则
 
 1. **只收录真实优惠**。定价表、"这是付费产品"这类信息不算优惠，只会以 `type: "tool"` 进入"全部工具"页，
@@ -99,6 +128,9 @@ npm run build:dev       # 同上，但产物落 dist.dev/ —— 多会话/并�
 npm run verify          # 真浏览器验收（密度/裁切/hover/筛选/弹层/移动端）
 npm run verify:shots    # 同上，并把截图写到 mockups/.preview/
 npm run selftest:seo    # v1.7 SEO 门禁演练：27 个检查码逐个定向篡改，每个都必须会响
+npm run selftest:price-history  # v3.4 价格历史：阶梯线 / 无基线不画 / 文字通道 / 单位单源
+npm run selftest:calendar       # v3.4 到期日历：RFC 5545 折行 / 转义 / 收录条件 / 确定性
+npm run selftest:search         # v3.4 全站搜索：索引唯一表 / 不发死链 / 转义 / 多词全部命中
 npm run verify:seo      # v1.7 SEO 独立验收：只读 dist，条目集合/sitemap 成员/索引策略现场重推
 npm run report:seo      # 落地页人读报告：有哪些页 / 哪些主题没成页及原因 / slug 与钉住表
 npm run check:zh        # 译文覆盖度报告（建议性）：对不上 id / 原文已变 / 待译 逐条列出，不阻塞发布
@@ -113,7 +145,7 @@ node scripts/serve.js --dir=dist       # 预览发布产物（预渲染后的 in
 > `cmd /c "…"` 跑这一行；先确认版本：`$PSVersionTable.PSVersion`。
 
 ```bash
-npm run test:strict && npm run check:reproducible && npm run plans:rebuild --dry-run && npm run check:plans:reproducible && npm run check:history && npm run migrate:audience:verify && npm run check:zh && npm run selftest:zh && npm run selftest:expiry && npm run selftest:text && npm run selftest:health && npm run selftest:provenance && npm run selftest:history && npm run selftest:changes && npm run selftest:audience && npm run selftest:app-token && npm run selftest:api-cost && npm run selftest:plans && npm run build && npm run check:feed:reproducible && npm run check:ci
+npm run test:strict && npm run check:reproducible && npm run plans:rebuild --dry-run && npm run check:plans:reproducible && npm run check:history && npm run migrate:audience:verify && npm run check:zh && npm run selftest:zh && npm run selftest:expiry && npm run selftest:text && npm run selftest:health && npm run selftest:provenance && npm run selftest:history && npm run selftest:changes && npm run selftest:audience && npm run selftest:app-token && npm run selftest:calendar && npm run selftest:api-cost && npm run selftest:price-history && npm run selftest:search && npm run selftest:plans && npm run build && npm run check:feed:reproducible && npm run check:ci
 ```
 
 > ⚠️ 这一行里面的 `npm run build` **写的就是共享发布目录 `dist/`**，而且它在 CI 语境下是对的 ——

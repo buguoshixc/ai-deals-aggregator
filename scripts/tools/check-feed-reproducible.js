@@ -85,7 +85,8 @@ const { execFileSync } = require('child_process');
 const ROOT = path.join(__dirname, '..', '..');
 const BUILD_TOOL = path.join(ROOT, 'scripts', 'tools', 'build-local.js');
 
-const feed = require('../lib/feed');                       // FEED_FILES = 唯一表
+const feed = require('../lib/feed');                       // FEED_FILES = 订阅产物唯一表
+const calendar = require('../lib/calendar');               // CALENDAR_FILES = 到期日历唯一表（v3.4 F2）
 const changes = require('../lib/changes');
 const historyCore = require('../lib/history-core');
 const history = require('../lib/history');
@@ -150,9 +151,13 @@ if (!TMP.startsWith(ROOT + path.sep) || !/(^|[\\/])dist\.qc-[^\\/]+$/.test(TMP))
 const sha256 = buffer => crypto.createHash('sha256').update(buffer).digest('hex');
 const shortHash = hash => `${String(hash).slice(0, 12)}…`;
 
-/** 逐文件读数：**比对面 = FEED_FILES**（本文件里一个订阅文件名 / MIME 字面量都没有） */
-function feedFilesOf(dir) {
-  return feed.FEED_FILES.map(([file]) => {
+/**
+ * 逐文件读数：**比对面 = FEED_FILES + CALENDAR_FILES**（本文件里一个产物文件名 / MIME 字面量都没有）。
+ * v3.4 F2：到期日历同样从数据日期派生、同样必须可复现，所以纳入逐字节对账；
+ * 墙钟探针仍然只扫**订阅流**（日历的时间是 DATE 值 + 冻结 DTSTAMP，形态不同）。
+ */
+function artifactFilesOf(dir) {
+  return [...feed.FEED_FILES, ...calendar.CALENDAR_FILES].map(([file]) => {
     const absolute = path.join(dir, file);
     let buffer = null;
     try {
@@ -168,7 +173,7 @@ function feedFilesOf(dir) {
   });
 }
 
-/** 聚合指纹：文件相对路径 + 各自的 sha256（顺序 = FEED_FILES 的顺序） */
+/** 聚合指纹：文件相对路径 + 各自的 sha256（顺序 = FEED_FILES + CALENDAR_FILES 的顺序） */
 function fingerprintOf(files) {
   return sha256(Buffer.from(files.map(file => `${file.rel}\u0000${file.hash}`).join('\u0001'), 'utf8'));
 }
@@ -273,15 +278,16 @@ function dataDatesOf() {
 
 console.log(`\n=== 订阅产物可复现门禁：连续构建 ${RUNS} 次，逐字节比对 ===`);
 console.log(`  参考产物：${rel(BUILT)}/ · 隔离输出目录：${rel(TMP)}/（用完即删；绝不覆盖共享产物）`);
-console.log(`  比对面：${feed.FEED_FILES.map(([file]) => file).join(' · ')}（唯一出处 = lib/feed.js 的 FEED_FILES）`);
+console.log(`  比对面：${[...feed.FEED_FILES, ...calendar.CALENDAR_FILES].map(([file]) => file).join(' · ')}`
+  + '（唯一出处 = lib/feed.js 的 FEED_FILES + lib/calendar.js 的 CALENDAR_FILES）');
 
 /* 参考产物：两个文件必须存在且非空；缺 ⇒ 非 0（只有显式 --allow-missing-dist 才退化） */
-const referenceFiles = feedFilesOf(BUILT);
+const referenceFiles = artifactFilesOf(BUILT);
 const referenceMissing = incompleteOf(referenceFiles);
 let reference = null;
 if (!referenceMissing.length) {
   reference = { label: `${rel(BUILT)}/`, files: referenceFiles, hash: fingerprintOf(referenceFiles) };
-  ok(`参考产物：${reference.label} 的订阅文件齐备且非空（${namesOf(referenceFiles)}；指纹 ${shortHash(reference.hash)}）`);
+  ok(`参考产物：${reference.label} 的产物文件齐备且非空（${namesOf(referenceFiles)}；指纹 ${shortHash(reference.hash)}）`);
 } else if (ALLOW_MISSING_DIST) {
   console.log(`  ⚠️ OPTIONAL DIAGNOSTIC（--allow-missing-dist）：${rel(BUILT)}/ 里缺 ${namesOf(referenceMissing)}`
     + '（或它们是空的），本轮**只做「连续构建逐字节一致」自比对**，不做「与参考产物一致」比对。');
@@ -325,11 +331,11 @@ try {
       break;
     }
 
-    const files = feedFilesOf(TMP);
+    const files = artifactFilesOf(TMP);
     const missing = incompleteOf(files);
     if (missing.length) {
-      fail(`第 ${run} 次构建没有产出全部订阅文件：${namesOf(missing)} 缺文件或是 0 字节`
-        + '（空 feed 一律判红 —— 静默跳过会让这一步少掉一半判据而全绿）');
+      fail(`第 ${run} 次构建没有产出全部产物文件：${namesOf(missing)} 缺文件或是 0 字节`
+        + '（空产物一律判红 —— 静默跳过会让这一步少掉一半判据而全绿）');
       break;
     }
     const hash = fingerprintOf(files);
@@ -340,7 +346,9 @@ try {
       for (const file of files) console.log(`      ${file.rel}：${file.bytes} 字节 · sha256 ${shortHash(file.hash)}`);
 
       /* 探针 ①：时间字段的形态 */
-      const instants = instantsOf(files);
+      // 墙钟探针只扫订阅流：日历用的是 DATE 值 + 冻结 DTSTAMP，时间形态不同，混进来会误报。
+      const feedNames = new Set(feed.FEED_FILES.map(([file]) => file));
+      const instants = instantsOf(files.filter(file => feedNames.has(file.rel)));
       const wrongShape = [...new Set(instants.filter(item => !FROZEN_INSTANT_RE.test(item.instant))
         .map(item => `${item.file}: ${item.instant}`))];
       if (!instants.length) {

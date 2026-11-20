@@ -33,6 +33,7 @@ const plansCompare = require('./plans-compare');
  * 必须是同一句，所以句子只能有一处实现（`planChangeText()`）。
  */
 const planHistory = require('./plan-history');
+const priceHistory = require('./price-history');
 
 /**
  * 说明登记（notes-manifest-residual-v1）：`.snote` 构造点不再直接写进页面 —— 每个构造点在
@@ -454,6 +455,33 @@ function comparePayloadScriptHtml(payload) {
  * 剩下能说的只有"这条事实是什么时候、从哪个官方页核对的"—— 全部证据都在 `plans.json` 里，
  * 撑不起 9 张独立页面（6 条连模型清单都没有）。详情只做**溯源**，不复述表格。
  */
+
+/**
+ * 套餐详情里的价格走势小图 —— **只在真的有价格事件时**才出现。
+ *
+ * 判据与 `/plans/api/`、模型页、厂商页共用 `lib/price-history.js`；
+ * 这里不重新推导一遍，只把 `opts.priceHistory` 里属于本条套餐的序列筛出来。
+ */
+function planPriceHistoryBlockOf(plan, opts = {}) {
+  const history = opts.priceHistory || null;
+  if (!history || !history.plan) return '';
+  const labels = planHistory.PLAN_HISTORY_WORDING.PLAN_HISTORY_FIELD_LABELS;
+  const list = [...history.plan.values()]
+    .filter(series => series.planId === plan.id && series.changes.length > 0)
+    .sort((a, b) => (a.priceField < b.priceField ? -1 : a.priceField > b.priceField ? 1 : 0));
+  if (!list.length) return '';
+  return priceHistory.priceHistoryBlockHtml({
+    seriesList: list,
+    asOf: opts.asOf || null,
+    heading: '价格变化走势',
+    headingTag: 'h3',
+    headingClass: 'ph3',
+    intro: '阶梯线只连接日志里真实记录过的价格点；两次记录之间的日子按上一个观测值画平线，不做插值。',
+    labelOf: series => labels[series.priceField] || series.priceField,
+    unitTextOf: series => BILLING_PERIOD_LABEL[series.unit] || series.unit || ''
+  });
+}
+
 function planDetailTemplatesHtml(plans, opts = {}) {
   const historyStore = opts.planHistoryStore || null;
   const plansById = new Map((plans || []).map(plan => [plan.id, plan]));
@@ -493,6 +521,7 @@ function planDetailTemplatesHtml(plans, opts = {}) {
           </dl>
           ${quotaDescription}
           ${timeline}
+          ${planPriceHistoryBlockOf(plan, opts)}
           <h3>官方原文引文（${(plan.evidence || []).length} 条）</h3>
           <ul class="pev">${evidence}</ul>
         </div>
@@ -712,9 +741,11 @@ function planChangesBlockHtml(radar, opts = {}) {
       + footer;
   }
 
+  const priceSummaryHtml = opts.priceSummary
+    ? `        <p class="ph-sum">${escapeHtml(opts.priceSummary)}</p>\n` : '';
   return `      <section class="pchanges" id="plan-changes" aria-labelledby="plan-changes-h">
         <h2 class="ph2" id="plan-changes-h">${escapeHtml(W.recentTitle)}</h2>
-${body}      </section>
+${body}${priceSummaryHtml}      </section>
 `;
 }
 
@@ -1027,6 +1058,22 @@ function assertPlanDealsBlock(html, view, opts = {}) {
 // T5 删除（census A · 半句）：删「数据集与判据：plans.json（每条套餐的原始字段，含官方原文引文）。」—— **内部数据源自证**（哪个文件、里面有什么字段）。⚠️ 同一条 `.snote` 的**元素不删**（前半句「名义 Token 单价的口径」是 C 类）⇒ 元素数不变。
 // [T5-plans-1065-footer-dup]
 // T5 删除（census B · 半句）：删「这一页只做收录与整理，价格、额度与条款以各平台官方页面为准。」—— 与共享页脚「优惠信息来自各厂商官方页面与公开折扣页，最终以官方页面为准。」同义重复。元素保留（同上）。
+/**
+ * 套餐价格历史的**一份**推导结果：正文里的逐套餐小图与 changes 块的聚合陈述共用它。
+ *
+ * `/plans/` 枢纽页也要在同一个变化块里写同一句话（两页的变化块必须逐字相同），
+ * 所以这句话的算法只能有一处：这里。调用方各自传自己的 plans / 日志 / 基准日。
+ */
+function planPriceHistoryOf(plans, planHistoryStore, asOf) {
+  const view = priceHistory.buildPriceHistory({ planStore: planHistoryStore, plans, asOf });
+  const counts = priceHistory.countsOf(view.plan);
+  return {
+    view,
+    counts,
+    summary: counts.entries ? `${counts.entries} 个套餐 · 基线以来 ${counts.changes} 次价格变化` : ''
+  };
+}
+
 function plansPageBody(plans, opts = {}) {
   const providerTable = opts.providerTable || providersLib.load().table;
   const rows = plansRows(plans, opts);
@@ -1037,9 +1084,12 @@ function plansPageBody(plans, opts = {}) {
   const payload = planComparePayloadOf(plans, { providerTable });
   /** 排序档位里没有 `unit` = 本期一条都不可比较 —— 那句话必须出现在页面上，而不是靠读者猜 */
   const unitSortable = payload.dimensions.sort.some(item => item.key === 'unit');
+  // 价格历史（F1）：整页只推导一次，变化块与套餐详情模板共用这一份。
+  const planPrice = planPriceHistoryOf(plans, opts.planHistoryStore || null, opts.asOf || null);
+  const priceSummary = planPrice.summary;
   // v2.3：最近变化块。**放在 #plans-compare 之外**（那个容器的 innerHTML 会被 JS 整块替换）。
   const planChangesBlock = opts.planChanges
-    ? planChangesBlockHtml(opts.planChanges, { prefix: opts.prefix || '', providerTable, plansById: new Map(plans.map(p => [p.id, p])), note: opts.note })
+    ? planChangesBlockHtml(opts.planChanges, { prefix: opts.prefix || '', providerTable, plansById: new Map(plans.map(p => [p.id, p])), note: opts.note, priceSummary })
     : '';
   // v2.4：优惠 ↔ 套餐。同样在 #plans-compare 之外、纯静态（无 JS 时也读得到）。
   // 视图由 `lib/deal-plan-links.js` 算好传进来（判据只有一处），这里只排版。
@@ -1132,7 +1182,7 @@ ${unitSortable ? '' : `      ${noteIn(opts)({ kind: 'page-note', slot: 'main-sno
 ${dealLinksBlock}
       ${comparePayloadScriptHtml(payload)}
       <div class="ptpl" aria-hidden="true">
-${planDetailTemplatesHtml(plans, { providerTable, planHistoryStore: opts.planHistoryStore, timelineLimit: opts.timelineLimit })}
+${planDetailTemplatesHtml(plans, { providerTable, planHistoryStore: opts.planHistoryStore, timelineLimit: opts.timelineLimit, priceHistory: planPrice.view, asOf: opts.asOf || null })}
       </div>
 
       <h2 class="ph2">口径与说明</h2>
@@ -1705,6 +1755,8 @@ module.exports = {
   planCompareRowOf,
   planComparePayloadOf,
   planDetailTemplatesHtml,
+  planPriceHistoryBlockOf,
+  planPriceHistoryOf,
   comparePayloadScriptHtml,
   comparePayloadOf,
   jsonForScript,
