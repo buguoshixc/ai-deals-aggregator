@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-19T13:10:19.916Z",
+  "generatedAt": "2026-11-20T05:53:03.647Z",
   "_note": "机器账本（collect 侧 scripts/tools/sync-vendor-slug-ledger.js 维护，**禁止手改**）：记录 /vendor/<slug>/ 已发布过的厂商 slug 与首次路由时间。人工要改 slug 时改 scripts/data/vendor-slugs.json（覆盖表），并在 scripts/data/landing-aliases.json 登记旧路由 → 新路由，让本工具迁移账本。构建过程不写这份文件。",
   "vendors": [
     {
@@ -235,6 +235,12 @@
       "vendorName": "RobinReach",
       "slug": "robinreach",
       "firstRoutedAt": "2026-11-18T20:03:44.064Z",
+      "status": "active"
+    },
+    {
+      "vendorName": "ScrollHaus",
+      "slug": "scrollhaus",
+      "firstRoutedAt": "2026-11-20T05:53:03.647Z",
       "status": "active"
     },
     {

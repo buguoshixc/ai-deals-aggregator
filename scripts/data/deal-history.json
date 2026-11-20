@@ -2876,9 +2876,9 @@
     },
     "42df4fdc8aa9": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-20",
-      "endedAt": null
+      "endedAt": "2026-11-20"
     },
     "44848acd19f3": {
       "source": "AppSumo",
@@ -3162,12 +3162,6 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
-    "a67c07bf4993": {
-      "source": "Futuretools",
-      "misses": 2,
-      "since": "2026-11-19",
-      "endedAt": "2026-11-19"
-    },
     "a9053ca847fb": {
       "source": "aitools.fyi",
       "misses": 2,
@@ -3278,9 +3272,9 @@
     },
     "e5fcacad308b": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-20",
-      "endedAt": null
+      "endedAt": "2026-11-20"
     },
     "e6da58501e1d": {
       "source": "aitools.fyi",
@@ -3312,17 +3306,17 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
-    "f34797ef8750": {
-      "source": "AppSumo",
-      "misses": 2,
-      "since": "2026-11-17",
-      "endedAt": "2026-11-18"
-    },
     "f6e6f3b1c820": {
       "source": "AppSumo",
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
+    },
+    "f7d846f3c57f": {
+      "source": "Futuretools",
+      "misses": 1,
+      "since": "2026-11-20",
+      "endedAt": null
     },
     "f91e1085801f": {
       "source": "aitools.fyi",
@@ -8056,6 +8050,64 @@
         "verified": false
       },
       "runAt": "2026-11-19T20:02:36.346Z"
+    },
+    {
+      "id": "42df4fdc8aa9",
+      "at": "2026-11-20",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-20",
+      "runAt": "2026-11-20T05:52:48.034Z",
+      "label": {
+        "title": "Triplo AI",
+        "vendor": "Triplo AI"
+      }
+    },
+    {
+      "id": "a67c07bf4993",
+      "at": "2026-11-20",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-20T05:52:48.034Z"
+    },
+    {
+      "id": "e5fcacad308b",
+      "at": "2026-11-20",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-20",
+      "runAt": "2026-11-20T05:52:48.034Z",
+      "label": {
+        "title": "Creator Lookup",
+        "vendor": "Creator Lookup"
+      }
+    },
+    {
+      "id": "f34797ef8750",
+      "at": "2026-11-20",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-20T05:52:48.034Z"
+    },
+    {
+      "id": "f34797ef8750",
+      "at": "2026-11-20",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": null,
+      "to": "2026-12-04",
+      "origin": "observed",
+      "runAt": "2026-11-20T05:52:48.034Z"
     }
   ]
 }
