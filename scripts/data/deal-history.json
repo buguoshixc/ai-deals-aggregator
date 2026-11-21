@@ -2756,9 +2756,9 @@
     },
     "10c4bcfc0c32": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-21",
-      "endedAt": null
+      "endedAt": "2026-11-21"
     },
     "1fff4784ec9d": {
       "source": "aitools.fyi",
@@ -2771,6 +2771,12 @@
       "misses": 2,
       "since": "2026-11-15",
       "endedAt": "2026-11-15"
+    },
+    "23d7b85f4992": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-21",
+      "endedAt": null
     },
     "2608e4a555a7": {
       "source": "Futuretools",
@@ -2966,9 +2972,9 @@
     },
     "6637868284f5": {
       "source": "OpenRouter",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-21",
-      "endedAt": null
+      "endedAt": "2026-11-21"
     },
     "69a0d047e3f9": {
       "source": "Futuretools",
@@ -3119,12 +3125,6 @@
       "misses": 2,
       "since": "2026-11-19",
       "endedAt": "2026-11-20"
-    },
-    "97d21ff73d3e": {
-      "source": "智谱AI活动页",
-      "misses": 1,
-      "since": "2026-11-21",
-      "endedAt": null
     },
     "98b5e610f7bc": {
       "source": "aitools.fyi",
@@ -8635,6 +8635,57 @@
         "title": "Press Ranger",
         "vendor": "Press Ranger"
       }
+    },
+    {
+      "id": "10c4bcfc0c32",
+      "at": "2026-11-21",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-21",
+      "runAt": "2026-11-21T11:10:32.186Z",
+      "label": {
+        "title": "Nifty",
+        "vendor": "Nifty"
+      }
+    },
+    {
+      "id": "6637868284f5",
+      "at": "2026-11-21",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-21",
+      "runAt": "2026-11-21T11:10:32.186Z",
+      "label": {
+        "title": "Recursive: Flint (free)",
+        "vendor": "Recursive"
+      }
+    },
+    {
+      "id": "d0ed1daf6974",
+      "at": "2026-11-21",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $99，原价 $249（省 60%）",
+        "pricingModel": "paid",
+        "priceLine": "$99 终身（原价 $249）",
+        "expiresAt": "2026-11-22",
+        "type": "deal",
+        "category": "设计创意",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-21T11:10:32.186Z"
     }
   ]
 }

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-11-21T13:46:35+08:00",
-  "count": 263,
+  "updatedAt": "2026-11-21T19:10:32+08:00",
+  "count": 264,
   "deals": [
     {
       "id": "2eae0e246de2",
@@ -2641,29 +2641,6 @@
       "verifiedAt": null
     },
     {
-      "id": "c8784a307734",
-      "title": "Lety.ai",
-      "vendor": "Lety.ai",
-      "url": "https://appsumo.com/products/lety-ai/",
-      "source": "AppSumo",
-      "sourceUrl": "https://appsumo.com/collections/new/",
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $79，原价 $299.01（省 74%）",
-      "pricingModel": "paid",
-      "priceLine": "$79 终身（原价 $299.01）",
-      "features": null,
-      "category": "对话模型",
-      "description": "Sell white-label AI agents with an agentic CRM, 900+ MCP integrations, and subscription billing",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": "2026-12-02",
-      "firstSeen": "2026-11-19",
-      "lastSeen": "2026-11-21",
-      "verified": false,
-      "verifiedAt": null
-    },
-    {
       "id": "2a7204391275",
       "title": "ZeroWork",
       "vendor": "ZeroWork",
@@ -2678,6 +2655,29 @@
       "features": null,
       "category": "编程开发",
       "description": "Scrape data, generate leads, and run social media tasks with no-code AI browser automation",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": "2026-12-02",
+      "firstSeen": "2026-11-19",
+      "lastSeen": "2026-11-21",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
+      "id": "c8784a307734",
+      "title": "Lety.ai",
+      "vendor": "Lety.ai",
+      "url": "https://appsumo.com/products/lety-ai/",
+      "source": "AppSumo",
+      "sourceUrl": "https://appsumo.com/collections/new/",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $79，原价 $299.01（省 74%）",
+      "pricingModel": "paid",
+      "priceLine": "$79 终身（原价 $299.01）",
+      "features": null,
+      "category": "对话模型",
+      "description": "Sell white-label AI agents with an agentic CRM, 900+ MCP integrations, and subscription billing",
       "eligibility": null,
       "validity": null,
       "expiresAt": "2026-12-02",
@@ -2710,20 +2710,20 @@
       "verifiedAt": null
     },
     {
-      "id": "bce5afb96302",
-      "title": "Visby",
-      "vendor": "Visby",
-      "url": "https://appsumo.com/products/visby/",
+      "id": "5c45f40df3ed",
+      "title": "CluGTM (formerly Cleanlist AI)",
+      "vendor": "CluGTM",
+      "url": "https://appsumo.com/products/clugtm/",
       "source": "AppSumo",
       "sourceUrl": "https://appsumo.com/collections/new/",
       "region": "global",
       "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $79，原价 $958（省 92%）",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $89，原价 $600（省 85%）",
       "pricingModel": "paid",
-      "priceLine": "$79 终身（原价 $958）",
+      "priceLine": "$89 终身（原价 $600）",
       "features": null,
-      "category": "搜索研究",
-      "description": "Track AI brand mentions, benchmark competitors’ share of voice, and close SEO and GEO content gaps",
+      "category": "编程开发",
+      "description": "Search 1B+ profiles, enrich from 25+ providers, and research leads with AI in one GTM platform",
       "eligibility": null,
       "validity": null,
       "expiresAt": "2026-12-02",
@@ -2756,6 +2756,29 @@
       "verifiedAt": null
     },
     {
+      "id": "bce5afb96302",
+      "title": "Visby",
+      "vendor": "Visby",
+      "url": "https://appsumo.com/products/visby/",
+      "source": "AppSumo",
+      "sourceUrl": "https://appsumo.com/collections/new/",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $79，原价 $958（省 92%）",
+      "pricingModel": "paid",
+      "priceLine": "$79 终身（原价 $958）",
+      "features": null,
+      "category": "搜索研究",
+      "description": "Track AI brand mentions, benchmark competitors’ share of voice, and close SEO and GEO content gaps",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": "2026-12-02",
+      "firstSeen": "2026-11-17",
+      "lastSeen": "2026-11-21",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
       "id": "a157ed655587",
       "title": "Rerun — AI Coworkers",
       "vendor": "Rerun",
@@ -2774,75 +2797,6 @@
       "validity": null,
       "expiresAt": null,
       "firstSeen": "2026-11-18",
-      "lastSeen": "2026-11-21",
-      "verified": false,
-      "verifiedAt": null
-    },
-    {
-      "id": "23d7b85f4992",
-      "title": "Rocky AI",
-      "vendor": "Rocky AI",
-      "url": "https://appsumo.com/products/rocky-ai/",
-      "source": "AppSumo",
-      "sourceUrl": "https://appsumo.com/collections/new/",
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $1200（省 95%）",
-      "pricingModel": "paid",
-      "priceLine": "$59 终身（原价 $1200）",
-      "features": null,
-      "category": "设计创意",
-      "description": "Run your coaching business on one white-label AI platform with courses, roleplays, cohorts, and AI agents",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": "2026-11-22",
-      "firstSeen": "2026-11-21",
-      "lastSeen": "2026-11-21",
-      "verified": false,
-      "verifiedAt": null
-    },
-    {
-      "id": "5c45f40df3ed",
-      "title": "CluGTM (formerly Cleanlist AI)",
-      "vendor": "CluGTM",
-      "url": "https://appsumo.com/products/clugtm/",
-      "source": "AppSumo",
-      "sourceUrl": "https://appsumo.com/collections/new/",
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $89，原价 $600（省 85%）",
-      "pricingModel": "paid",
-      "priceLine": "$89 终身（原价 $600）",
-      "features": null,
-      "category": "编程开发",
-      "description": "Search 1B+ profiles, enrich from 25+ providers, and research leads with AI in one GTM platform",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": "2026-12-02",
-      "firstSeen": "2026-11-17",
-      "lastSeen": "2026-11-21",
-      "verified": false,
-      "verifiedAt": null
-    },
-    {
-      "id": "f34797ef8750",
-      "title": "ScrollHaus",
-      "vendor": "ScrollHaus",
-      "url": "https://appsumo.com/products/scrollhaus/",
-      "source": "AppSumo",
-      "sourceUrl": "https://appsumo.com/collections/new/",
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $99，原价 $299（省 67%）",
-      "pricingModel": "paid",
-      "priceLine": "$99 终身（原价 $299）",
-      "features": null,
-      "category": "设计创意",
-      "description": "Animated website templates with 3D effects, scroll animations, and prompts for AI builders",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": "2026-12-04",
-      "firstSeen": "2026-11-09",
       "lastSeen": "2026-11-21",
       "verified": false,
       "verifiedAt": null
@@ -2885,6 +2839,52 @@
       "features": null,
       "category": "办公效率",
       "description": "Create docs, manage projects, and sell premium content using an AI workspace that syncs across devices",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": "2026-11-22",
+      "firstSeen": "2026-11-21",
+      "lastSeen": "2026-11-21",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
+      "id": "f34797ef8750",
+      "title": "ScrollHaus",
+      "vendor": "ScrollHaus",
+      "url": "https://appsumo.com/products/scrollhaus/",
+      "source": "AppSumo",
+      "sourceUrl": "https://appsumo.com/collections/new/",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $99，原价 $299（省 67%）",
+      "pricingModel": "paid",
+      "priceLine": "$99 终身（原价 $299）",
+      "features": null,
+      "category": "设计创意",
+      "description": "Animated website templates with 3D effects, scroll animations, and prompts for AI builders",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": "2026-12-04",
+      "firstSeen": "2026-11-09",
+      "lastSeen": "2026-11-21",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
+      "id": "d0ed1daf6974",
+      "title": "upcoach",
+      "vendor": "upcoach",
+      "url": "https://appsumo.com/products/upcoach/",
+      "source": "AppSumo",
+      "sourceUrl": "https://appsumo.com/collections/new/",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $99，原价 $249（省 60%）",
+      "pricingModel": "paid",
+      "priceLine": "$99 终身（原价 $249）",
+      "features": null,
+      "category": "设计创意",
+      "description": "Launch group coaching, cohort courses, and masterminds with progress tracking and AI insights",
       "eligibility": null,
       "validity": null,
       "expiresAt": "2026-11-22",
@@ -4380,6 +4380,88 @@
       }
     },
     {
+      "id": "97d21ff73d3e",
+      "title": "智谱AI 新用户注册专享 2000万 免费 Tokens 资源包",
+      "vendor": "智谱AI",
+      "url": "https://bigmodel.cn/pricing",
+      "source": "智谱AI活动页",
+      "sourceUrl": null,
+      "region": "cn",
+      "type": "deal",
+      "discountInfo": "新用户注册专享 2000万 免费 Tokens 资源包，并含 120 次图像和视频资源包。",
+      "pricingModel": "free",
+      "priceLine": null,
+      "features": null,
+      "category": "API服务",
+      "description": "来源：智谱开放平台官方价格页营销位与活动说明。",
+      "eligibility": "智谱开放平台新注册用户（需实名认证）",
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-11-21",
+      "verified": false,
+      "verifiedAt": null,
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "identityVerificationRequired": true,
+        "newUserOnly": true
+      },
+      "claimRequirements": {
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "provenance": {
+        "credibility": "curated",
+        "contrib": {
+          "audience": [
+            "curated"
+          ],
+          "benefitType": [
+            "curated"
+          ],
+          "eligibilityDetail": [
+            "curated"
+          ],
+          "claimRequirements": [
+            "curated"
+          ],
+          "availability": [
+            "curated"
+          ]
+        },
+        "fields": {
+          "audience": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "benefitType": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "eligibilityDetail": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "claimRequirements": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "availability": {
+            "basis": "source",
+            "derived": "stated"
+          }
+        }
+      }
+    },
+    {
       "id": "1688614d6669",
       "title": "智谱AI 邀请好友注册赠送 Tokens 资源包",
       "vendor": "智谱AI",
@@ -5233,6 +5315,29 @@
       }
     },
     {
+      "id": "23d7b85f4992",
+      "title": "Rocky AI",
+      "vendor": "Rocky AI",
+      "url": "https://appsumo.com/products/rocky-ai/",
+      "source": "AppSumo",
+      "sourceUrl": "https://appsumo.com/collections/new/",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $1200（省 95%）",
+      "pricingModel": "paid",
+      "priceLine": "$59 终身（原价 $1200）",
+      "features": null,
+      "category": "设计创意",
+      "description": "Run your coaching business on one white-label AI platform with courses, roleplays, cohorts, and AI agents",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": "2026-11-22",
+      "firstSeen": "2026-11-21",
+      "lastSeen": "2026-11-21",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
       "id": "10c4bcfc0c32",
       "title": "Nifty",
       "vendor": "Nifty",
@@ -5305,88 +5410,6 @@
       "verified": false,
       "verifiedAt": null,
       "excerpt": "IT之家 11 月 20 日消息，影石官方宣布，即日起，影石 Insta360 旗下旗舰级无线麦克风 Mic Pro 与 AI 录音全向麦克风 Wave 完成免费固件升级，原生接入腾讯 WorkBuddy。升级后，Mic Pro 的录音可直接进入 AI 工作流，影石的音频产品也从「记录工具」延伸为 AI 办公的语音入口。影石方面称，Mic Pro 和 Wave 凭借专业拾音与 AI 降噪能力，帮助用户清晰捕捉真实工作场景中的声音。WorkBuddy 则进一步理解录音内容，调…"
-    },
-    {
-      "id": "97d21ff73d3e",
-      "title": "智谱AI 新用户注册专享 2000万 免费 Tokens 资源包",
-      "vendor": "智谱AI",
-      "url": "https://bigmodel.cn/pricing",
-      "source": "智谱AI活动页",
-      "sourceUrl": null,
-      "region": "cn",
-      "type": "deal",
-      "discountInfo": "新用户注册专享 2000万 免费 Tokens 资源包，并含 120 次图像和视频资源包。",
-      "pricingModel": "free",
-      "priceLine": null,
-      "features": null,
-      "category": "API服务",
-      "description": "来源：智谱开放平台官方价格页营销位与活动说明。",
-      "eligibility": "智谱开放平台新注册用户（需实名认证）",
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-21",
-      "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
-      }
     },
     {
       "id": "d175c32f71fd",
