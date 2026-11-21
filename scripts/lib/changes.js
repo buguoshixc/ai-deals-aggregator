@@ -312,6 +312,26 @@ function renderOrderOf(radar) {
 }
 
 /**
+ * `/changes/` 页预渲染正文（无 JS 可读）的长度下限口径。
+ *
+ * 系数保持 v1.5 起的原值（`base: 700`、`perRow: 40` —— 下限不调低），但**乘数必须是实际渲染出的行数**
+ * （`renderOrderOf(radar).length`），绝不能用截断/去重前的事件总数（`totals`）：
+ *   · 每个分栏与 `other.cosmetic` / `other.metadata` 都按 `LIMITS.itemsPerSection`（30）封顶，
+ *     超出的事件**不会**渲染成行，只占一句「另有 N 条未显示」；
+ *   · B 类线索跨分栏去重（`dedupeLeadRows`）后，同一 id 只渲染一张 `.leadcard`。
+ * 2026-11-20→21（issue #154）连续两轮发布门禁红的根因正是旧写法把 `40 ×` 乘在了
+ * `highValueTotal + radar.totals.other` 上：30 天窗口攒到 242 条事件（其中 144 条被截断未渲染），
+ * 下限飙到 10380 字，超过 98 行真实渲染正文（10291 字）。按 `renderOrderOf(radar).length` 算，
+ * 未截断时与旧公式逐字相等，截断后随真实渲染面有界，且渲染路径断掉时仍能打红（`markChangesRows`
+ * 另对 `<li class="chgi">` 行数与 `renderOrderOf(radar).length` 做硬相等断言，不能靠少渲染行绕过）。
+ */
+const CHANGES_TEXT_FLOOR = { base: 700, perRow: 40 };
+
+function changesPageTextFloor(radar) {
+  return CHANGES_TEXT_FLOOR.base + CHANGES_TEXT_FLOOR.perRow * renderOrderOf(radar).length;
+}
+
+/**
  * ItemList 与页面行标记读的**同一次**集合：每个记录恰好一条（取最强事件），
  * 且只收**真有详情页**的（`href` 非空）—— 给「已离开数据集」的条目发一个不存在的 URL
  * 就是在结构化数据里造死链。
@@ -826,6 +846,8 @@ module.exports = {
   linkableDealIdsOf,
   buildRadar,
   renderOrderOf,
+  CHANGES_TEXT_FLOOR,
+  changesPageTextFloor,
   itemListRecords,
   summarize
 };
