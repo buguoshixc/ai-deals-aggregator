@@ -2724,6 +2724,12 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
+    "0750a3061d72": {
+      "source": "Futuretools",
+      "misses": 1,
+      "since": "2026-11-22",
+      "endedAt": null
+    },
     "086534ebceeb": {
       "source": "AppSumo",
       "misses": 2,
@@ -2754,12 +2760,6 @@
       "since": "2026-11-14",
       "endedAt": "2026-11-14"
     },
-    "10c4bcfc0c32": {
-      "source": "AppSumo",
-      "misses": 2,
-      "since": "2026-11-21",
-      "endedAt": "2026-11-21"
-    },
     "1fff4784ec9d": {
       "source": "aitools.fyi",
       "misses": 2,
@@ -2771,12 +2771,6 @@
       "misses": 2,
       "since": "2026-11-15",
       "endedAt": "2026-11-15"
-    },
-    "23d7b85f4992": {
-      "source": "AppSumo",
-      "misses": 1,
-      "since": "2026-11-21",
-      "endedAt": null
     },
     "2608e4a555a7": {
       "source": "Futuretools",
@@ -3180,12 +3174,6 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
-    "a67c07bf4993": {
-      "source": "Futuretools",
-      "misses": 2,
-      "since": "2026-11-21",
-      "endedAt": "2026-11-21"
-    },
     "a9053ca847fb": {
       "source": "aitools.fyi",
       "misses": 2,
@@ -3245,6 +3233,12 @@
       "misses": 2,
       "since": "2026-11-14",
       "endedAt": "2026-11-15"
+    },
+    "d0ed1daf6974": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-22",
+      "endedAt": null
     },
     "d175c32f71fd": {
       "source": "AppSumo",
@@ -8686,6 +8680,24 @@
         "verified": false
       },
       "runAt": "2026-11-21T11:10:32.186Z"
+    },
+    {
+      "id": "10c4bcfc0c32",
+      "at": "2026-11-22",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-21T18:46:54.275Z"
+    },
+    {
+      "id": "a67c07bf4993",
+      "at": "2026-11-22",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-21T18:46:54.275Z"
     }
   ]
 }
