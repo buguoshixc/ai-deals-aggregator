@@ -7865,11 +7865,17 @@ function selfCheck(built) {
           }
         }
       }
-      // 预渲染正文（无 JS 可读）。阈值按「固定说明 + 每条 40 字」估：实测空态页约 900 字，
-      // 每条事件行约 40–120 字。取 700 的下限只为拦住「渲染路径断了」这类坏法。
+      // 预渲染正文（无 JS 可读）。阈值按「固定说明 700 + 每条实际渲染行 40 字」算
+      //（唯一出处：`changes.changesPageTextFloor(radar)`，乘数为 `renderOrderOf(radar).length`）：
+      // 实测空态页约 900 字，每条渲染行约 40–120 字。不能乘截断前的事件总数 `totals`——
+      // 分栏按 `itemsPerSection=30` 封顶、线索跨栏去重，超出事件并不渲染成行
+      // （issue #154：242 条事件里 144 条被截断，旧写法算出 10380 字 > 实测 10291 字，连续停版）。
       const text = prerenderedText(page);
-      const floor = 700 + 40 * (highValueTotal + radar.totals.other);
-      if (text.length < floor) problems.push(`changes/ 预渲染正文过短（${text.length} 字 < ${floor}）`);
+      const renderedRows = changes.renderOrderOf(radar).length;
+      const floor = changes.changesPageTextFloor(radar);
+      if (text.length < floor) {
+        problems.push(`changes/ 预渲染正文过短（${text.length} 字 < ${floor}，按 ${renderedRows} 条实际渲染行）`);
+      }
       // 其它变化必须**显式列出**（不是悄悄丢掉）
       if (radar.totals.other > 0 && !noScript.includes('class="chgother"')) problems.push('有其他变化却没有列出折叠块');
 

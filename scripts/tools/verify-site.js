@@ -5128,27 +5128,73 @@ function noJsControlExemptionFor(route) {
   // 契约：线索**不占**条带的 `.ritem` 槽位（数据层 home 池排除），改由一条常驻入口
   // `a.rleadcount` 呈现；它不在横滑容器里、不随日期消失，`data-lead-count` 是 N 的真值。
   // 真值 = `/changes/` 实际渲染出的 `.leadcard` 张数（两把尺子同源：入口的 N 与卡片集都来自
-  // 「五个分栏里 lead === true 的条目」）。数据侧再算一遍窗口内线索，防「数据有线索、页面没卡、
-  // 入口也不见」被两侧同时判绿。
+  // 「五个分栏里 lead === true 的条目」）。
+  //
+  // 数据侧独立推导「经 7d/30d 窗口 + SECTION_ORDER 去重 + itemsPerSection 截断后，
+  // 应当落在 `/changes/` 五栏上的线索集合（id → section）」，防「数据有线索、页面没卡、
+  // 入口也不见」被两侧同时判绿；同时避免把「分栏超 30 条被合法截断」误判成渲染断链
+  //（2026-11-21 实测：`changed` 达 83 条，4 条活跃线索里 2 条已被截断，次日新增 5 条非线索
+  // `changed` 事件即会全部截断出前 30 名；旧写法只扫 `radarLeadDeals.firstSeen`，必假红）。
+  const expectedRenderedLeadSections = (() => {
+    const leadAsOf = String(radarDealsDoc.updatedAt || '').slice(0, 10);
+    const recentFrom = changesLib.addDays(leadAsOf, -(changesLib.WINDOWS.recentDays - 1));
+    const endedFrom = changesLib.addDays(leadAsOf, -(changesLib.WINDOWS.endedDays - 1));
+    if (!recentFrom || !endedFrom) return new Map();
+    const buckets = { created: [], changed: [], endingSoon: [], ended: [], restored: [] };
+    for (const event of (radarHistoryDoc.events || [])) {
+      if (!event || typeof event !== 'object') continue;
+      const at = String(event.at || '');
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(at) || at > leadAsOf) continue;
+      if (event.type === 'ended' || event.type === 'restored') {
+        if (at >= endedFrom) buckets[event.type].push(event);
+        continue;
+      }
+      if (at < recentFrom) continue;
+      if (event.type === 'created') {
+        if (at === leadAsOf) buckets.created.push(event);
+        else buckets.changed.push(event);
+        continue;
+      }
+      if (changesLib.LOW_VALUE_FIELD_TYPES.includes(event.type) || changesLib.isCosmetic(event)) continue;
+      if (changesLib.HIGH_VALUE_FIELD_TYPES.includes(event.type)) buckets.changed.push(event);
+    }
+    for (const key of ['created', 'changed', 'ended', 'restored']) {
+      buckets[key].sort(changesLib.compareByRecency);
+    }
+    const seenLeads = new Set();
+    const out = new Map();
+    for (const key of changesLib.SECTION_ORDER) {
+      const deduped = buckets[key].filter(event => {
+        const id = String(event.id || '');
+        if (!leadIds.has(id)) return true;
+        if (seenLeads.has(id)) return false;
+        seenLeads.add(id);
+        return true;
+      });
+      for (const event of deduped.slice(0, changesLib.LIMITS.itemsPerSection)) {
+        const id = String(event.id || '');
+        if (leadIds.has(id)) out.set(id, key);
+      }
+    }
+    return out;
+  })();
+
   {
     const chip = radarHome ? radarHome.leadChip : null;
     const cards = changesPage.leadCards || [];
-    const leadAsOf = String(radarDealsDoc.updatedAt || '').slice(0, 10);
-    const leadRecentFrom = Number.isFinite(Date.parse(`${leadAsOf}T00:00:00Z`))
-      ? new Date(Date.parse(`${leadAsOf}T00:00:00Z`) - 6 * 86400000).toISOString().slice(0, 10)
-      : null;
-    const leadsInWindowCount = !leadRecentFrom ? 0 : radarLeadDeals.filter(deal =>
-      typeof deal.firstSeen === 'string' && deal.firstSeen >= leadRecentFrom && deal.firstSeen <= leadAsOf).length;
-    const leadsInWindow = leadsInWindowCount > 0;
+    const expectedLeadCount = expectedRenderedLeadSections.size;
+    const leadsRenderedExpected = expectedLeadCount > 0;
     const N = cards.length;   // 页面侧真值 = /changes/ 的 .leadcard 张数
 
-    // ① 窗口内有线索 ⇒ 恰好一个入口，且 data-lead-count == /changes/ 的线索卡张数
+    // ① 经窗口与分栏截断后应渲染线索 > 0 ⇒ 恰好一个入口，且 data-lead-count == /changes/ 的线索卡张数 == 期望值
     check('窗口内有线索 ⇒ 首页条带恰好一个线索入口，data-lead-count == /changes/ 线索卡张数',
-      !leadsInWindow || (Boolean(chip) && chip.total === 1 && chip.count === N && N > 0),
-      leadsInWindow
-        ? `窗口内线索 ${leadsInWindowCount} 条 · 入口 ${chip ? chip.total : 0} 个` +
+      leadsRenderedExpected
+        ? (Boolean(chip) && chip.total === 1 && chip.count === N && N === expectedLeadCount)
+        : (chip === null && N === 0),
+      leadsRenderedExpected
+        ? `截断后应渲染线索 ${expectedLeadCount} 条（窗口活跃 ${radarLeadDeals.length} 条） · 入口 ${chip ? chip.total : 0} 个` +
           ` · data-lead-count=${chip ? chip.count : '缺失'} · /changes/ 卡 ${N} 张`
-        : `窗口内 0 条线索 · 入口 ${chip ? chip.total : 0} 个 · /changes/ 卡 ${N} 张`);
+        : `截断后应渲染线索 0 条（窗口活跃 ${radarLeadDeals.length} 条） · 入口 ${chip ? chip.total : 0} 个 · /changes/ 卡 ${N} 张`);
 
     // ② 显示值 = min(N, 上限)；「+」当且仅当 N 超上限（真值永远在 data-lead-count 上）
     {
@@ -5203,70 +5249,16 @@ function noJsControlExemptionFor(route) {
     const cards = changesPage.leadCards || [];
     const LEADS = changesLib.CHANGES_WORDING.CHANGES_LEAD;
     const LEAD_BADGE = audienceLib.WORDING_CONTRACT.SOURCE_TYPE.lead;
-    // 线索是否**按窗口应当**出现在 /changes/ 上：线索的 created 事件落在最近 7 天窗口内 ⇒
-    // 卡片必须出现。线索判据刻意严格，多数日子是 0 条 —— 0 条不是页面缺陷，卡片结构断言
-    // 如实跳过（与「雷达行无样本」那条同一纪律）；但「数据里有一条窗口内的线索、卡片却没渲染」
-    // 必须是红的，否则渲染分支断了也没人知道。
-    const leadAsOf = String(radarDealsDoc.updatedAt || '').slice(0, 10);
-    const leadRecentFrom = Number.isFinite(Date.parse(`${leadAsOf}T00:00:00Z`))
-      ? new Date(Date.parse(`${leadAsOf}T00:00:00Z`) - 6 * 86400000).toISOString().slice(0, 10)
-      : null;
-    const expectLeadCard = Boolean(leadRecentFrom) && radarLeadDeals.some(deal =>
-      typeof deal.firstSeen === 'string' && deal.firstSeen >= leadRecentFrom && deal.firstSeen <= leadAsOf);
-    const leadSkipDetail = '窗口内 0 条线索（线索判据按 0 条是正常结果，卡片结构断言如实跳过）';
-    // 期望分栏由**历史事件日 + 该事件是否还在渲染窗口里**推导，不写死 `created`
-    //（2026-11-11 上线轮修正；issue #150 的 TTL 线索又暴露了第二处）：
-    //   · created 事件日 = 基准日 ⇒「今日新增」；
-    //   · created 在最近 7 天窗口内（但不在基准日）⇒「最近 7 天变化」；
-    //   · created 已滑出 7 天窗口、ended/restored 仍在 30 天窗口内 ⇒ 该线索只剩
-    //     「已结束 / 已恢复」分栏。它仍是合法线索卡，不能因为 created 不是今天
-    //     就要求它出现在「最近 7 天变化」—— 那会把一条正常归档的线索判成页面错。
-    // 分栏优先级与 `lib/changes.js` 的 dedupe 顺序一致：created > changed >
-    // endingSoon > ended > restored；同一 id 只认第一个仍有窗口内事件的分栏。
-    const leadEndedFrom = Number.isFinite(Date.parse(`${leadAsOf}T00:00:00Z`))
-      ? changesLib.addDays(leadAsOf, -(changesLib.WINDOWS.endedDays - 1))
-      : null;
-    const leadSectionCandidates = new Map();
-    const markLeadSection = (id, section) => {
-      if (!leadSectionCandidates.has(id)) leadSectionCandidates.set(id, new Set());
-      leadSectionCandidates.get(id).add(section);
-    };
-    for (const event of (radarHistoryDoc.events || [])) {
-      if (!event || !leadIds.has(event.id)) continue;
-      const at = String(event.at || '');
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(at) || at > leadAsOf) continue;
-      if (event.type === 'created') {
-        if (at === leadAsOf) markLeadSection(event.id, 'created');
-        else if (at >= leadRecentFrom) markLeadSection(event.id, 'changed');
-        continue;
-      }
-      if (event.type === 'ended' || event.type === 'restored') {
-        if (leadEndedFrom && at >= leadEndedFrom) markLeadSection(event.id, event.type);
-        continue;
-      }
-      // 字段事件只活在最近 7 天窗口；它们渲染为「最近 7 天变化」。
-      if (at >= leadRecentFrom) markLeadSection(event.id, 'changed');
-    }
-    // 「即将结束」是状态量（不是事件）：只有当前记录带 expiresAt 且落在 soonDays 内才会出现。
-    for (const deal of radarLeadDeals) {
-      const daysLeft = changesLib.daysBetween(deal.expiresAt, leadAsOf);
-      if (daysLeft !== null && daysLeft >= 0 && daysLeft <= changesLib.WINDOWS.soonDays) {
-        markLeadSection(deal.id, 'endingSoon');
-      }
-    }
-    // 同一 id 可能在多个分栏都有真实事件；渲染层按 SECTION_ORDER 去重，只保留第一个。
-    // 判据必须用同一顺序，否则「created 已滑出 7 天、字段事件仍在窗口」这类
-    // 合法组合会被判成错栏。
-    const expectedLeadSection = dealId => {
-      const candidates = leadSectionCandidates.get(dealId);
-      if (!candidates) return null;
-      return changesLib.SECTION_ORDER.find(section => candidates.has(section)) || null;
-    };
+    // 线索是否**按窗口 + 去重 + 分栏上限应当**出现在 /changes/ 上（与上面常驻入口共用同一份
+    // 独立推导 `expectedRenderedLeadSections`）。应渲染 0 张（窗口无命中或全部被合法截断出前 30 名）
+    // 不是页面缺陷，卡片结构断言如实跳过；但「应渲染 K > 0 张、页面张数不等」必红。
+    const expectedLeadCount = expectedRenderedLeadSections.size;
+    const expectLeadCard = expectedLeadCount > 0;
+    const leadSkipDetail = `截断后应渲染 0 条线索（窗口活跃 ${radarLeadDeals.length} 条；卡片结构断言如实跳过）`;
+    const expectedLeadSection = dealId => expectedRenderedLeadSections.get(dealId) || null;
     check('线索卡在场性：窗口内有线索 ⇒ /changes/ 上必须有线索卡；窗口内没有 ⇒ 卡片也必须为 0',
-      expectLeadCard ? cards.length > 0 : cards.length === 0,
-      expectLeadCard
-        ? `窗口内 ${radarLeadDeals.filter(deal => String(deal.firstSeen || '') >= leadRecentFrom).length} 条线索 · 页面 ${cards.length} 张卡`
-        : `窗口内 0 条线索 · 页面 ${cards.length} 张卡`);
+      cards.length === expectedLeadCount,
+      `截断后应渲染 ${expectedLeadCount} 条线索（窗口活跃 ${radarLeadDeals.length} 条） · 页面 ${cards.length} 张卡`);
     // 卡片块顺序是逐块的（不是「文本里先出现哪句」）：少一块、多一块、换顺序都会红。
     const expectedBlocks = card => (card.blocks.includes('lcexcerpt')
       ? ['lctitle', 'lcmeta', 'lcdecl', 'lcexcerpt', 'lcbasis', 'lcactions']
