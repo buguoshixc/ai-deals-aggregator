@@ -2738,9 +2738,9 @@
     },
     "0d9b9646f1a5": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-21",
-      "endedAt": null
+      "endedAt": "2026-11-21"
     },
     "0ddacfb2cc6e": {
       "source": "Futuretools",
@@ -2753,6 +2753,12 @@
       "misses": 2,
       "since": "2026-11-14",
       "endedAt": "2026-11-14"
+    },
+    "10c4bcfc0c32": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-21",
+      "endedAt": null
     },
     "1fff4784ec9d": {
       "source": "aitools.fyi",
@@ -2900,9 +2906,9 @@
     },
     "49f87d205620": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-21",
-      "endedAt": null
+      "endedAt": "2026-11-21"
     },
     "4a4f4777ffbc": {
       "source": "Futuretools",
@@ -2957,6 +2963,12 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
+    },
+    "6637868284f5": {
+      "source": "OpenRouter",
+      "misses": 1,
+      "since": "2026-11-21",
+      "endedAt": null
     },
     "69a0d047e3f9": {
       "source": "Futuretools",
@@ -3108,6 +3120,12 @@
       "since": "2026-11-19",
       "endedAt": "2026-11-20"
     },
+    "97d21ff73d3e": {
+      "source": "智谱AI活动页",
+      "misses": 1,
+      "since": "2026-11-21",
+      "endedAt": null
+    },
     "98b5e610f7bc": {
       "source": "aitools.fyi",
       "misses": 2,
@@ -3164,9 +3182,9 @@
     },
     "a67c07bf4993": {
       "source": "Futuretools",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-21",
-      "endedAt": null
+      "endedAt": "2026-11-21"
     },
     "a9053ca847fb": {
       "source": "aitools.fyi",
@@ -3230,9 +3248,9 @@
     },
     "d175c32f71fd": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-21",
-      "endedAt": null
+      "endedAt": "2026-11-21"
     },
     "d338170e86af": {
       "source": "aitools.fyi",
@@ -8494,6 +8512,128 @@
       "label": {
         "title": "Skipit.ai",
         "vendor": "Skipit.ai"
+      }
+    },
+    {
+      "id": "0d9b9646f1a5",
+      "at": "2026-11-21",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-21",
+      "runAt": "2026-11-21T05:46:35.322Z",
+      "label": {
+        "title": "Vocable AI",
+        "vendor": "Vocable AI"
+      }
+    },
+    {
+      "id": "23d7b85f4992",
+      "at": "2026-11-21",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $1200（省 95%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $1200）",
+        "expiresAt": "2026-11-22",
+        "type": "deal",
+        "category": "设计创意",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-21T05:46:35.322Z"
+    },
+    {
+      "id": "49f87d205620",
+      "at": "2026-11-21",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-21",
+      "runAt": "2026-11-21T05:46:35.322Z",
+      "label": {
+        "title": "Keyshift AI",
+        "vendor": "Keyshift AI"
+      }
+    },
+    {
+      "id": "59c7b0179308",
+      "at": "2026-11-21",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/new/",
+      "to": "https://appsumo.com/collections/ending-soon/",
+      "origin": "observed",
+      "runAt": "2026-11-21T05:46:35.322Z"
+    },
+    {
+      "id": "6efc1d92dbf1",
+      "at": "2026-11-21",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/new/",
+      "to": "https://appsumo.com/collections/ending-soon/",
+      "origin": "observed",
+      "runAt": "2026-11-21T05:46:35.322Z"
+    },
+    {
+      "id": "7b9e80d90afc",
+      "at": "2026-11-21",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $49，原价 $120（省 59%）",
+        "pricingModel": "paid",
+        "priceLine": "$49 终身（原价 $120）",
+        "expiresAt": "2026-11-22",
+        "type": "deal",
+        "category": "办公效率",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-21T05:46:35.322Z"
+    },
+    {
+      "id": "a67c07bf4993",
+      "at": "2026-11-21",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-21",
+      "runAt": "2026-11-21T05:46:35.322Z",
+      "label": {
+        "title": "Ankon AI",
+        "vendor": "Ankon AI"
+      }
+    },
+    {
+      "id": "d175c32f71fd",
+      "at": "2026-11-21",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-21",
+      "runAt": "2026-11-21T05:46:35.322Z",
+      "label": {
+        "title": "Press Ranger",
+        "vendor": "Press Ranger"
       }
     }
   ]
