@@ -45,6 +45,12 @@ const ROUTE_RULES = [
     why: '首页：回答「有没有人在用」最直接的一页'
   },
   {
+    re: /^en\/$/,
+    trackable: true,
+    kind: 'home-en',
+    why: '英文首页：英文入口是否有人用，与中文首页分开统计才看得出 locale 入口的价值'
+  },
+  {
     re: /^deal\/[^/]+\/$/,
     trackable: true,
     kind: 'deal',

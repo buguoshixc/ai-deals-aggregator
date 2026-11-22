@@ -1262,13 +1262,27 @@ section('② 源码级判据（纯度 · 唯一表单源 · 措辞表外文案 �
   check('骨架单源：首页两条声明与 FEED_FILES 的派生形态**逐字节相同**（含行首缩进，不许对齐缩进）',
     declarationsByteExact,
     declarationsByteExact
-      ? `${indexDeclarations.length} 条逐字节一致（顶格 + 与 hreflang 那两条并存）`
+      ? `${indexDeclarations.length} 条逐字节一致（顶格 + 与 hreflang 那三条并存）`
       : declarationMismatchDetail('index.html', indexDeclarations, derivedDeclarations.split('\n')));
 
-  // ② hreflang 那半边不许被覆盖
+  // ② hreflang 那半边不许被覆盖。
+  // v3.5：英文单页上线后，首页从两条自指（zh-CN / x-default）变成三条：本页自指 +
+  // `en` 指向 `/en/` + `x-default` 指向站根。判据必须跟着“站点的语言声明面”更新，
+  // 而不是删掉这条牙：三条缺任何一条，另一侧（/en/）的互指就断了。
   const hreflangLines = indexHtml.split(/\r?\n/).filter(line => /rel="alternate" hreflang=/.test(line));
-  check('骨架单源：hreflang 那两条声明原样保留（新增，不是覆盖）',
-    hreflangLines.length === 2, `hreflang 声明 ${hreflangLines.length} 条（必须恰好 2 条）`);
+  const hreflangShape = new Map([
+    ['zh-CN', '__SITE_URL__'],
+    ['en', '__SITE_URL__en/'],
+    ['x-default', '__SITE_URL__']
+  ]);
+  const hreflangProblems = [];
+  if (hreflangLines.length !== 3) hreflangProblems.push(`hreflang 声明 ${hreflangLines.length} 条（必须恰好 3 条）`);
+  for (const [hreflang, href] of hreflangShape) {
+    const pattern = new RegExp(`rel="alternate" hreflang="${hreflang}" href="${href.replace(/[/.]/g, '\\$&')}"`);
+    if (!hreflangLines.some(line => pattern.test(line))) hreflangProblems.push(`缺少/指向不对：hreflang="${hreflang}" → ${href}`);
+  }
+  check('骨架单源：hreflang 三条声明原样保留（zh-CN 自指 + en → /en/ + x-default → 站根；新增，不是覆盖）',
+    hreflangProblems.length === 0, hreflangProblems.join('；'));
 
   // ③ 计数断言：带订阅 MIME 的声明只许活在骨架里，且恰好 FEED_FILES.length 条
   const declarationOwners = ['index.html', 'scripts/lib/page-shell.js', 'scripts/tools/build-local.js', 'scripts/lib/feed.js'];

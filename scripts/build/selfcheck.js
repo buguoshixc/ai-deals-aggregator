@@ -19,6 +19,7 @@ const site = require('../lib/site');
 const landing = require('../lib/landing');
 const vendorPage = require('../lib/vendor-page');
 const seo = require('../lib/seo');
+const pageFit = require('../lib/page-fit');
 const secretScan = require('../lib/secret-scan');
 const plansPage = require('../lib/plans-page');
 const planHistory = require('../lib/plan-history');
@@ -2635,7 +2636,8 @@ function createSelfCheck(ctx) {
     + 1 /* 模型资料索引 */ + built.modelDetailCount /* 模型详情页 */
     + 1 /* 档案索引 */ + built.archiveDetailCount /* 档案详情页 */
     + 1 /* 数据文档与引用页 */
-    + 1 /* 全站搜索页（v3.4 F3） */;
+    + 1 /* 全站搜索页（v3.4 F3） */
+    + 1 /* 英文首页（/en/，独立 kind home-en） */;
     // t4：公式里去掉「订阅中心 +1」与「数据文档页 +1」—— 那两页随订阅层与数据出口子系统下架。
     // v1.8：数据文档页以**更窄的定位**回来（不发布数据文件，只给许可与引用），公式加回它。
   if (sitemapLocs.length !== expectedLocs) {
@@ -2645,6 +2647,7 @@ function createSelfCheck(ctx) {
       ` + 枢纽 ${built.hubPages.length}）+ 状态页 1 + 变化雷达页 1 + 资料入口页 1 + 套餐对比页 1 + API 计费页 1` +
       ` + API 成本计算器 1 + Codex 额度重置档案页 1 + 模型索引 1 + 模型详情页 ${built.modelDetailCount}` +
       ` + 档案索引 1 + 档案详情页 ${built.archiveDetailCount} + 数据文档与引用页 1 + 全站搜索页 1` +
+      ` + 英文首页 1` +
       ` + 详情页 ${indexableDealPages.length}` +
       `（窗口期 noindex ${limboDealPages.length} 个不进 sitemap）`);
   } else {
@@ -2708,7 +2711,13 @@ function createSelfCheck(ctx) {
       const h1Count = seo.h1Count(page);
       if (h1Count !== 1) problems.push(`h1 ${h1Count} 个（必须恰好 1 个）`);
       if (!page.includes(`<link rel="canonical" href="${SITE_URL}${CODEX_RESETS_ROUTE}">`)) problems.push('canonical 不是自指');
-      if (!/rel="alternate" hreflang="zh-CN"/.test(page)) problems.push('缺少 hreflang=zh-CN');
+      // 自指 hreflang 必须**跟着页面语言走**，不能写死 zh-CN：英文单页的 `<html lang="en">`
+      // 需要 `hreflang="en"` 自指。判据是「本页声明的语言有一条指向自己的 alternate」，
+      // 不是在规则里给 en 开白名单 —— 白名单会让下一个语言静默漏检。
+      const pageLang = (page.match(/<html lang="([^"]+)"/) || [])[1] || 'zh-CN';
+      if (!new RegExp(`rel="alternate" hreflang="${pageLang}"`).test(page)) {
+        problems.push(`缺少 hreflang=${pageLang}（本页 <html lang> 的自指）`);
+      }
       if (!/rel="alternate" hreflang="x-default"/.test(page)) problems.push('缺少 hreflang=x-default');
       // 纯静态：分析 bootstrap、主题脚本、JSON-LD 是允许的共享内联段，除此之外不许有脚本。
       const withoutAllowedScripts = analytics.stripBootstrap(page)
@@ -3045,6 +3054,61 @@ function createSelfCheck(ctx) {
     console.log(`  ✓ JSON-LD: ${foundTypes.join(' / ')}`);
   }
 
+  // ---- 英文单页（/en/，kind=home-en）：结构 + “可见文案零汉字”----------------------------
+  //
+  // 这条断言是**发布面的**，不是排版检查：英文页最容易的失败方式不是报错，而是
+  // 一页干净 HTML 里夹着漏译的中文说明/分类/页脚，中文侧没有任何断言会看见它。
+  // 所以只判“可见文本”：script / style / 注释里的中文（主题脚本与分析脚本的注释）
+  // 不是读者能看到的文案，剥掉再判；属性里的中文（共享 GitHub 图标的 title/aria-label）
+  // 也属于既有共享件，不在这一页的文案面上。
+  {
+    const enRel = 'en/index.html';
+    const enFile = path.join(OUT, enRel);
+    if (!fs.existsSync(enFile)) {
+      fail(`英文单页：缺少 ${enRel}`);
+    } else {
+      const enHtml = fs.readFileSync(enFile, 'utf8');
+      const enProblems = [];
+      if (!/<html lang="en">/.test(enHtml)) enProblems.push(`<html lang> 不是 "en"`);
+      const canonical = (enHtml.match(/<link rel="canonical" href="([^"]+)">/) || [])[1];
+      if (canonical !== `${SITE_URL}en/`) enProblems.push(`canonical 不是 ${SITE_URL}en/（实得 ${canonical || '缺失'}）`);
+      const alternates = [...enHtml.matchAll(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)">/g)]
+        .map(match => ({ hreflang: match[1], href: match[2] }));
+      const want = new Map([
+        ['en', `${SITE_URL}en/`],
+        ['zh-CN', SITE_URL],
+        ['x-default', SITE_URL]
+      ]);
+      if (alternates.length !== 3) enProblems.push(`hreflang 应恰好 3 条，实得 ${alternates.length}`);
+      for (const [hreflang, href] of want) {
+        const hit = alternates.find(item => item.hreflang === hreflang);
+        if (!hit) enProblems.push(`缺少 hreflang="${hreflang}"`);
+        else if (hit.href !== href) enProblems.push(`hreflang="${hreflang}" 指向 ${hit.href}，应为 ${href}`);
+        else if (!/^https:\/\//.test(hit.href)) enProblems.push(`hreflang="${hreflang}" 不是绝对 URL`);
+      }
+      // `/en/` 不声明 feed：FEED_DECLARABLE_ROUTES 只有 `''` 与 `changes/`。
+      if (/<link rel="alternate"[^>]*type=/.test(enHtml)) enProblems.push('声明了订阅 feed（/en/ 不在 FEED_DECLARABLE_ROUTES）');
+      const h1 = (enHtml.match(/<h1\b/g) || []).length;
+      if (h1 !== 1) enProblems.push(`<h1> 应恰好 1 个，实得 ${h1}`);
+      const title = decodeEntities((enHtml.match(/<title>([\s\S]*?)<\/title>/) || [])[1] || '');
+      if (!title) enProblems.push('缺少 <title>');
+      else if (title.length > seo.TITLE_MAX_LENGTH) enProblems.push(`title ${title.length} 码元 > ${seo.TITLE_MAX_LENGTH}`);
+      const description = decodeEntities((enHtml.match(/<meta name="description" content="([^"]*)">/) || [])[1] || '');
+      if (!description) enProblems.push('缺少 description');
+      else if (description.length > pageFit.DESC_MAX_LENGTH) enProblems.push(`description ${description.length} 码元 > ${pageFit.DESC_MAX_LENGTH}`);
+      if (!/data-en-deal="/.test(enHtml)) enProblems.push('没有渲染任何卡片（data-en-deal）');
+      const visible = decodeEntities(enHtml
+        .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+        .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+        .replace(/<!--[\s\S]*?-->/g, ' ')
+        .replace(/<[^>]*>/g, ' '));
+      const han = visible.match(/[\u3400-\u4dbf\u4e00-\u9fff]/g) || [];
+      if (han.length) enProblems.push(`可见文案里出现 ${han.length} 个汉字（例如「${han.slice(0, 8).join('')}」）`);
+      if (enProblems.length) fail(`英文单页（${enRel}）：${enProblems.join('；')}`);
+      else console.log(`  ✓ 英文单页: <html lang="en"> · canonical/hreflang 三条绝对互指 · 可见文案零汉字（title ${title.length} / desc ${description.length} 码元）`);
+    }
+  }
+
   // ---- v3.0 Stage E：厂商资料页（**从磁盘回读**对账）------------------------------------
   //
   // 与其它区域的同一条纪律：不看内存里那个 HTML 字符串，而是把 `dist/vendor/<slug>/index.html`
@@ -3185,6 +3249,9 @@ function createSelfCheck(ctx) {
         // 它由首页自己那几条断言守着（卡片数 / CTA 数 / 折叠无损 / JSON-LD 类型集合）。
         checkItemListRows: false, checkItemListMembers: false
       }),
+      // 英文首页：独立 kind，**不复用 home** —— 复用会让下面这些「首页」口径
+      // （ItemList 在场、行数对账）同时命中两页，其中一页恒假绿。
+      readPage('en/', { kind: 'home-en', expectItemList: false }),
       readPage('status/', { kind: 'status', expectItemList: false }),
       // v1.5 修复（P1-4）：变化页的 ItemList 成员就是本站的优惠详情页（`deal/<id>/`），
       // 因此 `itemIds` 传**判据层去重后的同一份集合**（不再留空 —— 留空等于声明

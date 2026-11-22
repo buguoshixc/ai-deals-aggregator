@@ -94,6 +94,21 @@ const KIND_TABLE = {
     itemList: { expect: true, checkRows: false, checkMembers: false, marker: 'item' },
     sitemap: { priority: '1.0', changefreq: 'daily' }
   },
+  'home-en': {
+    label: '英文首页',
+    layout: 'wide',
+    // 英文页只承载「本来就英文」的条目 + 英文 chrome，没有中文首页那一整块策展/变化/FAQ。
+    // 下限按实际正文量保守取 1200：低于它说明卡片或说明整块丢了，而不是「英文文案更短」。
+    textFloor: floor(1200),
+    // 英文卡片直接外链厂商，不是站内条目集合 ⇒ 不声明 ItemList（与首页同一条理由，
+    // 但首页仍然有 ItemList，因为它同时是「本站有什么」的入口；英文页明确不是）。
+    itemList: { expect: false, checkRows: false, checkMembers: false, marker: 'item' },
+    sitemap: { priority: '0.8', changefreq: 'weekly' },
+    // 中文全站搜索（/search/）的索引是一份**中文**目录：英文页不进去。
+    // 这条**在 kind 表里声明**，而不是在搜索索引里写 `if (route === 'en/')` ——
+    // 排除口径只允许有一张表（新增英文页族时也在这里登记，不会漏一处分支）。
+    searchIndex: false
+  },
   collection: {
     label: '专题集合页',
     layout: 'wide',
@@ -281,6 +296,9 @@ const KIND_TABLE = {
  */
 const FIXED_ROUTE_KINDS = {
   '': 'home',
+  // 英文单页：**独立 kind，不复用 home**。复用会让所有"首页"断言同时命中两页
+  // （计数翻倍 / 其中一页恒假绿），这正是新增 locale 入口最容易踩的那条。
+  'en/': 'home-en',
   'status/': 'status',
   'changes/': 'changes',
   'plans/': 'plans-hub',
