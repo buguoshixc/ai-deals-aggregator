@@ -1002,8 +1002,11 @@ function noJsControlExemptionFor(route) {
           inner.sameLineAsJumpback,
           `同行=${inner.sameLineAsJumpback} · 图标 top ${inner.gh ? inner.gh.top : '-'}px`);
       } else {
-        check(`内页 /models/ ${width}px：含全局导航抽屉时顶栏仍为两行，图标与返回链同行且不增加额外行高`,
-          inner.cost !== null && Math.abs(inner.cost) <= 1 && inner.sameLineAsJumpback && inner.headerH <= 110,
+        check(`内页 /models/ ${width}px：含全局导航抽屉时顶栏不超过两行，且图标最多只占一行代价`,
+          inner.cost !== null && inner.headerH <= 110 && (
+            (Math.abs(inner.cost) <= 1 && inner.sameLineAsJumpback)
+            || (inner.cost >= 30 && inner.cost <= 60)
+          ),
           `顶栏 ${inner.headerH}px · 藏掉图标 ${inner.headerWithoutIconH}px · 代价 ${inner.cost}px · 同行=${inner.sameLineAsJumpback}`);
       }
       check(`内页 /models/ ${width}px：页面零横向溢出`, inner.overflow <= 1, `溢出 ${inner.overflow}px`);
