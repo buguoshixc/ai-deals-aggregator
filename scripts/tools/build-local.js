@@ -113,6 +113,9 @@ const pageKinds = require('../lib/page-kinds');
 // `<style>` / 主题脚本 / 页脚、各自调一次 finalizePage —— 实测那 9 份是逐字相同的。
 // 现在：文档脚手架只有一处实现，布局族按 kind 查 page-kinds.js，差异由显式参数承载。
 const shell = require('../lib/page-shell');
+// 英文单页（`/en/`）：独立 kind `home-en`，只收原文就是英文的 global 条目。
+// 正文渲染是纯函数（不读盘/不联网），收录口径与排除表都在那个模块里，这里只负责写盘与计数。
+const enPage = require('../lib/en-page');
 const planChanges = require('../lib/plan-changes');
 const providers = require('../lib/providers');
 // v2.4：优惠 ↔ 套餐关系层。真值在 scripts/data/deal-plan-links.json，
@@ -2898,11 +2901,35 @@ function assemble() {
   // 之外：详情模板与页脚那几处不在本清单的扫描面内），所以它的声明是「0 条」而不是跳过 ——
   // 「这一页不打算输出页面级说明」本身也是一个决定，漏登记会让它变成未纳管的页面。
   notePage('', { kind: 'home' });
+
+  // 英文单页（`/en/`）。此时 `html` 还保留共享 `<style>` 与 `__PREFIX__` 占位符，
+  // 正是 `loadShellParts()` 需要的形态；等首页 finalize 之后那些占位符已被解析，
+  // 再抽就会把 `__PREFIX__en/` 解析成 `en/`（在 `/en/` 里就是 `en/en/` 的死链）。
+  // 首页自己的产物一个字节都不受这一次抽取影响：`loadShellParts` 只读不写。
+  {
+    const enParts = shell.loadShellParts(html, ROUTE_HREFS, appAsset.SOURCE, styleAsset.FILE);
+    const enBuilt = enPage.renderEnPage({ deals: payload.deals, parts: enParts, siteUrl: SITE_URL, where: 'en/index.html' });
+    fs.mkdirSync(path.join(OUT, 'en'), { recursive: true });
+    fs.writeFileSync(path.join(OUT, 'en', 'index.html'), enBuilt.html, 'utf8');
+    notePage('en/', { kind: 'home-en' });
+    const reasonCounts = enBuilt.excluded.reduce((acc, row) => {
+      acc[row.reason] = (acc[row.reason] || 0) + 1;
+      return acc;
+    }, {});
+    const reasonText = Object.keys(reasonCounts).sort().map(reason => `${reasonCounts[reason]} ${reason}`).join(' / ') || '无';
+    console.log(`  英文单页: ${enBuilt.included} 条收录 · ${enBuilt.excluded.length} 条 global 排除（${reasonText}）· ${enBuilt.nonGlobal} 条非 global 不在英文侧`);
+  }
+
   const homeHtml = html.replace(/<style>[\s\S]*?<\/style>/, `<link rel="stylesheet" href="${styleAsset.FILE}">`);
   if (!homeHtml.includes(`href="${styleAsset.FILE}"`)) {
     throw new Error(`index.html 共享样式外链化失败：未替换为 ${styleAsset.FILE}`);
   }
-  fs.writeFileSync(indexFile, shell.finalizePage(homeHtml, '', '', ROUTE_HREFS, 'index.html'), 'utf8');
+  // SHARED 标记只在**源模板**里存在：它们让 `loadShellParts` 抽到同一份片段，
+  // 但产物里的首页是源模板本身，若不剥掉，中文侧就会多出两行注释 ——
+  // 那不是「页头多了一个 EN 链接」，是把构建脚手架漏进了发布字节。
+  // 生成页族由 page-shell 拼装，本来就不带标记；只有首页需要这一步。
+  const homeShipped = homeHtml.replace(/^[ \t]*<!--SHARED:langlink:(?:START|END)-->\n/gm, '');
+  fs.writeFileSync(indexFile, shell.finalizePage(homeShipped, '', '', ROUTE_HREFS, 'index.html'), 'utf8');
 
   // OG 分享图。
   // 画完立刻自检（og-image.selfCheck）：点阵字模没有自动换行，排版一变文字就会被静默裁掉，
@@ -3567,7 +3594,7 @@ function assemble() {
     <changefreq>${pageKinds.sitemapMeta(page.kind).changefreq}</changefreq>
     <priority>${pageKinds.sitemapMeta(page.kind).priority}</priority>
   </url>`).join('\n');
-  const sitemapEntries = [SITE_URL, ...independentDirectoryPages.map(page => page.url),
+  const sitemapEntries = [SITE_URL, `${SITE_URL}en/`, ...independentDirectoryPages.map(page => page.url),
     `${SITE_URL}status/`, `${SITE_URL}changes/`, `${SITE_URL}feeds/`, `${SITE_URL}${plansHubPage.PLANS_HUB_ROUTE}`,
     `${SITE_URL}${plansPage.PLANS_ROUTE}`,
     `${SITE_URL}${apiPlansPage.API_PLANS_ROUTE}`,
@@ -3592,6 +3619,15 @@ function assemble() {
   // priority 0.3 **低于**详情页 0.7，也低于分类页 0.9：它是给维护者与技术读者核对
   // 「本站还在不在更新」的工具页，不是搜索入口。给它 0.9 会把「哪一页才是入口」说反 ——
   // priority 是**声明**，不是排序实现的细节。
+  // 英文单页：与首页同一组 `<loc>` 只多这一条。priority / changefreq 从
+  // `page-kinds.js` 的 home-en 声明取（0.8 weekly：它是入口，但不是每天变的数据流）。
+  const homeEnUrl = `  <url>
+    <loc>${SITE_URL}en/</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>${pageKinds.sitemapMeta('home-en').changefreq}</changefreq>
+    <priority>${pageKinds.sitemapMeta('home-en').priority}</priority>
+  </url>`;
+
   const statusUrl = `  <url>
     <loc>${SITE_URL}status/</loc>
     <lastmod>${lastmod}</lastmod>
@@ -3705,6 +3741,7 @@ function assemble() {
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
+${homeEnUrl}
 ${directoryUrls}
 ${statusUrl}
 ${changesUrl}
@@ -4046,6 +4083,7 @@ ${archiveDetailUrls}
     // Feed 里每一条站内链接都要能在这里找到，否则就是一条死链。
     pageRoutes: new Set([
       '',
+      'en/',
       'status/',
       'changes/',
       plansHubPage.PLANS_HUB_ROUTE,

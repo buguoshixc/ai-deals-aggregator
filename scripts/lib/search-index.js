@@ -192,6 +192,9 @@ function buildSearchIndex(input = {}) {
     const normalized = pageKinds.normalizeRoute(route);
     if (normalized === '' || normalized === 'search/') continue; // 首页与搜索页自身不进结果
     const kind = pageKinds.kindOfRoute(normalized);
+    // 页面族的索引口径由 `page-kinds.js` 声明（`searchIndex: false` ⇒ 不进中文目录）。
+    // 不在本文件判路由字面量：新增一个不进搜索的页面族时只改那张表。
+    if (kind && pageKinds.KIND_TABLE[kind] && pageKinds.KIND_TABLE[kind].searchIndex === false) continue;
     if (kind === 'tool') {
       push({
         kind: 'tool',

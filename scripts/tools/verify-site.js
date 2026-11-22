@@ -295,8 +295,8 @@ const WIDE_DESKTOP = 1440;                 // 桌面档一（全站逐条）
  * **未登记的路由**（目录页 / 需求页 / `/status/` / 分类页 / 厂商页）仍断言「0 条带 `type` 的
  * `rel="alternate"`」；**登记的路由**（首页与 `/changes/`）断言「恰好 = `FEED_FILES` 登记的那几条，
  * 且 href 指向产物里真实存在且非空」；两类都另判「剩下的 alternate 必须全部是 hreflang 语言声明」。
- * 首页另有一条本页事实断言「恰好 2 条 hreflang」——见 §14 那两条 check
- * （那里写清了为什么不能只数裸选择器，以及为什么这一半不许删）。
+ * 首页另有一条本页事实断言「恰好 3 条 hreflang」（v3.5：en 单页上线后 2→3）——见 §14 那两条 check
+ * （那里写清了为什么不能只数裸选择器，以及为什么这一半不许删）；/en/ 对侧另有一条互指断言。
  * `landingsLib` 本身仍在别处使用（枢纽路由等），所以只删 `void landingsLib;` 那一行。
  */
 
@@ -1471,6 +1471,14 @@ function noJsControlExemptionFor(route) {
 
   console.log('\n=== 8b) 中文译文可搜索 ===');
 
+  // 这一段的前提是**中文首页**：`deal.zh` 是中文覆盖层，英文单页不渲染译文，
+  // 也不该拿它的 DOM 来跑「中文译文可搜」。若不显式判语言，将来把探针挪到 /en/ 上
+  // 会得到 0 条卡片 → 取样前提红，或更糟：某个页面恰好有译文卡片而搜索是另一套实现，
+  // 断言就静默变成假绿。语言是这一节的取样条件，不是可有可无的注释。
+  const zhSearchPageLang = await page.evaluate(() => document.documentElement.lang);
+  check('中文译文可搜的取样页是中文首页（<html lang="zh-CN">，不是 /en/）',
+    zhSearchPageLang === 'zh-CN', `当前 lang=${JSON.stringify(zhSearchPageLang)} · url=${page.url()}`);
+
   /**
    * 用户**看得见**的中文必须搜得到：卡片上的「中文」胶囊指的就是详情弹层里那段人工译文，
    * 把其中一段中文复制进搜索框却 0 结果，就是「看得见搜不到」。
@@ -1480,6 +1488,7 @@ function noJsControlExemptionFor(route) {
    * 卡片标题用两种口径匹配：单条卡（标题即条目标题）与折叠卡（标题是折叠后的，靠 data-deal-ids 认领）。
    */
   const ZH_PROBE = `(async () => {
+    if (document.documentElement.lang !== 'zh-CN') return null;
     const payload = await (await fetch(${DEALS_URL})).json();
     const deals = payload.deals || [];
     const cards = [...document.querySelectorAll('article.g')];
@@ -2395,13 +2404,73 @@ function noJsControlExemptionFor(route) {
     homeSubProblem === null,
     homeSubProblem || `订阅声明 ${homeTyped.length} 条，全部命中登记表：`
       + homeTyped.map(l => `${l.href}[${l.type}]`).join(' · '));
-  check('首页 rel="alternate" = 恰好 2 条 hreflang 语言声明（index.html:26-27）+ FEED_FILES 登记的每一条订阅声明各一条（每条非 hreflang 的都是已登记声明）',
-    homeHreflang.length === 2 && homeFeedRegistry.problem === null &&
+  // v3.5：英文单页上线后，中文首页的 hreflang 从两条自指（zh-CN / x-default）变成三条：
+  // 本页自指 + `en` 指向 `/en/` + `x-default` 指向站根。三条**都必须是绝对 URL**
+  // （Google 对相对路径会静默忽略），且必须与 `/en/` 那一侧互指 —— 只验首页等于只验一半。
+  const homeHreflangExpected = new Map([
+    ['zh-CN', SITE_URL],
+    ['en', `${SITE_URL}en/`],
+    ['x-default', SITE_URL]
+  ]);
+  const homeHreflangProblem = homeHreflang.length !== 3
+    ? `hreflang 应恰好 3 条，实得 ${homeHreflang.length}`
+    : homeHreflang.map(link => {
+      const want = homeHreflangExpected.get(link.hreflang);
+      if (!want) return `多出 ${link.hreflang}`;
+      if (link.href !== want) return `${link.hreflang} 指向 ${link.href}（应为 ${want}）`;
+      if (!/^https:\/\//.test(link.href)) return `${link.hreflang} 不是绝对 URL`;
+      return null;
+    }).filter(Boolean)[0] || null;
+  check('首页 rel="alternate" = 恰好 3 条 hreflang 语言声明（zh-CN 自指 + en → /en/ + x-default → 站根，绝对 URL）+ FEED_FILES 登记的每一条订阅声明各一条（每条非 hreflang 的都是已登记声明）',
+    homeHreflangProblem === null && homeFeedRegistry.problem === null &&
     homeTyped.length === homeFeedRegistry.files.length &&
     homeAlternates.length === homeHreflang.length + homeTyped.length,
-    `${homeAlternates.length} 条：[${homeAlternates.map(l => `${l.hreflang || '(无 hreflang)'}${l.type ? `/${l.type}` : ''}`).join(', ')}]`
+    homeHreflangProblem || `${homeAlternates.length} 条：[${homeAlternates.map(l => `${l.hreflang || '(无 hreflang)'}${l.type ? `/${l.type}` : ''}`).join(', ')}]`
     + ` · hreflang ${homeHreflang.length} 条 · 已登记订阅声明 ${homeTyped.length}/${homeFeedRegistry.files.length} 条`
     + `${homeFeedRegistry.problem ? ` · ${homeFeedRegistry.problem}` : ''}`);
+
+  // `/en/` 侧的同一条契约：`<html lang="en">`、canonical 绝对自指、三条 hreflang 与首页互指、
+  // 且**不声明 feed**（`FEED_DECLARABLE_ROUTES` 只有 `''` 与 `changes/`）。
+  {
+    const enProbe = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+    const enProblems = [];
+    try {
+      await enProbe.goto(new URL('en/', base).href, { waitUntil: 'domcontentloaded', timeout: 30000 });
+      const enFacts = await enProbe.evaluate(() => ({
+        lang: document.documentElement.lang,
+        canonical: (document.querySelector('link[rel="canonical"]') || {}).getAttribute
+          ? document.querySelector('link[rel="canonical"]').getAttribute('href') : null,
+        alternates: [...document.querySelectorAll('link[rel="alternate"]')].map(link => ({
+          href: link.getAttribute('href') || '',
+          type: link.getAttribute('type') || '',
+          hreflang: link.getAttribute('hreflang') || ''
+        }))
+      }));
+      const enHreflang = enFacts.alternates.filter(link => String(link.hreflang || '').trim() !== '');
+      const enTyped = enFacts.alternates.filter(link => String(link.type || '').trim() !== '');
+      const enExpected = new Map([
+        ['en', `${SITE_URL}en/`],
+        ['zh-CN', SITE_URL],
+        ['x-default', SITE_URL]
+      ]);
+      if (enFacts.lang !== 'en') enProblems.push(`<html lang> 是 ${JSON.stringify(enFacts.lang)}，应为 "en"`);
+      if (enFacts.canonical !== `${SITE_URL}en/`) enProblems.push(`canonical 是 ${enFacts.canonical}，应为 ${SITE_URL}en/`);
+      if (enTyped.length) enProblems.push(`声明了 ${enTyped.length} 条订阅 feed（/en/ 不在 FEED_DECLARABLE_ROUTES）`);
+      if (enHreflang.length !== 3) enProblems.push(`hreflang 应恰好 3 条，实得 ${enHreflang.length}`);
+      for (const [hreflang, href] of enExpected) {
+        const hit = enHreflang.find(link => link.hreflang === hreflang);
+        if (!hit) enProblems.push(`缺少 hreflang="${hreflang}"`);
+        else if (hit.href !== href) enProblems.push(`hreflang="${hreflang}" 指向 ${hit.href}（应为 ${href}）`);
+        else if (!/^https:\/\//.test(hit.href)) enProblems.push(`hreflang="${hreflang}" 不是绝对 URL`);
+      }
+    } catch (error) {
+      enProblems.push(`打不开 /en/：${error.message}`);
+    } finally {
+      await enProbe.close();
+    }
+    check('/en/ 与首页 hreflang 三条互指（en 自指 / zh-CN → 站根 / x-default → 站根，绝对 URL），canonical 自指，且不声明 feed',
+      enProblems.length === 0, enProblems.join('；'));
+  }
 
   const ldTypes = await page.evaluate(() => [...document.querySelectorAll('script[type="application/ld+json"]')]
     .map(s => { try { return JSON.parse(s.textContent)['@type']; } catch (e) { return 'PARSE_ERROR'; } }));

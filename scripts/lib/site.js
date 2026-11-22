@@ -61,6 +61,30 @@ const SITE_NAME = 'AI 优惠聚合器';
 const SITE_DESCRIPTION = '聚合国内外 AI 大模型的真实优惠：新用户免费额度、免费模型、学生/教师/非营利折扣、限时促销。全部指向厂商官方页。';
 
 /**
+ * 按 locale 取站点身份常量。**zh-CN 是默认值，逐字等于上面的三个常量** ——
+ * 不传 locale 的调用方（中文页面族、JSON-LD、sitemap）产物一个字节都不会变。
+ *
+ * 为什么要有访问器而不是让 `/en/` 自己拼一份：英文站名会同时出现在 `<title>`、
+ * `og:site_name` 与页脚。散成三份字面量的失效方式是「改了两处、忘了第三处」，
+ * 而三处各自看都自洽 —— 这正是 `site.js` 头注释里那条「第二处定义」的同一课。
+ */
+const SITE_LOCALES = Object.freeze({
+  'zh-CN': Object.freeze({ lang: 'zh-CN', siteName: SITE_NAME, siteDescription: SITE_DESCRIPTION }),
+  en: Object.freeze({
+    lang: 'en',
+    siteName: 'AI Deals Aggregator',
+    siteDescription: 'The English edition of AI Deals Aggregator: real AI discounts, free tiers and student offers, each linking straight to the vendor.'
+  })
+});
+
+function siteFor(locale = 'zh-CN') {
+  const key = String(locale || 'zh-CN');
+  const spec = SITE_LOCALES[key];
+  if (!spec) throw new Error(`siteFor：未登记的 locale「${key}」（已登记：${Object.keys(SITE_LOCALES).join(' / ')}）`);
+  return spec;
+}
+
+/**
  * 厂商页（与厂商订阅）的生成门槛。**按真实数据分布定，不是拍脑袋**（实测见报告）：
  * 交付日 80 条优惠分布在 33 家厂商里，`当前有效优惠 >= 2` 命中 **9 家**；
  * `历史变更事件 >= 3` 当时命中 0 家。
@@ -126,6 +150,8 @@ module.exports = {
   SITE_URL,
   SITE_NAME,
   SITE_DESCRIPTION,
+  SITE_LOCALES,
+  siteFor,
   VENDOR_THRESHOLDS,
   VENDOR_SLUGS_FILE,
   loadVendorSlugs,

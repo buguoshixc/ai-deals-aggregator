@@ -59,6 +59,20 @@ const analytics = require('./analytics');
 const analyticsRoutes = require('./analytics-routes');
 const pageKinds = require('./page-kinds');
 
+/**
+ * 页头语言切换 chip 的**唯一**样式。
+ *
+ * ⚠️ 刻意写成行内样式，而不是往 index.html 的共享 `<style>` 里加一条规则：
+ * 共享样式在构建期被剥注释后生成 `style.<hash>.css`，改动它会让**每一页**的
+ * stylesheet 地址一起变。语言入口只该让页头多一个链接，不该改中文页面的其余字节。
+ */
+const LANG_LINK_STYLE = 'flex:none;display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;padding:0;border:1px solid var(--line);border-radius:var(--r-pill);background:var(--card);color:var(--ink2);font-family:inherit;font-size:11px;font-weight:600;line-height:1;letter-spacing:.04em;text-decoration:none';
+
+/** 渲染一枚语言 chip。中文页的 `href` 由共享片段里的 `__PREFIX__` 按输出深度解析。 */
+function langLinkHtml({ href, hreflang, lang, label, title }) {
+  return `<a class="langlink" href="${href}" hreflang="${hreflang}" lang="${lang}" title="${title}" aria-label="${title}" style="${LANG_LINK_STYLE}">${label}</a>`;
+}
+
 /** `detail` 布局族的统一内容列 class（与 `lib/archive.js` 的 ARCHIVE_ENTRY_MAIN_CLASS 同值） */
 const DETAIL_MAIN_CLASS = 'detail-main';
 
@@ -126,6 +140,7 @@ function loadShellParts(indexHtml, routeHrefs, appScript = '', styleFile = '') {
   const themeScript = (indexHtml.match(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/) || [''])[0];
   const footerRaw = (indexHtml.match(/<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/) || [])[1] || '';
   const ghLinkRaw = (indexHtml.match(/<!--SHARED:ghlink:START-->([\s\S]*?)<!--SHARED:ghlink:END-->/) || [])[1] || '';
+  const langLinkRaw = (indexHtml.match(/<!--SHARED:langlink:START-->([\s\S]*?)<!--SHARED:langlink:END-->/) || [])[1] || '';
   // A 包：详情页「这条领不到了？」复制反馈的**唯一实现**。v6 之前它在首页内联脚本里，
   // 外链化之后从 `appScript`（assets/app.js 的源码）抽 —— 详情页仍然与首页弹层共用同一份
   // 事件委托，不是第二份实现。
@@ -136,6 +151,7 @@ function loadShellParts(indexHtml, routeHrefs, appScript = '', styleFile = '') {
   if (!themeScript) missing.push('主题前置脚本');
   if (!footerRaw) missing.push('共享页脚片段（<!--SHARED:footer:START-->…END-->）');
   if (!ghLinkRaw) missing.push('页头图标入口（<!--SHARED:ghlink:START-->…END-->）');
+  if (!langLinkRaw) missing.push('页头语言入口（<!--SHARED:langlink:START-->…END-->）');
   if (!dealCopyRaw.trim()) missing.push('详情页复制反馈共享片段（/* SHARED:dealcopy:START */…END */）');
   if (missing.length) {
     throw new Error(`index.html 里抽不到 ${missing.join(' / ')} —— 页面壳失去共享来源，拒绝继续构建`
@@ -149,6 +165,8 @@ function loadShellParts(indexHtml, routeHrefs, appScript = '', styleFile = '') {
     // `.trim()`：片段是从两个标记之间切出来的，首尾各带一个换行与缩进，
     // 不裁掉会在每个页头里多出空行（页脚那边用的是同一个手法）。
     headerGhLink: ghLinkRaw.trim(),
+    // 页头语言入口与图标入口同源：都从 index.html 的 SHARED 区间抽。
+    headerLangLink: langLinkRaw.trim(),
     // A 包：详情页复制反馈的唯一实现（预渲染详情页与首页弹层共用这一份源码）。
     dealCopyScript: dealCopyRaw.trim(),
     routeHrefs
@@ -249,21 +267,33 @@ function navLinksHtml(prefix, currentRoute = '', includeHome = false) {
   }).join('');
 }
 
-function sharedHeaderHtml(prefix, headerExtra = '', ghLink = '', route = '') {
-  const inlineNav = `<nav class="gnav" aria-label="全站导航">${navLinksHtml(prefix, route, false)}</nav>`;
-  const drawerNav = `<details class="nav-drawer"><summary class="nav-btn" aria-label="打开全站导航" title="全站导航"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></summary><nav class="nav-drawer-panel" aria-label="移动导航">${navLinksHtml(prefix, route, true)}</nav></details>`;
-  return `  <a class="skip-link" href="#main">跳到正文</a>
-  <header class="top">
-    <div class="topin">
-      <a class="brand" href="${prefix}">
-        <span class="mark" aria-hidden="true">
+/**
+ * 品牌标记（圆角方块 + 两条 path）。中文页头与 `/en/` 的英文页头共用同一枚 SVG ——
+ * 第二份手抄的失效方式是「换 logo 只换了中文侧」，而两边各自看都正常。
+ *
+ * 缩进是**输出字节的一部分**：中文页头的 `sharedHeaderHtml()` 直接嵌入它，
+ * 抽取前后产物逐字节相同（`check:reproducible` 与中文侧 diff 会当场发现漂移）。
+ */
+const BRAND_MARK_HTML = `        <span class="mark" aria-hidden="true">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2A2 2 0 0 1 3 12V4.6A1.6 1.6 0 0 1 4.6 3H12a2 2 0 0 1 1.4.6l7.2 7.2a2 2 0 0 1 0 2.6Z"/>
             <path d="M12 8v6"/><path d="m9.5 11.5 2.5 2.5 2.5-2.5"/>
           </svg>
-        </span>
+        </span>`;
+
+function sharedHeaderHtml(prefix, headerExtra = '', ghLink = '', route = '', langLink = '') {
+  const inlineNav = `<nav class="gnav" aria-label="全站导航">${navLinksHtml(prefix, route, false)}</nav>`;
+  const drawerNav = `<details class="nav-drawer"><summary class="nav-btn" aria-label="打开全站导航" title="全站导航"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></summary><nav class="nav-drawer-panel" aria-label="移动导航">${navLinksHtml(prefix, route, true)}<a href="${prefix}en/" hreflang="en" lang="en">English</a></nav></details>`;
+  // 语言入口和图标入口同一手法：片段里的 `__PREFIX__` 按输出深度解析。
+  const langLinkResolved = String(langLink || '').split('__PREFIX__').join(prefix);
+  return `  <a class="skip-link" href="#main">跳到正文</a>
+  <header class="top">
+    <div class="topin">
+      <a class="brand" href="${prefix}">
+${BRAND_MARK_HTML}
         <span class="btxt"><b>AI <em>优惠</em>聚合器</b><small>真实优惠 · 每日更新</small></span>
       </a>
+      ${langLinkResolved}
       ${inlineNav}
       ${drawerNav}
       <a class="jumpback" href="${prefix}">← 返回全部优惠</a>${headerExtra ? `\n      ${headerExtra}` : ''}${ghLink ? `\n      ${ghLink}` : ''}
@@ -310,6 +340,11 @@ function docStart(spec) {
     faviconHref, logoCssHref = '',
     extraCss = '', jsonLdHtml = '',
     headerExtra = '', mainClass, expectLayout, where = kind,
+    // 文档语言。默认 'zh-CN' ⇒ 不传的页面族产物逐字节不变；`/en/` 传 'en'。
+    lang = 'zh-CN',
+    // 预渲染好的整段页头（`/en/` 的英文导航用它覆盖共享中文页头）；默认 null ⇒ 走
+    // sharedHeaderHtml()，中文页面族的输出因此不受影响。
+    headerHtml = null,
     // v3.2：订阅声明槽位。**一段已经拼好的** `<link rel="alternate" …>` HTML（多行、行间 `\n`、
     // **不带**尾换行），非空时本函数在它后面补恰好一个 `\n`；默认空串 ⇒ 输出与今天逐字节相同。
     // 取值来源只有一处：`scripts/lib/feed.js` 的 `FEED_FILES`（调用方按 SITE_URL 现算绝对 URL）。
@@ -334,7 +369,7 @@ function docStart(spec) {
       throw new Error(`页面壳：${where} 缺 ${name}（route=${route}）—— 这三项必填，不接受空值`);
     }
   }
-  if (!parts || !parts.sharedStyle || !parts.themeScript || !parts.footerTemplate || !parts.headerGhLink) {
+  if (!parts || !parts.sharedStyle || !parts.themeScript || !parts.footerTemplate || !parts.headerGhLink || !parts.headerLangLink) {
     throw new Error(`页面壳：${where} 没有传 loadShellParts() 的结果（或片段为空）`);
   }
 
@@ -370,7 +405,7 @@ function docStart(spec) {
   // 文档序（有语义，不许调换）：共享样式 → 页面级 `<style>`（覆盖关系）→ JSON-LD。
   // 共享规则一处定义、全站生效，页面级只写自己独有的规则 —— 见 docs/ARCHITECTURE.md。
   return `<!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="${lang}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -385,7 +420,7 @@ ${logoCssHtml}${parts.themeScript}
 ${sharedCssTag}
 ${extraCssHtml}${jsonLdHtmlBlock}</head>
 <body>
-${sharedHeaderHtml(prefix, headerExtra, parts.headerGhLink, route)}
+${headerHtml || sharedHeaderHtml(prefix, headerExtra, parts.headerGhLink, route, parts.headerLangLink)}
 
   <div class="wrap">
     <main id="main"${main ? ` class="${main}"` : ''}>`;
@@ -447,8 +482,10 @@ function renderDetailPageShell(spec) {
 
 module.exports = {
   DETAIL_MAIN_CLASS,
+  BRAND_MARK_HTML,
   loadShellParts,
   resolveRouteHrefs,
+  langLinkHtml,
   finalizePage,
   sharedHeaderHtml,
   docStart,
