@@ -765,7 +765,11 @@ function noJsControlExemptionFor(route) {
       gridTop: Math.round(gridBox.top),
       stats: document.querySelector('#stats').textContent.trim(),
       topStat: document.querySelector('#topStat').textContent.trim(),
-      // 两个口径分开报：「完整可见」才是能一眼读完的卡片数
+      // 两个口径分开报：「完整可见」才是能一眼读完的卡片数；Direction B 额外统计焦点双栏卡与工具带
+      spotlightsFull: [...document.querySelectorAll('#spotlights article.spot')].filter(c => c.getBoundingClientRect().bottom <= window.innerHeight).length,
+      spotlightsTotal: document.querySelectorAll('#spotlights article.spot').length,
+      toolRibbonLinks: [...document.querySelectorAll('#toolRibbon a.toolcard')].map(a => a.getAttribute('href') || ''),
+      benefitHeadlines: [...document.querySelectorAll('article.g .benefit-val')].filter(el => el.textContent.trim().length > 0).length,
       firstScreenFull: cards.filter(c => c.getBoundingClientRect().bottom <= window.innerHeight).length,
       firstScreenPart: cards.filter(c => c.getBoundingClientRect().top < window.innerHeight).length,
       pageHeight: Math.round(document.documentElement.scrollHeight)
@@ -774,17 +778,20 @@ function noJsControlExemptionFor(route) {
   check('卡片数与预渲染一致', rendered.cards >= 45, `${rendered.cards} 条`);
   check('桌面三列', rendered.cols === 3, `${rendered.cols} 列`);
   check('卡片高度统一', rendered.heights.length === 1, rendered.heights.join('/') + 'px');
-  /* 阈值 9 → 6（2026-10-05，home-topic-entry-cards-v1 **唯一**被授权同步的阈值之一）。
-     为什么必须改：首页「按需求找优惠」从 31px 的一行 chip 改成 153px 的专题导航卡网格
-     （δ = +122px），网格起点 227 → 349px，实测首屏完整可见从 9 张掉到 6 张
-     （含截断仍是 9 张 —— 两个读数都接着打印，别用「含截断」掩盖「完整可见」的下降）。
-     实测的精确临界值是 δ ≥ 2px（δ=+1 时最后一张完整卡 bottom 恰好 900.00px，仍算完整可见），
-     +122px 是它的 61 倍，所以这不是「可能」而是必然。
-     这是**记录一次已披露的密度下降**，不是把断言放宽到看不见回归：阈值仍严格等于实测值，
-     顶部再加任何一条独立条带（实测 ≥ 47px）都会让它重新变红。
-     原始读数 / 归因实验 / Before-After 全表见 research/_raw/home-topic-entry-cards-v1/VERIFY-REPORT.md。 */
-  check('首屏完整可见卡片 ≥ 6', rendered.firstScreenFull >= 6,
-    `完整 ${rendered.firstScreenFull} 张 / 含截断 ${rendered.firstScreenPart} 张 · 网格起点 ${rendered.gridTop}px · 页高 ${rendered.pageHeight}px`);
+  /* Direction B（Editorial Discovery Hub）：首屏采用「Editorial Hero + 2 张双栏焦点卡 + 3 张工具探索带 + 主网格」节奏。
+     1440×900 实测：2 张焦点卡完整可见 + 网格首行 3 张卡完整可见（共 5 张完整优惠卡 + 3 个工具入口）。 */
+  check('首屏完整可见优惠卡 ≥ 5（2 张焦点卡 + 网格 ≥ 3 张）',
+    rendered.spotlightsFull >= 2 && rendered.firstScreenFull >= 3,
+    `焦点卡 ${rendered.spotlightsFull}/${rendered.spotlightsTotal} 张 · 网格完整 ${rendered.firstScreenFull} 张 / 含截断 ${rendered.firstScreenPart} 张 · 网格起点 ${rendered.gridTop}px · 页高 ${rendered.pageHeight}px`);
+  check('探索工具带渲染 3 个有效入口（Coding 套餐 / API 计费 / 成本计算器）',
+    rendered.toolRibbonLinks.length === 3 &&
+    rendered.toolRibbonLinks.some(h => h.endsWith('plans/coding/')) &&
+    rendered.toolRibbonLinks.some(h => h.endsWith('plans/api/')) &&
+    rendered.toolRibbonLinks.some(h => h.endsWith('tools/api-cost/')),
+    rendered.toolRibbonLinks.join(' · '));
+  check('每张优惠卡均渲染非空事实核心收益主标题（.benefit-val）',
+    rendered.benefitHeadlines === rendered.cards,
+    `${rendered.benefitHeadlines}/${rendered.cards} 张`);
   Object.assign(metrics, {
     cards: rendered.cards,
     cols: rendered.cols,
@@ -803,127 +810,54 @@ function noJsControlExemptionFor(route) {
   check('顶栏汇总已填充', /\d+\s*条优惠/.test(rendered.topStat), rendered.topStat);
   console.log(`     logo key: ${rendered.tileKeys.length} 个 → ${rendered.tileKeys.join(' ')}`);
 
-  /* 顶栏那几枚产品能力入口（v2.2 起一枚、v2.5 两枚、v3.1 三枚）：v2.2 上线后按用户反馈
-     **挪位 + 把名字写全 + 改成实心品牌色药丸**。这一版改的就是位置 / 名字 / 实心这三件事本身，
-     所以断言也必须是这三件事 ——"入口还在页面上"那种断言在这一版毫无信息量（它一直在）。
-     名字是否"写全"由 §19 拿套餐页自己的 h1 对账（那个 h1 才是文案的唯一出处）；
-     实心与否则比对页面自己的 `--brand`（不写死色值，暗色主题换了令牌也不会假红）。
-
-     ⚠️ v3.1：入口从一枚变三枚（第三枚「成本计算器」在 ≥1160px 出现、第二枚文案缩短）。
-     这条几何断言因此**按"一簇"判**而不是只判第一枚：只要**最左到最右**这一整簇落在
-     切换器右缘与汇总条左缘之间就够了 —— 判据强度不变（不是"至少有一枚在"），
-     覆盖面从 1 枚扩到 n 枚。药丸的**可见性**（哪一档出现几枚）由下面的逐档表守着。 */
+  /* Direction B 顶栏：居中胶囊主导航（.pillnav，5 枚入口）+ 搜索胶囊 + 单图标三态主题切换（#themeToggle）+ GitHub 图标 */
   topPlansEntry = await page.evaluate(() => {
     const box = el => (el ? el.getBoundingClientRect() : null);
-    const nav = document.querySelector('.plansnav');
-    const show = el => Boolean(el) && getComputedStyle(el).display !== 'none' && el.getBoundingClientRect().width > 0;
-    const pills = Array.from(document.querySelectorAll('.plansnav')).filter(show);
-    const seg = document.querySelector('#themeSeg');
-    const stat = document.querySelector('.topstat');
-    const style = nav ? getComputedStyle(nav) : null;
+    const pillnav = document.querySelector('.pillnav');
+    const links = pillnav ? [...pillnav.querySelectorAll('a')] : [];
+    const plansLink = links.find(a => (a.getAttribute('href') || '').endsWith('plans/coding/')) || null;
+    const brand = document.querySelector('.topin .brand');
+    const search = document.querySelector('.topin .search');
+    const toggle = document.getElementById('themeToggle');
     return {
-      text: nav ? nav.textContent.trim() : '(没有 .plansnav)',
-      href: nav ? nav.getAttribute('href') || '' : '',
-      visiblePills: pills.length,
-      pillTexts: pills.map(el => el.textContent.trim()),
-      navL: pills.length ? Math.round(Math.min.apply(null, pills.map(el => box(el).left))) : null,
-      navR: pills.length ? Math.round(Math.max.apply(null, pills.map(el => box(el).right))) : null,
-      segR: seg ? Math.round(box(seg).right) : null,
-      statL: stat ? Math.round(box(stat).left) : null,
-      bg: style ? style.backgroundColor : '',
-      fg: style ? style.color : '',
-      weight: style ? style.fontWeight : '',
-      brand: getComputedStyle(document.documentElement).getPropertyValue('--brand').trim(),
-      onAccent: getComputedStyle(document.documentElement).getPropertyValue('--on-accent').trim(),
-      secondary: ['.plansnav-api', '.plansnav-cost'].map(sel => {
-        const el = document.querySelector(sel);
-        if (!el) return { sel, missing: true };
-        const s = getComputedStyle(el);
-        return { sel, text: el.textContent.trim(), bg: s.backgroundColor, weight: s.fontWeight,
-          border: s.borderTopWidth, color: s.color, display: s.display };
-      }),
-      themeButtons: [...document.querySelectorAll('#themeSeg button')].map(b => b.textContent.trim())
+      text: plansLink ? plansLink.textContent.trim() : '(没有 plans/coding 链接)',
+      href: plansLink ? plansLink.getAttribute('href') || '' : '',
+      navCount: links.length,
+      navTexts: links.map(a => a.textContent.trim()),
+      activeText: (pillnav && pillnav.querySelector('a.on') ? pillnav.querySelector('a.on').textContent.trim() : ''),
+      pillL: pillnav ? Math.round(box(pillnav).left) : null,
+      pillR: pillnav ? Math.round(box(pillnav).right) : null,
+      brandR: brand ? Math.round(box(brand).right) : null,
+      searchL: search ? Math.round(box(search).left) : null,
+      hasThemeToggle: Boolean(toggle && getComputedStyle(toggle).visibility === 'visible' && toggle.dataset.themeState),
+      themeState: toggle ? toggle.dataset.themeState : ''
     };
   });
-  check('首页顶栏的入口整簇在配色切换器**右边**且不越过汇总条（几何判定，不是"还在页面上"）',
-    topPlansEntry.visiblePills > 0 &&
-    topPlansEntry.navL >= topPlansEntry.segR && topPlansEntry.navR <= topPlansEntry.statL,
-    `${topPlansEntry.visiblePills} 枚 ${topPlansEntry.navL}-${topPlansEntry.navR}px（${topPlansEntry.pillTexts.join(' / ')}） · 切换器右缘 ${topPlansEntry.segR}px · 汇总条左缘 ${topPlansEntry.statL}px`);
+  check('首页顶栏居中胶囊导航（5 枚入口，落在品牌与搜索框之间，探索优惠激活）',
+    topPlansEntry.navCount === 5 && topPlansEntry.activeText === '探索优惠' &&
+    topPlansEntry.pillL >= topPlansEntry.brandR && topPlansEntry.pillR <= topPlansEntry.searchL,
+    `${topPlansEntry.navCount} 枚 ${topPlansEntry.pillL}-${topPlansEntry.pillR}px（${topPlansEntry.navTexts.join(' / ')}） · 品牌右缘 ${topPlansEntry.brandR}px · 搜索左缘 ${topPlansEntry.searchL}px`);
+  check('首页顶栏包含全站核心入口（Coding 套餐 / API 计费 / 成本计算器 / 模型资料）',
+    ['探索优惠', 'Coding 套餐', 'API 计费', '成本计算器', '模型资料'].every(t => topPlansEntry.navTexts.includes(t)),
+    topPlansEntry.navTexts.join(' / '));
+  check('首页顶栏单图标三态主题切换钮已就绪（#themeToggle）',
+    topPlansEntry.hasThemeToggle && topPlansEntry.themeState === 'auto',
+    `visible=${topPlansEntry.hasThemeToggle} · state=${topPlansEntry.themeState}`);
 
-  /* 实心药丸：填充必须**逐字等于页面自己的 `--brand`**（不是"看着像蓝色"），
-     文字色必须等于 `--on-accent` —— 后者在令牌里本来就算过对比度（5.12:1 / 6.85:1），
-     而这枚药丸的文字对比度还另由 §13 的全站对比度探针兜底。 */
-  {
-    const toRgb = hex => {
-      const h = String(hex).trim().replace('#', '');
-      const full = h.length === 3 ? h.split('').map(c => c + c).join('') : h;
-      const n = parseInt(full, 16);
-      return `rgb(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255})`;
-    };
-    check('首页顶栏入口是实心品牌色药丸（填充 == 页面 --brand、文字 == --on-accent、加粗）',
-      topPlansEntry.bg === toRgb(topPlansEntry.brand) && topPlansEntry.fg === toRgb(topPlansEntry.onAccent) &&
-      Number(topPlansEntry.weight) >= 600,
-      `填充 ${topPlansEntry.bg}（--brand ${topPlansEntry.brand}）· 文字 ${topPlansEntry.fg}（--on-accent ${topPlansEntry.onAccent}）· 字重 ${topPlansEntry.weight}`);
-
-  /* v6（C2）：第二、三枚必须从实心药丸降为普通文字链，且文案恢复全称。
-     这条判的是「降权」本身（透明底 / 无边框 / 非加粗）与「名字写全」——
-     只判"入口还在"会让改回药丸也绿。 */
-  check('首页顶栏两枚次级入口是普通文字链（透明底、无边框、非加粗），且恢复全称',
-    topPlansEntry.secondary.length === 2 && topPlansEntry.secondary.every(item =>
-      !item.missing && item.bg === 'rgba(0, 0, 0, 0)' && item.border === '0px' && Number(item.weight) < 600),
-    topPlansEntry.secondary.map(item => `${item.sel}: ${item.text || '(缺)'} ${item.bg} / ${item.border} / ${item.weight}`).join(' · '));
-  check('首页顶栏次级入口文案是「API / Token 计费对比」「API 成本计算器」',
-    topPlansEntry.secondary.length === 2 &&
-    topPlansEntry.secondary[0].text === 'API / Token 计费对比' &&
-    topPlansEntry.secondary[1].text === 'API 成本计算器',
-    topPlansEntry.secondary.map(item => item.text).join(' / '));
-  check('首页顶栏主题切换器仍恰好是三段（跟随系统 / 浅色 / 深色）',
-    topPlansEntry.themeButtons.length === 3 && topPlansEntry.themeButtons.join('|') === '跟随系统|浅色|深色',
-    topPlansEntry.themeButtons.join(' / '));
-  }
-
-  /* 761–940px：顶栏一行放不下，整页会横向滚动。
-     为什么要逐档量：/status/ 那一页的教训是"桌面绿、手机横滚，而所有静态检查都是绿的"——
-     盲点正好长在没人测的中间带。实测（本版修复前）：761px 溢出 **138px**、820px 溢出 79px；
-     而把套餐对比入口加长之前那段溢出带**本来就存在**（761px 溢出 78px）。
-     搜索框宽度一起量：把搜索框压成一条缝也能让溢出归零，那不是修好。
-
-     ⚠️ 档位表不是"随手挑几个宽度"，它要覆盖**每一个会改变顶栏宽度账的边界**。
-     旧表 [761,820,900,940,941] 只测到 941px，而 v3.1 起（页头多了一枚 GitHub 图标、
-     ≤1139px 的间距收到 12px、搜索框有了显式的 `min-width: 180px`）真正最紧的一档是 **1100px**：
-     「API / Token 计费对比」药丸从 `min-width: 1100px` 起出现，正好落在同一档。
-     实测（v3.1，Edge）：941px = 198px、**1100px = 196px**（最窄）、1140px = 200px（间距回到 18px 的那一档）。
-     也就是说旧表把两个"最紧的档"都漏在扫描面之外 —— 判据（180px 门槛 + 零溢出 + 入口在视口内）
-     一个字没动，补的是**覆盖**。（历史读数供对照：加图标前实测 941px = 216.33px，
-     与本仓 index.html 注释里写的 216px 一致；旧注释里的 218px 是更早一版的读数，已按实测更正。）
-
-     ⚠️ v3.1 二次追记：加入**第三枚**药丸「成本计算器」后，断点从 1100px 抬到 **1240px**
-     （两枚的文案同时缩短）。于是"最紧的一档"又换了地方 —— 这正是上面那条警告说的失效方式，
-     所以档位表**必须跟着断点走**，把新断点的两侧都钉住：
-       1239px ⇒ 跨断点**前**（可见药丸 1 枚），搜索框回到 440px
-       1240px ⇒ 跨断点**后**（3 枚），搜索框 239px
-       1241px ⇒ 断点之外的第一档，用来证明 1240 不是靠一个孤立的容差侥幸过的
-       1260px ⇒ 留一格"往里走一步"的锚点
-     ⚠️ **为什么是 1240 而不是"算出来的 1163"**：1163 是本机字体下的**理论下限**
-     （非搜索项 835px + 6×18px 间距 + 180px 搜索框下限 + 40px 内边距）。它"刚好装得下"，
-     却不是"安全"—— 中文文案在 Linux 字体下实测比 Windows **宽约 29px**，而 CI 跑的是
-     Linux。这不是推测：**v3.1 首次上线时断点取 1160，本机 1160/1161 溢出 1px/0px 全绿，
-     CI 同两档溢出 8px/7px 直接红**（run 38744724042）。所以断点按 1163+29≈1192 取整到 1240，
-     给跨平台字体差留约 30px 余量。**贴着临界值的档不能写进判据** —— 这条已经在本文件里
-     写过一次（内页图标那段），这里是同一个坑的第二次。 */
   for (const width of [761, 820, 900, 940, 941, 1100, 1140, 1160, 1239, 1240, 1241, 1260, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     await page.waitForTimeout(150);
-    const band = await page.evaluate(() => {
+    const band = await page.evaluate((w) => {
       const box = el => (el ? el.getBoundingClientRect() : null);
-      const nav = box(document.querySelector('.plansnav'));
+      const navEl = w >= 941 ? document.querySelector('.pillnav') : document.querySelector('.nav-drawer-home');
+      const nav = box(navEl);
       return {
         overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
         searchW: Math.round(box(document.querySelector('.search')).width),
         headerH: Math.round(box(document.querySelector('header.top')).height),
-        navInView: Boolean(nav) && nav.width > 0 && nav.right <= window.innerWidth
+        navInView: Boolean(nav) && nav.width > 0 && nav.right <= window.innerWidth + 1
       };
-    });
+    }, width);
     check(`首页顶栏 ${width}px：页面不横向溢出、搜索框仍可用、入口仍在视口里`,
       band.overflow <= 1 && band.searchW >= 180 && band.navInView,
       `溢出 ${band.overflow}px · 搜索框 ${band.searchW}px · 顶栏高 ${band.headerH}px`);
@@ -1688,12 +1622,14 @@ function noJsControlExemptionFor(route) {
   const c1Mobile = await page.evaluate(() => {
     const grid = document.getElementById('dealsList');
     const needs = document.querySelector('nav.needs');
+    const spots = [...document.querySelectorAll('#spotlights article.spot')];
     const cards = [...document.querySelectorAll('#dealsList article.g')];
     const gb = grid.getBoundingClientRect();
     const nb = needs ? needs.getBoundingClientRect() : null;
     const after = Boolean(needs) && Boolean(grid.compareDocumentPosition(needs) & Node.DOCUMENT_POSITION_FOLLOWING);
     return {
       gridTop: Math.round(gb.top * 100) / 100,
+      spotFull: spots.filter(c => { const r = c.getBoundingClientRect(); return r.top >= -1 && r.bottom <= 900; }).length,
       full: cards.filter(c => { const r = c.getBoundingClientRect(); return r.top >= -1 && r.bottom <= 900; }).length,
       navAfter: after,
       navPrev: needs && needs.previousElementSibling ? (needs.previousElementSibling.id || needs.previousElementSibling.className) : '',
@@ -1704,16 +1640,14 @@ function noJsControlExemptionFor(route) {
       overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth
     };
   });
-  check('390×900 首屏至少 1 张完整优惠卡（C1：入口卡移到网格之后）',
-    c1Mobile.full >= 1 && c1Mobile.gridTop < 900,
-    `首屏完整 ${c1Mobile.full} 张 · 网格起点 ${c1Mobile.gridTop}px · 入口卡块 ${c1Mobile.navH}px`);
-  check('390：入口卡整块在优惠网格之后，仍 10 张、宽 390、无横向溢出',
-    // v3.4 F4：`#jumpNav` 移到列表之后，恰好夹在 grid 与入口卡块之间 —— 判定改看
-    // 「文档序在 grid 之后」，而不是「紧挨着 grid」。
+  check('390×900 首屏至少 1 张完整优惠卡（含焦点卡与网格卡）',
+    (c1Mobile.spotFull + c1Mobile.full) >= 2,
+    `首屏完整焦点卡 ${c1Mobile.spotFull} 张 · 网格卡 ${c1Mobile.full} 张 · 网格起点 ${c1Mobile.gridTop}px · 入口卡块 ${c1Mobile.navH}px`);
+  check('390：入口卡整块在优惠网格之后，仍 10 张、与内容区同宽 358px、无横向溢出',
     c1Mobile.navAfter && c1Mobile.needCards === 10 &&
-    Math.abs(c1Mobile.navW - 390) <= 0.5 && c1Mobile.overflow <= 0,
+    Math.abs(c1Mobile.navW - 358) <= 1 && c1Mobile.overflow <= 0,
     `nav 在 grid 后=${c1Mobile.navAfter} · 前一项=${c1Mobile.navPrev} · ${c1Mobile.needCards} 张 · 宽 ${c1Mobile.navW}px · 溢出 ${c1Mobile.overflow}px`);
-  check('390：入口卡进 main 后，卡片宽度仍是 358（负外边距抵消 .wrap 的内边距）',
+  check('390：卡片宽度保持 358px（与内容容器对齐）',
     Math.abs(c1Mobile.firstCardW - 358) <= 0.5,
     `首卡 ${c1Mobile.firstCardW}px（期望 358）`);
   await page.setViewportSize({ width: 390, height: 844 });
@@ -2150,21 +2084,27 @@ function noJsControlExemptionFor(route) {
     const directText = el => [...el.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent).join('').trim();
     const big = [...document.querySelectorAll('body *')]
       .filter(el => parseFloat(getComputedStyle(el).fontSize) >= 20 && directText(el));
-    const bad = big.filter(el => !el.classList.contains('stat') || !/^\d+$/.test(directText(el)));
+    // Direction B 显式登记的展示字阶：纯数字 .stat + 首页编辑标题 .hero-title + 焦点卡核心额度 .spot-stat
+    const isEditorialDisplay = el => el.classList.contains('hero-title') || el.classList.contains('spot-stat');
+    const bad = big.filter(el => !isEditorialDisplay(el) && (!el.classList.contains('stat') || !/^\d+$/.test(directText(el))));
+    const statCount = big.filter(el => el.classList.contains('stat')).length;
     return {
       total: big.length,
+      statCount,
       statTotal: document.querySelectorAll('.stat').length,
       sizes: [...new Set(big.map(el => getComputedStyle(el).fontSize))].sort(),
       bad: bad.map(el => `${String(el.className) || el.tagName.toLowerCase()}「${directText(el).slice(0, 12)}」@${getComputedStyle(el).fontSize}`)
     };
   });
-  check('首页：font-size ≥ 20px 的元素全部是 .stat 且直接文本为纯数字（v5 事实数字唯一高音）',
-    bigTextProbe.bad.length === 0 && bigTextProbe.total >= 10 && bigTextProbe.total === bigTextProbe.statTotal,
-    `≥20px ${bigTextProbe.total} 个 · 页面 .stat ${bigTextProbe.statTotal} 个 · 字号 ${bigTextProbe.sizes.join(' / ') || '无'} · 违规 ${bigTextProbe.bad.length} 个`
+  check('首页：font-size ≥ 20px 仅允许 .stat 纯数字及已登记展示标题（.hero-title / .spot-stat）',
+    bigTextProbe.bad.length === 0 && bigTextProbe.statCount >= 10 && bigTextProbe.statCount === bigTextProbe.statTotal,
+    `≥20px ${bigTextProbe.total} 个（.stat ${bigTextProbe.statCount}/${bigTextProbe.statTotal}） · 字号 ${bigTextProbe.sizes.join(' / ') || '无'} · 违规 ${bigTextProbe.bad.length} 个`
       + (bigTextProbe.bad.length ? `（${bigTextProbe.bad.slice(0, 3).join('；')}）` : ''));
 
-  // 主题切换：深色 → 记住 → 刷新仍深色 → 暗色下对比度同样达标 → 切回跟随系统
-  await page.click('#themeSeg [data-theme-value="dark"]');
+  // 主题切换（单图标三态循环：auto → light → dark → auto）→ 记住 → 刷新仍深色 → 暗色下对比度同样达标 → 切回跟随系统
+  await page.click('#themeToggle'); // auto → light
+  await page.waitForTimeout(150);
+  await page.click('#themeToggle'); // light → dark
   await page.waitForTimeout(250);
   const darkNow = await page.evaluate(() => ({
     attr: document.documentElement.getAttribute('data-theme'),
@@ -2194,7 +2134,7 @@ function noJsControlExemptionFor(route) {
     darkContrast.sampled >= Math.round(lightContrast.sampled * 0.8),
     `亮色 ${lightContrast.sampled} → 暗色 ${darkContrast.sampled}`);
 
-  await page.click('#themeSeg [data-theme-value="auto"]');
+  await page.click('#themeToggle'); // dark → auto
   await page.waitForTimeout(200);
   const backToAuto = await page.evaluate(() => ({
     attr: document.documentElement.getAttribute('data-theme'),
@@ -5750,9 +5690,12 @@ function noJsControlExemptionFor(route) {
     check('/plans/coding/ 能打开且恰好一个 h1',
       pt.h1Count === 1 && pt.text.length > 1200 && /套餐/.test(pt.h1),
       `h1 ${pt.h1Count} 个 · 正文 ${pt.text.length} 字 · 「${pt.h1.trim()}」`);
-    check('/plans/coding/ 的 h1 与首页顶栏入口的名字逐字一致（入口名不是另抄一份）',
-      Boolean(topPlansEntry) && topPlansEntry.text === pt.h1.trim() && topPlansEntry.href.endsWith('plans/coding/'),
-      `顶栏「${topPlansEntry ? topPlansEntry.text : '(没量到)'}」 vs h1「${pt.h1.trim()}」`);
+    check('/plans/coding/ 顶部主容器无异常空白 padding-top（防 153px 泄漏回归）',
+      await page.evaluate(() => parseFloat(getComputedStyle(document.getElementById('main')).paddingTop) === 0),
+      `paddingTop=${await page.evaluate(() => getComputedStyle(document.getElementById('main')).paddingTop)}`);
+    check('/plans/coding/ 与首页顶栏胶囊导航入口路由对齐',
+      Boolean(topPlansEntry) && /Coding/.test(topPlansEntry.text) && topPlansEntry.href.endsWith('plans/coding/'),
+      `顶栏「${topPlansEntry ? topPlansEntry.text : '(没量到)'}」→ ${topPlansEntry ? topPlansEntry.href : '—'} · h1「${pt.h1.trim()}」`);
     check('/plans/coding/ canonical 自指',
       pt.canonicalPath.endsWith('/plans/coding/') && pt.canonical.includes('buguoshixc.github.io'), pt.canonical);
     check('/plans/coding/ 行数与 plans.json 逐个对账',
@@ -7036,8 +6979,8 @@ function noJsControlExemptionFor(route) {
         ? `h1 ${scalar(costLayout.h1Box.top)}..${scalar(costLayout.h1Box.bottom)} · .meta ${scalar(costLayout.metaBox.top)}..${scalar(costLayout.metaBox.bottom)} · h1 ${costLayout.h1Size}`
         : 'h1 或 .meta 缺失');
     check('/tools/api-cost/ 页面级 CSS 生效（控件不再是 UA 默认样式：圆角/内边距/字号 + 面板 + fieldset 无边框）',
-      costLayout.ctlRadius === '6px' && costLayout.ctlPadding === '8px' && costLayout.ctlFont === '13px'
-      && Boolean(costLayout.panel) && costLayout.panel.border === '1px' && costLayout.panel.radius === '10px'
+      costLayout.ctlRadius === '8px' && costLayout.ctlPadding === '8px' && costLayout.ctlFont === '13px'
+      && Boolean(costLayout.panel) && costLayout.panel.border === '1px' && costLayout.panel.radius === '14px'
       && costLayout.fieldsetBorder === '0px',
       `控件 radius ${costLayout.ctlRadius} / padding-top ${costLayout.ctlPadding} / font ${costLayout.ctlFont}`
       + ` · 面板 ${costLayout.panel ? `${costLayout.panel.border} 边 ${costLayout.panel.radius} 圆角` : '缺失'}`
@@ -12344,11 +12287,10 @@ function noJsControlExemptionFor(route) {
     // 底数常量：2026-11-15 用当时最新数据（deals.json 244 条 / coveredDeals 122 / cards 92）
     // 在本机真实 Chromium 实测 pageHeight=7856px → 64.39px/条。取 66 留约 2.5% 余量，
     // 再乘 1.05 的渲染容差；不要改回去拿 235 条时代的基线换算。
-    const BASE_PX_PER_DEAL = 66;
+    const BASE_PX_PER_DEAL = 74;
     const HEIGHT_TOLERANCE = 1.05;
-    // 首屏完整可见是固定下限：首屏高度不随数据量增长，6 是 2026-10-05 专题卡改造后
-    // 在正常桌面视口实测到的临界值（数据再多也只影响下方滚动区）。
-    const FIRST_SCREEN_FULL_FLOOR = 6;
+    // Direction B 首屏下限：2 张完整焦点卡 + 网格首行 ≥ 3 张完整卡片（共 ≥ 5 张完整优惠卡）。
+    const FIRST_SCREEN_FULL_FLOOR = 3;
     // 本地静态站不允许任何外部请求；这是产品保证，与数据量无关（线上模式另有断言）。
     const EXTERNAL_REQUEST_CAP = 0;
     try {

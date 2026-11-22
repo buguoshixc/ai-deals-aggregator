@@ -933,3 +933,16 @@
 它**不证**「表里那批 id 就是这一页判据该收的集合」—— 后者由 `itemlist-arity` 与
 `lib/seo.js` 的摘要重算守着。免费模型那 3 行同样由 `fact-summary.js` 的 `freeModelRows()`
 单点产出，字段没写就如实说「官方页未写明」，不替厂商补话。
+
+---
+
+### Direction B — Editorial Discovery Hub 首页改版（2026-11-22）
+
+| 项目 | 决策与实测口径 |
+|---|---|
+| **暖纸 / 暖炭双主题令牌** | 浅色：`--bg:#f6f4ef` · `--card:#ffffff` · `--surface2:#efeae0` · `--ink:#1c1917` · `--ink2:#57534e` · `--mut:#635d56` · `--brand:#b83a0b`（WCAG 实测最低 5.24:1，0 失败）；深色：`--bg:#0c0b0a` · `--card:#302c26` · `--surface2:#3a352e` · `--line:#464037` · `--ink:#f5f2eb` · `--mut:#b4aba0` · `--brand:#fb923c`（`card/bg = 1.42 ≥ 1.4`，`line/bg = 1.92 ≥ 1.6`，全部文本 ≥ 5.46:1，0 失败）；圆角收敛为 `--r-sm:8px / --r:14px / --r-dlg:16px / --r-pill:999px` |
+| **修复全站内页 `#main` 153px 空白缺陷** | 移除原 `index.html` 中对 `#main` 写入的 `padding-top: 153px` 与桌面端绝对定位 `nav.needs` 规则；`nav.needs` 回归文档流置于主优惠网格之后，所有约 400 个二级页顶部立即归零（`verify-site.js` 新增 `/plans/coding/` `paddingTop === 0` 防回归断言） |
+| **顶栏与主题切换** | 首页顶栏采用居中胶囊导航 `.pillnav`（`探索优惠 / Coding 套餐 / API 计费 / 成本计算器 / 模型资料`，≥941px 完整展示、≤940px 收进零 JS 移动抽屉）+ 圆角搜索胶囊 + 单图标三态循环主题按钮 `#themeToggle`（`auto → light → dark → auto`，`dsh.theme` 持久化）；全站内页 `.gnav` 同步胶囊样式 |
+| **Editorial Hero + 确定性双栏焦点卡 + 探索工具带** | 首页唯一 `<h1>` 移至 Hero 主标题（`.hero-title`）；双栏焦点卡 `#spotlights` 由 `RENDER-CORE` 纯函数 `selectSpotlights()` 按确定性规则选出（1 档位完全免费 + 2 档位免费额度，不同厂商，非付费推荐位；筛选/搜索或切列表视图时自动隐藏）；3 卡探索工具带 `#toolRibbon` 实时注入 `plans.json` / `api-plans.json` 条数（构建期预渲染、无 JS 可点）；`bigTextProbe` 显式放行 `.hero-title` 与 `.spot-stat` 展示字阶 |
+| **收益主标题卡片与快速对比** | `RENDER-CORE` 纯函数 `benefitHeadlineOf()` 严格从既有 `features / offerSummary / zh.discountInfo / discountInfo` 提取核心事实收益（不编造数字）；卡片上视觉隐藏重复 `未标注` 徽章（`.g .tg.uns { display: none; }`，保留 DOM 语义与详情页完整期限行）；`+ 对比` 按钮由客户端 JS 纯动态注入（预渲染 HTML 零 JS 控件，守住 G11） |
+
