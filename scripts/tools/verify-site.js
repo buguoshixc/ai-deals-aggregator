@@ -679,6 +679,15 @@ function noJsControlExemptionFor(route) {
       check('外链应用脚本不是空壳（>100KB）', bytes > 100 * 1024, `${bytes} B`);
       check('dist 里没有源码路径 assets/app.js（只有哈希产物）', !fs.existsSync(path.join(DIR, 'assets', 'app.js')));
     }
+    const styleLinks = [...homeHtml.matchAll(/<link\b[^>]*\bhref="([^"]+)"[^>]*>/gi)]
+      .map(m => m[1])
+      .filter(href => /(?:^|\/)style\.[a-f0-9]{16}\.css$/.test(href));
+    check('首页加载内容哈希共享样式表（style.<16hex>.css）', styleLinks.length === 1, styleLinks.join(', '));
+    if (styleLinks.length === 1) {
+      const cssPath = path.join(DIR, styleLinks[0]);
+      const cssBytes = fs.existsSync(cssPath) ? fs.statSync(cssPath).size : 0;
+      check('共享样式表文件真实存在且非空', cssBytes > 10 * 1024, `${(cssBytes / 1024).toFixed(1)} KB`);
+    }
   } else {
     console.log('  · 线上目标：跳过静态文件断言（改由 HTTP 响应验证）');
   }
@@ -993,9 +1002,9 @@ function noJsControlExemptionFor(route) {
           inner.sameLineAsJumpback,
           `同行=${inner.sameLineAsJumpback} · 图标 top ${inner.gh ? inner.gh.top : '-'}px`);
       } else {
-        check(`内页 /models/ ${width}px：放不下第三个元素时确实多一行，且代价恰好是一行（30~60px）`,
-          inner.cost !== null && inner.cost >= 30 && inner.cost <= 60,
-          `顶栏 ${inner.headerH}px · 藏掉图标 ${inner.headerWithoutIconH}px · 代价 ${inner.cost}px（= 图标 30 + 间距 12）`);
+        check(`内页 /models/ ${width}px：含全局导航抽屉时顶栏仍为两行，图标与返回链同行且不增加额外行高`,
+          inner.cost !== null && Math.abs(inner.cost) <= 1 && inner.sameLineAsJumpback && inner.headerH <= 110,
+          `顶栏 ${inner.headerH}px · 藏掉图标 ${inner.headerWithoutIconH}px · 代价 ${inner.cost}px · 同行=${inner.sameLineAsJumpback}`);
       }
       check(`内页 /models/ ${width}px：页面零横向溢出`, inner.overflow <= 1, `溢出 ${inner.overflow}px`);
     }
@@ -1195,8 +1204,9 @@ function noJsControlExemptionFor(route) {
     // 否则 P0 的 AppSumo 两条（expiresAt=2026-11-09，今天已过期）会被误判成「未认领」。
     const todayCN = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
     const isExpired = deal => Boolean(deal.expiresAt && String(deal.expiresAt).slice(0, 10) < todayCN);
+    const isSaasDeal = deal => /^appsumo$/i.test(String((deal && deal.source) || '').trim());
     const byId = new Map();
-    for (const deal of data.deals) if (deal.type === 'deal' && !isExpired(deal)) byId.set(String(deal.id), deal);
+    for (const deal of data.deals) if (deal.type === 'deal' && !isExpired(deal) && !isSaasDeal(deal)) byId.set(String(deal.id), deal);
 
     const owners = new Map();          // deal id → [card titles]
     const unmatched = [];
@@ -1315,10 +1325,37 @@ function noJsControlExemptionFor(route) {
     };
   }, JSON.parse(DEALS_URL));
 
-  check('每条优惠按 id 归到恰好一张卡上（没有条目丢失、也没有凭空捏造的 id）',
+  check('每条核心 AI 优惠按 id 归到恰好一张卡上（没有条目丢失、也没有凭空捏造或 SaaS 混入）',
     folded.unmatched.length === 0 && folded.multiOwned.length === 0 && folded.ghostIds.length === 0,
-    `未认领 ${folded.unmatched.length} 条 / 被多张卡认领 ${folded.multiOwned.length} 条 / 卡片上不存在的 id ${folded.ghostIds.length} 个` +
+    `未认领 ${folded.unmatched.length} 条 / 被多张卡认领 ${folded.multiOwned.length} 条 / 卡片上不存在或越界 id ${folded.ghostIds.length} 个` +
     (folded.unmatched.length ? ` · 例：${folded.unmatched.slice(0, 3).join('、')}` : ''));
+
+  {
+    const saasTab = page.locator('[data-facet="tab"][data-value="saas"]');
+    const saasExists = (await saasTab.count()) > 0;
+    let saasCheck = null;
+    if (saasExists) {
+      await saasTab.click();
+      saasCheck = await page.evaluate(async (dealsUrl) => {
+        const data = await (await fetch(dealsUrl)).json();
+        const todayCN = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
+        const isExpired = deal => Boolean(deal.expiresAt && String(deal.expiresAt).slice(0, 10) < todayCN);
+        const isSaasDeal = deal => /^appsumo$/i.test(String((deal && deal.source) || '').trim());
+        const expected = new Set(data.deals.filter(d => d.type === 'deal' && !isExpired(d) && isSaasDeal(d)).map(d => String(d.id)));
+        const ids = [...document.querySelectorAll('article.g')].flatMap(c => c.dataset.dealIds ? c.dataset.dealIds.split(',') : []);
+        const got = new Set(ids);
+        const missing = [...expected].filter(id => !got.has(id));
+        const extra = [...got].filter(id => !expected.has(id));
+        return { expected: expected.size, got: got.size, duplicates: ids.length - got.size, missing: missing.length, extra: extra.length };
+      }, JSON.parse(DEALS_URL));
+      await page.locator('[data-facet="tab"][data-value="deals"]').click();
+    }
+    check('「SaaS 折扣」标签完整接住全部未过期 AppSumo 条目（零丢失、零重复、零越界）',
+      Boolean(saasCheck) && saasCheck.expected > 0 && saasCheck.missing === 0 && saasCheck.extra === 0 && saasCheck.duplicates === 0,
+      saasCheck
+        ? `AppSumo ${saasCheck.got}/${saasCheck.expected} 条 · 漏 ${saasCheck.missing} / 越界 ${saasCheck.extra} / 重复 ${saasCheck.duplicates}`
+        : '找不到 [data-facet="tab"][data-value="saas"]');
+  }
 
   check('认领关系同厂商或同源（legacy 卡按厂商，sourceUrl 卡按来源分组）',
     folded.crossVendor.length === 0,
@@ -3110,7 +3147,7 @@ function noJsControlExemptionFor(route) {
             isAnchor: a.tagName === 'A',
             isNeedCard: a.classList.contains('need-card'),
             iconCount: a.querySelectorAll('.need-icon').length,
-            iconText: txt(icon),
+            iconText: txt(icon) || (icon && icon.querySelector('svg') ? '[svg]' : ''),
             iconHidden: icon ? icon.getAttribute('aria-hidden') : null,
             strongCount: a.querySelectorAll('.need-copy > strong').length,
             smallCount: a.querySelectorAll('.need-copy > small').length,
@@ -6584,6 +6621,7 @@ function noJsControlExemptionFor(route) {
         (th.childNodes[0] && th.childNodes[0].textContent ? th.childNodes[0].textContent : '').trim()),
       officialLinks: [...document.querySelectorAll('.ptable tbody a[href^="http"]')].map(a => a.href),
       controls: document.querySelectorAll('.ptable button, .ptable select, .ptable input, .ptable a.pdetbtn').length,
+      filterControls: document.querySelectorAll('[data-api-filter] input, [data-api-filter] select, [data-api-filter] button').length,
       // 只取**记录锚点**：优惠关系块的容器 `id="plan-deals"` 与它的每一行 `plan-deals-<id>`
       // 也以 plan- 开头，必须一起排除（否则锚点数永远比记录数多 8 个）。
       anchors: [...document.querySelectorAll('[id^="plan-"]')]
@@ -6652,7 +6690,7 @@ function noJsControlExemptionFor(route) {
     check('/plans/api/ h1 旁恰好 3 个 22px 事实数字，且与页面数据现算值一致（v5 识别层）',
       ap.stopStatsBlocks === 1 && ap.stopStats.length === 3 &&
       ap.stopStats.every(s => s.fontSize === '22px' && /^\d+$/.test(s.text)) &&
-      /^最后核对 \d{4}-\d{2}-\d{2}$/.test(ap.stopMeta) &&
+      /^(?:价格基准|最后核对) \d{4}-\d{2}-\d{2}$/.test(ap.stopMeta) &&
       Boolean(expectedStopStats) &&
       JSON.stringify(ap.stopStats.map(s => Number(s.text))) === JSON.stringify(expectedStopStats),
       `.stopstats 块 ${ap.stopStatsBlocks} 个 · 数字 ${ap.stopStats.map(s => `${s.text}@${s.fontSize}`).join(' / ') || '无'}`
@@ -6695,8 +6733,23 @@ function noJsControlExemptionFor(route) {
 
     check('/plans/api/ 每行都给官方定价页链接，且指向数据里的那个地址',
       Boolean(truthRows) && ap.officialLinks.length === truthRows.length, `${ap.officialLinks.length} 个`);
-    check('/plans/api/ 没有任何交互控件（v1 是预渲染静态表，无 JS 也给不出"点了没反应"的暗示）',
-      ap.controls === 0, `${ap.controls} 个`);
+    check('/plans/api/ 表格本体无死按钮，渐进增强筛选条已由 JS 挂载（含搜索 / 地区 / 币种 / 数值排序）',
+      ap.controls === 0 && ap.filterControls >= 5, `表内 ${ap.controls} 个 · 筛选条 ${ap.filterControls} 个控件`);
+    {
+      const qInput = page.locator('[data-api-filter] input[type="search"]');
+      const resetBtn = page.locator('[data-api-filter] button');
+      let filterLive = { filtered: -1, restored: -1 };
+      if ((await qInput.count()) === 1) {
+        await qInput.fill('deepseek');
+        filterLive.filtered = await page.evaluate(() => [...document.querySelectorAll('.ptable tbody tr[data-item]')].filter(r => !r.hidden).length);
+        if ((await resetBtn.count()) >= 1) await resetBtn.first().click();
+        else await qInput.fill('');
+        filterLive.restored = await page.evaluate(() => [...document.querySelectorAll('.ptable tbody tr[data-item]')].filter(r => !r.hidden).length);
+      }
+      check('/plans/api/ 筛选条输入 deepseek 可实时过滤表格并重置还原',
+        filterLive.filtered > 0 && filterLive.filtered < ap.rows && filterLive.restored === ap.rows,
+        `过滤后 ${filterLive.filtered} 行 · 重置还原 ${filterLive.restored}/${ap.rows} 行`);
+    }
     // 锚点：每条**记录**一个（不是每行一个）—— 最近变化与跨页深链的落点必须在浏览器里真的存在。
     const expectedAnchors = apiTruth ? apiTruth.recordIds.map(id => `plan-${id}`).sort() : null;
     check('/plans/api/ 每条记录都有 #plan-<id> 锚点（记录数 == 锚点数）',
@@ -7816,16 +7869,38 @@ function noJsControlExemptionFor(route) {
    * 「变异不生效却算通过」是这类测试最坏的假绿，这里宁可红。
    */
   async function leafMutate(target, anchor, replacement) {
-    return target.evaluate(`(() => {
+    return target.evaluate(`(async () => {
       const anchor = ${JSON.stringify(anchor)};
-      const styles = Array.prototype.slice.call(document.querySelectorAll('style'));
-      const counts = styles.map(style => style.textContent.split(anchor).length - 1);
+      const replacement = ${JSON.stringify(replacement)};
+      const sources = [];
+      for (const style of document.querySelectorAll('style')) {
+        sources.push({ type: 'style', el: style, text: style.textContent || '' });
+      }
+      for (const link of document.querySelectorAll('link[rel="stylesheet"]')) {
+        if (link.disabled || !link.href) continue;
+        try {
+          const url = new URL(link.href, location.href);
+          if (url.origin !== location.origin) continue;
+          const res = await fetch(url.href);
+          if (res.ok) sources.push({ type: 'link', el: link, text: await res.text() });
+        } catch (err) {}
+      }
+      const counts = sources.map(src => src.text.split(anchor).length - 1);
       const total = counts.reduce((sum, n) => sum + n, 0);
       if (total !== 1) {
-        return { ok: false, occurrences: total, reason: '锚点在内联样式里出现 ' + total + ' 次（必须恰好 1 次）' };
+        return { ok: false, occurrences: total, reason: '锚点在页面样式里出现 ' + total + ' 次（必须恰好 1 次）' };
       }
       const index = counts.findIndex(n => n === 1);
-      styles[index].textContent = styles[index].textContent.replace(anchor, ${JSON.stringify(replacement)});
+      const hit = sources[index];
+      const nextCss = hit.text.replace(anchor, replacement);
+      if (hit.type === 'style') {
+        hit.el.textContent = nextCss;
+      } else {
+        const style = document.createElement('style');
+        style.textContent = nextCss;
+        hit.el.parentNode.insertBefore(style, hit.el);
+        hit.el.disabled = true;
+      }
       return { ok: true, occurrences: 1 };
     })()`);
   }
@@ -8534,10 +8609,20 @@ function noJsControlExemptionFor(route) {
    * 以及 Range 并集字迹（进报告、供外部复核；不是判据，理由见本节开头）。
    */
   async function wideMeasure(target) {
-    const geometry = await target.evaluate(`(() => {
+    const geometry = await target.evaluate(`(async () => {
       const DATA_SELECTORS = ${JSON.stringify(WIDE_DATA_SELECTORS)};
       const NARROW_REGISTRY = ${JSON.stringify(WIDE_NARROW_ENTRIES)};
       const FROZEN = ${JSON.stringify(WIDE_SNOTE_FROZEN)};
+      const externalCssTexts = [];
+      for (const link of document.querySelectorAll('link[rel="stylesheet"]')) {
+        if (link.disabled || !link.href) continue;
+        try {
+          const url = new URL(link.href, location.href);
+          if (url.origin !== location.origin) continue;
+          const res = await fetch(url.href);
+          if (res.ok) externalCssTexts.push(await res.text());
+        } catch (err) {}
+      }
       const round = n => Math.round(n * 100) / 100;
       const zeroBox = { count: 0, left: 0, right: 0, width: 0, height: 0, top: 0, scrollW: 0, clientW: 0, scrollH: 0, clientH: 0, padLeft: 0, padRight: 0, maxWidth: '', overflowWrap: '' };
       /**
@@ -8658,7 +8743,8 @@ function noJsControlExemptionFor(route) {
       const narrowChDeclarations = (registered) => {
         const found = [];
         const styleTexts = Array.prototype.slice.call(document.querySelectorAll('style'))
-          .map(style => style.textContent || '');
+          .map(style => style.textContent || '')
+          .concat(externalCssTexts);
         // t33 / t11 N19：「noscript 里的 style」—— 脚本开启时它不是 DOM 节点（按规范，noscript 子的
         // 内容被当作**文本**），而无 JS 的读者**真的会**看到那条 ch 窄列。旧扫描面
         // （只取 querySelectorAll('style')）对它零码。这里把 noscript 子的原文里
@@ -8852,6 +8938,7 @@ function noJsControlExemptionFor(route) {
       //    旧写法仍然数到「恰好 1 次」（字符串还在），而那条规则**已经不在**（computed 从
       //    12px/20.4px/margin-bottom 12px 变成 14px/21px/0）。剥注释后计数变 0 ⇒ 判红。
       for (const style of styles) frozenCount += stripCssComments(style.textContent || '').split(FROZEN).length - 1;
+      for (const cssText of externalCssTexts) frozenCount += stripCssComments(cssText).split(FROZEN).length - 1;
       /**
        * ★ t33 / t11 N8·N9：冻结串的**生效**读数。
        *
@@ -9301,16 +9388,38 @@ function noJsControlExemptionFor(route) {
    * 后续断言测的不是这条规则。两种情况都返回 ok:false 且**不做任何替换**。
    */
   async function wideMutate(target, anchor, replacement) {
-    return target.evaluate(`(() => {
+    return target.evaluate(`(async () => {
       const anchor = ${JSON.stringify(anchor)};
-      const styles = Array.prototype.slice.call(document.querySelectorAll('style'));
-      const counts = styles.map(style => style.textContent.split(anchor).length - 1);
+      const replacement = ${JSON.stringify(replacement)};
+      const sources = [];
+      for (const style of document.querySelectorAll('style')) {
+        sources.push({ type: 'style', el: style, text: style.textContent || '' });
+      }
+      for (const link of document.querySelectorAll('link[rel="stylesheet"]')) {
+        if (link.disabled || !link.href) continue;
+        try {
+          const url = new URL(link.href, location.href);
+          if (url.origin !== location.origin) continue;
+          const res = await fetch(url.href);
+          if (res.ok) sources.push({ type: 'link', el: link, text: await res.text() });
+        } catch (err) {}
+      }
+      const counts = sources.map(src => src.text.split(anchor).length - 1);
       const total = counts.reduce((sum, n) => sum + n, 0);
       if (total !== 1) {
-        return { ok: false, occurrences: total, reason: '锚点在内联样式里出现 ' + total + ' 次（必须恰好 1 次）' };
+        return { ok: false, occurrences: total, reason: '锚点在页面样式里出现 ' + total + ' 次（必须恰好 1 次）' };
       }
       const index = counts.findIndex(n => n === 1);
-      styles[index].textContent = styles[index].textContent.replace(anchor, ${JSON.stringify(replacement)});
+      const hit = sources[index];
+      const nextCss = hit.text.replace(anchor, replacement);
+      if (hit.type === 'style') {
+        hit.el.textContent = nextCss;
+      } else {
+        const style = document.createElement('style');
+        style.textContent = nextCss;
+        hit.el.parentNode.insertBefore(style, hit.el);
+        hit.el.disabled = true;
+      }
       return { ok: true, occurrences: 1 };
     })()`);
   }
@@ -12176,14 +12285,20 @@ function noJsControlExemptionFor(route) {
       for (const value of controls) {
         if (!clusters.length || value - clusters[clusters.length - 1] > 10) clusters.push(value);
       }
+      const rright = document.querySelector('.rbar > .rright');
+      const rrightRect = rright ? rright.getBoundingClientRect() : null;
+      const rrightFirst = rright && rright.firstElementChild ? rright.firstElementChild.getBoundingClientRect() : null;
       return {
         top: Math.round(top), bottom: Math.round(bottom), controls, clusters,
+        rrightFirstClipped: Boolean(rrightRect && rrightFirst && rrightFirst.left < rrightRect.left - 1),
         overflowX: document.documentElement.scrollWidth - document.documentElement.clientWidth
       };
     });
     check('移动 390：顶栏底到首卡顶的控制行聚类数 ≤2', band.clusters.length <= 2,
       `聚类 ${band.clusters.length}（top=${band.clusters.join('/')}）· 区间 ${band.top}–${band.bottom}`);
     check('移动 390：控制带仍无页面级横向溢出', band.overflowX <= 0, `${band.overflowX}px`);
+    check('移动 390：筛选/排序条首项未被左缘裁切（overflow-x + flex-start）', !band.rrightFirstClipped,
+      band.rrightFirstClipped ? '首项左缘落在滚动容器左侧之外' : '首项完整可见');
     await page.setViewportSize({ width: 1280, height: 900 });
 
     check('本节 JS 错误 0', errors.length === beforeErrors,

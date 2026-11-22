@@ -339,7 +339,12 @@ function logoHtml(row) {
 
 function rowHtml(row) {
   const idAttr = row.anchorId ? ` id="${escapeHtml(row.anchorId)}"` : '';
-  return `      <tr data-item="${escapeHtml(row.modelKey)}|${escapeHtml(row.variant)}" data-plan="${escapeHtml(row.planId)}">
+  const hasCache = row.rates && row.rates.cachedInput !== null && row.rates.cachedInput !== undefined ? '1' : '0';
+  const inputRate = row.rates && typeof row.rates.input === 'number' ? String(row.rates.input) : '';
+  const outputRate = row.rates && typeof row.rates.output === 'number' ? String(row.rates.output) : '';
+  const searchKey = [row.provider, row.model, row.modelKey, row.planName, row.channelLabel, row.variantLabel, row.regionLabel, row.currency]
+    .filter(Boolean).join(' ').toLowerCase();
+  return `      <tr data-item="${escapeHtml(row.modelKey)}|${escapeHtml(row.variant)}" data-plan="${escapeHtml(row.planId)}" data-region="${escapeHtml(row.region || '')}" data-currency="${escapeHtml(row.currency || '')}" data-channel="${escapeHtml(row.channel || '')}" data-has-cache="${hasCache}" data-input-rate="${escapeHtml(inputRate)}" data-output-rate="${escapeHtml(outputRate)}" data-search="${escapeHtml(searchKey)}">
         <td class="pv">${logoHtml(row)}<span class="pvname">${escapeHtml(row.provider)}</span><small>${escapeHtml(row.regionLabel)}</small></td>
         <th scope="row"${idAttr}>${escapeHtml(row.model)}<small>${escapeHtml(row.planName)} · ${escapeHtml(row.channelLabel)}</small></th>
         <td>${escapeHtml(row.variantLabel)}</td>
@@ -837,7 +842,7 @@ ${verifyRows.map(row => `          <div class="factsum-row" data-fact-key="${row
           <span class="stopstat"><b class="stat stat-22">${providers.length}</b><span class="stopstat-lb">个平台</span></span>
           <span class="stopstat"><b class="stat stat-22">${rows.length}</b><span class="stopstat-lb">个模型计价条目</span></span>
         </div>
-        <span class="meta">最后核对 ${escapeHtml(updatedAt)}</span>
+        <span class="meta">价格基准 ${escapeHtml(updatedAt)}</span>
       </div>
 
 ${verifyFactsHtml}
@@ -850,8 +855,9 @@ ${notes}
 
 ${providerThresholdTableHtml(plans, { ...opts, updatedAt })}
 
+      <div class="apfilter" data-api-filter></div>
       <div class="ptable-wrap">
-      <table class="ptable">
+      <table class="ptable" data-api-table>
         <caption>表头 ${API_PLANS_COLUMNS.length} 列；每一行是一个「平台 × 模型 × 变体」的计价条目。价格单位见「计费单位」列，不跨单位换算。</caption>
         <thead>
           <tr>${API_PLANS_COLUMNS.map((name, index) => `<th${index === 0 ? '' : ' scope="col"'}>${escapeHtml(name)}</th>`).join('')}</tr>
@@ -972,7 +978,7 @@ function textOnly(html) {
 /** 从渲染结果里按行取出单元格文本（断言与自测共用这一个解析器） */
 function rowsOfHtml(html) {
   const rows = [];
-  const trRe = /<tr data-item="([^"]*)" data-plan="([^"]*)">([\s\S]*?)<\/tr>/g;
+  const trRe = /<tr data-item="([^"]*)" data-plan="([^"]*)"[^>]*>([\s\S]*?)<\/tr>/g;
   let match;
   while ((match = trRe.exec(html))) {
     const cells = [...match[3].matchAll(/<(?:td|th)[^>]*>([\s\S]*?)<\/(?:td|th)>/g)]
@@ -1201,6 +1207,151 @@ function assertHistoryHonesty(plans, store) {
   return problems;
 }
 
+/**
+ * Phase 4.1：`/plans/api/` 渐进增强筛选与用户自选数值排序。
+ * 无 JS 时挂载点 `.apfilter` 为空（零死控件、静态 108 行全量可读）；
+ * 有 JS 时挂载搜索 / 地区 / 币种 / 缓存与 Batch 筛选项 + 中性按列排序 + URL 同步。
+ */
+const API_PLANS_FILTER_CSS = `  .apfilter { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); margin: var(--s3) 0 var(--s2); }
+  .apfilter:empty { display: none; }
+  .apfilter input[type="search"], .apfilter select {
+    border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--card);
+    color: var(--ink); padding: 6px 9px; font: inherit; font-size: var(--fs-sm);
+  }
+  .apfilter input[type="search"] { min-width: 190px; flex: 1 1 200px; max-width: 300px; }
+  .apfilter input:focus-visible, .apfilter select:focus-visible, .apfilter button:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
+  .apf-chk { display: inline-flex; align-items: center; gap: 5px; font-size: var(--fs-sm); color: var(--ink2); cursor: pointer; white-space: nowrap; }
+  .apf-reset {
+    border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--bg);
+    color: var(--ink2); padding: 5px 10px; font: inherit; font-size: var(--fs-sm); cursor: pointer;
+  }
+  .apf-reset:hover { border-color: var(--brand); color: var(--brand); }
+  .apf-count { margin-left: auto; color: var(--mut); font-size: var(--fs-sm); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .ptable tr[hidden] { display: none; }`;
+
+const API_PLANS_FILTER_SCRIPT = `(function () {
+  'use strict';
+  var host = document.querySelector('[data-api-filter]');
+  var table = document.querySelector('[data-api-table]');
+  if (!host || !table) return;
+  var tbody = table.querySelector('tbody');
+  if (!tbody) return;
+  var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr[data-item]'));
+  if (!rows.length) return;
+  var origOrder = rows.slice();
+  var total = rows.length;
+
+  host.innerHTML =
+    '<input type="search" data-apf="q" placeholder="搜索模型、平台或通道…" aria-label="按模型或平台筛选 API 计费">' +
+    '<select data-apf="region" aria-label="按地区筛选"><option value="">全部地区</option><option value="cn">国内</option><option value="global">国外</option></select>' +
+    '<select data-apf="currency" aria-label="按币种筛选"><option value="">全部币种</option><option value="CNY">CNY（人民币）</option><option value="USD">USD（美元）</option></select>' +
+    '<select data-apf="sort" aria-label="按数值列排序"><option value="default">默认顺序（平台序）</option><option value="input-asc">输入单价：低 → 高（同表按数值）</option><option value="output-asc">输出单价：低 → 高（同表按数值）</option></select>' +
+    '<label class="apf-chk"><input type="checkbox" data-apf="cache"> 仅看支持缓存价</label>' +
+    '<label class="apf-chk"><input type="checkbox" data-apf="batch"> 仅看 Batch / 错峰</label>' +
+    '<button type="button" class="apf-reset" data-apf="reset">重置</button>' +
+    '<span class="apf-count" data-apf="count" aria-live="polite">显示 ' + total + ' / ' + total + ' 条</span>';
+
+  var qEl = host.querySelector('[data-apf="q"]');
+  var regEl = host.querySelector('[data-apf="region"]');
+  var curEl = host.querySelector('[data-apf="currency"]');
+  var sortEl = host.querySelector('[data-apf="sort"]');
+  var cacheEl = host.querySelector('[data-apf="cache"]');
+  var batchEl = host.querySelector('[data-apf="batch"]');
+  var resetBtn = host.querySelector('[data-apf="reset"]');
+  var countEl = host.querySelector('[data-apf="count"]');
+
+  function rateVal(tr, attr) {
+    var raw = tr.getAttribute(attr);
+    if (raw === null || raw === '') return Infinity;
+    var n = Number(raw);
+    return Number.isFinite(n) ? n : Infinity;
+  }
+
+  function apply(sync) {
+    var tokens = String(qEl.value || '').toLowerCase().trim().split(/\\s+/).filter(Boolean);
+    var region = regEl.value;
+    var currency = curEl.value;
+    var onlyCache = cacheEl.checked;
+    var onlyBatch = batchEl.checked;
+    var sort = sortEl.value;
+
+    var ordered = origOrder.slice();
+    if (sort === 'input-asc' || sort === 'output-asc') {
+      var attr = sort === 'input-asc' ? 'data-input-rate' : 'data-output-rate';
+      ordered.sort(function (a, b) {
+        var ca = a.getAttribute('data-currency') || '';
+        var cb = b.getAttribute('data-currency') || '';
+        if (!currency && ca !== cb) return ca < cb ? -1 : 1;
+        var va = rateVal(a, attr);
+        var vb = rateVal(b, attr);
+        if (va !== vb) return va - vb;
+        return origOrder.indexOf(a) - origOrder.indexOf(b);
+      });
+    }
+    var frag = document.createDocumentFragment();
+    var shown = 0;
+    for (var i = 0; i < ordered.length; i++) {
+      var tr = ordered[i];
+      var hay = tr.getAttribute('data-search') || '';
+      var ok = true;
+      for (var t = 0; t < tokens.length; t++) {
+        if (hay.indexOf(tokens[t]) === -1) { ok = false; break; }
+      }
+      if (ok && region && tr.getAttribute('data-region') !== region) ok = false;
+      if (ok && currency && tr.getAttribute('data-currency') !== currency) ok = false;
+      if (ok && onlyCache && tr.getAttribute('data-has-cache') !== '1') ok = false;
+      if (ok && onlyBatch) {
+        var ch = tr.getAttribute('data-channel') || '';
+        if (ch !== 'batch' && ch !== 'off_peak') ok = false;
+      }
+      if (ok) { tr.removeAttribute('hidden'); shown++; }
+      else tr.setAttribute('hidden', '');
+      frag.appendChild(tr);
+    }
+    tbody.appendChild(frag);
+    countEl.textContent = '显示 ' + shown + ' / ' + total + ' 条';
+
+    if (sync) {
+      try {
+        if (window.history && window.history.replaceState) {
+          var u = new URL(window.location.href);
+          function setP(k, v) { if (v) u.searchParams.set(k, v); else u.searchParams.delete(k); }
+          setP('q', qEl.value.trim());
+          setP('region', region);
+          setP('currency', currency);
+          setP('sort', sort === 'default' ? '' : sort);
+          setP('cache', onlyCache ? '1' : '');
+          setP('batch', onlyBatch ? '1' : '');
+          window.history.replaceState(null, '', u.pathname + u.search + u.hash);
+        }
+      } catch (e) {}
+    }
+  }
+
+  try {
+    var p = new URLSearchParams(window.location.search);
+    if (p.get('q')) qEl.value = p.get('q');
+    if (p.get('region')) regEl.value = p.get('region');
+    if (p.get('currency')) curEl.value = p.get('currency');
+    if (p.get('sort')) sortEl.value = p.get('sort');
+    if (p.get('cache') === '1') cacheEl.checked = true;
+    if (p.get('batch') === '1') batchEl.checked = true;
+  } catch (e) {}
+
+  qEl.addEventListener('input', function () { apply(true); });
+  regEl.addEventListener('change', function () { apply(true); });
+  curEl.addEventListener('change', function () { apply(true); });
+  sortEl.addEventListener('change', function () { apply(true); });
+  cacheEl.addEventListener('change', function () { apply(true); });
+  batchEl.addEventListener('change', function () { apply(true); });
+  resetBtn.addEventListener('click', function () {
+    qEl.value = ''; regEl.value = ''; curEl.value = ''; sortEl.value = 'default';
+    cacheEl.checked = false; batchEl.checked = false;
+    apply(true);
+  });
+  apply(false);
+})();`;
+
 module.exports = {
   API_PLANS_ROUTE,
   API_PLANS_HEADING,
@@ -1208,6 +1359,8 @@ module.exports = {
   API_PLANS_DESCRIPTION,
   API_PLANS_COLUMNS,
   API_PLANS_NOTES,
+  API_PLANS_FILTER_CSS,
+  API_PLANS_FILTER_SCRIPT,
   FORBIDDEN_CLAIM_WORDS,
   UNKNOWN_TEXT,
   UNKNOWN_NUM,

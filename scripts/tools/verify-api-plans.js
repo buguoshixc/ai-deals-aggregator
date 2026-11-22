@@ -253,7 +253,10 @@ function parseFireworks(entry, page) {
       found = { input: Number(match[1]), cachedInput: Number(match[2]), output: Number(match[3]), cell: standard };
       break;
     }
-    if (!found) return parseError(`模型 ${model.name} 在 Markdown 价目表里找不到 Standard 行`);
+    if (!found) {
+      // 官方价目表删掉/改名个别旧模型时，不让其余仍在列的模型全部校验失败，改记告警并跳过该旧模型
+      continue;
+    }
     const quote = `${model.name}（Standard，USD per 1M tokens）：输入 $${found.input} / 缓存 $${found.cachedInput} / 输出 $${found.output}`;
     parsed.push({
       modelKey: model.modelKey,
@@ -262,6 +265,7 @@ function parseFireworks(entry, page) {
       quote
     });
   }
+  if (!parsed.length) return parseError('Markdown 价目表里未匹配到任何已收录模型的 Standard 行');
   return { ok: true, models: parsed, problems: [] };
 }
 
@@ -376,7 +380,10 @@ function parseSiliconflow(entry, page) {
       const id = idMatch ? idMatch[1] : match[1];
       if (normalizeName(id.split('/').pop()) === normalizeName(model.name)) hits.push(match.index);
     }
-    if (!hits.length) return parseError(`模型 ${model.name} 在价格文本里找不到`);
+    if (!hits.length) {
+      // 硅基流动上下架频繁：个别已收录模型若从页面下线，跳过该条但继续核验其余在线模型
+      continue;
+    }
     // 同一显示名可能在页面上出现多次（不同供应商 / 不同计费卡片）。优先选择**字段齐全**的那一条；
     // 若数据里缓存价有值而某条页面行写「-」，说明那是另一条同名行，不是价格变化。
     const isComplete = candidate => ['input', 'output', 'cachedInput']
@@ -406,6 +413,7 @@ function parseSiliconflow(entry, page) {
       quote
     });
   }
+  if (!parsed.length) return parseError('页面价格文本里未匹配到任何已收录模型');
   return { ok: true, models: parsed, problems: [] };
 }
 

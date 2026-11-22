@@ -153,14 +153,24 @@ function buildSelects(apiPlans) {
     return a.label < b.label ? -1 : a.label > b.label ? 1 : 0;
   });
 
-  function opts(items, valKey, labelKey) {
-    return items.map(function (item) {
-      return '<option value="' + escapeHtml(String(item[valKey])) + '">' + escapeHtml(String(item[labelKey])) + '</option>';
-    }).join('');
+  // 按平台分组生成 <optgroup>，同平台内优先把标准付费模型排前（不做评分/推荐）
+  var byProvider = {};
+  for (var k = 0; k < models.length; k++) {
+    var m = models[k];
+    if (!byProvider[m.provider]) byProvider[m.provider] = [];
+    byProvider[m.provider].push(m);
   }
+  var providerNames = Object.keys(byProvider).sort();
+  var modelOptions = providerNames.map(function (prov) {
+    var groupItems = byProvider[prov];
+    var inner = groupItems.map(function (item) {
+      return '<option value="' + escapeHtml(String(item.modelKey)) + '">' + escapeHtml(String(item.label)) + '</option>';
+    }).join('');
+    return '<optgroup label="' + escapeHtml(prov) + '">' + inner + '</optgroup>';
+  }).join('');
 
   return {
-    modelOptions: opts(models, 'modelKey', 'label'),
+    modelOptions: modelOptions,
     variantOptions: Array.from(variants).sort(function (a, b) {
       if (a === 'standard') return -1;
       if (b === 'standard') return 1;
@@ -231,7 +241,7 @@ function apiCostPageBody(apiPlans, ctx) {
   var body = '<div id="api-cost">'
     + '<div class="stop">'
     + '<h1>' + escapeHtml(API_COST_HEADING) + '</h1>'
-    + '<span class="meta">v3.1 \u00b7 \u6309\u5b98\u65b9\u5355\u4ef7\u8ba1\u7b97</span>'
+    + '<span class="meta">\u6309\u5b98\u65b9\u5355\u4ef7\u8ba1\u7b97</span>'
     + '</div>'
     + '\n'
     + '<div class="cost-panel">'
@@ -256,7 +266,9 @@ function apiCostPageBody(apiPlans, ctx) {
     + '</div></details>'
     + '</fieldset>'
     + '</form>'
+    + '<div class="cost-presets" data-api-cost-presets></div>'
     + '<div data-api-cost-results class="cost-results"></div>'
+    + '<div class="cost-cmp" data-api-cost-compare></div>'
     + '</div>'
     + '\n'
     + example

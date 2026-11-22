@@ -154,7 +154,7 @@ const asOf = String(payload.updatedAt || '').slice(0, 10);
 // 两者都不是 ⇒ 窗口期（dealLimbo）⇒ 该页必须 noindex 且不进 sitemap。
 // 回链只认**相对** href（与 seo.internalLinks 同口径）：档案页的 canonical 是绝对 URL
 // `…/archive/deal/<id>/`，若不排除会把每个归档实体都误判成「有回链」。
-const homepageVisibleIds = new Set(renderCore.defaultVisible(deals).map(deal => deal.id));
+const homepageVisibleIds = new Set((renderCore.allVisibleDeals ? renderCore.allVisibleDeals(deals) : renderCore.defaultVisible(deals)).map(deal => deal.id));
 const archivedLinkedIds = new Set();
 const archiveDealRoot = path.join(OUT, 'archive', 'deal');
 if (fs.existsSync(archiveDealRoot)) {
@@ -172,10 +172,14 @@ if (fs.existsSync(archiveDealRoot)) {
     }
   }
 }
-const dealLimboOf = id => !seo.dealIndexable({
-  homepageVisible: homepageVisibleIds.has(id),
-  archivedLinked: archivedLinkedIds.has(id)
-});
+const dealLimboOf = id => {
+  const deal = dealsById.get(id);
+  return !seo.dealIndexable({
+    homepageVisible: homepageVisibleIds.has(id),
+    archivedLinked: archivedLinkedIds.has(id),
+    expiredDays: deal ? seo.daysExpired(deal.expiresAt, asOf) : null
+  });
+};
 
 // 计划**从数据重新算一遍**（不读构建期的 PLAN）
 //

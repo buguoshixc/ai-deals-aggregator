@@ -442,6 +442,69 @@
         "description": "A tool that creates short, highlight clips from long-form videos."
       },
       "description": "从长视频里自动挑出精彩片段做成短片。"
+    },
+    "f9844047fe7c": {
+      "_title": "inclusionAI: Ling 3.2 Flash (free)",
+      "src": {
+        "description": "Ling 3.2 Flash is a hybrid reasoning model from inclusionAI that accepts text and image input, with a 1M-token context window and up to 200 images per request. Thinking can…"
+      },
+      "description": "Ling 3.2 Flash 是 inclusionAI 推出的混合推理模型，支持文本与图像输入，具备 1M token 上下文窗口，单次请求最多可传入 200 张图片。"
+    },
+    "98cfbb26c5cc": {
+      "_title": "Baidu: ERNIE-5.5-Flash-Preview (free)",
+      "src": {
+        "description": "ERNIE 5.5 Flash Preview is the latest foundation model in the ERNIE family, with comprehensive improvements in coding, agentic capabilities, knowledge work, and deep research. It has 280 billion total…"
+      },
+      "description": "ERNIE 5.5 Flash Preview 是百度文心系列最新基础模型，在编程开发、智能体能力、知识工作与深度研究方面均有提升，总参数量 280B。"
+    },
+    "14f39f10f728": {
+      "_title": "LiquidAI: LFM3-1.7B (free)",
+      "src": {
+        "description": "A compact 1.7B-parameter text model with a 256K-token context, post-trained for agents, tool calling, and structured outputs. It reasons before it answers. Prompts and outputs may be retained and used…"
+      },
+      "description": "1.7B 参数的轻量文本模型，支持 256K token 上下文，针对智能体、工具调用与结构化输出做过后训练，回答前先推理。"
+    },
+    "762a098836d7": {
+      "_title": "Particle AI: Particle-1 (free)",
+      "src": {
+        "description": "Particle-1 is a token-efficient agentic coding model from Particle AI, post-trained on DeepSeek V4.1 Flash. It is suited for software engineering work such as terminal workflows, codebase changes, and data…"
+      },
+      "description": "Particle-1 是 Particle AI 基于 DeepSeek V4.1 Flash 后训练的智能体编程模型，注重 token 效率，适用于终端工作流与代码库修改等软件工程任务。"
+    },
+    "6637868284f5": {
+      "_title": "Recursive: Flint (free)",
+      "src": {
+        "description": "Flint is an open-weight mixture-of-experts model from Recursive, with about 2.5B active parameters out of 40B total, built by Recursive's autoresearch system Eureka Machine for coding agents. It is suited…"
+      },
+      "description": "Flint 是 Recursive 通过自动化研究系统 Eureka Machine 构建的开源权重 MoE 模型（总参 40B，激活约 2.5B），面向编程智能体场景。"
+    },
+    "940d872f9eac": {
+      "_title": "Thinking Machines: Inkling 2 Small (free)",
+      "src": {
+        "description": "Inkling 2 Small is an open-weight multimodal mixture-of-experts reasoning model from Thinking Machines Lab, with 17B active parameters out of 594B total. It is the first model in the second…"
+      },
+      "description": "Inkling 2 Small 是 Thinking Machines Lab 推出的开源权重多模态 MoE 推理模型，总参数量 594B，每次激活 17B 参数。"
+    },
+    "2374288880c3": {
+      "_title": "NVIDIA: Nemotron 3.5 Super VL (free)",
+      "src": {
+        "description": "NVIDIA Nemotron 3.5 Super VL is an open multimodal mixture-of-experts model from NVIDIA, with 12B active parameters out of 120B total. It takes text, images, documents, GUI screenshots, and video…"
+      },
+      "description": "NVIDIA Nemotron 3.5 Super VL 是 NVIDIA 推出的开放多模态 MoE 模型（总参 120B，激活 12B），支持文本、图像、文档、界面截图与视频输入。"
+    },
+    "75c584a4d6a2": {
+      "_title": "XingChen: Xing4.0 29B A4B (free)",
+      "src": {
+        "description": "Xing4.0-29B-A4B is an open-weight mixture-of-experts language model from China Telecom's AI team (TeleAI) and the successor to the TeleChat series. It has 29B total parameters with 4B active per toke…"
+      },
+      "description": "Xing4.0-29B-A4B 是中国电信人工智能团队（TeleAI）推出的开源权重 MoE 语言模型（TeleChat 后续系列），总参 29B，每 token 激活 4B。"
+    },
+    "ef3cba339a72": {
+      "_title": "Crouton Alpha",
+      "src": {
+        "description": "Crouton Alpha is a lightweight model built for scalable coding, agentic, and multimodal workflows. It's ideal for executing agentic sub-tasks, tool use, and document analysis in high-volume, repeated…"
+      },
+      "description": "Crouton Alpha 是面向可扩展编程、智能体与多模态工作流的轻量级模型，适合高频重复的智能体子任务、工具调用与文档分析。"
     }
   }
 }

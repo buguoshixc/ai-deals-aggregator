@@ -49,6 +49,7 @@
 const fs = require('fs');
 const path = require('path');
 const appAsset = require('./app-asset');
+const styleAsset = require('./style-asset');
 
 /**
  * IndexNow 的密钥文件（`<key>.txt`）：它的**唯一出处**是 `lib/indexnow.js`。
@@ -152,6 +153,10 @@ const ALLOWED_PATHS = [
   // 它是站点自己的交互代码，不是数据集，也不是第三方 CDN 资源。
   [appAsset.FILE, '首页应用脚本（assets/app.js 的内容哈希产物名）：构建期写盘、index.html defer 加载，'
     + '负责筛选 / 排序 / 详情弹层；不是数据文件，也不热链第三方'],
+  // Phase 5：全站共享样式表。文件名由 `lib/style-asset.js` 从 `index.html` 共享 `<style>`
+  // 剥注释后的内容哈希派生，由首页与全部子页以 `<link rel="stylesheet">` 共享缓存。
+  [styleAsset.FILE, '全站共享样式表（index.html 共享 <style> 剥注释后的内容哈希产物名）：构建期写盘一次，'
+    + '供首页与全站子页 <link rel="stylesheet"> 共享缓存；不是数据文件，也不热链第三方'],
   ['logos.css', '厂商 logo 的样式表：与 logos/ 同批生成，页面用它渲染 data-logo 图形'],
   ['og-image.png', '社交分享图（构建期由 lib/og-image.js 生成，被 og:image 引用）'],
   ['robots.txt', '抓取策略（声明 sitemap 地址，是站点对外的运维约定而不是数据）'],

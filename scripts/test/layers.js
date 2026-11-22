@@ -68,6 +68,7 @@ const LAYERS = {
     needs: [],
     scripts: [
       'selftest:expiry',
+      'selftest:categories',
       'selftest:app-token'
     ]
   },

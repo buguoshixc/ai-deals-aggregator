@@ -414,6 +414,15 @@ function linkableDealIdsOf(deals) {
   return ids;
 }
 
+/** 订阅源（feed.xml / feed.json）用的核心优惠 id 集合：在可链接集合内剔除 AppSumo SaaS 噪音 */
+function feedDealIdsOf(deals) {
+  const ids = new Set();
+  for (const deal of deals || []) {
+    if (isLinkableDeal(deal) && deal.id && String(deal.source || '') !== 'AppSumo') ids.add(deal.id);
+  }
+  return ids;
+}
+
 /* ------------------------------------------------------------------ */
 /* 主入口                                                               */
 /* ------------------------------------------------------------------ */
@@ -844,6 +853,7 @@ module.exports = {
   // `scripts/lib/changes.js` 自己的 `identityOf()`。判据本体只有一个 `isLinkableDeal()`
   // （不导出：外部消费者要的是物化后的 id 集合，不是这条布尔式）。
   linkableDealIdsOf,
+  feedDealIdsOf,
   buildRadar,
   renderOrderOf,
   CHANGES_TEXT_FLOOR,

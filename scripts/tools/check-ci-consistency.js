@@ -182,6 +182,7 @@ const GATE_STEP_NAMES = [
   'Translation coverage (advisory, English fallback, never blocks)',
   'Translation self-test',
   'Expiry self-test',
+  'Categories boundary self-test',
   'Text / cleanText self-test',
   'Source-health self-test',
   // v1.3 新增：信息来源（evidence / provenance）的全部红线 —— 引文的版权上限、
@@ -390,6 +391,8 @@ const GATE_STEP_RUN = {
     "node scripts/tools/zh-selftest.js",
   "Expiry self-test":
     "node scripts/tools/expiry-selftest.js",
+  "Categories boundary self-test":
+    "node scripts/tools/categories-selftest.js",
   "Text / cleanText self-test":
     "node scripts/tools/text-selftest.js",
   "Source-health self-test":
@@ -574,6 +577,7 @@ const GATE_STEP_RUN = {
   + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s08.outcome }}\" = \"failure\" ]; then failed='Translation coverage (advisory, English fallback, never blocks)'; fi"
   + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s09.outcome }}\" = \"failure\" ]; then failed='Translation self-test'; fi"
   + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s10.outcome }}\" = \"failure\" ]; then failed='Expiry self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s10b.outcome }}\" = \"failure\" ]; then failed='Categories boundary self-test'; fi"
   + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s11.outcome }}\" = \"failure\" ]; then failed='Text / cleanText self-test'; fi"
   + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s12.outcome }}\" = \"failure\" ]; then failed='Source-health self-test'; fi"
   + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s13.outcome }}\" = \"failure\" ]; then failed='Provenance self-test'; fi"

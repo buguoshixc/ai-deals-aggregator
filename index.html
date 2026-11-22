@@ -470,6 +470,7 @@
     .f.ok { border-color: var(--cn); color: var(--cn); background: var(--cnbg); }
     .f.ok.on { background: var(--ok); border-color: var(--ok); color: var(--on-t1); }
     .f b { opacity: .7; margin-left: var(--s1); font-weight: 600; }
+    .f .ficon { display: inline-flex; align-items: center; vertical-align: -2px; margin-right: 4px; color: currentColor; }
     .fsep { width: 1px; height: 16px; background: var(--line); flex: none; margin: 0 var(--s1); }
 
     /* ---------- 结果条 ---------- */
@@ -639,7 +640,8 @@
     .need-card:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
     /* 图标：装饰性（渲染时带 aria-hidden），只按 glyph 排版。这里用 --fs-lg 是因为 emoji
        在 12px 上会缩成一个认不出的小点 —— 它是同一条字号阶梯里的既有档位，不是新字号。 */
-    .need-card .need-icon { flex: none; font-size: var(--fs-lg); line-height: 1; }
+    .need-card .need-icon { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; color: var(--brand); }
+    .need-card .need-icon svg { width: 18px; height: 18px; display: block; }
     .need-card .need-copy {
       /* v5：30px 数字与 12px 标题按基线对齐（同一行里两种字号）；卡高仍是 68px，靠卡内纵向余量。 */
       display: flex; flex-wrap: wrap; align-items: baseline; gap: 1px var(--s2);
@@ -1107,9 +1109,24 @@
     .dh .lg.text { font-size: 14px; letter-spacing: -.5px; }
     .dh h2 { font-size: 19px; font-weight: 700; line-height: 1.35; letter-spacing: -.3px; flex: 1; }
     .dsub { font-size: 12.5px; color: var(--mut); margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-    .doffer { margin-top: var(--s4); background: var(--dealsoft); border-left: 3px solid var(--deal); border-radius: 0 var(--r) var(--r) 0; padding: var(--s3) 14px; }
-    .doffer .lab { font-size: 10.5px; font-weight: 700; color: var(--deal-ink); letter-spacing: .4px; }
-    .doffer p { margin-top: var(--s1); font-size: 14px; font-weight: 600; color: var(--deal-ink); line-height: 1.6; }
+    .dexpired {
+      margin-top: var(--s3); padding: var(--s2) 12px; border-radius: var(--r-sm);
+      background: var(--dealsoft); border: 1px solid color-mix(in srgb, var(--deal) 28%, transparent);
+      color: var(--deal-ink); font-size: var(--fs-sm); font-weight: 600; line-height: 1.5;
+    }
+    .doffer { margin-top: var(--s4); background: var(--bg); border-left: 3px solid var(--t5); border-radius: 0 var(--r) var(--r) 0; padding: var(--s3) 14px; }
+    .doffer .lab { font-size: 10.5px; font-weight: 700; color: var(--t5); letter-spacing: .4px; }
+    .doffer p { margin-top: var(--s1); font-size: 14px; font-weight: 600; color: var(--ink); line-height: 1.6; }
+    .doffer.t1 { background: var(--cnbg); border-left-color: var(--t1); }
+    .doffer.t1 .lab { color: var(--t1); }
+    .doffer.t2 { background: var(--glbg); border-left-color: var(--t2); }
+    .doffer.t2 .lab { color: var(--t2); }
+    .doffer.t3 { background: color-mix(in srgb, var(--t3) 8%, var(--card)); border-left-color: var(--t3); }
+    .doffer.t3 .lab { color: var(--t3); }
+    .doffer.t4 { background: color-mix(in srgb, var(--t4) 10%, var(--card)); border-left-color: var(--t4); }
+    .doffer.t4 .lab { color: var(--t4); }
+    .doffer.t5 { background: var(--bg); border-left-color: var(--t5); }
+    .doffer.t5 .lab { color: var(--t5); }
     .ddesc { font-size: 13px; color: var(--ink2); margin-top: 14px; line-height: 1.7; }
 
     /* ---------- 中文翻译块 ----------
@@ -1140,11 +1157,12 @@
       margin-top: 6px; font-size: 13px; line-height: 1.7; color: var(--ink);
       border-left: 2px solid var(--line); padding: 1px 0 1px 10px;
     }
-    /* 译文挂在优惠条（玫红底）里时，正文仍用深色，避免玫红叠玫红糊成一片 */
-    .doffer .zht .zbody { color: var(--deal-ink); border-left-color: var(--deal); }
+    /* 译文挂在优惠条里时，正文保持高对比 --ink，竖条跟随左侧档位色 */
+    .doffer .zht .zbody { color: var(--ink); border-left-color: var(--line); }
     .dgrid .cv .zht > summary { font-size: 10.5px; }
     .dgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; margin-top: var(--s4); }
     .dgrid .cv { background: var(--card); padding: var(--s3); }
+    .dgrid .cv:last-child:nth-child(odd) { grid-column: 1 / -1; }
     .dgrid .cv .k { font-size: 10.5px; color: var(--mut); letter-spacing: .4px; }
     .dgrid .cv .v { font-size: 13px; margin-top: var(--s1); color: var(--ink); word-break: break-word; }
     .dgrid .cv .v.ok { color: var(--ok); font-weight: 600; }
@@ -1432,12 +1450,12 @@
       .rbar > #stats { flex: 0 1 auto; min-width: 0; }
       .rbar > .rright {
         flex: 1 1 0; min-width: 0; overflow-x: auto; overflow-y: hidden;
-        scrollbar-width: none; gap: var(--s2);
-        mask-image: linear-gradient(to right, transparent 0, #000 10px, #000 calc(100% - 10px), transparent 100%);
-        -webkit-mask-image: linear-gradient(to right, transparent 0, #000 10px, #000 calc(100% - 10px), transparent 100%);
+        scrollbar-width: none; gap: var(--s2); padding-right: 12px;
+        mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 14px), transparent 100%);
+        -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 14px), transparent 100%);
       }
       .rright::-webkit-scrollbar { display: none; }
-      .rright { flex-wrap: nowrap; justify-content: flex-end; }
+      .rright { flex-wrap: nowrap; justify-content: flex-start; }
       .rright > * { flex: 0 0 auto; }
       .sortbox button { padding: 6px 8px; }
       .seg button { padding: 6px 8px; }
@@ -1579,9 +1597,70 @@
     @media (max-width: 348px) {
       .jump .jn { display: none; }
     }
+
+    /* ---------- Phase 3: 全站统一导航、无障碍跳过链与全站搜索桥接 ---------- */
+    .skip-link {
+      position: fixed; left: -9999px; top: 8px; z-index: 100;
+      padding: 8px 14px; border-radius: var(--r-sm);
+      background: var(--brand); color: var(--on-accent);
+      font-size: var(--fs-sm); font-weight: 600; text-decoration: none;
+    }
+    .skip-link:focus-visible { left: 12px; outline: 2px solid var(--ink); outline-offset: 2px; }
+    .gnav {
+      display: none; align-items: center; gap: 4px; flex: 0 1 auto; min-width: 0;
+    }
+    .gnav a {
+      font-size: 12.5px; color: var(--ink2); text-decoration: none; white-space: nowrap;
+      padding: 5px 9px; border-radius: var(--r-sm);
+      transition: background-color var(--t-fast) var(--e-std), color var(--t-fast) var(--e-std);
+    }
+    .gnav a:hover { color: var(--brand); background: var(--line2); }
+    .gnav a.on { color: var(--brand); font-weight: 600; background: var(--glbg); }
+    .gnav a:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
+    .nav-drawer { position: relative; flex: none; display: inline-block; }
+    .nav-drawer-home { display: none; }
+    .nav-btn {
+      list-style: none; width: 30px; height: 30px; border-radius: var(--r-sm);
+      border: 1px solid var(--line); background: var(--card); color: var(--ink2);
+      display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+    }
+    .nav-btn::-webkit-details-marker { display: none; }
+    .nav-btn:hover { border-color: var(--brand); color: var(--brand); }
+    .nav-btn:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+    .nav-drawer-panel {
+      position: absolute; top: calc(100% + 6px); right: 0; z-index: 60;
+      min-width: 170px; padding: 6px; border-radius: var(--r);
+      background: var(--card); border: 1px solid var(--line);
+      box-shadow: 0 12px 28px -8px rgba(15, 23, 42, .22);
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .nav-drawer-panel a {
+      padding: 8px 10px; border-radius: var(--r-sm); font-size: var(--fs-sm);
+      color: var(--ink); text-decoration: none; white-space: nowrap;
+    }
+    .nav-drawer-panel a:hover { background: var(--line2); color: var(--brand); }
+    .nav-drawer-panel a.on { background: var(--glbg); color: var(--brand); font-weight: 600; }
+    @media (min-width: 941px) {
+      .gnav { display: flex; }
+      .nav-drawer { display: none; }
+    }
+    @media (max-width: 940px) {
+      .nav-drawer-home { display: inline-block; order: 3; }
+      .topin:has(.nav-drawer-home) .search { min-width: calc(100% - 84px); }
+    }
+    @media (max-width: 420px) {
+      .topin { gap: 8px; }
+    }
+    .gsearch-jump {
+      display: inline-block; margin-left: 8px; color: var(--brand); font-weight: 600;
+      text-decoration: none; white-space: nowrap;
+    }
+    .gsearch-jump:hover { text-decoration: underline; }
+    .empty .gsearch-jump { display: block; margin: 10px 0 0; }
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#main">跳到正文</a>
   <header class="top">
     <div class="topin">
       <a class="brand" href="./">
@@ -1618,6 +1697,7 @@
       <a class="plansnav plansnav-api" href="__APIPLAN_HREF__" title="对比各平台按量计费的 API / Token 官方单价">API / Token 计费对比</a>
       <a class="plansnav plansnav-cost" href="__APICOST_HREF__" title="按已收录官方单价计算 token 用量成本（不排序 / 不推荐 / 不跨币种 / 不折算 credits）">API 成本计算器</a>
       <div class="topstat" id="topStat"><!--PRERENDER:topstat--></div>
+      <details class="nav-drawer nav-drawer-home"><summary class="nav-btn" aria-label="打开全站导航" title="全站导航"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></summary><nav class="nav-drawer-panel" aria-label="移动导航"><a href="__PLANS_HREF__">Coding 套餐</a><a href="__APIPLAN_HREF__">API 计费</a><a href="__APICOST_HREF__">成本计算器</a><a href="__MODELS_HREF__">模型库</a><a href="__SEARCH_HREF__">全站搜索</a><a href="__CODEXRESET_HREF__">Codex 重置</a></nav></details>
       <!-- GitHub 图标入口。这一段是**共享片段**：lib/page-shell.js 按下面那对标记把它抽进
            9 个页面族与全部详情页的页头（抽不到即抛错），所以改文案 / 换图形 / 改地址只改这一处。
            为什么可以写绝对 URL 而不是路由占位符：它指向 GitHub 本身，与产物落在哪个子路径无关。
@@ -1773,7 +1853,7 @@
            （v1.5 的密度账）。厂商名单由构建期按落地页计划注入，源码里不留第二份清单。
            v2.1：套餐对比页也挂在这一行末尾 —— 它与「按厂商 / 分类浏览」是同一类东西
            （长期在售的产品能力），而不是「今天的优惠」。 -->
-      <p class="catnav" aria-label="按厂商、分类与套餐浏览">按厂商 / 分类浏览：<a href="__VENDOR_HREF__">厂商优惠</a> · <a href="__CATEGORY_HREF__">分类优惠</a> · <a href="__MODELS_HREF__">模型资料</a> · <a href="__PLANSHUB_HREF__">套餐与 API 计费</a> · <a href="__ARCHIVE_HREF__">历史档案</a> · <a href="__PLANS_HREF__">套餐对比</a> · <a href="__APIPLAN_HREF__">API / Token 计费对比</a> · <a href="__APICOST_HREF__">API 成本计算器</a> · <a href="__DATADOCS_HREF__">数据与引用</a> · <a href="__SEARCH_HREF__">全站搜索</a><!--PRERENDER:vendorline--></p>
+      <p class="catnav" aria-label="按厂商、分类与套餐浏览">按厂商 / 分类浏览：<a href="__VENDOR_HREF__">厂商优惠</a> · <a href="__CATEGORY_HREF__">分类优惠</a> · <a href="__MODELS_HREF__">模型资料</a> · <a href="__PLANSHUB_HREF__">套餐与 API 计费</a> · <a href="__ARCHIVE_HREF__">历史档案</a> · <a href="__CODEXRESET_HREF__">Codex 重置</a> · <a href="__PLANS_HREF__">套餐对比</a> · <a href="__APIPLAN_HREF__">API / Token 计费对比</a> · <a href="__APICOST_HREF__">API 成本计算器</a> · <a href="__DATADOCS_HREF__">数据与引用</a> · <a href="__SEARCH_HREF__">全站搜索</a><!--PRERENDER:vendorline--></p>
       <!-- ⚠️ t4：页脚的三枚入口在这一轮里删干净了；同一行末尾的 vendorline 预渲染标记必须留着 ——
            它不是链接，而是构建期注入点（厂商名单由 replaceMarker() 灌进来），删了就抛
            「index.html 缺少预渲染标记」。配套删掉的还有：

@@ -267,8 +267,8 @@ function tooth6_secretScan() {
   const hits = secretScan.scanFiles([dir]);
   assert('牙6c 候选文件里的密钥会被扫出来', hits.length === 1 && hits[0].hits.length > 0, `命中 ${hits.length} 个文件`);
 
-  const buildSource = read('scripts/tools/build-local.js');
-  assert('牙6d 产物自检已接入密钥扫描', /secretScan|secret-scan/.test(buildSource), 'build-local.js 里没有扫描调用');
+  const buildSource = read('scripts/tools/build-local.js') + '\n' + read('scripts/build/selfcheck.js');
+  assert('牙6d 产物自检已接入密钥扫描', /secretScan|secret-scan/.test(buildSource), 'build-local.js / selfcheck.js 里没有扫描调用');
 
   const redacted = redact.prepareInput({ text: `key: sk-${'G'.repeat(30)}`, maxChars: 500 });
   assert('牙6e 送模型前会脱敏', !redacted.text.includes('G'.repeat(30)) && redacted.redacted > 0, JSON.stringify(redacted.text.slice(0, 80)));

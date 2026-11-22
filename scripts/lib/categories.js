@@ -23,19 +23,22 @@ const DEFAULT_CATEGORY = '其他';
 /**
  * 有序规则表：先匹配先生效。
  * key 为分类枚举，value 为命中即归类的关键词/正则。
+ *
+ * 边界纪律：英文短词一律加 `\b` 词边界（避免 `invoices` 命中 `voice`、`provide`/`video` 命中 `ide`、
+ * `article`/`start` 命中 `art`、`build`/`suite` 命中 `ui`、`no-code` 命中 `code`）。
  */
 const RULES = [
-  ['对话模型', /chat|chatbot|chat bot|conversation|llm|language model|gpt|claude|gemini|grok|对话|大模型|语言模型|通用模型|多模态模型/i],
-  ['图像绘画', /image|photo|art|avatar|portrait|illustration|drawing|generat.*art|midjourney|stable diffusion|绘画|图像|图片|头像|写真|文生图|图生图/i],
-  ['视频', /video|animation|motion|clip|reel|film|movie|lip.?sync|视频|动画|剪辑|配音/i],
-  ['音频语音', /audio|voice|speech|tts|text.?to.?speech|speech.?to.?text|transcri|podcast|music|音频|语音|配音|转录|音乐/i],
-  ['编程开发', /code|coding|developer|programming|ide|debug|devops|ql|test automation|api.?dev|编程|代码|开发|调试/i],
-  ['办公效率', /productivity|office|note|meeting|calendar|email|document|spreadsheet|slide|presentation|workflow|automation|project management|task|办公|效率|笔记|会议|文档|表格|演示|自动化|项目管理/i],
-  ['API服务', /api|sdk|endpoint|platform.*model|cloud|inference|hosting|api服务|接口|算力|推理/i],
-  ['智能体', /agent|agentic|autonomous|assistant|copilot|智能体|代理|助手/i],
-  ['搜索研究', /search|research|academic|paper|knowledge|benchmark|data analysis|citation|搜索|研究|学术|论文|知识库|文献|基准/i],
-  ['设计创意', /design|ui|ux|graphic|brand|logo|typography|creative|设计|创意|品牌|logo|排版/i],
-  ['教育学习', /education|student|school|teacher|course|learn|tutor|homework|study|教育|学生|学校|教师|课程|学习|作业/i]
+  ['API服务', /\b(?:api|sdk|endpoint|inference)\b|\bplatform\b.*\bmodel\b|api服务|接口|算力|推理/i],
+  ['对话模型', /\b(?:chat|chatbot|chat bot|conversation|llm|language model|gpt|claude|gemini|grok)\b|对话|大模型|语言模型|通用模型|多模态模型/i],
+  ['图像绘画', /\b(?:image|photo|avatar|portrait|illustration|drawing|midjourney|stable diffusion)\b|\bgenerat\w*\s+art\b|\bai\s+art\b|绘画|图像|图片|头像|写真|文生图|图生图/i],
+  ['视频', /\b(?:video|animation|motion|clip|reel|film|movie|lip.?sync)\b|视频|动画|剪辑/i],
+  ['音频语音', /\b(?:audio|voice|speech|tts|text.?to.?speech|speech.?to.?text|transcrib\w*|transcription|podcast|music)\b|音频|语音|配音|转录|音乐/i],
+  ['编程开发', /(?<!no[- ]|low[- ])\b(?:code|coding)\b|\b(?:developer|programming|ide|debug|devops|sql|graphql|test automation|api.?dev)\b|编程|代码|开发|调试/i],
+  ['办公效率', /\b(?:productivity|office|note|meeting|calendar|email|document|spreadsheet|slide|presentation|workflow|automation|project management|task|crm|invoice|invoicing|proposal|contract|no-code|low-code)\b|办公|效率|笔记|会议|文档|表格|演示|自动化|项目管理/i],
+  ['智能体', /\b(?:agent|agentic|autonomous|assistant|copilot)\b|智能体|代理|助手/i],
+  ['搜索研究', /\b(?:search|research|academic|paper|knowledge|benchmark|data analysis|citation)\b|搜索|研究|学术|论文|知识库|文献|基准/i],
+  ['设计创意', /\b(?:design|ui|ux|graphic|brand|logo|typography|creative)\b|设计|创意|品牌|排版/i],
+  ['教育学习', /\b(?:education|student|school|teacher|course|learn|tutor|homework|study)\b|教育|学生|学校|教师|课程|学习|作业/i]
 ];
 
 /**

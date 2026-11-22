@@ -379,29 +379,32 @@
       try { data = JSON.parse(payloadScript.textContent); } catch (e) { data = {}; }
     }
 
-    function recalculate() {
-      // 读取表单值
-      var modelSelect = form.querySelector('[data-model]');
-      var variantSelect = form.querySelector('[data-variant]');
-      var channelSelect = form.querySelector('[data-channel]');
-      var inputEl = form.querySelector('[data-input-tokens]');
-      var outputEl = form.querySelector('[data-output-tokens]');
-      var cachedEl = form.querySelector('[data-cached-tokens]');
-      var cacheWriteEl = form.querySelector('[data-cache-write-tokens]');
-      var cacheWriteLongEl = form.querySelector('[data-cache-write-long-tokens]');
-      var requestsEl = form.querySelector('[data-requests]');
+    var presetsContainer = root.querySelector('[data-api-cost-presets]');
+    var compareContainer = root.querySelector('[data-api-cost-compare]');
+    var modelSelect = form.querySelector('[data-model]');
+    var variantSelect = form.querySelector('[data-variant]');
+    var channelSelect = form.querySelector('[data-channel]');
+    var inputEl = form.querySelector('[data-input-tokens]');
+    var outputEl = form.querySelector('[data-output-tokens]');
+    var cachedEl = form.querySelector('[data-cached-tokens]');
+    var cacheWriteEl = form.querySelector('[data-cache-write-tokens]');
+    var cacheWriteLongEl = form.querySelector('[data-cache-write-long-tokens]');
+    var requestsEl = form.querySelector('[data-requests]');
 
-      var modelKey = modelSelect ? modelSelect.value : '';
-      var variant = variantSelect ? variantSelect.value : 'standard';
-      var channel = channelSelect ? channelSelect.value : 'standard';
+    var compareList = []; // [{ modelKey, variant, channel }]，最多 4 项
+    var CMP_LIMIT = 4;
 
-      // 查找匹配的 plan + model
-      var match = findModel(data, modelKey, variant, channel);
-      if (!match) {
-        renderNoMatch(resultsContainer);
-        return;
-      }
+    var WORKLOAD_PRESETS = [
+      { label: '轻度日常（1M 输入 / 0.3M 输出）', input: '1000000', output: '300000', cached: '', req: '1' },
+      { label: '长上下文 / RAG（10M 输入 / 1M 输出 / 5M 缓存）', input: '10000000', output: '1000000', cached: '5000000', req: '1' },
+      { label: '批量处理（50M 输入 / 5M 输出）', input: '50000000', output: '5000000', cached: '', req: '1' }
+    ];
 
+    function itemKeyOf(item) {
+      return item.modelKey + '|' + item.variant + '|' + item.channel;
+    }
+
+    function readCleanInputs() {
       var inputs = {
         inputTokens: inputEl ? parseTokens(inputEl.value) : { value: 0, valid: true },
         outputTokens: outputEl ? parseTokens(outputEl.value) : { value: 0, valid: true },
@@ -410,28 +413,208 @@
         cacheWriteLongTokens: cacheWriteLongEl && cacheWriteLongEl.value ? parseTokens(cacheWriteLongEl.value) : null,
         requests: requestsEl ? parseTokens(requestsEl.value) : { value: 1, valid: true }
       };
-
-      // 输入校验
       var errors = [];
       for (var key in inputs) {
         var parsed = inputs[key];
         if (parsed && !parsed.valid) errors.push(key + ': ' + parsed.error);
       }
-      if (errors.length) {
-        renderError(resultsContainer, errors);
+      if (errors.length) return { errors: errors, cleanInputs: null };
+      return {
+        errors: [],
+        cleanInputs: {
+          inputTokens: inputs.inputTokens.value,
+          outputTokens: inputs.outputTokens.value,
+          cachedInputTokens: inputs.cachedInputTokens ? inputs.cachedInputTokens.value : null,
+          cacheWriteTokens: inputs.cacheWriteTokens ? inputs.cacheWriteTokens.value : null,
+          cacheWriteLongTokens: inputs.cacheWriteLongTokens ? inputs.cacheWriteLongTokens.value : null,
+          requests: inputs.requests ? inputs.requests.value : 1
+        }
+      };
+    }
+
+    function syncUrl() {
+      try {
+        if (typeof window === 'undefined' || !window.history || !window.history.replaceState) return;
+        var u = new URL(window.location.href);
+        function setP(k, v) { if (v) u.searchParams.set(k, v); else u.searchParams.delete(k); }
+        setP('model', modelSelect ? modelSelect.value : '');
+        setP('variant', variantSelect && variantSelect.value !== 'standard' ? variantSelect.value : '');
+        setP('channel', channelSelect && channelSelect.value !== 'standard' ? channelSelect.value : '');
+        setP('in', inputEl ? inputEl.value.trim() : '');
+        setP('out', outputEl ? outputEl.value.trim() : '');
+        setP('req', requestsEl && requestsEl.value.trim() !== '1' ? requestsEl.value.trim() : '');
+        setP('cache', cachedEl ? cachedEl.value.trim() : '');
+        setP('cmp', compareList.length ? compareList.map(itemKeyOf).join(',') : '');
+        window.history.replaceState(null, '', u.pathname + u.search + u.hash);
+      } catch (e) {}
+    }
+
+    function renderCompare(cleanInputs) {
+      if (!compareContainer) return;
+      var curKey = itemKeyOf({
+        modelKey: modelSelect ? modelSelect.value : '',
+        variant: variantSelect ? variantSelect.value : 'standard',
+        channel: channelSelect ? channelSelect.value : 'standard'
+      });
+      var exists = compareList.some(function (it) { return itemKeyOf(it) === curKey; });
+      var bar = '<div class="cost-cmp-bar">'
+        + '<button type="button" class="cost-cmp-btn" data-cmp-add'
+        + (exists || compareList.length >= CMP_LIMIT ? ' disabled' : '') + '>'
+        + (exists ? '已在对比栏' : ('+ 加入并排对比（' + compareList.length + '/' + CMP_LIMIT + '）'))
+        + '</button>'
+        + '<button type="button" class="cost-cmp-btn cost-cmp-sec" data-cmp-copy>复制当前链接</button>'
+        + (compareList.length ? '<button type="button" class="cost-cmp-btn cost-cmp-sec" data-cmp-clear>清空对比</button>' : '')
+        + '<span class="cost-cmp-status" data-cmp-status role="status" aria-live="polite"></span>'
+        + '</div>';
+
+      if (!compareList.length) {
+        compareContainer.innerHTML = bar;
         return;
       }
 
-      // 转成纯值
-      var cleanInputs = {
-        inputTokens: inputs.inputTokens.value,
-        outputTokens: inputs.outputTokens.value,
-        cachedInputTokens: inputs.cachedInputTokens ? inputs.cachedInputTokens.value : null,
-        cacheWriteTokens: inputs.cacheWriteTokens ? inputs.cacheWriteTokens.value : null,
-        cacheWriteLongTokens: inputs.cacheWriteLongTokens ? inputs.cacheWriteLongTokens.value : null,
-        requests: inputs.requests ? inputs.requests.value : 1
-      };
+      var currencies = {};
+      var rowsHtml = compareList.map(function (it, idx) {
+        var m = findModel(data, it.modelKey, it.variant, it.channel);
+        if (!m) return '';
+        var res = cleanInputs ? computeCost(m.plan, m.model, cleanInputs) : null;
+        if (res && res.currency) currencies[res.currency] = true;
+        var unitStr = (m.plan.pricing ? (currencyLabel(m.plan.pricing.currency) + ' / ' + unitLabel(m.plan.pricing.unit)) : '—');
+        var inCell = res && res.computable ? formatDimension(res.dimensions.input, res.currency) : '—';
+        var chCell = res && res.computable ? formatDimension(res.dimensions.cachedInput, res.currency) : '—';
+        var outCell = res && res.computable ? formatDimension(res.dimensions.output, res.currency) : '—';
+        var totCell = res && res.computable ? formatTotal(res) : (res ? res.reason : '请先填用量');
+        var link = m.plan.officialUrl
+          ? '<a href="' + escapeText(m.plan.officialUrl) + '" target="_blank" rel="nofollow noopener">' + escapeText(m.plan.provider) + ' ↗</a>'
+          : escapeText(m.plan.provider || '');
+        return '<tr>'
+          + '<th scope="row">' + escapeText(m.model.name) + '<small>' + link + ' · ' + escapeText(m.plan.lastSeen || '—') + '</small></th>'
+          + '<td>' + escapeText(unitStr) + '</td>'
+          + '<td class="num">' + escapeText(inCell) + '</td>'
+          + '<td class="num">' + escapeText(chCell) + '</td>'
+          + '<td class="num">' + escapeText(outCell) + '</td>'
+          + '<td class="num"><b>' + escapeText(totCell) + '</b></td>'
+          + '<td><button type="button" class="cost-cmp-drop" data-cmp-drop="' + idx + '" aria-label="移出对比">移除</button></td>'
+          + '</tr>';
+      }).join('');
 
+      var multiCurrency = Object.keys(currencies).length > 1;
+      var tableHtml = '<div class="ptable-wrap cost-cmp-wrap"><table class="ptable cost-cmp-tbl">'
+        + '<caption>并排计算（同一份 token 用量 · 按各自官方单价与原生币种独立算'
+        + (multiCurrency ? '；跨币种不做汇率折算' : '') + '）</caption>'
+        + '<thead><tr><th scope="col">模型与平台</th><th scope="col">计费单位</th><th scope="col" class="num">输入</th><th scope="col" class="num">缓存命中</th><th scope="col" class="num">输出</th><th scope="col" class="num">合计</th><th scope="col">操作</th></tr></thead>'
+        + '<tbody>' + rowsHtml + '</tbody></table></div>';
+
+      compareContainer.innerHTML = bar + tableHtml;
+    }
+
+    if (presetsContainer) {
+      presetsContainer.innerHTML = '<span class="cost-presets-lab">常用用量模板：</span>'
+        + WORKLOAD_PRESETS.map(function (p, idx) {
+          return '<button type="button" class="cost-preset-btn" data-preset="' + idx + '">' + escapeText(p.label) + '</button>';
+        }).join('');
+      presetsContainer.addEventListener('click', function (ev) {
+        var btn = ev.target && ev.target.closest ? ev.target.closest('[data-preset]') : null;
+        if (!btn) return;
+        var p = WORKLOAD_PRESETS[Number(btn.getAttribute('data-preset'))];
+        if (!p) return;
+        if (inputEl) inputEl.value = p.input;
+        if (outputEl) outputEl.value = p.output;
+        if (requestsEl) requestsEl.value = p.req;
+        if (cachedEl) cachedEl.value = p.cached;
+        recalculate(true);
+      });
+    }
+
+    if (compareContainer) {
+      compareContainer.addEventListener('click', function (ev) {
+        var target = ev.target && ev.target.closest ? ev.target.closest('button') : null;
+        if (!target) return;
+        if (target.hasAttribute('data-cmp-add')) {
+          if (compareList.length >= CMP_LIMIT) return;
+          var item = {
+            modelKey: modelSelect ? modelSelect.value : '',
+            variant: variantSelect ? variantSelect.value : 'standard',
+            channel: channelSelect ? channelSelect.value : 'standard'
+          };
+          if (!findModel(data, item.modelKey, item.variant, item.channel)) return;
+          if (!compareList.some(function (it) { return itemKeyOf(it) === itemKeyOf(item); })) {
+            compareList.push(item);
+            recalculate(true);
+          }
+        } else if (target.hasAttribute('data-cmp-clear')) {
+          compareList = [];
+          recalculate(true);
+        } else if (target.hasAttribute('data-cmp-drop')) {
+          var idx = Number(target.getAttribute('data-cmp-drop'));
+          if (idx >= 0 && idx < compareList.length) {
+            compareList.splice(idx, 1);
+            recalculate(true);
+          }
+        } else if (target.hasAttribute('data-cmp-copy')) {
+          syncUrl();
+          var statusEl = compareContainer.querySelector('[data-cmp-status]');
+          try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(window.location.href).then(function () {
+                if (statusEl) statusEl.textContent = '已复制分享链接';
+              });
+            } else if (statusEl) {
+              statusEl.textContent = '已更新地址栏链接';
+            }
+          } catch (e) {
+            if (statusEl) statusEl.textContent = '已更新地址栏链接';
+          }
+        }
+      });
+    }
+
+    // 读取 URL 初始参数（支持链接分享）
+    try {
+      if (typeof window !== 'undefined' && window.location && window.location.search) {
+        var qp = new URLSearchParams(window.location.search);
+        if (qp.get('model') && modelSelect) modelSelect.value = qp.get('model');
+        if (qp.get('variant') && variantSelect) variantSelect.value = qp.get('variant');
+        if (qp.get('channel') && channelSelect) channelSelect.value = qp.get('channel');
+        if (qp.get('in') && inputEl) inputEl.value = qp.get('in');
+        if (qp.get('out') && outputEl) outputEl.value = qp.get('out');
+        if (qp.get('req') && requestsEl) requestsEl.value = qp.get('req');
+        if (qp.get('cache') && cachedEl) cachedEl.value = qp.get('cache');
+        var rawCmp = qp.get('cmp');
+        if (rawCmp) {
+          rawCmp.split(',').slice(0, CMP_LIMIT).forEach(function (part) {
+            var segs = part.split('|');
+            if (segs.length >= 1 && segs[0]) {
+              var cand = { modelKey: segs[0], variant: segs[1] || 'standard', channel: segs[2] || 'standard' };
+              if (findModel(data, cand.modelKey, cand.variant, cand.channel)) compareList.push(cand);
+            }
+          });
+        }
+      }
+    } catch (e) {}
+
+    function recalculate(shouldSync) {
+      var modelKey = modelSelect ? modelSelect.value : '';
+      var variant = variantSelect ? variantSelect.value : 'standard';
+      var channel = channelSelect ? channelSelect.value : 'standard';
+
+      var match = findModel(data, modelKey, variant, channel);
+      var parsed = readCleanInputs();
+
+      if (shouldSync) syncUrl();
+
+      if (!match) {
+        renderNoMatch(resultsContainer);
+        renderCompare(parsed.cleanInputs);
+        return;
+      }
+
+      if (parsed.errors.length) {
+        renderError(resultsContainer, parsed.errors);
+        renderCompare(null);
+        return;
+      }
+
+      var cleanInputs = parsed.cleanInputs;
       var result = computeCost(match.plan, match.model, cleanInputs);
 
       // 一个 token 都没填：不显示「免费」（见 renderEmpty 的注释）。
@@ -442,15 +625,17 @@
         || (cleanInputs.cacheWriteLongTokens || 0) > 0;
       if (!anyTokens) {
         renderEmpty(resultsContainer);
+        renderCompare(null);
         return;
       }
 
       renderResult(resultsContainer, result);
+      renderCompare(cleanInputs);
     }
 
-    form.addEventListener('input', recalculate);
-    form.addEventListener('change', recalculate);
-    recalculate();
+    form.addEventListener('input', function () { recalculate(true); });
+    form.addEventListener('change', function () { recalculate(true); });
+    recalculate(false);
   }
 
   /**

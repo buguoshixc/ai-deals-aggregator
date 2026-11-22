@@ -76,6 +76,15 @@ v3.4（`v3.4-price-history-calendar-search`）是四件事的收口，不改数�
 （三者都是纯合成数据、不读 `dist/`，已进 CI 的 L2）。交付报告见
 [`research/v3.4-polish-report.md`](research/v3.4-polish-report.md)。
 
+## v3.5：体验与性能全面收口（视觉修复 / 信噪分离 / 全局导航 / 交互决策 / 静态资源瘦身 / 构建模块化）
+
+1. **视觉与细节修复**：修复窄屏筛选栏左侧裁切（`flex-start` + 横向渐隐）、修复 `500,000` 英文千位数字误拆、修复折叠卡片模型列表粘连、详情弹层按优惠档位分层配色并消除奇数网格空白格、已过期 `/deal/` 页增加醒目「活动已结束」提示与活跃同类入口、用纯单色内联 SVG 替换依赖操作系统的 emoji 图标。
+2. **信噪比与数据可信度**：`scripts/lib/categories.js` 英文关键词加 `\b` 词边界并新增 `npm run selftest:categories`；首页新增独立 `SaaS 折扣` 标签页将 AppSumo SaaS 终身折扣与核心 AI/大模型优惠分离（同步过滤主 RSS/JSON Feed 并合并同日同条目多字段变更）；人工策展条目如实展示核对日期 `verifiedAt`（消除每日刷新造成的假新鲜感）；修复 DeepSeek/Fireworks/SiliconFlow 价格核验解析器并补齐核心中文译文。
+3. **全站统一导航与跨站搜索**：`scripts/lib/page-shell.js` 为全部子页注入桌面端一致顶栏与零 JS 移动端 `<details>` 抽屉菜单（含 `跳到正文` skip-link 与页脚 `Codex 重置` 入口）；首页搜索条与空态直通 `/search/?q=...`，`/search/` 自动应用并同步 `?q=`。
+4. **交互决策工具升级**：`/plans/api/` 新增渐进增强搜索、地区、币种、缓存/批处理筛选与用户自选数值排序（静态表格无死按钮、URL 可分享）；`/tools/api-cost/` 支持按平台 `<optgroup>` 选择、3 组事实型工作负载预设、最多 4 模型并排对比（各自保留原币种与原单位，不做汇率折算）及一键复制参数链接。
+5. **性能瘦身与缓存复用**：共享样式由 `scripts/lib/style-asset.js` 外链为内容哈希 `style.<hash>.css`（52 KB，全站 401 页复用缓存），`app.<hash>.js` 经确定性词法去注释从 240 KB 降至 120 KB，`assets/data/offers.json` 紧凑序列化从 540 KB 降至 363 KB，整站 `dist/` 产物从 ~55 MB 降至 ~12.6 MB（单个 `/deal/` 页从 ~107 KB 降至 ~30 KB）。
+6. **构建模块化与仓库整洁**：将 `scripts/tools/build-local.js`（9,955 行 → 4,165 行）按职责拆出 `scripts/build/{notes-manifest,pages-ops,residue,selfcheck}.js` 并以全树 SHA-256 摘要验证逐字节等价；历史过程状态日志归档至 [`docs/archive/`](docs/archive/)。
+
 ## 设计原则
 
 1. **只收录真实优惠**。定价表、"这是付费产品"这类信息不算优惠，只会以 `type: "tool"` 进入"全部工具"页，
