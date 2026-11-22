@@ -377,6 +377,64 @@ section('⑩ 渲染器：条带与页面的形态由 RENDER-CORE 现渲染断言
   const brokenStrip = rc.changesStripHtml(changes.buildRadar({ deals: [], store: null, asOf: AS_OF, availability: 'unavailable' }));
   check('日志不可用时条带说「没有拿到历史日志」', brokenStrip.includes('没有拿到历史日志'));
   check('日志不可用时条带不说「没有变化」', brokenStrip.includes('当前没有观测到变化') === false);
+
+  // ---- 常驻线索入口（2026-11）：不占条带槽位、不随日期消失 ----------------------------
+  // 线索判据的唯一入口是 `identityOf()`：`deal.sourceFacts.sourceType === 'lead'`
+  //（与构建期 provenance 派生的字段同名）。fixture 必须显式带上它，否则测的就不是线索。
+  const leadDeal = id => deal({ id, type: 'tool', sourceFacts: { sourceType: 'lead' } });
+  const leadCreated = id => event({ id, at: day(0), type: 'created', field: null, from: null, to: null, fields: {} });
+
+  const oneLeadId = '111111111111';
+  const oneLead = radarOf([leadCreated(oneLeadId)], [leadDeal(oneLeadId)]);
+  const stripOneLead = rc.changesStripHtml(oneLead);
+  check('线索不占条带 .ritem 槽位（数据层 home 池按 lead 排除，N 另有常驻入口）',
+    oneLead.home.items.length === 0 && stripOneLead.includes('class="ritem"') === false);
+  check('N=1：常驻入口文本「线索 · 未核验 1 条」，data-lead-count=1',
+    stripOneLead.includes('class="rleadcount" data-lead-count="1"') &&
+    stripOneLead.includes('线索 · 未核验') && stripOneLead.includes('1 条 →'));
+  check('N>0 且条带正文区为空时**不**印「当前没有观测到变化」（否则一边说没变化一边挂入口）',
+    stripOneLead.includes('当前没有观测到变化') === false && stripOneLead.includes('class="rnone"') === false);
+  check('线索入口的锚点来自 identityOf()（changes/#lead-<id>，渲染层不自己拼）',
+    stripOneLead.includes('href="changes/#lead-' + oneLeadId + '"'));
+  check('线索入口不带 data-deal-id（它不是 .ritem 条目，整串比对只认 .ritem）',
+    /<a class="rleadcount"[^>]*data-deal-id/.test(stripOneLead) === false);
+
+  const manyLeadIds = ['111111111111', '222222222222', '333333333333', '444444444444', '555555555555'];
+  const fiveLeads = radarOf(manyLeadIds.map(leadCreated), manyLeadIds.map(leadDeal));
+  const stripFiveLeads = rc.changesStripHtml(fiveLeads);
+  check('N=5：显示值封顶为「' + changes.LIMITS.LEAD_CHIP_MAX + '+ 条 →」，真值仍写在 data-lead-count=5',
+    stripFiveLeads.includes('data-lead-count="5"') &&
+    stripFiveLeads.includes(changes.LIMITS.LEAD_CHIP_MAX + '+ 条 →') &&
+    stripFiveLeads.includes('5 条 →') === false);
+
+  // ---- 同一线索跨分栏：一条记录只画一张卡（2026-11-13）-------------------------
+  //
+  // 真实形态：`created` 在 7 天窗口内（进「最近 7 天变化」）+ 同一记录的 `ended`
+  // （来源不再列出）在 30 天窗口内（也进「已结束」）⇒ 同一 id 会在两栏各出现一次。
+  // 线索卡的身份是 `article.leadcard id="lead-<id>"`：一条记录一个锚点，画两张会产生
+  // 重复 id，而首页常驻入口的 `data-lead-count`（按 id 去重）会与读者数到的卡数分家。
+  //
+  // 三件事同时断言，缺一条这个承诺就没被守住：
+  //   ① 渲染集合里只出现一次（后出现的整行移除）；
+  //   ② 页面上确实只有一张卡、锚点唯一；
+  //   ③ `totals` 仍是**事件数**（覆盖不变量拿事件对账 —— 去重不许把 ended 事件从账上抹掉）。
+  {
+    const crossId = '666666666666';
+    const crossRadar = radarOf([
+      event({ id: crossId, at: day(-2), type: 'created', field: null, from: null, to: null, fields: {} }),
+      event({ id: crossId, at: day(0), type: 'ended', field: null, from: null, to: null, reason: 'source_no_longer_lists' })
+    ], [leadDeal(crossId)]);
+    const crossPage = rc.changesPageHtml(crossRadar, '../');
+    check('跨分栏线索只在**先出现的分栏**保留一行（changed 有 / ended 无）',
+      crossRadar.sections.changed.items.some(item => item.id === crossId) &&
+      crossRadar.sections.ended.items.some(item => item.id === crossId) === false);
+    check('跨分栏线索在页面上只有一张卡、锚点不重复（重复 id 会让入口锚点指向第一张而数出两张）',
+      (crossPage.match(/<article class="leadcard"/g) || []).length === 1 &&
+      (crossPage.match(new RegExp(`id="lead-${crossId}"`, 'g')) || []).length === 1);
+    check('去重不抹掉事件账：totals 仍是事件数（changed 1 + ended 1），页面行数与 renderOrderOf 相同',
+      crossRadar.totals.changed === 1 && crossRadar.totals.ended === 1 &&
+      (crossPage.match(/<li class="chgi" /g) || []).length === changes.renderOrderOf(crossRadar).length);
+  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -595,6 +653,110 @@ section('⑪ 说明容器 matcher：多 class 的 `<p class="snote mcount">` 不
   // 判据是 token 级，class 的**顺序与个数**都不该影响结果。
   check('新 matcher 对 class="snote aliasnote"（历史形状）同样必命中',
     token.test('<p class="snote aliasnote">这一页是旧地址……</p>'), String(token.test('<p class="snote aliasnote">这一页是旧地址……</p>')));
+}
+
+/* ------------------------------------------------------------------ */
+section('⑭ /changes/ 预渲染正文下限（按实际渲染行数，不按截断前事件总数 · issue #154）');
+
+{
+  const rc = require('../lib/render-core').load();
+  const stripHtml = html => String(html || '')
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  // 系数保持原值（700 + 40 × 行数），只修正乘数口径
+  check('下限系数保持原值（base=700, perRow=40，不调低护栏）',
+    changes.CHANGES_TEXT_FLOOR.base === 700 && changes.CHANGES_TEXT_FLOOR.perRow === 40,
+    JSON.stringify(changes.CHANGES_TEXT_FLOOR));
+
+  const empty = radarOf([], [deal()]);
+  const unavailable = changes.buildRadar({ deals: [], store: null, asOf: AS_OF, availability: 'unavailable' });
+  check('空雷达与日志不可用时下限均为 700',
+    changes.changesPageTextFloor(empty) === 700 && changes.changesPageTextFloor(unavailable) === 700,
+    `${changes.changesPageTextFloor(empty)} / ${changes.changesPageTextFloor(unavailable)}`);
+
+  // 未截断且无线索去重时，与旧公式逐字相等
+  const small = radarOf([
+    event({ id: ID_A, at: day(0), type: 'created', field: null, from: null, to: null, fields: {} }),
+    event({ id: ID_B, at: day(-2), type: 'benefit_changed', field: 'discountInfo' }),
+    event({ id: ID_C, at: day(-5), type: 'ended', field: null, from: null, to: null, reason: 'withdrawn' })
+  ], [deal({ id: ID_A }), deal({ id: ID_B })]);
+  check('未截断时与旧口径相等（3 条事件 = 3 行 ⇒ 700 + 40×3 = 820）',
+    changes.changesPageTextFloor(small) === 700 + 40 * 3,
+    String(changes.changesPageTextFloor(small)));
+
+  // 复现 issue #154：窗口内大量历史事件触发 itemsPerSection=30 截断（例如 80 changed + 120 ended + 40 other）
+  const heavyDeals = [];
+  const heavyEvents = [];
+  for (let i = 0; i < 80; i++) {
+    const id = `c${String(i).padStart(11, '0')}`;
+    heavyDeals.push(deal({ id, title: `AI 编程助手 Pro 套餐限时优惠 ${i}`, vendor: `示例厂商 ${i}` }));
+    heavyEvents.push(event({ id, at: day(-1), type: 'benefit_changed', field: 'discountInfo', from: '新用户赠送 100 万 tokens 免费额度', to: '新用户赠送 200 万 tokens 免费额度' }));
+  }
+  for (let i = 0; i < 120; i++) {
+    const id = `e${String(i).padStart(11, '0')}`;
+    heavyEvents.push(event({
+      id, at: day(-5), type: 'ended', field: null, from: null, to: null,
+      reason: 'withdrawn', label: { title: `AI 平台开发者免费额度计划 ${i}`, vendor: `示例厂商 ${i}` }
+    }));
+  }
+  for (let i = 0; i < 40; i++) {
+    const id = `m${String(i).padStart(11, '0')}`;
+    heavyDeals.push(deal({ id, title: `云端模型推理 API 体验额度 ${i}`, vendor: `示例厂商 ${i}` }));
+    heavyEvents.push(event({ id, at: day(-2), type: 'updated', field: 'category', from: '其他', to: '对话模型' }));
+  }
+  const heavy = radarOf(heavyEvents, heavyDeals);
+  const renderedRows = changes.renderOrderOf(heavy).length;
+  const heavyFloor = changes.changesPageTextFloor(heavy);
+  const legacyFloor = 700 + 40 * (
+    changes.SECTION_ORDER.reduce((sum, key) => sum + heavy.totals[key], 0) + heavy.totals.other
+  );
+  check('超限截断场景（240 条事件 → 90 条渲染行）：下限按渲染行算（4300），不按截断前总数飙升（10300）',
+    renderedRows === 90 && heavyFloor === 700 + 40 * 90 && legacyFloor === 700 + 40 * 240,
+    `rendered=${renderedRows} · floor=${heavyFloor} · legacy=${legacyFloor}`);
+
+  // 真渲染检验 + 牙：正常渲染正文 ≥ 下限；把渲染行剥掉 ⇒ 立刻跌破下限（牙还在）
+  const heavyBody = rc.changesPageHtml(heavy, '../');
+  const heavyBodyText = stripHtml(heavyBody);
+  const brokenBodyText = stripHtml(heavyBody.replace(/<li class="chgi"[\s\S]*?<\/li>/g, ''));
+  check('超限截断场景：真实渲染正文 ≥ 新下限（即使不含页壳与套餐块）',
+    heavyBodyText.length >= heavyFloor,
+    `正文 ${heavyBodyText.length} 字 / 下限 ${heavyFloor}`);
+  check('牙：把事件行渲染剥掉 ⇒ 正文立刻跌破下限（没有放宽对渲染断链的拦截）',
+    brokenBodyText.length < heavyFloor,
+    `断链正文 ${brokenBodyText.length} 字 / 下限 ${heavyFloor}`);
+
+  // B 类线索跨分栏去重：同一条线索既有 changed 又有 ended，totals 计 2 条，页面只画 1 张 .leadcard
+  const leadDeal = deal({
+    id: ID_D,
+    type: 'tool',
+    title: '去重测试线索',
+    source: 'IT之家',
+    url: 'https://example.com/lead',
+    firstSeen: day(-2),
+    sourceFacts: { sourceType: 'lead' }
+  });
+  const leadRadar = radarOf([
+    event({ id: ID_D, at: day(-2), type: 'created', field: null, from: null, to: null, fields: {} }),
+    event({ id: ID_D, at: day(-1), type: 'ended', field: null, from: null, to: null, reason: 'withdrawn' })
+  ], [leadDeal]);
+  check('B 类线索跨栏去重：totals 计 2 事件、页面只渲染 1 张线索卡 ⇒ 下限按 1 行算（740）',
+    leadRadar.totals.changed === 1 && leadRadar.totals.ended === 1
+    && changes.renderOrderOf(leadRadar).length === 1
+    && changes.changesPageTextFloor(leadRadar) === 740,
+    `totals=${JSON.stringify(leadRadar.totals)} · rows=${changes.renderOrderOf(leadRadar).length} · floor=${changes.changesPageTextFloor(leadRadar)}`);
+
+  // 单源契约：构建链路（build-local.js + scripts/build/selfcheck.js）必须调用 changes.changesPageTextFloor，不再手写旧公式
+  const buildSrc = [
+    path.join(ROOT, 'scripts', 'tools', 'build-local.js'),
+    path.join(ROOT, 'scripts', 'build', 'selfcheck.js')
+  ].map(f => fs.readFileSync(f, 'utf8')).join('\n');
+  check('单源契约：build-local.js 调用 changes.changesPageTextFloor(radar) 且已移除旧公式',
+    buildSrc.includes('changes.changesPageTextFloor(radar)')
+    && !buildSrc.includes('700 + 40 * (highValueTotal + radar.totals.other)'));
 }
 
 /* ------------------------------------------------------------------ */

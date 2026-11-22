@@ -48,12 +48,16 @@
 
 const fs = require('fs');
 const path = require('path');
+const appAsset = require('./app-asset');
+const styleAsset = require('./style-asset');
 
 /**
  * IndexNow 的密钥文件（`<key>.txt`）：它的**唯一出处**是 `lib/indexnow.js`。
  * 本文件只调 `keyFileName()` 取名字，不写第二份字面量 —— 与上面 `FEED_FILES` 那条同款纪律。
  */
 const indexnow = require('./indexnow');
+// v3.4 F2：到期日历的产物表（文件名 → MIME）唯一出处是 lib/calendar.js。
+const calendar = require('./calendar');
 
 /* ------------------------------------------------------------------ */
 /* 订阅产物登记表（v3.2 · 逐路径登记；名字一律从 feed.js 的 FEED_FILES 取）  */
@@ -117,10 +121,42 @@ const FEED_ASSET_PATHS = (() => {
   return files.map(([file], index) => [file, FEED_ASSET_WHY[index]]);
 })();
 
+/**
+ * 到期日历的产物登记条目（`[路径, 理由]`，路径按 `CALENDAR_FILES` 逐条取）。
+ *
+ * 与订阅产物同一定位：它**不是**「给读者下载的数据集」，而是一份**订阅入口** ——
+ * 用户把 URL 交给自己的日历客户端，客户端才会来取。所以进 `ALLOWED_PATHS`、不进 `ALLOWED_DATA`。
+ * 文件名从 `lib/calendar.js` 现取，本文件不写第二份 `expiry.ics` 字面量；条数不匹配即抛错。
+ */
+const CALENDAR_ASSET_WHY = [
+  '到期日历（RFC 5545 / iCalendar）：构建期由 lib/calendar.js 生成，收录有绝对截止日期且未过期的条目；'
+  + '它是供人订阅的日历入口（.ics），不是可下载的数据集，也没有被任何页面脚本请求'
+];
+const CALENDAR_ASSET_PATHS = (() => {
+  const files = calendar.CALENDAR_FILES;
+  if (!Array.isArray(files) || !files.length) {
+    throw new Error('scripts/lib/calendar.js 的 CALENDAR_FILES 必须是非空数组（日历产物登记表读不出来时不许静默放行）');
+  }
+  if (files.length !== CALENDAR_ASSET_WHY.length) {
+    throw new Error(`CALENDAR_FILES 有 ${files.length} 条，但到期日历登记理由有 ${CALENDAR_ASSET_WHY.length} 条 ——`
+      + '逐路径登记必须一条一理由');
+  }
+  return files.map(([file], index) => [file, CALENDAR_ASSET_WHY[index]]);
+})();
+
 /** 允许出现在产物里的**具体路径**（相对产物目录，POSIX 形式）。逐条写理由。 */
 const ALLOWED_PATHS = [
   ['.nojekyll', 'GitHub Pages 的 Jekyll 关断标记（内容只有一个空行，不是数据）'],
   ['favicon.svg', '站点图标（每个页面 <head> 都引用它）'],
+  // v6：首页应用脚本。文件名由 `lib/app-asset.js` 从 **assets/app.js 的内容哈希**派生
+  //（不是通配、不是前缀放行）；这条登记与构建期写盘点、index.html 的 src 共用同一个值。
+  // 它是站点自己的交互代码，不是数据集，也不是第三方 CDN 资源。
+  [appAsset.FILE, '首页应用脚本（assets/app.js 的内容哈希产物名）：构建期写盘、index.html defer 加载，'
+    + '负责筛选 / 排序 / 详情弹层；不是数据文件，也不热链第三方'],
+  // Phase 5：全站共享样式表。文件名由 `lib/style-asset.js` 从 `index.html` 共享 `<style>`
+  // 剥注释后的内容哈希派生，由首页与全部子页以 `<link rel="stylesheet">` 共享缓存。
+  [styleAsset.FILE, '全站共享样式表（index.html 共享 <style> 剥注释后的内容哈希产物名）：构建期写盘一次，'
+    + '供首页与全站子页 <link rel="stylesheet"> 共享缓存；不是数据文件，也不热链第三方'],
   ['logos.css', '厂商 logo 的样式表：与 logos/ 同批生成，页面用它渲染 data-logo 图形'],
   ['og-image.png', '社交分享图（构建期由 lib/og-image.js 生成，被 og:image 引用）'],
   ['robots.txt', '抓取策略（声明 sitemap 地址，是站点对外的运维约定而不是数据）'],
@@ -136,7 +172,8 @@ const ALLOWED_PATHS = [
   // 名字从 `lib/indexnow.js` 现取：本文件不写第二份字面量（同 `FEED_FILES` 那条纪律）。
   [indexnow.keyFileName(), 'IndexNow 密钥文件（文件名与内容都是密钥本身）：参与引擎抓它来证明'
     + '「提交者确实控制着这个子目录」，属于站对外的运维约定而不是数据，也没有任何页面引用它'],
-  ...FEED_ASSET_PATHS
+  ...FEED_ASSET_PATHS,
+  ...CALENDAR_ASSET_PATHS
 ];
 
 /** 允许出现在产物里的**目录前缀**（同样逐条写理由；前缀以 `/` 结尾，只匹配目录内的文件）。 */
@@ -158,6 +195,31 @@ const ALLOWED_DATA = [
 
 /** 页面本体：任何 `*.html` 都是产物的一部分，不在这张表里逐个登记（它们由 SEO 门禁与自检盯）。 */
 const PAGE_FILE_RE = /\.html?$/i;
+
+/**
+ * 产物里**不是页面**的 `.html`（逐路径登记 + 理由，不许通配）。
+ *
+ * 「任何 `*.html` 都是页面本体」这条假设有一串机器牙：构建自检的页头图标入口、`<footer>` 锚点、
+ * 说明意图清单、订阅 alternate 声明，以及产物复核 `analytics-selftest` 的「每个页面 exactly 1 个
+ * bootstrap」。但**站点归属验证文件**是这条假设的合法例外 —— 搜索引擎指定它叫 `<token>.html`、
+ * 必须落在站点根并逐字节原样可取，而它不是页面：没有页头 / 页脚 / 说明意图，没有页面引用它，
+ * 也不进 sitemap。
+ *
+ * 这张表是那条例外的**唯一出处**：构建期（拷贝清单 + 页面判据）与产物复核必须读同一份，
+ * 否则「构建时放行、复核时不认」这种漂移只会以一条看起来莫名其妙的门禁红出现。
+ * 三条纪律照旧：逐路径、写明理由、失败点名。
+ */
+const NON_PAGE_HTML = [
+  // Google Search Console 的「HTML 文件」验证（2026-11 加）。与 `BingSiteAuth.xml` 同属
+  // 「站对外的运维约定」那一类：没有页面引用它、它也不进 sitemap，但 Google 抓的就是这个
+  // 路径下的这份内容 —— 一个字节都不能改（连结尾换行都算「不原样」）。
+  ['google9207b438510519e4.html',
+    'Google Search Console 的站点归属验证文件（GSC 生成，内容只有一行 google-site-verification 令牌）：'
+    + '必须落在站点根逐字节原样可取，属于站对外的运维约定而不是数据；它不是页面，也没有任何页面引用它']
+];
+
+/** 上面那张表的路径集合（构建期与产物复核共用的成员判据，避免各自再写一份字面量）。 */
+const NON_PAGE_HTML_PATHS = new Set(NON_PAGE_HTML.map(([rel]) => rel));
 
 /**
  * 产物里全部文件的相对路径（POSIX 形式，排序后返回，便于逐字节可复现的日志与断言）。
@@ -248,7 +310,9 @@ function assertNoPublishedData(dir) {
 /** 给日志用的一行摘要：「产物资产 N 个（页面 M / 非页面 K，其中数据资源 1）」 */
 function summarizePublishedFiles(dir) {
   const files = listPublishedFiles(dir);
-  const pages = files.filter(rel => PAGE_FILE_RE.test(rel)).length;
+  // 页面数按「`.html` 减去 NON_PAGE_HTML 登记的验证文件」算：验证文件形状上是 `.html`、
+  // 语义上不是页面，算进页面会让日志读数与实际页面集合对不上（差一）。
+  const pages = files.filter(rel => PAGE_FILE_RE.test(rel) && !NON_PAGE_HTML_PATHS.has(rel)).length;
   const data = files.filter(rel => ALLOWED_DATA.some(([p]) => p === rel)).length;
   return { total: files.length, pages, nonPages: files.length - pages, data };
 }
@@ -257,6 +321,8 @@ module.exports = {
   ALLOWED_PATHS,
   ALLOWED_PREFIX,
   ALLOWED_DATA,
+  NON_PAGE_HTML,
+  NON_PAGE_HTML_PATHS,
   listPublishedFiles,
   assertNoPublishedData,
   summarizePublishedFiles

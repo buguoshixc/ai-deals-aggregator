@@ -30,8 +30,45 @@ const VENDOR_SLUGS_FILE = path.join(DATA_DIR, 'vendor-slugs.json');
 const CATEGORY_SLUGS_FILE = path.join(DATA_DIR, 'category-slugs.json');
 const PINNED_FILE = path.join(DATA_DIR, 'landing-pages.json');
 const ALIASES_FILE = path.join(DATA_DIR, 'landing-aliases.json');
+// 厂商 slug 的**机器账本**：collect 侧写盘工具产出、同批入库、确定性排序、禁止人手改。
+// 与 vendor-slugs.json（人工覆盖表）分工：覆盖表是人给"可读短名"的地方；账本是机器
+// 第一次给一家厂商分配 URL 后**记住它**的地方 —— 没有它，每家新厂商都要人补一行，
+// 发布链就会在"数据已经入库、构建却要求人工"的形态上反复停摆。
+const VENDOR_SLUG_LEDGER_FILE = path.join(DATA_DIR, 'vendor-slug-ledger.json');
 
 const SLUG_RE = /^[a-z0-9][a-z0-9-]*$/;
+
+/**
+ * 厂商 → 历史事件数（`VENDOR_THRESHOLDS.minEvents` 那条门槛的唯一输入）。
+ *
+ * 为什么要有这一处：厂商页资格是三条 OR —— 有效优惠条数 / **历史事件数** / 非优惠资料。
+ * 前两条的读数以前由各调用点自己算（构建期一份、独立验收一份、三个 selftest 各传 `() => 0`），
+ * 2026-11-12 第一次出现**只靠事件数达标**的厂商（NinjaPipe：1 条优惠 / 3 条事件），
+ * 于是独立门禁重算的计划比产物少一页（`vendor/ninjapipe/`），判 `rowMismatches` 与
+ * ItemList 成员双红 —— 判据分家的代价。现在只有这一份实现：
+ *   · 身份归一仍然只从调用方注入的 `vendorKeyOf`（RENDER-CORE 的 `vendorOf()`，唯一入口）；
+ *   · 事件按记录 id 归到厂商；记录不在 `deals` 里的事件不计（与构建期口径相同）。
+ *
+ * @param {{deals?: object[], events?: object[], vendorKeyOf: Function}} params
+ * @returns {Map<string, number>} 厂商显示名 → 事件数；零事件的厂商不出现（调用方按 0 兜底）
+ */
+function vendorEventCountsOf({ deals = [], events = [], vendorKeyOf } = {}) {
+  if (typeof vendorKeyOf !== 'function') {
+    throw new Error('vendorEventCountsOf 需要 vendorKeyOf（厂商归一的唯一入口是 RENDER-CORE 的 vendorOf）');
+  }
+  const vendorOfId = new Map();
+  for (const deal of deals || []) {
+    if (deal && deal.id) vendorOfId.set(deal.id, vendorKeyOf(deal) || '');
+  }
+  const counts = new Map();
+  for (const event of events || []) {
+    const key = event && (event.id !== undefined ? event.id : event.planId);
+    const name = vendorOfId.get(key);
+    if (!name) continue;
+    counts.set(name, (counts.get(name) || 0) + 1);
+  }
+  return counts;
+}
 
 /**
  * 生成门槛。厂商那一档**刻意复用站点常量的门槛**（调用方从 `lib/site.js` 的 `VENDOR_THRESHOLDS`
@@ -199,6 +236,44 @@ function loadPinned(file = PINNED_FILE) {
 function loadAliases(file = ALIASES_FILE) {
   const doc = readJson(file, '别名表');
   return withoutMeta(doc.aliases || {});
+}
+
+/**
+ * 读取厂商 slug 机器账本。
+ *
+ * 账本**不存在**时返回空账本（不是错误）：仓库第一次引入它、或旧分支上还没有这个文件时，
+ * 构建应当照常工作（新厂商按 `suggestSlug()` 现场分配），而不是因为"状态文件缺失"停机。
+ * 账本的形状校验（SLUG_RE / 重复）与覆盖表共用 `validateSlugTable` 的同一套口径。
+ *
+ * @param {string} [file]
+ * @returns {{schemaVersion: number, vendors: Array<{vendorName: string, slug: string, firstRoutedAt: string, status: string}>}}
+ */
+function loadVendorSlugLedger(file = VENDOR_SLUG_LEDGER_FILE) {
+  if (!fs.existsSync(file)) return { schemaVersion: 1, vendors: [] };
+  const doc = readJson(file, '厂商 slug 机器账本');
+  const vendors = Array.isArray(doc.vendors) ? doc.vendors : [];
+  return {
+    schemaVersion: Number(doc.schemaVersion) || 1,
+    vendors: vendors
+      .filter(row => row && row.vendorName && row.slug)
+      .map(row => ({
+        vendorName: String(row.vendorName),
+        slug: String(row.slug),
+        firstRoutedAt: String(row.firstRoutedAt || ''),
+        status: row.status === 'degraded' ? 'degraded' : 'active'
+      }))
+      .sort((a, b) => a.vendorName.localeCompare(b.vendorName, 'zh'))
+  };
+}
+
+/** 账本按厂商显示名索引（重复名取第一条；形状问题由 `validateSlugTable` 另行报）。 */
+function ledgerByName(ledger) {
+  const map = new Map();
+  for (const row of (ledger && ledger.vendors) || []) {
+    if (!row || !row.vendorName) continue;
+    if (!map.has(row.vendorName)) map.set(row.vendorName, row);
+  }
+  return map;
 }
 
 function validateSlugTable(table, what) {
@@ -374,6 +449,59 @@ function vendorMaterialOf({ vendorName, providerTable = {}, plans = [], apiPlans
   return material;
 }
 
+/**
+ * 厂商 slug 的**唯一解析实现**（四层，顺序固定）。
+ *
+ *   ① `vendor-slugs.json`   —— 人工覆盖表：人给可读短名的地方，优先级最高；
+ *   ② `providers.json` 同名 provider 的 `slug` —— 已有的数据层登记；
+ *   ③ 机器账本 `vendor-slug-ledger.json` —— 机器第一次分配后记住的已发布 URL；
+ *   ④ `suggestSlug(name)`   —— 现场分配（拉丁名 → 短横线串；非拉丁名 → `vendor-<hash36>`）。
+ *
+ * 为什么是这四层而不是"谁有就用谁"：`/vendor/<slug>/` 是**已发布 URL**。
+ * 同一条解析链同时服务构建（读）与 collect 侧写盘工具（写），所以两边对"这家该用哪个
+ * slug"永远只有一份答案 —— 这正是本仓「机制只有一份实现」的纪律。
+ *
+ * 唯一硬拦（P1 保留的最后一条人工卡点，且是数据事故不是流程缺环）：
+ * **账本已有 slug，但本次现算（覆盖表 / provider / suggest）得到另一个值** ⇒ 厂商改名后
+ * 旧 URL 会 404。报错里同时给出旧值与新值；改路由必须走 `landing-aliases.json`（旧→新）。
+ *
+ * @param {string} vendorName A 空间厂商显示名
+ * @param {{vendorSlugs?: object, providerTable?: object, ledger?: object}} [ctx]
+ * @returns {{slug: string, source: 'override'|'provider'|'ledger'|'suggested',
+ *   ledgerEntry: object|null, renameProblem: string|null, unreadable: boolean}}
+ */
+function resolveVendorSlug(vendorName, { vendorSlugs = {}, providerTable = {}, ledger = null } = {}) {
+  const name = String(vendorName || '');
+  const entry = ledgerByName(ledger).get(name) || null;
+  const override = Object.prototype.hasOwnProperty.call(vendorSlugs, name) ? String(vendorSlugs[name] || '') : '';
+  const providerEntry = Object.values(providerTable || {}).find(row => row && String(row.name || '') === name) || null;
+  const fromProvider = providerEntry ? String(providerEntry.slug || '') : '';
+  const computed = override ? { slug: override, source: 'override' }
+    : (fromProvider ? { slug: fromProvider, source: 'provider' } : null);
+  const suggested = suggestSlug(name);
+  const readable = /[a-z0-9]/i.test(name);
+
+  // 账本存在时：它记的是**已经发布过的 URL**。现算值（覆盖表 / provider / 兜底分配）
+  // 只要与它不一致，就是"改名"或"换短名"——都会让旧 URL 404，必须让人显式决定。
+  if (entry) {
+    const current = computed ? computed.slug : suggested;
+    const currentSource = computed ? computed.source : 'suggested';
+    if (current !== entry.slug) {
+      return {
+        slug: entry.slug, source: 'ledger', ledgerEntry: entry, unreadable: false,
+        renameProblem: `厂商「${name}」的 slug 变了：机器账本记录的是「${entry.slug}」（已发布 URL /vendor/${entry.slug}/），`
+          + `现在按${currentSource === 'suggested' ? '名称现算' : currentSource === 'override' ? '人工覆盖表' : 'provider 登记'}解析到「${current}」。`
+          + `继续构建会让旧地址 404 —— 若改名是有意的，请先在 scripts/data/landing-aliases.json 登记旧路由 → 新路由，`
+          + `再由 collect 侧的写盘工具迁移账本（账本不许手改）；否则把覆盖值/provider slug 改回「${entry.slug}」。`
+      };
+    }
+    return { slug: entry.slug, source: 'ledger', ledgerEntry: entry, renameProblem: null, unreadable: false };
+  }
+  if (computed) return { slug: computed.slug, source: computed.source, ledgerEntry: null, renameProblem: null, unreadable: false };
+  // 首次遇到：现场分配并交给调用方打印，落盘由 collect 侧的写盘工具完成（构建不写源数据）。
+  return { slug: suggested, source: 'suggested', ledgerEntry: null, renameProblem: null, unreadable: !readable };
+}
+
 /* ------------------------------------------------------------------ */
 /* 规划：一次性产出全部落地页 + 被跳过项                                 */
 /* ------------------------------------------------------------------ */
@@ -405,11 +533,19 @@ function planLandingPages(options = {}) {
   const models = Array.isArray(options.models) ? options.models
     : ((options.models && Array.isArray(options.models.models)) ? options.models.models : []);
   const modelLinks = options.modelLinks || [];
+  // P1：厂商 slug 机器账本（**只读**）。写入在 collect 侧的 `scripts/tools/sync-vendor-slug-ledger.js`，
+  // 构建过程绝不写源数据；两边调用同一个 `resolveVendorSlug()`。
+  const vendorSlugLedger = options.vendorSlugLedger || loadVendorSlugLedger();
   const ctx = { vendorThresholds, categoryMinDeals };
 
   const pages = [];
   const skipped = [];
   const problems = [];
+  // P1：本次首次分配、等待 collect 侧落盘的新厂商；P2：本次自动降级的钉住路由；
+  // warnings 是「不必停机但要让人看见」的机器可读行（构建日志逐行打印）。
+  const autoSlugVendors = [];
+  const warnings = [];
+  const degradedPages = [];
 
   const dealPool = deals.filter(deal => deal && deal.type === 'deal');
   const countBy = (field, value) => dealPool.filter(deal => deal[field] === value).length;
@@ -544,27 +680,32 @@ function planLandingPages(options = {}) {
   for (const name of vendorNames) {
     const count = vendorCounts.get(name);
     const material = materialByVendor.get(name) || vendorMaterialOf({ vendorName: name });
-    // 规范 slug：优先 deals 侧登记表；没有时退回 providers.json 里那一份。
-    // 两份**同名条目**必须逐字相同（`providers.validateSlugAgreement` 是那条硬断言），
-    // 因此这里不是"取一个能用的"，而是"同一家公司只有一个 slug"。
-    const providerEntry = Object.values(providerTable).find(entry => entry && String(entry.name || '') === name) || null;
-    const slug = vendorSlugs[name] || (providerEntry && providerEntry.slug) || null;
+    // P1：slug 解析改成四层（人工覆盖 → provider 登记 → 机器账本 → suggestSlug），
+    // 唯一实现在 `resolveVendorSlug()`；构建与 collect 侧写盘工具共用它。
+    // 这条链不再是"没有登记就停机"：首次遇到的新厂商现场分配（打印 `auto-slug:`），
+    // 落盘由 collect 侧写盘工具完成。唯一硬拦见 `renameProblem` 分支。
     const eventCount = eventCountOf(name) || 0;
     const eligible = count >= vendorThresholds.minDeals || eventCount >= vendorThresholds.minEvents || material.nonDeal;
-    const route = slug ? `vendor/${slug}/` : null;
+    const resolution = resolveVendorSlug(name, { vendorSlugs, providerTable, ledger: vendorSlugLedger });
+    const slug = resolution.slug;
+    const route = `vendor/${slug}/`;
     if (!eligible) {
       skipped.push({ kind: 'vendor', key: name, route, count, eventCount, reason: 'below-threshold' });
       continue;
     }
-    if (!slug) {
-      const why = material.nonDeal
-        ? `有非优惠资料（Coding 套餐 ${material.codingPlans} 条 / API 记录 ${material.apiRecords} 条 / 模型 ${material.models} 个）`
-        : `有效优惠 ${count} 条 / 历史事件 ${eventCount} 条`;
-      // 措辞刻意不写 provider 登记表的文件名：`plans-selftest` 有一条"deals 链路完全不引用
-      // plans / provider 层"的静态扫描，而 `landing.js` 属于 deals 链路。这里只需要给出
-      // 可执行的下一步，不需要（也不应该）让这一层知道另一层的文件名。
-      problems.push(`厂商「${name}」已达标（${why}）但没有登记 slug —— 请在厂商 slug 表（scripts/data/vendor-slugs.json）加一行，或确认 provider 登记表里这一家有 slug，建议值 "${suggestSlug(name)}"`);
+    if (resolution.renameProblem) {
+      // 唯一保留的硬拦：账本已发布过的 slug 与现算不一致（改名 ⇒ 旧 URL 404）。
+      problems.push(resolution.renameProblem);
       continue;
+    }
+    if (resolution.source === 'suggested') {
+      // 首次遇到：现场分配 + 打印，落盘交给 collect 侧写盘工具（它调用同一个解析函数）。
+      autoSlugVendors.push({ vendorName: name, slug, firstRoutedAt: '', status: 'active' });
+      if (resolution.unreadable) {
+        // 非拉丁厂商名：suggestSlug 会给出 `vendor-<hash36>`。长尾不该停机 —— 先给稳定 URL，
+        // 只在 Summary/日志里留一行，人可事后到覆盖表写可读短名。
+        warnings.push(`warn: unreadable-slug 「${name}」→ vendor/${slug}/（非拉丁厂商名：先按稳定哈希分配，长尾不停机；可事后在 scripts/data/vendor-slugs.json 覆盖成可读值）`);
+      }
     }
     const pinned = pinnedRoutes.has(route);
     const gate = shouldGenerateLandingPage('vendor', {
@@ -652,7 +793,105 @@ function planLandingPages(options = {}) {
     }
   }
 
-  // ⑤ 枢纽页：有子页才生成（永不出空目录页）
+  // ⑤ 钉住的路由：数据跌出门槛时**自动降级为 noindex 页**，而不是停机等人写别名
+  //    ------------------------------------------------------------------
+  // 策略写死（与 docs/BUILD.md 同一条）：**保住 URL 优先于保持可索引**。
+  // 已发布过的 /vendor/<slug>/ 一旦 404，收录与外部链接就断了；让它变成
+  // `noindex,follow` 的维护页（自指 canonical、不进 sitemap）代价只是"暂时不索引"，
+  // 数据回到门槛后自动恢复。人的配置错误仍然保留硬拦（别名页没钉住，见 ⑦）。
+  const degradedNoteOf = reason => `本页当前没有可展示的条目（机器判据：${reason}）。URL 保持不变，以避免已收录的地址失效；`
+    + '内容会在数据回到自动生成门槛后自动恢复。页面暂时以 noindex,follow 输出、不进 sitemap —— '
+    + '「保住 URL」优先于「保持可索引」。';
+  const makeDegradedPage = (route, declaration, reason) => {
+    const kind = declaration.kind === 'hub' ? 'hub'
+      : (declaration.kind || (route.startsWith('vendor/') ? 'vendor'
+        : route.startsWith('category/') ? 'category'
+          : route.startsWith('need/') ? 'need' : 'collection'));
+    const noteRows = [
+      { kind: 'scope-note', text: degradedNoteOf(reason) },
+      { kind: 'degraded-note', text: '如果你认为这一页不该降级：先确认数据（deals / deal-history / 资料 join）是否真的低于门槛；'
+        + '如果页面确实应该保留，请让人工覆盖表或机器账本给出决定，而不是改渲染层。' }
+    ];
+    const userNotes = noteRows.map(row => row.text);
+    const segments = route.split('/').filter(Boolean);
+    const base = {
+      kind, route, depth: depthOf(route), indexable: false, pinned: true, degraded: true,
+      degradedReason: reason, count: 0, userNotes, noteRows, canonicalRoute: null, aliasOf: null
+    };
+    if (kind === 'vendor') {
+      const name = String(declaration.key || '');
+      const material = vendorMaterialOf({ vendorName: name, providerTable, plans, apiPlans, models, modelLinks });
+      return Object.assign(base, {
+        key: name, slug: segments[1] || suggestSlug(name),
+        title: `${name}（资料更新中）`,
+        heading: `${name} 的 AI 优惠与免费额度`,
+        description: `${name} 目前低于自动生成门槛，本页保留原 URL，内容在数据恢复后自动更新。`,
+        match: { by: 'vendor', value: name },
+        eventCount: eventCountOf(name) || 0,
+        material, nonDealMaterial: material.nonDeal, providerKey: material.providerKey
+      });
+    }
+    if (kind === 'category') {
+      const key = String(declaration.key || '');
+      return Object.assign(base, {
+        key, slug: categorySlugs[key] || segments[1] || key,
+        title: `${key}（页面维护中）`,
+        heading: `「${key}」分类`,
+        description: `「${key}」分类当前低于自动生成门槛，本页保留原 URL，内容在数据恢复后自动更新。`,
+        match: { by: 'category', value: key }
+      });
+    }
+    if (kind === 'hub') {
+      const hubBase = [CATEGORY_HUB, VENDOR_HUB].find(hub => hub.route === route) || VENDOR_HUB;
+      return Object.assign({}, hubBase, base, {
+        key: hubBase.key, slug: hubBase.slug, title: hubBase.title, heading: hubBase.heading,
+        description: hubBase.description, match: null, children: []
+      });
+    }
+    if (kind === 'need') {
+      const key = String(declaration.key || segments[1] || '');
+      return Object.assign(base, {
+        key, slug: key, title: `${key}（页面维护中）`, heading: `${key} 相关优惠`,
+        description: '这一页当前低于自动生成门槛，本页保留原 URL，内容在数据恢复后自动更新。',
+        match: { by: 'needs', slug: key }
+      });
+    }
+    const key = String(declaration.key || segments[0] || '');
+    return Object.assign(base, {
+      key, slug: key, title: `${key}（页面维护中）`, heading: key,
+      description: '这一页当前低于自动生成门槛，本页保留原 URL，内容在数据恢复后自动更新。',
+      match: { by: 'collections', slug: key }
+    });
+  };
+  const pinnedByRoute = new Map(pinnedList.map(row => [row.route, row]));
+  const generatedBeforeHubs = new Set([
+    ...pages.map(page => page.route),
+    ...categoryPages.map(page => page.route),
+    ...vendorPages.map(page => page.route)
+  ]);
+  for (const route of pinnedRoutes) {
+    if (generatedBeforeHubs.has(route)) continue;
+    const declaration = pinnedByRoute.get(route) || {};
+    const guessedKind = declaration.kind || (route === 'vendor/' || route === 'category/' ? 'hub'
+      : route.startsWith('vendor/') ? 'vendor'
+        : route.startsWith('category/') ? 'category'
+          : route.startsWith('need/') ? 'need' : 'collection');
+    // 枢纽页要等 ⑤ 之后才知道子页数；别名页缺失是人的配置错误（保留 ⑦ 的硬拦）。
+    if (guessedKind === 'hub' || guessedKind === 'alias') continue;
+    const hit = skipped.find(row => row.route === route);
+    const page = makeDegradedPage(route, declaration, hit ? hit.reason : 'not-in-plan');
+    if (page.kind === 'vendor') vendorPages.push(page);
+    else if (page.kind === 'category') categoryPages.push(page);
+    else pages.push(page);
+    degradedPages.push(page);
+    // `seo.validate()` 的 gate-pinned-missing 会把「钉住路由出现在 skipped」判红；
+    // 这一条已被降级页取代，从 skipped 移走（日志改由 warnings 的 auto-degraded 行承担）。
+    const at = skipped.findIndex(row => row.route === route);
+    if (at >= 0) skipped.splice(at, 1);
+    warnings.push(`auto-degraded: ${route}（${page.degradedReason}；保留 URL · noindex,follow · 不进 sitemap）`);
+  }
+
+  // ⑥ 枢纽页：有子页才生成（永不出空目录页）；钉住的枢纽页空掉时同样降级。
   const hubPages = [];
   for (const hub of [CATEGORY_HUB, VENDOR_HUB]) {
     const children = hub.key === 'vendor' ? vendorPages : categoryPages;
@@ -664,6 +903,16 @@ function planLandingPages(options = {}) {
     hubPages.push(Object.assign({}, hub, {
       indexable: true, pinned: pinnedRoutes.has(hub.route), match: null, count: children.length, children
     }));
+  }
+  for (const route of pinnedRoutes) {
+    if (route !== CATEGORY_HUB.route && route !== VENDOR_HUB.route) continue;
+    if (hubPages.some(hub => hub.route === route)) continue;
+    const page = makeDegradedPage(route, pinnedByRoute.get(route) || { kind: 'hub' }, 'no-children');
+    hubPages.push(page);
+    degradedPages.push(page);
+    const at = skipped.findIndex(row => row.route === route);
+    if (at >= 0) skipped.splice(at, 1);
+    warnings.push(`auto-degraded: ${route}（no-children；保留 URL · noindex,follow · 不进 sitemap）`);
   }
 
   const ordered = [
@@ -680,16 +929,15 @@ function planLandingPages(options = {}) {
   // 这比让它悄悄消失、或者硬造一个身份要好。
   skipped.push(...noIdentity);
 
-  // ⑥ 钉住的页面必须都生成，且不能是空页
+  // ⑦ 兜底：仍然没有生成的钉住路由 = 人的配置错误（或别名目标缺失），保留硬拦。
   const generatedRoutes = new Set(ordered.map(page => page.route));
   for (const route of pinnedRoutes) {
-    if (!generatedRoutes.has(route)) {
-      const hit = skipped.find(row => row.route === route);
-      problems.push(`钉住的路由 ${route} 本次没有生成（原因：${hit ? hit.reason : '不在计划里'}）—— 收录过的 URL 不允许静默消失：要么让数据回到门槛以上，要么为它登记 landing-aliases.json 并从这里移除`);
-    }
+    if (generatedRoutes.has(route)) continue;
+    const hit = skipped.find(row => row.route === route);
+    problems.push(`钉住的路由 ${route} 本次没有生成，且无法自动降级（原因：${hit ? hit.reason : '不在计划里'}）—— 请检查 scripts/data/landing-pages.json / landing-aliases.json 的登记`);
   }
   for (const page of ordered) {
-    if (page.pinned && page.kind !== 'hub' && page.count === 0) {
+    if (page.pinned && !page.degraded && page.kind !== 'hub' && page.count === 0) {
       problems.push(`钉住的页面 ${page.route} 条数为 0 —— 空页面对读者没有价值，请补数据或登记别名`);
     }
     if (page.kind === 'alias' && !pinnedRoutes.has(page.route)) {
@@ -697,7 +945,12 @@ function planLandingPages(options = {}) {
     }
   }
 
-  return { pages: ordered, skipped, problems, vendorPages, categoryPages, hubPages };
+  return {
+    pages: ordered, skipped, problems, vendorPages, categoryPages, hubPages,
+    // P1/P2：构建侧只读输出。`autoSlugVendors` 是 collect 侧写盘工具要落盘的新厂商；
+    // `degradedPages` 是本次自动降级的路由；`warnings` 是 `warn:` / `auto-degraded:` 机器行。
+    autoSlugVendors, degradedPages, warnings, vendorSlugLedger
+  };
 }
 
 /**
@@ -883,6 +1136,7 @@ module.exports = {
   CATEGORY_SLUGS_FILE,
   PINNED_FILE,
   ALIASES_FILE,
+  VENDOR_SLUG_LEDGER_FILE,
   SLUG_RE,
   CATEGORY_MIN_DEALS,
   RECENT_DAYS,
@@ -892,6 +1146,9 @@ module.exports = {
   VENDOR_HUB,
   CATEGORY_HUB,
   loadVendorSlugs,
+  loadVendorSlugLedger,
+  ledgerByName,
+  resolveVendorSlug,
   loadCategorySlugs,
   loadPinned,
   loadAliases,
@@ -901,6 +1158,7 @@ module.exports = {
   itemsOf,
   itemKeyOf,
   planLandingPages,
+  vendorEventCountsOf,
   summaryOf,
   summaryValues,
   topicChangesOf,

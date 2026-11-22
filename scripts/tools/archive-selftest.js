@@ -9,8 +9,9 @@
  *   · `buildArchive()` 不读盘、不看时钟（静态扫描）；
  *   · 交付日 0 条记录时，页面必须给出**明确的空态**（0 是事实，不是故障）。
  *
- * 真实三份日志当前都是"纯基线 0 事件"，因此 ended/restored 分支由合成夹具驱动 ——
- * 这一点如实写在测试输出里，不补造任何生产事件。
+ * 2026-11-12 起不再是「三份日志都是纯基线 0 事件」：deals 日志第一次有了真实的
+ * ended 事件（60 条，判据修复后的首次实跑），ended/restored 分支因此同时由**真实数据**
+ * 与合成夹具驱动；「0 事件时断言不是恒红」这条承诺改用显式空夹具守住。
  */
 
 'use strict';
@@ -101,10 +102,55 @@ const realArchives = Object.keys(realStores).map(kind => archiveLib.buildArchive
 
 check(`三份真实日志都被识别为可用（${realArchives.map(a => `${a.kind}:${a.counts.baseline}条基线`).join(' / ')}）`,
   realArchives.every(archive => archive.availability === 'ok'));
-check('真实日志 0 事件 ⇒ 0 条档案（这是事实，不是故障）',
-  realArchives.every(archive => archive.entries.length === 0 && archive.counts.ended === 0));
-check('0 条时完整性断言为零问题（断言不是恒红）',
+// 档案条目数 = 该日志里「含 ended/restored 的生命周期链」数（同一 id 只算一条）。
+// 这个期望值从日志现算，不写死 —— 2026-11-12 之前它是 0，判据修复后 deals 侧第一次非 0；
+// 写死「0」会让这条断言在真实数据一有结束记录时变成恒红（而不是恒绿），两种都是假断言。
+const lifecycleChainCount = store => new Set((store.events || [])
+  .filter(event => event && (event.type === 'ended' || event.type === 'restored'))
+  .map(event => String(event.id !== undefined ? event.id : event.planId))).size;
+const expectedEntries = Object.keys(realStores)
+  .reduce((sum, kind) => sum + lifecycleChainCount(realStores[kind]), 0);
+const realEntryTotal = realArchives.reduce((sum, archive) => sum + archive.entries.length, 0);
+check(`真实日志 ⇒ 档案条目数 = 生命周期链数（实得 ${realEntryTotal} / 期望 ${expectedEntries}）`,
+  realEntryTotal === expectedEntries);
+check('完整性断言在真实日志上为零问题（断言不是恒红）',
   realArchives.every(archive => archiveLib.assertArchiveIntegrity(archive).length === 0));
+
+// 真实数据上现算（不写死条数）：仍在数据集里的 deal 档案条目，「最后有效时间」必须等于记录的
+// lastSeen；并且在 ended 记录上不再与「结束发现时间」恒等（F4 修正的因果证据）。
+{
+  const dealArchive = realArchives.find(archive => archive.kind === 'deal');
+  const dealRecordById = new Map(realRecords.deal.map(record => [record.id, record]));
+  const wrongEffective = (dealArchive ? dealArchive.entries : []).filter(entry => {
+    const record = dealRecordById.get(entry.id);
+    if (!record || typeof record.lastSeen !== 'string') return false;
+    return entry.lastEffectiveAt !== record.lastSeen.slice(0, 10);
+  });
+  check('真实数据：仍在数据集里的档案条目「最后有效时间」= 记录 lastSeen（现算，不写死条数）',
+    wrongEffective.length === 0, wrongEffective.slice(0, 2).map(entry => entry.id).join(','));
+  const notAliased = (dealArchive ? dealArchive.entries : []).filter(entry =>
+    entry.endDiscoveredAt && entry.lastChangedAt === entry.endDiscoveredAt &&
+    entry.lastEffectiveAt !== entry.lastChangedAt);
+  // 大小关系只对「没有 live lastSeen 的条目」成立：lastEffectiveAt 在仍在数据集里的条目上
+  // 取的是 record.lastSeen（采集器最近一次真的列出它的日期），而 lastChangedAt 是「最后一条
+  // 事件日」——一条 restored 回来、之后每天照常被看到的记录，lastSeen 晚于最后一条事件日是
+  // **设计内**的常态（2026-11-14 数据里 Flora AI 就是 firstMissed 11-12 → restored 11-13 →
+  // lastSeen 11-14）。旧断言把两个**不同语义**的读数混成大小关系，数据一走到这种形态就假红。
+  // 收紧方式：对无 lastSeen 的条目（已离库，lastEffectiveAt 回退为最后事件日）仍判
+  // lastEffectiveAt <= lastChangedAt；对 live 条目则单独判「lastEffectiveAt == record.lastSeen」
+  // （上面那条断言），两个方向都判，而不是删掉判据。
+  const noLiveSeen = (dealArchive ? dealArchive.entries : []).filter(entry => entry.lastEffectiveAtSource !== 'lastSeen');
+  const orderViolations = noLiveSeen.filter(entry => !(entry.lastEffectiveAt <= entry.lastChangedAt));
+  check('真实数据：lastEffectiveAt 与 lastChangedAt 不是同一个读数（历史记录只给 sitemap 用）；无 lastSeen 的条目不得晚于最后事件日',
+    notAliased.length > 0 && orderViolations.length === 0,
+    `差异读数 ${notAliased.length} 条 · 顺序违规 ${orderViolations.length} 条` +
+      (orderViolations.length ? `（${orderViolations.slice(0, 2).map(entry => entry.id).join(',')}）` : ''));
+}
+
+// 「0 条时断言不是恒红」的承诺仍要守住（用显式空夹具，不依赖真实日志恰好为 0）。
+const emptyArchive = archiveLib.buildArchive({ kind: 'deal', baseline: realStores.deal.baseline, events: [], asOf: '2026-10-01' });
+check('0 事件时档案 0 条、完整性断言不为红（空是事实，不是故障）',
+  emptyArchive.entries.length === 0 && archiveLib.assertArchiveIntegrity(emptyArchive).length === 0);
 
 {
   const withoutRecords = archiveLib.buildArchive({
@@ -186,7 +232,9 @@ const synthetic = archiveLib.buildArchive({
   kind: 'deal',
   baseline,
   events: lifecycleEvents,
-  records: [{ id: 'aaaaaaaaaaa1', title: '演练优惠 A', vendor: '演练厂商' }],
+  records: [{ id: 'aaaaaaaaaaa1', title: '演练优惠 A', vendor: '演练厂商', lastSeen: '2026-09-15' }],
+  // 详情页可链接集合 = 与 `/changes/` 同一条判据（deals：type === 'deal'）；B 不在集合里
+  linkableIds: new Set(['aaaaaaaaaaa1']),
   asOf: '2026-10-01'
 });
 
@@ -199,6 +247,19 @@ check('B 的结束原因与墓碑被完整保留',
   synthetic.entries.some(entry => entry.id === 'bbbbbbbbbbb2'
     && entry.status === 'ended' && entry.endReason === 'pruned_expired' && entry.title === '演练优惠 B'));
 check('完整性断言在正确产物上为零问题', archiveLib.assertArchiveIntegrity(synthetic).length === 0);
+
+// 2026-11-12 独立复查 F4：「最后有效时间」= 有证据的最后一次**见到它**，不是最后一条事件日。
+// 修正前它对 60/60 条 ended 恰等于「结束发现时间」，会被读成「有效到结束那天」。
+const synthA = synthetic.entries.find(entry => entry.id === 'aaaaaaaaaaa1');
+const synthB = synthetic.entries.find(entry => entry.id === 'bbbbbbbbbbb2');
+check('「最后有效时间」：记录仍在数据集里 ⇒ 取 record.lastSeen（F4 修正）',
+  synthA.lastEffectiveAt === '2026-09-15' && synthA.lastEffectiveAtSource === 'lastSeen',
+  `${synthA.lastEffectiveAt} / ${synthA.lastEffectiveAtSource}`);
+check('「最后有效时间」：记录已离开数据集 ⇒ 退回最后一条事件日，并标明来源',
+  synthB.lastEffectiveAt === '2026-09-11' && synthB.lastEffectiveAtSource === 'lastEvent',
+  `${synthB.lastEffectiveAt} / ${synthB.lastEffectiveAtSource}`);
+check('lastChangedAt 仍是最后一条事件日（sitemap lastmod 用它，展示口径不把它带早）',
+  synthA.lastChangedAt === '2026-09-20' && synthB.lastChangedAt === '2026-09-11');
 
 /* ================================================================== */
 section('②′ 另外两份日志的事件键（planId）与派生视图');
@@ -385,6 +446,15 @@ section('⑦ 详情页与页码声明');
     html.includes('演练优惠 A') && html.includes('https://example.com/a'));
   check('详情页给出档案路由（kind + id）',
     archiveLib.archiveEntryRoute(entry) === 'archive/deal/aaaaaaaaaaa1/');
+
+  // 有站内详情页的记录（A 被 restored 回来，且 linkableIds 里有它）⇒ 档案页给入口；
+  // 没有详情页的记录（B 被 pruned_expired，或工具类条目）⇒ 不给链接（不造死链）。
+  const entryB = synthetic.entries.find(item => item.id === 'bbbbbbbbbbb2');
+  const htmlB = archiveLib.renderArchiveEntry(entryB, { prefix: archiveLib.archiveEntryPrefix(entryB) });
+  check('linkable 的记录 → 档案页带站内详情页入口',
+    entry.linkable === true && html.includes('站内详情页') && html.includes('deal/aaaaaaaaaaa1/'));
+  check('不可链接的记录 → 不给站内详情页链接（不造死链）',
+    entryB.linkable === false && !htmlB.includes('站内详情页'));
 
   const dirty = html.replace('最后已知内容', '最后已知内容（性价比最高）');
   check('【牙】档案页注入结论性词汇 → 红',
@@ -660,6 +730,32 @@ section('⑧ 详情页门槛与 sitemap 资格（题面 §4 / §F4）');
   check('【牙】过门槛的条目没进 sitemap → 红',
     archiveLib.assertArchiveSitemapEligibility({ sitemapRoutes: routes.slice(1), gateResults: gates })
       .some(problem => problem.includes('没有进 sitemap')));
+
+  // linkedDealIdsOf：详情页索引策略（seo.dealIndexable）的「档案接住」一侧。
+  // 它必须与 renderArchiveEntry 的回链判据**同源**：只认 kind=deal 且 linkable 的条目。
+  const entryA = okEntries.find(entry => entry.id === 'aaaaaaaaaaa1');
+  const entryB = okEntries.find(entry => entry.id === 'bbbbbbbbbbb2');
+  const linkedIds = archiveLib.linkedDealIdsOf(okEntries);
+  check('linkedDealIdsOf 只收 linkable 的 deal 条目（B 不可链接 ⇒ 不在集合里）',
+    linkedIds.has('aaaaaaaaaaa1') && !linkedIds.has('bbbbbbbbbbb2'), [...linkedIds].join(','));
+  check('entryLinksDeal 与回链判据同源：linkable 的 deal 真、不可链接的 deal 假',
+    archiveLib.entryLinksDeal(entryA) === true && archiveLib.entryLinksDeal(entryB) === false);
+  check('【牙】非 deal 种类（plan）即便 linkable 也不进 linkedDealIdsOf',
+    !archiveLib.linkedDealIdsOf([{ id: '111111111111', kind: 'plan', linkable: true }]).has('111111111111'));
+  // 【牙】契约：linkedDealIdsOf **不自己判门槛** —— 调用方必须喂 gated 集合。
+  // 一条 linkable 但未过门槛（无快照）的条目没有渲染出来的档案详情页、也就没有回链；
+  // 若误喂未 gated 集合，它会被算成「有回链」⇒ 详情页被误判可索引（孤儿页重新暴露）。
+  const ungatedLinkable = archiveLib.buildArchive({
+    kind: 'deal',
+    baseline: { at: '2026-09-01', fields: {} },
+    events: [{ id: 'nnnnnnnnnnnn', at: '2026-09-10', type: 'ended', reason: 'pruned_expired' }],
+    linkableIds: new Set(['nnnnnnnnnnnn']),
+    asOf: '2026-10-01'
+  }).entries[0];
+  check('【牙】未过门槛的 linkable 条目：未 gated 会被算进去，gating 之后必须消失（调用方契约）',
+    archiveLib.archiveDetailGate(ungatedLinkable).ok === false &&
+    archiveLib.linkedDealIdsOf([ungatedLinkable]).has('nnnnnnnnnnnn') &&
+    !archiveLib.linkedDealIdsOf([ungatedLinkable].filter(entry => archiveLib.archiveDetailGate(entry).ok)).has('nnnnnnnnnnnn'));
 }
 
 /* ================================================================== */
@@ -728,9 +824,11 @@ section('⑩ 真实产物（接线后才有；未接线时如实跳过）');
     }
     check('dist 现场：/archive/ 存在、三组齐、sitemap 成员与详情路由集合逐个对账',
       problems.length === 0, problems.slice(0, 3).join('；'));
-    check(`交付日真实产物：${diskArchives.reduce((sum, a) => sum + (a.entries || []).length, 0)} 条档案` +
-      `（三份日志 ended/restored 事件各 0 条 ⇒ 0 条是事实）`,
-      diskArchives.every(archive => archive.availability === 'ok'));
+    const diskEntryTotal = diskArchives.reduce((sum, archive) => sum + (archive.entries || []).length, 0);
+    const diskExpected = ['deal', 'plan', 'api']
+      .reduce((sum, kind) => sum + lifecycleChainCount(diskStores[kind]), 0);
+    check(`真实产物：${diskEntryTotal} 条档案（= 三份日志里含 ended/restored 的链数 ${diskExpected}）`,
+      diskEntryTotal === diskExpected && diskArchives.every(archive => archive.availability === 'ok'));
   }
 }
 

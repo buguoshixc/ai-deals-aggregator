@@ -6,7 +6,6 @@
 
 | 文件 | 是什么 | 怎么复现 |
 |---|---|---|
-| `text-floor-margins.json` | **正文下限余量登记的机器可读转写**（页路由 / kind / 条数 / 当前字数 / 下限 / 余量 / 登记日期）。唯一出处是 `scripts/lib/seo.js` 的 `TEXT_FLOOR_RESIDUALS`，`npm run selftest:seo` §六 会与它**逐字节对账** —— 这个文件是**产物**，不是真值 | `node -e "const fs=require('fs'),seo=require('./scripts/lib/seo');fs.writeFileSync('research/_raw/p2-residuals-v1/text-floor-margins.json', JSON.stringify(seo.TEXT_FLOOR_RESIDUALS,null,2)+'\n')"` |
 | `floor-census.json` | 全站 **186 页**的「可见正文 − 下限」普查（kind/count 取自构建期同一份计划） | 一次性探针 `.arch-v1/p2-census.cjs`（不进库；报告 §9 有命令） |
 | `readings.json` | 三条 P2 的现场读数汇总：e1 的公式与登记表 · e2 的真函数三层读数 · e3 的入口文案全站普查与措辞出处 · 断言数 before/after | 同上三个探针的输出汇总 |
 | `mutations.json` | 四处**沙箱实跑变红**的读数（产物级 3 处 + 源码级 1 处），含改前/改后 sha256、命令、退出码、逐字红行 | 报告 §4 / §9 的命令 |

@@ -17,6 +17,21 @@ const { cleanText, normalizeDate, todayCN } = require('./schema');
 // 「长期有效」的判据只保留一份实现（classify.js），前端 index.html 的 ONGOING:START/END 块与它同词表
 const { isOngoing, ONGOING_PATTERNS } = require('./classify');
 
+/* DUE_WINDOW:START */
+const DUE_WINDOW_DAYS = 30;
+/* DUE_WINDOW:END */
+
+/**
+ * 「即将到期」的前瞻窗口（天）。**唯一出处是上面这个常量**：
+ * 首页 facets 的「即将到期」chip、筛选判据、stats 文案、到期日历（expiry.ics）都读它；
+ * index.html 的 RENDER-CORE 里有一份逐字节相同的副本（标记块 DUE_WINDOW:START/END），
+ * `npm run selftest:expiry` 会抽取两边比对 —— 只改一边立刻红。
+ *
+ * 为什么是 30 天而不是 changes.js 的 7 天：那是两条**不同的判据**。
+ *   · changes.js 的 soonDays=7 回答「最近一周内有哪些线索值得提醒」（运营视角，只在 /changes/ 用）；
+ *   · 这里是筛选与日历的收录窗口，回答「接下来一个月内有哪些截止日期要提前安排」。
+ * 两个数字不同不是重复实现，把它们合并反而会让两侧的语义都变形。改 changes.js 时别动这里。
+ */
 /** 结束语义：日期必须落在这些词的附近才算截止日 */
 const END_CUE_RE = /截止|截至|至|到|结束|到期|最后|until|till|through|thru|\bends?\b|\bend(?:ing)?\b|expir|deadline|no later than/i;
 
@@ -111,4 +126,7 @@ function applyDeadline(deal, { today = todayCN() } = {}) {
   return { ...deal, expiresAt: deadline };
 }
 
-module.exports = { extractDeadline, isOngoing, ONGOING_PATTERNS, applyDeadline, collectAbsoluteDates };
+module.exports = {
+  extractDeadline, isOngoing, ONGOING_PATTERNS, applyDeadline, collectAbsoluteDates,
+  DUE_WINDOW_DAYS
+};

@@ -145,6 +145,7 @@ const DISCLAIMER = WORDING.HISTORY_NOTES.disclaimer;
 /** 纯标点分隔符（不是措辞）：条目正文的段间 / 值的列表间隔 */
 const PART_SEP = ' · ';
 const VALUE_SEP = '、';
+const MERGE_SEP = '；';
 const VALUE_ARROW = ' → ';
 
 /* ------------------------------------------------------------------ */
@@ -277,7 +278,7 @@ function defaultTextOf(event, profile) {
  * ⚠️ 空 feed（`kept === 0`）是**合法返回值**；「空 feed 不算通过」是**构建**那条链的判据
  * （调用方在 0 条时必须让构建失败），本模块不替调用方判红、也不编造占位条目。
  */
-function buildFeedEntries({ sources = [], max = FEED_MAX_ITEMS } = {}) {
+function buildFeedEntries({ sources = [], max = FEED_MAX_ITEMS, coalesceSameDay = false } = {}) {
   if (!Array.isArray(sources)) {
     throw new Error('buildFeedEntries 的 sources 必须是数组（形状：'
       + '[{ kind, profile, store, titleOf, textOf?, linkableIds? }]，见 INTERFACE-CONTRACT 第 6.2 条）');
@@ -322,6 +323,7 @@ function buildFeedEntries({ sources = [], max = FEED_MAX_ITEMS } = {}) {
         : '';
       if (!ID_RE.test(key)) { stats.dropped.noUrl += 1; continue; }
       if (kind === 'deal' && !linkableIds.has(key)) { stats.dropped.notLinkable += 1; continue; }
+      if (kind !== 'deal' && linkableIds instanceof Set && !linkableIds.has(key)) { stats.dropped.notLinkable += 1; continue; }
       const url = urlOf(kind, key);
       if (!url) { stats.dropped.noUrl += 1; continue; }      // 兜底：合法 kind 走不到这里
       const at = String(event.at || '');
@@ -365,9 +367,28 @@ function buildFeedEntries({ sources = [], max = FEED_MAX_ITEMS } = {}) {
   }
 
   unique.sort(changes.compareByRecency);                    // 全序（同日按 id 收敛）
-  const kept = unique.slice(0, max);                         // 截断（被截掉的条数单独记账）
+  let merged = unique;
+  if (coalesceSameDay) {
+    const byUrlDay = new Map();
+    merged = [];
+    for (const entry of unique) {
+      const k = `${entry.url}\u0000${entry.at}`;
+      const prev = byUrlDay.get(k);
+      if (!prev) {
+        const copy = Object.assign({}, entry);
+        byUrlDay.set(k, copy);
+        merged.push(copy);
+      } else {
+        if (entry.text && prev.text !== entry.text && !prev.text.includes(entry.text)) {
+          prev.text = prev.text ? `${prev.text}${MERGE_SEP}${entry.text}` : entry.text;
+        }
+        stats.dropped.duplicate += 1;
+      }
+    }
+  }
+  const kept = merged.slice(0, max);                         // 截断（被截掉的条数单独记账）
   stats.kept = kept.length;
-  stats.truncated = unique.length - kept.length;
+  stats.truncated = merged.length - kept.length;
 
   // 恒等式：账目必须闭合（不闭合就是有事件被静默吞掉了 —— 那正是这一轮要钉死的东西）
   const droppedTotal = stats.dropped.notLinkable + stats.dropped.noUrl
@@ -558,6 +579,9 @@ function renderJsonFeed(entries, meta) {
 module.exports = {
   FEED_FILES,
   FEED_MAX_ITEMS,
+  // v3.4 F3：搜索索引也要拼同一批站内 URL（`plans/coding/#plan-<id>` / `plans/api/#plan-<id>`）。
+  // 前缀是订阅层与搜索层共用的**唯一表**，导出而不是让第二个文件复制字面量。
+  PLAN_URL_PREFIX,
   buildFeedEntries,
   renderAtom,
   renderJsonFeed

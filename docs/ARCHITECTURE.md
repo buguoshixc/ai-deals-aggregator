@@ -35,7 +35,8 @@
 | 来源健康 | `scripts/data/source-health.json` → `source-health.json` | `/status/` |
 | 页面类型声明 | `scripts/lib/page-kinds.js`（**代码即声明**） | 构建期、SEO 门禁、页壳 |
 | 站点常量 | `scripts/lib/site.js` 的 `SITE_URL` / `SITE_NAME` / `SITE_DESCRIPTION` | 全站（**唯一出处**；原先住在订阅层的 `feeds.js`，该文件已随 2026-10 的订阅层下架删除 —— 见 §4） |
-| 共享样式 | `index.html` 的**单个** `<style>`（57,692 B） | 每个页面的基础样式 |
+| 共享样式 | `index.html` 的**单个** `<style>` → 构建期经 `scripts/lib/style-asset.js` 剥注释落盘为 `style.<hash>.css` | 首页与全部子页以 `<link rel="stylesheet">` 共享并缓存 |
+| 首页主脚本 | `assets/app.js` → 构建期经 `scripts/lib/app-asset.js` 词法级剥注释落盘为 `app.<hash>.js` | 首页 defer 加载（保留可读 `SOURCE` 供静态门禁与 `RENDER-CORE` 提取） |
 | 路由占位符表 | `scripts/tools/build-local.js` 的 `ROUTE_HREFS` | 页壳的 `resolveRouteHrefs()` |
 | 统计范围 | `scripts/lib/analytics-routes.js` 的 `ROUTE_RULES` | 页壳的 `finalizePage()` |
 
@@ -75,9 +76,9 @@ page-kinds.js（路由 → kind → 布局族 wide/detail/prose）
         ↓
 scripts/lib/*-page.js  （这一族的**正文**：纯函数，可被离线自测直接调用）
         ↓
-scripts/lib/page-shell.js  （**唯一** document 出口：DOCTYPE / head / 共享页头 / 共享页脚）
+scripts/lib/page-shell.js  （**唯一** document 出口：DOCTYPE / head / 统一全局导航顶栏 + 移动端零 JS 抽屉 / 共享页脚 / 外链 style.<hash>.css）
         ↓
-scripts/build 编排（现在是 scripts/tools/build-local.js 的 assemble()）
+scripts/tools/build-local.js + scripts/build/{notes-manifest,pages-ops,residue,selfcheck}.js（构建编排与产物自检）
         ↓
 dist/**（暂存目录全部自检通过后，原子替换到位）
 ```
@@ -225,7 +226,7 @@ scripts/lib/*-page.js   页面正文（纯函数）
       ↓
 scripts/lib/page-shell.js   唯一 document 出口
       ↓
-scripts/tools/build-local.js（构建编排；未来收敛为 scripts/build/）
+scripts/tools/build-local.js + scripts/build/{notes-manifest,pages-ops,residue,selfcheck}.js（构建编排与自检）
       ↓
 dist/**
 ```

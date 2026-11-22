@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "source": "leads_ifanr",
+  "sourceName": "爱范儿",
+  "fixture": "leads_ifanr.feeds",
+  "sourceUrl": "https://www.ifanr.com/feed",
+  "capturedAt": "2026-11-19",
+  "trimmed": "解析器/判据真正读的四个字段（title / link / pubDate / description）：三闸全中与近失配条目优先，最多 8 条，description 截到 200 字",
+  "note": "expected 是**生产解析器在这个最小片段上的真实输出**；重建后请人工 review diff。",
+  "count": 8,
+  "items": [
+    {
+      "title": "早报｜iPhone Duo新增外屏人脸解锁/曝英伟达董事会无意请回黄仁勋/华为Mate X8定档11月24日",
+      "url": "https://www.ifanr.com/1689760?utm_source=rss&utm_medium=rss&utm_campaign=",
+      "source": "爱范儿",
+      "sourceUrl": "https://www.ifanr.com/feed",
+      "firstSeen": "2026-11-17",
+      "type": "tool",
+      "excerpt": "· 阿里发布 Qwen4-Max，缓存命中价格低至每百万 Token 0.5 元 · 腾讯混元推出 Hy4 flash，WorkBuddy 限时开放免费使用 · 腾讯公开司庆讲话，要求核心业务团队面向 AI 再创业#欢迎关注爱范儿官方微信公众号：爱范儿（微信号：ifanr），更多精彩内容第一时间为您奉上。",
+      "vendor": "Qwen"
+    },
+    {
+      "title": "今年是阔屏的元年，阔屏是手机的今后十年",
+      "url": "https://www.ifanr.com/1690322?utm_source=rss&utm_medium=rss&utm_campaign=",
+      "source": "爱范儿",
+      "sourceUrl": "https://www.ifanr.com/feed",
+      "firstSeen": "2026-11-19",
+      "type": "tool",
+      "excerpt": "新中产、新比例、新潮流#欢迎关注爱范儿官方微信公众号：爱范儿（微信号：ifanr），更多精彩内容第一时间为您奉上。"
+    },
+    {
+      "title": "刚拒绝黄仁勋回归，英伟达官宣全员加薪，热门接班人曝光",
+      "url": "https://www.ifanr.com/1690288?utm_source=rss&utm_medium=rss&utm_campaign=",
+      "source": "爱范儿",
+      "sourceUrl": "https://www.ifanr.com/feed",
+      "firstSeen": "2026-11-19",
+      "type": "tool",
+      "excerpt": "英伟达何去何从#欢迎关注爱范儿官方微信公众号：爱范儿（微信号：ifanr），更多精彩内容第一时间为您奉上。"
+    },
+    {
+      "title": "早报｜GTA6开售，评分破纪录/大疆多款相机涨价/豆包工作三个月日活破800万",
+      "url": "https://www.ifanr.com/1690255?utm_source=rss&utm_medium=rss&utm_campaign=",
+      "source": "爱范儿",
+      "sourceUrl": "https://www.ifanr.com/feed",
+      "firstSeen": "2026-11-19",
+      "type": "tool",
+      "excerpt": "· Google 发布 Gemini 4 Neon，主打复杂任务与更低单次成本 · 英伟达员工大会：董事会不让黄仁勋回归，临时 CEO 承诺涨薪 · 英特尔再裁全球 IT 员工，继续推进组织精简#欢迎关注爱范儿官方微信公众号：爱范儿（微信号：ifanr），更多精彩内容第一时间为您奉上。"
+    },
+    {
+      "title": "刚刚，Gemini 4 Neon 突袭发布，性价比一夜斩杀 Opus 5.5",
+      "url": "https://www.ifanr.com/1690235?utm_source=rss&utm_medium=rss&utm_campaign=",
+      "source": "爱范儿",
+      "sourceUrl": "https://www.ifanr.com/feed",
+      "firstSeen": "2026-11-19",
+      "type": "tool",
+      "excerpt": "性能更强，还更便宜#欢迎关注爱范儿官方微信公众号：爱范儿（微信号：ifanr），更多精彩内容第一时间为您奉上。"
+    },
+    {
+      "title": "《GTA VI》首发体验：过去十年最好的游戏，也可能是未来十年最好的游戏",
+      "url": "https://www.ifanr.com/1690188?utm_source=rss&utm_medium=rss&utm_campaign=",
+      "source": "爱范儿",
+      "sourceUrl": "https://www.ifanr.com/feed",
+      "firstSeen": "2026-11-19",
+      "type": "tool",
+      "excerpt": "欢迎回到罪城#欢迎关注爱范儿官方微信公众号：爱范儿（微信号：ifanr），更多精彩内容第一时间为您奉上。"
+    },
+    {
+      "title": "这届高校学生，为何选择用鸿蒙创新？",
+      "url": "https://www.ifanr.com/1690168?utm_source=rss&utm_medium=rss&utm_campaign=",
+      "source": "爱范儿",
+      "sourceUrl": "https://www.ifanr.com/feed",
+      "firstSeen": "2026-11-18",
+      "type": "tool",
+      "excerpt": "有想法就是入场券。#欢迎关注爱范儿官方微信公众号：爱范儿（微信号：ifanr），更多精彩内容第一时间为您奉上。"
+    },
+    {
+      "title": "深度实测 GPT-6.2：强是真强，难用也是真难用",
+      "url": "https://www.ifanr.com/1690130?utm_source=rss&utm_medium=rss&utm_campaign=",
+      "source": "爱范儿",
+      "sourceUrl": "https://www.ifanr.com/feed",
+      "firstSeen": "2026-11-18",
+      "type": "tool",
+      "excerpt": "希望国模也快快跟上啊#欢迎关注爱范儿官方微信公众号：爱范儿（微信号：ifanr），更多精彩内容第一时间为您奉上。"
+    }
+  ]
+}

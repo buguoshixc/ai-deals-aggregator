@@ -77,28 +77,80 @@ const DETAIL_MAIN_CLASS = 'detail-main';
  *
  * @param {string} indexHtml 已组装好的首页 HTML（含共享 `<style>` / 主题脚本 / 页脚 / 图标入口）
  * @param {Array<[string,string]>} routeHrefs 路由占位符表（`build-local.js` 的 ROUTE_HREFS）
+ * @param {string} [appScript] 首页外链主脚本的源码（v6 起 RENDER-CORE 不再内联在 HTML 里；
+ *   `SHARED:dealcopy` 区间在这份源码里。构建期传 `appAsset.SOURCE`，不传则只认 HTML 内联块）。
  */
-function loadShellParts(indexHtml, routeHrefs) {
+/**
+ * 字符串感知的页面级 CSS 注释剥离与空行压缩（纯函数，不读盘、不破坏任何规则文本）。
+ * @param {string} css
+ * @returns {string}
+ */
+function minifyExtraCss(css) {
+  const src = String(css || '');
+  let out = '';
+  let i = 0;
+  const n = src.length;
+  while (i < n) {
+    const ch = src[i];
+    if (ch === '"' || ch === "'") {
+      const quote = ch;
+      out += ch;
+      i += 1;
+      while (i < n) {
+        const c = src[i];
+        out += c;
+        i += 1;
+        if (c === '\\' && i < n) { out += src[i]; i += 1; }
+        else if (c === quote) break;
+      }
+      continue;
+    }
+    if (ch === '/' && src[i + 1] === '*') {
+      const end = src.indexOf('*/', i + 2);
+      if (end === -1) break;
+      i = end + 2;
+      continue;
+    }
+    out += ch;
+    i += 1;
+  }
+  return out
+    .split(/\r?\n/)
+    .map(line => line.trim())
+    .filter(Boolean)
+    .join('\n');
+}
+
+function loadShellParts(indexHtml, routeHrefs, appScript = '', styleFile = '') {
   const sharedStyle = (indexHtml.match(/<style>[\s\S]*?<\/style>/) || [''])[0];
   const themeScript = (indexHtml.match(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/) || [''])[0];
   const footerRaw = (indexHtml.match(/<!--SHARED:footer:START-->([\s\S]*?)<!--SHARED:footer:END-->/) || [])[1] || '';
   const ghLinkRaw = (indexHtml.match(/<!--SHARED:ghlink:START-->([\s\S]*?)<!--SHARED:ghlink:END-->/) || [])[1] || '';
+  // A 包：详情页「这条领不到了？」复制反馈的**唯一实现**。v6 之前它在首页内联脚本里，
+  // 外链化之后从 `appScript`（assets/app.js 的源码）抽 —— 详情页仍然与首页弹层共用同一份
+  // 事件委托，不是第二份实现。
+  const dealCopySource = appScript || indexHtml;
+  const dealCopyRaw = (dealCopySource.match(/\/\* SHARED:dealcopy:START \*\/([\s\S]*?)\/\* SHARED:dealcopy:END \*\//) || [])[1] || '';
   const missing = [];
   if (!sharedStyle) missing.push('共享 <style>');
   if (!themeScript) missing.push('主题前置脚本');
   if (!footerRaw) missing.push('共享页脚片段（<!--SHARED:footer:START-->…END-->）');
   if (!ghLinkRaw) missing.push('页头图标入口（<!--SHARED:ghlink:START-->…END-->）');
+  if (!dealCopyRaw.trim()) missing.push('详情页复制反馈共享片段（/* SHARED:dealcopy:START */…END */）');
   if (missing.length) {
     throw new Error(`index.html 里抽不到 ${missing.join(' / ')} —— 页面壳失去共享来源，拒绝继续构建`
       + '（页面壳的样式、页脚与页头入口纪律：共享规则只有一处出处，见 docs/ARCHITECTURE.md）');
   }
   return {
     sharedStyle,
+    styleFile: String(styleFile || '').trim(),
     themeScript,
     footerTemplate: footerRaw.replace(/<span id="lastUpdated">--<\/span>/, '<span>见首页</span>'),
     // `.trim()`：片段是从两个标记之间切出来的，首尾各带一个换行与缩进，
     // 不裁掉会在每个页头里多出空行（页脚那边用的是同一个手法）。
     headerGhLink: ghLinkRaw.trim(),
+    // A 包：详情页复制反馈的唯一实现（预渲染详情页与首页弹层共用这一份源码）。
+    dealCopyScript: dealCopyRaw.trim(),
     routeHrefs
   };
 }
@@ -170,8 +222,38 @@ function finalizePage(html, route, prefix, routeHrefs, where = '') {
  * 两个变量的顺序即 DOM 顺序，且图标**永远是最后一项** —— 右侧的 auto 边距在 `.jumpback`
  * 上，图标跟着它落在最右端；给图标再写一条 auto 边距会把空白劈成两半。
  */
-function sharedHeaderHtml(prefix, headerExtra = '', ghLink = '') {
-  return `  <header class="top">
+/**
+ * 全站共享顶栏主导航（单一真值源；与首页移动端抽屉同口径）。
+ * 内页 `>= 941px` 横排展示，`< 941px` 收进零 JS `<details class="nav-drawer">` 菜单。
+ */
+const GLOBAL_NAV_ITEMS = [
+  { route: 'plans/coding/', label: 'Coding 套餐' },
+  { route: 'plans/api/', label: 'API 计费' },
+  { route: 'tools/api-cost/', label: '成本计算器' },
+  { route: 'models/', label: '模型库' },
+  { route: 'changes/', label: '变化' },
+  { route: 'search/', label: '搜索' }
+];
+
+function navLinksHtml(prefix, currentRoute = '', includeHome = false) {
+  const items = includeHome
+    ? [{ route: '', label: '全部优惠' }, ...GLOBAL_NAV_ITEMS, { route: 'codex-reset/', label: 'Codex 重置' }]
+    : GLOBAL_NAV_ITEMS;
+  const norm = String(currentRoute || '');
+  return items.map(item => {
+    const active = item.route === ''
+      ? norm === ''
+      : (norm === item.route || norm.startsWith(item.route));
+    const href = `${prefix}${item.route}`;
+    return `<a href="${href}"${active ? ' class="on" aria-current="page"' : ''}>${item.label}</a>`;
+  }).join('');
+}
+
+function sharedHeaderHtml(prefix, headerExtra = '', ghLink = '', route = '') {
+  const inlineNav = `<nav class="gnav" aria-label="全站导航">${navLinksHtml(prefix, route, false)}</nav>`;
+  const drawerNav = `<details class="nav-drawer"><summary class="nav-btn" aria-label="打开全站导航" title="全站导航"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></summary><nav class="nav-drawer-panel" aria-label="移动导航">${navLinksHtml(prefix, route, true)}</nav></details>`;
+  return `  <a class="skip-link" href="#main">跳到正文</a>
+  <header class="top">
     <div class="topin">
       <a class="brand" href="${prefix}">
         <span class="mark" aria-hidden="true">
@@ -182,6 +264,8 @@ function sharedHeaderHtml(prefix, headerExtra = '', ghLink = '') {
         </span>
         <span class="btxt"><b>AI <em>优惠</em>聚合器</b><small>真实优惠 · 每日更新</small></span>
       </a>
+      ${inlineNav}
+      ${drawerNav}
       <a class="jumpback" href="${prefix}">← 返回全部优惠</a>${headerExtra ? `\n      ${headerExtra}` : ''}${ghLink ? `\n      ${ghLink}` : ''}
     </div>
   </header>`;
@@ -276,10 +360,14 @@ function docStart(spec) {
   const robotsHtml = robots ? `<meta name="robots" content="${robots}">\n` : '';
   const ogHtml = ogBlockHtml(og);
   const logoCssHtml = logoCssHref ? `<link rel="stylesheet" href="${logoCssHref}">\n` : '';
-  const extraCssHtml = extraCss ? `<style>\n${extraCss}\n</style>\n` : '';
+  const sharedCssTag = parts.styleFile
+    ? `<link rel="stylesheet" href="${prefix}${parts.styleFile}">`
+    : parts.sharedStyle;
+  const trimmedExtraCss = extraCss ? minifyExtraCss(extraCss) : '';
+  const extraCssHtml = trimmedExtraCss ? `<style>\n${trimmedExtraCss}\n</style>\n` : '';
   const jsonLdHtmlBlock = jsonLdHtml ? `${jsonLdHtml}\n` : '';
 
-  // 文档序（有语义，不许调换）：共享 `<style>` → 页面级 `<style>`（覆盖关系）→ JSON-LD。
+  // 文档序（有语义，不许调换）：共享样式 → 页面级 `<style>`（覆盖关系）→ JSON-LD。
   // 共享规则一处定义、全站生效，页面级只写自己独有的规则 —— 见 docs/ARCHITECTURE.md。
   return `<!DOCTYPE html>
 <html lang="zh-CN">
@@ -294,10 +382,10 @@ ${hreflangHtml}${hreflangHtml ? '\n' : ''}${feedTagsHtml}${feedTagsHtml ? '\n' :
 <meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="${faviconHref}" type="image/svg+xml">
 ${logoCssHtml}${parts.themeScript}
-${parts.sharedStyle}
+${sharedCssTag}
 ${extraCssHtml}${jsonLdHtmlBlock}</head>
 <body>
-${sharedHeaderHtml(prefix, headerExtra, parts.headerGhLink)}
+${sharedHeaderHtml(prefix, headerExtra, parts.headerGhLink, route)}
 
   <div class="wrap">
     <main id="main"${main ? ` class="${main}"` : ''}>`;

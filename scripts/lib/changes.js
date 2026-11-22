@@ -98,6 +98,28 @@ const CHANGES_WORDING = {
     soonBasis: '「即将结束」只认数据里写有绝对截止日期（expiresAt）的条目，剩余天数按基准日计算。',
     unavailable: '本次构建没有拿到历史日志（deal-history.json 缺失或损坏），因此无法显示变化记录 —— 这不表示「没有变化」。',
     noEvents: '自起算日起还没有任何变更事件。'
+  },
+  /**
+   * B 类资讯线索卡（`/changes/` 的 created 分栏与二级页「最近变化」）的措辞 —— **唯一权威**。
+   *
+   * 渲染层（RENDER-CORE 的 `leadCardHtml()`）只做模板替换（`{source}` / `{date}`），
+   * **不许**再写新的中文字面量：线索卡的每一句读者可见文字都必须能在这里找到。
+   *   · `basis` 与 `ttl` 渲染时**直接拼接**（两句都以「。」结尾，拼接处不再补标点）；
+   *   · 引文出处按「有没有来源媒体」二选一（`excerptFrom` / `excerptFromUnknown`）；
+   *   · `readOriginal` 是线索卡里**唯一**可点链接的文案（全卡只有一个 `<a>`）。
+   */
+  CHANGES_LEAD: {
+    sourceLine: '来源：{source}',
+    dateLine: '原文日期：{date}',
+    excerptFrom: '—— 摘录自{source}的 RSS 原文（仅清理空白，未改写）',
+    excerptFromUnknown: '—— 摘录自原文 RSS（仅清理空白，未改写）',
+    basis: '线索判据：标题或摘要开头同时出现 AI 平台名、免费/限时/降价信号与时间词，且原文可点开。',
+    ttl: '线索按原文日期保留 7 天，第 8 天自动下架。',
+    readOriginal: '阅读原文 →',
+    /** 首页条带「常驻线索入口」的计数后缀。`{n}` = min(N, LIMITS.LEAD_CHIP_MAX)；真值永远在 data-lead-count 上 */
+    count: '{n} 条 →',
+    /** N 超过显示上限时的那套后缀（「3+ 条 →」）—— 不新增第二套窄屏文案 */
+    countMore: '{n}+ 条 →'
   }
 };
 
@@ -118,7 +140,20 @@ const LIMITS = {
   /** 每个分栏最多渲染多少行（超出只报条数，不删数据） */
   itemsPerSection: 30,
   /** 首页条带最多展示几项 */
-  homeItems: 3
+  homeItems: 3,
+  /**
+   * 首页条带「常驻线索入口」的显示上限（B 类未核验线索）。
+   *
+   * 线索**不占**条带的 `.ritem` 槽位（`buildRadar()` 的 home 池按 `lead === true` 排除），
+   * 改由一条常驻入口独立呈现 —— 它不随日期消失，所以必须自己封顶，否则线索一多
+   * 就会把条带撑成第二条正文行。显示值 = `min(N, LEAD_CHIP_MAX)`；`N > LEAD_CHIP_MAX`
+   * 时用 `CHANGES_LEAD.countMore`（「N+ 条 →」），**N 的真值永远写在 `data-lead-count` 上**。
+   *
+   * `N` 不是 deals.json 里的线索总数：它只扫**渲染用**的五个分栏（`SECTION_ORDER`，
+   * 已过 `itemsPerSection` 截断）并按 id 去重 —— 与 `/changes/` 会渲染出的 `.leadcard`
+   * 集合是同一把尺子。数值与 RENDER-CORE 的同名常量必须一致（构建期自检现渲染核对）。
+   */
+  LEAD_CHIP_MAX: 3
 };
 
 /** 分栏顺序（页面与条带共用；顺序是契约，自测按它逐项对账） */
@@ -277,6 +312,26 @@ function renderOrderOf(radar) {
 }
 
 /**
+ * `/changes/` 页预渲染正文（无 JS 可读）的长度下限口径。
+ *
+ * 系数保持 v1.5 起的原值（`base: 700`、`perRow: 40` —— 下限不调低），但**乘数必须是实际渲染出的行数**
+ * （`renderOrderOf(radar).length`），绝不能用截断/去重前的事件总数（`totals`）：
+ *   · 每个分栏与 `other.cosmetic` / `other.metadata` 都按 `LIMITS.itemsPerSection`（30）封顶，
+ *     超出的事件**不会**渲染成行，只占一句「另有 N 条未显示」；
+ *   · B 类线索跨分栏去重（`dedupeLeadRows`）后，同一 id 只渲染一张 `.leadcard`。
+ * 2026-11-20→21（issue #154）连续两轮发布门禁红的根因正是旧写法把 `40 ×` 乘在了
+ * `highValueTotal + radar.totals.other` 上：30 天窗口攒到 242 条事件（其中 144 条被截断未渲染），
+ * 下限飙到 10380 字，超过 98 行真实渲染正文（10291 字）。按 `renderOrderOf(radar).length` 算，
+ * 未截断时与旧公式逐字相等，截断后随真实渲染面有界，且渲染路径断掉时仍能打红（`markChangesRows`
+ * 另对 `<li class="chgi">` 行数与 `renderOrderOf(radar).length` 做硬相等断言，不能靠少渲染行绕过）。
+ */
+const CHANGES_TEXT_FLOOR = { base: 700, perRow: 40 };
+
+function changesPageTextFloor(radar) {
+  return CHANGES_TEXT_FLOOR.base + CHANGES_TEXT_FLOOR.perRow * renderOrderOf(radar).length;
+}
+
+/**
  * ItemList 与页面行标记读的**同一次**集合：每个记录恰好一条（取最强事件），
  * 且只收**真有详情页**的（`href` 非空）—— 给「已离开数据集」的条目发一个不存在的 URL
  * 就是在结构化数据里造死链。
@@ -359,6 +414,15 @@ function linkableDealIdsOf(deals) {
   return ids;
 }
 
+/** 订阅源（feed.xml / feed.json）用的核心优惠 id 集合：在可链接集合内剔除 AppSumo SaaS 噪音 */
+function feedDealIdsOf(deals) {
+  const ids = new Set();
+  for (const deal of deals || []) {
+    if (isLinkableDeal(deal) && deal.id && String(deal.source || '') !== 'AppSumo') ids.add(deal.id);
+  }
+  return ids;
+}
+
 /* ------------------------------------------------------------------ */
 /* 主入口                                                               */
 /* ------------------------------------------------------------------ */
@@ -420,12 +484,43 @@ function buildRadar({ deals = [], store = null, asOf = null, availability = 'ok'
     // 只有 `type === 'deal'` 的记录才有静态详情页（见 build-local 的 writeDetailPages），
     // 给工具条目或已离开数据集的条目挂链接就是造死链。判据 = `isLinkableDeal()`（唯一一处）。
     const linkable = isLinkableDeal(deal);
+    const sourceType = deal && deal.sourceFacts && typeof deal.sourceFacts === 'object'
+      ? deal.sourceFacts.sourceType
+      : null;
+    const lead = sourceType === 'lead';
+    // B 类资讯线索（beta）的**锚点身份在这里定义（全站唯一构造点）**：
+    //   首页条带把它拼成 `changes/#<anchor>`，`/changes/` 的线索卡把它当 `id`。
+    //   将来若要搬到 `/lead/<id>/` 独立页，只改这一行 —— 渲染层不自己拼锚点。
+    const anchor = lead ? `lead-${id}` : null;
+    // 线索卡的展示字段（渲染层只读、不改写）：
+    //   · `extHref` —— **只**给线索卡里那个「阅读原文」CTA 用（全站唯一的线索跨域链接）；
+    //     首页条带与 `/changes/` 的标题一律不再外链（旧行为是「条带直接跳原文」，已删）；
+    //   · `excerpt` / `media` / `publishedAt` —— 摘录引文与出处。没有 `excerpt` 时渲染层
+    //     **整块省略**（不写「暂无摘要」之类的占位句）；媒体与原文日期取自记录本身
+    //     （`source` / `firstSeen` —— 对线索而言 `firstSeen` 承载的是原文日期，见
+    //     `collectors/leads.js` 与 `lib/lead-radar.js` 的 TTL 说明）。
+    // 以上都**不**进 `href`，因此 ItemList / 订阅 / 页面行对账都不受影响
+    //（那些消费者只认有站内详情页的记录，见下面 itemListRecords）。
+    const externalUrl = lead && deal && typeof deal.url === 'string' && /^https?:\/\//i.test(deal.url)
+      ? deal.url
+      : null;
+    const excerpt = lead && deal && typeof deal.excerpt === 'string' && deal.excerpt ? deal.excerpt : null;
+    const media = lead && deal && typeof deal.source === 'string' ? deal.source : null;
+    const publishedAt = lead && deal && typeof deal.firstSeen === 'string' ? deal.firstSeen : null;
     return {
       title: title ? String(title) : null,
       vendor: vendor ? String(vendor) : '',
       titled: Boolean(title),
       linkable,
-      href: linkable ? `deal/${encodeURIComponent(id)}/` : null
+      href: linkable ? `deal/${encodeURIComponent(id)}/` : null,
+      // 线索的 beta 标记、站内锚点身份与展示字段（渲染层用；上面两类消费者都不读它们）
+      lead,
+      sourceType: sourceType || null,
+      anchor,
+      extHref: externalUrl,
+      excerpt,
+      media,
+      publishedAt
     };
   };
 
@@ -508,25 +603,40 @@ function buildRadar({ deals = [], store = null, asOf = null, availability = 'ok'
 
   for (const key of Object.keys(all)) all[key].sort(compareByRecency);
 
-  // ---- 组装分栏（有界）-------------------------------------------------
-  const capInto = list => {
-    const capped = list.slice(0, cfg.itemsPerSection);
-    return { items: capped, truncated: Math.max(0, list.length - capped.length) };
-  };
-  base.sections.created = capInto(all.created);
-  base.sections.changed = capInto(all.changed);
-  base.sections.endingSoon = capInto(endingSoon);
-  base.sections.ended = capInto(all.ended);
-  base.sections.restored = capInto(all.restored);
-  base.other = {
-    cosmetic: all.cosmetic.slice(0, cfg.itemsPerSection),
-    metadata: all.metadata.slice(0, cfg.itemsPerSection),
-    truncated: {
-      cosmetic: Math.max(0, all.cosmetic.length - cfg.itemsPerSection),
-      metadata: Math.max(0, all.metadata.length - cfg.itemsPerSection)
-    }
-  };
-  base.totals = {
+  // ---- B 类线索按记录去重（2026-11-13）---------------------------------
+  //
+  // 同一条线索可能在两个分栏里都有**真实**事件：`created` 在 7 天窗口内 ⇒「最近 7 天变化」，
+  // 同一记录的 `ended`（来源不再列出）在 30 天窗口内 ⇒「已结束」。分栏本身没错，但线索卡的
+  // 身份是 `article.leadcard id="lead-<id>"`（一条记录一个锚点）：画两张会让 `/changes/`
+  // 出现重复 id，而首页常驻入口 `data-lead-count` 的真值按 id 去重（RENDER-CORE 的
+  // `radarLeadEntryOf()`）⇒ 入口数字与读者数到的卡数分家（构建期产物自检当场红）。
+  //
+  // 判据与 `radarLeadEntryOf()` 同源：按**渲染顺序**（SECTION_ORDER）扫，第一次出现保留，
+  // 之后出现的**整行移除** —— 不降级成普通变化行：普通行没有「线索 · 未核验」声明，
+  // 把一条未核验的资讯画成普通优惠行是更坏的谎。
+  //
+  // `totals` 仍是**事件数**：构建期自检的覆盖不变量（`covered === 窗口内事件数`）拿事件
+  // 对账，不能因去重而少算。`truncated` 在去重之后现算（「窗口内还有多少条没展示」以
+  // **渲染集合**为分母）。
+  const seenLeadIds = new Set();
+  const dedupeLeadRows = list => list.filter(item => {
+    if (!item || item.lead !== true) return true;
+    const id = String(item.id || '');
+    if (!id) return true;
+    if (seenLeadIds.has(id)) return false;
+    seenLeadIds.add(id);
+    return true;
+  });
+  const createdRows = dedupeLeadRows(all.created);
+  const changedRows = dedupeLeadRows(all.changed);
+  const endingSoonRows = dedupeLeadRows(endingSoon);
+  const endedRows = dedupeLeadRows(all.ended);
+  const restoredRows = dedupeLeadRows(all.restored);
+  // 「其他变化」在页面上排在五个分栏之后，同样受「一条记录一张卡」约束。
+  const cosmeticRows = dedupeLeadRows(all.cosmetic);
+  const metadataRows = dedupeLeadRows(all.metadata);
+  // 事件数真值（去重前）：分栏标题、覆盖不变量与「其他变化（n）」都读它。
+  const eventTotals = {
     created: all.created.length,
     changed: all.changed.length,
     endingSoon: endingSoon.length,
@@ -535,20 +645,45 @@ function buildRadar({ deals = [], store = null, asOf = null, availability = 'ok'
     other: all.cosmetic.length + all.metadata.length
   };
 
+  // ---- 组装分栏（有界）-------------------------------------------------
+  const capInto = list => {
+    const capped = list.slice(0, cfg.itemsPerSection);
+    return { items: capped, truncated: Math.max(0, list.length - capped.length) };
+  };
+  base.sections.created = capInto(createdRows);
+  base.sections.changed = capInto(changedRows);
+  base.sections.endingSoon = capInto(endingSoonRows);
+  base.sections.ended = capInto(endedRows);
+  base.sections.restored = capInto(restoredRows);
+  base.other = {
+    cosmetic: cosmeticRows.slice(0, cfg.itemsPerSection),
+    metadata: metadataRows.slice(0, cfg.itemsPerSection),
+    truncated: {
+      cosmetic: Math.max(0, cosmeticRows.length - cfg.itemsPerSection),
+      metadata: Math.max(0, metadataRows.length - cfg.itemsPerSection)
+    }
+  };
+  base.totals = eventTotals;
+
   // ---- 首页条带：只取高价值，按优先级取（桶内已是时间倒序）---------------
   const pools = {
-    created: all.created,
-    ended: all.ended,
-    restored: all.restored,
-    benefit_changed: all.changed.filter(item => item.type === 'benefit_changed'),
-    expiry_changed: all.changed.filter(item => item.type === 'expiry_changed'),
-    eligibility_changed: all.changed.filter(item => item.type === 'eligibility_changed'),
-    endingSoon
+    created: createdRows,
+    ended: endedRows,
+    restored: restoredRows,
+    benefit_changed: changedRows.filter(item => item.type === 'benefit_changed'),
+    expiry_changed: changedRows.filter(item => item.type === 'expiry_changed'),
+    eligibility_changed: changedRows.filter(item => item.type === 'eligibility_changed'),
+    endingSoon: endingSoonRows
   };
   const home = [];
   for (const key of HOME_PRIORITY) {
     for (const item of pools[key] || []) {
       if (home.length >= cfg.homeItems) break;
+      // B 类未核验线索**不占**首页条带的槽位（2026-11）：它们有自己的常驻入口
+      // （RENDER-CORE 的 `a.rleadcount`，不随日期消失、不计入「最多 3 项」）。
+      // 必须在这一层排（而不是渲染层）：条带自检要求 `.ritem` 的 id 序列
+      // 与 `radar.home.items` **逐项相等**，渲染层过滤会让构建当场红。
+      if (item.lead === true) continue;
       home.push(Object.assign({}, item, { homeKind: key }));
     }
     if (home.length >= cfg.homeItems) break;
@@ -718,8 +853,11 @@ module.exports = {
   // `scripts/lib/changes.js` 自己的 `identityOf()`。判据本体只有一个 `isLinkableDeal()`
   // （不导出：外部消费者要的是物化后的 id 集合，不是这条布尔式）。
   linkableDealIdsOf,
+  feedDealIdsOf,
   buildRadar,
   renderOrderOf,
+  CHANGES_TEXT_FLOOR,
+  changesPageTextFloor,
   itemListRecords,
   summarize
 };

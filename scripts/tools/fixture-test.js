@@ -3,7 +3,9 @@
  * fixture 回放测试（v2.0 Phase D）——**离线、确定性**，因此进得了门禁。
  *
  * 做法：对每个 `scripts/data/fixtures/<name>/`：
- *   读 `page.min.html` → 交给**生产解析器**（collector 的 `parse()`）→ 与 `expected.json` 逐字段比对。
+ *   读 `page.min.{html,json,xml}` → 交给**生产解析器**（collector 的 `parse()`）→ 与 `expected.json` 逐字段比对。
+ *   v2.2 起支持三种片段：DOM 页面（.html）、API JSON（.json）、RSS/Atom（.xml）——
+ *   来源是什么形态，fixture 就保留什么形态的最小真实片段，而不是硬塞进 HTML 壳里。
  *
  * 它守的是哪件事：**解析器的行为变化必须是有意的**。
  * 没有它，"AI 生成的 collector 补丁"就没有任何判据 —— 只能靠"跑一遍真实页面看看还有没有数据"，
@@ -90,13 +92,15 @@ function main() {
   for (const name of dirs) {
     const dir = path.join(FIXTURES_DIR, name);
     const expectedFile = path.join(dir, 'expected.json');
-    const pageFile = path.join(dir, 'page.min.html');
+    const pageFile = ['page.min.html', 'page.min.json', 'page.min.xml']
+      .map(name => path.join(dir, name))
+      .find(candidate => fs.existsSync(candidate)) || null;
     const provenanceFile = path.join(dir, 'PROVENANCE.md');
 
     console.log(`→ ${name}`);
 
     if (!fs.existsSync(expectedFile) || !fs.existsSync(pageFile)) {
-      fail(`${name}: 缺 expected.json 或 page.min.html`);
+      fail(`${name}: 缺 expected.json 或 page.min.{html,json,xml} 片段`);
       continue;
     }
     if (!fs.existsSync(provenanceFile)) {

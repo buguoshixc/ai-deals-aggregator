@@ -36,15 +36,11 @@ for (const deal of payload.deals) {
 const renderCore = require('../lib/render-core').load(path.join(ROOT, 'index.html'));
 const vendorKeyOf = deal => renderCore.vendorOf(deal).name;
 const store = history.load();
-const vendorEventCount = (() => {
-  const counts = new Map();
-  const byId = new Map(payload.deals.map(deal => [deal.id, vendorKeyOf(deal)]));
-  for (const event of history.eventsOf(store.store)) {
-    const name = byId.get(event && event.id);
-    if (name) counts.set(name, (counts.get(name) || 0) + 1);
-  }
-  return counts;
-})();
+const vendorEventCount = landing.vendorEventCountsOf({
+  deals: payload.deals,
+  events: history.eventsOf(store.store),
+  vendorKeyOf
+});
 
 const plan = landing.planLandingPages({
   deals: payload.deals,
@@ -104,13 +100,15 @@ console.log('  canonical 收口到正本（可抓取、不进 sitemap）：' + O
 // v3.3：这一行改成**从产物登记表现取**，不再手写第二份清单 —— 上一版是手写的，于是
 // `BingSiteAuth.xml`（2026-10-16 加）与 IndexNow 密钥文件（v3.3 加）每加一个都要记得回来改一次，
 // 而忘改的后果是「报告在撒谎」而不是「门禁变红」（`report:seo` 刻意不在 CI 里）。
-// 判据与产物门禁同源：`lib/published-assets.js` 的三张表就是「产物里允许有哪些非 HTML 文件」的唯一出处
-// （顺带修掉一处既有的漏项：两条订阅产物一直没被这一行列出来）。
+// 判据与产物门禁同源：`lib/published-assets.js` 的表就是「产物里允许有哪些非页面文件」的唯一出处
+// （顺带修掉一处既有的漏项：两条订阅产物一直没被这一行列出来）。`NON_PAGE_HTML`（站点归属验证
+// 文件）同样是「非页面资源」—— 它形状上是 `.html`、语义上不是页面，也不进 sitemap。
 console.log('  非页面资源（从不进 sitemap）：'
   + [
     ...publishedAssets.ALLOWED_PATHS.map(([p]) => p),
     ...publishedAssets.ALLOWED_PREFIX.map(([p]) => `${p}**`),
-    ...publishedAssets.ALLOWED_DATA.map(([p]) => p)
+    ...publishedAssets.ALLOWED_DATA.map(([p]) => p),
+    ...publishedAssets.NON_PAGE_HTML.map(([p]) => p)
   ].join(' · '));
 
 console.log('\n--- slug 契约 ---');

@@ -1,0 +1,200 @@
+{
+  "palettes": {
+    "light": {
+      "t1": "#0b7a44",
+      "t2": "#1d4ed8",
+      "t3": "#155e75",
+      "t4": "#92400e",
+      "t5": "#475569",
+      "on": {
+        "t1": "#ffffff",
+        "t2": "#ffffff",
+        "t3": "#ffffff",
+        "t4": "#ffffff",
+        "t5": "#ffffff"
+      }
+    },
+    "dark": {
+      "t1": "#4ade80",
+      "t2": "#60a5fa",
+      "t3": "#22d3ee",
+      "t4": "#fbbf24",
+      "t5": "#94a3b8",
+      "on": {
+        "t1": "#0b0d10",
+        "t2": "#0b0d10",
+        "t3": "#0b0d10",
+        "t4": "#0b0d10",
+        "t5": "#0b0d10"
+      }
+    }
+  },
+  "results": {
+    "light": {
+      "t1": {
+        "hex": "#0b7a44",
+        "textOnCard": 5.41,
+        "textOnBg": 5.05,
+        "blockVsCard": 5.41,
+        "blockVsBg": 5.05,
+        "onColor": "#ffffff",
+        "onColorVsBlock": 5.41
+      },
+      "t2": {
+        "hex": "#1d4ed8",
+        "textOnCard": 6.7,
+        "textOnBg": 6.25,
+        "blockVsCard": 6.7,
+        "blockVsBg": 6.25,
+        "onColor": "#ffffff",
+        "onColorVsBlock": 6.7
+      },
+      "t3": {
+        "hex": "#155e75",
+        "textOnCard": 7.27,
+        "textOnBg": 6.78,
+        "blockVsCard": 7.27,
+        "blockVsBg": 6.78,
+        "onColor": "#ffffff",
+        "onColorVsBlock": 7.27
+      },
+      "t4": {
+        "hex": "#92400e",
+        "textOnCard": 7.09,
+        "textOnBg": 6.61,
+        "blockVsCard": 7.09,
+        "blockVsBg": 6.61,
+        "onColor": "#ffffff",
+        "onColorVsBlock": 7.09
+      },
+      "t5": {
+        "hex": "#475569",
+        "textOnCard": 7.58,
+        "textOnBg": 7.07,
+        "blockVsCard": 7.58,
+        "blockVsBg": 7.07,
+        "onColor": "#ffffff",
+        "onColorVsBlock": 7.58
+      },
+      "brandVsCard": 5.12
+    },
+    "dark": {
+      "t1": {
+        "hex": "#4ade80",
+        "textOnCard": 10.31,
+        "textOnBg": 11.17,
+        "blockVsCard": 10.31,
+        "blockVsBg": 11.17,
+        "onColor": "#0b0d10",
+        "onColorVsBlock": 11.17
+      },
+      "t2": {
+        "hex": "#60a5fa",
+        "textOnCard": 7.07,
+        "textOnBg": 7.65,
+        "blockVsCard": 7.07,
+        "blockVsBg": 7.65,
+        "onColor": "#0b0d10",
+        "onColorVsBlock": 7.65
+      },
+      "t3": {
+        "hex": "#22d3ee",
+        "textOnCard": 9.94,
+        "textOnBg": 10.77,
+        "blockVsCard": 9.94,
+        "blockVsBg": 10.77,
+        "onColor": "#0b0d10",
+        "onColorVsBlock": 10.77
+      },
+      "t4": {
+        "hex": "#fbbf24",
+        "textOnCard": 10.76,
+        "textOnBg": 11.66,
+        "blockVsCard": 10.76,
+        "blockVsBg": 11.66,
+        "onColor": "#0b0d10",
+        "onColorVsBlock": 11.66
+      },
+      "t5": {
+        "hex": "#94a3b8",
+        "textOnCard": 7.01,
+        "textOnBg": 7.59,
+        "blockVsCard": 7.01,
+        "blockVsBg": 7.59,
+        "onColor": "#0b0d10",
+        "onColorVsBlock": 7.59
+      },
+      "brandVsCard": 6.39
+    }
+  },
+  "amber": [
+    {
+      "hex": "#b45309",
+      "vsWhite": 5.02,
+      "vsBg": 4.68,
+      "whiteOnIt": 5.02
+    },
+    {
+      "hex": "#a34d09",
+      "vsWhite": 5.8,
+      "vsBg": 5.41,
+      "whiteOnIt": 5.8
+    },
+    {
+      "hex": "#92400e",
+      "vsWhite": 7.09,
+      "vsBg": 6.61,
+      "whiteOnIt": 7.09
+    },
+    {
+      "hex": "#8a3f0a",
+      "vsWhite": 7.51,
+      "vsBg": 7.01,
+      "whiteOnIt": 7.51
+    }
+  ],
+  "cyan": [
+    {
+      "hex": "#0e7490",
+      "vsWhite": 5.36,
+      "vsBg": 5
+    },
+    {
+      "hex": "#155e75",
+      "vsWhite": 7.27,
+      "vsBg": 6.78
+    },
+    {
+      "hex": "#0f766e",
+      "vsWhite": 5.47,
+      "vsBg": 5.11
+    },
+    {
+      "hex": "#0891b2",
+      "vsWhite": 3.68,
+      "vsBg": 3.43
+    }
+  ],
+  "green": [
+    {
+      "hex": "#0b7a44",
+      "vsWhite": 5.41,
+      "vsBg": 5.05
+    },
+    {
+      "hex": "#0e7a4e",
+      "vsWhite": 5.37,
+      "vsBg": 5.01
+    },
+    {
+      "hex": "#15803d",
+      "vsWhite": 5.02,
+      "vsBg": 4.68
+    },
+    {
+      "hex": "#0f9d58",
+      "vsWhite": 3.51,
+      "vsBg": 3.27
+    }
+  ]
+}

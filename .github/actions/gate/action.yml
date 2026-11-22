@@ -1,8 +1,9 @@
 name: 'Gate（完整门禁）'
 description: >-
-  collect → validate → 译文 → 两个自测 → build → 真浏览器验收 → 回归比对的**唯一实现**。
-  verify.yml（PR/push）、deploy.yml（发布前）、collect.yml（提交数据前）都调用这一个文件，
-  避免出现两套相似但不同的测试链。
+  validate → 译文 → 自测 → build → 真浏览器验收 → 回归比对的**唯一实现**。
+  verify.yml（PR/push）、deploy.yml（发布前）、collect.yml（**数据提交之后**的发布就绪门禁）
+  都调用这一个文件，避免出现两套相似但不同的测试链。collect 侧的数据正确性由该 workflow
+  提交**之前**的独立硬门禁守着（9 条命令，见 collect.yml），本 action 不承担那一段。
 
 # 为什么是复合 action 而不是 reusable workflow（2026-09-28 的决定，附理由）：
 #  ① **检查名不能变**。verify.yml 的 job 名 `gate` 是分支保护要填的必需检查名；
@@ -31,11 +32,20 @@ inputs:
     required: false
     default: 'false'
 
+# 结论步骤把「第一个失败的步骤名」交给调用方（collect.yml 的留痕步骤读它；
+# 空串 = 没有失败的步骤，此时看 Summary 里的 mode 分支）。失败时 run 步骤仍会执行
+# （if: always()），所以输出在红 job 里同样可读。
+outputs:
+  failed_step:
+    description: '第一个失败的 gate 步骤名'
+    value: ${{ steps.conclusion.outputs.failed_step }}
+
 runs:
   using: composite
   steps:
     # 依赖：真浏览器验收需要 playwright-core；下面「准备浏览器」那步要读它的版本号。
     - name: Install dependencies
+      id: s01
       shell: bash
       run: npm ci
 
@@ -55,6 +65,7 @@ runs:
     # （已由 page-kinds.assertLayoutDeclarations + seo-selftest + verify-site §22c 三处把守）、
     # 产物注册表闭包（构建期 selfCheck 是 owner）、每个测试被门禁跑到（check-ci-consistency (17)(19) 是 owner）。
     - name: Architecture fitness (structure invariants)
+      id: s02
       shell: bash
       run: node scripts/test/fitness.js
 
@@ -66,11 +77,13 @@ runs:
     # 这条判据**只管未来**：基线（e0ca04a）时已跟踪的 1,283 个 Tier-3 文件全部 grandfather 放行，
     # 不删、不 untrack、不重写历史。
     - name: Evidence policy (Tier-3 interception)
+      id: s03
       shell: bash
       run: node scripts/tools/check-evidence.js
 
     # 数据门禁：collect.yml 采集后跑的就是这一条（strict），PR/发布路径同样要过。
     - name: Validate data (strict)
+      id: s04
       shell: bash
       run: node scripts/validate.js --strict
 
@@ -84,6 +97,7 @@ runs:
     # 实测过一次它的隐蔽性 —— 另一个重放工具（audience-rebuild.js）报 0/0 全绿，
     # 因为它把六字段当输入原样传过去，只验了策展那半边。没有独立断言就会重演。
     - name: Reproducibility gate (no value without a source)
+      id: s05
       shell: bash
       run: node scripts/tools/check-reproducible.js
 
@@ -96,6 +110,7 @@ runs:
     # 为什么必须有它：没有它，历史就是一段自说自话的文本，谁都能往里写一条
     # 「X 在 9 月 1 日改过」，而页面与构建全绿。人类读不出这种差异，机器可以。
     - name: History verify (log consistent with deals.json)
+      id: s06
       shell: bash
       run: node scripts/tools/history-verify.js
 
@@ -112,32 +127,45 @@ runs:
     # 「verified + verifiedAt 就升级」——同一个洞只堵了一半，而 validateDeal 两种档位
     # 都放行，不会有任何东西变红。夹具的第 4 条就是它。
     - name: Migration verifier (audience provenance backfill)
+      id: s07
       shell: bash
       run: node scripts/tools/migrate-audience-verify.js
 
-    # 译文门禁（2026-09-28 起是**硬门禁**，此前只是建议性）：
-    #   漂移（孤儿 / 原文已变 / 不合法 / 覆盖层管不到）= 必红，没有宽限期；
-    #   待译 = 按年龄判，超过宽限期（默认 7 天）转红，数量与「最老 N 天」每次都打印。
-    # 为什么必须硬：软门禁等于没有门禁——线上可能正拿着一份与英文对不上的中文，
-    # 而 CI 一路绿灯。为什么不能要求待译为 0：自动采集每天两次，那会让系统长期停在
-    # 「有新优惠 → 必然 CI 红」（2026-09-28 e01dcfc 实测）。
-    - name: Translation gate (drift blocks, pending ages out)
+    # 译文覆盖度（2026-11-08 起是**建议性**的，不再拦发布）：
+    #   漂移（孤儿 / 原文已变 / 不合规 / 覆盖层管不到）与待译都只报告，exit 0；
+    #   不合规与原文已变在 lib/zh.js 里已经把字段丢弃、回退英文原文，孤儿只告警。
+    # 为什么降级：译文是**附加信息**，英文原文一直都在，翻译坏掉最多让某一块显示英文；
+    #   而 2026-11-02 至 11-08 的停更证明「译文漂移 → 门禁红 → 采集不提交 → 站点冻住」
+    #   的代价远大于收益（上游改写英文是常态，把发布可用性押在人工补译上不现实）。
+    # 牙在哪：本步骤仍把漂移/待译逐条打进日志；需要硬拦时用 `--check --strict`
+    #   （人显式要求时才生效，CI 不带它）。
+    - name: Translation coverage (advisory, English fallback, never blocks)
+      id: s08
       shell: bash
       run: node scripts/tools/zh-todo.js --check
 
     - name: Translation self-test
+      id: s09
       shell: bash
       run: node scripts/tools/zh-selftest.js
 
     - name: Expiry self-test
+      id: s10
       shell: bash
       run: node scripts/tools/expiry-selftest.js
 
+    - name: Categories boundary self-test
+      id: s10b
+      shell: bash
+      run: node scripts/tools/categories-selftest.js
+
     - name: Text / cleanText self-test
+      id: s11
       shell: bash
       run: node scripts/tools/text-selftest.js
 
     - name: Source-health self-test
+      id: s12
       shell: bash
       run: node scripts/tools/health-selftest.js
 
@@ -147,6 +175,7 @@ runs:
     # 实测已经踩过一次：`known` 没被单独放行，每条真采到的记录都渲染成「未知」，
     # 而当时构建自检全绿。这里没有别的步骤会替它红，所以必须进来。
     - name: Provenance self-test
+      id: s13
       shell: bash
       run: node scripts/tools/provenance-selftest.js
 
@@ -155,6 +184,7 @@ runs:
     # 有锚点、链可重放、来源失败时**不**误报「消失」、超限必红不自动截断。
     # 判断标准与上面几支相同：它红的时候没有别的步骤会替它红。
     - name: Deal-history self-test
+      id: s14
       shell: bash
       run: node scripts/tools/history-selftest.js
 
@@ -165,6 +195,7 @@ runs:
     # 判断标准与上面几支相同：它红的时候没有别的步骤会替它红。
     # （产物级别的对账在 build-local 的产物自检里，两者互补：这一支管规则本身。）
     - name: Change-radar self-test
+      id: s15
       shell: bash
       run: node scripts/tools/changes-selftest.js
 
@@ -175,6 +206,7 @@ runs:
     #   ② 未篡改的干净夹具 0 个问题（否则「永远报错」也能通过 ①）。
     # 另含门槛函数的分支演练与注册表不变量（slug 表 / 钉住表 / 别名表 / 排除表）。
     - name: SEO self-test
+      id: s16
       shell: bash
       run: node scripts/tools/seo-selftest.js
 
@@ -184,6 +216,7 @@ runs:
     # —— 而它们恰好是本阶段全部红线的守卫。判断一个自测该不该进门禁的标准不是"它多新"，
     # 而是"它红的时候，有没有别的步骤会替它红"：这里没有，所以必须进来。
     - name: Audience self-test
+      id: s17
       shell: bash
       run: node scripts/tools/audience-selftest.js
 
@@ -195,6 +228,7 @@ runs:
     # 它红的时候没有别的步骤会替它红：audience-selftest 只锁「前端副本与 lib 一致」，
     # 不锁「数据文件的注记有没有跟着改」。同一形状（注记逐字引用会变的措辞/路径）以后照此办理。
     - name: Roles-note self-test (official_urls note vs live wording)
+      id: s18
       shell: bash
       run: node scripts/tools/roles-note-selftest.js
 
@@ -203,6 +237,7 @@ runs:
     # 或「换了不该换的身份去推送」，而本地一切正常。它盯三件事：JWT 不超过 10 分钟上限、
     # 三步的 Authorization 都是 App JWT、token 只进 $GITHUB_OUTPUT 且先 add-mask。
     - name: App-token self-test
+      id: s19
       shell: bash
       run: node scripts/tools/app-token-selftest.js
 
@@ -213,6 +248,7 @@ runs:
     # 这些判据的失效方式全都是**静默的**（页面照常、构建照常），
     # 没有别的步骤会替它红；而它们一旦失效，AI 的建议就会开始悄悄改写生产数据。
     - name: AI layer self-test
+      id: s20
       shell: bash
       run: node scripts/tools/ai-selftest.js
 
@@ -221,6 +257,7 @@ runs:
     # 有了它，改采集器（无论人改还是 AI 出补丁）才有可判定的回归判据 ——
     # 否则唯一的判据是"跑一遍真实页面看看还有没有数据"，那等于把测试建立在第三方的可用性上。
     - name: Collector fixtures (offline replay)
+      id: s21
       shell: bash
       run: node scripts/tools/fixture-test.js
 
@@ -230,6 +267,7 @@ runs:
     # 「三态不得与 false 混用」「聚合站出处不得当证据」「页面上不许出现结论性词汇」
     # 「算不出的单价必须显示成 —」「未知必须显示成未标注」这些承诺只在这一步被逐条验证。
     - name: Plans self-test (data + page)
+      id: s22
       shell: bash
       run: node scripts/tools/plans-selftest.js
 
@@ -242,6 +280,7 @@ runs:
     # 以及「机制只有一份实现」（静态扫描 history-core 的边界）。
     # 判断标准与上面几支相同：它红的时候没有别的步骤会替它红。
     - name: Plan-history self-test
+      id: s23
       shell: bash
       run: node scripts/tools/plan-history-selftest.js
 
@@ -252,6 +291,7 @@ runs:
     # 节省金额四道门（同套餐/同币种/同周期/全员可享）缺一不可、派生值不得落盘、
     # 候选报告没有任何写生产关系的代码路径。判断标准与上面几支相同：它红的时候没有别的步骤会替它红。
     - name: Deal-plan-links self-test
+      id: s24
       shell: bash
       run: node scripts/tools/deal-plan-links-selftest.js
 
@@ -262,23 +302,51 @@ runs:
     # 模型改名保持 modelKey 时产生零事件而换 modelKey 时必须被检测出来，以及这四条都**实跑变红**。
     # 判断标准与上面几支相同：它红的时候没有别的步骤会替它红。
     - name: API-plans self-test (data + page)
+      id: s25
       shell: bash
       run: node scripts/tools/api-plans-selftest.js
 
     # v3.1 新增：API 成本计算器自测（108 条逐条对账 + 2 条牙，L2 层，零依赖）。
     - name: API-cost self-test (calculator logic + teeth)
+      id: s26
       shell: bash
       run: node scripts/tools/api-cost-selftest.js
+
+    # v3.4 F1 新增：价格历史（走势图）自测 —— 只用合成 store，零依赖、离线、秒级。
+    # 它盯的是这一层自己的承诺：阶梯线不做线性插值、没有基线就不画假图、涨跌同时有文字通道
+    # （▼/▲ + 原值 → 新值 + 日期）、单位标签没有第二副本、源码里没有墙钟。五颗牙都实跑变红。
+    - name: Price-history self-test (F1 charts, no-baseline honesty)
+      id: s26a
+      shell: bash
+      run: node scripts/tools/price-history-selftest.js
+
+    # v3.4 F2 新增：到期日历（RFC 5545）自测 —— 同样零依赖、离线、秒级。
+    # 盯的是：CRLF/75 字节折行（中文按 3 字节）、TEXT 转义（逗号/分号/反斜杠/换行）、
+    # 只收「有截止日期且未过期」、UID 稳定、DTEND=次日、DTSTAMP 冻结在数据日期、独立解析往返。
+    - name: Calendar self-test (F2 ICS folding + escaping)
+      id: s26b
+      shell: bash
+      run: node scripts/tools/calendar-selftest.js
+
+    # v3.4 F3：全站搜索索引 + 目录渲染 + 双宿主过滤（纯合成数据，不读 dist）。
+    # 盯的是：URL 只来自唯一表并按 url 去重、type=tool 不发死链、未知 kind 直接抛、
+    # 分组计数 == 条目数、href 全在路由集合内、注入 <script> 被转义、多词查询「全部命中」。
+    - name: Search self-test (F3 index + escaping + filter)
+      id: s26c
+      shell: bash
+      run: node scripts/tools/search-selftest.js
 
     # v2.5 新增：api-plans.json 可重建性（人工来源层 → 派生文件，逐字节）。
     # 与 plans 那一条红的含义相同：问的是「有没有人手改了派生产物 / 改了来源层却忘了重建」。
     - name: API-plans reproducibility (curated → api-plans.json, byte-compare)
+      id: s27
       shell: bash
       run: node scripts/tools/check-api-plans-reproducible.js
 
     # v2.5 新增：API 计费变化日志与当前数据的一致性（基线 + 事件重放必须等于今天的数据）。
     # 与 plan-history 那一条红的含义相同，只是换了一份数据与一套判据。
     - name: API-plan-history verify (log consistent with api-plans.json)
+      id: s28
       shell: bash
       run: node scripts/tools/check-api-plan-history.js
 
@@ -289,15 +357,18 @@ runs:
     # 「厂商页的 API 计数必须与 api-plans 现算一致」、「/archive/ 的状态必须能从时间线重推」、
     # 「Manifest 的 count / updatedAt 必须与磁盘逐字段一致」—— 都只在这一步被验证。
     - name: Model-registry self-test (identity + explicit mapping)
+      id: s29
       shell: bash
       run: node scripts/tools/models-selftest.js
 
     # v3.0 新增：索引层与关系层的可重建性（与 plans / api-plans 那两条红的含义相同）。
     - name: Models reproducibility (registry → models.json, byte-compare)
+      id: s30
       shell: bash
       run: node scripts/tools/check-models-reproducible.js
 
     - name: Model-registry links check (explicit mapping only, no similarity)
+      id: s31
       shell: bash
       run: node scripts/tools/check-model-registry-links.js
 
@@ -309,6 +380,7 @@ runs:
     # 「尚未落盘（Stage D 未完成）」，**自检仍报 0 处问题** —— 一份在撒谎的报告可以永久静默存活。
     # 修好之后把它接进门禁：报告与数据对不上就红，避免同类假报告再次无声发生。
     - name: Coverage report (gap list consistent with data)
+      id: s32
       shell: bash
       run: node scripts/tools/coverage-report.js
 
@@ -322,6 +394,7 @@ runs:
     #   ④ 端到端契约：report:coverage --json 两次逐字节一致、旧 JSON 键一个不少。
     # 判断标准与上面每一支相同：**它红的时候没有别的步骤会替它红**。
     - name: Coverage-targets self-test (intent layer + seven derived states)
+      id: s33
       shell: bash
       run: node scripts/tools/coverage-targets-selftest.js
 
@@ -331,6 +404,7 @@ runs:
     # 症状完全静默：角色名对不上档位 ⇒ 整批模型掉进兜底档 ⇒ 慢周期模型（embedding / translation）
     # 被过早判成 legacy ⇒ 默认隐藏，而所有页面、报告、构建照常全绿。
     - name: Model-role vocabulary self-test (registry ↔ freshness contract)
+      id: s34
       shell: bash
       run: node scripts/tools/model-role-vocabulary-selftest.js
 
@@ -341,6 +415,7 @@ runs:
     # freshnessGroup 只影响写了它的那一条、每个比较组至少有一条默认可见、
     # **unknown 绝不自动等于 legacy**。这些承诺没有别的步骤会替它验。
     - name: Freshness self-test (catalogStatus branches)
+      id: s35
       shell: bash
       run: node scripts/tools/model-freshness-selftest.js
 
@@ -351,6 +426,7 @@ runs:
     #      而**不会有任何门禁报红**（legacy / historical 本来就是设计成隐藏的）。
     # 退出码 0 = 基线不变量成立（扰动结果只是"数据"）；1 = 基线自相矛盾（不变量违规 / 重复 slug / 非法输入）。
     - name: Freshness threshold sensitivity (±90 days, baseline invariants)
+      id: s36
       shell: bash
       run: node scripts/tools/model-freshness-sensitivity.js
 
@@ -363,6 +439,7 @@ runs:
     # 判断标准与前面每一支相同：**它红的时候没有别的步骤会替它红** —— 构建期那一遍跑的是
     # 真数据，验不到「某条规则其实永远不会响」；这一支还带 5 颗变异牙（实跑变红 → 逐字节还原）。
     - name: Feed self-test
+      id: s37
       shell: bash
       run: node scripts/tools/feed-selftest.js
 
@@ -376,12 +453,14 @@ runs:
     # （发布已经完成，通知失败只是"晚一点被发现"，不是"线上是坏的"）。
     # 另含 8 颗变异牙（改坏实现 → 实跑同一套判据 → 断言预期的那条真的变红 → 逐字节还原 → 判据回绿）。
     - name: IndexNow self-test
+      id: s38
       shell: bash
       run: node scripts/tools/indexnow-selftest.js
 
     # 发布产物由 build-local.js 组装（与 deploy.yml 完全同一条路径），
     # 失败即拦：能装出坏产物就不该合并、更不该发布。
     - name: Assemble site (same path as deploy.yml)
+      id: s39
       shell: bash
       run: node scripts/tools/build-local.js
 
@@ -395,18 +474,22 @@ runs:
     # 诊断才加 `--allow-missing-dist`（会打印 OPTIONAL DIAGNOSTIC）。
     # 这个调用形态与顺序由 `check-ci-consistency` 的 (10)/(17) 守着。
     - name: Models-page self-test (index + detail pages)
+      id: s40
       shell: bash
       run: node scripts/tools/models-page-selftest.js --dir=dist
 
     - name: Plans-hub self-test (/plans/)
+      id: s41
       shell: bash
       run: node scripts/tools/planshub-selftest.js --dir=dist
 
     - name: Vendor-pages self-test (/vendor/)
+      id: s42
       shell: bash
       run: node scripts/tools/vendor-page-selftest.js --dir=dist
 
     - name: Archive self-test (/archive/, synthetic ended/restored fixtures)
+      id: s43
       shell: bash
       run: node scripts/tools/archive-selftest.js --dir=dist
 
@@ -421,6 +504,7 @@ runs:
     # （合法的 browser Site Token 刻意不被算作泄密）。
     # 另含 8 种定向篡改的牙测试：任何一种篡改没被扫出来，这一步就红。
     - name: Analytics self-test (bootstrap count / production guard / provider)
+      id: s44
       shell: bash
       run: node scripts/tools/analytics-selftest.js --dir=dist
 
@@ -446,6 +530,7 @@ runs:
     # 反转的是「订阅出口」这一支，不是「去数据暴露」那一整族：`/docs/data/` 与
     # `/data/index.json` 依旧下架，`Data-docs self-test` 依旧不回来。
     - name: Residue guard (deleted copy must not return; container floors)
+      id: s45
       shell: bash
       run: node scripts/tools/check-residue.js --dir=dist
 
@@ -465,6 +550,7 @@ runs:
     # ⚠️ 新增的是门禁**步骤**，不是 `check-ci-consistency.js` 的**断言** ——
     # 所以 verify.yml 的 `--expect-checks` 仍然是 **39**（新增步骤不改变断言项数）。
     - name: Feed reproducibility (build twice, byte-compare)
+      id: s46
       shell: bash
       run: node scripts/tools/check-feed-reproducible.js --dir=dist
 
@@ -476,6 +562,7 @@ runs:
     #  guard 之后）。两者红的含义仍然不同：上面那条问「**产物**连不连字节稳定」，
     #  这一条问「盘上这份**派生数据**是不是来源层产出的那一份」。）
     - name: Plans reproducibility (curated → plans.json, byte-compare)
+      id: s47
       shell: bash
       run: node scripts/tools/check-plans-reproducible.js
 
@@ -486,6 +573,7 @@ runs:
     # 手写 eventId / 观测期外的缺席都会在这里红。
     # 没有它，「套餐变化」就是一段谁都能往里面写一条的文本，而页面与构建全绿。
     - name: Plan-history verify (log consistent with plans.json)
+      id: s48
       shell: bash
       run: node scripts/tools/check-plan-history.js
 
@@ -496,6 +584,7 @@ runs:
     # 一致地错下去。这一支的价值在**重算 + 与产物对账**，不在「真值来自哪一份文件」——
     # t6 起四份已下架的数据（plans / api-plans / models / model-registry-links）改从仓库根读。
     - name: SEO verification (independent, from dist/)
+      id: s49
       shell: bash
       run: node scripts/tools/seo-verify.js
 
@@ -612,39 +701,114 @@ runs:
     # verify-site.js 默认写死 Windows 的 Edge 路径，所以必须用它的 DSH_EDGE 覆盖成
     # runner 上真实存在的可执行文件——不然 Linux 上会直接 launch 失败。
     - name: Real-browser acceptance (verify-site.js)
+      id: s50
       if: steps.decision.outputs.mode == 'full'
       shell: bash
       env:
         DSH_EDGE: ${{ steps.browser.outputs.executable }}
       run: node scripts/tools/verify-site.js
 
-    # 回归比对：与 research/_raw/ours-baseline/verify.json（入库的冻结基线）比
-    # 覆盖条数 / 卡片数 / 首屏完整可见条数 / 页高 / 外部请求 / JS 错误。
-    # 代价写在 README：这几项「只能升不能降」，合法的数据缩减（过期下架、重新折叠）
-    # 会拦发布，处置方式是**人工、留痕**地重刷基线（npm run verify:baseline）。
-    - name: Regression verify (baseline compare)
+    # 回归比对：不再读入库的冻结基线，而是**从当前 deals.json 现算预算**，判这份产物
+    # 是否忠实渲染了当前数据（覆盖条数 / 卡片数的 ±2% 双边界、页高固定预算、首屏、
+    # 外部请求、JS 错误）。数据合法缩减只要重新构建就通过；数据与产物不是同一份才红。
+    # 这样新人不需要知道「刷基线」这件事，也不存在把报警器关掉的重刷动作。
+    - name: Regression verify (current-data budget)
+      id: s51
       if: steps.decision.outputs.mode == 'full'
       shell: bash
       env:
         DSH_EDGE: ${{ steps.browser.outputs.executable }}
-      run: node scripts/tools/verify-site.js --compare=research/_raw/ours-baseline/verify.json
+      run: node scripts/tools/verify-site.js --compare
+
+    # 页面预算自测：标题/描述在**拼接点**的边界与消歧（单元牙），加上一组契约驱动的
+    # 沙箱构建（真实数据 + 合成极值数据）与可证伪牙；产物在临时目录自建，不读 dist/。
+    # 不带 if：它不依赖浏览器/产物，degraded 与 full 都要跑 —— 预算回归与浏览器无关。
+    - name: Page-fit self-test (composition budgets, contract corpus)
+      id: s52
+      shell: bash
+      run: node scripts/tools/page-fit-selftest.js
 
     # 结论落 Summary（if: always() —— 前面的步骤红了也要把结论与"判了什么"写清楚；
     # 这一步只记录，不改变 job 的成败）。
     - name: Gate conclusion
+      id: conclusion
       if: always()
       shell: bash
       run: |
+        failed=''
+        if [ -z "$failed" ] && [ "${{ steps.s01.outcome }}" = "failure" ]; then failed='Install dependencies'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s02.outcome }}" = "failure" ]; then failed='Architecture fitness (structure invariants)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s03.outcome }}" = "failure" ]; then failed='Evidence policy (Tier-3 interception)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s04.outcome }}" = "failure" ]; then failed='Validate data (strict)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s05.outcome }}" = "failure" ]; then failed='Reproducibility gate (no value without a source)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s06.outcome }}" = "failure" ]; then failed='History verify (log consistent with deals.json)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s07.outcome }}" = "failure" ]; then failed='Migration verifier (audience provenance backfill)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s08.outcome }}" = "failure" ]; then failed='Translation coverage (advisory, English fallback, never blocks)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s09.outcome }}" = "failure" ]; then failed='Translation self-test'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s10.outcome }}" = "failure" ]; then failed='Expiry self-test'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s10b.outcome }}" = "failure" ]; then failed='Categories boundary self-test'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s11.outcome }}" = "failure" ]; then failed='Text / cleanText self-test'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s12.outcome }}" = "failure" ]; then failed='Source-health self-test'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s13.outcome }}" = "failure" ]; then failed='Provenance self-test'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s14.outcome }}" = "failure" ]; then failed='Deal-history self-test'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s15.outcome }}" = "failure" ]; then failed='Change-radar self-test'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s16.outcome }}" = "failure" ]; then failed='SEO self-test'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s17.outcome }}" = "failure" ]; then failed='Audience self-test'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s18.outcome }}" = "failure" ]; then failed='Roles-note self-test (official_urls note vs live wording)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s19.outcome }}" = "failure" ]; then failed='App-token self-test'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s20.outcome }}" = "failure" ]; then failed='AI layer self-test'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s21.outcome }}" = "failure" ]; then failed='Collector fixtures (offline replay)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s22.outcome }}" = "failure" ]; then failed='Plans self-test (data + page)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s23.outcome }}" = "failure" ]; then failed='Plan-history self-test'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s24.outcome }}" = "failure" ]; then failed='Deal-plan-links self-test'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s25.outcome }}" = "failure" ]; then failed='API-plans self-test (data + page)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s26.outcome }}" = "failure" ]; then failed='API-cost self-test (calculator logic + teeth)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s26a.outcome }}" = "failure" ]; then failed='Price-history self-test (F1 charts, no-baseline honesty)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s26b.outcome }}" = "failure" ]; then failed='Calendar self-test (F2 ICS folding + escaping)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s26c.outcome }}" = "failure" ]; then failed='Search self-test (F3 index + escaping + filter)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s27.outcome }}" = "failure" ]; then failed='API-plans reproducibility (curated → api-plans.json, byte-compare)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s28.outcome }}" = "failure" ]; then failed='API-plan-history verify (log consistent with api-plans.json)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s29.outcome }}" = "failure" ]; then failed='Model-registry self-test (identity + explicit mapping)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s30.outcome }}" = "failure" ]; then failed='Models reproducibility (registry → models.json, byte-compare)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s31.outcome }}" = "failure" ]; then failed='Model-registry links check (explicit mapping only, no similarity)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s32.outcome }}" = "failure" ]; then failed='Coverage report (gap list consistent with data)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s33.outcome }}" = "failure" ]; then failed='Coverage-targets self-test (intent layer + seven derived states)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s34.outcome }}" = "failure" ]; then failed='Model-role vocabulary self-test (registry ↔ freshness contract)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s35.outcome }}" = "failure" ]; then failed='Freshness self-test (catalogStatus branches)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s36.outcome }}" = "failure" ]; then failed='Freshness threshold sensitivity (±90 days, baseline invariants)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s37.outcome }}" = "failure" ]; then failed='Feed self-test'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s38.outcome }}" = "failure" ]; then failed='IndexNow self-test'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s39.outcome }}" = "failure" ]; then failed='Assemble site (same path as deploy.yml)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s40.outcome }}" = "failure" ]; then failed='Models-page self-test (index + detail pages)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s41.outcome }}" = "failure" ]; then failed='Plans-hub self-test (/plans/)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s42.outcome }}" = "failure" ]; then failed='Vendor-pages self-test (/vendor/)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s43.outcome }}" = "failure" ]; then failed='Archive self-test (/archive/, synthetic ended/restored fixtures)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s44.outcome }}" = "failure" ]; then failed='Analytics self-test (bootstrap count / production guard / provider)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s45.outcome }}" = "failure" ]; then failed='Residue guard (deleted copy must not return; container floors)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s46.outcome }}" = "failure" ]; then failed='Feed reproducibility (build twice, byte-compare)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s47.outcome }}" = "failure" ]; then failed='Plans reproducibility (curated → plans.json, byte-compare)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s48.outcome }}" = "failure" ]; then failed='Plan-history verify (log consistent with plans.json)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s49.outcome }}" = "failure" ]; then failed='SEO verification (independent, from dist/)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.browser.outcome }}" = "failure" ]; then failed='Prepare browser for the real-browser gate'; fi
+        if [ -z "$failed" ] && [ "${{ steps.decision.outcome }}" = "failure" ]; then failed='Browser availability decision (never silent)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s50.outcome }}" = "failure" ]; then failed='Real-browser acceptance (verify-site.js)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s51.outcome }}" = "failure" ]; then failed='Regression verify (current-data budget)'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s52.outcome }}" = "failure" ]; then failed='Page-fit self-test (composition budgets, contract corpus)'; fi
         {
           echo ""
           echo "### 门禁结论"
           echo ""
-          if [ "${{ steps.decision.outputs.mode }}" = "full" ]; then
+          if [ "$failed" = "Browser availability decision (never silent)" ]; then
+            echo "- ❌ 真浏览器验收没有执行（见上一条注解与 Summary 顶部原因）"
+          elif [ -n "$failed" ]; then
+            echo "- ⛔ **Gate @ $failed 失败**（后续步骤因此被跳过，不是浏览器不可用）"
+          elif [ "${{ steps.decision.outputs.mode }}" = "full" ]; then
             echo "- 静态门禁 + **真浏览器验收 + 回归比对**都跑了"
           elif [ "${{ steps.decision.outputs.mode }}" = "degraded" ]; then
             echo "- ⚠️ 只跑了静态门禁（**未做真浏览器验收**，显式降级）"
           else
-            echo "- ❌ 真浏览器验收没有执行（见上一条注解与 Summary 顶部原因）"
+            echo "- ⛔ **门禁没有走到浏览器结论**（mode 为空：前面的步骤被跳过/取消，不是「浏览器不可用」——见日志里第一个 skipped / cancelled 步骤）"
           fi
           echo "- 触发事件：\`${{ github.event_name }}\` @ \`${{ github.ref }}\`"
         } >> "$GITHUB_STEP_SUMMARY"
+        echo "failed_step=$failed" >> "$GITHUB_OUTPUT"

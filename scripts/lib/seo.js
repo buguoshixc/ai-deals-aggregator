@@ -20,6 +20,16 @@
 
 const pageKinds = require('./page-kinds');
 
+/**
+ * `<title>` 的硬上限（**唯一出处**）。
+ *
+ * 为什么要有这个名字：数据契约允许 150 字符的逐字标题，展示层的 `<title>` 却只有 80；
+ * 两者之间必须有一层预算适配（`lib/page-fit.js`）。历史上 80 是这里的一个字面量，
+ * 展示层各拼接点各自为政，于是「合法数据 + 到期归档」就能把发布门禁冻住（issue #150）。
+ * 常量单源化之后，适配层与门禁读的是同一个数 —— 改上限只改这一处。
+ */
+const TITLE_MAX_LENGTH = 80;
+
 const PROBLEM_CODES = [
   'gate-threshold', 'gate-pinned-missing', 'gate-pinned-empty',
   // v1.8：`alias-indexable` 退役（旧语义是「别名页必须 noindex」，与本轮策略相反），
@@ -27,128 +37,41 @@ const PROBLEM_CODES = [
   'alias-target-exists', 'alias-item-set', 'alias-canonical',
   'slug-shape', 'slug-unique',
   'title-unique', 'title-length', 'desc-nonempty', 'desc-unique',
-  'canonical-self', 'canonical-unique', 'h1-count', 'robots-policy',
+  'canonical-self', 'canonical-unique', 'h1-count', 'robots-policy', 'deal-index-policy',
   'itemlist-arity', 'itemlist-members',
   'breadcrumb-target-exists', 'sitemap-target-exists', 'sitemap-policy',
-  'orphan', 'internal-link-exists', 'thin-content', 'thin-content-margin',
+  'orphan', 'internal-link-exists', 'thin-content',
   'duplicate-item-set',
   'summary-source'
 ];
 
 /**
- * 正文下限**余量**登记（P2 残留 e1）—— 「这些页离红线多远」的唯一出处。
- *
- * ## 它解决什么
- *
- * `thin-content` 只在**跌破下限**时响：`/need/no-card/` 实测 710 字 / 下限 660（`600 + 60×1`）
- * ⇒ 它要再掉 **51** 个字才第一次变红。而这一页正是全站最薄的一页（次薄 123 字），
- * 也是唯一在文档里被点名「余量只剩 50 字」的那一条残留 —— 「还没红」不等于「没事」。
- *
- * 下限公式**不许调低**（`page-kinds.js` 的口径 + `v3.0-antigaming` 的下限单调性规则），
- * 所以真正的风险只有一个方向：**正文继续变薄**。这张表把「当前余量」登记成一条底线，
- * 跌破它就在**还没到红线之前**变红，并点名是哪一页、掉了多少。
- *
- * ## 语义（三个数字要分清）
- *
- *   · `chars` / `floor` / `margin` —— **登记当天**的读数（`margin = chars − floor`）。
- *     它是登记的依据，不是判据；判据只有下面一条。
- *   · `kind` / `count`            —— 登记时这一页的 kind 与「条数」（下限公式的两个入参）。
- *     自测逐条重算 `textFloor(kind, count) === floor`，公式改了这里立刻红。
- *   · 判据：**实时 `margin ≥ 登记值 margin`**（相等算过）。两个来源都会跑这条：
- *     构建期把刚写下的页面交给 `validate()`，独立门禁 `seo-verify.js` 从 dist 重新解析。
- *
- * 余量会变小有两条路，两条都该被人看见：① 正文变少（内容被删/被折叠）；② 条数变多
- * （`count` 涨 ⇒ 下限涨得比正文快）。所以跌破登记值时的处置**只有一条**：
- * 要么补回内容，要么**显式重新登记**（`node scripts/tools/seo-verify.js --print-floor-margins`
- * 会打印一张可以逐字贴回来的登记块）—— 重新登记是一次可见、可评审的动作，这就是它存在的意义。
- *
- * ## 为什么写在代码里，而不是读 `research/_raw/` 的 JSON
- *
- * `seo.js` 的纪律是「纯函数、不读盘」（见文件头）。登记表因此是**这份声明**；
- * 机器可读的 JSON 转写放在 `research/_raw/p2-residuals-v1/text-floor-margins.json`，
- * 由 `seo-selftest.js` 与声明**逐字节对账**（两条不许漂移）。改登记只能改这里。
- *
- * 登记范围：全站余量 < 150 字的全部页面（下一档是 409 字）。机器可读的**全站普查**
- * 见 `research/_raw/p2-residuals-v1/floor-census.json`。
+ * 优惠详情页的索引策略（唯一出处）：一条优惠的详情页可索引，当且仅当
+ *   ① 它还在首页默认视图里（`renderCore.defaultVisible` —— 未到期、非线索），或
+ *   ② 它已被档案接住（有一条**会渲染**的档案详情页给 `/deal/<id>/` 一条站内入链）。
+ * 两者都不满足＝「到期 / 线索但尚未归档」的窗口期：首页剔除按墙钟立即生效，而档案收录要等
+ * `ended` 事件（连续 2 轮来源未见），这 1–2 轮里它可能没有任何站内入链（分类页白名单外 +
+ * 单条厂商 + 雷达截断时必然）。把这类页临时 `noindex`（不进 sitemap），孤儿判据就不会被这个
+ * 结构性时间窗触发；`ended` 事件落地、档案接住它之后自动恢复可索引。
+ * 这不是「把报警器关掉」：活跃页与已归档页照常受 `orphan` 判据保护；独立验收（seo-verify）
+ * 还会从数据重算一遍窗口期集合，`deal-index-policy` 判据守住描述符自洽，防止静默批量 deindex。
  */
-const TEXT_FLOOR_RESIDUALS = [
-  // ⚠️ t3 一次性重新登记（六条一起，理由是**正文被有意删掉**，不是下限被调低）：
-  //   · 六页共同的 −20 字：页脚删掉了「优惠变化：变化雷达 · 订阅这些优惠」那一行
-  //     （去数据暴露：t3 删了页脚的订阅那整行 = −20 字；t4 又删了页脚最后一枚「开放数据」入口 = −7 字。
-  //      见 `index.html` 的 t4 注释与 `build-local.js` 的 `ROUTE_HREFS`）。
-  //     页脚是一份共享片段，所以每一页的可见正文都同步短了 20 字。
-  //   · `/category/` 额外的 −58 字：枢纽表删掉了第 4 列「订阅」（RSS / JSON 地址），
-  //     5 行的那一格文本加上表头随之下线。
-  // **下限一个字没动**（下面的 `floor` 与 `kind` / `count` 全部保持原值），判据也仍是
-  // 「实时余量 ≥ 登记值」—— 变的只是"登记当天读到的那一串数字"。
-  // 机器可读的 JSON 转写（`research/_raw/p2-residuals-v1/text-floor-margins.json`）必须同步，
-  // 否则 `seo-selftest` 的「逐字节相同」当场红；重新登记块由
-  // `node scripts/tools/seo-verify.js --print-floor-margins` 打印（唯一出处仍是本表）。
-  // ⚠️ v3.1 一次性重新登记（六条一起，理由与上一次同形：**正文被有意删掉**，不是下限被调低）：
-  //   · 六页共同的 −12 字：页脚那枚指向仓库的文字链（「 · GitHub 仓库」连同它前面的间隔点）
-  //     被删除，改成**页头最右侧的图标入口**（同一改动；图形与地址的唯一出处是 index.html 的
-  //     `SHARED:ghlink` 标记区间，由 `lib/page-shell.js` 抽进全部页面族）。页脚是一份共享片段
-  //     ⇒ 每一页的可见正文同步短 12 字 —— 这与上面 t3 那一次是**同一类**后果，处置也相同。
-  //   · 口径完全不动：**下限一个字没动**（floor / kind / count 全部保持原值），判据仍是
-  //     「实时余量 ≥ 登记值」；变的只是"登记当天读到的那一串数字"。
-  //   · 读数取自构建期自检在这六页上报出的实际值（671 / 826 / 1044 / 937 / 1000 / 943，
-  //     即原读数各 −12），并由 `node scripts/tools/seo-verify.js --print-floor-margins`
-  //     在产物上逐页复核（`--registered-at=2026-10-12`）。
-  //   · 机器可读的 JSON 转写（`research/_raw/p2-residuals-v1/text-floor-margins.json`）必须同步，
-  //     否则 `seo-selftest` 的「逐字节相同」当场红。
-  // 下面这条登记仍然只覆盖「余量 < 150 字」的那几页 —— 这个改动对全站每页都是 −12 字，
-  // 但只有这六页的余量本来就在登记射程内（其余页面离自己的下限还有 150 字以上）。
-  // ⚠️ search-intent-v1（W2）一次性重新登记（2026-11-04）：**两条退役、四条更新读数**，
-  //   下限（floor / kind / count）一个字没动，判据仍是「实时余量 ≥ 登记值」与
-  //   「登记集合 == 实时余量 < 150 的集合」两条并行。
-  //   · 退役 `need/no-card/`（余量 11 → **313**）与 `need/ai-coding/`（97 → **417**）：
-  //     这两页本轮新增「事实摘要」（`aside.factsum`，5 行事实 + 一行口径），可见正文各涨
-  //     ≈300 字，余量因此**离开 < 150 的射程**。退役是那条双向不变式要求的动作
-  //     （登记了却已不薄 ⇒ 属于「过期登记」，同样判红），不是把判据放宽：
-  //     两页的下限 660 / 840 原样保留，`seo.textFloor('need', n)` 仍按原值判。
-  //   · 四条 category 页按今天的产物重读（数据日推进带来的读数漂移，与上一次同类）。
-  //   · 读数由 `node scripts/tools/seo-verify.js --print-floor-margins` 在产物上打印。
-  { route: 'category/', kind: 'hub', count: 5, chars: 852, floor: 800, margin: 52, registeredAt: '2026-11-04' },
-  { route: 'category/audio/', kind: 'category', count: 6, chars: 1070, floor: 960, margin: 110, registeredAt: '2026-11-04' },
-  { route: 'category/image/', kind: 'category', count: 5, chars: 1036, floor: 900, margin: 136, registeredAt: '2026-11-04' },
-  { route: 'category/agent/', kind: 'category', count: 4, chars: 969, floor: 840, margin: 129, registeredAt: '2026-11-04' }
-];
+const EXPIRED_NOINDEX_AFTER_DAYS = 14;
 
-/**
- * 已经「毕业」的登记（`search-intent-v1` · W2，2026-11-04）。
- *
- * 为什么需要这一栏：登记表的不变式是**双向**的（`seo-verify.js` §③′）——
- * 「登记集合 == 实时余量 < 150 的集合」。一页补内容补到余量够厚之后，它就不再属于
- * 「最薄的那一档」，**留在表里会变成「过期登记」而判红**，所以必须从表里下来。
- * 但另一条判据（`seo-selftest.js`）要求被点名的那条残留「不许静默下架」——
- * 两条判据在「补内容」这件事上会互相打架。
- *
- * 这一栏就是解法：**毕业不是消失，是登记搬家**。规则三条，都由 selftest 判：
- *   ① 毕业记录里的路由**不许**还留在 `TEXT_FLOOR_RESIDUALS`（否则两条表各说各话）；
- *   ② 毕业当天的余量必须 **≥ 150**（拿「毕业」当挡箭牌去藏一页变薄的内容，判红）；
- *   ③ `floor` 与 `textFloor(kind, count)` 必须相等（下限口径原样，毕业不改判据）。
- *
- * 也就是说：判据的**下限**一个字没动，动的是「这一页还薄不薄」这个事实。
- */
-const TEXT_FLOOR_GRADUATED = [
-  {
-    route: 'need/no-card/', kind: 'need', count: 1, chars: 973, floor: 660, margin: 313,
-    graduatedAt: '2026-11-04',
-    reason: 'search-intent-v1 W2 给 10 个 /need/* 页加了「事实摘要」（5 行现算事实 + 一行口径），本页可见正文 671 → 973，余量 11 → 313'
-  },
-  {
-    route: 'need/ai-coding/', kind: 'need', count: 4, chars: 1257, floor: 840, margin: 417,
-    graduatedAt: '2026-11-04',
-    reason: '同上：事实摘要让本页余量 97 → 417，离开「余量 < 150」的射程'
-  }
-];
+/** 计算一条优惠相对基准日（YYYY-MM-DD）已过期多少天；未过期或无截止日期返回 null */
+function daysExpired(expiresAt, asOf) {
+  if (!expiresAt || !asOf) return null;
+  const exp = String(expiresAt).slice(0, 10);
+  const base = String(asOf).slice(0, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(exp) || !/^\d{4}-\d{2}-\d{2}$/.test(base)) return null;
+  const diffMs = Date.parse(`${base}T00:00:00Z`) - Date.parse(`${exp}T00:00:00Z`);
+  if (!Number.isFinite(diffMs) || diffMs <= 0) return null;
+  return Math.floor(diffMs / 86400000);
+}
 
-/** 路由 → 登记项（登记表很小，线性查；重复登记由 `seo-selftest` 断言） */
-function floorResidualOf(route) {
-  for (const row of TEXT_FLOOR_RESIDUALS) {
-    if (row.route === route) return row;
-  }
-  return null;
+function dealIndexable({ homepageVisible, archivedLinked, expiredDays = null } = {}) {
+  if (typeof expiredDays === 'number' && expiredDays > EXPIRED_NOINDEX_AFTER_DAYS) return false;
+  return Boolean(homepageVisible || archivedLinked);
 }
 
 /**
@@ -383,7 +306,8 @@ function internalLinks(html, route) {
 /** 把站内链接规范化成路由键：'vendor/zhipu/' —— 静态文件保留扩展名，便于分开对账 */
 function normalizeRoute(href) {
   if (!href) return '';
-  if (/\.(xml|json|css|svg|png|txt|ico)$/i.test(href)) return href;
+  // v3.4 F2：`.ics` 与其它静态文件同样按「带扩展名 = 文件，不补尾斜杠」处理。
+  if (/\.(xml|json|css|svg|png|txt|ico|ics)$/i.test(href)) return href;
   return href.endsWith('/') ? href : `${href}/`;
 }
 
@@ -452,7 +376,7 @@ function validate(pages, opts = {}) {
     const independent = page.indexable && canonical === expectedUrl;
 
     if (!title) fail('title-length', route, '页面没有 <title>');
-    else if (title.length > 80) fail('title-length', route, `标题 ${title.length} 字符，超过 80：${title}`);
+    else if (title.length > TITLE_MAX_LENGTH) fail('title-length', route, `标题 ${title.length} 字符，超过 ${TITLE_MAX_LENGTH}：${title}`);
     // 唯一性只在**独立可索引**页面之间要求：别名页与目标页共用标题是刻意的
     // ——它就是「同一主题的旧地址」，标题不同反而会让读者以为进错了页。
     if (title && independent) {
@@ -491,6 +415,16 @@ function validate(pages, opts = {}) {
         : `策略表判它可索引，但页面带了 robots=${robots}`);
     }
 
+    // 优惠详情页索引策略的自洽判据：描述符声明的窗口期状态（dealLimbo）必须与 indexable 一致。
+    // dealLimbo 由构建期按 dealIndexable() 从数据算出（首页可见 || 档案接住）。这一条守住
+    // 「有人改了 indexable 却没改 dealLimbo（或反之）」的漂移；窗口期集合本身对不对，由
+    // seo-verify 从数据独立重算（两个来源互证）。只对声明了 dealLimbo 的 deal 页判。
+    if (page.kind === 'deal' && page.dealLimbo !== undefined && page.indexable === Boolean(page.dealLimbo)) {
+      fail('deal-index-policy', route,
+        `dealLimbo=${page.dealLimbo} 与 indexable=${page.indexable} 矛盾`
+        + '（窗口期页必须 noindex，非窗口期页必须可索引；见 seo.dealIndexable）');
+    }
+
     // sitemap 与索引策略必须一致：**sitemap = 独立可索引页面的集合**。
     // canonical 收口到别处的别名页可以被抓取、可以传递链接权重，但**不该进 sitemap**
     // （sitemap 是「请索引这些独立 URL」的声明，与 canonical 指向别处直接冲突）。
@@ -508,26 +442,6 @@ function validate(pages, opts = {}) {
 
     if (text.length < textFloor(page.kind, page.count)) {
       fail('thin-content', route, `可见正文 ${text.length} 字符 < 下限 ${textFloor(page.kind, page.count)}（kind=${page.kind} count=${page.count}）`);
-    }
-
-    // ---- 正文下限**余量**（P2 残留 e1）--------------------------------
-    // 只对已登记的路由判：这些页的余量已经收窄（`/need/no-card/` 只剩 50 字），
-    // 而下限公式不许调低 ⇒ 风险全在「正文继续变薄」这一侧。
-    // ⚠️ 登记表里**没有**的路由这里一行都不判（`validate()` 不该因为某页没登记就多说话）；
-    // 「登记的路由还在不在产物里」由 `seo-verify.js` 对着 dist 查（那边才知道全站有哪些页）。
-    const residual = floorResidualOf(route);
-    if (residual) {
-      const floor = textFloor(page.kind, page.count);
-      const margin = text.length - floor;
-      if (margin < residual.margin) {
-        const kindNote = page.kind === residual.kind && Number(page.count) === residual.count
-          ? `（登记于 ${residual.registeredAt}：本页 ${residual.chars} 字 − 下限 ${residual.floor} = 余量 ${residual.margin}）`
-          : `（登记于 ${residual.registeredAt} 的基准是 kind=${residual.kind} count=${residual.count}，本页是 kind=${page.kind} count=${page.count}）`;
-        fail('thin-content-margin', route,
-          `可见正文 ${text.length} 字符，下限 ${floor}，余量 ${margin} < 登记值 ${residual.margin}${kindNote}；`
-          + '余量已跌破登记底线（还没到 thin-content 的红线，但这一页是全站最薄的几页之一）——'
-          + '补回内容，或显式重新登记：node scripts/tools/seo-verify.js --print-floor-margins');
-      }
     }
 
     // ---- JSON-LD / ItemList / 面包屑 ----
@@ -677,7 +591,14 @@ function validate(pages, opts = {}) {
     for (const page of list) {
       if (page.kind !== 'vendor' && page.kind !== 'category') continue;
       if (page.pinned) {
-        if (!page.count) fail('gate-pinned-empty', page.route, '钉住的页面条数为 0');
+        /**
+         * P2（路由死锁机器化）：钉住路由在本次数据下掉出门槛时，计划层不再硬拦等人补别名，
+         * 而是继续生成**同 URL 的降级页**（`indexable:false`、canonical 自指、不进 sitemap）。
+         * 那类页面的 count=0 是**降级的结果**，不是数据事故 —— 门禁不能再拿「钉住页面不许为空」
+         * 判它死，否则降级机制第一次生效就会把 SEO 门禁自己弄红。
+         * 可索引页仍然一条不松（下一行就是原判据）。
+         */
+        if (!page.count && page.indexable !== false) fail('gate-pinned-empty', page.route, '钉住的页面条数为 0');
         continue;
       }
       if (page.kind === 'vendor') {
@@ -804,12 +725,12 @@ function summarize(result) {
 }
 
 module.exports = {
+  TITLE_MAX_LENGTH,
+  EXPIRED_NOINDEX_AFTER_DAYS,
   PROBLEM_CODES,
+  daysExpired,
+  dealIndexable,
   textFloor,
-  // 正文下限**余量**登记（P2 残留 e1）：构建期、独立门禁、自测三处读同一份声明
-  TEXT_FLOOR_RESIDUALS,
-  TEXT_FLOOR_GRADUATED,
-  floorResidualOf,
   validate,
   recomputeSummary,
   summarize,

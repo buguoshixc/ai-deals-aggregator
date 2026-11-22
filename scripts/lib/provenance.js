@@ -69,6 +69,25 @@ const SOURCE_TYPES = {
   'Futuretools': 'directory',
   'Futurepedia': 'directory',
   'Layer3Labs': 'directory',
+  // AppSumo：第三方交易平台（deal 集市）。落地页是它自己的产品页 —— 页面上的
+  // 「折扣价 / 原价 / 截止日期」都是 AppSumo 作为交易平台一方给出的条款，不是厂商官方页，
+  // 所以登记为 directory 而不是 official。
+  'AppSumo': 'directory',
+  // OpenRouter：模型路由平台的官方 API/定价页。免费模型这条优惠的条款方就是 OpenRouter
+  // 自己（它的 pricing 就是「本平台如何计费」的权威），所以登记为 official。
+  'OpenRouter': 'official',
+  // B 类资讯线索（beta，2026-11 起）：科技媒体的 RSS 里发现的「像优惠」的报道。
+  // 与 directory 的区别：目录站是把厂商的条款整理成结构化列表，线索是**新闻**——
+  // 没核验、可能不准确，所以单列一个来源类型 `lead`，页面显示「线索 · 未核验」。
+  // 采集器见 scripts/collectors/leads.js；判据与 TTL 见 scripts/lib/lead-radar.js。
+  'IT之家': 'lead',
+  '36氪': 'lead',
+  '量子位': 'lead',
+  '爱范儿': 'lead',
+  '少数派': 'lead',
+  '极客公园': 'lead',
+  '快科技': 'lead',
+  '钛媒体': 'lead',
   // 人工策展
   'Curated': 'curated',
   'Curated-CN': 'curated'

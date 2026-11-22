@@ -11,7 +11,7 @@
  *   node scripts/tools/verify-site.js --dir=dist --keep        # 保留浏览器窗口（调试用）
  *   node scripts/tools/verify-site.js --url=https://…/         # 直接验收线上站点（部署后冒烟）
  *   node scripts/tools/verify-site.js --json=out.json          # 顺带写出机器可读指标（密度/页高/请求数/断言明细）
- *   node scripts/tools/verify-site.js --compare=base.json      # 与基线比回归：密度不得降、页高/请求不得涨
+ *   node scripts/tools/verify-site.js --compare                # 用当前 deals.json 现算预算判回归（不读基线文件）
  *
  * 退出码非 0 = 有断言失败。
  */
@@ -106,6 +106,13 @@ const factSummaryLib = require('../lib/fact-summary');
 // 事实摘要里的平台名走 `RENDER-CORE` 的 `vendorOf()`（与页面同一条归并），所以这里也要能从
 // 产物 `index.html` 里把那段 RENDER-CORE 载进 VM —— 与 build-local 用的是同一个 loader。
 const { load: loadRenderCore } = require('../lib/render-core');
+// B 类资讯线索（lead）的判据**唯一出处**：`provenance.SOURCE_TYPES`（构建期 `factsFor()` 正是
+// 用它派生 `sourceFacts.sourceType`）。验收脚本不另写一份「哪些来源算线索」的名单 —— 那份名单
+// 一抄就会分家，而分家后的表现是「页面上有一条线索，断言却不知道它是线索」。
+const provenance = require('../lib/provenance');
+// 线索卡的措辞权威（`CHANGES_LEAD` / `CHANGES_LABELS` …）。断言按 lib/changes.js 的常量比对，
+// 不把「阅读原文 →」「线索判据：…」抄成第二份字面量。
+const changesLib = require('../lib/changes');
 
 /**
  * 订阅产物登记表 `FEED_FILES` 的**唯一读取点**（唯一出处 = `scripts/lib/feed.js` 的导出）。
@@ -364,18 +371,23 @@ async function waitForApp(page, timeout = 20000) {
 }
 
 /**
- * 机器可读指标：`--json=` 把它写成文件，`--compare=` 拿它跟基线比。
+ * 机器可读指标：`--json=` 把它写成文件；`--compare` 用**当前 deals.json 现算的预算**判回归。
  *
  * 为什么要有这个：改动前后的「密度有没有退、页高有没有涨、请求有没有多」必须是**脚本产出的数字**，
  * 不能手抄进文档（手抄的数字没人复核，也没有回归保护）。用法：
- *   node scripts/tools/verify-site.js --json=research/_raw/ours-baseline/verify.json
- *   node scripts/tools/verify-site.js --compare=research/_raw/ours-baseline/verify.json
+ *   node scripts/tools/verify-site.js --json=/tmp/verify.json
+ *   node scripts/tools/verify-site.js --compare
+ *
+ * v3.3 起 `--compare` **不再读 research/_raw/ours-baseline/verify.json**：冻结基线只能靠人刷，
+ * 而「刷基线」正是把报警器关掉的动作。现在每次都用当前数据现算期望值，数据与产物不是同一份才红
+ * （例如：数据删了 20% 但 dist 没重建 —— 页面上还是旧内容）。
  */
 const metrics = {};
 // 首页顶栏那一枚「AI Coding 套餐对比」的现场量测，留给 §19 与套餐页的 h1 对账用
 let topPlansEntry = null;
 const jsonArg = process.argv.find(a => a.startsWith('--json='));
-const compareArg = process.argv.find(a => a.startsWith('--compare='));
+const compareRawArg = process.argv.find(a => a === '--compare' || a.startsWith('--compare='));
+const compareArg = Boolean(compareRawArg);
 
 /*
  * ============================ CLS 门禁（cls-gate-v1）============================
@@ -554,7 +566,7 @@ const CLS_PROBE = () => {
  * ⚠️ 为什么**不是**让豁免依赖 `--allow-control-exemption`（`ALLOW_CONTROL_EXEMPTION`）：
  * 那个开关是「我知道这一轮的 `--dir=` 是形态注入副本」的声明，只在证据复跑时才会带；
  * 而 CI（`.github/actions/gate/action.yml`）跑的是**裸** `node scripts/tools/verify-site.js`
- * 与 `--compare=` 两行，一个开关都不带。若把本豁免挂在那个开关上，CI 就会**永久长红**，
+ * 与 `--compare` 两行，一个开关都不带。若把本豁免挂在那个开关上，CI 就会**永久长红**，
  * 于是所有人学会忽略这一条 —— 那正是「豁免默认即红」要避免的反面。所以这里的「显式登记」
  * 落在**登记表**上（它进 git、可 review、可 grep），而开关只用来**收回**，不用来**开启**。
  *
@@ -650,6 +662,35 @@ function noJsControlExemptionFor(route) {
     if (analytics.isAllowedExternalRequest(url)) analyticsRequests.push(url);
     else { externalRequests.push(url); forbiddenRequests.push(url); }
   });
+
+  console.log('\n=== 0) 首页主脚本外链（v6 / B） ===');
+  if (!urlArg) {
+    const homeHtml = fs.readFileSync(path.join(DIR, 'index.html'), 'utf8');
+    const appScripts = [...homeHtml.matchAll(/<script\b[^>]*\bsrc="([^"]+)"[^>]*>/gi)]
+      .map(m => ({ tag: m[0], src: m[1] }))
+      .filter(item => /(?:^|\/)app\.[a-f0-9]{16}\.js$/.test(item.src));
+    check('首页恰好加载 1 个内容哈希应用脚本（app.<16hex>.js）', appScripts.length === 1, appScripts.map(item => item.src).join(', '));
+    check('应用脚本带 defer（首屏解析不阻塞渲染）', appScripts.length === 1 && /\bdefer\b/.test(appScripts[0].tag), appScripts[0] ? appScripts[0].tag : '未找到');
+    check('首页没有内联 RENDER-CORE（176KB 已移出首屏 HTML）', !/RENDER-CORE:START/.test(homeHtml));
+    if (appScripts.length === 1) {
+      const assetPath = path.join(DIR, appScripts[0].src);
+      check('外链应用脚本文件真实存在', fs.existsSync(assetPath), path.relative(ROOT, assetPath));
+      const bytes = fs.existsSync(assetPath) ? fs.statSync(assetPath).size : 0;
+      check('外链应用脚本不是空壳（>100KB）', bytes > 100 * 1024, `${bytes} B`);
+      check('dist 里没有源码路径 assets/app.js（只有哈希产物）', !fs.existsSync(path.join(DIR, 'assets', 'app.js')));
+    }
+    const styleLinks = [...homeHtml.matchAll(/<link\b[^>]*\bhref="([^"]+)"[^>]*>/gi)]
+      .map(m => m[1])
+      .filter(href => /(?:^|\/)style\.[a-f0-9]{16}\.css$/.test(href));
+    check('首页加载内容哈希共享样式表（style.<16hex>.css）', styleLinks.length === 1, styleLinks.join(', '));
+    if (styleLinks.length === 1) {
+      const cssPath = path.join(DIR, styleLinks[0]);
+      const cssBytes = fs.existsSync(cssPath) ? fs.statSync(cssPath).size : 0;
+      check('共享样式表文件真实存在且非空', cssBytes > 10 * 1024, `${(cssBytes / 1024).toFixed(1)} KB`);
+    }
+  } else {
+    console.log('  · 线上目标：跳过静态文件断言（改由 HTTP 响应验证）');
+  }
 
   console.log('\n=== 1) 无 JS：预渲染骨架 ===');
   await page.route('**/assets/data/offers.json', route => route.abort());   // 断掉数据，只看静态 HTML
@@ -793,7 +834,15 @@ function noJsControlExemptionFor(route) {
       fg: style ? style.color : '',
       weight: style ? style.fontWeight : '',
       brand: getComputedStyle(document.documentElement).getPropertyValue('--brand').trim(),
-      onAccent: getComputedStyle(document.documentElement).getPropertyValue('--on-accent').trim()
+      onAccent: getComputedStyle(document.documentElement).getPropertyValue('--on-accent').trim(),
+      secondary: ['.plansnav-api', '.plansnav-cost'].map(sel => {
+        const el = document.querySelector(sel);
+        if (!el) return { sel, missing: true };
+        const s = getComputedStyle(el);
+        return { sel, text: el.textContent.trim(), bg: s.backgroundColor, weight: s.fontWeight,
+          border: s.borderTopWidth, color: s.color, display: s.display };
+      }),
+      themeButtons: [...document.querySelectorAll('#themeSeg button')].map(b => b.textContent.trim())
     };
   });
   check('首页顶栏的入口整簇在配色切换器**右边**且不越过汇总条（几何判定，不是"还在页面上"）',
@@ -815,6 +864,22 @@ function noJsControlExemptionFor(route) {
       topPlansEntry.bg === toRgb(topPlansEntry.brand) && topPlansEntry.fg === toRgb(topPlansEntry.onAccent) &&
       Number(topPlansEntry.weight) >= 600,
       `填充 ${topPlansEntry.bg}（--brand ${topPlansEntry.brand}）· 文字 ${topPlansEntry.fg}（--on-accent ${topPlansEntry.onAccent}）· 字重 ${topPlansEntry.weight}`);
+
+  /* v6（C2）：第二、三枚必须从实心药丸降为普通文字链，且文案恢复全称。
+     这条判的是「降权」本身（透明底 / 无边框 / 非加粗）与「名字写全」——
+     只判"入口还在"会让改回药丸也绿。 */
+  check('首页顶栏两枚次级入口是普通文字链（透明底、无边框、非加粗），且恢复全称',
+    topPlansEntry.secondary.length === 2 && topPlansEntry.secondary.every(item =>
+      !item.missing && item.bg === 'rgba(0, 0, 0, 0)' && item.border === '0px' && Number(item.weight) < 600),
+    topPlansEntry.secondary.map(item => `${item.sel}: ${item.text || '(缺)'} ${item.bg} / ${item.border} / ${item.weight}`).join(' · '));
+  check('首页顶栏次级入口文案是「API / Token 计费对比」「API 成本计算器」',
+    topPlansEntry.secondary.length === 2 &&
+    topPlansEntry.secondary[0].text === 'API / Token 计费对比' &&
+    topPlansEntry.secondary[1].text === 'API 成本计算器',
+    topPlansEntry.secondary.map(item => item.text).join(' / '));
+  check('首页顶栏主题切换器仍恰好是三段（跟随系统 / 浅色 / 深色）',
+    topPlansEntry.themeButtons.length === 3 && topPlansEntry.themeButtons.join('|') === '跟随系统|浅色|深色',
+    topPlansEntry.themeButtons.join(' / '));
   }
 
   /* 761–940px：顶栏一行放不下，整页会横向滚动。
@@ -937,9 +1002,12 @@ function noJsControlExemptionFor(route) {
           inner.sameLineAsJumpback,
           `同行=${inner.sameLineAsJumpback} · 图标 top ${inner.gh ? inner.gh.top : '-'}px`);
       } else {
-        check(`内页 /models/ ${width}px：放不下第三个元素时确实多一行，且代价恰好是一行（30~60px）`,
-          inner.cost !== null && inner.cost >= 30 && inner.cost <= 60,
-          `顶栏 ${inner.headerH}px · 藏掉图标 ${inner.headerWithoutIconH}px · 代价 ${inner.cost}px（= 图标 30 + 间距 12）`);
+        check(`内页 /models/ ${width}px：含全局导航抽屉时顶栏不超过两行，且图标最多只占一行代价`,
+          inner.cost !== null && inner.headerH <= 110 && (
+            (Math.abs(inner.cost) <= 1 && inner.sameLineAsJumpback)
+            || (inner.cost >= 30 && inner.cost <= 60)
+          ),
+          `顶栏 ${inner.headerH}px · 藏掉图标 ${inner.headerWithoutIconH}px · 代价 ${inner.cost}px · 同行=${inner.sameLineAsJumpback}`);
       }
       check(`内页 /models/ ${width}px：页面零横向溢出`, inner.overflow <= 1, `溢出 ${inner.overflow}px`);
     }
@@ -1133,8 +1201,15 @@ function noJsControlExemptionFor(route) {
         memberText: (card.querySelector('.fmembers') || {}).textContent || ''
       };
     });
+    // 首页卡片只渲染**当前**优惠：页面里的 `isExpired()` 用北京时间的今天判定，
+    // 过期但在 `store.prune` 宽限期内仍留在 deals.json 的记录**没有卡片**。
+    // 这里独立算一遍（不 require 构建期模块 —— 这一节的价值就是用另一条路算），
+    // 否则 P0 的 AppSumo 两条（expiresAt=2026-11-09，今天已过期）会被误判成「未认领」。
+    const todayCN = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
+    const isExpired = deal => Boolean(deal.expiresAt && String(deal.expiresAt).slice(0, 10) < todayCN);
+    const isSaasDeal = deal => /^appsumo$/i.test(String((deal && deal.source) || '').trim());
     const byId = new Map();
-    for (const deal of data.deals) if (deal.type === 'deal') byId.set(String(deal.id), deal);
+    for (const deal of data.deals) if (deal.type === 'deal' && !isExpired(deal) && !isSaasDeal(deal)) byId.set(String(deal.id), deal);
 
     const owners = new Map();          // deal id → [card titles]
     const unmatched = [];
@@ -1191,6 +1266,16 @@ function noJsControlExemptionFor(route) {
       };
       const foldedHits = hits.filter(card => card.declared > 1);
       if (!foldedHits.length) continue;
+      // v6（D1）：同源折叠卡的成员本来就跨厂商（OpenRouter 的 8 个模型分属 Baidu/NVIDIA/…），
+      // 厂商词当然不会出现在卡标题里。这些卡由下面「同源卡成员共享同一 sourceUrl」单独判，
+      // 不能再用厂商词判红；厂商词只对 sourceUrl 为空的 legacy 折叠卡负责。
+      const isSourceCard = card => {
+        const members = card.ids.map(id => byId.get(id)).filter(Boolean);
+        if (!members.length) return false;
+        const srcs = members.map(d => String(d.sourceUrl || '').trim());
+        return srcs.every(Boolean) && new Set(srcs).size === 1;
+      };
+      if (foldedHits.some(isSourceCard)) continue;
       const vendorWords = wordsOf(deal.vendor);
       const ok = foldedHits.some(card => {
         const t = card.title.toLowerCase();
@@ -1219,6 +1304,11 @@ function noJsControlExemptionFor(route) {
         offer: card.offer,
         memberLinks: card.memberLinks.filter(Boolean),
         memberTextChars: card.memberText.length,
+        // 同源卡：所有成员都必须来自同一 sourceUrl；sourceUrl 为空的是 legacy 厂商折叠卡。
+        sourceUrl: (() => {
+          const srcs = members.map(d => String(d.sourceUrl || '').trim());
+          return srcs.length === members.length && srcs.every(Boolean) && new Set(srcs).size === 1 ? srcs[0] : '';
+        })(),
         // 预渲染的成员原文：**每种不同的文案**至少要在卡片静态正文里出现一次（无 JS 也读得到）。
         // 分母是「不同文案数」——同一份文案覆盖 N 个型号时说一遍就够（那正是 modelOffers 的口径）。
         prerenderedTexts: [...distinct].filter(t => card.memberText.includes(t.slice(0, 12))).length,
@@ -1233,19 +1323,51 @@ function noJsControlExemptionFor(route) {
       multiOwned,
       crossVendor,
       ghostIds,
-      foldedCards
+      foldedCards,
+      sourceCards: foldedCards.filter(card => card.sourceUrl)
     };
   }, JSON.parse(DEALS_URL));
 
-  check('每条优惠按 id 归到恰好一张卡上（没有条目丢失、也没有凭空捏造的 id）',
+  check('每条核心 AI 优惠按 id 归到恰好一张卡上（没有条目丢失、也没有凭空捏造或 SaaS 混入）',
     folded.unmatched.length === 0 && folded.multiOwned.length === 0 && folded.ghostIds.length === 0,
-    `未认领 ${folded.unmatched.length} 条 / 被多张卡认领 ${folded.multiOwned.length} 条 / 卡片上不存在的 id ${folded.ghostIds.length} 个` +
+    `未认领 ${folded.unmatched.length} 条 / 被多张卡认领 ${folded.multiOwned.length} 条 / 卡片上不存在或越界 id ${folded.ghostIds.length} 个` +
     (folded.unmatched.length ? ` · 例：${folded.unmatched.slice(0, 3).join('、')}` : ''));
 
-  check('认领关系同厂商（折叠键把厂商算进去了，不是只按优惠文案并卡）',
+  {
+    const saasTab = page.locator('[data-facet="tab"][data-value="saas"]');
+    const saasExists = (await saasTab.count()) > 0;
+    let saasCheck = null;
+    if (saasExists) {
+      await saasTab.click();
+      saasCheck = await page.evaluate(async (dealsUrl) => {
+        const data = await (await fetch(dealsUrl)).json();
+        const todayCN = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
+        const isExpired = deal => Boolean(deal.expiresAt && String(deal.expiresAt).slice(0, 10) < todayCN);
+        const isSaasDeal = deal => /^appsumo$/i.test(String((deal && deal.source) || '').trim());
+        const expected = new Set(data.deals.filter(d => d.type === 'deal' && !isExpired(d) && isSaasDeal(d)).map(d => String(d.id)));
+        const ids = [...document.querySelectorAll('article.g')].flatMap(c => c.dataset.dealIds ? c.dataset.dealIds.split(',') : []);
+        const got = new Set(ids);
+        const missing = [...expected].filter(id => !got.has(id));
+        const extra = [...got].filter(id => !expected.has(id));
+        return { expected: expected.size, got: got.size, duplicates: ids.length - got.size, missing: missing.length, extra: extra.length };
+      }, JSON.parse(DEALS_URL));
+      await page.locator('[data-facet="tab"][data-value="deals"]').click();
+    }
+    check('「SaaS 折扣」标签完整接住全部未过期 AppSumo 条目（零丢失、零重复、零越界）',
+      Boolean(saasCheck) && saasCheck.expected > 0 && saasCheck.missing === 0 && saasCheck.extra === 0 && saasCheck.duplicates === 0,
+      saasCheck
+        ? `AppSumo ${saasCheck.got}/${saasCheck.expected} 条 · 漏 ${saasCheck.missing} / 越界 ${saasCheck.extra} / 重复 ${saasCheck.duplicates}`
+        : '找不到 [data-facet="tab"][data-value="saas"]');
+  }
+
+  check('认领关系同厂商或同源（legacy 卡按厂商，sourceUrl 卡按来源分组）',
     folded.crossVendor.length === 0,
     folded.crossVendor.length ? `跨厂商 ${folded.crossVendor.length} 条 · 例：${folded.crossVendor.slice(0, 2).join(' / ')}`
-      : `全部 ${folded.deals} 条都落在同一厂商的卡片上`);
+      : `全部 ${folded.deals} 条都落在同一厂商或同一来源的卡片上`);
+
+  check('同源折叠卡的成员确实共享同一 sourceUrl（sourceUrl 为空时不许冒充同源）',
+    folded.sourceCards.every(card => card.sourceUrl && card.memberLinks.length === card.declared),
+    folded.sourceCards.map(card => `${card.title}：${card.sourceUrl}`).join(' · ') || '本页没有同源折叠卡');
 
   // 这条断言的牙口是**实跑验过**的：把折叠键里的厂商抹掉（`foldKey` 只返回 type+条件+有效期）
   // 后，重建产物仍能过构建自检，但这条当场变红「跨厂商 11 条」。
@@ -1555,6 +1677,47 @@ function noJsControlExemptionFor(route) {
   check('移动端单列', mobile.cols === 1, `${mobile.cols} 列`);
   check('移动端卡片完整', mobile.cards >= 45 && mobile.tiles >= 20, `${mobile.cards} 卡片 / ${mobile.tiles} tile`);
 
+  /* v6（C1）：≤560px 的十条「按需求找优惠」入口卡必须整块移到优惠网格**之后**，
+     并让 390×900 首屏至少出现 1 张完整优惠卡。旧读数：入口卡块占 758px，
+     网格起点 1135.75/1148.75px，首屏 0 张。这里用 900（任务书口径）而不是上面
+     那条移动端断言的 844，量的是同一件事：首屏能不能看到优惠。
+     ⚠️ nav.needs 进 main 后宽度会吃 .wrap 的 16px 内边距；-16px 外边距是修复，
+     所以这里同时钉「整块宽 390」与「卡片仍 358」，防止以后又被包含块悄悄收窄。 */
+  await page.setViewportSize({ width: 390, height: 900 });
+  await page.waitForTimeout(200);
+  const c1Mobile = await page.evaluate(() => {
+    const grid = document.getElementById('dealsList');
+    const needs = document.querySelector('nav.needs');
+    const cards = [...document.querySelectorAll('#dealsList article.g')];
+    const gb = grid.getBoundingClientRect();
+    const nb = needs ? needs.getBoundingClientRect() : null;
+    const after = Boolean(needs) && Boolean(grid.compareDocumentPosition(needs) & Node.DOCUMENT_POSITION_FOLLOWING);
+    return {
+      gridTop: Math.round(gb.top * 100) / 100,
+      full: cards.filter(c => { const r = c.getBoundingClientRect(); return r.top >= -1 && r.bottom <= 900; }).length,
+      navAfter: after,
+      navPrev: needs && needs.previousElementSibling ? (needs.previousElementSibling.id || needs.previousElementSibling.className) : '',
+      navW: nb ? Math.round(nb.width * 100) / 100 : 0,
+      navH: nb ? Math.round(nb.height * 100) / 100 : 0,
+      needCards: needs ? needs.querySelectorAll('.need-card').length : 0,
+      firstCardW: cards[0] ? Math.round(cards[0].getBoundingClientRect().width * 100) / 100 : 0,
+      overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth
+    };
+  });
+  check('390×900 首屏至少 1 张完整优惠卡（C1：入口卡移到网格之后）',
+    c1Mobile.full >= 1 && c1Mobile.gridTop < 900,
+    `首屏完整 ${c1Mobile.full} 张 · 网格起点 ${c1Mobile.gridTop}px · 入口卡块 ${c1Mobile.navH}px`);
+  check('390：入口卡整块在优惠网格之后，仍 10 张、宽 390、无横向溢出',
+    // v3.4 F4：`#jumpNav` 移到列表之后，恰好夹在 grid 与入口卡块之间 —— 判定改看
+    // 「文档序在 grid 之后」，而不是「紧挨着 grid」。
+    c1Mobile.navAfter && c1Mobile.needCards === 10 &&
+    Math.abs(c1Mobile.navW - 390) <= 0.5 && c1Mobile.overflow <= 0,
+    `nav 在 grid 后=${c1Mobile.navAfter} · 前一项=${c1Mobile.navPrev} · ${c1Mobile.needCards} 张 · 宽 ${c1Mobile.navW}px · 溢出 ${c1Mobile.overflow}px`);
+  check('390：入口卡进 main 后，卡片宽度仍是 358（负外边距抵消 .wrap 的内边距）',
+    Math.abs(c1Mobile.firstCardW - 358) <= 0.5,
+    `首卡 ${c1Mobile.firstCardW}px（期望 358）`);
+  await page.setViewportSize({ width: 390, height: 844 });
+
   // 控制带逐个控件体检 + 跳转 chip 折行 + **更窄视口的页面级溢出** —— 补的是门禁的两个盲区：
   // ① 上面那条「无横向溢出」只看**页面级** scrollWidth：控件被父容器 `overflow:hidden` 切掉一截时，
   //    页面级宽度照样正常，门禁全绿而肉眼看是「最近更新」只剩「最近更」
@@ -1567,6 +1730,15 @@ function noJsControlExemptionFor(route) {
   await waitForApp(page);
   const chromeProbe = () => page.evaluate(() => {
     const CLIP = ['hidden', 'clip'];
+    // v3.4 F4：单行横向滚动的控制带是**滚动视口**（overflow-x:auto），不是裁切器；
+    // 里面的控件要靠滑动才完整可见，按设计允许右边缘超出容器。
+    const SCROLL = ['auto', 'scroll'];
+    const inScrollport = el => {
+      for (let p = el.parentElement; p; p = p.parentElement) {
+        if (SCROLL.includes(getComputedStyle(p).overflowX)) return true;
+      }
+      return false;
+    };
     const label = el => el.tagName.toLowerCase() + (el.id ? '#' + el.id : '') +
       (typeof el.className === 'string' && el.className.trim()
         ? '.' + el.className.trim().split(/\s+/).join('.') : '') +
@@ -1583,14 +1755,16 @@ function noJsControlExemptionFor(route) {
       }
       // ② 被祖先里某个 overflow:hidden/clip 的盒子切掉一截 —— 页面级宽度查不出的那一类
       for (let p = el.parentElement; p; p = p.parentElement) {
-        if (!CLIP.includes(getComputedStyle(p).overflowX)) continue;
+        const px = getComputedStyle(p).overflowX;
+        if (!CLIP.includes(px)) continue;
+        if (inScrollport(el)) break;
         if (box.right > p.getBoundingClientRect().right + 1) {
           cutByAncestor.push(label(el) + ' ← ' + label(p));
           break;
         }
       }
       // ③ 直接越出视口
-      if (box.right > window.innerWidth + 1) pastViewport.push(label(el));
+      if (box.right > window.innerWidth + 1 && !inScrollport(el)) pastViewport.push(label(el));
     }
     const nav = document.getElementById('jumpNav');
     const links = nav ? [...nav.querySelectorAll('a')] : [];
@@ -1961,8 +2135,33 @@ function noJsControlExemptionFor(route) {
 
   const lightContrast = await page.evaluate(contrastProbe);
   const worstText = probe => probe.worst.map(w => `${w.selector}「${w.text}」${w.ratio}`).join(' · ') || '无';
-  check('亮色主题：低于 4.5:1 的文本 ≤ 20', lightContrast.below <= 20,
+  // 闸门就是承诺：DESIGN-RULES C1 写的是「0 条不达标」，此前放宽到 ≤20 等于给 20 个节点留回退空间。
+  // 无障碍预算不该被数据/样式演进以「还有名额」的方式吃掉；收紧到 0，坏了就必须修色。
+  check('亮色主题：低于 WCAG 阈值的文本 == 0（normal 4.5:1 / large 3:1）', lightContrast.below === 0,
     `抽样 ${lightContrast.sampled} · 跳过复杂背景 ${lightContrast.skipped} · 低于要求 ${lightContrast.below} · 最低 ${lightContrast.min} · 最差 ${worstText(lightContrast)}`);
+
+  // v5 识别层（Tooth：浏览器侧）——**事实数字是页面唯一的高音**。
+  // 判据：font-size ≥ 20px 的元素必须全部是 `.stat`，且元素**自身直接文本**（child text nodes，
+  // 不含子元素）是纯数字。单位「条」在 11px 的 `.stat-unit` 子元素里，不参与大字判定。
+  // 数量不写死：need 卡条数随数据变化（0 条入口整卡消失），分带数也随档位分布变（4/5 档）。
+  // 这里同时要求 big.length == 页面 .stat 总数 —— 只判「big 全是 .stat」会漏掉
+  // 「.stat 的 22/30px 规则没生效、退回 11px」这种反向坏法。
+  const bigTextProbe = await page.evaluate(() => {
+    const directText = el => [...el.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent).join('').trim();
+    const big = [...document.querySelectorAll('body *')]
+      .filter(el => parseFloat(getComputedStyle(el).fontSize) >= 20 && directText(el));
+    const bad = big.filter(el => !el.classList.contains('stat') || !/^\d+$/.test(directText(el)));
+    return {
+      total: big.length,
+      statTotal: document.querySelectorAll('.stat').length,
+      sizes: [...new Set(big.map(el => getComputedStyle(el).fontSize))].sort(),
+      bad: bad.map(el => `${String(el.className) || el.tagName.toLowerCase()}「${directText(el).slice(0, 12)}」@${getComputedStyle(el).fontSize}`)
+    };
+  });
+  check('首页：font-size ≥ 20px 的元素全部是 .stat 且直接文本为纯数字（v5 事实数字唯一高音）',
+    bigTextProbe.bad.length === 0 && bigTextProbe.total >= 10 && bigTextProbe.total === bigTextProbe.statTotal,
+    `≥20px ${bigTextProbe.total} 个 · 页面 .stat ${bigTextProbe.statTotal} 个 · 字号 ${bigTextProbe.sizes.join(' / ') || '无'} · 违规 ${bigTextProbe.bad.length} 个`
+      + (bigTextProbe.bad.length ? `（${bigTextProbe.bad.slice(0, 3).join('；')}）` : ''));
 
   // 主题切换：深色 → 记住 → 刷新仍深色 → 暗色下对比度同样达标 → 切回跟随系统
   await page.click('#themeSeg [data-theme-value="dark"]');
@@ -1988,7 +2187,7 @@ function noJsControlExemptionFor(route) {
     `data-theme=${darkAfterReload.attr} body=${darkAfterReload.bodyBg}`);
 
   const darkContrast = await page.evaluate(contrastProbe);
-  check('暗色主题：低于 4.5:1 的文本 ≤ 20', darkContrast.below <= 20,
+  check('暗色主题：低于 WCAG 阈值的文本 == 0（normal 4.5:1 / large 3:1）', darkContrast.below === 0,
     `抽样 ${darkContrast.sampled} · 低于要求 ${darkContrast.below} · 最低 ${darkContrast.min} · 最差 ${worstText(darkContrast)}`);
 
   check('两种主题下抽样量相当（深色不是把内容藏起来）',
@@ -2147,6 +2346,75 @@ function noJsControlExemptionFor(route) {
     Boolean(report) && report.blank && report.prefilled && /github\.com\/.+\/issues\/new/.test(report.href),
     report ? `${report.href.slice(0, 76)}…（rel=${report.rel}）` : '未找到纠错链接');
 
+  // A 包（判据只加不松）：原来的 issue 入口断言一个字没删，这里**追加**两条新事实：
+  //   ① .dact 里多了一个 <button type="button">「这条领不到了？」，
+  //      data-copy 里是构建期拼好的完整话术（条目 id / 官方页 / issue 地址都在）；
+  //   ② 点击后出现可见且 aria-live=polite 的反馈，约 4 秒后收回 —— 三级剪贴板降级链
+  //      无论走到哪一级都必须给读者一句话，不许静默失败。
+  // 弹层与静态详情页是两条渲染路径：这里验弹层（js 渲染）；静态页的无 JS 形态在 §15 追加验。
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], {
+    origin: new URL(base).origin
+  }).catch(() => { /* 浏览器不支持授权时：只放弃「剪贴板内容逐字比对」的读数，断言不降级 */ });
+  const copyProbe = await page.evaluate(async () => {
+    document.querySelector('article.g').click();
+    await new Promise(r => setTimeout(r, 350));
+    const btn = document.querySelector('#detail .dact button.dact-copy');
+    const issue = [...document.querySelectorAll('#detail .dact a')].find(a => /issues\/new/.test(a.href));
+    const box = document.querySelector('#detail .dact-copy-status');
+    const text = btn ? (btn.getAttribute('data-copy') || '') : '';
+    const out = {
+      exists: Boolean(btn),
+      type: btn ? btn.getAttribute('type') : '',
+      issueStillThere: Boolean(issue),
+      text,
+      ariaLive: box ? box.getAttribute('aria-live') : '',
+      role: box ? box.getAttribute('role') : '',
+      idLine: (text.match(/条目 id：(\S+)/) || [])[1] || '',
+      statusText: '',
+      statusState: '',
+      statusVisible: false,
+      clip: '__not_read__'
+    };
+    if (btn) {
+      btn.click();
+      await new Promise(r => setTimeout(r, 450));
+      const liveBox = document.querySelector('#detail .dact-copy-status');
+      out.statusText = liveBox ? liveBox.textContent.trim() : '';
+      out.statusState = liveBox ? (liveBox.getAttribute('data-copy-state') || '') : '';
+      out.statusVisible = Boolean(liveBox) && (liveBox.offsetWidth > 0 || liveBox.offsetHeight > 0
+        || liveBox.getClientRects().length > 0);
+      try { out.clip = await navigator.clipboard.readText(); } catch (error) { out.clip = '__not_read__'; }
+    }
+    document.querySelector('#detail .x').click();
+    await new Promise(r => setTimeout(r, 250));
+    return out;
+  });
+  const copyIdFromText = copyProbe.idLine;
+  check('详情里新增「这条领不到了？」复制按钮：issue 入口仍在 + type=button + 预置话术含条目 id / 官方页 / issue 地址',
+    copyProbe.exists && copyProbe.type === 'button' && copyProbe.issueStillThere
+      && /条目 id：\S+/.test(copyProbe.text) && copyProbe.text.includes('官方页：')
+      && copyProbe.text.includes('/issues/new') && Boolean(copyIdFromText),
+    copyProbe.exists
+      ? `id=${copyIdFromText || '缺失'} · 话术 ${copyProbe.text.length} 字 · 剪贴板读数 ${
+        copyProbe.clip === '__not_read__' ? '未授权（不参与判定）' : (copyProbe.clip === copyProbe.text ? '逐字一致' : '不一致')}`
+      : '未找到 .dact-copy 按钮');
+  check('点击复制后出现可见且 aria-live 可读的反馈（role=status / polite）',
+    copyProbe.statusState === 'copied' && copyProbe.statusText.length > 0 && copyProbe.statusVisible
+      && copyProbe.ariaLive === 'polite' && copyProbe.role === 'status',
+    `state=${copyProbe.statusState || '无'} · 文本「${copyProbe.statusText.slice(0, 40)}」 · 可见=${copyProbe.statusVisible}`
+      + ` · aria-live=${copyProbe.ariaLive || '无'} / role=${copyProbe.role || '无'}`);
+  await page.waitForTimeout(4500);
+  const copyRetracted = await page.evaluate(() => {
+    const box = document.querySelector('#detail .dact-copy-status');
+    return {
+      text: box ? box.textContent.trim() : '',
+      state: box ? (box.getAttribute('data-copy-state') || '') : ''
+    };
+  });
+  check('复制反馈几秒后收回（4 秒计时器真的在跑，不残留一条常驻提示）',
+    copyRetracted.text === '' && copyRetracted.state === '',
+    `4.5 秒后 status=「${copyRetracted.text.slice(0, 30)}」 / state=${copyRetracted.state || '无'}`);
+
   /* ------------------------------------------------------------------ */
   /* t5 删除：订阅发现（首页 8 条 rel="alternate" + 每个 feed 的探针）        */
   /* ------------------------------------------------------------------ */
@@ -2281,11 +2549,19 @@ function noJsControlExemptionFor(route) {
   const noJsContext = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1440, height: 900 } });
   const noJsPage = await noJsContext.newPage();
   await noJsPage.goto(detailUrl, { waitUntil: 'load' });
-  const noJsDetail = await noJsPage.evaluate(() => ({
-    chars: document.body ? document.body.innerText.replace(/\s+/g, ' ').trim().length : 0,
-    heading: (document.querySelector('#detailTitle') || {}).textContent || '',
-    official: [...document.querySelectorAll('a')].filter(a => /^https?:/.test(a.getAttribute('href') || '')).length
-  }));
+  const noJsDetail = await noJsPage.evaluate(() => {
+    const copyBtn = document.querySelector('.dact-copy');
+    return {
+      chars: document.body ? document.body.innerText.replace(/\s+/g, ' ').trim().length : 0,
+      heading: (document.querySelector('#detailTitle') || {}).textContent || '',
+      official: [...document.querySelectorAll('a')].filter(a => /^https?:/.test(a.getAttribute('href') || '')).length,
+      // A 包：无 JS 时复制按钮**在 DOM 里但不可见**（默认 display:none，只有 body.copy-ready 才显示）。
+      // 这是「无 JS 不给死控件」在静态详情页上的形态；断言两面都判，避免把「按钮被删了」当通过。
+      copyInDom: Boolean(copyBtn),
+      copyDisplay: copyBtn ? getComputedStyle(copyBtn).display : 'missing',
+      copyVisible: Boolean(copyBtn) && copyBtn.getClientRects().length > 0
+    };
+  });
   // ⚠️ 取样必须在 `noJsContext.close()` **之前**做完（页面随 context 一起销毁）。
   // ⚠️ 路径必须**解析自站点根**（`DEALS_URL`），不能写相对路径也不能写死 `/deals.json`：
   //    此刻页面停在 `deal/<id>/` 下，`deals.json` 会解析成 `deal/<id>/deals.json` → 404；
@@ -2312,6 +2588,10 @@ function noJsControlExemptionFor(route) {
   check('详情页不执行 JS 也能读到内容',
     noJsDetail.chars > 400 && Boolean(noJsDetail.heading) && noJsDetail.official >= 1,
     `正文 ${noJsDetail.chars} 字符 · 标题「${noJsDetail.heading.slice(0, 22)}」· 官方链接 ${noJsDetail.official} 个`);
+  // A 包：预渲染详情页**带**复制按钮，但无 JS 时它必须不可见（不是删掉按钮、也不是留死按钮）。
+  check('静态详情页无 JS 时复制按钮存在但不可见（JS 就绪信号 copy-ready 才显示）',
+    noJsDetail.copyInDom && noJsDetail.copyDisplay === 'none' && !noJsDetail.copyVisible,
+    `在 DOM=${noJsDetail.copyInDom} · display=${noJsDetail.copyDisplay} · 可见=${noJsDetail.copyVisible}`);
 
   /**
    * v1.1 受众字段的结构化行（学生 / 开发者模型）。
@@ -2863,12 +3143,14 @@ function noJsControlExemptionFor(route) {
             href: a.getAttribute('href'),
             label: txt(strong),
             desc: txt(small),
-            // 条数：口径与 build-local.js 的 renderNeedRow 一致（只数 type === 'deal'）
-            badge: Number((a.querySelector('.need-copy b') || {}).textContent || ''),
+            // 条数：口径与 build-local.js 的 renderNeedRow 一致（只数 type === 'deal'）。
+            // v5：计数标记是 `<b class="stat stat-30">N<span class="stat-unit">条</span></b>`，
+            // 必须读**自身第一个文本节点** —— `textContent` 会连单位「条」一起读成 "13条" ⇒ NaN。
+            badge: Number((((a.querySelector('.need-copy b') || {}).firstChild || {}).textContent || '').trim()),
             isAnchor: a.tagName === 'A',
             isNeedCard: a.classList.contains('need-card'),
             iconCount: a.querySelectorAll('.need-icon').length,
-            iconText: txt(icon),
+            iconText: txt(icon) || (icon && icon.querySelector('svg') ? '[svg]' : ''),
             iconHidden: icon ? icon.getAttribute('aria-hidden') : null,
             strongCount: a.querySelectorAll('.need-copy > strong').length,
             smallCount: a.querySelectorAll('.need-copy > small').length,
@@ -4470,6 +4752,33 @@ function noJsControlExemptionFor(route) {
   // 那会解析到 `assets/data/deal-history.json`，一个**刻意不存在**的路径。
   const radarDealsDoc = readRoot('deals.json');
   const radarHistoryDoc = readRoot('scripts/data/deal-history.json');
+
+  // ---- B 类资讯线索（lead）的数据层不变量（2026-11 改版）----------------------------
+  //
+  // 线索是「科技媒体报道里像优惠的资讯」：本站**没核验、不下结论**，所以它的 `type` 必须
+  // 一直是 `tool`。这条断言防的是「为了把线索塞进优惠列表/AI 卡片，顺手把 type 改成 deal」——
+  // 一改，它就会进首页卡片、优惠计数、详情页路由与 ItemList（`type === 'deal'` 是那些地方的
+  // 唯一入口判据），而页面上不会有任何一眼可见的异常。
+  //
+  // 判据的唯一出处是 `provenance.SOURCE_TYPES`（构建期 `factsFor()` 用它派生
+  // `sourceFacts.sourceType === 'lead'`）。这里读**仓库根** deals.json，不读 dist：
+  // `--url=` 线上冒烟时没有本地产物，而数据不变量与产物无关。
+  const radarLeadDeals = (radarDealsDoc.deals || [])
+    .filter(deal => deal && provenance.SOURCE_TYPES[deal.source] === 'lead');
+  const leadDealById = new Map(radarLeadDeals.map(deal => [deal.id, deal]));
+  const leadIds = new Set(leadDealById.keys());
+  const leadUrls = new Set(radarLeadDeals
+    .map(deal => deal.url)
+    .filter(url => /^https?:\/\//i.test(String(url || ''))));
+  {
+    const notTool = radarLeadDeals.filter(deal => deal.type !== 'tool');
+    check('线索记录 type 仍是 tool（来源登记为 lead ⇒ type=tool；改成 deal 会混进优惠列表/计数/ItemList）',
+      notTool.length === 0,
+      radarLeadDeals.length
+        ? `${radarLeadDeals.length} 条线索 · type 非 tool ${notTool.length} 条` +
+          (notTool.length ? `（${notTool.slice(0, 2).map(deal => `${deal.id}→${deal.type}`).join('、')}）` : '')
+        : '本轮 0 条线索（7 天窗口内没有候选 —— 判据按 0 条是正常结果）');
+  }
   // ⚠️ page.evaluate(fn, arg) **只接受一个**参数 —— 两份数据必须打成一个对象传进去
   // （先前写成两个位置参数时第二个被静默忽略，页面里读到 `undefined.events` 直接抛错）。
   const radarExpect = await page.evaluate(async ({ payload, historyDoc }) => {
@@ -4514,10 +4823,42 @@ function noJsControlExemptionFor(route) {
       height: Math.round(rect.height),
       total: Number(nav.dataset.radarTotal || 0),
       other: Number(nav.dataset.radarOther || 0),
-      items: [...nav.querySelectorAll('.ritem')].map(el => ({ id: el.dataset.dealId || '', href: el.getAttribute('href') || '' })),
+      items: [...nav.querySelectorAll('.ritem')].map(el => ({
+        id: el.dataset.dealId || '',
+        href: el.getAttribute('href') || '',
+        external: /^https?:\/\//i.test(el.getAttribute('href') || ''),
+        target: el.getAttribute('target') || '',
+        rel: el.getAttribute('rel') || '',
+        // 线索徽标是「这一项是线索」的页面侧证据（与 sourceType 的数据判据互为第二把尺子）
+        lead: Boolean(el.querySelector('.rlead'))
+      })),
+      // 条带里**所有**可点元素（含「全部变化」入口）：判「条带内零跨域链接」用的是它；
+      // 只数 `.ritem` 会漏掉入口那一条，而「漏掉的那一条」正是这条断言要防的失效形态。
+      anchors: [...nav.querySelectorAll('a[href]')].map(a => ({
+        href: a.getAttribute('href') || '',
+        external: /^https?:\/\//i.test(a.getAttribute('href') || '')
+      })),
       empty: Boolean(nav.querySelector('.rnone')),
       unavailable: nav.textContent.includes('没有拿到历史日志'),
       noChange: nav.textContent.includes('当前没有观测到变化'),
+      // 常驻线索入口（B 类未核验线索，2026-11）：不在 `.rscroll` 里、不随日期消失。
+      // `data-lead-count` 是 N 的**真值**；可见文本只显示 min(N, 上限)（N>上限时带「+」）。
+      leadChip: (() => {
+        const chips = [...nav.querySelectorAll('a.rleadcount')];
+        if (!chips.length) return null;
+        const chip = chips[0];
+        const box = chip.getBoundingClientRect();
+        return {
+          count: Number(chip.dataset.leadCount || -1),
+          href: chip.getAttribute('href') || '',
+          text: (chip.textContent || '').replace(/\s+/g, ' ').trim(),
+          total: chips.length,
+          external: /^https?:\/\//i.test(chip.getAttribute('href') || ''),
+          // 「不抢正文区槽位」的页面侧证据：入口必须在横滑容器**外**
+          insideScroll: Boolean(scroll && scroll.contains(chip)),
+          fullyInViewport: box.left >= -1 && box.right <= window.innerWidth + 1 && box.width > 0
+        };
+      })(),
       moreHref: more ? more.getAttribute('href') : null,
       moreInViewport: more ? more.getBoundingClientRect().right <= window.innerWidth + 1 : false,
       controls: nav.querySelectorAll('button, input, select').length,
@@ -4536,6 +4877,42 @@ function noJsControlExemptionFor(route) {
     check('条带自身不横溢（横滑只发生在正文区）', radarHome.navOverflow <= 0,
       `nav 溢出 ${radarHome.navOverflow}px · 正文区可滑 ${radarHome.scrollOverflow}px`);
     check('条带最多 3 项', radarHome.items.length <= 3, `${radarHome.items.length} 项`);
+
+    // ---- B 类线索（2026-11 改版）：首页条带不再把读者直接送往外站 ----
+    // 旧行为：线索项本身就是指向原文的 target=_blank 外链。新契约：条带 → /changes/ 的
+    // 站内线索卡锚点，跨域链接只剩卡片里的那一个 CTA。两半都判，缺一不可：
+    //   ① 线索项必须是 `changes/#lead-<id>`（由 id 推出，防前端自己拼错/回退成外链）；
+    //   ② 整条条带（含「全部变化」入口）零跨域链接。
+    const stripLeadItems = radarHome.items.filter(item => item.lead);
+    const badLeadHrefs = stripLeadItems.filter(item =>
+      item.external || item.target || item.href !== `changes/#lead-${item.id}`);
+    check('条带里的线索项链接到站内 changes/#lead-<id>（无 target=_blank，不再直接跳外站）',
+      badLeadHrefs.length === 0,
+      stripLeadItems.length
+        ? `${stripLeadItems.length} 条线索项 · 不合格 ${badLeadHrefs.length} 条` +
+          (badLeadHrefs.length
+            ? `（${badLeadHrefs.slice(0, 2).map(item => `${item.id}→${item.href || '(无 href)'}`).join('、')}）`
+            : '')
+        : '本轮条带无线索项');
+    const stripExternal = (radarHome.anchors || []).filter(anchor => anchor.external);
+    check('条带内零跨域链接（线索不再从首页把读者送到外站）',
+      stripExternal.length === 0,
+      stripExternal.length
+        ? `${stripExternal.length} 条：${stripExternal.slice(0, 2).map(anchor => anchor.href.slice(0, 60)).join('、')}`
+        : '全部站内');
+
+    // 线索不进首页优惠列表/筛选器：卡片成员 id（`article.g` 的 data-deal-ids）里一个都不能有线索。
+    // 页面的排除判据是 RENDER-CORE 的 isLeadRecord()（读 sourceFacts.sourceType），
+    // 这里从**渲染结果**反着验：只要有一张卡的成员集合里出现线索 id，就说明排除判据被绕开了。
+    const homeCardIds = await page.evaluate(() => [...document.querySelectorAll('article.g[data-deal-ids]')]
+      .flatMap(card => (card.dataset.dealIds || '').split(',').filter(Boolean)));
+    const leakedLeadIds = homeCardIds.filter(id => leadIds.has(id));
+    check('线索不进首页优惠列表/筛选器（卡片 data-deal-ids 集合不含线索）',
+      leakedLeadIds.length === 0,
+      leakedLeadIds.length
+        ? `${leakedLeadIds.length} 条线索出现在优惠卡片里：${leakedLeadIds.slice(0, 3).join(', ')}`
+        : `卡片 ${homeCardIds.length} 个成员 id · 线索 ${leadIds.size} 条均未出现`);
+
     if (radarExpect.unavailable) {
       check('历史日志缺失时条带明说「没有拿到历史日志」（不冒充「没有变化」）', radarHome.unavailable,
         radarHome.unavailable ? '' : '条带没有说明日志不可用');
@@ -4562,6 +4939,20 @@ function noJsControlExemptionFor(route) {
   const changesPage = await page.evaluate(() => {
     const heads = [...document.querySelectorAll('.chgsec h2')].map(h => h.textContent.trim());
     const links = [...document.querySelectorAll('a.chgn[href]')].map(a => a.getAttribute('href'));
+    // B 类线索（2026-11 改版）：线索行的标题**不再是链接**，它的唯一链接是卡片里的
+    // 「阅读原文」CTA；因此 `a.chgn[href]` 只剩普通变化行（站内详情页）。这里仍逐条带上
+    // 「是否外链 / 线索徽标 / target / rel」，供下面的断言判「标题链接不许外链」。
+    const radarLinks = [...document.querySelectorAll('a.chgn[href]')].map(a => {
+      const href = a.getAttribute('href') || '';
+      const row = a.closest('.chgi');
+      return {
+        href,
+        external: /^https?:\/\//i.test(href),
+        target: a.getAttribute('target') || '',
+        rel: a.getAttribute('rel') || '',
+        lead: Boolean(row && row.querySelector('.rlead'))
+      };
+    });
     const planSection = document.getElementById('plans');
     // v3.0 Stage H：第三条变化流（API 价格变化）。
     const apiSection = document.getElementById('api-plans');
@@ -4575,6 +4966,7 @@ function noJsControlExemptionFor(route) {
       })),
       wrongPrefix: links.filter(href => href.startsWith('deal/')).length,
       links,
+      radarLinks,
       // v2.3：套餐变化块
       jumpNav: Boolean(document.querySelector('nav.chgjump')),
       dealsAnchor: Boolean(document.getElementById('deals')),
@@ -4597,7 +4989,53 @@ function noJsControlExemptionFor(route) {
       apiItems: apiSection ? apiSection.querySelectorAll('.chglist li').length : -1,
       apiEmpty: apiSection ? /没有观测到|没有拿到 API 计费变化日志/.test(apiSection.innerText) : false,
       apiUnavailable: apiSection ? apiSection.innerText.includes('没有拿到 API 计费变化日志') : false,
-      apiLinkHrefs: apiSection ? [...apiSection.querySelectorAll('a.pchgwho[href]')].map(a => a.getAttribute('href')) : []
+      apiLinkHrefs: apiSection ? [...apiSection.querySelectorAll('a.pchgwho[href]')].map(a => a.getAttribute('href')) : [],
+      // B 类线索卡（2026-11）：结构断言的取值面。全部按 DOM 契约读（块类名 / 文本 / 链接属性），
+      // 不用「文本里先出现哪一句」这种一改排版就假绿的判据。
+      leadCards: [...document.querySelectorAll('.chgi .leadcard')].map(card => {
+        const row = card.closest('.chgi');
+        const section = card.closest('.chgsec');
+        const text = el => (el ? (el.textContent || '').replace(/\s+/g, ' ').trim() : '');
+        const pick = cls => text(card.querySelector('.' + cls));
+        const time = card.querySelector('time');
+        const anchors = [...card.querySelectorAll('a')].map(a => ({
+          href: a.getAttribute('href') || '',
+          target: a.getAttribute('target') || '',
+          rel: a.getAttribute('rel') || '',
+          cls: a.className || '',
+          text: text(a)
+        }));
+        return {
+          id: card.id,
+          dealId: row ? row.getAttribute('data-deal-id') || '' : '',
+          section: section ? section.id : '',
+          // 子块按文档顺序取第一个 class token（断言块顺序与「未核验声明压在引文上方」）
+          blocks: [...card.children].map(el => (el.className || '').split(/\s+/)[0]),
+          title: pick('lctitle'),
+          meta: pick('lcmeta'),
+          decl: pick('lcdecl'),
+          excerpt: pick('lcexcerpt'),
+          basis: pick('lcbasis'),
+          ctaText: pick('lcactions'),
+          anchors,
+          time: time ? { datetime: time.getAttribute('datetime') || '', text: text(time) } : null
+        };
+      }),
+      // 首页条带 href 的落点判据：线索卡锚点 id 必须真的存在这一页上。
+      leadAnchorIds: [...document.querySelectorAll('.leadcard[id]')].map(card => card.id),
+      // `/changes/` 的 ItemList 成员 id（element.url 是 SITE_URL 绝对地址）—— 线索没有站内详情页，
+      // 一条都不许进来（与 page-kinds 的 checkRows 是两把尺子：那一把数行，这一把判成员语义）。
+      itemListIds: (() => {
+        const blocks = [...document.querySelectorAll('script[type="application/ld+json"]')]
+          .map(script => { try { return JSON.parse(script.textContent); } catch (error) { return null; } })
+          .filter(Boolean);
+        const list = blocks.find(block => block['@type'] === 'ItemList');
+        if (!list) return [];
+        return (list.itemListElement || []).map(element => {
+          const match = String(element.url || '').match(/\/deal\/([^/]+)\/$/);
+          return match ? decodeURIComponent(match[1]) : '';
+        });
+      })()
     };
   });
   check('/changes/ 页存在且分栏齐（优惠五栏 + 套餐一栏 + API 一栏）', changesPage.headings.length === 7, changesPage.headings.join(' | '));
@@ -4701,18 +5139,357 @@ function noJsControlExemptionFor(route) {
   // `check-plan-history.js` / `selftest:api-plans` 这类**对账仓库根源文件**的门禁盯着。
 
   // 雷达行 → 单条优惠的详情页（要求 4：详情页能看单条优惠的历史）。
-  // 没有可点的雷达行时如实报「本轮无样本」，并改验另一条出口（条带 → /changes/）。
-  if (changesPage.links.length) {
-    const probe = await page.evaluate(async (href) => {
-      const response = await fetch(href);
-      const text = await response.text();
-      return { ok: response.ok, status: response.status, hasHistory: text.includes('变更记录') };
-    }, changesPage.links[0]);
-    check('雷达行链到的详情页真的打得开且含「变更记录」块',
-      probe.ok && probe.hasHistory, `HTTP ${probe.status} · 含变更记录=${probe.hasHistory}`);
-  } else {
-    check('雷达行 → 单条历史（本轮无样本：日志里还没有任何事件）', true,
-      '跳过：可点的雷达行为 0（v1.5 交付当天日志为空，链路已由 selftest 与构建自检覆盖）');
+  // B 类线索（2026-11 改版）不在这条链上：线索没有站内详情页，它的唯一可点链接是卡片 CTA。
+  // 因此 `a.chgn` 只剩普通变化行，判据简化为「一条外链都不许有」——旧的
+  // 「外链只在线索行」判据已随改版作废（它守的行为本轮被删掉了）。
+  {
+    const radarLinks = changesPage.radarLinks || [];
+    const externalLinks = radarLinks.filter(link => link.external);
+    check('雷达行标题链接只指向站内详情页（线索标题不再是外链）',
+      externalLinks.length === 0,
+      externalLinks.length
+        ? `${externalLinks.length} 条外链：${externalLinks.slice(0, 2).map(link => link.href.slice(0, 60)).join('、')}`
+        : `${radarLinks.length} 条全部站内`);
+    if (radarLinks.length) {
+      const probe = await page.evaluate(async (href) => {
+        const response = await fetch(href);
+        const text = await response.text();
+        return { ok: response.ok, status: response.status, hasHistory: text.includes('变更记录') };
+      }, radarLinks[0].href);
+      check('雷达行链到的详情页真的打得开且含「变更记录」块',
+        probe.ok && probe.hasHistory, `HTTP ${probe.status} · 含变更记录=${probe.hasHistory}`);
+    } else {
+      check('雷达行 → 单条历史（本轮无样本：日志里还没有任何事件）', true, '跳过：可点的站内雷达行为 0');
+    }
+  }
+
+  // ---- 首页条带的常驻线索入口（B 类未核验线索，2026-11）---------------------------------
+  //
+  // 契约：线索**不占**条带的 `.ritem` 槽位（数据层 home 池排除），改由一条常驻入口
+  // `a.rleadcount` 呈现；它不在横滑容器里、不随日期消失，`data-lead-count` 是 N 的真值。
+  // 真值 = `/changes/` 实际渲染出的 `.leadcard` 张数（两把尺子同源：入口的 N 与卡片集都来自
+  // 「五个分栏里 lead === true 的条目」）。
+  //
+  // 数据侧独立推导「经 7d/30d 窗口 + SECTION_ORDER 去重 + itemsPerSection 截断后，
+  // 应当落在 `/changes/` 五栏上的线索集合（id → section）」，防「数据有线索、页面没卡、
+  // 入口也不见」被两侧同时判绿；同时避免把「分栏超 30 条被合法截断」误判成渲染断链
+  //（2026-11-21 实测：`changed` 达 83 条，4 条活跃线索里 2 条已被截断，次日新增 5 条非线索
+  // `changed` 事件即会全部截断出前 30 名；旧写法只扫 `radarLeadDeals.firstSeen`，必假红）。
+  const expectedRenderedLeadSections = (() => {
+    const leadAsOf = String(radarDealsDoc.updatedAt || '').slice(0, 10);
+    const recentFrom = changesLib.addDays(leadAsOf, -(changesLib.WINDOWS.recentDays - 1));
+    const endedFrom = changesLib.addDays(leadAsOf, -(changesLib.WINDOWS.endedDays - 1));
+    if (!recentFrom || !endedFrom) return new Map();
+    const buckets = { created: [], changed: [], endingSoon: [], ended: [], restored: [] };
+    for (const event of (radarHistoryDoc.events || [])) {
+      if (!event || typeof event !== 'object') continue;
+      const at = String(event.at || '');
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(at) || at > leadAsOf) continue;
+      if (event.type === 'ended' || event.type === 'restored') {
+        if (at >= endedFrom) buckets[event.type].push(event);
+        continue;
+      }
+      if (at < recentFrom) continue;
+      if (event.type === 'created') {
+        if (at === leadAsOf) buckets.created.push(event);
+        else buckets.changed.push(event);
+        continue;
+      }
+      if (changesLib.LOW_VALUE_FIELD_TYPES.includes(event.type) || changesLib.isCosmetic(event)) continue;
+      if (changesLib.HIGH_VALUE_FIELD_TYPES.includes(event.type)) buckets.changed.push(event);
+    }
+    for (const key of ['created', 'changed', 'ended', 'restored']) {
+      buckets[key].sort(changesLib.compareByRecency);
+    }
+    const seenLeads = new Set();
+    const out = new Map();
+    for (const key of changesLib.SECTION_ORDER) {
+      const deduped = buckets[key].filter(event => {
+        const id = String(event.id || '');
+        if (!leadIds.has(id)) return true;
+        if (seenLeads.has(id)) return false;
+        seenLeads.add(id);
+        return true;
+      });
+      for (const event of deduped.slice(0, changesLib.LIMITS.itemsPerSection)) {
+        const id = String(event.id || '');
+        if (leadIds.has(id)) out.set(id, key);
+      }
+    }
+    return out;
+  })();
+
+  {
+    const chip = radarHome ? radarHome.leadChip : null;
+    const cards = changesPage.leadCards || [];
+    const expectedLeadCount = expectedRenderedLeadSections.size;
+    const leadsRenderedExpected = expectedLeadCount > 0;
+    const N = cards.length;   // 页面侧真值 = /changes/ 的 .leadcard 张数
+
+    // ① 经窗口与分栏截断后应渲染线索 > 0 ⇒ 恰好一个入口，且 data-lead-count == /changes/ 的线索卡张数 == 期望值
+    check('窗口内有线索 ⇒ 首页条带恰好一个线索入口，data-lead-count == /changes/ 线索卡张数',
+      leadsRenderedExpected
+        ? (Boolean(chip) && chip.total === 1 && chip.count === N && N === expectedLeadCount)
+        : (chip === null && N === 0),
+      leadsRenderedExpected
+        ? `截断后应渲染线索 ${expectedLeadCount} 条（窗口活跃 ${radarLeadDeals.length} 条） · 入口 ${chip ? chip.total : 0} 个` +
+          ` · data-lead-count=${chip ? chip.count : '缺失'} · /changes/ 卡 ${N} 张`
+        : `截断后应渲染线索 0 条（窗口活跃 ${radarLeadDeals.length} 条） · 入口 ${chip ? chip.total : 0} 个 · /changes/ 卡 ${N} 张`);
+
+    // ② 显示值 = min(N, 上限)；「+」当且仅当 N 超上限（真值永远在 data-lead-count 上）
+    {
+      const MAX = changesLib.LIMITS.LEAD_CHIP_MAX;
+      const WORD = changesLib.CHANGES_WORDING.CHANGES_LEAD;
+      const expected = (chip && chip.count > MAX ? WORD.countMore : WORD.count)
+        .replace('{n}', String(Math.min(chip ? chip.count : 0, MAX)));
+      const badge = audienceLib.WORDING_CONTRACT.SOURCE_TYPE.lead;
+      check('线索入口显示值 = min(N, 上限)，「+」当且仅当 N 超上限（真值在 data-lead-count）',
+        chip ? (chip.text === `${badge} ${expected}` && chip.count === N) : N === 0,
+        chip
+          ? `文本「${chip.text}」 · N=${chip.count} · 上限 ${MAX} · 期望「${badge} ${expected}」`
+          : `本轮无入口（N=${N}）`);
+    }
+
+    // ③ N=0 ⇒ 入口不存在
+    check('N=0（/changes/ 没有线索卡）⇒ 条带上没有线索入口',
+      N > 0 || chip === null,
+      chip ? `入口存在 · data-lead-count=${chip.count} · /changes/ 卡 ${N} 张` : 'N=0 · 入口不存在');
+
+    // ④ 入口 href 是站内 `changes/#<anchor>`，锚点在 /changes/ 真实存在
+    //    （并入原「条带线索项死锚」断言：线索项已退出 .ritem，死锚检查改读常驻入口）
+    {
+      const chipAnchor = chip ? (chip.href.split('#')[1] || '') : '';
+      const anchorExists = (changesPage.leadAnchorIds || []).includes(chipAnchor);
+      check('线索入口 → /changes/ 的锚点在目标页真实存在（无死锚，且完整可见/不是外链/不在横滑区）',
+        !chip || (!chip.external && /^changes\/#lead-/.test(chip.href) && anchorExists && !chip.insideScroll && chip.fullyInViewport),
+        chip
+          ? `href=${chip.href} · 锚点 ${chipAnchor} · 落点=${anchorExists} · 在横滑区=${chip.insideScroll}` +
+            ` · 完整可见=${chip.fullyInViewport}`
+          : '本轮无线索入口');
+    }
+
+    // ⑤ 线索不再占 `.ritem` 槽位（数据层排除的页面侧证据；防「渲染层偷偷放回来」）
+    const leadRitems = (radarHome && Array.isArray(radarHome.items) ? radarHome.items : [])
+      .filter(item => item.lead);
+    check('线索不占条带 .ritem 槽位（只走常驻入口；正文区里没有线索项）',
+      leadRitems.length === 0,
+      leadRitems.length
+        ? `${leadRitems.length} 条线索仍占正文槽位：${leadRitems.slice(0, 3).map(item => item.id).join(', ')}`
+        : `${(radarHome ? radarHome.items : []).length} 项均为普通变化`);
+  }
+
+  // ---- 线索卡：结构 / 顺序 / 唯一 CTA（2026-11 的验收主体）------------------------------
+  //
+  // 每一条断言都对应一个「页面看起来正常、语义已经坏了」的坏法：
+  //   · 线索卡被渲染成普通变化行 → 读者只看到一句没有上下文的「首次收录」；
+  //   · 未核验声明挪到引文下面 / 被删掉 → 读者先读到引文、后知道未核验（顺序即语义）；
+  //   · 标题也做成外链 → 跨域链接又回到两处，「只在线索卡 CTA」的断言就失去意义；
+  //   · 没有 excerpt 时印一句「暂无摘要」→ 用一句假话填了「空就是空」这条规矩。
+  {
+    const cards = changesPage.leadCards || [];
+    const LEADS = changesLib.CHANGES_WORDING.CHANGES_LEAD;
+    const LEAD_BADGE = audienceLib.WORDING_CONTRACT.SOURCE_TYPE.lead;
+    // 线索是否**按窗口 + 去重 + 分栏上限应当**出现在 /changes/ 上（与上面常驻入口共用同一份
+    // 独立推导 `expectedRenderedLeadSections`）。应渲染 0 张（窗口无命中或全部被合法截断出前 30 名）
+    // 不是页面缺陷，卡片结构断言如实跳过；但「应渲染 K > 0 张、页面张数不等」必红。
+    const expectedLeadCount = expectedRenderedLeadSections.size;
+    const expectLeadCard = expectedLeadCount > 0;
+    const leadSkipDetail = `截断后应渲染 0 条线索（窗口活跃 ${radarLeadDeals.length} 条；卡片结构断言如实跳过）`;
+    const expectedLeadSection = dealId => expectedRenderedLeadSections.get(dealId) || null;
+    check('线索卡在场性：窗口内有线索 ⇒ /changes/ 上必须有线索卡；窗口内没有 ⇒ 卡片也必须为 0',
+      cards.length === expectedLeadCount,
+      `截断后应渲染 ${expectedLeadCount} 条线索（窗口活跃 ${radarLeadDeals.length} 条） · 页面 ${cards.length} 张卡`);
+    // 卡片块顺序是逐块的（不是「文本里先出现哪句」）：少一块、多一块、换顺序都会红。
+    const expectedBlocks = card => (card.blocks.includes('lcexcerpt')
+      ? ['lctitle', 'lcmeta', 'lcdecl', 'lcexcerpt', 'lcbasis', 'lcactions']
+      : ['lctitle', 'lcmeta', 'lcdecl', 'lcbasis', 'lcactions']);
+    const placementProblems = cards.filter(card => !card.dealId || card.id !== `lead-${card.dealId}` ||
+      card.section !== expectedLeadSection(card.dealId));
+    check('/changes/ 的线索卡按历史事件日落在正确分栏（created 事件日=基准日 ⇒ 今日新增，否则 ⇒ 最近 7 天变化；article.leadcard id=lead-<id>，不是普通变化行）',
+      !expectLeadCard || (cards.length > 0 && placementProblems.length === 0),
+      expectLeadCard
+        ? (cards.length
+          ? (placementProblems.length
+            ? `${placementProblems.length}/${cards.length} 张分栏不符：` + placementProblems.slice(0, 2).map(card => `${card.id}@${card.section || '(未知分栏)'}（应 ${card.dealId ? expectedLeadSection(card.dealId) : '?'}）`).join('、')
+            : `${cards.length} 张：${cards.slice(0, 2).map(card => `${card.id}@${card.section || '(未知分栏)'}`).join('、')}`)
+          : '页面上没有线索卡（线索仍在数据/雷达里，但渲染分支没接上？）')
+        : leadSkipDetail);
+    const orderProblems = cards.filter(card => JSON.stringify(card.blocks) !== JSON.stringify(expectedBlocks(card)));
+    check('线索卡块顺序：标题 → 来源媒体+原文日期 → 未核验声明 → 摘录引文（有则出）→ 判据与下架说明 → CTA',
+      !expectLeadCard || (cards.length > 0 && orderProblems.length === 0),
+      expectLeadCard
+        ? (orderProblems.length
+          ? orderProblems.slice(0, 2).map(card => `「${card.id}」=${card.blocks.join('>')}`).join(' · ')
+          : cards.map(card => card.blocks.join('>')).join(' · ') || '无线索卡')
+        : leadSkipDetail);
+    const declProblems = cards.filter(card => {
+      const declAt = card.blocks.indexOf('lcdecl');
+      const excerptAt = card.blocks.indexOf('lcexcerpt');
+      return declAt < 0 || !card.decl.includes(LEAD_BADGE) || (excerptAt >= 0 && declAt > excerptAt);
+    });
+    check('未核验声明压在摘录引文上方，且文本来自 SOURCE_WORDING.SOURCE_TYPE.lead（「线索 · 未核验」）',
+      !expectLeadCard || (cards.length > 0 && declProblems.length === 0),
+      expectLeadCard
+        ? (declProblems.length ? `${declProblems.length}/${cards.length} 张不合格` : `${cards.length} 张卡声明块全部合格`)
+        : leadSkipDetail);
+    const ctaProblems = cards.filter(card => {
+      const deal = leadDealById.get(card.dealId);
+      const cta = card.anchors.find(anchor => anchor.cls.split(/\s+/).includes('lccta'));
+      if (!cta || card.anchors.length !== 1) return true;          // 全卡只许一个可点链接，且必须是 CTA
+      if (!/^https?:\/\//i.test(cta.href) || cta.target !== '_blank') return true;
+      const rel = new Set(cta.rel.split(/\s+/).filter(Boolean));
+      if (!rel.has('noopener') || !rel.has('noreferrer')) return true;
+      return !deal || cta.href !== deal.url;
+    });
+    check('线索卡只有一个可点链接 = 「阅读原文 →」CTA（href=原文、target=_blank、rel 含 noopener noreferrer）',
+      !expectLeadCard || (cards.length > 0 && ctaProblems.length === 0),
+      expectLeadCard
+        ? (ctaProblems.length ? `${ctaProblems.length}/${cards.length} 张不合格` : `${cards.length} 张卡各 1 个 CTA`)
+        : leadSkipDetail);
+    const contentProblems = [];
+    for (const card of cards) {
+      const deal = leadDealById.get(card.dealId);
+      if (!deal) { contentProblems.push(`${card.id}：找不到记录`); continue; }
+      if (card.title !== String(deal.title)) contentProblems.push(`${card.id}：标题不一致`);
+      if (!card.meta.includes(String(deal.source || ''))) contentProblems.push(`${card.id}：缺来源媒体`);
+      if (!card.time || card.time.datetime !== String(deal.firstSeen)) contentProblems.push(`${card.id}：原文日期不一致`);
+      const excerpt = typeof deal.excerpt === 'string' && deal.excerpt ? deal.excerpt : '';
+      if (excerpt) {
+        if (!card.blocks.includes('lcexcerpt') || !card.excerpt.includes(excerpt)) {
+          contentProblems.push(`${card.id}：摘要引文缺失或不一致`);
+        }
+      } else if (card.blocks.includes('lcexcerpt')) {
+        contentProblems.push(`${card.id}：没有 excerpt 却渲染了引文块（不许写占位句）`);
+      }
+      if (!card.basis.includes(LEADS.basis) || !card.basis.includes(LEADS.ttl)) {
+        contentProblems.push(`${card.id}：判据/下架说明不是 CHANGES_LEAD 的权威措辞`);
+      }
+      if (!card.anchors.some(anchor => anchor.text.includes(LEADS.readOriginal.replace(/\s*→$/, '')))) {
+        contentProblems.push(`${card.id}：CTA 文案不是「${LEADS.readOriginal}」`);
+      }
+    }
+    check('线索卡内容与记录一致（标题 / 来源 / 原文日期 / 摘要引文；无 excerpt 时整块省略、不写占位句）',
+      !expectLeadCard || (cards.length > 0 && contentProblems.length === 0),
+      expectLeadCard
+        ? (contentProblems.length ? contentProblems.slice(0, 3).join('；') : `${cards.length} 张卡逐项对齐`)
+        : leadSkipDetail);
+
+    // —— 线索不进 ItemList / sitemap（没有站内详情页，就不能出现在结构化数据里）——
+    const leadInItemList = (changesPage.itemListIds || []).filter(id => leadIds.has(id));
+    check('/changes/ 的 ItemList 不含线索（线索没有站内详情页，不能进结构化数据）',
+      leadInItemList.length === 0,
+      leadInItemList.length
+        ? `混入 ${leadInItemList.join(', ')}`
+        : `ItemList ${(changesPage.itemListIds || []).length} 项 · 线索 ${leadIds.size} 条均未出现`);
+    const sitemapProbe = await page.evaluate(async (href) => {
+      try {
+        const response = await fetch(href);
+        return { status: response.status, body: await response.text() };
+      } catch (error) {
+        return { status: 0, body: '' };
+      }
+    }, new URL('sitemap.xml', base).href);
+    // ⚠️ 判据的形状（2026-11-13 修正）：**不能拿「sitemap 文本里有没有这个 id」当判据** ——
+    // 那是「代理量」，不是「线索内容页」。`/archive/deal/<lead-id>/` 是**归档墓碑页**
+    // （记录曾经被收录、来源不再列出），它属于数据层不变量「含 ended/restored 的事件链必须
+    // 可回查」的合法产物 —— 归档页里出现 lead id 是应该的，把它判成「线索进了 sitemap」
+    // 是判据与它自己声称的东西（`/deal/<lead-id>/` 或线索独立页）不一致。
+    // 这条断言要守的是「线索没有**自己的内容页**」⇒ 判 `<loc>` 的**路由形状**：
+    //   · `deal/<lead-id>/` —— 线索被当成 deal 建了站内详情页；
+    //   · `lead/<lead-id>/` —— 将来若给线索单开独立页。
+    // 其它路由（含归档墓碑页）即使路径里带这个 id，也不是线索内容页。
+    const sitemapLocs = [...sitemapProbe.body.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => match[1].trim());
+    const leadPageRouteOf = id => new RegExp(`^(?:deal|lead)/${id}/$`);
+    const sitemapLeadHits = [...leadIds]
+      .map(id => {
+        const rel = sitemapLocs.map(loc => loc.replace(SITE_URL, '')).find(route => leadPageRouteOf(id).test(route));
+        return rel ? `${id}@${rel}` : null;
+      })
+      .filter(Boolean);
+    check('/changes/ 的线索不进 sitemap（无 deal/<lead-id>/ 详情页或 lead/<lead-id>/ 独立页；归档墓碑页不算线索页）',
+      sitemapProbe.status === 200 && sitemapLeadHits.length === 0,
+      sitemapProbe.status === 200
+        ? (sitemapLeadHits.length
+          ? `混入 ${sitemapLeadHits.slice(0, 3).join(', ')}`
+          : `sitemap ${sitemapLocs.length} 条 loc · 线索 ${leadIds.size} 条都没有自己的内容页` +
+            `（归档墓碑页 ${sitemapLocs.filter(loc => /archive\/deal\//.test(loc)).length} 条不计入）`)
+        : `读不到 sitemap（HTTP ${sitemapProbe.status}）`);
+  }
+
+  // ---- 全站跨域链接扫描：指向线索原文的 <a> 只允许是线索卡 CTA -------------------------
+  //
+  // 验收原话：「跨域链接全站只剩卡片里的一个 CTA」。浏览器只访问了首页与 /changes/，
+  // 而「全站」必须对产物里的**每一个 .html** 判，所以这一段在 Node 侧做字面扫描：
+  //   · 指向线索原文（仓库根 deals.json 里 lead 记录的 url）的 <a> 必须带 class="lccta"
+  //     且 target=_blank / rel=noopener noreferrer；
+  //   · **逐文件**「指向线索原文的外链数 == 该文件的线索卡张数」：多一条 = 卡片之外又
+  //     出现了跨域链接；少一条 = 某张卡的 CTA 不见了（两种都不许）；
+  //   · /changes/ 上按 DOM 数出的线索卡张数必须与字面扫描的卡数一致（两把尺子互相校验）。
+  // 判据不写死「只许出现在 /changes/」：将来线索卡若被二级页的「最近变化」块复用，
+  // 每张卡仍然只带一个 CTA —— 这条断言照样成立，且不会误报。首页条带零跨域由上面的
+  // 真浏览器断言单独守（那一条必须钉死在首页条带上）。
+  //
+  // 不把「线索原文 URL」抄成字面量：URL 从数据现取；也不数「看起来像外链」的字符串 ——
+  // 只数真正的 <a href> 标签，避免把原文里的 URL 文本误判成链接。
+  {
+    const decodeAttr = text => String(text)
+      .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"');
+    const htmlFiles = [];
+    const walk = dir => {
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const file = path.join(dir, entry.name);
+        if (entry.isDirectory()) walk(file);
+        else if (entry.name.endsWith('.html')) htmlFiles.push(file);
+      }
+    };
+    walk(DIR);
+    const hits = [];
+    const cardsByFile = new Map();
+    for (const file of htmlFiles) {
+      const raw = fs.readFileSync(file, 'utf8');
+      const rel = path.relative(DIR, file).split(path.sep).join('/');
+      // ⚠️ 先剥掉 `<script>` / `<style>` 再数：首页的内联 RENDER-CORE 源码里含有渲染模板的
+      // 字面串（`'<article class="leadcard"'`）与文档注释 —— 直接扫原始 HTML 会把**模板源码**
+      // 数成「页面上真的有一张卡」（实测首页因此假报 2 张卡 / 0 条外链）。渲染出来的卡片是
+      // 构建期写进正文的静态标记，剥脚本/样式后仍然在，所以这一刀不会漏掉真卡。
+      const html = raw
+        .replace(/<script[\s\S]*?<\/script>/gi, '')
+        .replace(/<style[\s\S]*?<\/style>/gi, '');
+      // 线索卡的 DOM 契约（`<article class="leadcard" id="lead-…">`）——字面扫描的卡数按它数。
+      const cardCount = (html.match(/<article class="leadcard"/g) || []).length;
+      if (cardCount) cardsByFile.set(rel, cardCount);
+      if (!leadUrls.size) continue;
+      for (const match of html.matchAll(/<a\b[^>]*>/g)) {
+        const tag = match[0];
+        const href = /href="([^"]*)"/.exec(tag);
+        if (!href) continue;
+        const value = decodeAttr(href[1]);
+        if (!leadUrls.has(value)) continue;
+        hits.push({ file: rel, tag });
+      }
+    }
+    const notCta = hits.filter(hit =>
+      !/\bclass="[^"]*\blccta\b/.test(hit.tag) || !/target="_blank"/.test(hit.tag) ||
+      !/rel="noopener noreferrer"/.test(hit.tag));
+    const hitsByFile = new Map();
+    for (const hit of hits) hitsByFile.set(hit.file, (hitsByFile.get(hit.file) || 0) + 1);
+    const allFiles = new Set([...cardsByFile.keys(), ...hitsByFile.keys()]);
+    const countMismatch = [...allFiles]
+      .map(file => ({ file, cards: cardsByFile.get(file) || 0, links: hitsByFile.get(file) || 0 }))
+      .filter(row => row.cards !== row.links);
+    const totalCards = [...cardsByFile.values()].reduce((sum, count) => sum + count, 0);
+    const changesCards = cardsByFile.get('changes/index.html') || 0;
+    const domCards = (changesPage.leadCards || []).length;
+    check('全站跨域链接只剩线索卡里的那个 CTA（逐文件：指向线索原文的外链数 == 线索卡张数，且每条都是 .lccta）',
+      notCta.length === 0 && countMismatch.length === 0 && changesCards === domCards,
+      leadUrls.size
+        ? `${hits.length} 条指向线索原文 · 非 CTA ${notCta.length} 条 · 线索卡 ${totalCards} 张` +
+          `（/changes/ 字面 ${changesCards} 张 / DOM ${domCards} 张）` +
+          (countMismatch.length
+            ? ` · 卡数≠外链数的文件：${countMismatch.slice(0, 3)
+              .map(row => `${row.file}(${row.cards}/${row.links})`).join('、')}`
+            : '')
+        : '本轮 0 条线索（跨域链接面自然为空）');
   }
 
   // 无 JS：这一页也必须是完整正文
@@ -5847,6 +6624,7 @@ function noJsControlExemptionFor(route) {
         (th.childNodes[0] && th.childNodes[0].textContent ? th.childNodes[0].textContent : '').trim()),
       officialLinks: [...document.querySelectorAll('.ptable tbody a[href^="http"]')].map(a => a.href),
       controls: document.querySelectorAll('.ptable button, .ptable select, .ptable input, .ptable a.pdetbtn').length,
+      filterControls: document.querySelectorAll('[data-api-filter] input, [data-api-filter] select, [data-api-filter] button').length,
       // 只取**记录锚点**：优惠关系块的容器 `id="plan-deals"` 与它的每一行 `plan-deals-<id>`
       // 也以 plan- 开头，必须一起排除（否则锚点数永远比记录数多 8 个）。
       anchors: [...document.querySelectorAll('[id^="plan-"]')]
@@ -5860,6 +6638,13 @@ function noJsControlExemptionFor(route) {
       crumbs: [...document.querySelectorAll('.crumb a')].map(a => a.getAttribute('href') || ''),
       footLinks: [...document.querySelectorAll('footer a')].map(a => a.getAttribute('href') || ''),
       cross: [...document.querySelectorAll('a[href$="plans/coding/"]')].length,
+      // v5 识别层：h1 旁 3 个事实数字（.stopstats 里每个是 .stat stat-22，读自身直接文本）
+      stopStatsBlocks: document.querySelectorAll('.stopstats').length,
+      stopStats: [...document.querySelectorAll('.stopstats .stat')].map(el => ({
+        text: [...el.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent).join('').trim(),
+        fontSize: getComputedStyle(el).fontSize
+      })),
+      stopMeta: ((document.querySelector('.stop .meta') || {}).textContent || '').trim(),
       text: document.body ? document.body.innerText.replace(/\s+/g, ' ').trim() : ''
     }));
 
@@ -5881,7 +6666,7 @@ function noJsControlExemptionFor(route) {
           });
         }
       }
-      return { rows, recordIds: (doc.plans || []).map(plan => plan.id) };
+      return { rows, recordIds: (doc.plans || []).map(plan => plan.id), providerKeys: [...new Set((doc.plans || []).map(plan => plan.provider))] };
     })()`).catch(() => null);
 
     const truthRows = apiTruth ? apiTruth.rows : null;
@@ -5898,6 +6683,21 @@ function noJsControlExemptionFor(route) {
     check('/plans/api/ 能打开且恰好一个 h1',
       ap.h1Count === 1 && ap.text.length > 1200 && /API/.test(ap.h1),
       `h1 ${ap.h1Count} 个 · 正文 ${ap.text.length} 字 · 「${ap.h1.trim()}」`);
+
+    // v5 识别层（Tooth：浏览器侧）：h1 旁的事实数字 = **3 个 22px 真数**，且与页面数据现算值一致
+    // （不许硬编码 24/21/108 —— 数据一推进就必须跟着变）。同时 .stop 里的「最后核对 YYYY-MM-DD」
+    // 必须保留：这行日期是这一页的可核对性声明，不能被数字块顺手吃掉。
+    const expectedStopStats = apiTruth
+      ? [apiTruth.recordIds.length, apiTruth.providerKeys.length, truthRows.length]
+      : null;
+    check('/plans/api/ h1 旁恰好 3 个 22px 事实数字，且与页面数据现算值一致（v5 识别层）',
+      ap.stopStatsBlocks === 1 && ap.stopStats.length === 3 &&
+      ap.stopStats.every(s => s.fontSize === '22px' && /^\d+$/.test(s.text)) &&
+      /^(?:价格基准|最后核对) \d{4}-\d{2}-\d{2}$/.test(ap.stopMeta) &&
+      Boolean(expectedStopStats) &&
+      JSON.stringify(ap.stopStats.map(s => Number(s.text))) === JSON.stringify(expectedStopStats),
+      `.stopstats 块 ${ap.stopStatsBlocks} 个 · 数字 ${ap.stopStats.map(s => `${s.text}@${s.fontSize}`).join(' / ') || '无'}`
+        + ` · 数据现算 ${expectedStopStats ? expectedStopStats.join(' / ') : '未读到'} · meta「${ap.stopMeta}」`);
     check('/plans/api/ canonical 自指',
       ap.canonicalPath.endsWith('/plans/api/'), ap.canonicalPath);
     check('/plans/api/ 行数与 api-plans.json 逐个对账',
@@ -5936,8 +6736,23 @@ function noJsControlExemptionFor(route) {
 
     check('/plans/api/ 每行都给官方定价页链接，且指向数据里的那个地址',
       Boolean(truthRows) && ap.officialLinks.length === truthRows.length, `${ap.officialLinks.length} 个`);
-    check('/plans/api/ 没有任何交互控件（v1 是预渲染静态表，无 JS 也给不出"点了没反应"的暗示）',
-      ap.controls === 0, `${ap.controls} 个`);
+    check('/plans/api/ 表格本体无死按钮，渐进增强筛选条已由 JS 挂载（含搜索 / 地区 / 币种 / 数值排序）',
+      ap.controls === 0 && ap.filterControls >= 5, `表内 ${ap.controls} 个 · 筛选条 ${ap.filterControls} 个控件`);
+    {
+      const qInput = page.locator('[data-api-filter] input[type="search"]');
+      const resetBtn = page.locator('[data-api-filter] button');
+      let filterLive = { filtered: -1, restored: -1 };
+      if ((await qInput.count()) === 1) {
+        await qInput.fill('deepseek');
+        filterLive.filtered = await page.evaluate(() => [...document.querySelectorAll('.ptable tbody tr[data-item]')].filter(r => !r.hidden).length);
+        if ((await resetBtn.count()) >= 1) await resetBtn.first().click();
+        else await qInput.fill('');
+        filterLive.restored = await page.evaluate(() => [...document.querySelectorAll('.ptable tbody tr[data-item]')].filter(r => !r.hidden).length);
+      }
+      check('/plans/api/ 筛选条输入 deepseek 可实时过滤表格并重置还原',
+        filterLive.filtered > 0 && filterLive.filtered < ap.rows && filterLive.restored === ap.rows,
+        `过滤后 ${filterLive.filtered} 行 · 重置还原 ${filterLive.restored}/${ap.rows} 行`);
+    }
     // 锚点：每条**记录**一个（不是每行一个）—— 最近变化与跨页深链的落点必须在浏览器里真的存在。
     const expectedAnchors = apiTruth ? apiTruth.recordIds.map(id => `plan-${id}`).sort() : null;
     check('/plans/api/ 每条记录都有 #plan-<id> 锚点（记录数 == 锚点数）',
@@ -7057,16 +7872,38 @@ function noJsControlExemptionFor(route) {
    * 「变异不生效却算通过」是这类测试最坏的假绿，这里宁可红。
    */
   async function leafMutate(target, anchor, replacement) {
-    return target.evaluate(`(() => {
+    return target.evaluate(`(async () => {
       const anchor = ${JSON.stringify(anchor)};
-      const styles = Array.prototype.slice.call(document.querySelectorAll('style'));
-      const counts = styles.map(style => style.textContent.split(anchor).length - 1);
+      const replacement = ${JSON.stringify(replacement)};
+      const sources = [];
+      for (const style of document.querySelectorAll('style')) {
+        sources.push({ type: 'style', el: style, text: style.textContent || '' });
+      }
+      for (const link of document.querySelectorAll('link[rel="stylesheet"]')) {
+        if (link.disabled || !link.href) continue;
+        try {
+          const url = new URL(link.href, location.href);
+          if (url.origin !== location.origin) continue;
+          const res = await fetch(url.href);
+          if (res.ok) sources.push({ type: 'link', el: link, text: await res.text() });
+        } catch (err) {}
+      }
+      const counts = sources.map(src => src.text.split(anchor).length - 1);
       const total = counts.reduce((sum, n) => sum + n, 0);
       if (total !== 1) {
-        return { ok: false, occurrences: total, reason: '锚点在内联样式里出现 ' + total + ' 次（必须恰好 1 次）' };
+        return { ok: false, occurrences: total, reason: '锚点在页面样式里出现 ' + total + ' 次（必须恰好 1 次）' };
       }
       const index = counts.findIndex(n => n === 1);
-      styles[index].textContent = styles[index].textContent.replace(anchor, ${JSON.stringify(replacement)});
+      const hit = sources[index];
+      const nextCss = hit.text.replace(anchor, replacement);
+      if (hit.type === 'style') {
+        hit.el.textContent = nextCss;
+      } else {
+        const style = document.createElement('style');
+        style.textContent = nextCss;
+        hit.el.parentNode.insertBefore(style, hit.el);
+        hit.el.disabled = true;
+      }
       return { ok: true, occurrences: 1 };
     })()`);
   }
@@ -7775,10 +8612,20 @@ function noJsControlExemptionFor(route) {
    * 以及 Range 并集字迹（进报告、供外部复核；不是判据，理由见本节开头）。
    */
   async function wideMeasure(target) {
-    const geometry = await target.evaluate(`(() => {
+    const geometry = await target.evaluate(`(async () => {
       const DATA_SELECTORS = ${JSON.stringify(WIDE_DATA_SELECTORS)};
       const NARROW_REGISTRY = ${JSON.stringify(WIDE_NARROW_ENTRIES)};
       const FROZEN = ${JSON.stringify(WIDE_SNOTE_FROZEN)};
+      const externalCssTexts = [];
+      for (const link of document.querySelectorAll('link[rel="stylesheet"]')) {
+        if (link.disabled || !link.href) continue;
+        try {
+          const url = new URL(link.href, location.href);
+          if (url.origin !== location.origin) continue;
+          const res = await fetch(url.href);
+          if (res.ok) externalCssTexts.push(await res.text());
+        } catch (err) {}
+      }
       const round = n => Math.round(n * 100) / 100;
       const zeroBox = { count: 0, left: 0, right: 0, width: 0, height: 0, top: 0, scrollW: 0, clientW: 0, scrollH: 0, clientH: 0, padLeft: 0, padRight: 0, maxWidth: '', overflowWrap: '' };
       /**
@@ -7899,7 +8746,8 @@ function noJsControlExemptionFor(route) {
       const narrowChDeclarations = (registered) => {
         const found = [];
         const styleTexts = Array.prototype.slice.call(document.querySelectorAll('style'))
-          .map(style => style.textContent || '');
+          .map(style => style.textContent || '')
+          .concat(externalCssTexts);
         // t33 / t11 N19：「noscript 里的 style」—— 脚本开启时它不是 DOM 节点（按规范，noscript 子的
         // 内容被当作**文本**），而无 JS 的读者**真的会**看到那条 ch 窄列。旧扫描面
         // （只取 querySelectorAll('style')）对它零码。这里把 noscript 子的原文里
@@ -8093,6 +8941,7 @@ function noJsControlExemptionFor(route) {
       //    旧写法仍然数到「恰好 1 次」（字符串还在），而那条规则**已经不在**（computed 从
       //    12px/20.4px/margin-bottom 12px 变成 14px/21px/0）。剥注释后计数变 0 ⇒ 判红。
       for (const style of styles) frozenCount += stripCssComments(style.textContent || '').split(FROZEN).length - 1;
+      for (const cssText of externalCssTexts) frozenCount += stripCssComments(cssText).split(FROZEN).length - 1;
       /**
        * ★ t33 / t11 N8·N9：冻结串的**生效**读数。
        *
@@ -8542,16 +9391,38 @@ function noJsControlExemptionFor(route) {
    * 后续断言测的不是这条规则。两种情况都返回 ok:false 且**不做任何替换**。
    */
   async function wideMutate(target, anchor, replacement) {
-    return target.evaluate(`(() => {
+    return target.evaluate(`(async () => {
       const anchor = ${JSON.stringify(anchor)};
-      const styles = Array.prototype.slice.call(document.querySelectorAll('style'));
-      const counts = styles.map(style => style.textContent.split(anchor).length - 1);
+      const replacement = ${JSON.stringify(replacement)};
+      const sources = [];
+      for (const style of document.querySelectorAll('style')) {
+        sources.push({ type: 'style', el: style, text: style.textContent || '' });
+      }
+      for (const link of document.querySelectorAll('link[rel="stylesheet"]')) {
+        if (link.disabled || !link.href) continue;
+        try {
+          const url = new URL(link.href, location.href);
+          if (url.origin !== location.origin) continue;
+          const res = await fetch(url.href);
+          if (res.ok) sources.push({ type: 'link', el: link, text: await res.text() });
+        } catch (err) {}
+      }
+      const counts = sources.map(src => src.text.split(anchor).length - 1);
       const total = counts.reduce((sum, n) => sum + n, 0);
       if (total !== 1) {
-        return { ok: false, occurrences: total, reason: '锚点在内联样式里出现 ' + total + ' 次（必须恰好 1 次）' };
+        return { ok: false, occurrences: total, reason: '锚点在页面样式里出现 ' + total + ' 次（必须恰好 1 次）' };
       }
       const index = counts.findIndex(n => n === 1);
-      styles[index].textContent = styles[index].textContent.replace(anchor, ${JSON.stringify(replacement)});
+      const hit = sources[index];
+      const nextCss = hit.text.replace(anchor, replacement);
+      if (hit.type === 'style') {
+        hit.el.textContent = nextCss;
+      } else {
+        const style = document.createElement('style');
+        style.textContent = nextCss;
+        hit.el.parentNode.insertBefore(style, hit.el);
+        hit.el.disabled = true;
+      }
       return { ok: true, occurrences: 1 };
     })()`);
   }
@@ -10642,6 +11513,220 @@ function noJsControlExemptionFor(route) {
   // 读者面的新契约（页面不出现数据文件名 / JSON / 「开放数据」入口）由构建期的
   // `lib/published-assets.js` fail-closed 扫描 + 产物级断言守着，不再需要一个浏览器节。
 
+  /* ================================================================== */
+  /* §25：/codex-reset/ Codex 额度重置档案（B 包）                        */
+  /* ================================================================== */
+  //
+  // 这一节的牙分两侧，都能被证伪：
+  //   数据侧 —— codex-resets.json 的字段契约（与 scripts/validate.js 的判据**同源事实、独立实现**：
+  //            即使 validate.js 被改成空转，这里在真产物上仍会红）；
+  //   页面侧 —— 行数 == 数据条数、每条时间/类型/来源/摘录/原推五件齐全、四档宽度无横向溢出、
+  //            纯静态（无内联页面脚本）、sitemap/canonical/hreflang、与 /plans/coding/ 互链。
+  // 本页诚实性的**唯一守卫**：「预测 / 概率 / %」判红。口径块按题面要求必须明写
+  // 「本页不预测下一次重置」—— 这与「出现『预测』即判红」字面互斥，取交集：
+  // 页面上「预测」只允许出现在这一句里，且**恰好一次**；其余位置出现、或出现「概率」/「%」都红。
+  // 下面用变异副本证明这条判定式真的会咬（不是永远为真的空转）。
+  console.log('\n=== 25) /codex-reset/ Codex 额度重置档案 ===');
+  {
+    const codexData = readRoot('codex-resets.json');
+    const codexEvents = Array.isArray(codexData.events) ? codexData.events : [];
+    const beijingMinute = iso => {
+      const time = Date.parse(iso);
+      if (Number.isNaN(time)) return '未知';
+      const shifted = new Date(time + 8 * 3600 * 1000);
+      const pad = value => String(value).padStart(2, '0');
+      return `${shifted.getUTCFullYear()}-${pad(shifted.getUTCMonth() + 1)}-${pad(shifted.getUTCDate())} `
+        + `${pad(shifted.getUTCHours())}:${pad(shifted.getUTCMinutes())}`;
+    };
+    /** 页面诚实性判定式（唯一实现；本节的磁盘扫描与变异自检都走它）。返回违规说明数组。 */
+    const codexHonestyViolations = html => {
+      const problems = [];
+      const scope = String(html)
+        .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+        .replace(/<style[\s\S]*?<\/style>/gi, ' ');
+      const disclaimer = '本页不预测下一次重置';
+      const count = scope.split(disclaimer).length - 1;
+      const rest = scope.split(disclaimer).join('');
+      if (count !== 1) problems.push(`口径句「${disclaimer}」出现 ${count} 次（必须恰好 1 次）`);
+      if (rest.includes('预测')) problems.push('出现了口径句之外的「预测」');
+      if (scope.includes('概率')) problems.push('出现了「概率」');
+      if (scope.includes('%')) problems.push('出现了 ASCII 百分号 %');
+      return problems;
+    };
+
+    // ── 数据侧 ①：条数与枚举（逐条，不抽样）──────────────────────────────
+    const dataProblems = [];
+    let lastAnnounced = null;
+    codexEvents.forEach((event, index) => {
+      const where = `第 ${index + 1} 条`;
+      if (!event || typeof event !== 'object') { dataProblems.push(`${where} 不是对象`); return; }
+      if (!event.tweetId) dataProblems.push(`${where} tweetId 为空`);
+      if (typeof event.tweetUrl !== 'string' || !/^https:\/\/(?:www\.)?(?:x|twitter|mobile\.twitter)\.com\//.test(event.tweetUrl)) {
+        dataProblems.push(`${where} tweetUrl 不是 https 的 x.com/twitter.com 链接`);
+      }
+      if (Number.isNaN(Date.parse(event.announcedAt))) dataProblems.push(`${where} announcedAt 不可解析`);
+      if (!['regular', 'banked'].includes(event.resetType)) dataProblems.push(`${where} reset_type 非法（${event.resetType}）`);
+      if (!['webhook', 'observed', 'backfill'].includes(event.source)) dataProblems.push(`${where} source 非法（${event.source}）`);
+      if (typeof event.text !== 'string' || !event.text.trim()) dataProblems.push(`${where} text 为空`);
+      const announced = Date.parse(event.announcedAt);
+      if (lastAnnounced !== null && Number.isFinite(announced) && announced > lastAnnounced) {
+        dataProblems.push(`${where} 没有按 announcedAt 倒序（第 ${index} 条比前一条更新）`);
+      }
+      if (Number.isFinite(announced)) lastAnnounced = announced;
+    });
+    check('§25 数据侧：codex-resets.json 每条都是 https 的 x/twitter 原推链接 + 可解析 announced_at + reset_type/source 枚举合法 + 按时间倒序',
+      codexEvents.length > 0 && dataProblems.length === 0,
+      dataProblems.length ? `${dataProblems.length} 处问题：${dataProblems.slice(0, 3).join('；')}` : `${codexEvents.length} 条全过`);
+
+    // ── 数据侧 ②：统计口径自洽（total / avg / lastResetAt / fetchedAt）────────
+    const statProblems = [];
+    if (Number(codexData.stats && codexData.stats.total) !== codexEvents.length) {
+      statProblems.push(`stats.total ${codexData.stats && codexData.stats.total} ≠ events ${codexEvents.length}`);
+    }
+    const avgInterval = Number(codexData.stats && codexData.stats.avgIntervalDays);
+    if (!Number.isFinite(avgInterval) || avgInterval <= 0) statProblems.push('stats.avgIntervalDays 不是有限正数');
+    if (Number.isNaN(Date.parse(codexData.fetchedAt))) statProblems.push('fetchedAt 不可解析');
+    const lastResetAt = codexData.stats && codexData.stats.lastResetAt;
+    if (Number.isNaN(Date.parse(lastResetAt))) statProblems.push('stats.lastResetAt 不可解析');
+    else if (codexEvents.length && Date.parse(lastResetAt) !== Math.max(...codexEvents.map(event => Date.parse(event.announcedAt)))) {
+      statProblems.push('stats.lastResetAt ≠ 最新一条记录的 announcedAt');
+    }
+    check('§25 数据侧：stats.total == 条数 · avgIntervalDays 为正数 · lastResetAt == 最新事件时间 · fetchedAt 可解析',
+      statProblems.length === 0, statProblems.join('；') || `total=${codexEvents.length} · avg=${avgInterval} 天`);
+
+    // ── 页面体检（复用资料库页套件：h1 / canonical / sitemap / 无 JS / 无外部请求）──
+    const { data: codexPageData } = await auditLibraryPage({
+      label: '/codex-reset/',
+      route: 'codex-reset/',
+      noJsText: ['数据截至', '本页不预测下一次重置', '同一事件可能被收录多次', '原推'],
+      minText: 2000,
+      itemList: false,
+      // 每条记录都有**原推**这条站外链接（一手证据）；收录方与发布账号的链接也在这条分支里。
+      official: codexEvents.length,
+      footerLink: false
+    });
+    check('§25 /codex-reset/ 恰好一个 h1 且标题就是档案名',
+      codexPageData.title.includes('Codex 额度重置档案'), `「${codexPageData.title}」`);
+
+    // ── 页面侧 ③：行数 == 数据条数；每条五件齐全、顺序与数据一致 ────────────
+    await page.goto(new URL('codex-reset/', base).href, { waitUntil: 'load' });
+    const rendered = await page.evaluate(`(() => {
+      const rows = [...document.querySelectorAll('[data-codex-event]')].map(row => ({
+        tweetId: row.getAttribute('data-codex-event'),
+        resetType: row.getAttribute('data-reset-type'),
+        source: row.getAttribute('data-source'),
+        datetime: (row.querySelector('time') || {}).getAttribute ? row.querySelector('time').getAttribute('datetime') : '',
+        timeText: ((row.querySelector('time') || {}).textContent || '').trim(),
+        typeText: ((row.querySelector('.cx-type') || {}).textContent || '').trim(),
+        sourceText: ((row.querySelector('.cx-src') || {}).textContent || '').replace(/\\s+/g, ' ').trim(),
+        excerpt: ((row.querySelector('.cx-text') || {}).textContent || '').trim(),
+        href: (row.querySelector('a.cx-orig') || {}).href || '',
+        cells: row.querySelectorAll('td').length
+      }));
+      const stats = [...document.querySelectorAll('.cx-stat b')].map(node => node.textContent.trim());
+      const meta = ((document.querySelector('.stop .meta') || {}).textContent || '').trim();
+      const pageText = document.body ? document.body.innerText.replace(/\\s+/g, ' ').trim() : '';
+      return { rows, stats, meta, pageText };
+    })()`);
+    check('§25 页面时间线行数 == 数据条数（多/少一条都红）',
+      rendered.rows.length === codexEvents.length,
+      `页面 ${rendered.rows.length} 行 / 数据 ${codexEvents.length} 条`);
+    const rowProblems = [];
+    rendered.rows.forEach((row, index) => {
+      const event = codexEvents[index];
+      if (!event) { rowProblems.push(`第 ${index + 1} 行没有对应数据`); return; }
+      const where = `第 ${index + 1} 行`;
+      if (row.tweetId !== event.tweetId) rowProblems.push(`${where} tweetId 与数据顺序不一致`);
+      if (!/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(row.timeText)) rowProblems.push(`${where} 时间不是北京时间「YYYY-MM-DD HH:mm」`);
+      if (row.datetime !== event.announcedAt) rowProblems.push(`${where} <time datetime> ≠ announcedAt`);
+      const typeLabel = event.resetType === 'regular' ? '全局重置' : '可储存重置';
+      if (!row.typeText.includes(typeLabel)) rowProblems.push(`${where} 类型标签不是「${typeLabel}」`);
+      const sourceLabel = { webhook: '实时收录', observed: '事后观测收录', backfill: '历史回填' }[event.source];
+      if (!row.sourceText.includes(sourceLabel)) rowProblems.push(`${where} 收录来源标签不是「${sourceLabel}」`);
+      if (row.href !== event.tweetUrl) rowProblems.push(`${where} 原推链接 ≠ tweet_url`);
+      if (row.cells !== 5) rowProblems.push(`${where} 不是五列（时间/类型/来源/摘录/原推）`);
+      // 摘录：必须是原文的**前缀**且 ≤140 字符；有截断就必须留痕，没有截断就不许画蛇添足。
+      const normalized = String(event.text || '').replace(/\s+/g, ' ').trim();
+      const hasMarker = row.excerpt.includes('此处截断');
+      const bodyText = (row.excerpt.split(/…（原文共 \d+ 字符，此处截断）/)[0] || '').trim();
+      if (!bodyText || bodyText.length > 140) rowProblems.push(`${where} 摘录长度 ${bodyText.length}（应 1–140）`);
+      else if (!normalized.startsWith(bodyText)) rowProblems.push(`${where} 摘录不是英文原文的前缀（改写了原文）`);
+      if (hasMarker === (bodyText === normalized)) rowProblems.push(`${where} 截断留痕与实际是否截断不一致`);
+    });
+    check('§25 时间线每条五件齐全：北京时间 + 类型标签 + 收录来源 + 英文原文前缀摘录（≤140，截断留痕）+ 原推链接',
+      rendered.rows.length > 0 && rowProblems.length === 0,
+      rowProblems.length ? `${rowProblems.length} 处问题：${rowProblems.slice(0, 3).join('；')}` : `${rendered.rows.length} 条逐条对账一致`);
+
+    // ── 页面侧 ④：三个数字 + 数据截至（按 fetchedAt 现算，构建期算死）────────
+    const expectedFetchedCN = beijingMinute(codexData.fetchedAt);
+    const diffDays = (Date.parse(codexData.fetchedAt) - Date.parse(lastResetAt)) / 86400000;
+    const expectedSince = (Math.max(0, Math.round(diffDays * 10) / 10)).toFixed(1);
+    const expectedAvg = (Math.round(avgInterval * 10) / 10).toFixed(1);
+    check('§25 三个数字与数据一致：累计记录条数 / 平均间隔（avg_interval_days）/ 距上次重置（fetchedAt − lastResetAt，构建期算死）',
+      rendered.stats.length === 3
+        && rendered.stats[0] === String(codexEvents.length)
+        && rendered.stats[1] === expectedAvg
+        && rendered.stats[2] === expectedSince,
+      `页面 [${rendered.stats.join(' / ')}] · 期望 [${codexEvents.length} / ${expectedAvg} / ${expectedSince}]`);
+    check('§25 「数据截至」= fetchedAt 的北京时间（不是构建时钟、不是 X 小时前）',
+      rendered.meta.includes(`数据截至 ${expectedFetchedCN}（北京时间）`),
+      `页面「${rendered.meta}」 · 期望 ${expectedFetchedCN}`);
+    check('§25 口径块四件事都在：数据来源 / 数据截至 / 本页不预测下一次重置 / 同一事件可能被收录多次',
+      rendered.pageText.includes('@thsottiaux') && rendered.pageText.includes('codex-resets.com')
+        && rendered.pageText.includes('数据截至') && rendered.pageText.includes('本页不预测下一次重置')
+        && rendered.pageText.includes('同一事件可能被收录多次'),
+      '四个片段逐个命中');
+
+    // ── 页面侧 ⑤：四档宽度无页面级横向溢出（题面 390/761/940/1280）──────────
+    const codexOverflow = [];
+    for (const width of [390, 761, 940, 1280]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(new URL('codex-reset/', base).href, { waitUntil: 'load' });
+      const overflow = await page.evaluate('document.documentElement.scrollWidth - document.documentElement.clientWidth');
+      if (overflow > 0) codexOverflow.push(`${width}px:${overflow}px`);
+    }
+    await page.setViewportSize({ width: 1440, height: 900 });
+    check('§25 390 / 761 / 940 / 1280 四档都没有页面级横向溢出',
+      codexOverflow.length === 0, codexOverflow.join(' · ') || '四档全部 0px');
+
+    // ── 页面侧 ⑥：纯静态（无内联页面脚本）+ hreflang + 互链 + 守卫（磁盘字节）──
+    const codexHtml = fs.readFileSync(path.join(DIR, 'codex-reset', 'index.html'), 'utf8');
+    const withoutAllowedScripts = analytics.stripBootstrap(codexHtml)
+      .replace(/<script>\s*\/\* 主题必须在首次绘制前决定[\s\S]*?<\/script>/g, '')
+      .replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g, '');
+    check('§25 纯静态：去掉分析 bootstrap / 主题前置脚本 / JSON-LD 后没有任何内联脚本',
+      !/<script(?![^>]*\bsrc=)[^>]*>/.test(withoutAllowedScripts),
+      '允许的共享内联段之外 script 0 个');
+    const codexHreflang = [...codexHtml.matchAll(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)">/g)]
+      .map(match => ({ lang: match[1], href: match[2] }));
+    check('§25 hreflang 进页面：zh-CN 与 x-default 各自指向本页 canonical',
+      codexHreflang.length === 2
+        && codexHreflang.some(item => item.lang === 'zh-CN')
+        && codexHreflang.some(item => item.lang === 'x-default')
+        && codexHreflang.every(item => item.href === `https://buguoshixc.github.io/ai-deals-aggregator/codex-reset/`),
+      codexHreflang.map(item => `${item.lang}=${item.href}`).join(' · ') || '没有 hreflang');
+    const plansCodingHtml = fs.readFileSync(path.join(DIR, 'plans', 'coding', 'index.html'), 'utf8');
+    check('§25 与 /plans/coding/ 互链（两页互相都有站内链接，不是单边）',
+      codexHtml.includes('href="../plans/coding/"') && plansCodingHtml.includes('href="../../codex-reset/"'),
+      `codex→plans=${codexHtml.includes('../plans/coding/')} · plans→codex=${plansCodingHtml.includes('../../codex-reset/')}`);
+
+    // ── 页面侧 ⑦：诚实性守卫（预测 / 概率 / %）+ 判定式可证伪 ──────────────────
+    const cleanProblems = codexHonestyViolations(codexHtml);
+    check('§25 诚实性守卫：页面上「预测」只出现在口径句里恰好 1 次；「概率」与「%」零出现',
+      cleanProblems.length === 0,
+      cleanProblems.join('；') || '口径句 1 次 · 概率 0 · % 0');
+    const mutated = {
+      probability: codexHtml.replace('累计记录条数', '累计记录条数（发生概率）'),
+      percent: codexHtml.replace('累计记录条数', '累计记录条数 20%'),
+      extraForecast: codexHtml.replace('</main>', '<p>下一次预测</p></main>')
+    };
+    const falsifiable = Object.entries(mutated)
+      .filter(([, html]) => codexHonestyViolations(html).length > 0)
+      .map(([name]) => name);
+    check('§25 守卫可证伪：注入「概率」/「20%」/第二处「预测」的三个变异副本都必须被判红（不是永远为真的空转）',
+      falsifiable.length === 3, `被判红的变异：${falsifiable.join(', ') || '0 个'}`);
+  }
+
   /* ------------------------------------------------------------------ */
   /* 私有站点分析（private-analytics-v1）                                 */
   /* ------------------------------------------------------------------ */
@@ -10756,6 +11841,473 @@ function noJsControlExemptionFor(route) {
     }
   }
 
+  console.log('\n=== 27) F1 价格历史（阶梯线 / 无基线不画 / 暗色可读）===');
+  {
+    // 第二把尺子：不 require lib/price-history，直接按两份真值文件重算
+    // 「基线以来哪些费率维度真的变过」。页面上的图数必须等于这个集合的大小。
+    const apiPlansDoc = JSON.parse(fs.readFileSync(path.join(ROOT, 'api-plans.json'), 'utf8'));
+    const historyDoc = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts', 'data', 'api-plan-history.json'), 'utf8'));
+    const changedKeys = new Set();
+    let expectedChanges = 0;
+    // 计价条目 = (planId, modelKey, variant)，且至少一个费率不是 null；从基线 + 首次收录快照数。
+    const seedKeys = new Set();
+    const collectEntry = (planId, fields) => {
+      for (const entry of (fields && fields.models) || []) {
+        const rates = entry && entry.rates ? Object.values(entry.rates) : [];
+        if (!rates.some(value => value !== null && value !== undefined)) continue;
+        seedKeys.add(`${planId}|${entry.modelKey}|${entry.variant}`);
+      }
+    };
+    for (const [planId, fields] of Object.entries(historyDoc.baseline && historyDoc.baseline.fields ? historyDoc.baseline.fields : {})) {
+      collectEntry(planId, fields);
+    }
+    for (const event of historyDoc.events || []) if (event.type === 'created') collectEntry(event.planId, event.fields);
+    for (const event of historyDoc.events || []) {
+      if (!event || event.field !== 'models') continue;
+      if (!['price_increased', 'price_decreased', 'model_changed'].includes(event.type)) continue;
+      if (!apiPlansDoc.plans.some(plan => plan.id === event.planId)) continue;
+      const entry = event.to || event.from;
+      if (!entry || !entry.rates || !event.from || !event.from.rates) continue;
+      for (const rateKey of Object.keys(entry.rates)) {
+        const from = event.from.rates[rateKey] === undefined ? null : event.from.rates[rateKey];
+        const to = entry.rates[rateKey] === undefined ? null : entry.rates[rateKey];
+        if (from === to) continue;
+        expectedChanges++;
+        changedKeys.add(`${event.planId}|${entry.modelKey}|${entry.variant}|${rateKey}`);
+      }
+    }
+
+    const beforeErrors = errors.length;
+    await page.goto(`${base}plans/api/`, { waitUntil: 'networkidle' });
+    // /plans/api/ 是构建期静态页（零自研 JS）：等它自己的价格历史节，而不是等首页应用的
+    // `#lastUpdated` —— 二级页页脚写的是「见首页」，等应用信号永远等不到。
+    await page.waitForSelector('#api-price-history', { timeout: 10000 });
+    const apiInfo = await page.evaluate(() => {
+      const block = document.querySelector('#api-price-history');
+      const svgs = block ? [...block.querySelectorAll('svg[data-ph-key]')] : [];
+      return {
+        exists: Boolean(block),
+        series: block ? Number(block.getAttribute('data-ph-series')) : -1,
+        changes: block ? Number(block.getAttribute('data-ph-changes')) : -1,
+        svgs: svgs.length,
+        keys: svgs.map(svg => svg.getAttribute('data-ph-key')),
+        titles: svgs.map(svg => {
+          const title = svg.querySelector('title');
+          return title ? title.textContent.trim() : '';
+        }),
+        summary: block && block.querySelector('.ph-sum') ? block.querySelector('.ph-sum').textContent.trim() : '',
+        externalScripts: [...document.querySelectorAll('script[src]')].map(script => script.getAttribute('src'))
+      };
+    });
+    check('/plans/api/ 有「价格历史（基线以来）」节', apiInfo.exists);
+    check('/plans/api/ 的图数 == 独立重算的「变过的费率维度」数',
+      apiInfo.svgs === changedKeys.size, `页面 ${apiInfo.svgs} vs 重算 ${changedKeys.size}`);
+    check('/plans/api/ 的 data-ph-series / data-ph-changes 与页面内容对账',
+      apiInfo.series === apiInfo.svgs && apiInfo.changes === expectedChanges,
+      `series=${apiInfo.series} svgs=${apiInfo.svgs} changes=${apiInfo.changes} vs ${expectedChanges}`);
+    check('/plans/api/ 每张图的序列键都能在真值里落地、title 非空',
+      apiInfo.keys.every(key => changedKeys.has(key)) && apiInfo.titles.every(Boolean),
+      apiInfo.keys.filter(key => !changedKeys.has(key)).slice(0, 2).join(' · '));
+    check('/plans/api/ 的聚合陈述与独立重算逐字一致',
+      apiInfo.summary === `${seedKeys.size} 个计价条目 · 基线以来 ${expectedChanges} 次价格变化`,
+      `页面「${apiInfo.summary}」 vs 重算 ${seedKeys.size}/${expectedChanges}`);
+    check('/plans/api/ 没有新增外链脚本（内联 SVG 不是 JS）',
+      apiInfo.externalScripts.length === 0, apiInfo.externalScripts.join(' · '));
+
+    // 模型详情：有关联计费的模型页必须有同一块，且 data-ph-series 与页面里的图数一致。
+    const modelsDir = path.join(DIR, 'models');
+    const modelSlug = fs.existsSync(modelsDir)
+      ? fs.readdirSync(modelsDir).find(name => {
+        const file = path.join(modelsDir, name, 'index.html');
+        return fs.existsSync(file) && fs.readFileSync(file, 'utf8').includes('id="model-price-history"');
+      })
+      : null;
+    if (modelSlug) {
+      await page.goto(`${base}models/${modelSlug}/`, { waitUntil: 'networkidle' });
+      await page.waitForSelector('#model-price-history', { timeout: 10000 });
+      const modelInfo = await page.evaluate(() => {
+        const block = document.querySelector('#model-price-history');
+        const svgs = block ? [...block.querySelectorAll('svg[data-ph-key]')] : [];
+        return {
+          exists: Boolean(block),
+          series: block ? Number(block.getAttribute('data-ph-series')) : -1,
+          svgs: svgs.length,
+          titled: svgs.every(svg => svg.querySelector('title') && svg.querySelector('title').textContent.trim())
+        };
+      });
+      check(`模型页（${modelSlug}）有「价格历史（API 计费）」块且计数自洽`,
+        modelInfo.exists && modelInfo.series === modelInfo.svgs && modelInfo.series > 0,
+        JSON.stringify(modelInfo));
+      check(`模型页（${modelSlug}）每张图都有非空 title`, modelInfo.titled);
+    } else {
+      check('dist 里没有带价格历史块的模型页（如实跳过：可能本次没有关联计费）', true);
+    }
+
+    // 暗色：把主题切到 dark，量线条的计算色；线条不能和背景同一个颜色。
+    await page.goto(`${base}plans/api/`, { waitUntil: 'networkidle' });
+    await page.waitForSelector('#api-price-history', { timeout: 10000 });
+    const darkColors = await page.evaluate(() => {
+      document.documentElement.dataset.theme = 'dark';
+      const path = document.querySelector('#api-price-history svg path[stroke]');
+      const bg = getComputedStyle(document.body).backgroundColor;
+      return {
+        stroke: path ? getComputedStyle(path).stroke : '',
+        bg
+      };
+    });
+    check('暗色下价格历史线条的计算色 ≠ 页面背景色',
+      Boolean(darkColors.stroke) && darkColors.stroke !== darkColors.bg,
+      `${darkColors.stroke} vs ${darkColors.bg}`);
+    await page.evaluate(() => { delete document.documentElement.dataset.theme; });
+
+    check('本节 JS 错误 0', errors.length === beforeErrors,
+      errors.slice(beforeErrors, beforeErrors + 2).join(' · ') || '0 个');
+  }
+
+  console.log('\n=== 28) F2 即将到期（due 筛选 / 基准日 / 到期日历）===');
+  {
+    const beforeErrors = errors.length;
+    await page.goto(`${base}`, { waitUntil: 'networkidle' });
+    await waitForApp(page);
+
+    const chipBefore = await page.evaluate(() => {
+      const chip = document.querySelector('.facets [data-facet="due"]');
+      return { exists: Boolean(chip), text: chip ? chip.textContent.trim() : '', pressed: chip ? chip.getAttribute('aria-pressed') : null };
+    });
+    check('首页 facets 行里有「即将到期」chip（默认未选中）',
+      chipBefore.exists && chipBefore.text.includes('即将到期') && chipBefore.pressed === 'false', JSON.stringify(chipBefore));
+
+    await page.evaluate(() => { document.querySelector('.facets [data-facet="due"]').click(); });
+    await page.waitForFunction(() => {
+      const chip = document.querySelector('.facets [data-facet="due"]');
+      return chip && chip.getAttribute('aria-pressed') === 'true';
+    }, null, { timeout: 5000 });
+    await page.waitForTimeout(150);
+
+    // 第二把尺子：在页面里独立 fetch offers.json，按与 RENDER-CORE **不同源**的写法重算
+    // 「今天 + 30 天内到期」的条数；同时读屏幕上真实渲染的卡片与 stats 文案。
+    const dueView = await page.evaluate(async () => {
+      const doc = await (await fetch('assets/data/offers.json')).json();
+      const today = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
+      const WINDOW = 30;
+      const days = date => Math.round((Date.parse(date + 'T00:00:00Z') - Date.parse(today + 'T00:00:00Z')) / 86400000);
+      const expected = (doc.deals || []).filter(deal => {
+        if (!deal || !deal.expiresAt) return false;
+        if (deal.type === 'deal' && days(deal.expiresAt) < 0) return false;
+        return days(deal.expiresAt) >= 0 && days(deal.expiresAt) <= WINDOW;
+      }).length;
+      // 卡片是 `article.g`（网格视图），不是 `.card` —— 首页预渲染的 97 张都在这里。
+      const cards = [...document.querySelectorAll('#dealsList .g')].filter(card => card.offsetParent !== null);
+      const badges = cards.map(card => {
+        const badge = card.querySelector('.tg.due');
+        return badge ? badge.textContent.trim() : null;
+      });
+      return {
+        today,
+        expected,
+        cards: cards.length,
+        badges,
+        stats: (document.querySelector('#stats') || {}).textContent || '',
+        chipText: (document.querySelector('.facets [data-facet="due"]') || {}).textContent || ''
+      };
+    });
+    check('due 筛选后可见卡片数 == 独立重算的「30 天内到期」条数',
+      dueView.cards === dueView.expected && dueView.expected > 0,
+      `页面 ${dueView.cards} vs 重算 ${dueView.expected}`);
+    check('每张可见卡都带 due 徽章（过期/无日期的一条都不许混进来）',
+      dueView.badges.every(Boolean), dueView.badges.filter(badge => !badge).length + ' 张缺徽章');
+    const dayNumbers = dueView.badges.filter(Boolean).map(text => {
+      if (text.includes('今天')) return 0;
+      const match = /剩\s*(\d+)\s*天/.exec(text);
+      return match ? Number(match[1]) : NaN;
+    });
+    check('每张卡的剩余天数都落在 0–30 天（含边界）',
+      dayNumbers.every(value => Number.isFinite(value) && value >= 0 && value <= 30),
+      dayNumbers.filter(value => !(Number.isFinite(value) && value >= 0 && value <= 30)).slice(0, 3).join(' · '));
+    check('stats 行给出「N 条 30 天内到期 · 基准日 YYYY-MM-DD」且基准日就是同一个「今天」',
+      dueView.stats.includes(`${dueView.expected} 条 30 天内到期 · 基准日 ${dueView.today}`), dueView.stats.slice(0, 120));
+    check('stats 行里有到期日历链接（/expiry.ics，无 JS 也能点）',
+      /href="expiry\.ics"/.test(await page.evaluate(() => document.querySelector('#stats').innerHTML)));
+    // 未激活时 chip 上的数字 = 点下去会剩下几条（激活后它反而显示「取消这一步会回到几条」，
+    // 这是全部 facet 的同一套口径，所以这里用点击**前**读到的那个数字）。
+    check('未激活时 chip 上的计数 == 独立重算的条数（同一个 facetModel 管线）',
+      new RegExp(`即将到期\\s*${dueView.expected}\\b`).test(chipBefore.text.replace(/\s+/g, ' ')), chipBefore.text);
+
+    // 到期日历本身：node 侧直接取，验 HTTP 200 + iCalendar 起始行。
+    const calendarRes = await fetch(`${base}expiry.ics`);
+    const calendarText = await calendarRes.text();
+    check('到期日历 /expiry.ics 可取（HTTP 200）', calendarRes.status === 200, `HTTP ${calendarRes.status}`);
+    check('到期日历正文是 iCalendar（BEGIN:VCALENDAR … END:VCALENDAR）',
+      /^BEGIN:VCALENDAR\r?\n/.test(calendarText) && /^END:VCALENDAR\r?$/m.test(calendarText),
+      `${Buffer.byteLength(calendarText, 'utf8')} 字节`);
+    check('到期日历里有事件，且不含已过期条目',
+      /^BEGIN:VEVENT\r?$/m.test(calendarText) && !calendarText.includes('已过期'), '事件数 0 或混入过期');
+
+    // 收尾复位：再点一下 chip，回到默认视图（不影响后面的节）。
+    await page.evaluate(() => { document.querySelector('.facets [data-facet="due"]').click(); });
+    await page.waitForFunction(() => {
+      const chip = document.querySelector('.facets [data-facet="due"]');
+      return chip && chip.getAttribute('aria-pressed') === 'false';
+    }, null, { timeout: 5000 });
+    check('本节 JS 错误 0', errors.length === beforeErrors,
+      errors.slice(beforeErrors, beforeErrors + 2).join(' · ') || '0 个');
+  }
+
+  console.log('\n=== 29) F3 全站搜索（静态目录 / 渐进增强过滤 / 无死链）===');
+  {
+    const beforeErrors = errors.length;
+    // 第二把尺子：不 require lib/search-index。期望值从**真值 + 产物目录**现算：
+    //   · deal：deals.json 里 type==='deal' 且 dist 里真有详情页的；
+    //   · plan / apiPlan：两份真值的 count；
+    //   · model：models.json 里在 dist 有详情页的；
+    //   · vendor / category / need / collection：dist 里真实的目录页；
+    //   · 固定页：本脚本自己列的 10 条（不含首页与 /search/ 自身）。
+    const dealsDoc = JSON.parse(fs.readFileSync(path.join(ROOT, 'deals.json'), 'utf8'));
+    const plansDoc = JSON.parse(fs.readFileSync(path.join(ROOT, 'plans.json'), 'utf8'));
+    const apiPlansDoc2 = JSON.parse(fs.readFileSync(path.join(ROOT, 'api-plans.json'), 'utf8'));
+    const modelsDoc = JSON.parse(fs.readFileSync(path.join(ROOT, 'models.json'), 'utf8'));
+    const distDir = path.resolve(ROOT, DIR);
+    const hasPage = rel => fs.existsSync(path.join(distDir, rel, 'index.html'));
+    // 别名页（canonical 指向正本）不进搜索索引；第二把尺子直接读产物里的 canonical，
+    // 只数「自指 canonical」的目录页 —— 否则会把 /need/student-only/ 这类别名页多算一遍。
+    const selfCanonical = rel => {
+      const file = path.join(distDir, rel, 'index.html');
+      if (!fs.existsSync(file)) return false;
+      const match = /<link rel="canonical" href="([^"]+)"/.exec(fs.readFileSync(file, 'utf8'));
+      return Boolean(match) && match[1] === `https://buguoshixc.github.io/ai-deals-aggregator/${rel}/`;
+    };
+    const countDirs = rel => (fs.existsSync(path.join(distDir, rel))
+      ? fs.readdirSync(path.join(distDir, rel), { withFileTypes: true })
+        .filter(entry => entry.isDirectory() && selfCanonical(`${rel}/${entry.name}`)).length
+      : 0);
+    const expectedDeals = (dealsDoc.deals || []).filter(deal => deal.type === 'deal' && hasPage(`deal/${encodeURIComponent(deal.id)}`)).length;
+    const expectedModels = (modelsDoc.models || []).filter(model => hasPage(`models/${encodeURIComponent(model.slug)}`)).length;
+    const expectedVendors = countDirs('vendor');
+    const expectedCategories = countDirs('category');
+    const expectedNeeds = countDirs('need');
+    const expectedCollections = ['student', 'developer', 'free-api'].filter(route => hasPage(route)).length;
+    // 两个枢纽目录页（/vendor/、/category/）也是 landing spec 的 route，同样进索引；
+    // 它们不是 vendor/<slug>/ 的子目录，单独数。
+    const fixedRoutes = ['status/', 'changes/', 'plans/', 'plans/coding/', 'plans/api/', 'models/', 'archive/', 'docs/data/', 'tools/api-cost/', 'codex-reset/', 'vendor/', 'category/'];
+    const expectedFixed = fixedRoutes.filter(route => hasPage(route.replace(/\/$/, ''))).length;
+    const expectedTotal = expectedDeals + plansDoc.count + apiPlansDoc2.count + expectedModels
+      + expectedVendors + expectedCategories + expectedNeeds + expectedCollections + expectedFixed;
+
+    // ① 无 JS：完整目录可读（渐进增强的反面证明）
+    const noJs = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1280, height: 900 } });
+    const staticPage = await noJs.newPage();
+    await staticPage.goto(`${base}search/`, { waitUntil: 'load' });
+    const staticView = await staticPage.evaluate(() => {
+      const items = [...document.querySelectorAll('.sitem')];
+      const groups = [...document.querySelectorAll('.sgroup')];
+      return {
+        items: items.length,
+        groupCounts: groups.map(group => Number(group.querySelector('[data-search-count]').textContent)),
+        hrefs: items.map(item => item.querySelector('a').getAttribute('href')),
+        input: Boolean(document.querySelector('#siteSearchInput'))
+      };
+    });
+    await noJs.close();
+    check('无 JS 时目录条目数 == 真值 + 产物独立重算',
+      staticView.items === expectedTotal, `${staticView.items} != ${expectedTotal}`);
+    check('分组计数之和 == 条目总数', staticView.groupCounts.reduce((a, b) => a + b, 0) === staticView.items,
+      `${staticView.groupCounts.join('+')} vs ${staticView.items}`);
+    check('每条目录项都有站内相对链接（../ 开头、无外链）',
+      staticView.hrefs.length > 0 && staticView.hrefs.every(href => href.startsWith('../') && !/^https?:/i.test(href)),
+      staticView.hrefs.find(href => !href.startsWith('../')) || '');
+    check('无 JS 也能看到搜索框（渐进增强不是唯一路径）', staticView.input);
+    const sampleHref = staticView.hrefs.find(href => href && !href.includes('#'));
+    if (sampleHref) {
+      const sampleRes = await fetch(`${base}search/${sampleHref}`);
+      check('抽样目录内链 HTTP 200（不发死链）', sampleRes.status === 200, `${sampleHref} → HTTP ${sampleRes.status}`);
+    } else {
+      check('抽样目录内链 HTTP 200（不发死链）', false, '目录里没有可抽样的链接');
+    }
+
+    // ② 有 JS：过滤是渐进增强（只藏东西，不改内容）
+    await page.goto(`${base}search/`, { waitUntil: 'load' });
+    await page.waitForTimeout(200);
+    const before = await page.evaluate(() => [...document.querySelectorAll('.sitem')].filter(item => !item.hidden).length);
+    check('有 JS 时初始目录仍然是全量（不闪空）', before === expectedTotal, `${before} != ${expectedTotal}`);
+    await page.fill('#siteSearchInput', 'deepseek');
+    await page.waitForTimeout(120);
+    const filtered = await page.evaluate(() => {
+      const visible = [...document.querySelectorAll('.sitem')].filter(item => !item.hidden);
+      return {
+        count: visible.length,
+        allMatch: visible.every(item => (item.getAttribute('data-keywords') || '').toLowerCase().includes('deepseek')),
+        status: document.querySelector('#searchStatus').textContent.trim(),
+        emptyHidden: document.querySelector('#searchEmpty').hidden
+      };
+    });
+    check('输入 deepseek ⇒ 可见项 >0 且每一项都真的含该词（不是随便显示）',
+      filtered.count > 0 && filtered.allMatch, `可见 ${filtered.count} · 全匹配 ${filtered.allMatch}`);
+    check('输入 deepseek ⇒ 结果数 live region 写出「显示 N / M 条」',
+      new RegExp(`显示\\s*${filtered.count}\\s*/\\s*${expectedTotal}\\s*条`).test(filtered.status), filtered.status);
+    check('有结果时诚实空态不出现', filtered.emptyHidden === true);
+    await page.fill('#siteSearchInput', 'zzzz-no-such-entry');
+    await page.waitForTimeout(120);
+    const emptyView = await page.evaluate(() => ({
+      visible: [...document.querySelectorAll('.sitem')].filter(item => !item.hidden).length,
+      emptyHidden: document.querySelector('#searchEmpty').hidden
+    }));
+    check('输入不存在的词 ⇒ 0 条可见 + 诚实空态出现', emptyView.visible === 0 && emptyView.emptyHidden === false,
+      `可见 ${emptyView.visible} · 空态隐藏 ${emptyView.emptyHidden}`);
+    await page.fill('#siteSearchInput', '');
+    await page.waitForTimeout(120);
+    const restored = await page.evaluate(() => [...document.querySelectorAll('.sitem')].filter(item => !item.hidden).length);
+    check('清空输入 ⇒ 完整目录还原（渐进增强不丢条目）', restored === expectedTotal, `${restored} != ${expectedTotal}`);
+
+    // ③ 移动端：390 宽度下页面级溢出为 0，输入框不越界
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(`${base}search/`, { waitUntil: 'load' });
+    await page.waitForTimeout(150);
+    const mobileView = await page.evaluate(() => {
+      const input = document.querySelector('#siteSearchInput');
+      const rect = input ? input.getBoundingClientRect() : null;
+      return {
+        overflowX: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        inputWithin: Boolean(rect) && rect.left >= 0 && rect.right <= window.innerWidth + 0.5
+      };
+    });
+    check('移动 390：页面级横向溢出 == 0', mobileView.overflowX <= 0, `${mobileView.overflowX}px`);
+    check('移动 390：搜索框在视口内（不越界）', mobileView.inputWithin);
+    await page.setViewportSize({ width: 1280, height: 900 });
+
+    check('本节 JS 错误 0', errors.length === beforeErrors,
+      errors.slice(beforeErrors, beforeErrors + 2).join(' · ') || '0 个');
+  }
+
+  console.log('\n=== 30) F4 观感（暗色两路一致 / 对比度 / 引文条 / 手机控制带）===');
+  {
+    const beforeErrors = errors.length;
+    // ① 暗色变量两份副本必须逐值一致：一份是 data-theme="dark"，一份是 prefers-color-scheme。
+    //    只比 --card/--line/--line2 —— 这三对是本次改动的对象，也是「两处 copy 忘同步」最容易漏的。
+    const darkByTheme = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    await darkByTheme.goto(base, { waitUntil: 'load' });
+    await darkByTheme.evaluate(() => { document.documentElement.dataset.theme = 'dark'; });
+    const themeVars = await darkByTheme.evaluate(() => {
+      const cs = getComputedStyle(document.documentElement);
+      return ['--card', '--line', '--line2', '--bg'].map(name => [name, cs.getPropertyValue(name).trim()]);
+    });
+    await darkByTheme.close();
+    const darkByMedia = await browser.newPage({ viewport: { width: 1280, height: 900 }, colorScheme: 'dark' });
+    await darkByMedia.goto(base, { waitUntil: 'load' });
+    const mediaVars = await darkByMedia.evaluate(() => {
+      const cs = getComputedStyle(document.documentElement);
+      return ['--card', '--line', '--line2', '--bg'].map(name => [name, cs.getPropertyValue(name).trim()]);
+    });
+    await darkByMedia.close();
+    check('暗色两份副本（data-theme 与 prefers-color-scheme）的 --card/--line/--line2 逐值相同',
+      themeVars.every(([name, value], index) => value === mediaVars[index][1]),
+      themeVars.map(([name, value], index) => `${name}:${value}≠${mediaVars[index][1]}`).filter(text => text.includes('≠')).join(' · '));
+
+    // ② 对比度实算（相对亮度 WCAG 2.x）。阈值：正文/次级文字/弱文字 ≥4.5，卡面 vs 页底 ≥1.4，描边 vs 页底 ≥1.6。
+    const readVars = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    await readVars.goto(base, { waitUntil: 'load' });
+    await readVars.evaluate(() => { document.documentElement.dataset.theme = 'dark'; });
+    const darkValues = await readVars.evaluate(() => {
+      const cs = getComputedStyle(document.documentElement);
+      const get = name => cs.getPropertyValue(name).trim();
+      return { bg: get('--bg'), card: get('--card'), ink: get('--ink'), ink2: get('--ink2'), mut: get('--mut'), line: get('--line') };
+    });
+    await readVars.close();
+    const luminance = hex => {
+      const body = hex.replace('#', '');
+      const channels = [0, 2, 4].map(offset => parseInt(body.slice(offset, offset + 2), 16) / 255)
+        .map(value => (value <= 0.04045 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4)));
+      return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+    };
+    const contrast = (a, b) => {
+      const first = luminance(a);
+      const second = luminance(b);
+      return (Math.max(first, second) + 0.05) / (Math.min(first, second) + 0.05);
+    };
+    check('暗色：ink/card、ink2/card、mut/card 全部 ≥4.5',
+      contrast(darkValues.ink, darkValues.card) >= 4.5
+      && contrast(darkValues.ink2, darkValues.card) >= 4.5
+      && contrast(darkValues.mut, darkValues.card) >= 4.5,
+      `ink ${contrast(darkValues.ink, darkValues.card).toFixed(2)} · ink2 ${contrast(darkValues.ink2, darkValues.card).toFixed(2)} · mut ${contrast(darkValues.mut, darkValues.card).toFixed(2)}`);
+    check('暗色：card/bg ≥1.4（卡面从页底浮起来）',
+      contrast(darkValues.card, darkValues.bg) >= 1.4, contrast(darkValues.card, darkValues.bg).toFixed(2));
+    check('暗色：line/bg ≥1.6（描边可见）',
+      contrast(darkValues.line, darkValues.bg) >= 1.6, contrast(darkValues.line, darkValues.bg).toFixed(2));
+
+    // ③ 引文竖条：computed 宽度 ≤3px（改动前 6px），文字色仍是 --ink（不是弱化色）。
+    await page.goto(base, { waitUntil: 'load' });
+    await waitForApp(page);
+    const quote = await page.evaluate(() => {
+      const bar = document.querySelector('.of .bar');
+      const text = document.querySelector('.of .tx');
+      if (!bar || !text) return null;
+      const barStyle = getComputedStyle(bar);
+      return {
+        width: bar.getBoundingClientRect().width,
+        background: barStyle.backgroundColor,
+        textColor: getComputedStyle(text).color,
+        inkVar: (() => {
+          // `--ink` 在两套主题里不是同一个颜色：断言必须比「是否等于当前主题的 --ink」，
+          // 不能把深色主题的十六进制写死（否则浅色主题下必红）。
+          const probe = document.createElement('span');
+          probe.style.color = 'var(--ink)';
+          document.body.appendChild(probe);
+          const value = getComputedStyle(probe).color;
+          probe.remove();
+          return value;
+        })(),
+        textMaxWidth: getComputedStyle(text).maxWidth,
+        fontSize: parseFloat(getComputedStyle(text).fontSize)
+      };
+    });
+    check('引文竖条 computed 宽度 ≤3px 且不是 6px 旧值', Boolean(quote) && quote.width <= 3.01, quote ? `${quote.width}px` : '页面上没有 .of .bar');
+    check('引文竖条用 color-mix（不再是逐档写死的 --tN）', Boolean(quote) && !/rgb\(74, 222, 128\)|rgb\(96, 165, 250\)|rgb\(251, 191, 36\)/.test(quote.background), quote ? quote.background : '');
+    check('引文文字仍是 --ink，且 .tx 有 ≈62 字符上限（31em）',
+      Boolean(quote) && quote.textColor === quote.inkVar
+      && quote.textMaxWidth !== 'none'
+      && (parseFloat(quote.textMaxWidth) / quote.fontSize) >= 30
+      && (parseFloat(quote.textMaxWidth) / quote.fontSize) <= 32,
+      quote ? `${quote.textColor} / max-width ${quote.textMaxWidth} @ ${quote.fontSize}px` : '');
+
+    // ④ 手机控制带：顶栏底到首卡顶之间最多两条「控制行」（聚合汇总/筛选一行 + 变化雷达一行）。
+    //    用控件 top 的聚类数衡量（同一行 ±10px 算一簇），不数容器高度（容器 padding 会把行数算多）。
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(base, { waitUntil: 'load' });
+    await waitForApp(page);
+    const band = await page.evaluate(() => {
+      const top = document.querySelector('.top').getBoundingClientRect().bottom;
+      const firstCard = document.querySelector('#dealsList .g');
+      const bottom = firstCard ? firstCard.getBoundingClientRect().top : window.innerHeight;
+      const controls = [...document.querySelectorAll('#stats, .rright > *, .radar, #jumpNav')]
+        .filter(el => {
+          const box = el.getBoundingClientRect();
+          return box.height > 0 && box.width > 0 && box.top >= top - 1 && box.bottom <= bottom + 1;
+        })
+        .map(el => Math.round(el.getBoundingClientRect().top))
+        .sort((a, b) => a - b);
+      const clusters = [];
+      for (const value of controls) {
+        if (!clusters.length || value - clusters[clusters.length - 1] > 10) clusters.push(value);
+      }
+      const rright = document.querySelector('.rbar > .rright');
+      const rrightRect = rright ? rright.getBoundingClientRect() : null;
+      const rrightFirst = rright && rright.firstElementChild ? rright.firstElementChild.getBoundingClientRect() : null;
+      return {
+        top: Math.round(top), bottom: Math.round(bottom), controls, clusters,
+        rrightFirstClipped: Boolean(rrightRect && rrightFirst && rrightFirst.left < rrightRect.left - 1),
+        overflowX: document.documentElement.scrollWidth - document.documentElement.clientWidth
+      };
+    });
+    check('移动 390：顶栏底到首卡顶的控制行聚类数 ≤2', band.clusters.length <= 2,
+      `聚类 ${band.clusters.length}（top=${band.clusters.join('/')}）· 区间 ${band.top}–${band.bottom}`);
+    check('移动 390：控制带仍无页面级横向溢出', band.overflowX <= 0, `${band.overflowX}px`);
+    check('移动 390：筛选/排序条首项未被左缘裁切（overflow-x + flex-start）', !band.rrightFirstClipped,
+      band.rrightFirstClipped ? '首项左缘落在滚动容器左侧之外' : '首项完整可见');
+    await page.setViewportSize({ width: 1280, height: 900 });
+
+    check('本节 JS 错误 0', errors.length === beforeErrors,
+      errors.slice(beforeErrors, beforeErrors + 2).join(' · ') || '0 个');
+  }
+
   await browser.close();
   if (server) server.close();
 
@@ -10774,29 +12326,64 @@ function noJsControlExemptionFor(route) {
     generatedAt: new Date().toISOString()
   });
 
-  // 回归比对：只比「改了之后不能倒退」的量。密度不得下降，页高/请求不得增加，错误必须仍为 0。
+  // 回归比对（--compare）：预算从**当前 deals.json** 现算，不再读冻结基线文件。
+  //
+  // 为什么不是「基线随发布前进」：deploy job 不能 checkout 仓库、build job 只有 contents:read，
+  // 而让 collect 写回基线会出现「发布没成功、基线已经前进」——报警器被静默关掉。
+  // 所以这里只回答一个问题：**这份产物是否忠实渲染了当前这份数据**。
+  // 数据合法缩减（过期下架）只要重新构建就通过；数据与产物不是同一份（少了/多了）才红。
+  //
+  // 期望值用构建同一份 renderer（dist/index.html 里的 RENDER-CORE）从当前数据现算，
+  // 不拿「deals.json 总条数」硬乘系数：244 条里有 116 条是 lead（type=tool），
+  // 它们本来就不渲染成卡；按总数算会把正常发布永久判红。
   if (compareArg) {
-    console.log('\n=== 12) 回归比对（--compare）===');
-    const baselineFile = path.resolve(ROOT, compareArg.slice('--compare='.length));
-    if (!fs.existsSync(baselineFile)) {
-      check('回归基线文件存在', false, `找不到 ${path.relative(ROOT, baselineFile)}`);
-    } else {
-      const parsed = JSON.parse(fs.readFileSync(baselineFile, 'utf8'));
-      const ref = parsed.metrics || parsed;
-      const num = v => (typeof v === 'number' ? v : 0);
-      // 卡片数会随折叠口径变化（同一家公司的同类优惠并成一张卡时就该下降），
-      // 所以「不减少」这条盯的是**覆盖的优惠条数**——那才是丢了数据的信号。
-      check('回归：覆盖的优惠条数不减少', metrics.coveredDeals >= num(ref.coveredDeals),
-        `${num(ref.coveredDeals)} → ${metrics.coveredDeals}`);
-      check('回归：卡片数不减少', metrics.cards >= num(ref.cards), `${num(ref.cards)} → ${metrics.cards}`);
-      check('回归：首屏完整可见不减少', metrics.firstScreenFull >= num(ref.firstScreenFull),
-        `${num(ref.firstScreenFull)} → ${metrics.firstScreenFull}`);
-      check('回归：页高不增加（容差 15%）', metrics.pageHeight <= Math.round(num(ref.pageHeight) * 1.15),
-        `${num(ref.pageHeight)}px → ${metrics.pageHeight}px`);
-      check('回归：外部请求不增加', metrics.externalRequests <= num(ref.externalRequests),
-        `${num(ref.externalRequests)} → ${metrics.externalRequests}`);
+    console.log('\n=== 12) 回归比对（--compare：从当前数据现算预算）===');
+    if (compareRawArg.startsWith('--compare=')) {
+      console.log('     注意：--compare=<文件> 已废弃，基线文件不再参与判定；现在一律从当前 deals.json 现算预算。');
+    }
+    // 底数常量：2026-11-15 用当时最新数据（deals.json 244 条 / coveredDeals 122 / cards 92）
+    // 在本机真实 Chromium 实测 pageHeight=7856px → 64.39px/条。取 66 留约 2.5% 余量，
+    // 再乘 1.05 的渲染容差；不要改回去拿 235 条时代的基线换算。
+    const BASE_PX_PER_DEAL = 66;
+    const HEIGHT_TOLERANCE = 1.05;
+    // 首屏完整可见是固定下限：首屏高度不随数据量增长，6 是 2026-10-05 专题卡改造后
+    // 在正常桌面视口实测到的临界值（数据再多也只影响下方滚动区）。
+    const FIRST_SCREEN_FULL_FLOOR = 6;
+    // 本地静态站不允许任何外部请求；这是产品保证，与数据量无关（线上模式另有断言）。
+    const EXTERNAL_REQUEST_CAP = 0;
+    try {
+      const dealsFile = path.join(ROOT, 'deals.json');
+      const dealsDoc = JSON.parse(fs.readFileSync(dealsFile, 'utf8'));
+      const renderCore = loadRenderCore(path.join(DIR, 'index.html'));
+      const expectedCards = renderCore.defaultCards(Array.isArray(dealsDoc.deals) ? dealsDoc.deals : []);
+      const expectedCoverage = expectedCards.reduce((n, card) => {
+        const count = Number(card.modelCount);
+        return n + (Number.isFinite(count) && count > 1 ? count : 1);
+      }, 0);
+      const expectedCardCount = expectedCards.length;
+      // 双边界：下界抓「本该渲染的没渲染」，上界抓「产物还是上一份数据」（B4 注入的关键）。
+      // 只判下界时，删掉 20% 数据但没重建的 dist 因为「页面上更多」反而永远绿。
+      const low = n => Math.floor(n * 0.98);
+      const high = n => Math.ceil(n * 1.02);
+      const range = (min, max) => `${min}–${max}`;
+      check('回归：覆盖的优惠条数与当前数据一致（±2%）',
+        metrics.coveredDeals >= low(expectedCoverage) && metrics.coveredDeals <= high(expectedCoverage),
+        `当前数据应有 ${expectedCoverage} 条被覆盖（允许 ${range(low(expectedCoverage), high(expectedCoverage))}），页面实测 ${metrics.coveredDeals} 条`);
+      check('回归：卡片数与当前数据一致（±2%）',
+        metrics.cards >= low(expectedCardCount) && metrics.cards <= high(expectedCardCount),
+        `当前数据应有 ${expectedCardCount} 张卡（允许 ${range(low(expectedCardCount), high(expectedCardCount))}），页面实测 ${metrics.cards} 张`);
+      check('回归：首屏完整可见不减少', metrics.firstScreenFull >= FIRST_SCREEN_FULL_FLOOR,
+        `下限 ${FIRST_SCREEN_FULL_FLOOR}，实测 ${metrics.firstScreenFull}`);
+      const heightBudget = Math.round(BASE_PX_PER_DEAL * Math.max(metrics.coveredDeals, 1) * HEIGHT_TOLERANCE);
+      check('回归：页高不超过每条覆盖的固定预算', metrics.pageHeight <= heightBudget,
+        `${metrics.pageHeight}px ≤ ${heightBudget}px（${metrics.coveredDeals} 条 × ${BASE_PX_PER_DEAL}px × ${HEIGHT_TOLERANCE}）`);
+      check('回归：外部请求不超过固定上限', metrics.externalRequests <= EXTERNAL_REQUEST_CAP,
+        `${metrics.externalRequests} ≤ ${EXTERNAL_REQUEST_CAP}`);
       check('回归：JS 错误仍为 0', metrics.jsErrors === 0, `${metrics.jsErrors} 个`);
-      console.log(`     基线：${path.relative(ROOT, baselineFile)}（生成于 ${parsed.generatedAt || '未知时间'}）`);
+      console.log(`     预算来源：当前 deals.json（期望覆盖 ${expectedCoverage} 条 · 期望卡片 ${expectedCardCount} 张）`);
+    } catch (error) {
+      check('回归：能从当前数据现算预算', false,
+        `读不到 deals.json 或 dist/index.html 的渲染器：${(error && error.message) || error}`);
     }
   }
 

@@ -26,6 +26,8 @@ const { SITE_URL } = require('../lib/site');
 // 与 `feed-selftest` 的「4 个读写方扫描」是同一条纪律（那份扫描面里没有本文件，
 // 但「唯一表」这件事不该靠「有没有被扫到」来决定）。
 const { FEED_FILES } = require('../lib/feed');
+// v3.4 F2：到期日历的文件名 / MIME 也只从唯一表取（本文件不写第二份字面量）。
+const { CALENDAR_FILES } = require('../lib/calendar');
 
 const arg = name => (process.argv.find(a => a.startsWith(`--${name}=`)) || '').slice(name.length + 3);
 
@@ -47,7 +49,8 @@ const ROUTES = [
   ['tools/api-cost/', 'API 成本计算器'],
   ['models/', '模型资料索引'],
   ['vendor/', '厂商枢纽'],
-  ['archive/', '历史档案']
+  ['archive/', '历史档案'],
+  ['search/', '全站搜索']
 ];
 
 const ORIGIN = (arg('url') || SITE_URL).replace(/\/$/, '');
@@ -156,6 +159,34 @@ const check = (name, ok, detail) => { results.push({ name, ok: !!ok, detail }); 
             if (!Array.isArray(parsed.items)) problems.push('缺 items 数组');
           }
         }
+      }
+      check(`${label}  /${file}`, problems.length === 0,
+        problems.length ? problems.join('；') : `${Buffer.byteLength(body, 'utf8')} 字节 · ${type}`);
+    } catch (e) {
+      check(`${label}  /${file}`, false, e.message);
+    }
+  }
+
+  /* ── 到期日历探针（v3.4 F2）────────────────────────────────────────────────
+   * 与订阅产物同一个理由：`.ics` 不是页面，走不了 ROUTES 的 title/canonical/JSON-LD 判据；
+   * 但它同样是「整族缺席」型事故的典型（产物没写、部署漏文件、中间层返回 HTML 错误页）。
+   * 只问三件事：HTTP 200、非空、正文是 iCalendar（BEGIN:VCALENDAR + VERSION:2.0）。
+   * 格式标记在本文件独立写出（协议常量，不是本仓的唯一表）；文件名与 MIME 仍从
+   * `CALENDAR_FILES` 现取，本文件里没有第二份字面量。
+   * -------------------------------------------------------------------------- */
+  for (const [file, type] of CALENDAR_FILES) {
+    const label = `到期日历 ${file}`;
+    const url = `${ORIGIN}/${file}`;
+    try {
+      const { status, body } = await fetchText(url);
+      const problems = [];
+      if (status !== 200) problems.push(`HTTP ${status}`);
+      if (!body.trim()) problems.push('响应体是空的');
+      if (!problems.length) {
+        if (!/^BEGIN:VCALENDAR\r?\n/.test(body)) problems.push('不是 iCalendar 正文（缺 BEGIN:VCALENDAR 起始行）');
+        if (!/^VERSION:2\.0\r?$/m.test(body)) problems.push('缺 VERSION:2.0');
+        if (!/^END:VCALENDAR\r?$/m.test(body)) problems.push('缺 END:VCALENDAR');
+        if (/<!doctype html>/i.test(body)) problems.push('拿到的是 HTML 错误页');
       }
       check(`${label}  /${file}`, problems.length === 0,
         problems.length ? problems.join('；') : `${Buffer.byteLength(body, 'utf8')} 字节 · ${type}`);

@@ -1,0 +1,296 @@
+{
+  "themeScript": {
+    "distLen": 360,
+    "homeEqual": true,
+    "familyEqual": true
+  },
+  "footer_beforeHome": {
+    "lastUpdated": "2026/11/10 00:38:06",
+    "footerLastP": "数据每日自动更新 · 最后更新：2026/11/10 00:38:06 · 数据源状态 · 订阅源"
+  },
+  "footer_afterHome": {
+    "lastUpdated": "2026/11/10 00:38:06",
+    "footerLastP": "数据每日自动更新 · 最后更新：2026/11/10 00:38:06 · 数据源状态 · 订阅源"
+  },
+  "footer_beforeFamily": {
+    "lastUpdated": null,
+    "footerLastP": "数据每日自动更新 · 最后更新：见首页 · 数据源状态 · 订阅源"
+  },
+  "footer_afterFamily": {
+    "lastUpdated": null,
+    "footerLastP": "数据每日自动更新 · 最后更新：见首页 · 数据源状态 · 订阅源"
+  },
+  "scroll390_before": [
+    {
+      "sel": ".facetsin",
+      "overflowX": "auto",
+      "scrollW": 1418,
+      "clientW": 390,
+      "rect": {
+        "left": 0,
+        "right": 390,
+        "w": 390
+      }
+    },
+    {
+      "sel": ".facets",
+      "overflowX": "visible",
+      "scrollW": 390,
+      "clientW": 390,
+      "rect": {
+        "left": 0,
+        "right": 390,
+        "w": 390
+      }
+    },
+    {
+      "sel": ".rright",
+      "overflowX": "visible",
+      "scrollW": 358,
+      "clientW": 358,
+      "rect": {
+        "left": 16,
+        "right": 374,
+        "w": 358
+      }
+    },
+    {
+      "sel": ".seg",
+      "overflowX": "hidden",
+      "scrollW": 146,
+      "clientW": 146,
+      "rect": {
+        "left": 173.1,
+        "right": 321.1,
+        "w": 148
+      }
+    },
+    {
+      "sel": ".jump",
+      "overflowX": "visible",
+      "scrollW": 286,
+      "clientW": 286,
+      "rect": {
+        "left": 16,
+        "right": 302.3,
+        "w": 286.3
+      }
+    },
+    {
+      "sel": ".hubline",
+      "overflowX": "visible",
+      "scrollW": 358,
+      "clientW": 358,
+      "rect": {
+        "left": 16,
+        "right": 374,
+        "w": 358
+      }
+    }
+  ],
+  "scroll390_after": [
+    {
+      "sel": ".facetsin",
+      "overflowX": "auto",
+      "scrollW": 1418,
+      "clientW": 390,
+      "rect": {
+        "left": 0,
+        "right": 390,
+        "w": 390
+      }
+    },
+    {
+      "sel": ".facets",
+      "overflowX": "visible",
+      "scrollW": 390,
+      "clientW": 390,
+      "rect": {
+        "left": 0,
+        "right": 390,
+        "w": 390
+      }
+    },
+    {
+      "sel": ".rright",
+      "overflowX": "visible",
+      "scrollW": 358,
+      "clientW": 358,
+      "rect": {
+        "left": 16,
+        "right": 374,
+        "w": 358
+      }
+    },
+    {
+      "sel": ".seg",
+      "overflowX": "hidden",
+      "scrollW": 146,
+      "clientW": 146,
+      "rect": {
+        "left": 173.1,
+        "right": 321.1,
+        "w": 148
+      }
+    },
+    {
+      "sel": ".jump",
+      "overflowX": "visible",
+      "scrollW": 324,
+      "clientW": 324,
+      "rect": {
+        "left": 16,
+        "right": 340,
+        "w": 324
+      }
+    },
+    {
+      "sel": ".hubline",
+      "overflowX": "visible",
+      "scrollW": 358,
+      "clientW": 358,
+      "rect": {
+        "left": 16,
+        "right": 374,
+        "w": 358
+      }
+    }
+  ],
+  "compareGeo": {
+    "text680x400": true,
+    "crop": [
+      {
+        "w": 680,
+        "h": 342
+      },
+      {
+        "w": 680,
+        "h": 342
+      }
+    ],
+    "scaleTexts": [
+      "100%：1440 CSS px 原尺寸，窗口 680×400 只做裁切（不缩放）",
+      "100%：1440 CSS px 原尺寸，窗口 680×400 只做裁切（不缩放）"
+    ],
+    "rulerTexts": [
+      "100% 裁切：y=96–438px",
+      "100% 裁切：y=96–438px"
+    ],
+    "figureCaption": [
+      "改前 现状 dist 产物（JS 运行，1440×900）",
+      "改后 v5 识别层 mockup（静态渲染；复刻线上 JS 运行后的 DOM，无交互）"
+    ]
+  },
+  "clip390": [
+    {
+      "inside": true,
+      "cardH": 68,
+      "bW": 53.6,
+      "bH": 30,
+      "textRangeW": 53.6,
+      "textRangeH": 35,
+      "clip": null,
+      "scrollW": 54,
+      "clientW": 54
+    },
+    {
+      "inside": true,
+      "cardH": 68,
+      "bW": 33.3,
+      "bH": 30,
+      "textRangeW": 33.3,
+      "textRangeH": 35,
+      "clip": null,
+      "scrollW": 33,
+      "clientW": 33
+    },
+    {
+      "inside": true,
+      "cardH": 68,
+      "bW": 33.3,
+      "bH": 30,
+      "textRangeW": 33.3,
+      "textRangeH": 35,
+      "clip": null,
+      "scrollW": 33,
+      "clientW": 33
+    },
+    {
+      "inside": true,
+      "cardH": 68,
+      "bW": 53.6,
+      "bH": 30,
+      "textRangeW": 53.6,
+      "textRangeH": 35,
+      "clip": null,
+      "scrollW": 54,
+      "clientW": 54
+    },
+    {
+      "inside": true,
+      "cardH": 68,
+      "bW": 53.6,
+      "bH": 30,
+      "textRangeW": 53.6,
+      "textRangeH": 35,
+      "clip": null,
+      "scrollW": 54,
+      "clientW": 54
+    },
+    {
+      "inside": true,
+      "cardH": 68,
+      "bW": 53.6,
+      "bH": 30,
+      "textRangeW": 53.6,
+      "textRangeH": 35,
+      "clip": null,
+      "scrollW": 54,
+      "clientW": 54
+    },
+    {
+      "inside": true,
+      "cardH": 68,
+      "bW": 53.6,
+      "bH": 30,
+      "textRangeW": 53.6,
+      "textRangeH": 35,
+      "clip": null,
+      "scrollW": 54,
+      "clientW": 54
+    },
+    {
+      "inside": true,
+      "cardH": 68,
+      "bW": 33.3,
+      "bH": 30,
+      "textRangeW": 33.3,
+      "textRangeH": 35,
+      "clip": null,
+      "scrollW": 33,
+      "clientW": 33
+    },
+    {
+      "inside": true,
+      "cardH": 68,
+      "bW": 53.6,
+      "bH": 30,
+      "textRangeW": 53.6,
+      "textRangeH": 35,
+      "clip": null,
+      "scrollW": 54,
+      "clientW": 54
+    },
+    {
+      "inside": true,
+      "cardH": 68,
+      "bW": 53.6,
+      "bH": 30,
+      "textRangeW": 53.6,
+      "textRangeH": 35,
+      "clip": null,
+      "scrollW": 54,
+      "clientW": 54
+    }
+  ]
+}

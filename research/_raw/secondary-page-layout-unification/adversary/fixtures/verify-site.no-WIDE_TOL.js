@@ -1475,6 +1475,53 @@ const compareArg = process.argv.find(a => a.startsWith('--compare='));
     Boolean(report) && report.blank && report.prefilled && /github\.com\/.+\/issues\/new/.test(report.href),
     report ? `${report.href.slice(0, 76)}…（rel=${report.rel}）` : '未找到纠错链接');
 
+  // A 包（fixture 同步）：与 scripts/tools/verify-site.js §14 同形的「只加不删」判据 ——
+  // 原 issue 入口断言原样保留，这里补复制按钮 / 预置话术 / aria-live 反馈 / 4 秒收回。
+  const copyReport = await page.evaluate(async () => {
+    document.querySelector('article.g').click();
+    await new Promise(r => setTimeout(r, 350));
+    const btn = document.querySelector('#detail .dact button.dact-copy');
+    const box = document.querySelector('#detail .dact-copy-status');
+    const text = btn ? (btn.getAttribute('data-copy') || '') : '';
+    const out = {
+      exists: Boolean(btn),
+      type: btn ? btn.getAttribute('type') : '',
+      text,
+      ariaLive: box ? box.getAttribute('aria-live') : '',
+      statusText: '',
+      statusState: '',
+      statusVisible: false
+    };
+    if (btn) {
+      btn.click();
+      await new Promise(r => setTimeout(r, 450));
+      const liveBox = document.querySelector('#detail .dact-copy-status');
+      out.statusText = liveBox ? liveBox.textContent.trim() : '';
+      out.statusState = liveBox ? (liveBox.getAttribute('data-copy-state') || '') : '';
+      out.statusVisible = Boolean(liveBox) && (liveBox.offsetWidth > 0 || liveBox.offsetHeight > 0
+        || liveBox.getClientRects().length > 0);
+    }
+    document.querySelector('#detail .x').click();
+    await new Promise(r => setTimeout(r, 250));
+    return out;
+  });
+  check('详情里有「这条领不到了？」复制按钮 + 预置话术含条目 id / 官方页 / issue 地址',
+    copyReport.exists && copyReport.type === 'button'
+      && /条目 id：\S+/.test(copyReport.text) && copyReport.text.includes('官方页：')
+      && copyReport.text.includes('/issues/new'),
+    copyReport.exists ? `话术 ${copyReport.text.length} 字` : '未找到 .dact-copy 按钮');
+  check('点击复制后有可见且 aria-live 可读的反馈',
+    copyReport.statusState === 'copied' && copyReport.statusText.length > 0
+      && copyReport.statusVisible && copyReport.ariaLive === 'polite',
+    `state=${copyReport.statusState || '无'} · 文本「${copyReport.statusText.slice(0, 40)}」`);
+  await page.waitForTimeout(4500);
+  const copyRetracted = await page.evaluate(() => {
+    const box = document.querySelector('#detail .dact-copy-status');
+    return { text: box ? box.textContent.trim() : '', state: box ? (box.getAttribute('data-copy-state') || '') : '' };
+  });
+  check('复制反馈几秒后收回', copyRetracted.text === '' && copyRetracted.state === '',
+    `4.5 秒后 status=「${copyRetracted.text.slice(0, 30)}」`);
+
   // 订阅（v1.6）：首页只暴露四个订阅选择（各两种格式 = 8 条 rel="alternate"），
   // 每条都要**真的打得开、真的是那个格式、标题与 Feed 自己的 <title> 逐字相同**。
   //

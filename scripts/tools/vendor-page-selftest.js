@@ -105,8 +105,13 @@ const renderCoreBundle = renderCore.load(path.join(ROOT, 'index.html'));
 const vendorKeyOf = deal => renderCoreBundle.vendorOf(deal).name;
 
 const vendorThresholds = site.VENDOR_THRESHOLDS;
+const dealHistoryEvents = Array.isArray(readJson('scripts/data/deal-history.json').events)
+  ? readJson('scripts/data/deal-history.json').events
+  : [];
+const vendorEventCount = landing.vendorEventCountsOf({ deals, events: dealHistoryEvents, vendorKeyOf });
 const planOptions = {
-  deals, vendorKeyOf, vendorSlugs: site.VENDOR_SLUGS, vendorThresholds, eventCountOf: () => 0
+  deals, vendorKeyOf, vendorSlugs: site.VENDOR_SLUGS, vendorThresholds,
+  eventCountOf: name => vendorEventCount.get(name) || 0
 };
 const basePlan = landing.planLandingPages(planOptions);
 const extPlan = landing.planLandingPages({
@@ -147,6 +152,21 @@ check(`真实数据上厂商页从 ${basePlan.pages.filter(p => p.kind === 'vend
  */
 function candidateSetProblems(pages) {
   const problems = [];
+  // 身份来源 = **A 空间规范名**：`vendorOf()` 对每条 deal 的归一结果（静态 `VENDOR_RULES` 只是
+  // 品牌归一化表，不是身份全集 —— P1 起新厂商没有规则也会被原样归一成自己的名字进入 A 空间）。
+  // 这里原先是「providers.json 里 vendorKey 非 null 的 name」—— 那只是 A 空间的一个子集：
+  // 2026-11-12 出现的 NinjaPipe 是**只有优惠记录、没有 provider 条目**的新厂商
+  // （A 空间身份已登记、`/vendor/ninjapipe/` 已生成），于是「页面不许超出身份集合」
+  // 这条把真实页面误判成越权。身份判据与页面计划必须读同一个集合，不能各取一份子集。
+  // P1（slug 死锁机器化）再补一条：AutomateNexus CRM 这类**刚出现、还没有品牌规则**的厂商
+  // 同样有 A 空间身份（`vendorOf()` 返回原始名），机器账本会为它分配 slug —— 不能因为
+  // 静态规则表里没有它就判页面越权。
+  const aSpaceNames = renderCoreBundle.vendorKeyNames().map(pair => pair.name);
+  const dealNames = deals.map(deal => vendorKeyOf(deal)).filter(Boolean);
+  const identityNames = new Set([...aSpaceNames, ...dealNames]);
+  // 正向（必须有页）只判**有 provider 条目且 vendorKey 非 null** 的身份 —— 那是
+  // providers.json 层的责任；只有优惠记录、没有 provider 条目的新厂商（NinjaPipe）
+  // 由计划层（`landing.planLandingPages`）与 `seo-verify` 的行集合对账负责，不在这里重复判。
   const identityProviders = Object.entries(providerTable)
     .filter(([, entry]) => entry && entry.vendorKey).map(([, entry]) => String(entry.name));
   const expected = identityProviders.filter(name => {
@@ -154,7 +174,7 @@ function candidateSetProblems(pages) {
     return material.nonDeal || pages.some(page => page.key === name);
   });
   for (const name of expected) if (!pages.some(page => page.key === name)) problems.push(`${name}: 有 A 空间身份且达标，却没有厂商页`);
-  for (const page of pages) if (!identityProviders.includes(page.key)) problems.push(`${page.key}: 页面存在，但不在 A 空间身份集合里`);
+  for (const page of pages) if (!identityNames.has(page.key)) problems.push(`${page.key}: 页面存在，但不在 A 空间身份集合里`);
   return problems;
 }
 check('候选集合 == 「有 A 空间厂商名 且 达标」的 provider 集合（不再多、不再少）',
@@ -369,9 +389,17 @@ section('③ 牙 #6：同一 provider 两个 canonical slug');
   check('【R5】候选厂商名全部在 A 空间有身份（vendorKey 非 null）',
     vendorPage.assertVendorCandidateIdentity(vendorPages, { providerTable }).length === 0);
 
-  // 队长补充：slug 必须来自权威表（不能只靠 providers.json 兜底）
-  const declared = vendorPage.assertVendorSlugDeclared(vendorPages, { vendorSlugs: site.VENDOR_SLUGS });
-  check(`【R5 续】${vendorPages.length} 个厂商页的 slug 全部来自 vendor-slugs.json（权威表，不靠 provider 兜底）`,
+  // 队长补充 → P1（slug 死锁机器化）之后升级为**权威链**判据：
+  // 人工覆盖表 → providers.json → 机器账本（collect 侧写盘工具维护）→ 本轮首次分配（待落盘）。
+  // 判据从「必须在 vendor-slugs.json」变成「必须在权威链上，且已登记的值与页面 slug 逐字一致」——
+  // 新厂商不再需要人先补表才能发布，但改名换 slug 仍然会被牙抓到。
+  const ledgerSlugs = {};
+  for (const row of (extPlan.vendorSlugLedger && extPlan.vendorSlugLedger.vendors) || []) ledgerSlugs[row.vendorName] = row.slug;
+  const autoSlugNames = (extPlan.autoSlugVendors || []).map(row => row.vendorName);
+  const declared = vendorPage.assertVendorSlugDeclared(vendorPages, {
+    vendorSlugs: site.VENDOR_SLUGS, ledgerSlugs, autoSlugNames, providerTable
+  });
+  check(`【R5 续】${vendorPages.length} 个厂商页的 slug 全部来自权威链（vendor-slugs.json / providers.json / 机器账本 / 本轮首次分配），且已登记的逐字一致`,
     declared.length === 0, declared.slice(0, 2).join('；'));
   check('【R5 续牙】某家未登记 slug（只靠 provider 兜底）→ 红',
     vendorPage.assertVendorSlugDeclared([
@@ -387,10 +415,16 @@ section('③ 牙 #6：同一 provider 两个 canonical slug');
       { kind: 'vendor', key: 'Trae', slug: 'trae', route: 'vendor/trae/' }
     ], { providerTable }).some(problem => problem.includes('A 空间厂商名')));
   {
-    const aSpaceNames = renderCoreBundle.vendorKeyNames().map(pair => pair.name);
-    check(`【R5】用 index.html 的真实 A 空间厂商名表（${aSpaceNames.length} 个）核验：页面厂商名全部命中`,
-      vendorPage.assertVendorCandidateIdentity(vendorPages, { providerTable, vendorNames: aSpaceNames }).length === 0,
-      vendorPage.assertVendorCandidateIdentity(vendorPages, { providerTable, vendorNames: aSpaceNames }).slice(0, 1).join('；'));
+    // P1：A 空间身份 = 静态品牌规则 ∪ 每条 deal 经 `vendorOf()` 归一出的名字
+    // （新厂商没有规则时就是原始名；机器账本会为它分配 slug）。
+    const aSpaceNames = [
+      ...renderCoreBundle.vendorKeyNames().map(pair => pair.name),
+      ...deals.map(deal => vendorKeyOf(deal)).filter(Boolean)
+    ];
+    const uniqueASpaceNames = [...new Set(aSpaceNames)];
+    check(`【R5】用 index.html 的真实 A 空间厂商名表（${uniqueASpaceNames.length} 个）核验：页面厂商名全部命中`,
+      vendorPage.assertVendorCandidateIdentity(vendorPages, { providerTable, vendorNames: uniqueASpaceNames }).length === 0,
+      vendorPage.assertVendorCandidateIdentity(vendorPages, { providerTable, vendorNames: uniqueASpaceNames }).slice(0, 1).join('；'));
   }
 
   const duplicated = vendorPage.assertVendorSlugCanonical([
@@ -566,7 +600,9 @@ section('⑧ 真实产物（接线后才有；未接线时如实跳过）');
       const file = path.join(DIST, spec.route, 'index.html');
       if (!fs.existsSync(file)) { problems.push(`${spec.route}: 缺少产物`); continue; }
       const html = fs.readFileSync(file, 'utf8');
-      if (!sitemap.includes(`<loc>${SITE_URL}${spec.route}</loc>`)) problems.push(`${spec.route}: sitemap 漏了`);
+      // P2（路由死锁机器化）：钉住路由掉出门槛时自动降级为 noindex 页（canonical 自指、不进 sitemap）——
+      // 保住 URL 优先于保持可索引。只有可索引页才该出现在 sitemap 里。
+      if (spec.indexable !== false && !sitemap.includes(`<loc>${SITE_URL}${spec.route}</loc>`)) problems.push(`${spec.route}: sitemap 漏了`);
       const ctx = {
         ...ctxFor(spec), apiPlans: diskApiPlans, plans: diskPlans, models: diskModels, modelLinks: diskLinks
       };
@@ -580,6 +616,56 @@ section('⑧ 真实产物（接线后才有；未接线时如实跳过）');
 }
 
 /* ================================================================== */
+
+/* ================================================================== */
+section('⑨ F1 价格历史：产物回读与独立重算（厂商页）');
+/* ================================================================== */
+
+{
+  const file = path.join(DIST, 'vendor', 'anthropic', 'index.html');
+  if (!fs.existsSync(file)) {
+    console.log('    （dist 里没有 vendor/anthropic/index.html —— 先跑 npm run build）');
+  } else {
+    const html = fs.readFileSync(file, 'utf8');
+    const block = html.match(/<section class="ph-block"[^>]*data-ph-series="(\d+)"[^>]*data-ph-changes="(\d+)"/);
+    // 第二把尺子：不 require lib/price-history，直接按两份真值文件重算
+    // 「这家厂商有几个计价条目 / 基线以来有几次价格变化 / 变化落在哪些维度」。
+    const apiPlans = readJson('api-plans.json').plans.filter(plan => plan.provider === 'anthropic');
+    const store = readJson('scripts/data/api-plan-history.json');
+    const entries = apiPlans.reduce((sum, plan) => sum + (Array.isArray(plan.models) ? plan.models.length : 0), 0);
+    const changedKeys = new Set();
+    let changes = 0;
+    for (const event of store.events || []) {
+      if (!event || event.field !== 'models') continue;
+      if (!['price_increased', 'price_decreased', 'model_changed'].includes(event.type)) continue;
+      if (!apiPlans.some(plan => plan.id === event.planId)) continue;
+      const entry = event.to || event.from;
+      if (!entry || !entry.rates || !event.from || !event.from.rates) continue;
+      for (const rateKey of Object.keys(entry.rates)) {
+        const from = event.from.rates[rateKey] === undefined ? null : event.from.rates[rateKey];
+        const to = entry.rates[rateKey] === undefined ? null : entry.rates[rateKey];
+        if (from === to) continue;
+        changes++;
+        changedKeys.add(`${event.planId}|${entry.modelKey}|${entry.variant}|${rateKey}`);
+      }
+    }
+    check('【F1 厂商页】产物里有价格历史块，图数 == 独立重算的变化维度数',
+      Boolean(block) && Number(block[1]) === changedKeys.size,
+      block ? `产物 ${block[1]} vs 重算 ${changedKeys.size}` : '缺 ph-block');
+    check('【F1 厂商页】变化数 == 独立重算的价格变化次数',
+      Boolean(block) && Number(block[2]) === changes,
+      block ? `产物 ${block[2]} vs 重算 ${changes}` : '缺 ph-block');
+    check('【F1 厂商页】聚合陈述与独立重算一致',
+      html.includes(`${entries} 个计价条目 · 基线以来 ${changes} 次价格变化`));
+    check('【F1 厂商页】区块内每个 svg 都有非空标题与 data-ph-key', (() => {
+      if (!block) return false;
+      const end = html.indexOf('</section>', block.index);
+      const section = html.slice(block.index, end < 0 ? html.length : end);
+      const svgs = [...section.matchAll(/<svg class="ph-svg"[^>]*data-ph-key="([^"]*)"[^>]*>[\s\S]*?<\/svg>/g)];
+      return svgs.length > 0 && svgs.every(match => /<title[^>]*>[^<]+<\/title>/.test(match[0]) && match[1].includes('|'));
+    })());
+  }
+}
 
 console.log(`\n=== v3.0 厂商统一资料页演练：${passed} 项通过，${failures.length} 项失败 ===`);
 if (failures.length) {

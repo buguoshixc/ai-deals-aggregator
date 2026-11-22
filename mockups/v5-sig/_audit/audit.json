@@ -1,0 +1,1500 @@
+{
+  "generatedAt": "2026-11-11T13:26:50.647Z",
+  "auditor": "audit-verifier (independent)",
+  "method": "Playwright Chromium headless (playwright-core bundled), LD_LIBRARY_PATH set; 127.0.0.1:8081; viewport 1440x900 (light/dark) + 390x844; dpr=1; all numbers re-measured here, not read from _data/*.json.",
+  "files": {
+    "mockups/v5-sig/home-light.html": "d727c8068e390b496d66a114d423e1a30dc0b55f2b46cd01798ebcfa77b56f86",
+    "mockups/v5-sig/home-dark.html": "e3316cdf76bb6f83da927bee98309f40278de3d5d0bc0897e26d867fe255526c",
+    "mockups/v5-sig/home-390.html": "19dd5b2a1c3a68da46d359dbd3fee3ad7f9e40b969b29fd0db1af209a97d07b8",
+    "mockups/v5-sig/family.html": "9ae8d4e60df79cb9257373fdd794a4a9e4fda3c997bbdaf022bbb70491389029",
+    "mockups/v5-sig/compare.html": "92d3ea15cf2027a68aad87473872bd0285a2127ce3a1a5952eddd7d1ca29d609",
+    "mockups/v5-sig/shots/home-25pct.png": "2cfbd06afa4a501baebc52fe08fbef71dbab07c9a2277923e4d296b872069c4f",
+    "mockups/v5-sig/shots/home-before-after.png": "4d1db4291f139df0ebf4e95a7a815d100ea2a74cce19b59a91fe9dfecb806a9d",
+    "mockups/v5-sig/shots/after-1440.png": "533141cac1afea9c7d888e8d04d264722f120785e1b42ab85ecf7d256e27e3e9",
+    "mockups/v5-sig/shots/before-1440.png": "4f8f86bbc2ed44abb17facfe33c6b33e287f7f448289f9d85940882b167c96aa",
+    "mockups/v5-sig/_tools/build-sig.js": "241a9cbd48bad0c86024281c5f50511baa69489675a5a92a9adb0091b2600330",
+    "index.html": "bb704909858501ba72edfff2a887ef88e8a4a0accca615b580b3fb3cd7a99483",
+    "dist/index.html": "0d992bd4cea80813a0ea6d4e971e5bb6eda65a2c7d0dbc12ead0bd0fb3ae6b84",
+    "dist/plans/api/index.html": "4463bd42e837825d46fee77754f965019dae2b115b9dfac9c7809c05cac847b3"
+  },
+  "overall": {
+    "verdict": "FAIL",
+    "reason": "8 项硬清单中 7 项 PASS；工程纪律项 FAIL：family.html 30/32 内部链接解析到不存在的 dist/dist/…（HTTP 404）。视觉规格全部 PASS。",
+    "passCount": 7,
+    "failCount": 1,
+    "failItems": [
+      "7-engineering-discipline: family.html 相对链接双 dist 前缀"
+    ]
+  },
+  "items": [
+    {
+      "id": 1,
+      "title": "样式改动与规格对应",
+      "verdict": "PASS",
+      "evidence": {
+        "tokens": {
+          "light": {
+            "--fs-stat-sm": "22px",
+            "--fs-stat": "30px",
+            "--fs-stat-lg": "42px"
+          },
+          "dark": {
+            "--fs-stat-sm": "22px",
+            "--fs-stat": "30px",
+            "--fs-stat-lg": "42px"
+          }
+        },
+        "statComputed": {
+          "count": 14,
+          "allTabularNums": true,
+          "letterSpacing": [
+            "-0.6px",
+            "-0.44px"
+          ],
+          "lineHeightEqualsFontSize": true,
+          "fontWeight": [
+            "700"
+          ],
+          "color": [
+            "rgb(15, 23, 42)"
+          ]
+        },
+        "statUnit": {
+          "fs": "11px",
+          "color": "rgb(107, 114, 128)",
+          "ls": "normal",
+          "fvn": "normal",
+          "fw": "500"
+        },
+        "needCard": {
+          "count": 10,
+          "heights": [
+            68
+          ],
+          "countFs": [
+            "30px"
+          ],
+          "beforeHeights": [
+            68
+          ],
+          "beforeCountFs": [
+            "11px"
+          ]
+        },
+        "tierhead": {
+          "heights": [
+            26
+          ],
+          "square": [
+            "22x22/11px",
+            "22x22/11px",
+            "22x22/11px",
+            "22x22/11px"
+          ],
+          "countFs": [
+            "22px",
+            "22px",
+            "22px",
+            "22px"
+          ],
+          "countTexts": [
+            "11条",
+            "20条",
+            "20条",
+            "25条"
+          ],
+          "beforeSquare": [
+            "16x16/9.5px",
+            "16x16/9.5px",
+            "16x16/9.5px",
+            "16x16/9.5px"
+          ],
+          "beforeHeights": [
+            26
+          ]
+        },
+        "tierLine": [
+          {
+            "tier": "tierhead t1",
+            "h": 1,
+            "bg": "rgb(11, 122, 68)",
+            "opacity": "0.4"
+          },
+          {
+            "tier": "tierhead t2",
+            "h": 1,
+            "bg": "rgb(29, 78, 216)",
+            "opacity": "0.4"
+          },
+          {
+            "tier": "tierhead t3",
+            "h": 1,
+            "bg": "rgb(21, 94, 117)",
+            "opacity": "0.4"
+          },
+          {
+            "tier": "tierhead t4",
+            "h": 1,
+            "bg": "rgb(146, 64, 14)",
+            "opacity": "0.4"
+          }
+        ],
+        "quoteBar": {
+          "widths": [
+            "6px"
+          ],
+          "beforeWidths": [
+            "3px"
+          ],
+          "perTierBg": [
+            {
+              "cls": "of t1",
+              "barBg": "rgb(11, 122, 68)",
+              "barW": "6px"
+            },
+            {
+              "cls": "of t2",
+              "barBg": "rgb(29, 78, 216)",
+              "barW": "6px"
+            },
+            {
+              "cls": "of t3",
+              "barBg": "rgb(21, 94, 117)",
+              "barW": "6px"
+            },
+            {
+              "cls": "of t4",
+              "barBg": "rgb(146, 64, 14)",
+              "barW": "6px"
+            }
+          ]
+        },
+        "quoteText": {
+          "txColors": [
+            "rgb(15, 23, 42)"
+          ],
+          "txBoldColors": [
+            "rgb(15, 23, 42)"
+          ],
+          "darkTxBoldColors": [
+            "rgb(232, 236, 242)"
+          ],
+          "beforeBoldColors": [
+            "rgb(11, 122, 68)",
+            "rgb(109, 40, 217)",
+            "rgb(217, 45, 75)"
+          ]
+        },
+        "tinkUsage": {
+          "t1ink": 0,
+          "t2ink": 0,
+          "textColorsLight": {
+            "rgb(15, 23, 42)": 257,
+            "rgb(217, 45, 75)": 8,
+            "rgb(107, 114, 128)": 407,
+            "rgb(73, 80, 102)": 196,
+            "rgb(255, 255, 255)": 119,
+            "rgb(159, 18, 57)": 4,
+            "rgb(59, 91, 253)": 101,
+            "rgb(35, 72, 196)": 66,
+            "rgb(11, 122, 99)": 30
+          },
+          "textColorsDark": {
+            "rgb(232, 236, 242)": 257,
+            "rgb(255, 107, 129)": 8,
+            "rgb(141, 151, 165)": 407,
+            "rgb(182, 190, 201)": 196,
+            "rgb(20, 23, 28)": 4,
+            "rgb(11, 13, 16)": 87,
+            "rgb(255, 143, 159)": 4,
+            "rgb(124, 147, 255)": 101,
+            "rgb(255, 255, 255)": 28,
+            "rgb(143, 176, 255)": 66,
+            "rgb(61, 220, 151)": 30
+          }
+        },
+        "decoration": {
+          "border-radius": {
+            "beforeVals": 7,
+            "afterVals": 7,
+            "added": [],
+            "removed": []
+          },
+          "box-shadow": {
+            "beforeVals": 8,
+            "afterVals": 8,
+            "added": [],
+            "removed": []
+          },
+          "border-color": {
+            "beforeVals": 10,
+            "afterVals": 10,
+            "added": [],
+            "removed": []
+          },
+          "border": {
+            "beforeVals": 6,
+            "afterVals": 6,
+            "added": [],
+            "removed": []
+          },
+          "border-top": {
+            "beforeVals": 4,
+            "afterVals": 4,
+            "added": [],
+            "removed": []
+          },
+          "border-bottom": {
+            "beforeVals": 3,
+            "afterVals": 3,
+            "added": [],
+            "removed": []
+          },
+          "border-left": {
+            "beforeVals": 8,
+            "afterVals": 8,
+            "added": [],
+            "removed": []
+          },
+          "outline": {
+            "beforeVals": 3,
+            "afterVals": 3,
+            "added": [],
+            "removed": []
+          }
+        },
+        "hueSequence": {
+          "light": [
+            "t1:#0b7a44 h150.8 s83.5%/green",
+            "t2:#1d4ed8 h224.3 s76.3%/blue",
+            "t3:#155e75 h194.4 s69.6%/cyan",
+            "t4:#92400e h22.7 s82.5%/amber",
+            "t5:#475569 h215.3 s19.3%/gray"
+          ],
+          "dark": [
+            "t1:#4ade80 h141.9 s69.2%/green",
+            "t2:#60a5fa h213.1 s93.9%/blue",
+            "t3:#22d3ee h187.9 s85.7%/cyan",
+            "t4:#fbbf24 h43.3 s96.4%/amber",
+            "t5:#94a3b8 h215 s20.2%/gray"
+          ]
+        },
+        "stat42Usage": "token 与 .stat-42 规则存在，本轮页面无 42px 实例（未滥用）"
+      }
+    },
+    {
+      "id": 2,
+      "title": "对比度（渲染后 computed token 自算 WCAG）",
+      "verdict": "PASS",
+      "evidence": {
+        "minAsText": {
+          "light": 5.05,
+          "dark": 7.01
+        },
+        "minAsBlockVsBg": {
+          "light": 5.05,
+          "dark": 7.59
+        },
+        "minOnVsBlock": {
+          "light": 5.41,
+          "dark": 7.59
+        },
+        "table": {
+          "light": {
+            "bg": "#f6f7f9",
+            "card": "#fff",
+            "tiers": {
+              "t1": {
+                "hex": "#0b7a44",
+                "hue": 150.8,
+                "sat": 83.5,
+                "hueClass": "green",
+                "vsBg": 5.05,
+                "vsCard": 5.41
+              },
+              "t2": {
+                "hex": "#1d4ed8",
+                "hue": 224.3,
+                "sat": 76.3,
+                "hueClass": "blue",
+                "vsBg": 6.25,
+                "vsCard": 6.7
+              },
+              "t3": {
+                "hex": "#155e75",
+                "hue": 194.4,
+                "sat": 69.6,
+                "hueClass": "cyan",
+                "vsBg": 6.78,
+                "vsCard": 7.27
+              },
+              "t4": {
+                "hex": "#92400e",
+                "hue": 22.7,
+                "sat": 82.5,
+                "hueClass": "amber",
+                "vsBg": 6.61,
+                "vsCard": 7.09
+              },
+              "t5": {
+                "hex": "#475569",
+                "hue": 215.3,
+                "sat": 19.3,
+                "hueClass": "gray",
+                "vsBg": 7.07,
+                "vsCard": 7.58
+              }
+            },
+            "on": {
+              "t1": {
+                "hex": "#fff",
+                "onVsBlock": 5.41
+              },
+              "t2": {
+                "hex": "#fff",
+                "onVsBlock": 6.7
+              },
+              "t3": {
+                "hex": "#fff",
+                "onVsBlock": 7.27
+              },
+              "t4": {
+                "hex": "#fff",
+                "onVsBlock": 7.09
+              },
+              "t5": {
+                "hex": "#fff",
+                "onVsBlock": 7.58
+              }
+            }
+          },
+          "dark": {
+            "bg": "#0b0d10",
+            "card": "#14171c",
+            "tiers": {
+              "t1": {
+                "hex": "#4ade80",
+                "hue": 141.9,
+                "sat": 69.2,
+                "hueClass": "green",
+                "vsBg": 11.17,
+                "vsCard": 10.31
+              },
+              "t2": {
+                "hex": "#60a5fa",
+                "hue": 213.1,
+                "sat": 93.9,
+                "hueClass": "blue",
+                "vsBg": 7.65,
+                "vsCard": 7.07
+              },
+              "t3": {
+                "hex": "#22d3ee",
+                "hue": 187.9,
+                "sat": 85.7,
+                "hueClass": "cyan",
+                "vsBg": 10.77,
+                "vsCard": 9.94
+              },
+              "t4": {
+                "hex": "#fbbf24",
+                "hue": 43.3,
+                "sat": 96.4,
+                "hueClass": "amber",
+                "vsBg": 11.66,
+                "vsCard": 10.76
+              },
+              "t5": {
+                "hex": "#94a3b8",
+                "hue": 215,
+                "sat": 20.2,
+                "hueClass": "gray",
+                "vsBg": 7.59,
+                "vsCard": 7.01
+              }
+            },
+            "on": {
+              "t1": {
+                "hex": "#0b0d10",
+                "onVsBlock": 11.17
+              },
+              "t2": {
+                "hex": "#0b0d10",
+                "onVsBlock": 7.65
+              },
+              "t3": {
+                "hex": "#0b0d10",
+                "onVsBlock": 10.77
+              },
+              "t4": {
+                "hex": "#0b0d10",
+                "onVsBlock": 11.66
+              },
+              "t5": {
+                "hex": "#0b0d10",
+                "onVsBlock": 7.59
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": 3,
+      "title": "1440×900 首屏（home-light / home-dark）",
+      "verdict": "PASS",
+      "evidence": {
+        "fullyVisibleCards": {
+          "beforeLight": 6,
+          "beforeDark": 6,
+          "afterLight": 6,
+          "afterDark": 6
+        },
+        "totalCards": {
+          "before": 76,
+          "after": 76
+        },
+        "gridTop": {
+          "beforeLight": 352,
+          "afterLight": 352,
+          "beforeDark": 352,
+          "afterDark": 352
+        },
+        "horizontalOverflow": {
+          "beforeLight": 0,
+          "afterLight": 0,
+          "afterDark": 0
+        },
+        "tierheadHeight": {
+          "light": [
+            26
+          ],
+          "dark": [
+            26
+          ]
+        },
+        "needCardHeight": {
+          "light": [
+            68
+          ],
+          "dark": [
+            68
+          ]
+        },
+        "tierSquare": {
+          "light": [
+            "22x22",
+            "22x22",
+            "22x22",
+            "22x22"
+          ],
+          "dark": [
+            "22x22",
+            "22x22",
+            "22x22",
+            "22x22"
+          ]
+        },
+        "bigTextLight": [
+          {
+            "fs": "30px",
+            "direct": "13",
+            "isStat": true,
+            "tag": "B"
+          },
+          {
+            "fs": "30px",
+            "direct": "7",
+            "isStat": true,
+            "tag": "B"
+          },
+          {
+            "fs": "30px",
+            "direct": "1",
+            "isStat": true,
+            "tag": "B"
+          },
+          {
+            "fs": "30px",
+            "direct": "30",
+            "isStat": true,
+            "tag": "B"
+          },
+          {
+            "fs": "30px",
+            "direct": "66",
+            "isStat": true,
+            "tag": "B"
+          },
+          {
+            "fs": "30px",
+            "direct": "45",
+            "isStat": true,
+            "tag": "B"
+          },
+          {
+            "fs": "30px",
+            "direct": "44",
+            "isStat": true,
+            "tag": "B"
+          },
+          {
+            "fs": "30px",
+            "direct": "7",
+            "isStat": true,
+            "tag": "B"
+          },
+          {
+            "fs": "30px",
+            "direct": "12",
+            "isStat": true,
+            "tag": "B"
+          },
+          {
+            "fs": "30px",
+            "direct": "67",
+            "isStat": true,
+            "tag": "B"
+          },
+          {
+            "fs": "22px",
+            "direct": "11",
+            "isStat": true,
+            "tag": "SPAN"
+          },
+          {
+            "fs": "22px",
+            "direct": "20",
+            "isStat": true,
+            "tag": "SPAN"
+          },
+          {
+            "fs": "22px",
+            "direct": "20",
+            "isStat": true,
+            "tag": "SPAN"
+          },
+          {
+            "fs": "22px",
+            "direct": "25",
+            "isStat": true,
+            "tag": "SPAN"
+          }
+        ],
+        "bigTextDark": [
+          {
+            "fs": "30px",
+            "direct": "13",
+            "isStat": true,
+            "tag": "B"
+          },
+          {
+            "fs": "30px",
+            "direct": "7",
+            "isStat": true,
+            "tag": "B"
+          },
+          {
+            "fs": "30px",
+            "direct": "1",
+            "isStat": true,
+            "tag": "B"
+          },
+          {
+            "fs": "30px",
+            "direct": "30",
+            "isStat": true,
+            "tag": "B"
+          },
+          {
+            "fs": "30px",
+            "direct": "66",
+            "isStat": true,
+            "tag": "B"
+          },
+          {
+            "fs": "30px",
+            "direct": "45",
+            "isStat": true,
+            "tag": "B"
+          },
+          {
+            "fs": "30px",
+            "direct": "44",
+            "isStat": true,
+            "tag": "B"
+          },
+          {
+            "fs": "30px",
+            "direct": "7",
+            "isStat": true,
+            "tag": "B"
+          },
+          {
+            "fs": "30px",
+            "direct": "12",
+            "isStat": true,
+            "tag": "B"
+          },
+          {
+            "fs": "30px",
+            "direct": "67",
+            "isStat": true,
+            "tag": "B"
+          },
+          {
+            "fs": "22px",
+            "direct": "11",
+            "isStat": true,
+            "tag": "SPAN"
+          },
+          {
+            "fs": "22px",
+            "direct": "20",
+            "isStat": true,
+            "tag": "SPAN"
+          },
+          {
+            "fs": "22px",
+            "direct": "20",
+            "isStat": true,
+            "tag": "SPAN"
+          },
+          {
+            "fs": "22px",
+            "direct": "25",
+            "isStat": true,
+            "tag": "SPAN"
+          }
+        ],
+        "bigTextAllStatDigits": true
+      }
+    },
+    {
+      "id": 4,
+      "title": "390×844（home-390）",
+      "verdict": "PASS",
+      "evidence": {
+        "horizontalOverflow": 0,
+        "needCardHeight": [
+          68
+        ],
+        "needCountFs": [
+          "30px"
+        ],
+        "needCountInsideCard": true,
+        "needCopyOverflowX": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "tierheads": [
+          {
+            "cls": "tierhead t1",
+            "h": 26,
+            "hintDisplay": "none",
+            "square": "22x22",
+            "stat": "22px",
+            "line": {
+              "h": 1,
+              "bg": "rgb(11, 122, 68)",
+              "opacity": "0.4"
+            }
+          },
+          {
+            "cls": "tierhead t2",
+            "h": 26,
+            "hintDisplay": "none",
+            "square": "22x22",
+            "stat": "22px",
+            "line": {
+              "h": 1,
+              "bg": "rgb(29, 78, 216)",
+              "opacity": "0.4"
+            }
+          },
+          {
+            "cls": "tierhead t3",
+            "h": 26,
+            "hintDisplay": "none",
+            "square": "22x22",
+            "stat": "22px",
+            "line": {
+              "h": 1,
+              "bg": "rgb(21, 94, 117)",
+              "opacity": "0.4"
+            }
+          },
+          {
+            "cls": "tierhead t4",
+            "h": 26,
+            "hintDisplay": "none",
+            "square": "22x22",
+            "stat": "22px",
+            "line": {
+              "h": 1,
+              "bg": "rgb(146, 64, 14)",
+              "opacity": "0.4"
+            }
+          }
+        ],
+        "controlPoint": {
+          "chooser": ".jump a（档位图例 chip：构造成「不折行/不被裁」的控点）",
+          "chips": [
+            {
+              "text": "1完全免费",
+              "w": 78.02,
+              "h": 28,
+              "padding": "2px",
+              "gap": "2px",
+              "scrollW": 76,
+              "clientW": 76,
+              "singleLineTextH": 14,
+              "square": "22x22"
+            },
+            {
+              "text": "2免费额度",
+              "w": 78.02,
+              "h": 28,
+              "padding": "2px",
+              "gap": "2px",
+              "scrollW": 76,
+              "clientW": 76,
+              "singleLineTextH": 14,
+              "square": "22x22"
+            },
+            {
+              "text": "3身份优惠",
+              "w": 78.02,
+              "h": 28,
+              "padding": "2px",
+              "gap": "2px",
+              "scrollW": 76,
+              "clientW": 76,
+              "singleLineTextH": 14,
+              "square": "22x22"
+            },
+            {
+              "text": "4折扣促销",
+              "w": 78.02,
+              "h": 28,
+              "padding": "2px",
+              "gap": "2px",
+              "scrollW": 76,
+              "clientW": 76,
+              "singleLineTextH": 14,
+              "square": "22x22"
+            }
+          ],
+          "note": "4 枚 chip 78.02×28，scrollWidth=clientWidth=76，label 单行；22×22 图例方块在 chip 内"
+        },
+        "facetScroller": {
+          "preexisting": true,
+          "note": ".facetsin overflowX:auto，scrollW 1418 / client 390，改前改后同值；是站点既有横向筛选滚区，document 无横向溢出"
+        },
+        "bigText": [
+          {
+            "fs": "30px",
+            "direct": "13",
+            "isStat": true,
+            "tag": "B"
+          },
+          {
+            "fs": "30px",
+            "direct": "7",
+            "isStat": true,
+            "tag": "B"
+          },
+          {
+            "fs": "30px",
+            "direct": "1",
+            "isStat": true,
+            "tag": "B"
+          },
+          {
+            "fs": "30px",
+            "direct": "30",
+            "isStat": true,
+            "tag": "B"
+          },
+          {
+            "fs": "30px",
+            "direct": "66",
+            "isStat": true,
+            "tag": "B"
+          },
+          {
+            "fs": "30px",
+            "direct": "45",
+            "isStat": true,
+            "tag": "B"
+          },
+          {
+            "fs": "30px",
+            "direct": "44",
+            "isStat": true,
+            "tag": "B"
+          },
+          {
+            "fs": "30px",
+            "direct": "7",
+            "isStat": true,
+            "tag": "B"
+          },
+          {
+            "fs": "30px",
+            "direct": "12",
+            "isStat": true,
+            "tag": "B"
+          },
+          {
+            "fs": "30px",
+            "direct": "67",
+            "isStat": true,
+            "tag": "B"
+          },
+          {
+            "fs": "22px",
+            "direct": "11",
+            "isStat": true,
+            "tag": "SPAN"
+          },
+          {
+            "fs": "22px",
+            "direct": "20",
+            "isStat": true,
+            "tag": "SPAN"
+          },
+          {
+            "fs": "22px",
+            "direct": "20",
+            "isStat": true,
+            "tag": "SPAN"
+          },
+          {
+            "fs": "22px",
+            "direct": "25",
+            "isStat": true,
+            "tag": "SPAN"
+          }
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "title": "25% 缩略图 shots/home-25pct.png（360×225）",
+      "verdict": "PASS",
+      "evidence": {
+        "dimensions": {
+          "w": 360,
+          "h": 225
+        },
+        "pixelCounts": {
+          "t1": {
+            "hex": "#0b7a44",
+            "tol20": 164,
+            "tol8": 163,
+            "tol3": 158
+          },
+          "t2": {
+            "hex": "#1d4ed8",
+            "tol20": 11,
+            "tol8": 11,
+            "tol3": 11
+          },
+          "t3": {
+            "hex": "#155e75",
+            "tol20": 12,
+            "tol8": 11,
+            "tol3": 9
+          },
+          "t4": {
+            "hex": "#92400e",
+            "tol20": 13,
+            "tol8": 10,
+            "tol3": 9
+          },
+          "t5": {
+            "hex": "#475569",
+            "tol20": 231,
+            "tol8": 26,
+            "tol3": 0
+          }
+        },
+        "measurableTierColors": [
+          "t1",
+          "t2",
+          "t3",
+          "t4"
+        ],
+        "clusters": {
+          "t1": {
+            "hex": "#0b7a44",
+            "total": 164,
+            "components": [
+              {
+                "n": 16,
+                "x": 8,
+                "y": 89,
+                "w": 5,
+                "h": 5
+              },
+              {
+                "n": 15,
+                "x": 8,
+                "y": 98,
+                "w": 5,
+                "h": 4
+              },
+              {
+                "n": 15,
+                "x": 124,
+                "y": 98,
+                "w": 5,
+                "h": 4
+              },
+              {
+                "n": 15,
+                "x": 240,
+                "y": 98,
+                "w": 5,
+                "h": 4
+              },
+              {
+                "n": 15,
+                "x": 8,
+                "y": 149,
+                "w": 5,
+                "h": 4
+              },
+              {
+                "n": 15,
+                "x": 124,
+                "y": 149,
+                "w": 5,
+                "h": 4
+              }
+            ]
+          },
+          "t2": {
+            "hex": "#1d4ed8",
+            "total": 11,
+            "components": [
+              {
+                "n": 11,
+                "x": 46,
+                "y": 80,
+                "w": 4,
+                "h": 5
+              }
+            ]
+          },
+          "t3": {
+            "hex": "#155e75",
+            "total": 12,
+            "components": [
+              {
+                "n": 11,
+                "x": 73,
+                "y": 80,
+                "w": 4,
+                "h": 5
+              },
+              {
+                "n": 1,
+                "x": 19,
+                "y": 20,
+                "w": 1,
+                "h": 1
+              }
+            ]
+          },
+          "t4": {
+            "hex": "#92400e",
+            "total": 13,
+            "components": [
+              {
+                "n": 11,
+                "x": 100,
+                "y": 80,
+                "w": 4,
+                "h": 5
+              },
+              {
+                "n": 2,
+                "x": 100,
+                "y": 80,
+                "w": 1,
+                "h": 2
+              }
+            ]
+          }
+        },
+        "rescaledFromAfter1440": {
+          "t1": 166,
+          "t2": 14,
+          "t3": 14,
+          "t4": 15,
+          "t5": 372
+        },
+        "beforeRescaled": {
+          "t1": 20,
+          "t2": 0,
+          "t3": 0,
+          "t4": 0,
+          "t5": 298
+        },
+        "visual": "read_image 目检：可见 need 卡 30px 级数字（13/7/1/30/66/45/44/7/12/67），4× 放大图 thumb-zoom-need.png 可确认字形"
+      }
+    },
+    {
+      "id": 6,
+      "title": "family.html",
+      "verdict": "PASS",
+      "evidence": {
+        "h1Stats": [
+          {
+            "fs": "22px",
+            "direct": "24",
+            "cls": "stat stat-22"
+          },
+          {
+            "fs": "22px",
+            "direct": "21",
+            "cls": "stat stat-22"
+          },
+          {
+            "fs": "22px",
+            "direct": "108",
+            "cls": "stat stat-22"
+          }
+        ],
+        "stopstatsRect": {
+          "rect": {
+            "top": 109.5,
+            "left": 238.5,
+            "right": 551.6,
+            "bottom": 133
+          },
+          "parent": "stop",
+          "html": " <span class=\"stopstat\"><b class=\"stat stat-22\">24</b><span class=\"stopstat-lb\">条计费记录</span></span> <span class=\"stopstat\"><b class=\"stat stat-22\">21</b><span class=\"stopstat-lb\">个平台</span></span> <span class=\"stopstat\"><b class=\"stat stat-22\">108</b><span class=\"stopstat-lb\">个模型计价条目</span></span> "
+        },
+        "h1": {
+          "text": "API / Token 计费对比",
+          "fs": "19px",
+          "rect": {
+            "top": 106.5,
+            "left": 30,
+            "right": 230.5,
+            "bottom": 135
+          }
+        },
+        "distPlansApiMeta": "24 条计费记录 · 21 个平台 · 108 个模型计价条目 · 最后核对 2026-10-08",
+        "valuesMatchSource": true,
+        "horizontalOverflow": 0,
+        "styleInBody": 0,
+        "bodyHasCssText": false,
+        "styleTags": [
+          {
+            "inHead": true,
+            "inBody": false,
+            "len": 77117
+          },
+          {
+            "inHead": true,
+            "inBody": false,
+            "len": 5276
+          }
+        ],
+        "sameSiteBasis": {
+          "headerEqualBytewise": false,
+          "footerEqualBytewise": false,
+          "sharedStyleEqual": true,
+          "sharedStyleLen": [
+            77117
+          ],
+          "tokensEqual": true,
+          "fontEqual": true,
+          "logosEqual": true,
+          "themeMetaEqual": true,
+          "footerText": "home 与 family 的 footer 5 段文案一致（仅「最后更新」占位不同：-- vs 见首页）",
+          "headerNote": "family 为 /plans/api 子页变体：同一 .top/.topin/.brand/.mark/.btxt 品牌块与字体；把首页的搜索/主题/套餐导航换成「返回全部优惠」+ GitHub —— 同站子页，非换站"
+        }
+      }
+    },
+    {
+      "id": 7,
+      "title": "工程纪律",
+      "verdict": "FAIL",
+      "evidence": {
+        "headScripts": {
+          "home-light.html": {
+            "headScriptCount": 1,
+            "bodyScriptCount": 0,
+            "jsonLd": 0,
+            "themeScript": true,
+            "styleInBody": false,
+            "analytics": false
+          },
+          "home-dark.html": {
+            "headScriptCount": 1,
+            "bodyScriptCount": 0,
+            "jsonLd": 0,
+            "themeScript": true,
+            "styleInBody": false,
+            "analytics": false
+          },
+          "home-390.html": {
+            "headScriptCount": 1,
+            "bodyScriptCount": 0,
+            "jsonLd": 0,
+            "themeScript": true,
+            "styleInBody": false,
+            "analytics": false
+          },
+          "family.html": {
+            "headScriptCount": 1,
+            "bodyScriptCount": 0,
+            "jsonLd": 0,
+            "themeScript": true,
+            "styleInBody": false,
+            "analytics": false
+          },
+          "compare.html": {
+            "headScriptCount": 0,
+            "bodyScriptCount": 0,
+            "jsonLd": 0,
+            "themeScript": false,
+            "styleInBody": false,
+            "analytics": false
+          }
+        },
+        "themeScriptByteIdenticalToDist": {
+          "distLen": 360,
+          "homeEqual": true,
+          "familyEqual": true
+        },
+        "git": {
+          "statusPorcelain": [
+            "?? mockups/v5-sig/"
+          ],
+          "diffNameOnly": [],
+          "distIgnored": ".gitignore:2:dist/\tdist/index.html",
+          "indexHtmlHeadSha": "bb704909858501ba72edfff2a887ef88e8a4a0accca615b580b3fb3cd7a99483",
+          "indexHtmlWorkingSha": "bb704909858501ba72edfff2a887ef88e8a4a0accca615b580b3fb3cd7a99483",
+          "indexHtmlUnmodified": true
+        },
+        "indexHtmlUnmodified": true,
+        "distIgnoredByGit": ".gitignore:2:dist/\tdist/index.html",
+        "distMtimeBeforeSession": "2026-11-11T01:33:25.438Z",
+        "homeLinks": {
+          "home-light.html": {
+            "total": 152,
+            "bad": 0,
+            "prefixes": {
+              "../../dist/": 152
+            }
+          },
+          "home-dark.html": {
+            "total": 152,
+            "bad": 0,
+            "prefixes": {
+              "../../dist/": 152
+            }
+          },
+          "home-390.html": {
+            "total": 152,
+            "bad": 0,
+            "prefixes": {
+              "../../dist/": 152
+            }
+          }
+        },
+        "familyLinks": {
+          "total": 32,
+          "bad": 30,
+          "prefixes": {
+            "../../dist/": 32
+          },
+          "badSamples": [
+            {
+              "url": "../../dist/dist/",
+              "resolved": "dist/dist",
+              "exists": false,
+              "isDir": false,
+              "indexExists": null,
+              "ok": false
+            },
+            {
+              "url": "../../dist/dist/",
+              "resolved": "dist/dist",
+              "exists": false,
+              "isDir": false,
+              "indexExists": null,
+              "ok": false
+            },
+            {
+              "url": "../../dist/dist/",
+              "resolved": "dist/dist",
+              "exists": false,
+              "isDir": false,
+              "indexExists": null,
+              "ok": false
+            },
+            {
+              "url": "../../dist/dist/tools/api-cost/",
+              "resolved": "dist/dist/tools/api-cost",
+              "exists": false,
+              "isDir": false,
+              "indexExists": null,
+              "ok": false
+            },
+            {
+              "url": "../../dist/dist/plans/coding/",
+              "resolved": "dist/dist/plans/coding",
+              "exists": false,
+              "isDir": false,
+              "indexExists": null,
+              "ok": false
+            },
+            {
+              "url": "../../dist/dist/plans/coding/",
+              "resolved": "dist/dist/plans/coding",
+              "exists": false,
+              "isDir": false,
+              "indexExists": null,
+              "ok": false
+            }
+          ],
+          "http404Confirmed": [
+            "mockups/v5-sig/../../dist/dist/ 404",
+            "mockups/v5-sig/../../dist/dist/student/ 404"
+          ],
+          "correctTarget": "mockups/v5-sig/../../dist/student/ 200"
+        },
+        "rootCause": "build-sig.js buildFamily(): const urls = h => rewriteUrls(h, 'dist/plans/api/') —— dist/plans/api 页面的 ../../ 相对链接先按含 dist/ 的前缀解析，再被 rewriteUrls 加一次 ../../dist/，得到 ../../dist/dist/…；应传 'plans/api/'。",
+        "compareHtml": {
+          "headScripts": 0,
+          "note": "评审页，无脚本/无样式泄漏；shots/ 相对路径为其自有截图资产（非站点 mockup）"
+        }
+      }
+    },
+    {
+      "id": 8,
+      "title": "compare.html",
+      "verdict": "PASS",
+      "evidence": {
+        "scrollHeight": 900,
+        "innerHeight": 900,
+        "bodyScrollHeight": 850,
+        "footerBottom": 840.41,
+        "images": [
+          {
+            "src": "shots/before-1440.png",
+            "transform": "none",
+            "natural": "1440x900",
+            "parent": "crop"
+          },
+          {
+            "src": "shots/before-1440.png",
+            "transform": "matrix(0.25, 0, 0, 0.25, 0, 0)",
+            "natural": "1440x900",
+            "parent": "thumb"
+          },
+          {
+            "src": "shots/after-1440.png",
+            "transform": "none",
+            "natural": "1440x900",
+            "parent": "crop"
+          },
+          {
+            "src": "shots/after-1440.png",
+            "transform": "matrix(0.25, 0, 0, 0.25, 0, 0)",
+            "natural": "1440x900",
+            "parent": "thumb"
+          }
+        ],
+        "samePngBothScales": [
+          {
+            "figure": "before",
+            "cropSrc": [
+              "shots/before-1440.png"
+            ],
+            "thumbSrc": [
+              "shots/before-1440.png"
+            ],
+            "same": true
+          },
+          {
+            "figure": "after",
+            "cropSrc": [
+              "shots/after-1440.png"
+            ],
+            "thumbSrc": [
+              "shots/after-1440.png"
+            ],
+            "same": true
+          }
+        ],
+        "displayedNumbers": {
+          "tableRows": [
+            [
+              "指标（实测）",
+              "改前",
+              "改后",
+              ""
+            ],
+            [
+              "首屏完整可见卡片",
+              "6 张",
+              "6 张",
+              "持平（不许下降）"
+            ],
+            [
+              "网格起点",
+              "352px",
+              "352px",
+              "零位移"
+            ],
+            [
+              "分带高 / 方块",
+              "26px / 16px",
+              "26px / 22px",
+              "带宽不变"
+            ],
+            [
+              "need 卡高",
+              "68px",
+              "68px",
+              "卡高不变"
+            ],
+            [
+              "need 卡计数",
+              "11px",
+              "30px",
+              "数字成为高音"
+            ],
+            [
+              "分带条数",
+              "11.5px",
+              "22px",
+              "数字成为高音"
+            ],
+            [
+              "引文竖条 / 文字",
+              "3px / rgb(11, 122, 68)",
+              "6px / --ink",
+              "颜色只留竖条"
+            ],
+            [
+              "新增非数字大字号",
+              "0",
+              "0",
+              "14 处大字全是 .stat 数字"
+            ]
+          ],
+          "chips": [
+            "首屏完整卡片 6 → 6",
+            "分带带宽 26 → 26px",
+            "新增非数字大字号 0",
+            "25% 缩略图 30px 数字 + 4 档位色 ✓",
+            "390px 横向溢出 0px",
+            "对比度下限 5.05:1 / 7.59:1"
+          ],
+          "swatches": [
+            "t1 #0b7a445.05:111.17:1",
+            "t2 #1d4ed86.25:17.65:1",
+            "t3 #155e756.78:110.77:1",
+            "t4 #92400e6.61:111.66:1",
+            "t5 #4755697.07:17.59:1"
+          ],
+          "notes": [
+            "同一张 PNG，transform: scale(.25) → 360×225。缩到 25% 时：档位色只剩分带里 1 个 16px 方块（≈4px）、引文竖条 0.75px；看不到 3 块档位色。",
+            "同一张 PNG，transform: scale(.25) → 360×225。缩到 25% 时：30px 计数 → 7.5px 仍是一眼可见的高音；4 块 22px 档位方块 → 5.5px 仍能数出绿 / 蓝 / 青 / 琥珀。"
+          ]
+        },
+        "retestConsistency": "全部表格/胶囊/色卡数字与复测一致（6→6、352→352、26/16→26/22、68/68、11→30、11.5→22、3→6、0→0、5.05/7.59、5.41/7.01）",
+        "shot": {
+          "file": "shots/home-before-after.png",
+          "dims": {
+            "w": 1440,
+            "h": 900,
+            "bytes": 288932
+          },
+          "docScrollHeight": 900
+        },
+        "textInconsistencies": [
+          "文案「窗口 680×400」与实际 .crop 680×342 不符（ruler y=96–438 本身也是 342 高）"
+        ]
+      }
+    }
+  ],
+  "extraFindings": [
+    {
+      "severity": "high",
+      "item": "family.html 导航链接全部失效（30/32）",
+      "detail": "后 30 个 href 为 ../../dist/dist/…，HTTP 404；head 的 logos.css/favicon 正常。修复：build-sig.js buildFamily 的 rewriteUrls 第二参数改为 plans/api/ 后重新生成 family.html。"
+    },
+    {
+      "severity": "low",
+      "item": "compare.html 文案与实际几何不符",
+      "detail": "「窗口 680×400 只做裁切」×2，实际 .crop 为 680×342（y=96–438）。"
+    },
+    {
+      "severity": "info",
+      "item": "390 全页高度 16849→16813（−36px，不是加高）",
+      "detail": "footer 已与改前等高（271.77px）；全部 −36px 来自 t2/t3 分带：改前 <b> 标题被长 hint 挤成 2 行（带高 44px），改后 26px。属修复既有窄屏缺陷，未向“加高度”方向走。"
+    },
+    {
+      "severity": "info",
+      "item": "25% 缩略图档位色可测但余量小",
+      "detail": "±20/通道容差下 t2/t3/t4 仅 11/12/13 px（各自 1 个 4×5 连通块 = 图例方块），t1 164px；「≥3 块不同档位色」成立但仰赖图例方块，建议 NOTES 注明证据强度。"
+    },
+    {
+      "severity": "info",
+      "item": "42px 档位 token 已定义但本轮无实例",
+      "detail": ".stat-42 规则与 --fs-stat-lg 存在；三个 mockup 页面均未使用 42px（符合“只给事实数字”的克制，未滥用）。"
+    }
+  ],
+  "artifacts": {
+    "scripts": [
+      "_audit/audit.js",
+      "_audit/supplement.js",
+      "_audit/diag2.js",
+      "_audit/diag3.js",
+      "_audit/diag4.js",
+      "_audit/linkcheck.js",
+      "_audit/pixdiff.js",
+      "_audit/probe1.js",
+      "_audit/probe2.js",
+      "_audit/make-audit-json.js"
+    ],
+    "data": [
+      "_audit/measured.json",
+      "_audit/supplement.json",
+      "_audit/linkcheck.json",
+      "_audit/diag2.json",
+      "_audit/diag4.json",
+      "_audit/probe2.out.json",
+      "_audit/audit-console.json",
+      "_audit/snapshot-start.sha256"
+    ],
+    "screenshots": [
+      "_audit/verify-home-light-1440.png",
+      "_audit/verify-home-dark-1440.png",
+      "_audit/verify-home-390.png",
+      "_audit/verify-family-1440.png",
+      "_audit/verify-compare-1440.png",
+      "_audit/verify-before-light-1440.png",
+      "_audit/thumb-zoom-need.png",
+      "_audit/thumb-zoom-legend.png"
+    ]
+  }
+}

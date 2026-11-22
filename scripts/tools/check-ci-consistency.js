@@ -59,7 +59,17 @@
  *   · (11) 追加：把每个调用方的 `with.allow_degraded_run` **按触发事件真的求值**（不是 grep
  *     字符串）：PR / push / schedule / workflow_run 与 workflow_dispatch 的「默认（未勾选）」
  *     都必须解析成 `'false'`；只有人工 workflow_dispatch **显式勾选**允许 `'true'`（而且必须
- *     真的解析成 `'true'`，逃生口不能被堵死）；deploy.yml 任何事件都不许降级；
+ *     真的解析成 `'true'`，逃生口不能被堵死）；deploy.yml 任何事件都不许降级。
+ *     **P3 例外**：collect.yml 的完整 gate 已移到数据提交**之后**（见 (13)），它的降级是
+ *     **自动**的 —— 所以要求它在**所有事件**上都解析成 `'true'`（而不是只改一句 detail 文案），
+ *     并且因为不再引用 inputs.* 而**不许**再声明降级输入（死开关会误导人工触发者）；
+ *     deploy.yml 仍任何事件都不许降级、verify.yml 仍非人工不许降级。
+ *   · (13) 追加（P3「门禁拆锁」）：collect.yml 的**数据正确性 9 条**必须在提交**之前**作为
+ *     独立硬门禁（无 `if` / 无 `continue-on-error`，run 体逐条包含命令）；**完整 gate** 必须
+ *     在提交**之后**运行、失败不阻塞入库，且**失败可见**（`continue-on-error` + 紧随其后
+ *     引用其 outcome 的 `if: always()` 留痕步）。旧语义「完整门禁在提交之前」正是 2026-11-02
+ *     一次门禁红停更 6 天的成因；新红线是「**坏数据不入库** + **发布就绪失败不静默**」——
+ *     数据正确性一条没松，发布仍由 deploy.yml 的 prepublish 严格门禁裁定（(12) 守着）。
  *   · (17) 追加：产物依赖步骤必须显式 `--dir=dist` 且排在 `Assemble site` **之后**
  *     （§10.9 / P2-26：原先它们排在构建前，CI 干净检出里没有 dist/ ⇒ 这些牙一次都没跑过）。
  *  反过来的边界也如实写在这里：`GATE_STEP_RUN` 是**逐步骤**的指纹，不是整文件 SHA（§13.10 禁止）；
@@ -148,9 +158,9 @@ const GATE_STEP_NAMES = [
   'Install dependencies',
   // architecture-modernization-v1 新增两步：都是**不需要数据也不需要 dist** 的结构/纪律门禁，
   // 因此排在数据门禁之前（红的时候是「骨架坏了」而不是「数据不对」，最快定位）。
-  //   · Architecture fitness —— 5 条结构不变量（依赖方向 / renderer 纯度 / 唯一 document 出口 /
-  //     分层表完整性 / 时间口径）；选这 5 条的标准见 scripts/test/fitness.js 头注释（刻意不收
-  //     「无循环依赖」与「布局族声明」，避免同一不变量重复证明）。
+  //   · Architecture fitness —— 6 条结构不变量（依赖方向 / renderer 纯度 / 唯一 document 出口 /
+  //     分层表完整性 / 时间口径 / 页面预算单源）；选这 6 条的标准见 scripts/test/fitness.js 头注释
+  //     （刻意不收「无循环依赖」与「布局族声明」，避免同一不变量重复证明）。
   //     第 5 条（时间口径：不许把未位移的 UTC 当前时间当「今天」）是 2026-10-13 事后加的：
   //     北京时间 00:00–08:00 的定时采集曾因为这一点把整条链红在门禁前。
   //   · Evidence policy —— Tier-3 过程产物不许进 Git，只拦基线之后新进的（grandfather 1,283 个放行）。
@@ -169,9 +179,10 @@ const GATE_STEP_NAMES = [
   // 基线文件），于是「能改写 deals.json 的命令行工具」没有任何 CI 守卫。改成 9 条合成
   // 夹具逐分支覆盖后才接得进来；接进来之前它就已经抓到一处潜伏缺陷（见 action.yml 注释）。
   'Migration verifier (audience provenance backfill)',
-  'Translation gate (drift blocks, pending ages out)',
+  'Translation coverage (advisory, English fallback, never blocks)',
   'Translation self-test',
   'Expiry self-test',
+  'Categories boundary self-test',
   'Text / cleanText self-test',
   'Source-health self-test',
   // v1.3 新增：信息来源（evidence / provenance）的全部红线 —— 引文的版权上限、
@@ -185,10 +196,8 @@ const GATE_STEP_NAMES = [
   // 上限 / 纯函数 / 墓碑与「不可用」的措辞）。它与 v1.4 那一支互补：
   // 前者管「记录对不对」，这一支管「取出来的视图对不对」，红的含义不同。
   'Change-radar self-test',
-  // v1.7 新增：SEO 门禁自测（28 个检查码逐条定向篡改 + 干净夹具必须静默 +
+  // v1.7 新增：SEO 门禁自测（27 个检查码逐条定向篡改 + 干净夹具必须静默 +
   // 门槛分支 + 注册表不变量）。它红的时候没有别的步骤会替它红：
-  // 构建期那一遍跑的是真数据，验不到「某个检查码其实永远不会响」。
-  // 2026-10-08（p2-residuals-v1）：检查码 27 → 28，新增 thin-content-margin（正文下限余量登记）。
   // 构建期那一遍跑的是真数据，验不到「某个检查码其实永远不会响」。
   'SEO self-test',
   // v1.1 新增：受众字段（三态语义 / merge 可信度仲裁 / 措辞同源）的全部红线守卫都在这支自测里。
@@ -227,6 +236,12 @@ const GATE_STEP_NAMES = [
   // 另外两条（可重建性、日志一致性）红的含义与 plans 那两条同构，只是换了一份数据。
   'API-plans self-test (data + page)',
   'API-cost self-test (calculator logic + teeth)',
+  // v3.4 F1：价格历史（阶梯线 / 无基线不画 / 文字通道 / 单位单源 / 无墙钟）。纯合成 store，不读 dist。
+  'Price-history self-test (F1 charts, no-baseline honesty)',
+  // v3.4 F2：到期日历（RFC 5545 折行/转义/收录条件/确定性）。纯函数，不读 dist。
+  'Calendar self-test (F2 ICS folding + escaping)',
+  // v3.4 F3：全站搜索（索引唯一表 / 按 url 去重 / 不发死链 / 转义 / 多词全部命中）。纯合成数据，不读 dist。
+  'Search self-test (F3 index + escaping + filter)',
   'API-plans reproducibility (curated → api-plans.json, byte-compare)',
   'API-plan-history verify (log consistent with api-plans.json)',
   // v3.0 新增：六个新页面家族与索引层的离线自测。它们红的含义各自独立 ——
@@ -331,7 +346,10 @@ const GATE_STEP_NAMES = [
   'Prepare browser for the real-browser gate',
   'Browser availability decision (never silent)',
   'Real-browser acceptance (verify-site.js)',
-  'Regression verify (baseline compare)',
+  'Regression verify (current-data budget)',
+  // v3.4 页面预算：不读 dist/、不需要浏览器；在临时沙箱里用契约数据真构建一遍，
+  // 所以它排在真浏览器验收之后、结论之前，且没有 if（degraded 也要跑）。
+  'Page-fit self-test (composition budgets, contract corpus)',
   'Gate conclusion'
 ];
 
@@ -367,12 +385,14 @@ const GATE_STEP_RUN = {
     "node scripts/tools/history-verify.js",
   "Migration verifier (audience provenance backfill)":
     "node scripts/tools/migrate-audience-verify.js",
-  "Translation gate (drift blocks, pending ages out)":
+  "Translation coverage (advisory, English fallback, never blocks)":
     "node scripts/tools/zh-todo.js --check",
   "Translation self-test":
     "node scripts/tools/zh-selftest.js",
   "Expiry self-test":
     "node scripts/tools/expiry-selftest.js",
+  "Categories boundary self-test":
+    "node scripts/tools/categories-selftest.js",
   "Text / cleanText self-test":
     "node scripts/tools/text-selftest.js",
   "Source-health self-test":
@@ -405,6 +425,12 @@ const GATE_STEP_RUN = {
     "node scripts/tools/api-plans-selftest.js",
   "API-cost self-test (calculator logic + teeth)":
     "node scripts/tools/api-cost-selftest.js",
+  "Price-history self-test (F1 charts, no-baseline honesty)":
+    "node scripts/tools/price-history-selftest.js",
+  "Calendar self-test (F2 ICS folding + escaping)":
+    "node scripts/tools/calendar-selftest.js",
+  "Search self-test (F3 index + escaping + filter)":
+    "node scripts/tools/search-selftest.js",
   "API-plans reproducibility (curated → api-plans.json, byte-compare)":
     "node scripts/tools/check-api-plans-reproducible.js",
   "API-plan-history verify (log consistent with api-plans.json)":
@@ -535,28 +561,94 @@ const GATE_STEP_RUN = {
  + '\n' + "exit 1",
   "Real-browser acceptance (verify-site.js)":
     "node scripts/tools/verify-site.js",
-  "Regression verify (baseline compare)":
-    "node scripts/tools/verify-site.js --compare=research/_raw/ours-baseline/verify.json",
+  "Regression verify (current-data budget)":
+    "node scripts/tools/verify-site.js --compare",
+  "Page-fit self-test (composition budgets, contract corpus)":
+    "node scripts/tools/page-fit-selftest.js",
   "Gate conclusion":
-    "{"
- + '\n' + "echo \"\""
- + '\n' + "echo \"### 门禁结论\""
- + '\n' + "echo \"\""
- + '\n' + "if [ \"${{ steps.decision.outputs.mode }}\" = \"full\" ]; then"
- + '\n' + "echo \"- 静态门禁 + **真浏览器验收 + 回归比对**都跑了\""
- + '\n' + "elif [ \"${{ steps.decision.outputs.mode }}\" = \"degraded\" ]; then"
- + '\n' + "echo \"- ⚠️ 只跑了静态门禁（**未做真浏览器验收**，显式降级）\""
- + '\n' + "else"
- + '\n' + "echo \"- ❌ 真浏览器验收没有执行（见上一条注解与 Summary 顶部原因）\""
- + '\n' + "fi"
- + '\n' + "echo \"- 触发事件：\\`${{ github.event_name }}\\` @ \\`${{ github.ref }}\\`\""
- + '\n' + "} >> \"$GITHUB_STEP_SUMMARY\"",
+      "failed=''"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s01.outcome }}\" = \"failure\" ]; then failed='Install dependencies'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s02.outcome }}\" = \"failure\" ]; then failed='Architecture fitness (structure invariants)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s03.outcome }}\" = \"failure\" ]; then failed='Evidence policy (Tier-3 interception)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s04.outcome }}\" = \"failure\" ]; then failed='Validate data (strict)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s05.outcome }}\" = \"failure\" ]; then failed='Reproducibility gate (no value without a source)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s06.outcome }}\" = \"failure\" ]; then failed='History verify (log consistent with deals.json)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s07.outcome }}\" = \"failure\" ]; then failed='Migration verifier (audience provenance backfill)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s08.outcome }}\" = \"failure\" ]; then failed='Translation coverage (advisory, English fallback, never blocks)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s09.outcome }}\" = \"failure\" ]; then failed='Translation self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s10.outcome }}\" = \"failure\" ]; then failed='Expiry self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s10b.outcome }}\" = \"failure\" ]; then failed='Categories boundary self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s11.outcome }}\" = \"failure\" ]; then failed='Text / cleanText self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s12.outcome }}\" = \"failure\" ]; then failed='Source-health self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s13.outcome }}\" = \"failure\" ]; then failed='Provenance self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s14.outcome }}\" = \"failure\" ]; then failed='Deal-history self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s15.outcome }}\" = \"failure\" ]; then failed='Change-radar self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s16.outcome }}\" = \"failure\" ]; then failed='SEO self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s17.outcome }}\" = \"failure\" ]; then failed='Audience self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s18.outcome }}\" = \"failure\" ]; then failed='Roles-note self-test (official_urls note vs live wording)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s19.outcome }}\" = \"failure\" ]; then failed='App-token self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s20.outcome }}\" = \"failure\" ]; then failed='AI layer self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s21.outcome }}\" = \"failure\" ]; then failed='Collector fixtures (offline replay)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s22.outcome }}\" = \"failure\" ]; then failed='Plans self-test (data + page)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s23.outcome }}\" = \"failure\" ]; then failed='Plan-history self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s24.outcome }}\" = \"failure\" ]; then failed='Deal-plan-links self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s25.outcome }}\" = \"failure\" ]; then failed='API-plans self-test (data + page)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s26.outcome }}\" = \"failure\" ]; then failed='API-cost self-test (calculator logic + teeth)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s26a.outcome }}\" = \"failure\" ]; then failed='Price-history self-test (F1 charts, no-baseline honesty)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s26b.outcome }}\" = \"failure\" ]; then failed='Calendar self-test (F2 ICS folding + escaping)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s26c.outcome }}\" = \"failure\" ]; then failed='Search self-test (F3 index + escaping + filter)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s27.outcome }}\" = \"failure\" ]; then failed='API-plans reproducibility (curated → api-plans.json, byte-compare)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s28.outcome }}\" = \"failure\" ]; then failed='API-plan-history verify (log consistent with api-plans.json)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s29.outcome }}\" = \"failure\" ]; then failed='Model-registry self-test (identity + explicit mapping)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s30.outcome }}\" = \"failure\" ]; then failed='Models reproducibility (registry → models.json, byte-compare)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s31.outcome }}\" = \"failure\" ]; then failed='Model-registry links check (explicit mapping only, no similarity)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s32.outcome }}\" = \"failure\" ]; then failed='Coverage report (gap list consistent with data)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s33.outcome }}\" = \"failure\" ]; then failed='Coverage-targets self-test (intent layer + seven derived states)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s34.outcome }}\" = \"failure\" ]; then failed='Model-role vocabulary self-test (registry ↔ freshness contract)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s35.outcome }}\" = \"failure\" ]; then failed='Freshness self-test (catalogStatus branches)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s36.outcome }}\" = \"failure\" ]; then failed='Freshness threshold sensitivity (±90 days, baseline invariants)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s37.outcome }}\" = \"failure\" ]; then failed='Feed self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s38.outcome }}\" = \"failure\" ]; then failed='IndexNow self-test'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s39.outcome }}\" = \"failure\" ]; then failed='Assemble site (same path as deploy.yml)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s40.outcome }}\" = \"failure\" ]; then failed='Models-page self-test (index + detail pages)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s41.outcome }}\" = \"failure\" ]; then failed='Plans-hub self-test (/plans/)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s42.outcome }}\" = \"failure\" ]; then failed='Vendor-pages self-test (/vendor/)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s43.outcome }}\" = \"failure\" ]; then failed='Archive self-test (/archive/, synthetic ended/restored fixtures)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s44.outcome }}\" = \"failure\" ]; then failed='Analytics self-test (bootstrap count / production guard / provider)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s45.outcome }}\" = \"failure\" ]; then failed='Residue guard (deleted copy must not return; container floors)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s46.outcome }}\" = \"failure\" ]; then failed='Feed reproducibility (build twice, byte-compare)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s47.outcome }}\" = \"failure\" ]; then failed='Plans reproducibility (curated → plans.json, byte-compare)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s48.outcome }}\" = \"failure\" ]; then failed='Plan-history verify (log consistent with plans.json)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s49.outcome }}\" = \"failure\" ]; then failed='SEO verification (independent, from dist/)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.browser.outcome }}\" = \"failure\" ]; then failed='Prepare browser for the real-browser gate'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.decision.outcome }}\" = \"failure\" ]; then failed='Browser availability decision (never silent)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s50.outcome }}\" = \"failure\" ]; then failed='Real-browser acceptance (verify-site.js)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s51.outcome }}\" = \"failure\" ]; then failed='Regression verify (current-data budget)'; fi"
+  + '\n' + "if [ -z \"$failed\" ] && [ \"${{ steps.s52.outcome }}\" = \"failure\" ]; then failed='Page-fit self-test (composition budgets, contract corpus)'; fi"
+  + '\n' + "{"
+  + '\n' + "echo \"\""
+  + '\n' + "echo \"### 门禁结论\""
+  + '\n' + "echo \"\""
+  + '\n' + "if [ \"$failed\" = \"Browser availability decision (never silent)\" ]; then"
+  + '\n' + "echo \"- ❌ 真浏览器验收没有执行（见上一条注解与 Summary 顶部原因）\""
+  + '\n' + "elif [ -n \"$failed\" ]; then"
+  + '\n' + "echo \"- ⛔ **Gate @ $failed 失败**（后续步骤因此被跳过，不是浏览器不可用）\""
+  + '\n' + "elif [ \"${{ steps.decision.outputs.mode }}\" = \"full\" ]; then"
+  + '\n' + "echo \"- 静态门禁 + **真浏览器验收 + 回归比对**都跑了\""
+  + '\n' + "elif [ \"${{ steps.decision.outputs.mode }}\" = \"degraded\" ]; then"
+  + '\n' + "echo \"- ⚠️ 只跑了静态门禁（**未做真浏览器验收**，显式降级）\""
+  + '\n' + "else"
+  + '\n' + "echo \"- ⛔ **门禁没有走到浏览器结论**（mode 为空：前面的步骤被跳过/取消，不是「浏览器不可用」——见日志里第一个 skipped / cancelled 步骤）\""
+  + '\n' + "fi"
+  + '\n' + "echo \"- 触发事件：\\`${{ github.event_name }}\\` @ \\`${{ github.ref }}\\`\""
+  + '\n' + "} >> \"$GITHUB_STEP_SUMMARY\""
+  + '\n' + "echo \"failed_step=$failed\" >> \"$GITHUB_OUTPUT\"",
 };
 
 /** 步骤级 `if:` 的冻结值（含键**存在性**：`if: false` 这类"静默跳过"必须红） */
 const GATE_STEP_IF = {
   "Real-browser acceptance (verify-site.js)": "steps.decision.outputs.mode == 'full'",
-  "Regression verify (baseline compare)": "steps.decision.outputs.mode == 'full'",
+  "Regression verify (current-data budget)": "steps.decision.outputs.mode == 'full'",
   "Gate conclusion": "always()",
 };
 
@@ -615,6 +707,17 @@ const CALLER_EVENT_MATRIX = {
 const STRICT_ONLY_EVENTS = ['pull_request', 'push', 'schedule', 'workflow_run'];
 /** 发布链：**任何**事件都不许降级（含人工 workflow_dispatch） */
 const NEVER_DEGRADE_WORKFLOWS = ['deploy.yml'];
+/**
+ * **自动降级**的调用方（P3「门禁拆锁」）：collect.yml 的完整 gate 已移到数据提交**之后**，
+ * 数据正确性由提交前的独立硬门禁守着（见 (13)）。所以这条链路**应该**降级，而不是冻结入库：
+ *   · 它的 `with.allow_degraded_run` 必须在**所有事件**上都解析成 `'true'`（写死，不再有人工
+ *     勾选入口）—— 解析成 'false' 会让一次浏览器故障把 collect job 判红，而 deploy.yml 的
+ *     workflow_run 只在结论 success 时才放行 ⇒ 停版会换个位置复活；
+ *   · 因为不再引用 `inputs.*`，它也不该再声明 `on.workflow_dispatch.inputs.allow_degraded_run`
+ *     （一个不起作用的开关会误导人工触发者）。
+ * ⚠️ deploy.yml **永远不在这里**：发布链任何事件都不许降级（NEVER_DEGRADE_WORKFLOWS）。
+ */
+const AUTO_DEGRADE_WORKFLOWS = ['collect.yml'];
 
 /** 三个调用方：都必须恰好调用一次门禁 action */
 const GATE_CALLERS = ['collect.yml', 'deploy.yml', 'verify.yml'];
@@ -654,7 +757,11 @@ const FROZEN_ASSERTION_NAMES = [
   '(10c) gate 复合 action 不含任何第三方 uses（门禁里不引入未冻结的外部动作）',
   '(11) collect.yml / deploy.yml / verify.yml 各恰好调用一次门禁 action',
   '(12) deploy.yml 的发布链必须先过门禁：prepublish 无 job 级 if、build 依赖它、deploy 依赖 build',
-  '(13) collect.yml 的门禁步骤排在提交步骤之前',
+  // P3「门禁拆锁」改名 + 改语义（旧名：(13) collect.yml 的门禁步骤排在提交步骤之前）：
+  // 红线从「完整门禁在提交前」变成「**数据正确性在提交前 + 完整门禁在提交后且失败可见**」。
+  // 数据正确性那 9 条一条没松（而且从门禁内部的一步升级成提交前的独立硬拦）；发布就绪类的
+  // 失败只是不再冻住数据入库，发布仍由 deploy.yml 的 prepublish 严格门禁裁定（(12) 守着）。
+  '(13) collect.yml 的数据正确性硬门禁在提交之前、完整 gate 在提交之后且失败可见',
   '(14) workflow 与复合 action 里没有「未加引号的标量含『冒号+空格』」（真实 YAML 会拒绝，本文件的缩进读取器读得过去）',
   '(15) collect.yml 的推送用专用 GitHub App 身份（github-actions 不能被加进 ruleset 绕过名单）',
   // v2.0：AI 维护链路必须"只读 + 只出 artifact"。这条断言存在的理由与 (13)/(15) 同类 ——
@@ -1029,7 +1136,10 @@ const gateStepNames = gateEntries
 /* ────────── P1-2 / P1-3 的判据工具：步骤体冻结 + 降级语义的真实执行 ────────── */
 
 /**
- * 按步解析 action.yml **原文**：返回每个步骤的 { name, id, ifValue, hasContinueOnError, runBody }。
+ * 按步解析 workflow / 复合 action 的**原文**：返回每个步骤的
+ * { name, id, ifValue, hasContinueOnError, runBody }。
+ * （P3 起也用于 collect.yml 的步骤：(13) 要核对数据正确性硬门禁的 run 体与 gate 的接线。
+ *   它只依赖「`- name:` 起始 + 缩进更深的 run 块」，两种文件都是同一形状。）
  *
  * 为什么不复用上面的 `parseWorkflow`：那个缩进读取器按设计**整体跳过块标量**（`run: |` 的内容），
  * 而这里要判的恰恰是块标量里的 body。两者互补：结构（键 / 路径）走 `parseWorkflow`，
@@ -1319,9 +1429,15 @@ check('(10c) gate 复合 action 不含任何第三方 uses（门禁里不引入�
 // 之前这里只数调用次数，于是把 `verify.yml` / `collect.yml` 的
 // `${{ inputs.allow_degraded_run && 'true' || 'false' }}` 硬编码成 `'true'`、或把 deploy.yml 的
 // `'false'` 改成 `'true'`，36/36 照样全绿（审计实测）。现在按**每个触发事件**把那个表达式
-// 真的算一遍：PR / push / schedule / workflow_run，以及 workflow_dispatch 的「默认（未勾选）」
-// 都必须解析成 'false'；只有人工 workflow_dispatch **显式勾选**才允许 'true'（而且必须真的
-// 解析成 'true' —— 逃生口不能被堵死）；发布链（deploy.yml）任何事件都不许降级。
+// 真的算一遍（判据是求值结果，不是字符串）：
+//   · deploy.yml：任何事件都必须 'false'（发布链不许降级）；
+//   · verify.yml：PR / push / 默认（未勾选）必须 'false'；只有人工显式勾选允许（且必须）'true'；
+//   · collect.yml（P3 起 AUTO_DEGRADE_WORKFLOWS）：gate 已在数据提交之后 ⇒ 它在**所有事件**
+//     上都必须是 'true'（自动降级，不再有逃生口）。若哪天有人把它改回 'false'，一次浏览器
+//     故障就会把 collect job 判红，而 deploy.yml 的 workflow_run 只在 success 时放行 ——
+//     2026-11-02 那次停更会换个位置复活，所以这里必须红。
+// 输入登记与引用绑定：只有**真的引用 `inputs.*`** 的调用方才要求声明带默认值的输入；
+// collect.yml 不再引用、也就不该再声明（下面单独判「不许残留死开关」）。
 const gateCallDetail = GATE_CALLERS.map(f =>
   `${f}:${usesEntries(wf[f] || []).filter(e => parseUses(e.value).kind === 'local' &&
     parseUses(e.value).raw === GATE_ACTION_REF).length}`);
@@ -1332,6 +1448,7 @@ const degradedDetail = [];
 for (const file of GATE_CALLERS) {
   const entries = wf[file] || [];
   if (!Object.prototype.hasOwnProperty.call(wf, file)) { degradedProblems.push(`${file}: 文件不存在`); continue; }
+  const isAutoDegrade = AUTO_DEGRADE_WORKFLOWS.includes(file);
   const withEntries = entries.filter(e => e.key === DEGRADED_INPUT && e.path.includes('steps') && e.path.includes('with'));
   if (withEntries.length !== 1) {
     degradedProblems.push(`${file}: with.${DEGRADED_INPUT} 出现 ${withEntries.length} 次（期望恰好 1 次，与 uses 调用一一对应）`);
@@ -1347,11 +1464,23 @@ for (const file of GATE_CALLERS) {
   const defaultEntry = entries.find(e => e.path.join('.') === `on.workflow_dispatch.inputs.${DEGRADED_INPUT}.default`);
   const declaredDefault = defaultEntry
     ? String(defaultEntry.value).replace(/^(['"])([\s\S]*)\1$/, '$2') : 'false';
-  if (triggers.has('workflow_dispatch') && !NEVER_DEGRADE_WORKFLOWS.includes(file) && !defaultEntry) {
+  // 「输入必须登记」只对**真的引用了 inputs.*** 的调用方生效（P3 前的行为等价于「所有可降级调用方」，
+  // 因为那时 verify.yml / collect.yml 都引用它）。collect.yml 改成自动降级后不再引用 ⇒ 不再要求声明；
+  // verify.yml 仍引用 ⇒ 仍要求声明 default=false（人工不勾选就不降级）。
+  const referencesInputs = /inputs\./.test(rawValue);
+  if (referencesInputs && triggers.has('workflow_dispatch') && !NEVER_DEGRADE_WORKFLOWS.includes(file) && !defaultEntry) {
     degradedProblems.push(`${file}: workflow_dispatch 允许降级，但 inputs.${DEGRADED_INPUT} 没有声明 default（手工降级必须是一个显式、带默认值的输入）`);
   }
   if (defaultEntry && declaredDefault !== 'false') {
     degradedProblems.push(`${file}: inputs.${DEGRADED_INPUT}.default = ${JSON.stringify(declaredDefault)}（必须默认 false —— 不勾选就是不降级）`);
+  }
+  // 自动降级调用方必须**与触发方式无关**：引用 inputs.* 就是在把它重新交回给「谁勾选」。
+  if (isAutoDegrade && referencesInputs) {
+    degradedProblems.push(`${file}: 自动降级值引用了 inputs.*（P3 起降级不取决于谁触发/谁勾选，必须写死 'true'）`);
+  }
+  // 也不许留下一个**不起作用的死开关**：自动降级后人工勾它没有任何效果，只会误导触发者。
+  if (isAutoDegrade && defaultEntry) {
+    degradedProblems.push(`${file}: 已改为自动降级，但 workflow_dispatch 仍声明 inputs.${DEGRADED_INPUT}（死开关：它不再被 with 引用，请删除）`);
   }
   for (const event of CALLER_EVENT_MATRIX[file]) {
     const contexts = event === 'workflow_dispatch'
@@ -1366,9 +1495,18 @@ for (const file of GATE_CALLERS) {
       if (evaluated.error) { degradedProblems.push(`${where}: ${evaluated.error}`); continue; }
       const resolved = String(evaluated.value);
       degradedDetail.push(`${where.replace(`${file} @ `, '')}=${resolved}`);
-      if (NEVER_DEGRADE_WORKFLOWS.includes(file) && resolved !== 'false') {
-        degradedProblems.push(`${where}: 解析成 ${resolved} —— 发布链任何事件都不许降级（它必须写死 'false'）`);
-      } else if (!NEVER_DEGRADE_WORKFLOWS.includes(file) && context.manual && resolved !== 'true') {
+      if (NEVER_DEGRADE_WORKFLOWS.includes(file)) {
+        if (resolved !== 'false') {
+          degradedProblems.push(`${where}: 解析成 ${resolved} —— 发布链任何事件都不许降级（它必须写死 'false'）`);
+        }
+      } else if (isAutoDegrade) {
+        // P3：collect 的 gate 在数据提交之后 ⇒ 降级是**正确**形态（不会让坏数据入库，发布由
+        // deploy 的严格门禁另行裁定）。反过来，解析成 'false' 会把「浏览器故障」重新变成
+        // 「collect job 红 ⇒ deploy 的 workflow_run 拒绝发布」—— 停版会换个位置复活。
+        if (resolved !== 'true') {
+          degradedProblems.push(`${where}: 解析成 ${resolved} —— collect 的 gate 已在提交之后，发布就绪失败必须**自动降级**（所有事件都写死 'true'）；改成 false 会让一次浏览器故障冻结整条发布链`);
+        }
+      } else if (context.manual && resolved !== 'true') {
         degradedProblems.push(`${where}: 解析成 ${resolved} —— 人工显式降级这条逃生口被堵死了（合法的降级必须仍然可用）`);
       } else if (!context.manual && resolved !== 'false') {
         degradedProblems.push(`${where}: 解析成 ${resolved} —— 必需路径不得静默降级（只有人工 workflow_dispatch 显式勾选才允许 'true'）`);
@@ -1380,7 +1518,8 @@ for (const file of GATE_CALLERS) {
 check('(11) collect.yml / deploy.yml / verify.yml 各恰好调用一次门禁 action',
   gateCallsOk && degradedProblems.length === 0,
   degradedProblems.length ? degradedProblems.slice(0, 4).join('；')
-    : `${gateCallDetail.join('、')}；降级输入按真实表达式求值 —— ${degradedDetail.join(' · ')}`);
+    : `${gateCallDetail.join('、')}；自动降级 ${AUTO_DEGRADE_WORKFLOWS.join('、')}（gate 已在提交之后）`
+      + `；降级输入按真实表达式求值 —— ${degradedDetail.join(' · ')}`);
 
 // (12) 发布链必须「先过门禁再发布」。三件事一起看：
 //   · prepublish **没有** job 级 if（被跳过的 job 报 Success，等于没跑却算过）；
@@ -1408,20 +1547,141 @@ check('(12) deploy.yml 的发布链必须先过门禁：prepublish 无 job 级 i
   gateWiringProblems.length ? gateWiringProblems.join('；')
     : `prepublish(无 if) → build(needs=${JSON.stringify(buildNeeds)}) → deploy(needs=${JSON.stringify(deployNeeds)})`);
 
-// (13) 采集路径的门禁必须在**提交之前**：机器人提交一进 master 就会被 deploy 的
-// workflow_run 接走，门禁放在提交之后就只是「事后告警」。
-// 判据用**原文位置**而不是解析结果：提交步骤的脚本是 `run: |` 块标量，缩进读取器按设计
-// 整体跳过块标量内容（那是它不引入 YAML 依赖的代价），所以「谁在前谁在后」直接比字符串位置，
-// 反而更贴近事实。两处引用都恰好只有一次（前者由 (11) 保证）。
+// (13) 采集链路的**两类门禁**（P3「门禁拆锁」后的红线，旧名是
+//      「(13) collect.yml 的门禁步骤排在提交步骤之前」）：
+//   ① **数据正确性**必须在数据提交**之前**硬拦：独立步骤、9 条命令逐条在 run 体里、
+//      不许步骤级 if（`if: false` 等于没验）、不许 continue-on-error（失败必须挡住提交）；
+//   ② **完整 gate**（发布就绪类）必须在提交**之后**运行，且失败要**不阻塞入库也不静默**：
+//      调用本身带 continue-on-error（失败不把 collect job 判红 —— deploy.yml 的 workflow_run
+//      只在 Collect 结论 success 时放行，这里判红等于冻结整条发布链）；紧随其后必须有
+//      一个 `if: always()` 的留痕步，引用 `steps.release_gate.outcome` 把结论写进 Summary、
+//      失败/降级时发 `::warning`。
+// 为什么这不算放水：旧语义「完整门禁在提交前」在 2026-11-02 让一次门禁红停更 6 天；新红线
+// 把两件事分开各自守 —— **坏数据一条都不许入库**（9 条命令逐字核对，一条没删），**发布就绪
+// 失败不许静默**（continue-on-error 只在"失败可见"成立时才允许）。发布仍由 deploy.yml 的
+// prepublish 严格门禁裁定（该链不允许降级，(12) 继续守着）。
+// 判据用**原文位置**：提交步骤与 run 体是 `run: |` 块标量，缩进读取器按设计整体跳过块标量内容
+// （那是它不引入 YAML 依赖的代价），所以「谁在前谁在后」直接比字符串位置，反而更贴近事实。
 const collectRaw = fs.readFileSync(path.join(WF_DIR, 'collect.yml'), 'utf8');
+const DATA_CORRECTNESS_STEP = 'Data correctness gate (hard — blocks the data commit)';
+const RELEASE_GATE_STEP = 'Release-readiness gate (after the data commit — never blocks storage)';
+const RELEASE_RECORD_STEP = 'Release-readiness gate record (never silent)';
+const RELEASE_GATE_ID = 'release_gate';
+/** 提交前**硬拦**的数据正确性命令（一条不松；增删/改顺序都要同步本条断言） */
+const DATA_CORRECTNESS_COMMANDS = [
+  'node scripts/validate.js --strict',
+  'node scripts/tools/check-reproducible.js',
+  'node scripts/tools/history-verify.js',
+  'node scripts/tools/migrate-audience-verify.js',
+  'node scripts/tools/provenance-selftest.js',
+  'node scripts/tools/history-selftest.js',
+  'node scripts/tools/changes-selftest.js',
+  'node scripts/tools/ai-selftest.js',
+  'node scripts/tools/fixture-test.js'
+];
+// `parseGateStepsRaw` 只依赖「`- name:` 起始 + 同缩进的 run 块」，对 workflow 的 steps 同样适用。
+const collectStepsRaw = parseGateStepsRaw(collectRaw);
+const collectStepByName = name => collectStepsRaw.find(step => step.name === name);
+/** 按 byte 切出某个步骤块的原文（用于检查 id / env 这类 parseGateStepsRaw 不建模的字段） */
+const collectStepSlices = (() => {
+  const starts = [];
+  const re = /\n {6}- name: /g;
+  let match;
+  while ((match = re.exec(collectRaw)) !== null) starts.push(match.index + 1);
+  return starts;
+})();
+function rawStepSlice(name) {
+  const marker = `      - name: ${name}`;
+  for (let i = 0; i < collectStepSlices.length; i++) {
+    const at = collectStepSlices[i];
+    if (collectRaw.startsWith(marker, at)) {
+      const end = i + 1 < collectStepSlices.length ? collectStepSlices[i + 1] : collectRaw.length;
+      return collectRaw.slice(at, end);
+    }
+  }
+  return '';
+}
 const idxGateRef = collectRaw.indexOf(`uses: ${GATE_ACTION_REF}`);
 const idxPush = collectRaw.indexOf('git push');
+const idxDataGate = collectRaw.indexOf(`- name: ${DATA_CORRECTNESS_STEP}`);
+const idxRecord = collectRaw.indexOf(`- name: ${RELEASE_RECORD_STEP}`);
+const idxLedgerSync = collectRaw.indexOf('scripts/tools/sync-vendor-slug-ledger.js');
 const commitStepCount = (collectRaw.match(/name: Commit and push if changed/g) || []).length;
 const collectProblems = [];
-if (idxGateRef < 0) collectProblems.push(`collect.yml 里没有 \`uses: ${GATE_ACTION_REF}\``);
+
+// ① 数据正确性硬门禁：存在 + 9 条命令逐条在 run 体里 + 无 if / 无 continue-on-error + 在推送之前。
+const dataGateStep = collectStepByName(DATA_CORRECTNESS_STEP);
+if (!dataGateStep) {
+  collectProblems.push(`collect.yml 里找不到「${DATA_CORRECTNESS_STEP}」步骤（改名/删除都要同步改本条断言）`);
+} else {
+  const dataGateBody = normalizeRunBody(dataGateStep.runBody);
+  for (const command of DATA_CORRECTNESS_COMMANDS) {
+    if (!dataGateBody.includes(command)) collectProblems.push(`数据正确性硬门禁的 run 体里没有「${command}」`);
+  }
+  if (dataGateStep.hasContinueOnError) {
+    collectProblems.push('数据正确性硬门禁带了 continue-on-error —— 它是提交前的硬拦，失败必须挡住提交');
+  }
+  if (dataGateStep.ifValue !== null) {
+    collectProblems.push(`数据正确性硬门禁带了步骤级 if（${dataGateStep.ifValue}）—— 被跳过就等于没验`);
+  }
+}
 if (idxPush < 0) collectProblems.push('collect.yml 里没有 git push（提交步骤不见了）');
-if (idxGateRef >= 0 && idxPush >= 0 && idxGateRef > idxPush) {
-  collectProblems.push('门禁写在 git push 之后（门禁红也拦不住入库）');
+if (idxDataGate >= 0 && idxPush >= 0 && idxDataGate > idxPush) {
+  collectProblems.push('数据正确性硬门禁写在 git push 之后 —— 坏数据会先入库');
+}
+
+// ② 完整 gate：必须在推送之后；带 continue-on-error（失败不阻塞发布链）+ 有 id；
+//    并且必须有 always() 留痕步引用它的 outcome（否则降级/失败就是静默的）。
+const releaseGateStep = collectStepByName(RELEASE_GATE_STEP);
+if (idxGateRef < 0) collectProblems.push(`collect.yml 里没有 \`uses: ${GATE_ACTION_REF}\``);
+if (idxGateRef >= 0 && idxPush >= 0 && idxGateRef < idxPush) {
+  collectProblems.push('完整 gate 仍在 git push 之前 —— 发布就绪类失败会再次冻住数据入库（P3 之前的行为）');
+}
+if (!releaseGateStep) {
+  collectProblems.push(`collect.yml 里找不到「${RELEASE_GATE_STEP}」步骤（发布就绪门禁的登记名）`);
+} else {
+  if (releaseGateStep.id !== RELEASE_GATE_ID) {
+    collectProblems.push(`「${RELEASE_GATE_STEP}」的 id 是 ${JSON.stringify(releaseGateStep.id)}`
+      + `（期望 ${JSON.stringify(RELEASE_GATE_ID)}：留痕步要按它读 outcome）`);
+  }
+  if (!releaseGateStep.hasContinueOnError) {
+    collectProblems.push('发布就绪 gate 没有 continue-on-error —— 它一红 collect job 就红，'
+      + '而 deploy.yml 的 workflow_run 只在结论 success 时放行 ⇒ 一次门禁失败会冻结整条发布链');
+  }
+}
+const releaseRecordStep = collectStepByName(RELEASE_RECORD_STEP);
+if (!releaseRecordStep) {
+  collectProblems.push(`collect.yml 里找不到「${RELEASE_RECORD_STEP}」留痕步骤 —— 降级/失败会变成静默`);
+} else {
+  if (releaseRecordStep.ifValue !== 'always()') {
+    collectProblems.push(`「${RELEASE_RECORD_STEP}」的 if 是 ${JSON.stringify(releaseRecordStep.ifValue)}`
+      + '（必须是 always()：失败 / skipped / cancelled 时也要留痕）');
+  }
+  const recordSlice = rawStepSlice(RELEASE_RECORD_STEP);
+  if (!recordSlice.includes(`steps.${RELEASE_GATE_ID}.outcome`)) {
+    collectProblems.push(`「${RELEASE_RECORD_STEP}」没有引用 steps.${RELEASE_GATE_ID}.outcome —— `
+      + '留痕必须基于真实结论，不能只写一句「见日志」');
+  }
+  // P4（诊断可见性）：只报 outcome 还是不够 —— 红在「第 9 步 zh-selftest」和红在
+  // 「浏览器装不上」在 Actions 页看起来一样。gate action 已把第一个失败步骤名写进
+  // outputs.failed_step，留痕步必须把它写进 Summary / ::warning，否则又退回「猜」。
+  if (!recordSlice.includes(`steps.${RELEASE_GATE_ID}.outputs.failed_step`)) {
+    collectProblems.push(`「${RELEASE_RECORD_STEP}」没有引用 steps.${RELEASE_GATE_ID}.outputs.failed_step —— `
+      + '失败步骤名必须出现在 Summary（否则「哪一步红了」又只能靠猜）');
+  }
+  if (!recordSlice.includes('失败步骤')) {
+    collectProblems.push(`「${RELEASE_RECORD_STEP}」的 Summary 没有「失败步骤」行 —— `
+      + '只写 outcome 不写步骤名，等于没解决误导');
+  }
+  if (!recordSlice.includes('GITHUB_STEP_SUMMARY')) {
+    collectProblems.push(`「${RELEASE_RECORD_STEP}」没有写 $GITHUB_STEP_SUMMARY —— 不在 Summary 留痕就不算「不静默」`);
+  }
+  if (!recordSlice.includes('::warning')) {
+    collectProblems.push(`「${RELEASE_RECORD_STEP}」没有 ::warning 注解 —— 失败/降级在 Actions 页上也必须看得见`);
+  }
+}
+if (idxGateRef >= 0 && idxRecord >= 0 && idxRecord < idxGateRef) {
+  collectProblems.push('留痕步排在完整 gate 之前（那时还没有 outcome 可读）');
 }
 if (commitStepCount !== 1) collectProblems.push(`「Commit and push」步骤出现 ${commitStepCount} 次（期望恰好 1 次）`);
 // 提交内容：四份东西必须一起走 —— 数据本身，以及三份**跨运行状态**
@@ -1429,13 +1689,26 @@ if (commitStepCount !== 1) collectProblems.push(`「Commit and push」步骤出�
 //「译文年龄退回 firstSeen，一失效就超期」，或 v1.4 实测差点放过去的那种最坏形态：
 //**采集把变更日志写进磁盘却没提交** —— 下一轮门禁拿「已更新的 deals.json」比「上一轮的日志」，
 // check:history 当场变红，整条采集链被自己的日志卡死。
-for (const needed of ['deals.json', 'scripts/data/source-health.json', 'scripts/data/zh-pending.json', 'scripts/data/deal-history.json']) {
+for (const needed of ['deals.json', 'scripts/data/source-health.json', 'scripts/data/zh-pending.json', 'scripts/data/deal-history.json', 'scripts/data/vendor-slug-ledger.json']) {
   if (!collectRaw.includes(needed)) collectProblems.push(`collect.yml 的提交里没有 ${needed}`);
 }
-check('(13) collect.yml 的门禁步骤排在提交步骤之前',
+// P1（slug 死锁机器化）：光把账本加进 git add 还不够 —— 没有写盘步骤，账本永远是空的，
+// 构建每次都会「首次分配」，而且不会有任何门禁红。位置也必须在 git push 之前：
+// 本轮写下的账本要跟本轮数据同一批入库，否则新厂商的 slug 下一轮才会稳定。
+if (idxLedgerSync < 0) {
+  collectProblems.push('collect.yml 没有运行 scripts/tools/sync-vendor-slug-ledger.js'
+    + '（机器账本永远不会落盘，slug 会每轮重新分配且无门禁红）');
+} else if (idxPush >= 0 && idxLedgerSync > idxPush) {
+  collectProblems.push('厂商 slug 账本的写盘步骤排在 git push 之后（本轮分配的 slug 不能随本轮数据入库）');
+}
+check('(13) collect.yml 的数据正确性硬门禁在提交之前、完整 gate 在提交之后且失败可见',
   collectProblems.length === 0,
   collectProblems.length ? collectProblems.join('；')
-    : `门禁在字节 ${idxGateRef} → git push 在字节 ${idxPush}（同一 collect job 里，步骤顺序即语义）`);
+    : `数据正确性 ${DATA_CORRECTNESS_COMMANDS.length} 条在字节 ${idxDataGate}（逐条核对，无 if / 无 continue-on-error）`
+      + ` → git push 在字节 ${idxPush}`
+      + ` → 完整 gate 在字节 ${idxGateRef}（continue-on-error + id=${RELEASE_GATE_ID}）`
+      + ` → 留痕步在字节 ${idxRecord}（if: always()，引用 steps.${RELEASE_GATE_ID}.outcome 与 outputs.failed_step 写 Summary 与 ::warning）`
+      + '；提交步骤唯一且仍带齐 deals / source-health / zh-pending / deal-history / vendor-slug-ledger');
 
 /* ─────────── (20) 无人值守链路里的外部安装步骤必须**有界** ─────────── */
 

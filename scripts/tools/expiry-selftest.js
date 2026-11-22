@@ -4,7 +4,7 @@
  *
  * 两件事必须同时对，否则页面上的「剩 N 天 / 长期活动 / 未标注截止日期」会互相打架：
  *   ① 外侧抽取器（scripts/lib/expiry.js）：只认文案里写死的绝对截止日，不猜；
- *   ② 前端三分类（index.html 的 RENDER-CORE.expiryState）：三档归类与排序次序。
+ *   ② 前端三分类（assets/app.js 的 RENDER-CORE.expiryState）：三档归类与排序次序。
  *
  * 用法：node scripts/tools/expiry-selftest.js
  */
@@ -12,12 +12,12 @@
 const fs = require('fs');
 const path = require('path');
 const { load: loadRenderCore } = require('../lib/render-core');
-const { extractDeadline, isOngoing, ONGOING_PATTERNS, applyDeadline } = require('../lib/expiry');
+const { extractDeadline, isOngoing, ONGOING_PATTERNS, applyDeadline, DUE_WINDOW_DAYS } = require('../lib/expiry');
 const { loadDeals } = require('../lib/store');
 const { todayCN } = require('../lib/schema');
+const appAsset = require('../lib/app-asset');
 
 const ROOT = path.join(__dirname, '..', '..');
-const INDEX_FILE = path.join(ROOT, 'index.html');
 
 let pass = 0;
 const failures = [];
@@ -196,14 +196,13 @@ for (const text of WORDLIST_SAMPLES) {
  * 比行为更强的防漂移：两条正则的**源文本**必须逐字节相同。
  *
  * 为什么需要它：ONGOING_RE 是 `const`，不会挂到 vm 沙箱的全局对象上
- * （index.html 里那段注释已说明只有 function/var 会挂上去），所以上面的行为比对是
+ * （app 源码里那段注释已说明只有 function/var 会挂上去），所以上面的行为比对是
  * **唯一**的耦合，而它只覆盖样例表——旧实现就是这样让 9 条真实违规从缝里漏过去的。
- * 这里直接读 index.html 的 ONGOING:START/END 标记块，与 classify.js 导出的源文本对账。
+ * 这里直接读 assets/app.js 的 ONGOING:START/END 标记块，与 classify.js 导出的源文本对账。
  * 只改一边（哪怕改得更严格）都会立刻红。
  */
 function ongoingFromIndex() {
-  const html = fs.readFileSync(INDEX_FILE, 'utf8');
-  const block = /\/\* ONGOING:START \*\/([\s\S]*?)\/\* ONGOING:END \*\//.exec(html);
+  const block = /\/\* ONGOING:START \*\/([\s\S]*?)\/\* ONGOING:END \*\//.exec(appAsset.SOURCE);
   if (!block) return null;
   const pick = name => {
     const m = new RegExp(`${name}\\s*=\\s*/([^/]*)/([a-z]*)\\s*;`).exec(block[1]);
@@ -213,7 +212,7 @@ function ongoingFromIndex() {
 }
 
 const indexPatterns = ongoingFromIndex();
-check('index.html 里有 ONGOING:START/END 标记块', indexPatterns !== null, '找不到标记块');
+check('assets/app.js 里有 ONGOING:START/END 标记块', indexPatterns !== null, '找不到标记块');
 if (indexPatterns) {
   check(
     '正向判据：前后端源文本逐字节相同',
@@ -227,6 +226,51 @@ if (indexPatterns) {
     `前端 ${indexPatterns.hedge && indexPatterns.hedge.source} / 后端 ${ONGOING_PATTERNS.hedge}`
   );
 }
+
+console.log('\n=== 5b) 「即将到期」：窗口常量、筛选判据与 chip 计数 ===');
+
+// 窗口常量只有一处出处：lib/expiry.js 的 DUE_WINDOW_DAYS；RENDER-CORE 里是逐字节相同的副本。
+const dueBlock = source => {
+  const match = /\/\* DUE_WINDOW:START \*\/([\s\S]*?)\/\* DUE_WINDOW:END \*\//.exec(source);
+  return match ? match[1].replace(/\s+/g, ' ').trim() : null;
+};
+const dueFront = dueBlock(appAsset.SOURCE);
+const dueBack = dueBlock(require('fs').readFileSync(path.join(ROOT, 'scripts', 'lib', 'expiry.js'), 'utf8'));
+check('assets/app.js 里有 DUE_WINDOW:START/END 标记块', dueFront !== null, '找不到标记块');
+check('lib/expiry.js 里有 DUE_WINDOW:START/END 标记块', dueBack !== null, '找不到标记块');
+checkEqual('前后端窗口常量逐字节相同（只改一边立刻红）', dueFront, dueBack);
+checkEqual('窗口是 30 天', DUE_WINDOW_DAYS, 30);
+
+const dueFilters = Object.assign({}, { tab: 'deals', region: '', category: '', vendor: '', search: '', collection: '', sort: 'tier', due: true, fav: false, favIds: [] });
+const dueDeal = days => ({ type: 'deal', expiresAt: shiftDays(days), region: 'cn', category: 'c', title: 't' + days });
+check('5 天后到期 ⇒ 命中', core.matches(dueDeal(5), dueFilters) === true);
+check('29 天后到期 ⇒ 命中（窗口内）', core.matches(dueDeal(29), dueFilters) === true);
+check('30 天后到期 ⇒ 命中（含边界）', core.matches(dueDeal(30), dueFilters) === true);
+check('31 天后到期 ⇒ 不命中（窗口外）', core.matches(dueDeal(31), dueFilters) === false);
+check('今天到期 ⇒ 命中', core.matches(dueDeal(0), dueFilters) === true);
+check('已过期 ⇒ 不命中', core.matches(dueDeal(-1), dueFilters) === false);
+check('没有 expiresAt ⇒ 不命中（不知道 ≠ 30 天后到期）', core.matches({ type: 'deal', region: 'cn' }, dueFilters) === false);
+check('due 关闭时不因到期日过滤', core.matches(dueDeal(31), Object.assign({}, dueFilters, { due: false })) === true);
+
+const dueCards = [dueDeal(3), dueDeal(10), dueDeal(31), dueDeal(-2), { type: 'deal', region: 'cn', title: '无日期' }]
+  .map((deal, i) => Object.assign({ id: 'd' + i, lastSeen: '2026-09-22', tier: 1, discountInfo: 'x' }, deal));
+const facet = core.facetModel(dueCards, Object.assign({}, dueFilters, { due: false }));
+checkEqual('chip 计数 == 同一判据数出来的条数（2 条：3 天 / 10 天）', facet.due.count, 2);
+const bar = core.facetBarHtml(dueCards, Object.assign({}, dueFilters, { due: false }));
+check('facets 行里有 data-facet="due" 的 chip', /data-facet="due"/.test(bar));
+check('chip 文案是「即将到期」且带计数', /即将到期<b>2<\/b>/.test(bar));
+check('chip 进的是既有 facets 行（没有新容器）', !/facetbar|duebar/.test(bar));
+const onBar = core.facetBarHtml(dueCards, dueFilters);
+check('激活时 chip 带 on / aria-pressed=true', /class="f due on"/.test(onBar) && /data-facet="due"[^>]*aria-pressed="true"/.test(onBar));
+check('激活时 chip 计数变成「取消后」的条数（4 条可见；已过期的 d3 本来就被全局排除）', /即将到期<b>4<\/b>/.test(onBar));
+
+const dueStats = core.statsHtml(dueCards, dueFilters);
+check('due 视图 stats 给出「N 条 30 天内到期 · 基准日 YYYY-MM-DD」',
+  new RegExp(`<b>2</b> 条 ${DUE_WINDOW_DAYS} 天内到期 · 基准日 ${today}`).test(dueStats), dueStats);
+check('due 视图 stats 带到期日历链接（无 JS 也能点）',
+  /href="expiry\.ics"/.test(dueStats) && /到期日历（\.ics）/.test(dueStats));
+check('基准日与 expiryState/daysUntil 用的是同一个 todayCN()（不另取「今天」）',
+  dueStats.includes(todayCN()));
 
 console.log('\n=== 6) 「即将截止」排序次序 ===');
 

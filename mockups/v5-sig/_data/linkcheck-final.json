@@ -1,0 +1,46 @@
+{
+  "home-light.html": {
+    "total": 152,
+    "bad": 0,
+    "prefixes": {
+      "../../dist/": 152
+    },
+    "badSamples": []
+  },
+  "home-dark.html": {
+    "total": 152,
+    "bad": 0,
+    "prefixes": {
+      "../../dist/": 152
+    },
+    "badSamples": []
+  },
+  "home-390.html": {
+    "total": 152,
+    "bad": 0,
+    "prefixes": {
+      "../../dist/": 152
+    },
+    "badSamples": []
+  },
+  "family.html": {
+    "total": 32,
+    "bad": 0,
+    "prefixes": {
+      "../../dist/": 32
+    },
+    "badSamples": []
+  },
+  "compare.html": {
+    "total": 4,
+    "bad": 0,
+    "prefixes": {
+      "other": 4
+    },
+    "badSamples": []
+  },
+  "summary": {
+    "files": 5,
+    "totalBad": 0
+  }
+}

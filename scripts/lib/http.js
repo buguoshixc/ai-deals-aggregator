@@ -58,7 +58,11 @@ async function getText(url, options = {}) {
   let lastError = null;
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      const res = await http.get(url, { timeout, headers });
+      // responseType:'text' 是必须的，不是风格问题（2026-11-09 实测踩到）：
+      // axios 默认会按 Content-Type 把 `application/json` 响应**自动 parse 成对象**，
+      // 于是 `typeof res.data === 'string'` 为假、走到 `String(res.data)` → "[object Object]"，
+      // 上层 `JSON.parse` 全部失败。getText 的契约是「返回文本」，对 JSON API 也必须成立。
+      const res = await http.get(url, { timeout, headers, responseType: 'text' });
       const text = typeof res.data === 'string' ? res.data : String(res.data);
       // 结构摘要：只在采集作用域内生效（见 dom-digest.js 的 beginCapture）
       if (domDigest.isCapturing()) domDigest.note(url, text, { httpStatus: res.status });

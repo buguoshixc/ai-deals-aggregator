@@ -65,15 +65,14 @@ npm run check:models:reproducible     # models.json
 
 | 命令 | 做什么 |
 |---|---|
-| `npm run verify` | **真浏览器验收**：起本地静态服务器 + 真实 Chromium，跑 852 项断言（几何 / 可见性 / 溢出 / 交互 / 响应式 / JS 错误 / 分析端点）。约 120s |
+| `npm run verify` | **真浏览器验收**：起本地静态服务器 + 真实 Chromium，跑 987 项断言（几何 / 可见性 / 溢出 / 交互 / 响应式 / JS 错误 / 分析端点）。约 120s |
 | `npm run verify:shots` | 同上 + 截图（调试用） |
-| `npm run verify:baseline` | 写基线 JSON 到 `research/_raw/ours-baseline/verify.json`（**会覆盖已入库的基线，谨慎**） |
-| `npm run verify:regress` | 与基线比对回归：覆盖条数 / 卡片数 / 首屏不减少，页高 ≤ +15%，外部请求不增加，JS 错误 = 0 |
+| `npm run verify:regress` | 用当前 `deals.json` **现算预算**判回归：覆盖条数/卡片数 ±2%、首屏完整可见、页高固定预算、外部请求、JS 错误；不读基线文件 |
 | `npm run verify:seo` | 独立 SEO 门禁（从 `dist/` 解析；与构建期规则层**各自解析、执行路径不合并**） |
 | `npm run verify -- --url=https://…/` | 直接验线上站点（发布后冒烟用） |
 
 常用参数：`--dir=<目录>`（默认 `dist`）、`--json=<文件>`（写机器可读报告）、
-`--compare=<基线>`、`--keep`（保留浏览器窗口）、`--url=`。
+`--compare`（从当前数据现算预算）、`--keep`（保留浏览器窗口）、`--url=`。
 
 ---
 

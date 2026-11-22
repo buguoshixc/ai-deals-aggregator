@@ -47,6 +47,44 @@ v3.0（`v3.0-ai-deals-knowledge-base`）把站点从「优惠 + 套餐 + API 价
 新增契约见 [`docs/SCHEMA-v3.0.md`](docs/SCHEMA-v3.0.md)（v3.0 只写新增/改动，既有契约引用旧文档）。
 交付报告与阶段台账见 [`research/v3.0-ai-deals-knowledge-base-report.md`](research/v3.0-ai-deals-knowledge-base-report.md)。
 
+## v3.4：价格历史 / 到期日历 / 全站搜索 / 暗色与移动观感
+
+v3.4（`v3.4-price-history-calendar-search`）是四件事的收口，不改数据契约、不新增数据文件：
+
+1. **价格历史（派生视图）**。判据全部在 `scripts/lib/price-history.js`：从三份变化日志
+   （`api-plan-history.json` / `plan-history.json` / `deal-history.json`）重放「基线以来的价格点」，
+   画成**阶梯线**（不做线性插值、不预测），每个变化点同时给 `from → to` 数值与日期（颜色不是唯一通道）。
+   挂载四处：模型页「价格历史（API 计费）」、厂商页 API 资料区、`/plans/api/`「价格历史（基线以来）」、
+   `/plans/coding/` 套餐详情的时间线旁（当前真实数据里套餐价格变化为 0，只出「N 个套餐 · 基线以来 0 次价格变化」；
+   渲染路径由离线自测用合成事件证明可用）。没有基线、或维度价格从未被记录时，如实写「未载该维度价格」，
+   不画假线。
+2. **到期日历**。首页筛选行加「即将到期」chip（窗口常量 `DUE_WINDOW_DAYS = 30`，与到期徽章、基准日同一个
+   `todayCN()` 判据）；`/expiry.ics` 是按 RFC 5545 生成的订阅文件（CRLF、75 字节折行、TEXT 转义、
+   `DTSTART;VALUE=DATE` + `DTEND` 次日、`VALARM -P3D`），只收「有截止日期且未过期」的记录。
+   入口只有两处：due 视图的汇总行、共享页脚（所有页面都有一条 `.ics` 链接）。
+3. **全站搜索 `/search/`**。构建期把优惠（只收有详情页的 `type: deal`）、Coding 套餐、API 计费、模型、
+   厂商 / 分类 / 需求 / 集合页、固定资料页编成一份静态目录（`scripts/lib/search-index.js`），
+   **无 JS 也能读全量**；输入框只是渐进增强，过滤在本地完成（`scripts/lib/search-filter.js` 逐字节内联），
+   不发请求、不新增数据资产。入口只在共享页脚。
+4. **暗色与移动观感**。暗色变量的两份副本（手动主题 / 跟随系统）逐值一致，正文与卡面对比度按 WCAG 实算并纳入
+   浏览器验收（`ink/ink2/mut` vs `--card` ≥4.5、`--card` vs `--bg` ≥1.4、`--line` vs `--bg` ≥1.6）；
+   引文竖条从 6px 收到 3px 并改用 `color-mix`（档位仍由文本徽章表达），引文行长上限 62ch；
+   ≤760px 时顶栏与首卡之间只保留两条控制行（汇总/筛选行 + 变化雷达行），「跳到力度档位」移到列表之后，
+   chip 行改为单行横向滚动（两端渐隐）。
+
+新增门禁命令：`npm run selftest:price-history`、`npm run selftest:calendar`、`npm run selftest:search`
+（三者都是纯合成数据、不读 `dist/`，已进 CI 的 L2）。交付报告见
+[`research/v3.4-polish-report.md`](research/v3.4-polish-report.md)。
+
+## v3.5：体验与性能全面收口（视觉修复 / 信噪分离 / 全局导航 / 交互决策 / 静态资源瘦身 / 构建模块化）
+
+1. **视觉与细节修复**：修复窄屏筛选栏左侧裁切（`flex-start` + 横向渐隐）、修复 `500,000` 英文千位数字误拆、修复折叠卡片模型列表粘连、详情弹层按优惠档位分层配色并消除奇数网格空白格、已过期 `/deal/` 页增加醒目「活动已结束」提示与活跃同类入口、用纯单色内联 SVG 替换依赖操作系统的 emoji 图标。
+2. **信噪比与数据可信度**：`scripts/lib/categories.js` 英文关键词加 `\b` 词边界并新增 `npm run selftest:categories`；首页新增独立 `SaaS 折扣` 标签页将 AppSumo SaaS 终身折扣与核心 AI/大模型优惠分离（同步过滤主 RSS/JSON Feed 并合并同日同条目多字段变更）；人工策展条目如实展示核对日期 `verifiedAt`（消除每日刷新造成的假新鲜感）；修复 DeepSeek/Fireworks/SiliconFlow 价格核验解析器并补齐核心中文译文。
+3. **全站统一导航与跨站搜索**：`scripts/lib/page-shell.js` 为全部子页注入桌面端一致顶栏与零 JS 移动端 `<details>` 抽屉菜单（含 `跳到正文` skip-link 与页脚 `Codex 重置` 入口）；首页搜索条与空态直通 `/search/?q=...`，`/search/` 自动应用并同步 `?q=`。
+4. **交互决策工具升级**：`/plans/api/` 新增渐进增强搜索、地区、币种、缓存/批处理筛选与用户自选数值排序（静态表格无死按钮、URL 可分享）；`/tools/api-cost/` 支持按平台 `<optgroup>` 选择、3 组事实型工作负载预设、最多 4 模型并排对比（各自保留原币种与原单位，不做汇率折算）及一键复制参数链接。
+5. **性能瘦身与缓存复用**：共享样式由 `scripts/lib/style-asset.js` 外链为内容哈希 `style.<hash>.css`（52 KB，全站 401 页复用缓存），`app.<hash>.js` 经确定性词法去注释从 240 KB 降至 120 KB，`assets/data/offers.json` 紧凑序列化从 540 KB 降至 363 KB，整站 `dist/` 产物从 ~55 MB 降至 ~12.6 MB（单个 `/deal/` 页从 ~107 KB 降至 ~30 KB）。
+6. **构建模块化与仓库整洁**：将 `scripts/tools/build-local.js`（9,955 行 → 4,165 行）按职责拆出 `scripts/build/{notes-manifest,pages-ops,residue,selfcheck}.js` 并以全树 SHA-256 摘要验证逐字节等价；历史过程状态日志归档至 [`docs/archive/`](docs/archive/)。
+
 ## 设计原则
 
 1. **只收录真实优惠**。定价表、"这是付费产品"这类信息不算优惠，只会以 `type: "tool"` 进入"全部工具"页，
@@ -99,9 +137,12 @@ npm run build:dev       # 同上，但产物落 dist.dev/ —— 多会话/并�
 npm run verify          # 真浏览器验收（密度/裁切/hover/筛选/弹层/移动端）
 npm run verify:shots    # 同上，并把截图写到 mockups/.preview/
 npm run selftest:seo    # v1.7 SEO 门禁演练：27 个检查码逐个定向篡改，每个都必须会响
+npm run selftest:price-history  # v3.4 价格历史：阶梯线 / 无基线不画 / 文字通道 / 单位单源
+npm run selftest:calendar       # v3.4 到期日历：RFC 5545 折行 / 转义 / 收录条件 / 确定性
+npm run selftest:search         # v3.4 全站搜索：索引唯一表 / 不发死链 / 转义 / 多词全部命中
 npm run verify:seo      # v1.7 SEO 独立验收：只读 dist，条目集合/sitemap 成员/索引策略现场重推
 npm run report:seo      # 落地页人读报告：有哪些页 / 哪些主题没成页及原因 / slug 与钉住表
-npm run check:zh        # 译文漂移门禁：对不上 id / 原文已变 / 待译 逐条列出，非零退出即有要办的事
+npm run check:zh        # 译文覆盖度报告（建议性）：对不上 id / 原文已变 / 待译 逐条列出，不阻塞发布
 npm run serve                          # 本地预览源码目录 http://127.0.0.1:8080
 node scripts/serve.js --dir=dist       # 预览发布产物（预渲染后的 index.html）
 ```
@@ -113,7 +154,7 @@ node scripts/serve.js --dir=dist       # 预览发布产物（预渲染后的 in
 > `cmd /c "…"` 跑这一行；先确认版本：`$PSVersionTable.PSVersion`。
 
 ```bash
-npm run test:strict && npm run check:reproducible && npm run plans:rebuild --dry-run && npm run check:plans:reproducible && npm run check:history && npm run migrate:audience:verify && npm run check:zh && npm run selftest:zh && npm run selftest:expiry && npm run selftest:text && npm run selftest:health && npm run selftest:provenance && npm run selftest:history && npm run selftest:changes && npm run selftest:audience && npm run selftest:app-token && npm run selftest:api-cost && npm run selftest:plans && npm run build && npm run check:feed:reproducible && npm run check:ci
+npm run test:strict && npm run check:reproducible && npm run plans:rebuild --dry-run && npm run check:plans:reproducible && npm run check:history && npm run migrate:audience:verify && npm run check:zh && npm run selftest:zh && npm run selftest:expiry && npm run selftest:text && npm run selftest:health && npm run selftest:provenance && npm run selftest:history && npm run selftest:changes && npm run selftest:audience && npm run selftest:app-token && npm run selftest:calendar && npm run selftest:api-cost && npm run selftest:price-history && npm run selftest:search && npm run selftest:plans && npm run build && npm run check:feed:reproducible && npm run check:ci
 ```
 
 > ⚠️ 这一行里面的 `npm run build` **写的就是共享发布目录 `dist/`**，而且它在 CI 语境下是对的 ——
@@ -524,8 +565,8 @@ scripts/
     ai-usage.js               v2.0 用量与成本报表（token 真实、金额未知时报「未知」）
     ai-eval.js                v2.0 评测：金标集三臂 + 译文守卫篡改测试
     zh-apply-candidates.js    v2.0 AI 翻译草稿落地（用当前英文重跑守卫 + 门禁 + 回滚）
-    zh-todo.js                中文翻译待办与脚手架（--json / --scaffold 盖原文指纹 / --orphans）
-    zh-selftest.js            中文译文门禁演练（自恢复，验证坏译文真的会被拦下）
+    zh-todo.js                中文翻译待办与脚手架（--json / --scaffold 盖原文指纹 / --orphans / --check）
+    zh-selftest.js            中文译文层演练（自恢复：坏译文回退英文、check 建议性、--strict 才拦）
     tier-report.js            分档与厂商归一报告（调规则时先看它）
     fetch-logos.js            从厂商官网抓取品牌图标，补进 assets/logos/
 ```
@@ -593,7 +634,7 @@ DeepSeek 官网与 API 文档（用无头浏览器渲染后依然 0 条优惠信
 | `<!--PRERENDER:deals-->` | 默认视图（优惠 Tab、无筛选）的**力度分带 + 卡片** HTML |
 | `<!--PRERENDER:facets-->` | 筛选条的 facet 按钮与实时计数 |
 | `<!--PRERENDER:needs-->` | 「按需求找优惠」入口行（10 枚 `<a>`，无 JS 也在、也能点） |
-| `<!--PRERENDER:changes-->` | v1.5 变化雷达条带（与「跳到档位」共用一行；无变化时是明确空态） |
+| `<!--PRERENDER:changes-->` | v1.5 变化雷达条带（2026-11-12 起独占一行；无变化时是明确空态） |
 | `<!--PRERENDER:topstat-->` | 顶栏右侧汇总（条数 / 更新日期） |
 | `<!--PRERENDER:stats-->` | 结果条（显示多少条卡片 · 国内 / 国外 · 覆盖几个档位） |
 | `<!--PRERENDER:categories-->` | 分类下拉的 `<option>` |
@@ -729,7 +770,8 @@ DeepSeek 官网与 API 文档（用无头浏览器渲染后依然 0 条优惠信
 - 卡片上给一个 `中文` 胶囊提示「详情页附中文翻译」，放在 `.meta` 行而不是标题旁——
   那一行是 `nowrap + overflow:hidden` 的横排，加个胶囊不会让标题重排，卡片定高不变。
 - **原文指纹**：每条译文连同它照抄的那段英文一起存进 `src`。英文被采集器改写后指纹对不上，
-  该字段译文**自动停用**并在构建日志里催促复核——宁可不出译文，也不出与原文矛盾的中文。
+  该字段译文**自动停用**（回退英文原文）并在日志里点名——宁可不出译文，也不出与原文矛盾的中文。
+  **这一步永远不阻断发布**（见下）。
 - 判定「这段是不是英文散文」由 `scripts/lib/zh.js` 统一负责，构建与工具共用：
   零汉字 + 拉丁字母 > 8，或有零星汉字但出现英文虚词。踩过的坑是「CJK 占比 < 25% 就算英文」
   会把 `官方定价页标注多款模型价格为「免费」：文本 Hunyuan-MT-7B、bge-m3……`
@@ -737,29 +779,28 @@ DeepSeek 官网与 API 文档（用无头浏览器渲染后依然 0 条优惠信
 
 ```bash
 npm run todo:zh         # 列出待翻译条目（原文 + 已有译文），--json / --scaffold / --orphans
-npm run check:zh        # 译文门禁（硬）：漂移必红；待译按宽限期判（默认 7 天，--grace=N 可调）
-npm run selftest:zh     # 门禁演练：塞坏数据进去，验证构建拦得住、check 也标得出来
+npm run check:zh        # 译文覆盖度报告（建议性，exit 0）：漂移 / 待译逐条列出，不阻塞发布
+npm run selftest:zh     # 演练：坏译文被丢弃回退、构建照发、check 仍看得见脏数据
 ```
 
-构建期门禁：译文不合规（不含汉字 / 字段名非法 / 超长 / 原文为空）**硬失败阻止发布**；
-原文已变则警告并停用该字段；译文键对不上任何条目则告警（条目改名换 URL 会让 id 变化）。
+构建期与采集期的处理（2026-11-08 起）：**译文层永不阻塞发布**。不合规（不含汉字 / 字段名非法 /
+超长 / 原文为空）与原文已变的字段都被 `scripts/lib/zh.js` **丢弃并回退英文原文**，只在日志里点名；
+孤儿（对不上 id）与覆盖层管不到的译文同样只告警。线上最坏的结果是**某一块显示英文**，
+而不是采集不提交、站点停更。
 
-**译文门禁分两档**（2026-09-28 起，此前 `check:zh` 是建议性、却被 `selftest:zh` 反向依赖）：
+**`check:zh` 是建议性报告**：漂移与待译逐条列出、数量与「最老 N 天」每次都打印，但 exit 0
+（2026-11-02 至 11-08 的停更就是硬拦造成的：上游改写英文 → 译文指纹失配 → 门禁红 → 采集
+不提交 → 站点冻住）。需要硬拦时显式加 `--strict`：
 
-| 判词 | 内容 | 后果 |
-|---|---|---|
-| **漂移** | 孤儿（对不上 id） / 原文已变停用 / 不合规 / 覆盖层管不到 | **必红**，没有宽限期 |
-| **待译** | 新采进来的英文条目还没人工翻译 | 宽限 7 天内放行（`PENDING_GRACE_DAYS`），数量与「最老 N 天」每次都打印；超期转红 |
-
-为什么不是「待译必红」：自动采集每天两次，任何一条新英文条目都会让下一次人工 push 的 gate
-变红（2026-09-28 e01dcfc 实测就是这条链），系统会长期停在「有新优惠 → 必然 CI 红」。
-为什么待译也不能无声：数量与最老天数进 CI Summary、采集日志与 `/status/` 页面。
-`npm run check:zh -- --grace=0` 可以把待译也当成必红（发布前自查用）。
+```bash
+npm run check:zh -- --strict              # 有漂移或超期待译时 exit 1（发布前自查用）
+npm run check:zh -- --strict --grace=0    # 连「刚进来的待译」也当成必红
+```
 
 **年龄从「它进入待译」那天算起**，不是从条目第一次被采集到（`firstSeen`）算起。
 这个区别是必须的：上游改写会让**一条老条目**的译文失效（2026-09-28 实测：Midjourney / Grok
-的英文被换掉，两条中文随之失效），用 `firstSeen` 计时等于「刚失效就超期」，第二天门禁就红
-而人没有反应时间。所以：
+的英文被换掉，两条中文随之失效），用 `firstSeen` 计时等于「刚失效就超期」，第二天就被标成
+超期（`--strict` 下直接红）而人没有反应时间。所以：
 
 - `scripts/data/zh-pending.json`（**入库**的跨运行状态）记下每个 `(条目, 字段)` 进入待译的日期；
   由 `collect.js` 每轮维护，作者循环 `--scaffold` 收尾时也调同一个纯函数划账
@@ -774,15 +815,18 @@ npm run selftest:zh     # 门禁演练：塞坏数据进去，验证构建拦得
 > 顺带一条血泪账：漂移数曾经把 `stale` 与 `dropped` 加了两遍（`lib/zh.js` 里后者就是前者的
 > 计数），于是打印出「漂移 4 处」而分解式只有 2 —— 数字对不上的门禁没人会信，已只计一次。
 
-> 上游改写造成译文失效时，覆盖层那条中文会**自动停用**（指纹对不上），而不是被工具悄悄追认
-> —— 必须有人复核新英文再重新落笔。H2 的红线是**不做机器翻译**，不是「不许人写」：
+> 上游改写造成译文失效时，覆盖层那条中文会**自动停用**（指纹对不上），页面回退英文原文，
+> 而不是被工具悄悄追认。想补译仍可按上面的作者循环做；**不补也不会卡住发布**
+> （2026-11-08 之前这里要求「必须有人复核」，结果上游一改英文就把整条采集链冻了一周）。
+> H2 的红线仍是**不做渲染期机翻**，不是「必须有译文」。
 > 2026-09-28 那次采集里 Midjourney / Grok 的英文被上游换掉，两条中文随之失效、从覆盖层移除
-> 并进入待译清单（宽限 7 天）；同日人工补译了 Midjourney / Grok / Unboring.ai 三条，账本随即划清。
+> 并进入待译清单；同日人工补译了 Midjourney / Grok / Unboring.ai 三条，账本随即划清。
 
 > 覆盖层是译文的**唯一权威**：源文件 `deals.json` 里不需要手工写 `zh`。
 > 构建时 `build-local.js` 会把贴好译文的整份数据写进 **`dist/deals.json`**——
 > 那才是浏览器 `fetch('deals.json')` 真正拿到的那一份。
-第 1 步的数据校验跑在未贴译文的 `deals.json` 上，所以这道门禁是在构建里单独补的。
+> 第 1 步的数据校验跑在未贴译文的 `deals.json` 上，所以构建期还会再贴一次并复核；
+> 复核结果只影响「哪些字段带中文」，不影响发布。
 
 ### 搜索范围（什么能被搜到）
 
@@ -937,13 +981,20 @@ v1.4 把「优惠怎么变的」记成了一份可重放验证的变更日志；
 进折叠块并计数，**不上首页**。日期与枚举字段不参与这条判定（差一个字符就是差一个语义）。
 判断全是规则，**没有任何 LLM、没有相似度近似、没有摘要**。
 
-**首页条带不单独占一行**（这是本轮最贵的取舍）：1440×900 实测网格起点 227px、卡片 192px、
+**首页条带自 2026-11-12 起独占一行**：`.hubline { flex-wrap: wrap }` + `.radar { flex: 1 1 100% }`
+（basis 100% 强制换行），「跳到档位」仍在上一行、右侧空出的约 2/3 是预期。条带自身仍是
+一行（实测 26px，闸值 ≤34px）、正文区内部横滑、入口「全部变化」在横滑容器外面（一个滑走的
+入口等于没有入口），正文区右缘另有 24px 渐隐（`mask-image` + `-webkit-mask-image`）。
+代价：+38px（= 26px 条带 + 12px 行距；设计值 24 + 12 = 36px）。2026-11-12 实测（本机
+Linux Chromium，同一份 `dist`）：1440×900 网格起点 353 → 391px、首屏完整可见卡片 6 → 6、
+列表视图首屏完整可见 10 → 10（两条门禁仍绿）；真实窗口视口 1305×803 完整可见卡片 6 → 3
+（含截断 9 → 6）。
+**历史记录（v1.5 时代，改动之前，勿当现状）**：1440×900 实测网格起点 227px、卡片 192px、
 行距 12px、档间分带标题 26px，第三行底边 = 899px —— 距视口底边只剩 **1px**，任何独立成行的
 条带都会把首屏完整可见从 9 张压到 6 张（演练实测：独立成行时网格起点 250px、6 张）。
-所以它与「跳到档位」共用一行（`.hubline`），做成 `flex: 1 1 auto; min-width: 0` 的可伸缩项：
-内容超宽由正文区内部横滑，「全部变化」入口放在横滑容器外面（一个滑走的入口等于没有入口）。
-窄屏上「跳到档位」本身就是四等分整行，条带顺延到下一行（仍是一行 24–28px），
-空态另有一套短文案，避免整句被裁掉半句。
+所以当年它与「跳到档位」共用一行（`.hubline`）、做成 `flex: 1 1 auto; min-width: 0` 的
+可伸缩项。v1.8 专题卡把网格起点抬到 349px 后，闸值按实测同步降到 6。
+窄屏（≤760px）原本就是这个换行布局（行距 6px、空态短文案），移动端几何与改动前逐项相同。
 
 **五条既有约定一个不少**：`/changes/` 有自指 canonical、双 feed、三段 JSON-LD
 （`CollectionPage` / `BreadcrumbList` / `ItemList`）、进 sitemap（`priority 0.8`，介于目录页 0.9
@@ -958,6 +1009,16 @@ v1.4 把「优惠怎么变的」记成了一份可重放验证的变更日志；
 当天 **0 条事件**、`deals.json` 里 **0 条 `expiresAt`**，所以五个分栏全空、首页条带是明确空态。
 这是如实结果（**不补造历史**）；非空路径由 `selftest:changes` 的夹具与一次**真实数据演练**
 证明（演练造了 6 类变化、跑完 build → verify，再逐字节还原两个文件）。
+
+**2026-11-12 起「已结束」分栏第一次有真实内容**：v1.4 的「来源不再列出」判据在生产接线上
+把采集器 id 当成了来源名（`aitools` vs `aitools.fyi`），两个命名空间从无交集 ⇒ `absence` 与
+`ended` 五周都是 0 条（自测用展示名，全绿）。修复判据 + 按「上一轮成功运行也没见到它」的
+证据补记历史欠账后，本地实跑一次采集即产生 **60 条 `ended(source_no_longer_lists)`**
+（aitools.fyi 30 / Futuretools 21 / AppSumo 7 / OpenRouter 2）。`/changes/` 的「已结束」栏按
+30 天窗口统计 60 条，但**渲染上限是 30 行**（既有分栏契约）：渲染出的 30 行里 `type === 'deal'`
+的 2 条带详情页链接，其余 7 条 deal 落在「另有 30 条未显示」的计数内；全部 9 条 deal 都能在
+`/archive/deal/<id>/` 档案详情页的「站内详情页」入口链到（9/9），工具类记录按既有「死链」判据
+不挂链接（`isLinkableDeal()` 唯一判据）。判据细节见 [`docs/SCHEMA-v1.4.md`](docs/SCHEMA-v1.4.md) §四。
 
 契约见 [`docs/SCHEMA-v1.5.md`](docs/SCHEMA-v1.5.md)，完成报告见
 `research/v1.5-change-radar-report.md`。
@@ -1062,9 +1123,9 @@ t10 按发现逐条收紧 —— **豁免机制整段移除**（实测它当时�
 
 卡片是**固定高度**的，任何一处内容变高都会被 `overflow:hidden` 静默裁掉；logo 簇是 hover
 展开的，很容易把标题挤到换行、把网格行高顶动。这两类问题静态检查都看不见，所以有
-`npm run verify`：起一个本地服务器 + Edge 无头浏览器，跑 **281 项断言**；带基线回归比对的
-`npm run verify:regress` 共 **287 项**（多出的 6 条是回归比对：覆盖条数、卡片数、首屏完整可见、
-页高、外部请求、JS 错误）。
+`npm run verify`：起一个本地服务器 + Edge 无头浏览器，跑 **987 项断言**；带回归预算的
+`npm run verify:regress` 共 **993 项**（多出的 6 条判据：覆盖条数、卡片数、首屏完整可见、
+页高、外部请求、JS 错误。预算由当前 `deals.json` 现算，不读冻结基线）。
 这两个数字由工具自己打印（`✅ 验收 N 项，失败 0 项`），跑一次就能核。**不要拿源码里 `check(`
 的调用点数去反推**：按行首 `check(` 计是 190 处，与执行项数并不相等 —— 有的调用在循环里
 （分类页 3 条路由 × 5 类断言、10 条需求页 × 7 类断言、状态页 2 个视口各一轮、变化雷达 2 个视口各一轮），
@@ -1160,7 +1221,7 @@ Install dependencies → Architecture fitness (structure invariants) → Evidenc
 → Plans reproducibility (curated → plans.json, byte-compare)
 → Plan-history verify (log consistent with plans.json) → SEO verification (independent, from dist/)
 → Prepare browser for the real-browser gate → Browser availability decision (never silent)
-→ Real-browser acceptance (verify-site.js) → Regression verify (baseline compare) → Gate conclusion
+→ Real-browser acceptance (verify-site.js) → Regression verify (current-data budget) → Gate conclusion
 ```
 
 三条 workflow 共用它，没有第二套测试链。
@@ -1168,7 +1229,9 @@ Install dependencies → Architecture fitness (structure invariants) → Evidenc
 让"可选能力"挤进门禁，等于把 AI 的可用性变成站点的可用性。）
 
 > 步骤的**顺序与数量**是一份冻结契约（`check-ci-consistency.js` 的 `GATE_STEP_NAMES`）：
-> 谁把真浏览器验收、回归比对或译文门禁从门禁里拿掉，`npm run check:ci` 立刻红。
+> 谁把真浏览器验收、回归比对或译文覆盖度报告从门禁里拿掉，`npm run check:ci` 立刻红。
+> （译文这一步自 2026-11-08 起是**建议性**的——它仍然在门禁里、仍然逐条报告漂移，
+> 只是不再用退出码拦发布；「从门禁里拿掉」和「降级为建议性」是两件事，前者仍会被抓。）
 > 所以上面这句「53 步」不是抄来的，是被断言钉住的 —— v3.2 新增的两步是 `Feed self-test`
 > （紧挨 `Assemble site` 之前）与 `Feed reproducibility (build twice, byte-compare)`
 > （紧挨 `Residue guard` 之后）；两步都**不新增断言项数**（`--expect-checks=39` 未动）。
@@ -1188,14 +1251,21 @@ Install dependencies → Architecture fitness (structure invariants) → Evidenc
   Collect 的结论，而第一句 `event_name != 'workflow_run'` 让每一次人工 push 都无条件发布
   —— 线上实证：`e01dcfc` 上 `gate=failure` 而 `build`/`deploy=success` 照发。
 - `.github/workflows/collect.yml`：cron **名义**上是每天北京时间 08:00 / 20:00（`0 0 * * *` / `0 12 * * *`
-  = UTC 00:00 / 12:00）采集 → 校验 → **提交前的完整门禁** → 有变化才提交
+  = UTC 00:00 / 12:00）采集 → 校验 → **数据正确性硬门禁（提交前）** → 有变化才提交
   `deals.json` + `scripts/data/source-health.json` + `scripts/data/zh-pending.json`
   + `scripts/data/source-snapshots.json`（v2.0 起第四份：页面结构摘要，**不含正文**）。
-  四份一起走：数据本身，以及三份跨运行状态。门禁排在 `git push` **之前**：数据有问题
-  就根本不入库（机器人提交一进 master 就会被 deploy 的 workflow_run 接走）。
+  四份一起走：数据本身，以及三份跨运行状态。P3「门禁拆锁」起门禁拆成两类
+  （2026-11-02 那次「门禁红 ⇒ 不提交 ⇒ 线上停版 6 天」的教训）：
+  · **数据正确性**（9 条：`validate --strict` / `check-reproducible` / `history-verify` /
+    `migrate-audience-verify` / provenance·history·changes·ai·fixture 各 selftest）在 `git push`
+    **之前**硬拦 —— 坏数据根本不入库；
+  · **发布就绪**（完整 gate：真浏览器验收 / 产物自检 / 确定性构建 / SEO 对账）在提交**之后**运行，
+    失败不阻塞入库且**自动降级**（`allow_degraded_run: 'true'`，不再需要人工勾选），结论与
+    「哪几步没跑 / 为什么」写进 Summary；**发布仍由 deploy.yml 的 prepublish 严格门禁裁定**。
   采集步骤为 `node scripts/collect.js --headless`（静态来源 + 无头来源），前面会安装 playwright 自带
-  chromium（这一步失败不阻断采集本身，但会让无头来源在健康表里判成 `headless_unavailable`，
-  进而让**提交前的门禁**失败——这是刻意的，见下）。
+  chromium（这一步失败不阻断采集本身，会让无头来源在健康表里判成 `headless_unavailable`：
+  发布就绪门禁因此自动降级、数据仍入库，但 deploy 的 prepublish 会以「浏览器不可用」拒发
+  ——见下）。
   **实测**：GitHub 的 schedule 队列常把这一跑延后 **3 到 6 小时**。2026-09-23 从 Actions API 复核 4 次
   schedule 运行的 `created_at`（延后 +3h26m50s 到 +5h55m40s）：
   `2026-09-21T17:55:40Z`（名义 12:00Z → 北京 09-22 01:55，延后 5h55m40s，run 35635091297）、
@@ -1230,15 +1300,18 @@ Install dependencies → Architecture fitness (structure invariants) → Evidenc
 > `npm ci`。此前「发布前无需 npm install」的说法只对 `build-local.js` 那一步成立（它确实零依赖），
 > 现在整条发布链不再与网络无关——这是「gate 全过才发布」的必然代价，如实记录。
 
-> ⚠️ **门禁红时会怎样**：本次不发布，线上继续保留上一份成功版本。定时采集那条链路尤其如此
-> ——浏览器装不上 = 门禁红 = 本次不提交数据、站点停更。这是刻意的取舍（数据正确性 >
-> 更新频率）；逃生口只有一个且必须人工：`workflow_dispatch` 勾 `allow_degraded_run`，
-> Summary 里会明确留下「本次没有做真浏览器验收」。
+> ⚠️ **门禁红时会怎样**（P3 起分两类，处置完全不同）：
+> · **数据正确性**红 ⇒ 本次不提交数据；线上保留上一份成功版本。
+> · **发布就绪**红 ⇒ 数据照常入库（提交已在前一步完成），collect 的 job 保持绿色，
+>   结论写进 Summary（`Release-readiness gate record`）；是否发布由 deploy.yml 的 `prepublish`
+>   **严格**门禁另行裁定 —— 发布链任何事件都不许降级。所以「数据入库」不等于「发布放行」。
+> 采集侧不再需要人工勾选降级（自动降级 + `<GITHUB_STEP_SUMMARY>` 留痕）；`verify.yml` 上那个
+> 人工 `allow_degraded_run` 开关只作用于 PR/push 门禁的浏览器验收，与发布链无关。
 
-> ⚠️ **回归比对的代价**：`verify --compare` 对覆盖条数 / 卡片数 / 首屏完整可见条数只允许
-> 「不减少」。合法的数据缩减（过期下架、重新折叠）会拦发布，处置方式是**人工、留痕**地
-> 重刷基线：`npm run verify:baseline`（基线文件 `research/_raw/ours-baseline/verify.json` 在 git 里，
-> 改它必然出现在 diff 里，无法静默绕过）。
+> ⚠️ **回归判据（v3.3）**：`verify --compare` 不再读冻结基线。期望的覆盖条数 / 卡片数 /
+> 页高预算都由当前 `deals.json` 现算：数据合法缩减（过期下架）只要重新构建就通过；数据与
+> 产物不是同一份（例如数据删了 20% 但 dist 还是旧的）会红。**不再有「刷基线」这个动作**，
+> 也没有可以悄悄调低的基线文件。
 
 ### 采集机器人的身份（专用 GitHub App）
 

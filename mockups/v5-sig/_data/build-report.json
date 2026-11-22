@@ -1,0 +1,304 @@
+{
+  "generatedAt": "2026-11-11T13:29:29.639Z",
+  "patches": [
+    {
+      "id": "tokens/stat",
+      "spec": "规格 1 字号断崖",
+      "hit": 1,
+      "documents": 4
+    },
+    {
+      "id": "palette/light",
+      "spec": "规格 5 档位色重排（浅色）",
+      "hit": 1,
+      "documents": 4
+    },
+    {
+      "id": "palette/light-ink",
+      "spec": "规格 4 引文让位（取消彩色文字）",
+      "hit": 1,
+      "documents": 4
+    },
+    {
+      "id": "palette/light-on",
+      "spec": "规格 5 色块上的数字（浅色）",
+      "hit": 1,
+      "documents": 4
+    },
+    {
+      "id": "palette/dark",
+      "spec": "规格 5 档位色重排（深色）",
+      "hit": 1,
+      "documents": 4
+    },
+    {
+      "id": "palette/prefers-dark",
+      "spec": "规格 5 档位色重排（跟随系统深色）",
+      "hit": 1,
+      "documents": 4
+    },
+    {
+      "id": "need/baseline",
+      "spec": "规格 2 首页 need 卡计数 11px → 30px",
+      "hit": 1,
+      "documents": 4
+    },
+    {
+      "id": "need/count",
+      "spec": "规格 2 首页 need 卡计数 11px → 30px",
+      "hit": 1,
+      "documents": 4
+    },
+    {
+      "id": "quote/bar",
+      "spec": "规格 3 卡片引文竖条 3px → 6px",
+      "hit": 1,
+      "documents": 4
+    },
+    {
+      "id": "quote/t4-bar",
+      "spec": "规格 5 档位色统一（删掉 t4 用 --warn 的第二套色）",
+      "hit": 1,
+      "documents": 4
+    },
+    {
+      "id": "quote/ink",
+      "spec": "规格 4 引文让位：颜色只留在 6px 竖条上，引文文字回 --ink",
+      "hit": 1,
+      "documents": 4
+    },
+    {
+      "id": "tier/square",
+      "spec": "规格 3 分带方块 16 → 22px（数字 9.5 → 11px）",
+      "hit": 1,
+      "documents": 4
+    },
+    {
+      "id": "tier/band-height",
+      "spec": "自查 4（规格 3）：22px 方块塞进 26px 带",
+      "hit": 1,
+      "documents": 4
+    },
+    {
+      "id": "tier/hint",
+      "spec": "规格 2/3 分带条数 22px（不挤掉方块与标题）",
+      "hit": 1,
+      "documents": 4
+    },
+    {
+      "id": "jump/pill",
+      "spec": "自查 1（首屏要能看见 ≥3 块档位色）：跳到档位升级为档位图例",
+      "hit": 1,
+      "documents": 4
+    },
+    {
+      "id": "append/v5-rules",
+      "spec": "规格 1/2/3 + 自查 1",
+      "hit": 1,
+      "documents": 4
+    }
+  ],
+  "markup": [
+    {
+      "page": "home-light.html",
+      "id": "need/count",
+      "count": 10,
+      "spec": "规格 2：need 卡计数 → 30px（真数，来自 dist）"
+    },
+    {
+      "page": "home-light.html",
+      "id": "tier/count",
+      "count": 4,
+      "spec": "规格 2：分带条数 → 22px",
+      "tiers": [
+        {
+          "tier": "t1",
+          "num": "11",
+          "desc": "注册就能用，不用等额度到账"
+        },
+        {
+          "tier": "t2",
+          "num": "20",
+          "desc": "新用户一次性赠送 / 首月免费，够跑一段时间"
+        },
+        {
+          "tier": "t3",
+          "num": "20",
+          "desc": "学生 / 教师 / 非营利 / 初创 —— 有资格就不花钱"
+        },
+        {
+          "tier": "t4",
+          "num": "25",
+          "desc": "要花钱，但比标准价便宜"
+        }
+      ]
+    },
+    {
+      "page": "home-light.html",
+      "id": "jump/legend",
+      "count": 4,
+      "spec": "自查 1：首屏 ≥3 块档位色（四档图例进首屏）"
+    },
+    {
+      "page": "home-light.html",
+      "id": "fav/static-repro",
+      "count": 76,
+      "spec": "保真：复刻线上 JS 生成的收藏按钮（静态外观）"
+    },
+    {
+      "page": "home-light.html",
+      "id": "footer/lastUpdated",
+      "count": 1,
+      "value": "2026/11/10 00:38:06",
+      "spec": "保真：复刻线上 JS 填入的 updatedAt（同数据 + 同格式化表达式）"
+    },
+    {
+      "page": "home-dark.html",
+      "id": "need/count",
+      "count": 10,
+      "spec": "规格 2：need 卡计数 → 30px（真数，来自 dist）"
+    },
+    {
+      "page": "home-dark.html",
+      "id": "tier/count",
+      "count": 4,
+      "spec": "规格 2：分带条数 → 22px",
+      "tiers": [
+        {
+          "tier": "t1",
+          "num": "11",
+          "desc": "注册就能用，不用等额度到账"
+        },
+        {
+          "tier": "t2",
+          "num": "20",
+          "desc": "新用户一次性赠送 / 首月免费，够跑一段时间"
+        },
+        {
+          "tier": "t3",
+          "num": "20",
+          "desc": "学生 / 教师 / 非营利 / 初创 —— 有资格就不花钱"
+        },
+        {
+          "tier": "t4",
+          "num": "25",
+          "desc": "要花钱，但比标准价便宜"
+        }
+      ]
+    },
+    {
+      "page": "home-dark.html",
+      "id": "jump/legend",
+      "count": 4,
+      "spec": "自查 1：首屏 ≥3 块档位色（四档图例进首屏）"
+    },
+    {
+      "page": "home-dark.html",
+      "id": "fav/static-repro",
+      "count": 76,
+      "spec": "保真：复刻线上 JS 生成的收藏按钮（静态外观）"
+    },
+    {
+      "page": "home-dark.html",
+      "id": "footer/lastUpdated",
+      "count": 1,
+      "value": "2026/11/10 00:38:06",
+      "spec": "保真：复刻线上 JS 填入的 updatedAt（同数据 + 同格式化表达式）"
+    },
+    {
+      "page": "home-390.html",
+      "id": "need/count",
+      "count": 10,
+      "spec": "规格 2：need 卡计数 → 30px（真数，来自 dist）"
+    },
+    {
+      "page": "home-390.html",
+      "id": "tier/count",
+      "count": 4,
+      "spec": "规格 2：分带条数 → 22px",
+      "tiers": [
+        {
+          "tier": "t1",
+          "num": "11",
+          "desc": "注册就能用，不用等额度到账"
+        },
+        {
+          "tier": "t2",
+          "num": "20",
+          "desc": "新用户一次性赠送 / 首月免费，够跑一段时间"
+        },
+        {
+          "tier": "t3",
+          "num": "20",
+          "desc": "学生 / 教师 / 非营利 / 初创 —— 有资格就不花钱"
+        },
+        {
+          "tier": "t4",
+          "num": "25",
+          "desc": "要花钱，但比标准价便宜"
+        }
+      ]
+    },
+    {
+      "page": "home-390.html",
+      "id": "jump/legend",
+      "count": 4,
+      "spec": "自查 1：首屏 ≥3 块档位色（四档图例进首屏）"
+    },
+    {
+      "page": "home-390.html",
+      "id": "fav/static-repro",
+      "count": 76,
+      "spec": "保真：复刻线上 JS 生成的收藏按钮（静态外观）"
+    },
+    {
+      "page": "home-390.html",
+      "id": "footer/lastUpdated",
+      "count": 1,
+      "value": "2026/11/10 00:38:06",
+      "spec": "保真：复刻线上 JS 填入的 updatedAt（同数据 + 同格式化表达式）"
+    },
+    {
+      "page": "family.html",
+      "id": "fav/static-repro",
+      "count": 0,
+      "spec": "保真：复刻线上 JS 生成的收藏按钮（静态外观）"
+    },
+    {
+      "page": "family.html",
+      "id": "family/h1-stats",
+      "count": 3,
+      "spec": "规格 2：页面族 h1 旁放 1–3 个 .stat",
+      "values": {
+        "nRecords": "24",
+        "nPlatforms": "21",
+        "nModels": "108",
+        "checkedAt": "2026-10-08"
+      }
+    }
+  ],
+  "outputs": [
+    {
+      "file": "home-light.html",
+      "bytes": 265170,
+      "stats": 14
+    },
+    {
+      "file": "home-dark.html",
+      "bytes": 265169,
+      "stats": 14
+    },
+    {
+      "file": "home-390.html",
+      "bytes": 265176,
+      "stats": 14
+    },
+    {
+      "file": "family.html",
+      "bytes": 255223,
+      "stats": 3,
+      "h1Stats": 3
+    }
+  ],
+  "notes": []
+}

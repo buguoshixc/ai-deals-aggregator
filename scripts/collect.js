@@ -2,10 +2,14 @@
 /**
  * 采集编排器：注册表 → 采集 → 归一（makeDeal）→ 去重合并 → 门槛 → 写盘 → 报告。
  *
- * 写盘/退出只有两条**拦**的理由（其余一切都只是告警）：
+ * 写盘/退出只有**一条**拦的理由（其余一切都只是告警）：
  *   ① 真的没有可发布内容：本次采集零产出且未加 --force → 跳过写盘、非 0 退出。
  *      （零产出还要照写 updatedAt/策展 lastSeen，等于把一次失败伪装成"刚更新过"。）
- *   ② 译文不合规：zhReport.skipped 非空 → 与构建期同一把尺子，跳过写盘、非 0 退出。
+ *
+ * 译文层（scripts/data/translations_zh.json）自 2026-11-08 起是**纯附加信息**：
+ * 不合规 / 原文已变 / 孤儿 / 覆盖层之外，全部只告警 + 相关字段回退英文，**绝不拦写盘**。
+ * 理由：线上英文原文一直都在，翻译坏掉最多让某一块显示英文；而 2026-11-02 的停更证明
+ * 「译文漂移 ⇒ 门禁红 ⇒ 采集不提交 ⇒ 站点冻住」的代价远大于收益（上游改写英文是常态）。
  *
  * 明确区分两个**不拦**的概念，别把它们混成一个"降级"：
  *   · 单源失败（某个采集器抛错）：常态而非异常——collect.yml 的浏览器安装步骤本身就是
@@ -14,10 +18,18 @@
  *     （scripts/data/source-health.json），不阻断写盘、不影响退出码。
  *   · 采集量骤降（stats.degraded：新采 < 既有 × 30%）：同样只告警。
  *     真正无法发布的情形由①兜住：零产出时本来就没有新东西可写。
+ *   · **源级熔断**（P3，2026-11 起）：连续 `CIRCUIT_FAILURE_THRESHOLD`(5) 次**采集器抛错**
+ *     才把该来源标为暂停（source-health.json 的 `pausedAt` / `pausedReason`），此后 collect
+ *     直接**跳过**（本轮不跑、不伪造 lastAttemptAt）；暂停满 `HALF_OPEN_AFTER_DAYS`(3) 天
+ *     放行一次半开重试，成功即清零恢复、再失败则窗口重新计时。零产出 / 条数骤降 /
+ *     `zeroOutputExpected` 一律**不进**熔断（否则按设计空转的线索雷达会先被关掉）。
+ *     跳过与真正跑失败一样**显式打印**（日志 + CI Summary + /status/），同样只告警、不拦写盘。
  *
- * 本脚本**不是**唯一的把关点：collect.yml 在 `git push` **之前**还会跑一次完整门禁
- * （.github/actions/gate）——数据有问题就根本不入库。所以这里"不拦"的东西仍可能在
- * 门禁那一步被拦下（例如无头浏览器不可用 ⇒ 无头来源判 headless_unavailable ⇒ 门禁红）。
+ * 本脚本**不是**唯一的把关点：collect.yml 在 `git push` **之前**还有一道**数据正确性**硬门禁
+ * （9 条命令，见 workflow 的 Data correctness gate）——坏数据根本不入库。所以这里"不拦"的东西
+ * 仍可能在提交前被拦下。**发布就绪**类检查（完整 gate：真浏览器验收 / 产物自检 / 确定性构建 /
+ * SEO 对账）自 P3「门禁拆锁」起排在提交**之后**，失败只自动降级并留痕，不再阻塞入库；
+ * 真正的发布裁定在 deploy.yml 的 prepublish 严格门禁（那边任何事件都不许降级）。
  * 旧注释里"deploy.yml 判 skipped → 线上停更"的说法自 2026-09-28 起已不成立：
  * 发布链现在自己先过门禁，采集失败会被 deploy.yml 的 prepublish 明确拒绝。
  *
@@ -27,11 +39,11 @@
  *   node scripts/collect.js --headless          # 额外启用无头浏览器来源（抓 JS 渲染的公开页）
  *   node scripts/collect.js --only=cn_docs      # 只跑指定来源
  *   node scripts/collect.js --list              # 列出已注册来源
- *   node scripts/collect.js --force             # 即使零产出也照写（坏译文一律不写盘）
+ *   node scripts/collect.js --force             # 即使零产出也照写
  */
 
 const { makeDeal, todayCN } = require('./lib/schema');
-const { loadStore, writeDeals, mergeAll, assertAllValid } = require('./lib/store');
+const { loadStore, writeDeals, mergeAll, assertAllValid, resolveLeadId } = require('./lib/store');
 const { loadCurated } = require('./lib/curated');
 const { attach: attachZh, summarize: summarizeZh, pendingAge, loadPending, writePending, updatePending, PENDING_GRACE_DAYS } = require('./lib/zh');
 const { createReport, printReport, printHealth } = require('./lib/report');
@@ -53,7 +65,7 @@ function option(name, fallback = null) {
   return found ? found.slice(prefix.length) : fallback;
 }
 
-async function collectFrom(collector, report) {
+async function collectFrom(collector, report, existing = []) {
   report.start(collector.id, collector.name, collector.region);
   const items = [];
   let failed = false;
@@ -74,7 +86,12 @@ async function collectFrom(collector, report) {
     let droppedInvalid = 0;
 
     for (const entry of raw || []) {
-      const deal = makeDeal(entry, {
+      // B 类线索 id 稳定（Part 2）：vendor 从标题切词改为雷达平台名后，makeId = sha1(vendor|title|url)
+      // 会变。重现的线索若按新 vendor 重新生成 id，历史会凭空多出 withdrawn ended + created，
+      // 按 id 键的 zh 译文 / audience overrides 变成孤儿。所以在 makeDeal 之前把存量匹配到的 id
+      // 接回来（vendor 在 history.js 属 UNTRACKED 身份字段 ⇒ 原地更新不产生任何事件）。
+      const carryId = collector.radar === true ? resolveLeadId(existing, entry) : null;
+      const deal = makeDeal(carryId ? { ...entry, id: carryId } : entry, {
         source: collector.name,
         region: collector.region,
         sourceUrl: entry.sourceUrl
@@ -118,11 +135,21 @@ async function collectFrom(collector, report) {
  *   · absenceEligibleSources —— 允许参与「未见」计数的来源：本轮心跳 healthy、
  *     不是上一轮遗留（stale）、且确实跑出了条目。失败 / 骤降 / 零产出的来源一律不计 ——
  *     否则一次坏采集（无头浏览器装不上、页面改版）会把整片条目误判成「消失」。
+ *     **判据只有一处实现**：`history.absenceEligibleSourcesOf(rows)`（2026-11-12 起）。
+ *     它返回的是记录侧的来源名（`deal.source` = health 行的 `name`），**不是采集器 id**。
+ *     此前这里直接取 health 行的 `source` 字段（采集器 id：`aitools` / `appsumo`），与
+ *     `deal.source`（展示名：`aitools.fyi` / `AppSumo`）从未有交集 ⇒ 该分支上线起从未执行。
+ *   · priorSuccessfulRunDates —— 来源名 → 上一轮**成功运行**的北京日期；历史层只在记录
+ *     没有观测态时用它把「上一轮成功运行也没见到它」这条证据折进缺席计数（见 lib/history.js
+ *     的 `record()` 注释）。没有它，历史欠账要再等两轮才能进入 `ended`。
+ *     **判据只有一处实现**：`history.priorSuccessfulRunDatesOf(healthStore)` —— 来源身份用
+ *     展示名（不是采集器 id）；「成功运行」要求上一轮 `status === 'healthy'` 且真的跑出了
+ *     条目（零产出 / 骤降的坏采集不能证明「上一轮没列出它」，2026-11-12 独立复查 F1 加固）。
  *   · removed —— id → 移除原因，直接取 mergeAll 手里已有的对象（不在历史层重写规则）。
  *   · labels  —— v1.5：id → 标题 / 厂商快照，挂在 `ended` 事件上（记录离开数据集后，
  *     它是变化雷达回答「这条是谁」的唯一来源）。
  */
-function recordHistory({ previous, next, fresh, stats, healthSummary, today, only }) {
+function recordHistory({ previous, next, fresh, stats, healthSummary, priorSuccessfulRunDates, today, only }) {
   if (only) {
     console.log('历史层: 本次为 --only 子集运行，跳过（避免把未跑的来源误判成「不再列出」）');
     return null;
@@ -155,9 +182,9 @@ function recordHistory({ previous, next, fresh, stats, healthSummary, today, onl
   if (stats.reclassified > 0) derivedFields.add('type');
 
   const rows = (healthSummary && healthSummary.rows) || [];
-  const absenceEligibleSources = rows
-    .filter(row => row && row.status === 'healthy' && !row.stale && Number(row.lastItemCount) > 0)
-    .map(row => row.source);
+  // 来源身份必须用**展示名**（deal.source）：health 行的 `source` 是采集器 id，两个命名空间
+  // 没有交集。细则与 2026-11-12 的根因写在 `lib/history.js` 的 `absenceEligibleSourcesOf()`。
+  const absenceEligibleSources = history.absenceEligibleSourcesOf(rows);
 
   // v1.5 墓碑标签：`ended` 事件上的标题 / 厂商快照。记录**离开数据集**之后，
   // `deals.json` 里就查不到它是谁了（title/vendor 是身份字段、刻意不被跟踪），
@@ -175,6 +202,7 @@ function recordHistory({ previous, next, fresh, stats, healthSummary, today, onl
     runAt: new Date().toISOString(),
     freshIds: fresh.map(deal => deal.id).filter(Boolean),
     absenceEligibleSources,
+    priorSuccessfulRunDates,
     removed: removal,
     labels,
     derivedFields
@@ -187,6 +215,11 @@ function printHistoryStats({ stats, store, eligibleSources }) {
   console.log(`历史层: 新增事件 ${stats.appended} 条（` +
     `${history.EVENT_TYPES.map(type => `${type} ${byType[type] || 0}`).join(' · ')}）· ` +
     `观测态 ${stats.absenceTracked} 条 · 可判定「未见」的来源 ${eligibleSources} 个`);
+  if (stats.absenceSeeded > 0) {
+    // 0 不打印（常态）；>0 时必须在日志与 CI Summary 里看得见：这些 ended 是「补记既往证据」
+    // 得到的，不是这次采集新攒够的两轮。
+    console.log(`        其中 ${stats.absenceSeeded} 条按上一轮成功运行的证据补记缺席（lastSeen 早于上一成功运行日）`);
+  }
   if (stats.appended === 0) {
     console.log('        （本次没有任何重要字段变化——description 文案微调与 lastSeen 刷新不记事件）');
   }
@@ -217,16 +250,60 @@ async function main() {  const headless = flag('headless');
   }
 
   const today = todayCN();
-  console.log(`开始采集（${today}）：${picked.length} 个来源${dryRun ? '，dry-run 模式' : ''}${headless ? '，含无头浏览器来源' : ''}`);
+
+  // P3 源级熔断：健康文件必须在**采集循环之前**读 —— 已暂停的源本轮不跑。
+  // 为什么提前：原先 health.load() 在采集循环之后（先跑 collector、后算健康），于是
+  // 「已经熔断」的源仍会每天被真实抓取一次，熔断等于没接上。这里读的是**盘上的旧状态**
+  // （上一轮写下的 pausedAt）；本轮自己的结果不参与本轮的跳过判定。
+  // 状态：open = 暂停窗口内 ⇒ 跳过；half_open = 窗口已满 ⇒ 放行一次重试（确定性半开，见 lib/health.js）。
+  const runStartedAt = new Date();
+  const healthStore = health.load();
+  if (healthStore.broken) {
+    console.warn(`⚠️  ${health.HEALTH_FILE} 解析失败（${healthStore.broken}），本轮按空历史重算`);
+  }
+  // 历史层补记的证据在**采集循环之前**取：lastSuccessAt 此刻还是「上一轮」的值；
+  // 采集与 health.build() 之后它会被本轮覆盖，那就再也回答不了「上一轮见没见过」。
+  // 判据（来源身份 = 展示名、日期按北京时间、且上一轮必须 healthy 且真跑出条目）收在
+  // `history.priorSuccessfulRunDatesOf()` 一处；2026-11-12 独立复查 F1 加固。
+  const priorSuccessfulRunDates = history.priorSuccessfulRunDatesOf(healthStore);
+  const pausedSkipped = [];
+  const halfOpenRetries = [];
+  const runnable = picked.filter(collector => {
+    const row = healthStore.byId[collector.id] || null;
+    const state = health.circuitState(row, runStartedAt);
+    if (state === health.CIRCUIT_STATE.open) {
+      pausedSkipped.push({ collector, row });
+      return false;
+    }
+    if (state === health.CIRCUIT_STATE.half_open) halfOpenRetries.push({ collector, row });
+    return true;
+  });
+  // 暂停 / 半开都**显式打印**：一个源"已经停了"与"今天没数据"必须是两句不同的话
+  // （否则熔断会变成静默删除一个来源）。
+  console.log(`开始采集（${today}）：${runnable.length} 个来源${dryRun ? '，dry-run 模式' : ''}${headless ? '，含无头浏览器来源' : ''}`
+    + `${pausedSkipped.length ? `（另有 ${pausedSkipped.length} 个来源已熔断暂停，本轮跳过）` : ''}`);
+  for (const { collector, row } of pausedSkipped) {
+    console.warn(`⏸  ${collector.name}（${collector.id}）已熔断暂停：连续失败 ${row.consecutiveFailures} 次，本轮跳过`
+      + ` —— ${health.pausedLabel(row)}`);
+  }
+  for (const { collector, row } of halfOpenRetries) {
+    console.log(`⏳ ${collector.name}（${collector.id}）半开重试：暂停已满 ${health.HALF_OPEN_AFTER_DAYS} 天，本轮放行一次`
+      + `（${health.pausedLabel(row)}）`);
+  }
+
+  // 既有数据必须在采集循环**之前**读：collectFrom 的线索 id 稳定钩子要拿盘上存量
+  // 按标题 / URL 接回 id。放在循环之后读会晚一轮 —— 本轮生成的记录已经旋转了。
+  const store = loadStore();
+  const existing = Array.isArray(store.deals) ? store.deals : [];
 
   const report = createReport();
   const fresh = [];
   const snapshotEntries = [];
   let collectorFailures = 0;
   const collectorErrorCodes = new Map();
-  for (const collector of picked) {
+  for (const collector of runnable) {
     console.log(`→ ${collector.name}`);
-    const { items, failed, digests, errorCode } = await collectFrom(collector, report);
+    const { items, failed, digests, errorCode } = await collectFrom(collector, report, existing);
     if (failed) collectorFailures++;
     if (errorCode) collectorErrorCodes.set(collector.id, errorCode);
     fresh.push(...items);
@@ -244,10 +321,15 @@ async function main() {  const headless = flag('headless');
   // 只存在于生产里：headlessReady===false 的前提是 row.error 存在，而 row.error 存在即
   // ok=false，于是先撞上「采集器报错」分支，headless_unavailable 永远不可达）。
   //
-  // 无头来源只认**本轮真的跑了的**collector（picked），不再无条件 list 全部无头来源：
+  // 无头来源只认**本轮真的跑了的**collector（runnable = picked 去掉熔断跳过的），
+  // 不再无条件 list 全部无头来源：
   // 后者会在普通（不带 --headless）采集里 require playwright-core，与「默认链路完全不依赖它」
   // 的边界相冲突——那个边界正是「内核装不上也不该拖垮静态链路」的第一道保障。
-  const headlessIds = picked.filter(c => c.headless).map(c => c.id);
+  const headlessIds = runnable.filter(c => c.headless).map(c => c.id);
+  // B 类资讯线索雷达（beta）：判据严格 ⇒ 多数媒体源一天 0 条是**设计结果**，不是故障。
+  // 把这些 id 传给健康判定（lib/health.js 的同名字段），零产出不会把它们推成 degraded/failed
+  // （否则 3 轮后会被 P3 的源级熔断当成坏源关掉）。采集器抛错仍然照常记失败。
+  const zeroOutputExpectedIds = runnable.filter(c => c.zeroOutputExpected === true).map(c => c.id);
   const browserStatus = (() => {
     if (!headlessIds.length) return { attempted: false, ok: null, channel: null, error: null, checkedAt: null };
     try {
@@ -260,17 +342,28 @@ async function main() {  const headless = flag('headless');
     rows: report.list(),
     headlessIds,
     browserStatus,
-    errorCodes: collectorErrorCodes
+    errorCodes: collectorErrorCodes,
+    zeroOutputExpectedIds
   });
-  const healthStore = health.load();
-  if (healthStore.broken) {
-    console.warn(`⚠️  ${health.HEALTH_FILE} 解析失败（${healthStore.broken}），本轮按空历史重算`);
-  }
+  // 注意 healthStore 是**采集循环之前**读的（暂停过滤要用旧状态）：这里不再重复 load。
+  // 本轮没跑的来源（含被熔断跳过的）由 build() 标记 stale/lastRunMissing 并原样保留旧读数
+  // —— lastAttemptAt 不会被伪造，pausedAt/pausedReason 也不会丢。
+  // now 传同一个 runStartedAt：整轮只取一次时间，文档里所有 lastAttemptAt 口径一致。
   const { doc: healthDoc, summary: healthSummary } = health.build({
     previousDoc: healthStore.doc,
-    attempts: healthAttempts
+    attempts: healthAttempts,
+    now: runStartedAt
   });
   printHealth(healthSummary);
+  if (halfOpenRetries.length) {
+    const rowById = new Map(healthSummary.rows.map(row => [row.source, row]));
+    const recovered = halfOpenRetries.filter(({ collector }) => {
+      const row = rowById.get(collector.id);
+      return row && !health.isPaused(row);
+    }).length;
+    console.log(`⏳ 半开重试结果：${recovered} 个恢复（连续失败清零、解除暂停）· `
+      + `${halfOpenRetries.length - recovered} 个未恢复（保持 failed，若抛错则窗口从本轮重新计时）`);
+  }
   if (browserStatus.attempted && browserStatus.ok === false) {
     console.warn(`⚠️  无头浏览器不可用（${browserStatus.error || '未知原因'}）—— 无头来源本轮一律不报「正常」`);
   }
@@ -287,8 +380,6 @@ async function main() {  const headless = flag('headless');
       `  ⚠️  新字段落空 [${d.field}${d.key ? '.' + d.key : ''}] ${d.title} —— ${d.reason}`));
   }
 
-  const store = loadStore();
-  const existing = Array.isArray(store.deals) ? store.deals : [];
   console.log(`\n既有 deals.json: ${existing.length} 条${store.legacy ? '（v1 格式，将在写入时升级为 v2）' : ''}`);
 
   const { deals, stats } = mergeAll({ fresh, existing, curated: curated.deals, today });
@@ -304,8 +395,10 @@ async function main() {  const headless = flag('headless');
     );
   }
   if (collectorFailures) {
+    // 分母用**本轮实际运行的**来源数（runnable）：被熔断跳过的来源这一轮根本没尝试，
+    // 把它们算进"失败 x/N"会让读数比实际更难看，也会让"跳过"与"失败"两个概念混在一起。
     console.warn(
-      `⚠️  来源失败 ${collectorFailures}/${picked.length} 个（advisory：逐条见报告表与「来源失败」清单，` +
+      `⚠️  来源失败 ${collectorFailures}/${runnable.length} 个（advisory：逐条见报告表与「来源失败」清单，` +
       `不拦写盘——单源失败是常态，静默跳过才是问题）`
     );
   }
@@ -340,10 +433,14 @@ async function main() {  const headless = flag('headless');
       }
     }
   }
-  console.log(`来源明细: 采集器失败 ${collectorFailures}/${picked.length} 个 · ` +
+  // P3 熔断：暂停跳过必须与"零产出/失败"并排打印（且 0 也打印）——否则"某个源已经停了"
+  // 与"今天没数据"在日志/Summary 里长得一样，熔断就等于静默删除一个来源。
+  console.log(`来源明细: 采集器失败 ${collectorFailures}/${runnable.length} 个 · ` +
     `零产出 ${healthSummary.zeroOutputSources.length} 个` +
     `${healthSummary.zeroOutputSources.length ? `（${healthSummary.zeroOutputSources.map(r => r.source).join('、')}）` : ''} · ` +
     `异常 ${healthSummary.degraded} 个 · 失败 ${healthSummary.failed} 个 · ` +
+    `⏸ 熔断暂停 ${healthSummary.paused} 个` +
+    `${healthSummary.paused ? `（本轮跳过 ${pausedSkipped.map(item => item.collector.id).join('、')}；半开重试 ${halfOpenRetries.length} 个）` : ''} · ` +
     `无头浏览器 ${browserStatus.attempted ? (browserStatus.ok ? '可用' : '不可用') : '未探测'}`);
   if (stats.removedGarbage) {
     console.log(`退役垃圾/无效旧条目 ${stats.removedGarbage} 条：${stats.retiredTitles.join('、')}`);
@@ -364,13 +461,13 @@ async function main() {  const headless = flag('headless');
   const { deals: localized, report: zhReport } = attachZh(deals);
   console.log(`中文译文: ${summarizeZh(zhReport)}`);
   if (zhReport.stale.length) {
-    zhReport.stale.forEach(row => console.warn(`  🔁 原文已变，译文停用待复核: ${row.title} — ${row.message}`));
+    zhReport.stale.forEach(row => console.warn(`  🔁 原文已变，译文停用（已回退英文）: ${row.title} — ${row.message}`));
   }
   if (zhReport.orphaned.length) {
     zhReport.orphaned.forEach(row => console.warn(`  ⚠️  译文对不上任何条目 id: ${row.id} ${row.title}`));
   }
   zhReport.skipped.forEach(row =>
-    console.warn(`  ⚠️  译文不合规: [${row.id}] ${row.title} — ${row.message}`));
+    console.warn(`  ⚠️  译文不合规（已回退英文）: [${row.id}] ${row.title} — ${row.message}`));
   if (zhReport.unmanaged.length) {
     console.warn(
       `  ⚠️  ${zhReport.unmanaged.length} 条译文不在覆盖层里（deals.json 自带、覆盖层管不到）：` +
@@ -378,14 +475,14 @@ async function main() {  const headless = flag('headless');
     );
   }
   if (zhReport.missing.length) {
-    // 「还有几条没译」不够用：译文门禁是按**年龄**判的（超过宽限期就拦），所以必须把
-    // 「最老多少天」一起说出来 —— 否则没人知道下一次 push 会不会红。
+    // 「还有几条没译」只是提示，不参与发布判定（2026-11-08 起译文层不再拦写完/发布）。
+    // 但「最老多少天」仍要说：它是「中文覆盖度在退化」的唯一可见信号。
     // 年龄从「进入待译」那天算起（本轮结束时写回 zh-pending.json），不是 firstSeen：
     // 上游改写会让一条老条目的译文失效，用 firstSeen 计时等于「刚失效就超期」。
     const pendingStore = loadPending();
     const age = pendingAge(zhReport.missing, localized, { today, pending: pendingStore.doc });
-    console.log(`  ℹ️  待译 ${zhReport.missing.length} 条（最老 ${age.oldestDays} 天，宽限 ${PENDING_GRACE_DAYS} 天）：` +
-      `node scripts/tools/zh-todo.js 查看`);
+    console.log(`  ℹ️  待译 ${zhReport.missing.length} 条（最老 ${age.oldestDays} 天；` +
+      `超过 ${PENDING_GRACE_DAYS} 天只会提醒，不影响发布）：node scripts/tools/zh-todo.js 查看`);
     console.log(`      ${age.rows.slice(0, 5).map(row => `${row.title}（${row.days} 天）`).join('、')}` +
       `${age.rows.length > 5 ? ` 等 ${age.rows.length} 条` : ''}`);
   }
@@ -409,7 +506,7 @@ async function main() {  const headless = flag('headless');
     console.log('\n(dry-run，未写盘)');
     // 历史层也做一次**只读**预览：record() 是纯函数，这里不落盘。
     // 预览里能看到「这一轮将记下哪些事件」，正是 dry-run 存在的意义。
-    const preview = recordHistory({ previous: existing, next: deals, fresh, stats, healthSummary, today, only });
+    const preview = recordHistory({ previous: existing, next: deals, fresh, stats, healthSummary, priorSuccessfulRunDates, today, only });
     if (preview) console.log('历史层预览（未写盘）:');
     if (preview) printHistoryStats(preview);
     console.log('\n新增/变更预览（前 15 条优惠）：');
@@ -420,17 +517,11 @@ async function main() {  const headless = flag('headless');
     return;
   }
 
-  // 译文不合规：与构建期同一把尺子。
-  // build-local.js 遇到同一种数据直接 throw（阻止发布）；采集期在这里只 warn 的话，
-  // CI 会把不合规的 zh 提交进 deals.json，下一次采集的 "Validate current data (before)"
-  // 立刻变红——采集链路从此卡死，而真正的坏数据还躺在仓库里。
-  if (zhReport.skipped.length) {
-    console.error(
-      `\n❌ 译文不合规 ${zhReport.skipped.length} 处，跳过写盘（构建期同样会硬失败，加 --force 也不放行）。` +
-      `先修 scripts/data/translations_zh.json`
-    );
-    process.exit(1);
-  }
+  // 译文不合规**不再拦写盘**（2026-11-08 起）：lib/zh.js 的 normalizeZh 已经把不合规字段
+  // 从 zh 里删掉（回退英文），这里上面已经逐条告警。写进 deals.json 的只会是**贴成功的**译文，
+  // 所以下一轮「Validate current data (before)」也不会因为坏译文变红。
+  // 原先这里硬拦的理由是「构建期同款 throw，CI 会把坏 zh 提交进库」——构建期现在同样只告警，
+  // 两边的判据一致：译文是附加信息，不参与发布可用性。
 
   // 唯一会拦写盘的采集侧情形：真的没有可发布内容。
   // 零产出还要照写，会把 updatedAt 改成今天、把 32 条策展的 lastSeen 全刷成今天，
@@ -438,7 +529,8 @@ async function main() {  const headless = flag('headless');
   // 反过来，单源失败 / 采集量骤降**不**在这里拦：见文件头那两条"不拦"的概念。
   if (nothingCollected && !force) {
     console.error(
-      `\n❌ 本次采集零产出（${picked.length} 个来源都没有可发布的条目），跳过写盘。` +
+      `\n❌ 本次采集零产出（本轮实际运行 ${runnable.length} 个来源都没有可发布的条目` +
+      `${pausedSkipped.length ? `；另有 ${pausedSkipped.length} 个已熔断暂停、本轮未尝试` : ''}），跳过写盘。` +
       `既有 deals.json 未被改动；确需照写请加 --force`
     );
     process.exit(1);
@@ -457,12 +549,12 @@ async function main() {  const headless = flag('headless');
   //     的条目整片误判成「来源不再列出」；
   //   · 历史文件缺失 —— 只告警，**不自动生成基线**（无人看见地把当前状态冻成
   //     「起始状态」正是本层最该避免的伪造历史；缺文件由 CI 的 check:history 拦）。
-  const historyStats = recordHistory({ previous: existing, next: deals, fresh, stats, healthSummary, today, only });
+  const historyStats = recordHistory({ previous: existing, next: deals, fresh, stats, healthSummary, priorSuccessfulRunDates, today, only });
   const payload = writeDeals(localized);
   // 心跳与数据同批写盘：`source-health.json` 入库（dist/ 是 gitignore 的，存不了跨运行状态）。
-  // 注意：上面两条硬拦（译文不合规 / 零产出）会让本次提前退出，于是**这一次**的来源结果
-  // 不会落盘——CI 里那两种情况本来也不会提交任何文件。设计上接受这个边界：单源失败而
-  // 整体成功（最常见的情形）一定会被记下来。
+  // 注意：唯一的硬拦（零产出）会让本次提前退出，于是**这一次**的来源结果不会落盘——
+  // CI 里那种情况本来也不会提交任何文件。设计上接受这个边界：单源失败而整体成功
+  // （最常见的情形）一定会被记下来。
   health.write(healthDoc);
   if (historyStats) {
     history.save(historyStats.store);

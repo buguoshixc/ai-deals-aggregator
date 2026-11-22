@@ -1,0 +1,65 @@
+HEADER home len 2620 family len 1630
+HEADER home: <header class="top"><div class="topin"><a class="brand" href="../../dist/"><span class="mark" aria-hidden="true"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2A2 2 0 0 1 3 12V4.6A1.6 1.6 0 0 1 4.6 3H12a2 2 0 0 1 1.4.6l7.2 7.2a2 2 0 0 1 0 2.6Z"></path><path d="M12 8v6"></path><path d="m9.5 11.5 2.5 2.5 2.5-2.5"></path></svg></span><span class="btxt"><h1 class="bt">AI <em>优惠</em>聚合器</h1><small>真实优惠 · 每日更新</small></span></a><label class="search"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8c94a6" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><input type="search" id="searchInput" placeholder="搜索模型、厂商或优惠内容…" aria-label="搜索模型、厂商或优惠内容"></label><div class="seg" id="themeSeg" role="group" aria-label="配色主题"><button type="button" data-theme-value="auto" aria-pressed="false">跟随系统</button><button type="button" data-theme-value="light" aria-pressed="true">浅色</button><button type="button" data-theme-value="dark" aria-pressed="false">深色</button></div><a class="plansnav" href="../../dist/plans/coding/" title="对比各平台长期在售的 AI Coding 套餐">AI Coding 套餐对比</a><a class="plansnav plansnav-api" href="../../dist/plans/api/" title="对比各平台按量计费的 API / Token 官方单价">API 计费对比<
+HEADER family: <header class="top"><div class="topin"><a class="brand" href="../../dist/dist/"><span class="mark" aria-hidden="true"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2A2 2 0 0 1 3 12V4.6A1.6 1.6 0 0 1 4.6 3H12a2 2 0 0 1 1.4.6l7.2 7.2a2 2 0 0 1 0 2.6Z"></path><path d="M12 8v6"></path><path d="m9.5 11.5 2.5 2.5 2.5-2.5"></path></svg></span><span class="btxt"><b>AI <em>优惠</em>聚合器</b><small>真实优惠 · 每日更新</small></span></a><a class="jumpback" href="../../dist/dist/">← 返回全部优惠</a><a class="ghlink" href="https://github.com/buguoshixc/ai-deals-aggregator" target="_blank" rel="noopener noreferrer" title="GitHub 仓库（在新标签页打开）" aria-label="GitHub 仓库"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466
+
+FOOTER home: <footer><p class="catnav" aria-label="按需求浏览">按需求浏览：<a href="../../dist/student/">学生优惠</a> · <a href="../../dist/developer/">开发者优惠</a> · <a href="../../dist/free-api/">免费 API</a></p><p class="catnav" aria-label="按厂商、分类与套餐浏览">按厂商 / 分类浏览：<a href="../../dist/vendor/">厂商优惠</a> · <a href="../../dist/category/">分类优惠</a> · <a href="../../dist/models/">模型资料</a> · <a href="../../dist/plans/">套餐与 API 计费</a> · <a href="../../dist/archive/">历史档案</a> · <a href="../../dist/plans/coding/">套餐对比</a> · <a href="../../dist/plans/api/">API 计费对比</a> · <a href="../../dist/tools/api-cost/">API 成本计算器</a> · <a href="../../dist/docs/data/">数据与引用</a><span class="vline">（<a href="../../dist/vendor/baidu-ai-cloud/">百度智能云</a> · <a href="../../dist/vendor/volcengine/">火山引擎</a> · <a href="../../dist/vendor/zhipu/">智谱AI</a> · <a href="../../dist/vendor/coze/">扣子 Coze</a> · <a href="../../dist/vendor/github/">GitHub</a> · <a href="../../dist/vendor/">全部 25 家厂商</a>）</span></p><p>数据每日自动更新 · 最后更新：<span id="lastUpdated">--</span> · <a href="../../dist/status/">数据源状态</a> · <a href="../../dist/feed.xml" title="订阅本站更新（Atom / JSON Feed · 每日两次）">订阅源</a></p><p>优惠信息来自各厂商官方页面与公开折扣页，最终以官方页面为准。发现过期信息欢迎提交修正。</p><p>本站不收录付费推广位，排序与推荐
+FOOTER family: <footer><p class="catnav" aria-label="按需求浏览">按需求浏览：<a href="../../dist/dist/student/">学生优惠</a> · <a href="../../dist/dist/developer/">开发者优惠</a> · <a href="../../dist/dist/free-api/">免费 API</a></p><p class="catnav" aria-label="按厂商、分类与套餐浏览">按厂商 / 分类浏览：<a href="../../dist/dist/vendor/">厂商优惠</a> · <a href="../../dist/dist/category/">分类优惠</a> · <a href="../../dist/dist/models/">模型资料</a> · <a href="../../dist/dist/plans/">套餐与 API 计费</a> · <a href="../../dist/dist/archive/">历史档案</a> · <a href="../../dist/dist/plans/coding/">套餐对比</a> · <a href="../../dist/dist/plans/api/">API 计费对比</a> · <a href="../../dist/dist/tools/api-cost/">API 成本计算器</a> · <a href="../../dist/dist/docs/data/">数据与引用</a><span class="vline">（<a href="../../dist/dist/vendor/baidu-ai-cloud/">百度智能云</a> · <a href="../../dist/dist/vendor/volcengine/">火山引擎</a> · <a href="../../dist/dist/vendor/zhipu/">智谱AI</a> · <a href="../../dist/dist/vendor/coze/">扣子 Coze</a> · <a href="../../dist/dist/vendor/github/">GitHub</a> · <a href="../../dist/dist/vendor/">全部 25 家厂商</a>）</span></p><p>数据每日自动更新 · 最后更新：<span>见首页</span> · <a href="../../dist/dist/status/">数据源状态</a> · <a href="../../dist/dist/feed.xml" title="订阅本站更新（Atom / JSON Feed · 每日两次）">订阅源</a></p><p>优惠信息来自各厂商官方页面与公开折扣页，最终以官方页面为准。发现过期信息欢迎提交修正。</p><p>本站不收录付费推广位，排序与推荐理由不出售。</p><p>厂商 
+
+footerText home: 按需求浏览：学生优惠 · 开发者优惠 · 免费 API 按厂商 / 分类浏览：厂商优惠 · 分类优惠 · 模型资料 · 套餐与 API 计费 · 历史档案 · 套餐对比 · API 计费对比 · API 成本计算器 · 数据与引用（百度智能云 · 火山引擎 · 智谱AI · 扣子 Coze · GitHub · 全部 25 家厂商） 数据每日自动更新 · 最后更新：-- · 数据源状态 · 订阅源 优惠信息来自各厂商官方页面与公开折扣页，最终以官方页面为准。发现过期信息欢迎提交修正。 本站不收录付费推广位，排序与推荐理由不出售。 厂商 logo 版权归各厂商所有，仅作标识用途。
+footerText family: 按需求浏览：学生优惠 · 开发者优惠 · 免费 API 按厂商 / 分类浏览：厂商优惠 · 分类优惠 · 模型资料 · 套餐与 API 计费 · 历史档案 · 套餐对比 · API 计费对比 · API 成本计算器 · 数据与引用（百度智能云 · 火山引擎 · 智谱AI · 扣子 Coze · GitHub · 全部 25 家厂商） 数据每日自动更新 · 最后更新：见首页 · 数据源状态 · 订阅源 优惠信息来自各厂商官方页面与公开折扣页，最终以官方页面为准。发现过期信息欢迎提交修正。 本站不收录付费推广位，排序与推荐理由不出售。 厂商 logo 版权归各厂商所有，仅作标识用途。
+
+headerText home: AI 优惠聚合器 真实优惠 · 每日更新 跟随系统 浅色 深色 AI Coding 套餐对比 API 计费对比 成本计算器 76 条优惠 · 更新 2026-11-10
+headerText family: AI 优惠聚合器 真实优惠 · 每日更新 ← 返回全部优惠
+
+390 grid before: {
+ "gridH": 14791.63,
+ "gridTop": 1148.75,
+ "rowGap": "8px",
+ "columnGap": "8px",
+ "display": "grid",
+ "gridTemplateColumns": "358px",
+ "childCount": 80,
+ "kinds": {
+  "DIV.tierhead": 4,
+  "ARTICLE.g": 76
+ },
+ "cardCount": 76,
+ "cardSum": 14027.63,
+ "tierCount": 4,
+ "tierSum": 140,
+ "tierTops": [
+  1150.75,
+  3366.63,
+  7380.81,
+  11292.25
+ ],
+ "lastCardBottom": 15940.38
+}
+
+390 grid after: {
+ "gridH": 14755.63,
+ "gridTop": 1148.75,
+ "rowGap": "8px",
+ "columnGap": "8px",
+ "display": "grid",
+ "gridTemplateColumns": "358px",
+ "childCount": 80,
+ "kinds": {
+  "DIV.tierhead": 4,
+  "ARTICLE.g": 76
+ },
+ "cardCount": 76,
+ "cardSum": 14027.63,
+ "tierCount": 4,
+ "tierSum": 104,
+ "tierTops": [
+  1150.75,
+  3366.63,
+  7362.81,
+  11256.25
+ ],
+ "lastCardBottom": 15904.38
+}
+
+390 footer text before: 按需求浏览：学生优惠 · 开发者优惠 · 免费 API 按厂商 / 分类浏览：厂商优惠 · 分类优惠 · 模型资料 · 套餐与 API 计费 · 历史档案 · 套餐对比 · API 计费对比 · API 成本计算器 · 数据与引用（百度智能云 · 火山引擎 · 智谱AI · 扣子 Coze · GitHub · 全部 25 家厂商） 数据每日自动更新 · 最后更新：2026/11/10 00:38:06 · 数据源状态 · 订阅源 优惠信息来自各厂商官方页面与公开折扣页，最终以官方页面为准。发现过期信息欢迎提交修正。 本站不收录付费推广位，排序与推荐理由不出售。 厂商 logo 版权归各厂商所有，仅作标识用途。
+390 footer text after : 按需求浏览：学生优惠 · 开发者优惠 · 免费 API 按厂商 / 分类浏览：厂商优惠 · 分类优惠 · 模型资料 · 套餐与 API 计费 · 历史档案 · 套餐对比 · API 计费对比 · API 成本计算器 · 数据与引用（百度智能云 · 火山引擎 · 智谱AI · 扣子 Coze · GitHub · 全部 25 家厂商） 数据每日自动更新 · 最后更新：-- · 数据源状态 · 订阅源 优惠信息来自各厂商官方页面与公开折扣页，最终以官方页面为准。发现过期信息欢迎提交修正。 本站不收录付费推广位，排序与推荐理由不出售。 厂商 logo 版权归各厂商所有，仅作标识用途。

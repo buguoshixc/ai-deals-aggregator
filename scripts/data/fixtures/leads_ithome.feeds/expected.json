@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "source": "leads_ithome",
+  "sourceName": "IT之家",
+  "fixture": "leads_ithome.feeds",
+  "sourceUrl": "https://www.ithome.com/rss/",
+  "capturedAt": "2026-11-19",
+  "trimmed": "解析器/判据真正读的四个字段（title / link / pubDate / description）：三闸全中与近失配条目优先，最多 8 条，description 截到 200 字",
+  "note": "expected 是**生产解析器在这个最小片段上的真实输出**；重建后请人工 review diff。",
+  "count": 8,
+  "items": [
+    {
+      "title": "AI 模型大幅降低古籍数字化成本：识别 1000 页内容费用已不到 0.1 美元",
+      "url": "https://www.ithome.com/1/029/688.htm",
+      "source": "IT之家",
+      "sourceUrl": "https://www.ithome.com/rss/",
+      "firstSeen": "2026-11-19",
+      "type": "tool",
+      "excerpt": "IT之家 11 月 19 日消息，借助免费开放的 AI 模型，从扫描版书籍和档案中提取文字的成本已经大幅下降。Hugging Face 的丹尼尔 · 范斯特里恩（Daniel van Strien）对 8 款能够识别图像中文字的 AI 模型进行了对比测试。测试材料共计 850 页，包括旧版自然历史书籍、1771 年版《大英百科全书》，以及打字和印刷的历史档案文件。所有模型均在同一款 GPU 上运行",
+      "vendor": "Hugging Face"
+    },
+    {
+      "title": "威刚推出 XPG INVADER X MINI Chroma 系列机箱：四色可选，预装 5 把 ARGB 风扇",
+      "url": "https://www.ithome.com/1/029/689.htm",
+      "source": "IT之家",
+      "sourceUrl": "https://www.ithome.com/rss/",
+      "firstSeen": "2026-11-19",
+      "type": "tool",
+      "excerpt": "IT之家 11 月 19 日消息，威刚现已推出 INVADER X MINI Chroma 系列机箱，新品主打多彩配色，采用海景房设计。IT之家注意到，该系列机箱提供天空蓝、珊瑚色、鸢尾紫和水绿色四种配色可选，采用 4mm 全景钢化玻璃，预装 5 把 120mm ARGB 风扇，显卡限长 330mm，支持安装 240mm 冷排。规格方面，该系列机箱尺寸为 460 × 210 × 359mm，兼容"
+    },
+    {
+      "title": "欧盟委员会证实遭到 AI 驱动的网络攻击，事态规模暂难判断",
+      "url": "https://www.ithome.com/1/029/687.htm",
+      "source": "IT之家",
+      "sourceUrl": "https://www.ithome.com/rss/",
+      "firstSeen": "2026-11-19",
+      "type": "tool",
+      "excerpt": "IT之家 11 月 19 日消息，据路透社报道，当地时间 19 日，欧盟委员会证实遭受了利用 AI 工具进行的网络攻击。有关此事的调查尚未结束，事态规模暂难判断。发言人托马斯 · 雷尼耶在记者会上说：“我可以确认，我们近期发现了一起网络攻击，并采取了必要的应对措施。为防止事态扩大和避免进一步风险，我们暂时下线了几个应用程序，大部分后来恢复了运行。调查还在继续，我们会根据陆续查明的情况采取必要措施。"
+    },
+    {
+      "title": "快手 CEO 程一笑：Kling 4.0 模型已经进入游戏和具身智能等场景",
+      "url": "https://www.ithome.com/1/029/686.htm",
+      "source": "IT之家",
+      "sourceUrl": "https://www.ithome.com/rss/",
+      "firstSeen": "2026-11-19",
+      "type": "tool",
+      "excerpt": "IT之家 11 月 19 日消息，据《科创板日报》今天报道，快手 CEO 程一笑今日在业绩会中透露，Kling 4.0 模型上线后，可灵流水实现提升，当前收入增长由企业客户 API 调用和专业创作者付费订阅双轮驱动，用户规模与 ARPPU（每付费用户平均收益）均保持增长。程一笑透露，Kling 4.0 目前已经进入影视、短剧及漫剧制作、广告营销、创意设计、游戏和具身智能等场景，可用于动态分镜、镜头"
+    },
+    {
+      "title": "政府补贴 1000 元：iPhone 18 Pro Max 京东 10999 → 9745 元随时结束",
+      "url": "https://www.ithome.com/1/029/685.htm",
+      "source": "IT之家",
+      "sourceUrl": "https://www.ithome.com/rss/",
+      "firstSeen": "2026-11-19",
+      "type": "tool",
+      "excerpt": "京东自营 iPhone 18 Pro/ Max 直降 300 元，今日大多数地区可叠加 1000 元政府补贴，实付金额如下：京东 iPhone 18 Pro Max 需签收激活国补后 9745 元起直达链接京东 iPhone 18 Pro 需签收激活国补后 8775 元起直达链接活动随时结束，需以实付款为准哦。"
+    },
+    {
+      "title": "27.99 万元起：比亚迪方程豹钛 9 上市，定位大六座方盒子",
+      "url": "https://www.ithome.com/1/029/684.htm",
+      "source": "IT之家",
+      "sourceUrl": "https://www.ithome.com/rss/",
+      "firstSeen": "2026-11-19",
+      "type": "tool",
+      "excerpt": "IT之家 11 月 19 日消息，比亚迪方程豹钛 9 汽车今日正式上市。新车首发 DMS 超级混动全能平台，主打硬派外观，采用六座布局。全系标配天神之眼 B 辅助驾驶、云辇-A 车身控制，定义全维硬派新境，售价 27.99 万元起。现阶段购车可享选装礼、一年免费闪充等权益。IT之家附该车各版本售价如下：四驱 Max 版：27.99 万元，惊喜置换价 27.39 万元四驱 Ultra 版：29.99"
+    },
+    {
+      "title": "《GTA 6》发售掀起直播狂潮，主播计划通宵直播抢抓流量窗口期",
+      "url": "https://www.ithome.com/1/029/683.htm",
+      "source": "IT之家",
+      "sourceUrl": "https://www.ithome.com/rss/",
+      "firstSeen": "2026-11-19",
+      "type": "tool",
+      "excerpt": "IT之家 11 月 19 日消息，据彭博社报道，《侠盗猎车手 6》（GTA 6）已正式发售，这场备受期待的游戏首发盛事，正成为网络主播和内容创作者的流量盛宴。部分主播已经计划通宵直播，甚至连续数日开播，争取抓住这款有望成为史上最大规模游戏发行作品带来的关注度。亚马逊旗下 Twitch、Alphabet 旗下 YouTube 以及 TikTok 上的内容创作者，正纷纷围绕 Take-Two Inte"
+    },
+    {
+      "title": "阿里巴巴 CEO 吴泳铭：2027、2028 年将是中国算力最紧缺的两年",
+      "url": "https://www.ithome.com/1/029/682.htm",
+      "source": "IT之家",
+      "sourceUrl": "https://www.ithome.com/rss/",
+      "firstSeen": "2026-11-19",
+      "type": "tool",
+      "excerpt": "IT之家 11 月 19 日消息，据界面新闻今日报道，在 2027 财年第二季度财报分析师电话会上，阿里巴巴集团 CEO 吴泳铭表示，2027 年和 2028 年，将是中国算力最紧缺的两年。2027 年以后，阿里云的芯片供给都会以国产平头哥芯片为主，同时也会采购其他国产芯片来支持内部的推理需求。吴泳铭提到，阿里的旗舰芯片会优先满足于大模型的训练，以保障模型迭代。在此基础上，也会考虑合作伙伴的客户的"
+    }
+  ]
+}

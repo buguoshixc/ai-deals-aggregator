@@ -2705,7 +2705,674 @@
       }
     }
   },
-  "absence": {},
+  "absence": {
+    "014a945319a7": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "06bc1d631f62": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "070cad8aa770": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "0750a3061d72": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-22",
+      "endedAt": "2026-11-22"
+    },
+    "086534ebceeb": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-19",
+      "endedAt": "2026-11-19"
+    },
+    "0a2fc31c76cc": {
+      "source": "IT之家",
+      "misses": 1,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-19"
+    },
+    "0d9b9646f1a5": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-21",
+      "endedAt": "2026-11-21"
+    },
+    "0ddacfb2cc6e": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "10c203c3a80e": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-14",
+      "endedAt": "2026-11-14"
+    },
+    "1fff4784ec9d": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "2374288880c3": {
+      "source": "OpenRouter",
+      "misses": 2,
+      "since": "2026-11-15",
+      "endedAt": "2026-11-15"
+    },
+    "2608e4a555a7": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-15",
+      "endedAt": "2026-11-15"
+    },
+    "26a04b07193d": {
+      "source": "钛媒体",
+      "misses": 0,
+      "since": "2026-11-20",
+      "endedAt": "2026-11-20"
+    },
+    "27b4acca203a": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "29ff7f061d59": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-19",
+      "endedAt": "2026-11-19"
+    },
+    "2add85b3877d": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-15",
+      "endedAt": "2026-11-16"
+    },
+    "2e5118bcd2c1": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-13",
+      "endedAt": "2026-11-13"
+    },
+    "2f0c03c32d8d": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-17",
+      "endedAt": "2026-11-17"
+    },
+    "31232ad4315e": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "314fb9d43531": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "318a050a84bb": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-14",
+      "endedAt": "2026-11-14"
+    },
+    "33d4fd34f78f": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "36fdb826204d": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-17",
+      "endedAt": "2026-11-17"
+    },
+    "39d2832e3c8f": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "3c435ea3c1e1": {
+      "source": "快科技",
+      "misses": 1,
+      "since": "2026-11-18",
+      "endedAt": "2026-11-20"
+    },
+    "3e0abe88eb9f": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-19",
+      "endedAt": "2026-11-19"
+    },
+    "3eac4b6acccb": {
+      "source": "快科技",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-13"
+    },
+    "3f97a29b90e6": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-19",
+      "endedAt": "2026-11-19"
+    },
+    "3fa2cec73c43": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "413a77602a7c": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "44848acd19f3": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-17",
+      "endedAt": "2026-11-18"
+    },
+    "44a401cd8f13": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "46b1877f5969": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "49f87d205620": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-21",
+      "endedAt": "2026-11-21"
+    },
+    "4a4f4777ffbc": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "4fcc2847e3fc": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "4fede366f914": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "54d867a4530d": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "5791cccec315": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-14",
+      "endedAt": "2026-11-14"
+    },
+    "60317b771abf": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "620ef4290482": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-18",
+      "endedAt": "2026-11-18"
+    },
+    "62e3166acec0": {
+      "source": "智谱AI",
+      "misses": 2,
+      "since": "2026-11-17",
+      "endedAt": "2026-11-18"
+    },
+    "654e05ed3453": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "6637868284f5": {
+      "source": "OpenRouter",
+      "misses": 2,
+      "since": "2026-11-21",
+      "endedAt": "2026-11-21"
+    },
+    "69a0d047e3f9": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "6c02d0ffe148": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "717bfce842bf": {
+      "source": "快科技",
+      "misses": 2,
+      "since": "2026-11-13",
+      "endedAt": "2026-11-18"
+    },
+    "72048178d658": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "72100a42eb69": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-19",
+      "endedAt": "2026-11-19"
+    },
+    "72410d92e184": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "75c584a4d6a2": {
+      "source": "OpenRouter",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "7b9e80d90afc": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-22",
+      "endedAt": null
+    },
+    "7d8921eb5c47": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-15",
+      "endedAt": "2026-11-16"
+    },
+    "7f06124571e2": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-15",
+      "endedAt": "2026-11-15"
+    },
+    "7f1250402ebb": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "7f3607d92aa5": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "8384e847f282": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "84dfc76c38e0": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "8583e9860d88": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "864a916dc7d3": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-14",
+      "endedAt": "2026-11-14"
+    },
+    "8797caa10aea": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "87a5685a4153": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-15",
+      "endedAt": "2026-11-16"
+    },
+    "8a8c3bdc2b05": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-18",
+      "endedAt": "2026-11-18"
+    },
+    "8b8b44476f52": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "8c2a12fcf560": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "8c8ed425e7c3": {
+      "source": "IT之家",
+      "misses": 0,
+      "since": "2026-11-20",
+      "endedAt": "2026-11-20"
+    },
+    "8c9181f2b117": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "8e4af3df250c": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-16",
+      "endedAt": "2026-11-17"
+    },
+    "90ef368f720d": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "940d872f9eac": {
+      "source": "OpenRouter",
+      "misses": 2,
+      "since": "2026-11-19",
+      "endedAt": "2026-11-20"
+    },
+    "98b5e610f7bc": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-15",
+      "endedAt": "2026-11-16"
+    },
+    "9b734ca08ce5": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "9ce2f3d45c11": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "9d99178344b6": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "9e43fb1945c3": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-17",
+      "endedAt": "2026-11-17"
+    },
+    "9e63611224ef": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "a134b60a8edc": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "a3f18a7a4b9d": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-15",
+      "endedAt": "2026-11-16"
+    },
+    "a4dc88711e74": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "a9053ca847fb": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "ab4c0e5c007e": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "ad748ed0cf5b": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-19",
+      "endedAt": "2026-11-20"
+    },
+    "b4d191dd0c65": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "bf08e4fbd5ac": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "c3d6bd34ebfe": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "c61916544faf": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-19",
+      "endedAt": "2026-11-20"
+    },
+    "c9c5429f2205": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "cb17bb1508c4": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "cfb47a6dd6fa": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-14",
+      "endedAt": "2026-11-15"
+    },
+    "d0ed1daf6974": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-22",
+      "endedAt": "2026-11-22"
+    },
+    "d175c32f71fd": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-21",
+      "endedAt": "2026-11-21"
+    },
+    "d338170e86af": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "d65084e7f76f": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-15",
+      "endedAt": "2026-11-16"
+    },
+    "d6cd29e05603": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "d7d64e1ef240": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "de0587956f33": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-15",
+      "endedAt": "2026-11-16"
+    },
+    "dfa07fdc244d": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "e2bea3790e12": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-14",
+      "endedAt": "2026-11-14"
+    },
+    "e4bd8003b3d6": {
+      "source": "智谱AI活动页",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "e5fcacad308b": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-20",
+      "endedAt": "2026-11-20"
+    },
+    "e6da58501e1d": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-15",
+      "endedAt": "2026-11-16"
+    },
+    "e7f286155de9": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "edcba5e8a6d2": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-15",
+      "endedAt": "2026-11-16"
+    },
+    "ee446d349239": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-16",
+      "endedAt": "2026-11-17"
+    },
+    "ef3cba339a72": {
+      "source": "OpenRouter",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "f68dfc4184bf": {
+      "source": "IT之家",
+      "misses": 1,
+      "since": "2026-11-21",
+      "endedAt": null
+    },
+    "f6e6f3b1c820": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "f7d846f3c57f": {
+      "source": "Futuretools",
+      "misses": 2,
+      "since": "2026-11-20",
+      "endedAt": "2026-11-21"
+    },
+    "f91e1085801f": {
+      "source": "aitools.fyi",
+      "misses": 2,
+      "since": "2026-11-12",
+      "endedAt": "2026-11-12"
+    },
+    "fef21feaac71": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-13",
+      "endedAt": "2026-11-13"
+    },
+    "ff8cbecdd5f6": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-19",
+      "endedAt": "2026-11-19"
+    }
+  },
   "events": [
     {
       "id": "4a4f4777ffbc",
@@ -3182,6 +3849,4912 @@
         "verified": false
       },
       "runAt": "2026-10-27T17:34:32.165Z"
+    },
+    {
+      "id": "2413e37ac108",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "2add85b3877d",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "音频语音",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "4e998909dbfb",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "paid",
+        "type": "tool",
+        "category": "API服务",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "7d8921eb5c47",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "paid",
+        "type": "tool",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "87a5685a4153",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "88b2afba57cf",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/openmontage-7994066d",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "98b5e610f7bc",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "paid",
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "a3f18a7a4b9d",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "a679dc7e78c6",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "paid",
+        "type": "tool",
+        "category": "对话模型",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "c21fd9ee54d1",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "free",
+        "type": "tool",
+        "category": "对话模型",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "c789f0a090bf",
+      "at": "2026-11-08",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "Free Gemini access remains available. Google AI Pro student offers vary by country; the U.S. student offer page says the previous student offer ended March 11, 2026.",
+      "to": "Free Gemini access remains available. In the U.S., eligible college students ages 18+ can get Google AI Pro free for one year if they redeem by December 31, 2026; a valid payment method is required and the plan then renews at $19.99/month.…",
+      "origin": "observed",
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "c789f0a090bf",
+      "at": "2026-11-08",
+      "type": "updated",
+      "field": "type",
+      "from": "tool",
+      "to": "deal",
+      "origin": "observed",
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "c971e33a9cd0",
+      "at": "2026-11-08",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "OpenAI, working with SheerID for verification, offers one full year of free ChatGPT Plus to eligible veterans and transitioning servicemembers, alongside example chats and a getting-started guide for job search, benefits, and relocation…",
+      "to": "OpenAI offers one free year of ChatGPT Plus to verified U.S. veterans and retirees who left active duty within the past 12 months and to active service members who will transition within the next 12 months, verified through ID.me.",
+      "origin": "observed",
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "d65084e7f76f",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "智能体",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "de0587956f33",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "e6da58501e1d",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "paid",
+        "type": "tool",
+        "category": "智能体",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "edcba5e8a6d2",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "其他",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "f005b0ea76d0",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "设计创意",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "f061ff167581",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "f5ffff50772c",
+      "at": "2026-11-08",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "Free ChatGPT tier; annual billing available for Business and Enterprise plans. No standing public student or nonprofit discount was listed on the official pricing page when checked.",
+      "to": "Free ChatGPT tier; annual billing available for Business and Enterprise plans. Verified nonprofits pay $8 per user per month for ChatGPT Business Standard seats billed annually, or $10 billed monthly, through OpenAI for Nonprofits;…",
+      "origin": "observed",
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "f7d846f3c57f",
+      "at": "2026-11-08",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "办公效率",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/skipit-ai",
+        "verified": false
+      },
+      "runAt": "2026-11-08T08:12:48.752Z"
+    },
+    {
+      "id": "086534ebceeb",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $39，原价 $199（省 80%）",
+        "pricingModel": "paid",
+        "priceLine": "$39 终身（原价 $199）",
+        "type": "deal",
+        "category": "编程开发",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "0d9b9646f1a5",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $89，原价 $360（省 75%）",
+        "pricingModel": "paid",
+        "priceLine": "$89 终身（原价 $360）",
+        "expiresAt": "2026-11-18",
+        "type": "deal",
+        "category": "音频语音",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "2e5118bcd2c1",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $39，原价 $180（省 78%）",
+        "pricingModel": "paid",
+        "priceLine": "$39 终身（原价 $180）",
+        "expiresAt": "2026-11-12",
+        "type": "deal",
+        "category": "办公效率",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "318a050a84bb",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $49，原价 $156（省 69%）",
+        "pricingModel": "paid",
+        "priceLine": "$49 终身（原价 $156）",
+        "expiresAt": "2026-11-10",
+        "type": "deal",
+        "category": "其他",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "33d4fd34f78f",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $39，原价 $468（省 92%）",
+        "pricingModel": "paid",
+        "priceLine": "$39 终身（原价 $468）",
+        "type": "deal",
+        "category": "视频",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "3f97a29b90e6",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $49，原价 $99（省 51%）",
+        "pricingModel": "paid",
+        "priceLine": "$49 终身（原价 $99）",
+        "expiresAt": "2026-11-16",
+        "type": "deal",
+        "category": "办公效率",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "44848acd19f3",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $55，原价 $150（省 63%）",
+        "pricingModel": "paid",
+        "priceLine": "$55 终身（原价 $150）",
+        "expiresAt": "2026-11-14",
+        "type": "deal",
+        "category": "设计创意",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "49f87d205620",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $19，原价 $70（省 73%）",
+        "pricingModel": "paid",
+        "priceLine": "$19 终身（原价 $70）",
+        "expiresAt": "2026-11-17",
+        "type": "deal",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "620ef4290482",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $144（省 59%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $144）",
+        "type": "deal",
+        "category": "视频",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "72100a42eb69",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $179，原价 $299（省 40%）",
+        "pricingModel": "paid",
+        "priceLine": "$179 终身（原价 $299）",
+        "type": "deal",
+        "category": "办公效率",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "7f06124571e2",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $49，原价 $228（省 79%）",
+        "pricingModel": "paid",
+        "priceLine": "$49 终身（原价 $228）",
+        "type": "deal",
+        "category": "办公效率",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "8797caa10aea",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $120（省 51%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $120）",
+        "expiresAt": "2026-11-10",
+        "type": "deal",
+        "category": "办公效率",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "8b8b44476f52",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $299（省 80%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $299）",
+        "type": "deal",
+        "category": "编程开发",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "8e4af3df250c",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $148（省 60%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $148）",
+        "type": "deal",
+        "category": "教育学习",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "c61916544faf",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $299（省 80%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $299）",
+        "type": "deal",
+        "category": "办公效率",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "dfa07fdc244d",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $69，原价 $240（省 71%）",
+        "pricingModel": "paid",
+        "priceLine": "$69 终身（原价 $240）",
+        "expiresAt": "2026-11-09",
+        "type": "deal",
+        "category": "编程开发",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "e2bea3790e12",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $190（省 69%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $190）",
+        "type": "deal",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "e5fcacad308b",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $299（省 80%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $299）",
+        "expiresAt": "2026-12-08",
+        "type": "deal",
+        "category": "搜索研究",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "f1323ce17329",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $69，原价 $708（省 90%）",
+        "pricingModel": "paid",
+        "priceLine": "$69 终身（原价 $708）",
+        "type": "deal",
+        "category": "办公效率",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "f34797ef8750",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $99，原价 $299（省 67%）",
+        "pricingModel": "paid",
+        "priceLine": "$99 终身（原价 $299）",
+        "type": "deal",
+        "category": "设计创意",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "f6e6f3b1c820",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $228（省 74%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $228）",
+        "expiresAt": "2026-11-09",
+        "type": "deal",
+        "category": "视频",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "fef21feaac71",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $69，原价 $588（省 88%）",
+        "pricingModel": "paid",
+        "priceLine": "$69 终身（原价 $588）",
+        "expiresAt": "2026-11-12",
+        "type": "deal",
+        "category": "API服务",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "ff8cbecdd5f6",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $199（省 70%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $199）",
+        "type": "deal",
+        "category": "视频",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:02:24.387Z"
+    },
+    {
+      "id": "14f39f10f728",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "OpenRouter 免费模型：prompt / completion 价格均为 $0；限流：20 次/分钟；每日 50 次（累计购买 <10 credits）或 1000 次（≥10 credits）—— 出自 OpenRouter 官方限流文档；官方未标注免费截止日期",
+        "pricingModel": "free",
+        "priceLine": "$0 输入 / $0 输出（免费）",
+        "features": [
+          "免费 API",
+          "20 RPM / 50 RPD",
+          ":free 路由"
+        ],
+        "validity": "官方未标注免费截止日期",
+        "type": "deal",
+        "category": "API服务",
+        "region": "global",
+        "source": "OpenRouter",
+        "sourceUrl": "https://openrouter.ai/api/v1/models",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:10:21.091Z"
+    },
+    {
+      "id": "2374288880c3",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "OpenRouter 免费模型：prompt / completion 价格均为 $0；限流：20 次/分钟；每日 50 次（累计购买 <10 credits）或 1000 次（≥10 credits）—— 出自 OpenRouter 官方限流文档；官方未标注免费截止日期",
+        "pricingModel": "free",
+        "priceLine": "$0 输入 / $0 输出（免费）",
+        "features": [
+          "免费 API",
+          "20 RPM / 50 RPD",
+          ":free 路由"
+        ],
+        "validity": "官方未标注免费截止日期",
+        "type": "deal",
+        "category": "API服务",
+        "region": "global",
+        "source": "OpenRouter",
+        "sourceUrl": "https://openrouter.ai/api/v1/models",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:10:21.091Z"
+    },
+    {
+      "id": "6637868284f5",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "OpenRouter 免费模型：prompt / completion 价格均为 $0；限流：20 次/分钟；每日 50 次（累计购买 <10 credits）或 1000 次（≥10 credits）—— 出自 OpenRouter 官方限流文档；官方未标注免费截止日期",
+        "pricingModel": "free",
+        "priceLine": "$0 输入 / $0 输出（免费）",
+        "features": [
+          "免费 API",
+          "20 RPM / 50 RPD",
+          ":free 路由"
+        ],
+        "validity": "官方未标注免费截止日期",
+        "type": "deal",
+        "category": "API服务",
+        "region": "global",
+        "source": "OpenRouter",
+        "sourceUrl": "https://openrouter.ai/api/v1/models",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:10:21.091Z"
+    },
+    {
+      "id": "75c584a4d6a2",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "OpenRouter 免费模型：prompt / completion 价格均为 $0；限流：20 次/分钟；每日 50 次（累计购买 <10 credits）或 1000 次（≥10 credits）—— 出自 OpenRouter 官方限流文档；官方未标注免费截止日期",
+        "pricingModel": "free",
+        "priceLine": "$0 输入 / $0 输出（免费）",
+        "features": [
+          "免费 API",
+          "20 RPM / 50 RPD",
+          ":free 路由"
+        ],
+        "validity": "官方未标注免费截止日期",
+        "type": "deal",
+        "category": "API服务",
+        "region": "global",
+        "source": "OpenRouter",
+        "sourceUrl": "https://openrouter.ai/api/v1/models",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:10:21.091Z"
+    },
+    {
+      "id": "ef3cba339a72",
+      "at": "2026-11-09",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "OpenRouter 免费模型：prompt / completion 价格均为 $0；限流：未标注（该模型 ID 无 :free 后缀；官方免费档限流条款按文档只适用于 free variant）；官方未标注免费截止日期",
+        "pricingModel": "free",
+        "priceLine": "$0 输入 / $0 输出（免费）",
+        "features": [
+          "免费 API",
+          "限流未标注"
+        ],
+        "validity": "官方未标注免费截止日期",
+        "type": "deal",
+        "category": "API服务",
+        "region": "global",
+        "source": "OpenRouter",
+        "sourceUrl": "https://openrouter.ai/api/v1/models",
+        "verified": false
+      },
+      "runAt": "2026-11-08T16:10:21.091Z"
+    },
+    {
+      "id": "29be3db37d5c",
+      "at": "2026-11-10",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "对话模型",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/call-annie",
+        "verified": false
+      },
+      "runAt": "2026-11-09T16:38:06.629Z"
+    },
+    {
+      "id": "2e5118bcd2c1",
+      "at": "2026-11-10",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/ending-soon/",
+      "to": "https://appsumo.com/collections/new/",
+      "origin": "observed",
+      "runAt": "2026-11-09T16:38:06.629Z"
+    },
+    {
+      "id": "3eac4b6acccb",
+      "at": "2026-11-10",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "对话模型",
+        "region": "cn",
+        "source": "快科技",
+        "sourceUrl": "https://rss.mydrivers.com/rss.aspx?Tid=1",
+        "verified": false
+      },
+      "runAt": "2026-11-09T16:38:06.629Z"
+    },
+    {
+      "id": "e7f286155de9",
+      "at": "2026-11-10",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $79，原价 $688（省 89%）",
+        "pricingModel": "paid",
+        "priceLine": "$79 终身（原价 $688）",
+        "type": "deal",
+        "category": "设计创意",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-09T16:38:06.629Z"
+    },
+    {
+      "id": "318a050a84bb",
+      "at": "2026-11-11",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-10",
+      "to": "2026-11-13",
+      "origin": "observed",
+      "runAt": "2026-11-10T19:25:01.475Z"
+    },
+    {
+      "id": "60c544edd8be",
+      "at": "2026-11-11",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $39，原价 $129（省 70%）",
+        "pricingModel": "paid",
+        "priceLine": "$39 终身（原价 $129）",
+        "expiresAt": "2026-11-25",
+        "type": "deal",
+        "category": "设计创意",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-10T19:25:01.475Z"
+    },
+    {
+      "id": "8384e847f282",
+      "at": "2026-11-11",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "音频语音",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/copilot-audio-expression",
+        "verified": false
+      },
+      "runAt": "2026-11-10T19:25:01.475Z"
+    },
+    {
+      "id": "940d872f9eac",
+      "at": "2026-11-11",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "OpenRouter 免费模型：prompt / completion 价格均为 $0；限流：20 次/分钟；每日 50 次（累计购买 <10 credits）或 1000 次（≥10 credits）—— 出自 OpenRouter 官方限流文档；官方未标注免费截止日期",
+        "pricingModel": "free",
+        "priceLine": "$0 输入 / $0 输出（免费）",
+        "features": [
+          "免费 API",
+          "20 RPM / 50 RPD",
+          ":free 路由"
+        ],
+        "validity": "官方未标注免费截止日期",
+        "type": "deal",
+        "category": "API服务",
+        "region": "global",
+        "source": "OpenRouter",
+        "sourceUrl": "https://openrouter.ai/api/v1/models",
+        "verified": false
+      },
+      "runAt": "2026-11-10T19:25:01.475Z"
+    },
+    {
+      "id": "9e43fb1945c3",
+      "at": "2026-11-11",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $69，原价 $144（省 52%）",
+        "pricingModel": "paid",
+        "priceLine": "$69 终身（原价 $144）",
+        "expiresAt": "2026-11-12",
+        "type": "deal",
+        "category": "教育学习",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-10T19:25:01.475Z"
+    },
+    {
+      "id": "0a2fc31c76cc",
+      "at": "2026-11-11",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "对话模型",
+        "region": "cn",
+        "source": "IT之家",
+        "sourceUrl": "https://www.ithome.com/rss/",
+        "verified": false
+      },
+      "runAt": "2026-11-11T04:51:57.183Z"
+    },
+    {
+      "id": "ee446d349239",
+      "at": "2026-11-11",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $69，原价 $90（省 23%）",
+        "pricingModel": "paid",
+        "priceLine": "$69 终身（原价 $90）",
+        "type": "deal",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-11T04:51:57.183Z"
+    },
+    {
+      "id": "fef21feaac71",
+      "at": "2026-11-11",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/ending-soon/",
+      "to": "https://appsumo.com/collections/new/",
+      "origin": "observed",
+      "runAt": "2026-11-11T04:51:57.183Z"
+    },
+    {
+      "id": "29ff7f061d59",
+      "at": "2026-11-12",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $99，原价 $399（省 75%）",
+        "pricingModel": "paid",
+        "priceLine": "$99 终身（原价 $399）",
+        "expiresAt": "2026-11-16",
+        "type": "deal",
+        "category": "设计创意",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-11T19:19:08.228Z"
+    },
+    {
+      "id": "2b95f56ce3a1",
+      "at": "2026-11-12",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $79，原价 $299（省 74%）",
+        "pricingModel": "paid",
+        "priceLine": "$79 终身（原价 $299）",
+        "expiresAt": "2026-11-16",
+        "type": "deal",
+        "category": "编程开发",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-11T19:19:08.228Z"
+    },
+    {
+      "id": "2f0c03c32d8d",
+      "at": "2026-11-12",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $49，原价 $588（省 92%）",
+        "pricingModel": "paid",
+        "priceLine": "$49 终身（原价 $588）",
+        "type": "deal",
+        "category": "智能体",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-11T19:19:08.228Z"
+    },
+    {
+      "id": "98cfbb26c5cc",
+      "at": "2026-11-12",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "OpenRouter 免费模型：prompt / completion 价格均为 $0；限流：20 次/分钟；每日 50 次（累计购买 <10 credits）或 1000 次（≥10 credits）—— 出自 OpenRouter 官方限流文档；官方未标注免费截止日期",
+        "pricingModel": "free",
+        "priceLine": "$0 输入 / $0 输出（免费）",
+        "features": [
+          "免费 API",
+          "20 RPM / 50 RPD",
+          ":free 路由"
+        ],
+        "validity": "官方未标注免费截止日期",
+        "type": "deal",
+        "category": "API服务",
+        "region": "global",
+        "source": "OpenRouter",
+        "sourceUrl": "https://openrouter.ai/api/v1/models",
+        "verified": false
+      },
+      "runAt": "2026-11-11T19:19:08.228Z"
+    },
+    {
+      "id": "fef21feaac71",
+      "at": "2026-11-12",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/new/",
+      "to": "https://appsumo.com/collections/ending-soon/",
+      "origin": "observed",
+      "runAt": "2026-11-11T19:19:08.228Z"
+    },
+    {
+      "id": "014a945319a7",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "NexusAi",
+        "vendor": "NexusAi"
+      }
+    },
+    {
+      "id": "06bc1d631f62",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Sync.so",
+        "vendor": "Sync.so"
+      }
+    },
+    {
+      "id": "070cad8aa770",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Verla",
+        "vendor": "Verla"
+      }
+    },
+    {
+      "id": "0750a3061d72",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Flora AI",
+        "vendor": "Flora AI"
+      }
+    },
+    {
+      "id": "0ddacfb2cc6e",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Wavel.ai",
+        "vendor": "Wavel.ai"
+      }
+    },
+    {
+      "id": "1fff4784ec9d",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Privaro",
+        "vendor": "Privaro"
+      }
+    },
+    {
+      "id": "27b4acca203a",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "TalkPix",
+        "vendor": "TalkPix"
+      }
+    },
+    {
+      "id": "31232ad4315e",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Hylark",
+        "vendor": "Hylark"
+      }
+    },
+    {
+      "id": "314fb9d43531",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "GPT Image 2.5",
+        "vendor": "GPT Image"
+      }
+    },
+    {
+      "id": "33d4fd34f78f",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "CaptionBolt",
+        "vendor": "CaptionBolt"
+      }
+    },
+    {
+      "id": "39d2832e3c8f",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Unboring.ai",
+        "vendor": "Unboring.ai"
+      }
+    },
+    {
+      "id": "3fa2cec73c43",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "AI Manga Translator AI",
+        "vendor": "AI Manga"
+      }
+    },
+    {
+      "id": "413a77602a7c",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Tenki Cloud",
+        "vendor": "Tenki Cloud"
+      }
+    },
+    {
+      "id": "44a401cd8f13",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Seedance 3.0 AI",
+        "vendor": "Seedance 3.0"
+      }
+    },
+    {
+      "id": "46b1877f5969",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Ontosight.ai",
+        "vendor": "Ontosight.ai"
+      }
+    },
+    {
+      "id": "4a4f4777ffbc",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Flowrite",
+        "vendor": "Flowrite"
+      }
+    },
+    {
+      "id": "4fcc2847e3fc",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "more.graphics",
+        "vendor": "more.graphics"
+      }
+    },
+    {
+      "id": "4fede366f914",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Labrynth",
+        "vendor": "Labrynth"
+      }
+    },
+    {
+      "id": "54d867a4530d",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Landscape Design AI",
+        "vendor": "Landscape Design"
+      }
+    },
+    {
+      "id": "5975c73aa115",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Qlip.ai",
+        "vendor": "Qlip.ai"
+      }
+    },
+    {
+      "id": "60317b771abf",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "AutoPod",
+        "vendor": "AutoPod"
+      }
+    },
+    {
+      "id": "654e05ed3453",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Sorank",
+        "vendor": "Sorank"
+      }
+    },
+    {
+      "id": "69a0d047e3f9",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Pickle AI",
+        "vendor": "Pickle AI"
+      }
+    },
+    {
+      "id": "6c02d0ffe148",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Designkit (formerly 美图设计室-智能生成海报)",
+        "vendor": "Designkit"
+      }
+    },
+    {
+      "id": "72048178d658",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "DeepBrain AI",
+        "vendor": "DeepBrain AI"
+      }
+    },
+    {
+      "id": "72410d92e184",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "TickClip",
+        "vendor": "TickClip"
+      }
+    },
+    {
+      "id": "75c584a4d6a2",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "XingChen: Xing4.0 29B A4B (free)",
+        "vendor": "XingChen"
+      }
+    },
+    {
+      "id": "7f1250402ebb",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Klarent",
+        "vendor": "Klarent"
+      }
+    },
+    {
+      "id": "7f3607d92aa5",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Genmo Mochi-1",
+        "vendor": "Genmo Mochi"
+      }
+    },
+    {
+      "id": "8384e847f282",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Copilot Audio Expression",
+        "vendor": "Copilot Audio"
+      }
+    },
+    {
+      "id": "84dfc76c38e0",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Genjutsu AI Video Editor",
+        "vendor": "Genjutsu AI"
+      }
+    },
+    {
+      "id": "8583e9860d88",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Getsolved AI Detector",
+        "vendor": "Getsolved AI"
+      }
+    },
+    {
+      "id": "8797caa10aea",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Prismical",
+        "vendor": "Prismical"
+      }
+    },
+    {
+      "id": "8b8b44476f52",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Webclaw",
+        "vendor": "Webclaw"
+      }
+    },
+    {
+      "id": "8c2a12fcf560",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Seedance 3.0",
+        "vendor": "Seedance 3.0"
+      }
+    },
+    {
+      "id": "8c9181f2b117",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Rumi Events",
+        "vendor": "Rumi Events"
+      }
+    },
+    {
+      "id": "90ef368f720d",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Anyvids",
+        "vendor": "Anyvids"
+      }
+    },
+    {
+      "id": "9b734ca08ce5",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Invoice Mama",
+        "vendor": "Invoice Mama"
+      }
+    },
+    {
+      "id": "9ce2f3d45c11",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Jason AI",
+        "vendor": "Jason AI"
+      }
+    },
+    {
+      "id": "9d99178344b6",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Infinite Slop",
+        "vendor": "Infinite Slop"
+      }
+    },
+    {
+      "id": "9e63611224ef",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "aipoker.bot",
+        "vendor": "aipoker.bot"
+      }
+    },
+    {
+      "id": "a134b60a8edc",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Dubly.AI",
+        "vendor": "Dubly.AI"
+      }
+    },
+    {
+      "id": "a4dc88711e74",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "looot",
+        "vendor": "looot"
+      }
+    },
+    {
+      "id": "a9053ca847fb",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Humanize Max",
+        "vendor": "Humanize Max"
+      }
+    },
+    {
+      "id": "ab4c0e5c007e",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Kreado AI",
+        "vendor": "Kreado AI"
+      }
+    },
+    {
+      "id": "b4d191dd0c65",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "HiClip",
+        "vendor": "HiClip"
+      }
+    },
+    {
+      "id": "bf08e4fbd5ac",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Star By Face",
+        "vendor": "Star By"
+      }
+    },
+    {
+      "id": "c3d6bd34ebfe",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Getsolved",
+        "vendor": "Getsolved"
+      }
+    },
+    {
+      "id": "c9c5429f2205",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Libra",
+        "vendor": "Libra"
+      }
+    },
+    {
+      "id": "cb17bb1508c4",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "AI Manga Translator",
+        "vendor": "AI Manga"
+      }
+    },
+    {
+      "id": "cbfce04c5556",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Motionleap",
+        "vendor": "Motionleap"
+      }
+    },
+    {
+      "id": "d338170e86af",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "MagicRemover",
+        "vendor": "MagicRemover"
+      }
+    },
+    {
+      "id": "d6cd29e05603",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Dawnwood",
+        "vendor": "Dawnwood"
+      }
+    },
+    {
+      "id": "d7d64e1ef240",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "ImagesArt AI Image Editor",
+        "vendor": "ImagesArt AI"
+      }
+    },
+    {
+      "id": "dfa07fdc244d",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Notte",
+        "vendor": "Notte"
+      }
+    },
+    {
+      "id": "e7f286155de9",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "NoCodeBackend",
+        "vendor": "NoCodeBackend"
+      }
+    },
+    {
+      "id": "ee446d349239",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "AltText.ai",
+        "vendor": "AltText.ai"
+      }
+    },
+    {
+      "id": "ef3cba339a72",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Crouton Alpha",
+        "vendor": "Crouton"
+      }
+    },
+    {
+      "id": "f6e6f3b1c820",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "Wideo",
+        "vendor": "Wideo"
+      }
+    },
+    {
+      "id": "f91e1085801f",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T02:09:31.338Z",
+      "label": {
+        "title": "ReelMuse.ai",
+        "vendor": "ReelMuse.ai"
+      }
+    },
+    {
+      "id": "fef21feaac71",
+      "at": "2026-11-12",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/ending-soon/",
+      "to": "https://appsumo.com/collections/new/",
+      "origin": "observed",
+      "runAt": "2026-11-12T02:09:31.338Z"
+    },
+    {
+      "id": "717bfce842bf",
+      "at": "2026-11-12",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "其他",
+        "region": "cn",
+        "source": "快科技",
+        "sourceUrl": "https://rss.mydrivers.com/rss.aspx?Tid=1",
+        "verified": false
+      },
+      "runAt": "2026-11-12T05:53:51.475Z"
+    },
+    {
+      "id": "8c8ed425e7c3",
+      "at": "2026-11-12",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "其他",
+        "region": "cn",
+        "source": "IT之家",
+        "sourceUrl": "https://www.ithome.com/rss/",
+        "verified": false
+      },
+      "runAt": "2026-11-12T05:53:51.475Z"
+    },
+    {
+      "id": "e4bd8003b3d6",
+      "at": "2026-11-12",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T05:53:51.475Z",
+      "label": {
+        "title": "GLM-5.3-Flash 限时五折",
+        "vendor": "智谱AI"
+      }
+    },
+    {
+      "id": "10c203c3a80e",
+      "at": "2026-11-13",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $145（省 59%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $145）",
+        "expiresAt": "2026-11-20",
+        "type": "deal",
+        "category": "办公效率",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-12T19:37:35.005Z"
+    },
+    {
+      "id": "26a04b07193d",
+      "at": "2026-11-13",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "其他",
+        "region": "cn",
+        "source": "钛媒体",
+        "sourceUrl": "https://www.tmtpost.com/rss",
+        "verified": false
+      },
+      "runAt": "2026-11-12T19:37:35.005Z"
+    },
+    {
+      "id": "2f0c03c32d8d",
+      "at": "2026-11-13",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T19:37:35.005Z",
+      "label": {
+        "title": "AutomateNexus CRM",
+        "vendor": "AutomateNexus CRM"
+      }
+    },
+    {
+      "id": "3c435ea3c1e1",
+      "at": "2026-11-13",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "其他",
+        "region": "cn",
+        "source": "快科技",
+        "sourceUrl": "https://rss.mydrivers.com/rss.aspx?Tid=1",
+        "verified": false
+      },
+      "runAt": "2026-11-12T19:37:35.005Z"
+    },
+    {
+      "id": "3eac4b6acccb",
+      "at": "2026-11-13",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-12",
+      "runAt": "2026-11-12T19:37:35.005Z",
+      "label": {
+        "title": "每天白赚几百 AI大模型免费薅羊毛：DeepSeek、GPT等全都有",
+        "vendor": "每天白赚几百 AI大模型免费薅羊毛：DeepSeek、GPT等全都有"
+      }
+    },
+    {
+      "id": "9e43fb1945c3",
+      "at": "2026-11-13",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-12",
+      "to": "2026-11-16",
+      "origin": "observed",
+      "runAt": "2026-11-12T19:37:35.005Z"
+    },
+    {
+      "id": "ee446d349239",
+      "at": "2026-11-13",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-12T19:37:35.005Z"
+    },
+    {
+      "id": "f1323ce17329",
+      "at": "2026-11-13",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": null,
+      "to": "2026-11-14",
+      "origin": "observed",
+      "runAt": "2026-11-12T19:37:35.005Z"
+    },
+    {
+      "id": "f1323ce17329",
+      "at": "2026-11-13",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/new/",
+      "to": "https://appsumo.com/collections/ending-soon/",
+      "origin": "observed",
+      "runAt": "2026-11-12T19:37:35.005Z"
+    },
+    {
+      "id": "0750a3061d72",
+      "at": "2026-11-13",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-13T05:14:52.149Z"
+    },
+    {
+      "id": "2e5118bcd2c1",
+      "at": "2026-11-13",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-13",
+      "runAt": "2026-11-13T05:14:52.149Z",
+      "label": {
+        "title": "Pretty Prompt",
+        "vendor": "Pretty Prompt"
+      }
+    },
+    {
+      "id": "762a098836d7",
+      "at": "2026-11-13",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "OpenRouter 免费模型：prompt / completion 价格均为 $0；限流：20 次/分钟；每日 50 次（累计购买 <10 credits）或 1000 次（≥10 credits）—— 出自 OpenRouter 官方限流文档；官方未标注免费截止日期",
+        "pricingModel": "free",
+        "priceLine": "$0 输入 / $0 输出（免费）",
+        "features": [
+          "免费 API",
+          "20 RPM / 50 RPD",
+          ":free 路由"
+        ],
+        "validity": "官方未标注免费截止日期",
+        "type": "deal",
+        "category": "API服务",
+        "region": "global",
+        "source": "OpenRouter",
+        "sourceUrl": "https://openrouter.ai/api/v1/models",
+        "verified": false
+      },
+      "runAt": "2026-11-13T05:14:52.149Z"
+    },
+    {
+      "id": "864a916dc7d3",
+      "at": "2026-11-13",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $199（省 70%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $199）",
+        "type": "deal",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-13T05:14:52.149Z"
+    },
+    {
+      "id": "fef21feaac71",
+      "at": "2026-11-13",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-13",
+      "runAt": "2026-11-13T05:14:52.149Z",
+      "label": {
+        "title": "NinjaPipe",
+        "vendor": "NinjaPipe"
+      }
+    },
+    {
+      "id": "36fdb826204d",
+      "at": "2026-11-14",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $49，原价 $199（省 75%）",
+        "pricingModel": "paid",
+        "priceLine": "$49 终身（原价 $199）",
+        "expiresAt": "2026-11-21",
+        "type": "deal",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-13T19:17:58.546Z"
+    },
+    {
+      "id": "3e0abe88eb9f",
+      "at": "2026-11-14",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $79，原价 $450（省 82%）",
+        "pricingModel": "paid",
+        "priceLine": "$79 终身（原价 $450）",
+        "expiresAt": "2026-11-21",
+        "type": "deal",
+        "category": "办公效率",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-13T19:17:58.546Z"
+    },
+    {
+      "id": "44848acd19f3",
+      "at": "2026-11-14",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-14",
+      "to": "2026-11-17",
+      "origin": "observed",
+      "runAt": "2026-11-13T19:17:58.546Z"
+    },
+    {
+      "id": "6e7cfea4dbc1",
+      "at": "2026-11-14",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $69，原价 $324（省 79%）",
+        "pricingModel": "paid",
+        "priceLine": "$69 终身（原价 $324）",
+        "expiresAt": "2026-11-28",
+        "type": "deal",
+        "category": "对话模型",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-13T19:17:58.546Z"
+    },
+    {
+      "id": "cfb47a6dd6fa",
+      "at": "2026-11-14",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $39，原价 $299（省 87%）",
+        "pricingModel": "paid",
+        "priceLine": "$39 终身（原价 $299）",
+        "expiresAt": "2026-11-21",
+        "type": "deal",
+        "category": "设计创意",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-13T19:17:58.546Z"
+    },
+    {
+      "id": "ee446d349239",
+      "at": "2026-11-14",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-13",
+      "runAt": "2026-11-13T19:17:58.546Z",
+      "label": {
+        "title": "AltText.ai",
+        "vendor": "AltText.ai"
+      }
+    },
+    {
+      "id": "f1323ce17329",
+      "at": "2026-11-14",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-14",
+      "to": "2026-11-28",
+      "origin": "observed",
+      "runAt": "2026-11-13T19:17:58.546Z"
+    },
+    {
+      "id": "10c203c3a80e",
+      "at": "2026-11-14",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-14",
+      "runAt": "2026-11-14T05:04:12.986Z",
+      "label": {
+        "title": "Kaptr.me",
+        "vendor": "Kaptr.me"
+      }
+    },
+    {
+      "id": "29ff7f061d59",
+      "at": "2026-11-14",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-14",
+      "runAt": "2026-11-14T05:04:12.986Z",
+      "label": {
+        "title": "VistaCreate",
+        "vendor": "VistaCreate"
+      }
+    },
+    {
+      "id": "318a050a84bb",
+      "at": "2026-11-14",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-14",
+      "runAt": "2026-11-14T05:04:12.986Z",
+      "label": {
+        "title": "ResumeUp.AI",
+        "vendor": "ResumeUp.AI"
+      }
+    },
+    {
+      "id": "5791cccec315",
+      "at": "2026-11-14",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-14",
+      "runAt": "2026-11-14T05:04:12.986Z",
+      "label": {
+        "title": "ProposAI",
+        "vendor": "ProposAI"
+      }
+    },
+    {
+      "id": "864a916dc7d3",
+      "at": "2026-11-14",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-14",
+      "runAt": "2026-11-14T05:04:12.986Z",
+      "label": {
+        "title": "Snappyit",
+        "vendor": "Snappyit"
+      }
+    },
+    {
+      "id": "9c94811e7f17",
+      "at": "2026-11-14",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "办公效率",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/docsmint-5f906736",
+        "verified": false
+      },
+      "runAt": "2026-11-14T05:04:12.986Z"
+    },
+    {
+      "id": "e2bea3790e12",
+      "at": "2026-11-14",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-14",
+      "runAt": "2026-11-14T05:04:12.986Z",
+      "label": {
+        "title": "AdaptlyPost",
+        "vendor": "AdaptlyPost"
+      }
+    },
+    {
+      "id": "f9844047fe7c",
+      "at": "2026-11-14",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "OpenRouter 免费模型：prompt / completion 价格均为 $0；限流：20 次/分钟；每日 50 次（累计购买 <10 credits）或 1000 次（≥10 credits）—— 出自 OpenRouter 官方限流文档；官方未标注免费截止日期",
+        "pricingModel": "free",
+        "priceLine": "$0 输入 / $0 输出（免费）",
+        "features": [
+          "免费 API",
+          "20 RPM / 50 RPD",
+          ":free 路由"
+        ],
+        "validity": "官方未标注免费截止日期",
+        "type": "deal",
+        "category": "API服务",
+        "region": "global",
+        "source": "OpenRouter",
+        "sourceUrl": "https://openrouter.ai/api/v1/models",
+        "verified": false
+      },
+      "runAt": "2026-11-14T05:04:12.986Z"
+    },
+    {
+      "id": "8a8c3bdc2b05",
+      "at": "2026-11-15",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $99，原价 $348（省 72%）",
+        "pricingModel": "paid",
+        "priceLine": "$99 终身（原价 $348）",
+        "type": "deal",
+        "category": "办公效率",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-14T17:44:04.926Z"
+    },
+    {
+      "id": "c24e115fffed",
+      "at": "2026-11-15",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $139（省 58%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $139）",
+        "expiresAt": "2026-11-29",
+        "type": "deal",
+        "category": "其他",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-14T17:44:04.926Z"
+    },
+    {
+      "id": "cfb47a6dd6fa",
+      "at": "2026-11-15",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-14",
+      "runAt": "2026-11-14T17:44:04.926Z",
+      "label": {
+        "title": "weDocs",
+        "vendor": "weDocs"
+      }
+    },
+    {
+      "id": "ee446d349239",
+      "at": "2026-11-15",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-14T17:44:04.926Z"
+    },
+    {
+      "id": "2374288880c3",
+      "at": "2026-11-15",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-15",
+      "runAt": "2026-11-15T04:58:14.619Z",
+      "label": {
+        "title": "NVIDIA: Nemotron 3.5 Super VL (free)",
+        "vendor": "NVIDIA"
+      }
+    },
+    {
+      "id": "2608e4a555a7",
+      "at": "2026-11-15",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-15",
+      "runAt": "2026-11-15T04:58:14.619Z",
+      "label": {
+        "title": "Atypica AI",
+        "vendor": "Atypica AI"
+      }
+    },
+    {
+      "id": "2f0c03c32d8d",
+      "at": "2026-11-15",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-15T04:58:14.619Z"
+    },
+    {
+      "id": "3dd8269967a8",
+      "at": "2026-11-15",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "音频语音",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-15T04:58:14.619Z"
+    },
+    {
+      "id": "3e0abe88eb9f",
+      "at": "2026-11-15",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/ending-soon/",
+      "to": "https://appsumo.com/collections/new/",
+      "origin": "observed",
+      "runAt": "2026-11-15T04:58:14.619Z"
+    },
+    {
+      "id": "4de51b8410b0",
+      "at": "2026-11-15",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-15T04:58:14.619Z"
+    },
+    {
+      "id": "68c524738cc0",
+      "at": "2026-11-15",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-15T04:58:14.619Z"
+    },
+    {
+      "id": "72e26c06162b",
+      "at": "2026-11-15",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-15T04:58:14.619Z"
+    },
+    {
+      "id": "7f06124571e2",
+      "at": "2026-11-15",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-15",
+      "runAt": "2026-11-15T04:58:14.619Z",
+      "label": {
+        "title": "NudgeForMe",
+        "vendor": "NudgeForMe"
+      }
+    },
+    {
+      "id": "8642f235cf91",
+      "at": "2026-11-15",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "paid",
+        "type": "tool",
+        "category": "智能体",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-15T04:58:14.619Z"
+    },
+    {
+      "id": "88e36f3c0ff8",
+      "at": "2026-11-15",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "智能体",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-15T04:58:14.619Z"
+    },
+    {
+      "id": "b5bc4094b875",
+      "at": "2026-11-15",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "paid",
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-15T04:58:14.619Z"
+    },
+    {
+      "id": "cbfce04c5556",
+      "at": "2026-11-15",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-15T04:58:14.619Z"
+    },
+    {
+      "id": "d63a45102b28",
+      "at": "2026-11-15",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-15T04:58:14.619Z"
+    },
+    {
+      "id": "e2a77341770d",
+      "at": "2026-11-15",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "pricingModel": "freemium",
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "aitools.fyi",
+        "verified": false
+      },
+      "runAt": "2026-11-15T04:58:14.619Z"
+    },
+    {
+      "id": "2add85b3877d",
+      "at": "2026-11-16",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-15",
+      "runAt": "2026-11-15T18:32:59.684Z",
+      "label": {
+        "title": "MusicGenerator",
+        "vendor": "MusicGenerator"
+      }
+    },
+    {
+      "id": "3e0abe88eb9f",
+      "at": "2026-11-16",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/new/",
+      "to": "https://appsumo.com/collections/ending-soon/",
+      "origin": "observed",
+      "runAt": "2026-11-15T18:32:59.684Z"
+    },
+    {
+      "id": "7d8921eb5c47",
+      "at": "2026-11-16",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-15",
+      "runAt": "2026-11-15T18:32:59.684Z",
+      "label": {
+        "title": "Nano Banana 3",
+        "vendor": "Nano Banana"
+      }
+    },
+    {
+      "id": "87a5685a4153",
+      "at": "2026-11-16",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-15",
+      "runAt": "2026-11-15T18:32:59.684Z",
+      "label": {
+        "title": "Angry Dance",
+        "vendor": "Angry Dance"
+      }
+    },
+    {
+      "id": "98b5e610f7bc",
+      "at": "2026-11-16",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-15",
+      "runAt": "2026-11-15T18:32:59.684Z",
+      "label": {
+        "title": "Seedance 3.0 AI Video Generator",
+        "vendor": "Seedance 3.0"
+      }
+    },
+    {
+      "id": "a3f18a7a4b9d",
+      "at": "2026-11-16",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-15",
+      "runAt": "2026-11-15T18:32:59.684Z",
+      "label": {
+        "title": "Lip Sync AI (lipsyncai.org)",
+        "vendor": "Lip Sync"
+      }
+    },
+    {
+      "id": "a67c07bf4993",
+      "at": "2026-11-16",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-15",
+      "runAt": "2026-11-15T18:32:59.684Z",
+      "label": {
+        "title": "Ankon AI",
+        "vendor": "Ankon AI"
+      }
+    },
+    {
+      "id": "d65084e7f76f",
+      "at": "2026-11-16",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-15",
+      "runAt": "2026-11-15T18:32:59.684Z",
+      "label": {
+        "title": "Inkwell Plot",
+        "vendor": "Inkwell Plot"
+      }
+    },
+    {
+      "id": "de0587956f33",
+      "at": "2026-11-16",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-15",
+      "runAt": "2026-11-15T18:32:59.684Z",
+      "label": {
+        "title": "Plimo",
+        "vendor": "Plimo"
+      }
+    },
+    {
+      "id": "e6da58501e1d",
+      "at": "2026-11-16",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-15",
+      "runAt": "2026-11-15T18:32:59.684Z",
+      "label": {
+        "title": "Dezhou Poker AI",
+        "vendor": "Dezhou Poker"
+      }
+    },
+    {
+      "id": "edcba5e8a6d2",
+      "at": "2026-11-16",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-15",
+      "runAt": "2026-11-15T18:32:59.684Z",
+      "label": {
+        "title": "Beacn",
+        "vendor": "Beacn"
+      }
+    },
+    {
+      "id": "29ff7f061d59",
+      "at": "2026-11-17",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-16T21:42:46.066Z"
+    },
+    {
+      "id": "29ff7f061d59",
+      "at": "2026-11-17",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "AppSumo 终身授权限时折扣：现价 $99，原价 $399（省 75%）",
+      "to": "AppSumo 终身授权限时折扣：现价 $109，原价 $399（省 73%）",
+      "origin": "observed",
+      "runAt": "2026-11-16T21:42:46.066Z"
+    },
+    {
+      "id": "29ff7f061d59",
+      "at": "2026-11-17",
+      "type": "benefit_changed",
+      "field": "priceLine",
+      "from": "$99 终身（原价 $399）",
+      "to": "$109 终身（原价 $399）",
+      "origin": "observed",
+      "runAt": "2026-11-16T21:42:46.066Z"
+    },
+    {
+      "id": "29ff7f061d59",
+      "at": "2026-11-17",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-16",
+      "to": "2026-12-02",
+      "origin": "observed",
+      "runAt": "2026-11-16T21:42:46.066Z"
+    },
+    {
+      "id": "2b95f56ce3a1",
+      "at": "2026-11-17",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "AppSumo 终身授权限时折扣：现价 $79，原价 $299（省 74%）",
+      "to": "AppSumo 终身授权限时折扣：现价 $89，原价 $299（省 70%）",
+      "origin": "observed",
+      "runAt": "2026-11-16T21:42:46.066Z"
+    },
+    {
+      "id": "2b95f56ce3a1",
+      "at": "2026-11-17",
+      "type": "benefit_changed",
+      "field": "priceLine",
+      "from": "$79 终身（原价 $299）",
+      "to": "$89 终身（原价 $299）",
+      "origin": "observed",
+      "runAt": "2026-11-16T21:42:46.066Z"
+    },
+    {
+      "id": "2b95f56ce3a1",
+      "at": "2026-11-17",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-16",
+      "to": "2026-12-02",
+      "origin": "observed",
+      "runAt": "2026-11-16T21:42:46.066Z"
+    },
+    {
+      "id": "3f97a29b90e6",
+      "at": "2026-11-17",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-16",
+      "to": "2026-11-19",
+      "origin": "observed",
+      "runAt": "2026-11-16T21:42:46.066Z"
+    },
+    {
+      "id": "5c45f40df3ed",
+      "at": "2026-11-17",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $79，原价 $104（省 24%）",
+        "pricingModel": "paid",
+        "priceLine": "$79 终身（原价 $104）",
+        "expiresAt": "2026-11-18",
+        "type": "deal",
+        "category": "编程开发",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-16T21:42:46.066Z"
+    },
+    {
+      "id": "5d66f28a59b5",
+      "at": "2026-11-17",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $49，原价 $89（省 45%）",
+        "pricingModel": "paid",
+        "priceLine": "$49 终身（原价 $89）",
+        "expiresAt": "2026-12-01",
+        "type": "deal",
+        "category": "设计创意",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-16T21:42:46.066Z"
+    },
+    {
+      "id": "8e4af3df250c",
+      "at": "2026-11-17",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-16",
+      "runAt": "2026-11-16T21:42:46.066Z",
+      "label": {
+        "title": "Preuve AI",
+        "vendor": "Preuve AI"
+      }
+    },
+    {
+      "id": "a01ebd902884",
+      "at": "2026-11-17",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $79，原价 $600（省 87%）",
+        "pricingModel": "paid",
+        "priceLine": "$79 终身（原价 $600）",
+        "expiresAt": "2026-12-01",
+        "type": "deal",
+        "category": "办公效率",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-16T21:42:46.066Z"
+    },
+    {
+      "id": "bce5afb96302",
+      "at": "2026-11-17",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $69，原价 $948（省 93%）",
+        "pricingModel": "paid",
+        "priceLine": "$69 终身（原价 $948）",
+        "expiresAt": "2026-11-18",
+        "type": "deal",
+        "category": "搜索研究",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-16T21:42:46.066Z"
+    },
+    {
+      "id": "d175c32f71fd",
+      "at": "2026-11-17",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $64，原价 $500（省 87%）",
+        "pricingModel": "paid",
+        "priceLine": "$64 终身（原价 $500）",
+        "expiresAt": "2026-11-18",
+        "type": "deal",
+        "category": "音频语音",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-16T21:42:46.066Z"
+    },
+    {
+      "id": "ee446d349239",
+      "at": "2026-11-17",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-16",
+      "runAt": "2026-11-16T21:42:46.066Z",
+      "label": {
+        "title": "AltText.ai",
+        "vendor": "AltText.ai"
+      }
+    },
+    {
+      "id": "fa69020c164a",
+      "at": "2026-11-17",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $69，原价 $99（省 30%）",
+        "pricingModel": "paid",
+        "priceLine": "$69 终身（原价 $99）",
+        "expiresAt": "2026-11-18",
+        "type": "deal",
+        "category": "其他",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-16T21:42:46.066Z"
+    },
+    {
+      "id": "08220811a35d",
+      "at": "2026-11-17",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "其他",
+        "region": "cn",
+        "source": "爱范儿",
+        "sourceUrl": "https://www.ifanr.com/feed",
+        "verified": false
+      },
+      "runAt": "2026-11-17T06:42:44.029Z"
+    },
+    {
+      "id": "086534ebceeb",
+      "at": "2026-11-17",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-17",
+      "runAt": "2026-11-17T06:42:44.029Z",
+      "label": {
+        "title": "DomScan",
+        "vendor": "DomScan"
+      }
+    },
+    {
+      "id": "2f0c03c32d8d",
+      "at": "2026-11-17",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-17",
+      "runAt": "2026-11-17T06:42:44.029Z",
+      "label": {
+        "title": "AutomateNexus CRM",
+        "vendor": "AutomateNexus CRM"
+      }
+    },
+    {
+      "id": "36fdb826204d",
+      "at": "2026-11-17",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-17",
+      "runAt": "2026-11-17T06:42:44.029Z",
+      "label": {
+        "title": "ClearCrowds",
+        "vendor": "ClearCrowds"
+      }
+    },
+    {
+      "id": "49f87d205620",
+      "at": "2026-11-17",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-17",
+      "to": "2026-11-20",
+      "origin": "observed",
+      "runAt": "2026-11-17T06:42:44.029Z"
+    },
+    {
+      "id": "9e43fb1945c3",
+      "at": "2026-11-17",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-17",
+      "runAt": "2026-11-17T06:42:44.029Z",
+      "label": {
+        "title": "Tough Tongue AI",
+        "vendor": "Tough Tongue"
+      }
+    },
+    {
+      "id": "44848acd19f3",
+      "at": "2026-11-18",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-17",
+      "runAt": "2026-11-17T20:32:28.248Z",
+      "label": {
+        "title": "Brandolia",
+        "vendor": "Brandolia"
+      }
+    },
+    {
+      "id": "62e3166acec0",
+      "at": "2026-11-18",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-17",
+      "runAt": "2026-11-17T20:32:28.248Z",
+      "label": {
+        "title": "GLM-4V-Flash 免费模型",
+        "vendor": "智谱AI"
+      }
+    },
+    {
+      "id": "a157ed655587",
+      "at": "2026-11-18",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $99，原价 $348（省 72%）",
+        "pricingModel": "paid",
+        "priceLine": "$99 终身（原价 $348）",
+        "type": "deal",
+        "category": "办公效率",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-17T20:32:28.248Z"
+    },
+    {
+      "id": "a67c07bf4993",
+      "at": "2026-11-18",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-17T20:32:28.248Z"
+    },
+    {
+      "id": "f34797ef8750",
+      "at": "2026-11-18",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-17",
+      "runAt": "2026-11-17T20:32:28.248Z",
+      "label": {
+        "title": "ScrollHaus",
+        "vendor": "ScrollHaus"
+      }
+    },
+    {
+      "id": "086534ebceeb",
+      "at": "2026-11-18",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-18T06:04:01.234Z"
+    },
+    {
+      "id": "5c45f40df3ed",
+      "at": "2026-11-18",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "AppSumo 终身授权限时折扣：现价 $79，原价 $104（省 24%）",
+      "to": "AppSumo 终身授权限时折扣：现价 $79，原价 $600（省 87%）",
+      "origin": "observed",
+      "runAt": "2026-11-18T06:04:01.234Z"
+    },
+    {
+      "id": "5c45f40df3ed",
+      "at": "2026-11-18",
+      "type": "benefit_changed",
+      "field": "priceLine",
+      "from": "$79 终身（原价 $104）",
+      "to": "$79 终身（原价 $600）",
+      "origin": "observed",
+      "runAt": "2026-11-18T06:04:01.234Z"
+    },
+    {
+      "id": "620ef4290482",
+      "at": "2026-11-18",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-18",
+      "runAt": "2026-11-18T06:04:01.234Z",
+      "label": {
+        "title": "VidTechy",
+        "vendor": "VidTechy"
+      }
+    },
+    {
+      "id": "717bfce842bf",
+      "at": "2026-11-18",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-13",
+      "runAt": "2026-11-18T06:04:01.234Z",
+      "label": {
+        "title": "豆包工作宣布接入多款第三方模型！含Kimi K3.1 Pro、DeepSeek V4.1 Flash等",
+        "vendor": "豆包工作宣布接入多款第三方模型！含Kimi K3.1"
+      }
+    },
+    {
+      "id": "8a8c3bdc2b05",
+      "at": "2026-11-18",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-18",
+      "runAt": "2026-11-18T06:04:01.234Z",
+      "label": {
+        "title": "Rerun",
+        "vendor": "Rerun"
+      }
+    },
+    {
+      "id": "940d872f9eac",
+      "at": "2026-11-18",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "OpenRouter 免费模型：prompt / completion 价格均为 $0；限流：20 次/分钟；每日 50 次（累计购买 <10 credits）或 1000 次（≥10 credits）—— 出自 OpenRouter 官方限流文档；官方未标注免费截止日期",
+      "to": "OpenRouter 免费模型：prompt / completion 价格均为 $0；限流：20 次/分钟；每日 50 次（累计购买 <10 credits）或 1000 次（≥10 credits）—— 出自 OpenRouter 官方限流文档；免费窗口至 2026-11-19（官方 expiration_date）",
+      "origin": "observed",
+      "runAt": "2026-11-18T06:04:01.234Z"
+    },
+    {
+      "id": "940d872f9eac",
+      "at": "2026-11-18",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": null,
+      "to": "2026-11-19",
+      "origin": "observed",
+      "runAt": "2026-11-18T06:04:01.234Z"
+    },
+    {
+      "id": "940d872f9eac",
+      "at": "2026-11-18",
+      "type": "expiry_changed",
+      "field": "validity",
+      "from": "官方未标注免费截止日期",
+      "to": "免费窗口至 2026-11-19（官方 expiration_date）",
+      "origin": "observed",
+      "runAt": "2026-11-18T06:04:01.234Z"
+    },
+    {
+      "id": "d262c0445b55",
+      "at": "2026-11-18",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "对话模型",
+        "region": "cn",
+        "source": "快科技",
+        "sourceUrl": "https://rss.mydrivers.com/rss.aspx?Tid=1",
+        "verified": false
+      },
+      "runAt": "2026-11-18T06:04:01.234Z"
+    },
+    {
+      "id": "0a2fc31c76cc",
+      "at": "2026-11-19",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "pruned_expired",
+      "runAt": "2026-11-18T20:03:30.768Z",
+      "label": {
+        "title": "Anthropic 宣布额度免费重置：Pro、Max、Ultra 和 Team 用户可领，Claude 支持更多 MCP Apps 扩展",
+        "vendor": "Anthropic 宣布额度免费重置：Pro、Max、Ultra"
+      }
+    },
+    {
+      "id": "0d9b9646f1a5",
+      "at": "2026-11-19",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-18",
+      "to": "2026-11-21",
+      "origin": "observed",
+      "runAt": "2026-11-18T20:03:30.768Z"
+    },
+    {
+      "id": "2a7204391275",
+      "at": "2026-11-19",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $99，原价 $488（省 80%）",
+        "pricingModel": "paid",
+        "priceLine": "$99 终身（原价 $488）",
+        "expiresAt": "2026-11-20",
+        "type": "deal",
+        "category": "编程开发",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-18T20:03:30.768Z"
+    },
+    {
+      "id": "41b332c4e705",
+      "at": "2026-11-19",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $989（省 94%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $989）",
+        "expiresAt": "2026-11-20",
+        "type": "deal",
+        "category": "对话模型",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-18T20:03:30.768Z"
+    },
+    {
+      "id": "42df4fdc8aa9",
+      "at": "2026-11-19",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $69，原价 $102（省 32%）",
+        "pricingModel": "paid",
+        "priceLine": "$69 终身（原价 $102）",
+        "expiresAt": "2026-11-20",
+        "type": "deal",
+        "category": "办公效率",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-18T20:03:30.768Z"
+    },
+    {
+      "id": "5975c73aa115",
+      "at": "2026-11-19",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-18T20:03:30.768Z"
+    },
+    {
+      "id": "59c7b0179308",
+      "at": "2026-11-19",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $69，原价 $124（省 44%）",
+        "pricingModel": "paid",
+        "priceLine": "$69 终身（原价 $124）",
+        "expiresAt": "2026-11-20",
+        "type": "deal",
+        "category": "智能体",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-18T20:03:30.768Z"
+    },
+    {
+      "id": "5c45f40df3ed",
+      "at": "2026-11-19",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "AppSumo 终身授权限时折扣：现价 $79，原价 $600（省 87%）",
+      "to": "AppSumo 终身授权限时折扣：现价 $89，原价 $600（省 85%）",
+      "origin": "observed",
+      "runAt": "2026-11-18T20:03:30.768Z"
+    },
+    {
+      "id": "5c45f40df3ed",
+      "at": "2026-11-19",
+      "type": "benefit_changed",
+      "field": "priceLine",
+      "from": "$79 终身（原价 $600）",
+      "to": "$89 终身（原价 $600）",
+      "origin": "observed",
+      "runAt": "2026-11-18T20:03:30.768Z"
+    },
+    {
+      "id": "5c45f40df3ed",
+      "at": "2026-11-19",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-18",
+      "to": "2026-12-02",
+      "origin": "observed",
+      "runAt": "2026-11-18T20:03:30.768Z"
+    },
+    {
+      "id": "7569157d322d",
+      "at": "2026-11-19",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $804（省 93%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $804）",
+        "expiresAt": "2026-11-20",
+        "type": "deal",
+        "category": "对话模型",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-18T20:03:30.768Z"
+    },
+    {
+      "id": "a157ed655587",
+      "at": "2026-11-19",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "AppSumo 终身授权限时折扣：现价 $99，原价 $348（省 72%）",
+      "to": "AppSumo 终身授权限时折扣：现价 $119，原价 $348（省 66%）",
+      "origin": "observed",
+      "runAt": "2026-11-18T20:03:30.768Z"
+    },
+    {
+      "id": "a157ed655587",
+      "at": "2026-11-19",
+      "type": "benefit_changed",
+      "field": "priceLine",
+      "from": "$99 终身（原价 $348）",
+      "to": "$119 终身（原价 $348）",
+      "origin": "observed",
+      "runAt": "2026-11-18T20:03:30.768Z"
+    },
+    {
+      "id": "bce5afb96302",
+      "at": "2026-11-19",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "AppSumo 终身授权限时折扣：现价 $69，原价 $948（省 93%）",
+      "to": "AppSumo 终身授权限时折扣：现价 $79，原价 $958（省 92%）",
+      "origin": "observed",
+      "runAt": "2026-11-18T20:03:30.768Z"
+    },
+    {
+      "id": "bce5afb96302",
+      "at": "2026-11-19",
+      "type": "benefit_changed",
+      "field": "priceLine",
+      "from": "$69 终身（原价 $948）",
+      "to": "$79 终身（原价 $958）",
+      "origin": "observed",
+      "runAt": "2026-11-18T20:03:30.768Z"
+    },
+    {
+      "id": "bce5afb96302",
+      "at": "2026-11-19",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-18",
+      "to": "2026-12-02",
+      "origin": "observed",
+      "runAt": "2026-11-18T20:03:30.768Z"
+    },
+    {
+      "id": "c8784a307734",
+      "at": "2026-11-19",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $69，原价 $299.01（省 77%）",
+        "pricingModel": "paid",
+        "priceLine": "$69 终身（原价 $299.01）",
+        "expiresAt": "2026-11-20",
+        "type": "deal",
+        "category": "设计创意",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-18T20:03:30.768Z"
+    },
+    {
+      "id": "d175c32f71fd",
+      "at": "2026-11-19",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "AppSumo 终身授权限时折扣：现价 $64，原价 $500（省 87%）",
+      "to": "AppSumo 终身授权限时折扣：现价 $74，原价 $500（省 85%）",
+      "origin": "observed",
+      "runAt": "2026-11-18T20:03:30.768Z"
+    },
+    {
+      "id": "d175c32f71fd",
+      "at": "2026-11-19",
+      "type": "benefit_changed",
+      "field": "priceLine",
+      "from": "$64 终身（原价 $500）",
+      "to": "$74 终身（原价 $500）",
+      "origin": "observed",
+      "runAt": "2026-11-18T20:03:30.768Z"
+    },
+    {
+      "id": "d175c32f71fd",
+      "at": "2026-11-19",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-18",
+      "to": "2026-12-02",
+      "origin": "observed",
+      "runAt": "2026-11-18T20:03:30.768Z"
+    },
+    {
+      "id": "d1dad8585282",
+      "at": "2026-11-19",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/shakker-ai",
+        "verified": false
+      },
+      "runAt": "2026-11-18T20:03:30.768Z"
+    },
+    {
+      "id": "fa69020c164a",
+      "at": "2026-11-19",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "AppSumo 终身授权限时折扣：现价 $69，原价 $99（省 30%）",
+      "to": "AppSumo 终身授权限时折扣：现价 $79，原价 $99（省 20%）",
+      "origin": "observed",
+      "runAt": "2026-11-18T20:03:30.768Z"
+    },
+    {
+      "id": "fa69020c164a",
+      "at": "2026-11-19",
+      "type": "benefit_changed",
+      "field": "priceLine",
+      "from": "$69 终身（原价 $99）",
+      "to": "$79 终身（原价 $99）",
+      "origin": "observed",
+      "runAt": "2026-11-18T20:03:30.768Z"
+    },
+    {
+      "id": "fa69020c164a",
+      "at": "2026-11-19",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-18",
+      "to": "2026-12-02",
+      "origin": "observed",
+      "runAt": "2026-11-18T20:03:30.768Z"
+    },
+    {
+      "id": "0750a3061d72",
+      "at": "2026-11-19",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-19",
+      "runAt": "2026-11-19T06:03:31.703Z",
+      "label": {
+        "title": "Flora AI",
+        "vendor": "Flora AI"
+      }
+    },
+    {
+      "id": "086534ebceeb",
+      "at": "2026-11-19",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-19",
+      "runAt": "2026-11-19T06:03:31.703Z",
+      "label": {
+        "title": "DomScan",
+        "vendor": "DomScan"
+      }
+    },
+    {
+      "id": "29ff7f061d59",
+      "at": "2026-11-19",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-19",
+      "runAt": "2026-11-19T06:03:31.703Z",
+      "label": {
+        "title": "VistaCreate",
+        "vendor": "VistaCreate"
+      }
+    },
+    {
+      "id": "3e0abe88eb9f",
+      "at": "2026-11-19",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-19",
+      "runAt": "2026-11-19T06:03:31.703Z",
+      "label": {
+        "title": "BetterClaw",
+        "vendor": "BetterClaw"
+      }
+    },
+    {
+      "id": "72100a42eb69",
+      "at": "2026-11-19",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-19",
+      "runAt": "2026-11-19T06:03:31.703Z",
+      "label": {
+        "title": "Hedy AI",
+        "vendor": "Hedy AI"
+      }
+    },
+    {
+      "id": "a67c07bf4993",
+      "at": "2026-11-19",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-19",
+      "runAt": "2026-11-19T06:03:31.703Z",
+      "label": {
+        "title": "Ankon AI",
+        "vendor": "Ankon AI"
+      }
+    },
+    {
+      "id": "c8784a307734",
+      "at": "2026-11-19",
+      "type": "updated",
+      "field": "category",
+      "from": "设计创意",
+      "to": "对话模型",
+      "origin": "observed",
+      "runAt": "2026-11-19T06:03:31.703Z"
+    },
+    {
+      "id": "ff8cbecdd5f6",
+      "at": "2026-11-19",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-19",
+      "runAt": "2026-11-19T06:03:31.703Z",
+      "label": {
+        "title": "MagicCanvas",
+        "vendor": "MagicCanvas"
+      }
+    },
+    {
+      "id": "0750a3061d72",
+      "at": "2026-11-19",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-19T13:10:07.115Z"
+    },
+    {
+      "id": "3f97a29b90e6",
+      "at": "2026-11-19",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-19",
+      "runAt": "2026-11-19T13:10:07.115Z",
+      "label": {
+        "title": "Kortex",
+        "vendor": "Kortex"
+      }
+    },
+    {
+      "id": "59c7b0179308",
+      "at": "2026-11-19",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-19",
+      "runAt": "2026-11-19T13:10:07.115Z",
+      "label": {
+        "title": "Kavout",
+        "vendor": "Kavout"
+      }
+    },
+    {
+      "id": "6efc1d92dbf1",
+      "at": "2026-11-19",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $144（省 59%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $144）",
+        "expiresAt": "2026-11-20",
+        "type": "deal",
+        "category": "音频语音",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-19T13:10:07.115Z"
+    },
+    {
+      "id": "e174981f60ea",
+      "at": "2026-11-19",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $49，原价 $180（省 73%）",
+        "pricingModel": "paid",
+        "priceLine": "$49 终身（原价 $180）",
+        "expiresAt": "2026-11-20",
+        "type": "deal",
+        "category": "音频语音",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-19T13:10:07.115Z"
+    },
+    {
+      "id": "26a04b07193d",
+      "at": "2026-11-20",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "pruned_expired",
+      "runAt": "2026-11-19T20:02:36.346Z",
+      "label": {
+        "title": "今天起，豆包工作接入更多模型了",
+        "vendor": "今天起，豆包工作接入更多模型了"
+      }
+    },
+    {
+      "id": "3c435ea3c1e1",
+      "at": "2026-11-20",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "pruned_expired",
+      "runAt": "2026-11-19T20:02:36.346Z",
+      "label": {
+        "title": "千问Go！会员优惠明晚结束：首月最低9.9元 网友用AI蹲机票省下310元",
+        "vendor": "千问Go！会员优惠明晚结束：首月最低9.9元 网友用AI蹲机票省下310元"
+      }
+    },
+    {
+      "id": "8c8ed425e7c3",
+      "at": "2026-11-20",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "pruned_expired",
+      "runAt": "2026-11-19T20:02:36.346Z",
+      "label": {
+        "title": "豆包工作接入 DeepSeek V4.1 Flash、Kimi K3.1 Pro 等第三方模型，同步上线额度消耗倍率与限时优惠",
+        "vendor": "豆包工作接入 DeepSeek"
+      }
+    },
+    {
+      "id": "940d872f9eac",
+      "at": "2026-11-20",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-19",
+      "runAt": "2026-11-19T20:02:36.346Z",
+      "label": {
+        "title": "Thinking Machines: Inkling 2 Small (free)",
+        "vendor": "Thinking Machines"
+      }
+    },
+    {
+      "id": "ad748ed0cf5b",
+      "at": "2026-11-20",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-19",
+      "runAt": "2026-11-19T20:02:36.346Z",
+      "label": {
+        "title": "Any Summary",
+        "vendor": "Any Summary"
+      }
+    },
+    {
+      "id": "c61916544faf",
+      "at": "2026-11-20",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-19",
+      "runAt": "2026-11-19T20:02:36.346Z",
+      "label": {
+        "title": "Acti",
+        "vendor": "Acti"
+      }
+    },
+    {
+      "id": "f68dfc4184bf",
+      "at": "2026-11-20",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "其他",
+        "region": "cn",
+        "source": "IT之家",
+        "sourceUrl": "https://www.ithome.com/rss/",
+        "verified": false
+      },
+      "runAt": "2026-11-19T20:02:36.346Z"
+    },
+    {
+      "id": "42df4fdc8aa9",
+      "at": "2026-11-20",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-20",
+      "runAt": "2026-11-20T05:52:48.034Z",
+      "label": {
+        "title": "Triplo AI",
+        "vendor": "Triplo AI"
+      }
+    },
+    {
+      "id": "a67c07bf4993",
+      "at": "2026-11-20",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-20T05:52:48.034Z"
+    },
+    {
+      "id": "e5fcacad308b",
+      "at": "2026-11-20",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-20",
+      "runAt": "2026-11-20T05:52:48.034Z",
+      "label": {
+        "title": "Creator Lookup",
+        "vendor": "Creator Lookup"
+      }
+    },
+    {
+      "id": "f34797ef8750",
+      "at": "2026-11-20",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-20T05:52:48.034Z"
+    },
+    {
+      "id": "f34797ef8750",
+      "at": "2026-11-20",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": null,
+      "to": "2026-12-04",
+      "origin": "observed",
+      "runAt": "2026-11-20T05:52:48.034Z"
+    },
+    {
+      "id": "10c4bcfc0c32",
+      "at": "2026-11-21",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $99，原价 $1428（省 93%）",
+        "pricingModel": "paid",
+        "priceLine": "$99 终身（原价 $1428）",
+        "expiresAt": "2026-11-22",
+        "type": "deal",
+        "category": "办公效率",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "27558d3945c7",
+      "at": "2026-11-21",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $79，原价 $954（省 92%）",
+        "pricingModel": "paid",
+        "priceLine": "$79 终身（原价 $954）",
+        "expiresAt": "2026-11-22",
+        "type": "deal",
+        "category": "音频语音",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "2a7204391275",
+      "at": "2026-11-21",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "AppSumo 终身授权限时折扣：现价 $99，原价 $488（省 80%）",
+      "to": "AppSumo 终身授权限时折扣：现价 $109，原价 $488（省 78%）",
+      "origin": "observed",
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "2a7204391275",
+      "at": "2026-11-21",
+      "type": "benefit_changed",
+      "field": "priceLine",
+      "from": "$99 终身（原价 $488）",
+      "to": "$109 终身（原价 $488）",
+      "origin": "observed",
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "2a7204391275",
+      "at": "2026-11-21",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-20",
+      "to": "2026-12-02",
+      "origin": "observed",
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "38dcebb31d86",
+      "at": "2026-11-21",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/clippie-ai",
+        "verified": false
+      },
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "41b332c4e705",
+      "at": "2026-11-21",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "AppSumo 终身授权限时折扣：现价 $59，原价 $989（省 94%）",
+      "to": "AppSumo 终身授权限时折扣：现价 $69，原价 $989（省 93%）",
+      "origin": "observed",
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "41b332c4e705",
+      "at": "2026-11-21",
+      "type": "benefit_changed",
+      "field": "priceLine",
+      "from": "$59 终身（原价 $989）",
+      "to": "$69 终身（原价 $989）",
+      "origin": "observed",
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "41b332c4e705",
+      "at": "2026-11-21",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-20",
+      "to": "2026-12-02",
+      "origin": "observed",
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "42df4fdc8aa9",
+      "at": "2026-11-21",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "42df4fdc8aa9",
+      "at": "2026-11-21",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "AppSumo 终身授权限时折扣：现价 $69，原价 $102（省 32%）",
+      "to": "AppSumo 终身授权限时折扣：现价 $79，原价 $102（省 23%）",
+      "origin": "observed",
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "42df4fdc8aa9",
+      "at": "2026-11-21",
+      "type": "benefit_changed",
+      "field": "priceLine",
+      "from": "$69 终身（原价 $102）",
+      "to": "$79 终身（原价 $102）",
+      "origin": "observed",
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "42df4fdc8aa9",
+      "at": "2026-11-21",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-20",
+      "to": "2026-12-02",
+      "origin": "observed",
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "59c7b0179308",
+      "at": "2026-11-21",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "59c7b0179308",
+      "at": "2026-11-21",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "AppSumo 终身授权限时折扣：现价 $69，原价 $124（省 44%）",
+      "to": "AppSumo 终身授权限时折扣：现价 $79，原价 $124（省 36%）",
+      "origin": "observed",
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "59c7b0179308",
+      "at": "2026-11-21",
+      "type": "benefit_changed",
+      "field": "priceLine",
+      "from": "$69 终身（原价 $124）",
+      "to": "$79 终身（原价 $124）",
+      "origin": "observed",
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "59c7b0179308",
+      "at": "2026-11-21",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-20",
+      "to": "2026-12-02",
+      "origin": "observed",
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "59c7b0179308",
+      "at": "2026-11-21",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/ending-soon/",
+      "to": "https://appsumo.com/collections/new/",
+      "origin": "observed",
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "6efc1d92dbf1",
+      "at": "2026-11-21",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "AppSumo 终身授权限时折扣：现价 $59，原价 $144（省 59%）",
+      "to": "AppSumo 终身授权限时折扣：现价 $69，原价 $144（省 52%）",
+      "origin": "observed",
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "6efc1d92dbf1",
+      "at": "2026-11-21",
+      "type": "benefit_changed",
+      "field": "priceLine",
+      "from": "$59 终身（原价 $144）",
+      "to": "$69 终身（原价 $144）",
+      "origin": "observed",
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "6efc1d92dbf1",
+      "at": "2026-11-21",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-20",
+      "to": "2026-12-02",
+      "origin": "observed",
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "7569157d322d",
+      "at": "2026-11-21",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "AppSumo 终身授权限时折扣：现价 $59，原价 $804（省 93%）",
+      "to": "AppSumo 终身授权限时折扣：现价 $69，原价 $804（省 91%）",
+      "origin": "observed",
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "7569157d322d",
+      "at": "2026-11-21",
+      "type": "benefit_changed",
+      "field": "priceLine",
+      "from": "$59 终身（原价 $804）",
+      "to": "$69 终身（原价 $804）",
+      "origin": "observed",
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "7569157d322d",
+      "at": "2026-11-21",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-20",
+      "to": "2026-12-02",
+      "origin": "observed",
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "c8784a307734",
+      "at": "2026-11-21",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "AppSumo 终身授权限时折扣：现价 $69，原价 $299.01（省 77%）",
+      "to": "AppSumo 终身授权限时折扣：现价 $79，原价 $299.01（省 74%）",
+      "origin": "observed",
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "c8784a307734",
+      "at": "2026-11-21",
+      "type": "benefit_changed",
+      "field": "priceLine",
+      "from": "$69 终身（原价 $299.01）",
+      "to": "$79 终身（原价 $299.01）",
+      "origin": "observed",
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "c8784a307734",
+      "at": "2026-11-21",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-20",
+      "to": "2026-12-02",
+      "origin": "observed",
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "ce32de15696e",
+      "at": "2026-11-21",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "其他",
+        "region": "cn",
+        "source": "IT之家",
+        "sourceUrl": "https://www.ithome.com/rss/",
+        "verified": false
+      },
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "e174981f60ea",
+      "at": "2026-11-21",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "AppSumo 终身授权限时折扣：现价 $49，原价 $180（省 73%）",
+      "to": "AppSumo 终身授权限时折扣：现价 $59，原价 $180（省 67%）",
+      "origin": "observed",
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "e174981f60ea",
+      "at": "2026-11-21",
+      "type": "benefit_changed",
+      "field": "priceLine",
+      "from": "$49 终身（原价 $180）",
+      "to": "$59 终身（原价 $180）",
+      "origin": "observed",
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "e174981f60ea",
+      "at": "2026-11-21",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-20",
+      "to": "2026-12-02",
+      "origin": "observed",
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "e174981f60ea",
+      "at": "2026-11-21",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/new/",
+      "to": "https://appsumo.com/collections/ending-soon/",
+      "origin": "observed",
+      "runAt": "2026-11-20T19:41:14.797Z"
+    },
+    {
+      "id": "f7d846f3c57f",
+      "at": "2026-11-21",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-20",
+      "runAt": "2026-11-20T19:41:14.797Z",
+      "label": {
+        "title": "Skipit.ai",
+        "vendor": "Skipit.ai"
+      }
+    },
+    {
+      "id": "0d9b9646f1a5",
+      "at": "2026-11-21",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-21",
+      "runAt": "2026-11-21T05:46:35.322Z",
+      "label": {
+        "title": "Vocable AI",
+        "vendor": "Vocable AI"
+      }
+    },
+    {
+      "id": "23d7b85f4992",
+      "at": "2026-11-21",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $1200（省 95%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $1200）",
+        "expiresAt": "2026-11-22",
+        "type": "deal",
+        "category": "设计创意",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-21T05:46:35.322Z"
+    },
+    {
+      "id": "49f87d205620",
+      "at": "2026-11-21",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-21",
+      "runAt": "2026-11-21T05:46:35.322Z",
+      "label": {
+        "title": "Keyshift AI",
+        "vendor": "Keyshift AI"
+      }
+    },
+    {
+      "id": "59c7b0179308",
+      "at": "2026-11-21",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/new/",
+      "to": "https://appsumo.com/collections/ending-soon/",
+      "origin": "observed",
+      "runAt": "2026-11-21T05:46:35.322Z"
+    },
+    {
+      "id": "6efc1d92dbf1",
+      "at": "2026-11-21",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/new/",
+      "to": "https://appsumo.com/collections/ending-soon/",
+      "origin": "observed",
+      "runAt": "2026-11-21T05:46:35.322Z"
+    },
+    {
+      "id": "7b9e80d90afc",
+      "at": "2026-11-21",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $49，原价 $120（省 59%）",
+        "pricingModel": "paid",
+        "priceLine": "$49 终身（原价 $120）",
+        "expiresAt": "2026-11-22",
+        "type": "deal",
+        "category": "办公效率",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-21T05:46:35.322Z"
+    },
+    {
+      "id": "a67c07bf4993",
+      "at": "2026-11-21",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-21",
+      "runAt": "2026-11-21T05:46:35.322Z",
+      "label": {
+        "title": "Ankon AI",
+        "vendor": "Ankon AI"
+      }
+    },
+    {
+      "id": "d175c32f71fd",
+      "at": "2026-11-21",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-21",
+      "runAt": "2026-11-21T05:46:35.322Z",
+      "label": {
+        "title": "Press Ranger",
+        "vendor": "Press Ranger"
+      }
+    },
+    {
+      "id": "10c4bcfc0c32",
+      "at": "2026-11-21",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-21",
+      "runAt": "2026-11-21T11:10:32.186Z",
+      "label": {
+        "title": "Nifty",
+        "vendor": "Nifty"
+      }
+    },
+    {
+      "id": "6637868284f5",
+      "at": "2026-11-21",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-21",
+      "runAt": "2026-11-21T11:10:32.186Z",
+      "label": {
+        "title": "Recursive: Flint (free)",
+        "vendor": "Recursive"
+      }
+    },
+    {
+      "id": "d0ed1daf6974",
+      "at": "2026-11-21",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $99，原价 $249（省 60%）",
+        "pricingModel": "paid",
+        "priceLine": "$99 终身（原价 $249）",
+        "expiresAt": "2026-11-22",
+        "type": "deal",
+        "category": "设计创意",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-21T11:10:32.186Z"
+    },
+    {
+      "id": "10c4bcfc0c32",
+      "at": "2026-11-22",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-21T18:46:54.275Z"
+    },
+    {
+      "id": "a67c07bf4993",
+      "at": "2026-11-22",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-21T18:46:54.275Z"
+    },
+    {
+      "id": "0750a3061d72",
+      "at": "2026-11-22",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-22",
+      "runAt": "2026-11-22T05:16:26.327Z",
+      "label": {
+        "title": "Flora AI",
+        "vendor": "Flora AI"
+      }
+    },
+    {
+      "id": "c2fc2a641d49",
+      "at": "2026-11-22",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $99，原价 $684（省 86%）",
+        "pricingModel": "paid",
+        "priceLine": "$99 终身（原价 $684）",
+        "expiresAt": "2026-11-22",
+        "type": "deal",
+        "category": "设计创意",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-22T05:16:26.327Z"
+    },
+    {
+      "id": "d0ed1daf6974",
+      "at": "2026-11-22",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-22",
+      "runAt": "2026-11-22T05:16:26.327Z",
+      "label": {
+        "title": "upcoach",
+        "vendor": "upcoach"
+      }
     }
   ]
 }

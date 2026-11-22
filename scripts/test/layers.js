@@ -68,6 +68,7 @@ const LAYERS = {
     needs: [],
     scripts: [
       'selftest:expiry',
+      'selftest:categories',
       'selftest:app-token'
     ]
   },
@@ -96,11 +97,16 @@ const LAYERS = {
       'selftest:health',
       'selftest:plans',
       'selftest:api-plans',
+      'selftest:price-history',
+      'selftest:calendar',
+    'selftest:search',
       'selftest:api-cost',
       'selftest:model-registry',
       'selftest:plan-history',
       'selftest:deal-plan-links',
       'selftest:seo',
+      // v3.4 页面预算：读仓库真实数据 + 复制一份到临时沙箱里构建；不依赖 dist/，所以是 L2。
+      'selftest:page-fit',
       'selftest:coverage-targets',
       'selftest:freshness',
       'selftest:model-roles',

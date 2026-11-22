@@ -1,0 +1,420 @@
+{
+ "sameSite": {
+  "headerEqual": false,
+  "footerEqual": false,
+  "headerLen": [
+   2646,
+   1644
+  ],
+  "footerLen": [
+   1274,
+   1341
+  ],
+  "tokensEqual": true,
+  "tokens": {
+   "--bg": "#f6f7f9",
+   "--card": "#fff",
+   "--ink": "#0f172a",
+   "--line": "#e6e9ef",
+   "--t1": "#0b7a44",
+   "--t2": "#1d4ed8",
+   "--t3": "#155e75",
+   "--t4": "#92400e",
+   "--t5": "#475569"
+  },
+  "fontEqual": true,
+  "font": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"PingFang SC\", \"Microsoft YaHei\", Roboto, sans-serif",
+  "logosEqual": true,
+  "logos": [
+   "../../dist/logos.css"
+  ],
+  "themeMetaEqual": true,
+  "sharedStyleEqual": true,
+  "homeStyleLen": [
+   77117
+  ],
+  "famStyleLen": [
+   77117,
+   5276
+  ],
+  "familyBigText": [
+   {
+    "tag": "B",
+    "cls": "stat stat-22",
+    "fs": "22px",
+    "direct": "24",
+    "isStat": true
+   },
+   {
+    "tag": "B",
+    "cls": "stat stat-22",
+    "fs": "22px",
+    "direct": "21",
+    "isStat": true
+   },
+   {
+    "tag": "B",
+    "cls": "stat stat-22",
+    "fs": "22px",
+    "direct": "108",
+    "isStat": true
+   }
+  ]
+ },
+ "diag390": {
+  "diffCount": 0,
+  "diffs": [],
+  "scrollH": [
+   16849,
+   16813
+  ],
+  "footerH": [
+   271.77,
+   271.77
+  ],
+  "footerChildrenBefore": [
+   {
+    "tag": "P",
+    "cls": "catnav",
+    "h": 22.8
+   },
+   {
+    "tag": "P",
+    "cls": "catnav",
+    "h": 91.19
+   },
+   {
+    "tag": "P",
+    "cls": "",
+    "h": 45.59
+   },
+   {
+    "tag": "P",
+    "cls": "",
+    "h": 45.59
+   },
+   {
+    "tag": "P",
+    "cls": "",
+    "h": 22.8
+   },
+   {
+    "tag": "P",
+    "cls": "",
+    "h": 22.8
+   }
+  ],
+  "footerChildrenAfter": [
+   {
+    "tag": "P",
+    "cls": "catnav",
+    "h": 22.8
+   },
+   {
+    "tag": "P",
+    "cls": "catnav",
+    "h": 91.19
+   },
+   {
+    "tag": "P",
+    "cls": "",
+    "h": 45.59
+   },
+   {
+    "tag": "P",
+    "cls": "",
+    "h": 45.59
+   },
+   {
+    "tag": "P",
+    "cls": "",
+    "h": 22.8
+   },
+   {
+    "tag": "P",
+    "cls": "",
+    "h": 22.8
+   }
+  ],
+  "jumpAH": [
+   [
+    28,
+    28,
+    28,
+    28
+   ],
+   [
+    28,
+    28,
+    28,
+    28
+   ]
+  ]
+ },
+ "thumbClusters": {
+  "t1": {
+   "hex": "#0b7a44",
+   "total": 164,
+   "components": [
+    {
+     "n": 16,
+     "x": 8,
+     "y": 89,
+     "w": 5,
+     "h": 5
+    },
+    {
+     "n": 15,
+     "x": 8,
+     "y": 98,
+     "w": 5,
+     "h": 4
+    },
+    {
+     "n": 15,
+     "x": 124,
+     "y": 98,
+     "w": 5,
+     "h": 4
+    },
+    {
+     "n": 15,
+     "x": 240,
+     "y": 98,
+     "w": 5,
+     "h": 4
+    },
+    {
+     "n": 15,
+     "x": 8,
+     "y": 149,
+     "w": 5,
+     "h": 4
+    },
+    {
+     "n": 15,
+     "x": 124,
+     "y": 149,
+     "w": 5,
+     "h": 4
+    }
+   ]
+  },
+  "t2": {
+   "hex": "#1d4ed8",
+   "total": 11,
+   "components": [
+    {
+     "n": 11,
+     "x": 46,
+     "y": 80,
+     "w": 4,
+     "h": 5
+    }
+   ]
+  },
+  "t3": {
+   "hex": "#155e75",
+   "total": 12,
+   "components": [
+    {
+     "n": 11,
+     "x": 73,
+     "y": 80,
+     "w": 4,
+     "h": 5
+    },
+    {
+     "n": 1,
+     "x": 19,
+     "y": 20,
+     "w": 1,
+     "h": 1
+    }
+   ]
+  },
+  "t4": {
+   "hex": "#92400e",
+   "total": 13,
+   "components": [
+    {
+     "n": 11,
+     "x": 100,
+     "y": 80,
+     "w": 4,
+     "h": 5
+    },
+    {
+     "n": 2,
+     "x": 100,
+     "y": 80,
+     "w": 1,
+     "h": 2
+    }
+   ]
+  }
+ },
+ "afterDarkBigText": [
+  "30px:13:stat",
+  "30px:7:stat",
+  "30px:1:stat",
+  "30px:30:stat",
+  "30px:66:stat",
+  "30px:45:stat",
+  "30px:44:stat",
+  "30px:7:stat",
+  "30px:12:stat",
+  "30px:67:stat",
+  "22px:11:stat",
+  "22px:20:stat",
+  "22px:20:stat",
+  "22px:25:stat"
+ ],
+ "familyBigText": [
+  "22px:24:stat",
+  "22px:21:stat",
+  "22px:108:stat"
+ ],
+ "beforeHint": {
+  "hintFs": "11.5px",
+  "tierFs": "11.5px",
+  "text": "注册就能用，不用等额度到账 · 11 条"
+ },
+ "shots": {
+  "home25": {
+   "w": 360,
+   "h": 225,
+   "bytes": 47943
+  },
+  "homeBeforeAfter": {
+   "w": 1440,
+   "h": 900,
+   "bytes": 288932
+  },
+  "verifyCompare": {
+   "w": 1440,
+   "h": 900,
+   "bytes": 294093
+  }
+ },
+ "mtimes": {
+  "index.html": {
+   "mtime": "2026-11-10T16:38:14.787Z",
+   "size": 338355
+  },
+  "dist/index.html": {
+   "mtime": "2026-11-11T01:33:25.438Z",
+   "size": 493326
+  },
+  "dist/plans/api/index.html": {
+   "mtime": "2026-11-11T01:33:25.642Z",
+   "size": 279733
+  },
+  "mockups/v5-sig/home-light.html": {
+   "mtime": "2026-11-11T13:23:15.005Z",
+   "size": 265170
+  }
+ },
+ "notes": [
+  ".scratch/apicost/before-wt/dist.notes.ndjson",
+  ".scratch/apicost/isolated-wt/dist.notes.ndjson",
+  ".scratch/apicost/mutant-dist.notes.ndjson",
+  ".scratch/hdr-owner-after.notes.ndjson",
+  ".scratch/hdr-owner-before.notes.ndjson",
+  ".scratch/hdr-owner-l1.notes.ndjson",
+  ".scratch/hdr-owner-t10-after.notes.ndjson",
+  ".scratch/hdr-owner-t10-before.notes.ndjson",
+  ".scratch/hdr-owner-wrap-after.notes.ndjson",
+  ".scratch/hdr-owner-wrap-fix.notes.ndjson",
+  ".scratch/notes-probe.cjs",
+  ".scratch/probe-final3.notes.ndjson",
+  ".scratch/probe-final4.notes.ndjson",
+  ".scratch/probe-postmerge.notes.ndjson",
+  ".scratch/probe-zh.notes.ndjson",
+  ".scratch/t2-dist.notes.ndjson",
+  ".scratch/t3-report/probe-dist.notes.ndjson",
+  ".scratch/tmpbuild.notes.ndjson",
+  ".scratch/verify-team/consistency-auditor/out-r4.notes.ndjson",
+  ".scratch/verify-team/teeth-verifier/out-A7.notes.ndjson",
+  ".scratch/verify-team/teeth-verifier/out-B5.notes.ndjson",
+  ".scratch/verify-team/teeth-verifier/out-C1.notes.ndjson",
+  ".scratch/verify-team/teeth-verifier/out-C2.notes.ndjson",
+  ".scratch/verify-team/teeth-verifier/out-D1.notes.ndjson",
+  ".scratch/verify-team/teeth-verifier/out-D5.notes.ndjson",
+  ".scratch/verify-team/teeth-verifier/out-r3-A7.notes.ndjson",
+  ".scratch/verify-team/teeth-verifier/out-r3-B5.notes.ndjson",
+  ".scratch/verify-team/teeth-verifier/out-r3-C1.notes.ndjson",
+  ".scratch/verify-team/teeth-verifier/out-r3-C2.notes.ndjson",
+  ".scratch/verify-team/teeth-verifier/out-r3-D1.notes.ndjson",
+  ".scratch/verify-team/teeth-verifier/out-r3-D5n.notes.ndjson",
+  ".worktrees/docs-pr117/research/notes-manifest-residual-v1-report.md",
+  ".worktrees/docs-pr117/research/notes-manifest-residual-v1-self-audit.md",
+  ".worktrees/docs-pr117/research/notes-manifest-v1-report.md",
+  ".worktrees/docs-pr117/research/notes-manifest-v1-self-audit.md",
+  ".worktrees/docs-pr117/research/page-notes-disclosure-v1-report.md",
+  ".worktrees/feat-api-cost-calculator/dist.notes.ndjson",
+  ".worktrees/feat-api-cost-calculator/research/notes-manifest-residual-v1-report.md",
+  ".worktrees/feat-api-cost-calculator/research/notes-manifest-residual-v1-self-audit.md",
+  ".worktrees/feat-api-cost-calculator/research/notes-manifest-v1-report.md",
+  ".worktrees/feat-api-cost-calculator/research/notes-manifest-v1-self-audit.md",
+  ".worktrees/feat-api-cost-calculator/research/page-notes-disclosure-v1-report.md",
+  ".worktrees/p3a-gate/dist.notes.ndjson",
+  ".worktrees/p3a-gate/research/notes-manifest-residual-v1-report.md",
+  ".worktrees/p3a-gate/research/notes-manifest-residual-v1-self-audit.md",
+  ".worktrees/p3a-gate/research/notes-manifest-v1-report.md",
+  ".worktrees/p3a-gate/research/notes-manifest-v1-self-audit.md",
+  ".worktrees/p3a-gate/research/page-notes-disclosure-v1-report.md",
+  ".worktrees/p3b-health/dist.notes.ndjson",
+  ".worktrees/p3b-health/research/notes-manifest-residual-v1-report.md",
+  ".worktrees/p3b-health/research/notes-manifest-residual-v1-self-audit.md",
+  ".worktrees/p3b-health/research/notes-manifest-v1-report.md",
+  ".worktrees/p3b-health/research/notes-manifest-v1-self-audit.md",
+  ".worktrees/p3b-health/research/page-notes-disclosure-v1-report.md",
+  "dist.deexpose.notes.ndjson",
+  "dist.mergecheck.notes.ndjson",
+  "dist.notes.ndjson",
+  "dist.qc-det.notes.ndjson",
+  "dist.qc-fix-after.notes.ndjson",
+  "dist.qc-fix-before.notes.ndjson",
+  "dist.qc-guards-atom.notes.ndjson",
+  "dist.qc-guards-broken.notes.ndjson",
+  "dist.qc-guards.notes.ndjson",
+  "dist.qc-mut.notes.ndjson",
+  "dist.qc-review-a.notes.ndjson",
+  "dist.qc-review-b.notes.ndjson",
+  "dist.qc-review.notes.ndjson",
+  "dist.qc-spec-contract.notes.ndjson",
+  "dist.qc-t8.notes.ndjson",
+  "dist.qc-tooth-7c.notes.ndjson",
+  "dist.qc-tooth-control.notes.ndjson",
+  "dist.qc-tooth-control2.notes.ndjson",
+  "dist.qc-tooth2-control-post.notes.ndjson",
+  "dist.qc-tooth2-control-pre.notes.ndjson",
+  "dist.qc-tooth2-control.notes.ndjson",
+  "dist.qc-tooth2-r6.notes.ndjson",
+  "dist.qc-tooth2-r7.notes.ndjson",
+  "dist.qc-tooth2-r8.notes.ndjson",
+  "dist.qc-tooth3-control.notes.ndjson",
+  "dist.qc-tooth3-r12.notes.ndjson",
+  "dist.qc-tooth3-r13.notes.ndjson",
+  "dist.qc-tooth3-r6.notes.ndjson",
+  "dist.qc-tooth3-r7.notes.ndjson",
+  "dist.qc-tooth3-r8.notes.ndjson",
+  "dist.qc-verify-2.notes.ndjson",
+  "dist.qc-verify.notes.ndjson",
+  "dist.qc-wiring-1.notes.ndjson",
+  "dist.qc-wiring-2.notes.ndjson",
+  "dist.qc-wiring.notes.ndjson",
+  "docs/v3.0/IA-NOTES-t12.md",
+  "mockups/v5-sig/NOTES.md",
+  "research/_raw/new-teeth-adversary/tooth-2-notes-ndjson.json",
+  "research/_raw/secondary-page-residue-v1/scan-notes.cjs",
+  "research/_raw/secondary-page-residue-v2-captain-recon/captain-preflight-notes.md",
+  "research/_raw/t43/pr-and-release-notes.md",
+  "research/notes-manifest-residual-v1-report.md",
+  "research/notes-manifest-residual-v1-self-audit.md",
+  "research/notes-manifest-v1-report.md",
+  "research/notes-manifest-v1-self-audit.md",
+  "research/page-notes-disclosure-v1-report.md"
+ ]
+}

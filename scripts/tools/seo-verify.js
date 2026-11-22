@@ -36,6 +36,11 @@ const landing = require('../lib/landing');
 // 站点常量（SITE_URL / VENDOR_SLUGS / VENDOR_THRESHOLDS）的唯一出处。t2 起从订阅层的
 // `feeds.js` 改指本模块：订阅层整体下架后这份常量不能跟着陪葬，而本工具只用到这三样。
 const site = require('../lib/site');
+// 入口文案的权威措辞表（2026-11）：指向 /changes/ 的入口现在有**两种**，
+// 「全部变化 →」是通用入口，常驻线索入口的计数文案由 `CHANGES_LEAD.count/countMore`
+// 渲染。两者都必须在产物里**按权威表复算**，而不是各自写一份字面量。
+const changes = require('../lib/changes');
+const audience = require('../lib/audience');
 
 const dirArg = process.argv.find(a => a.startsWith('--dir='));
 const OUT = path.resolve(ROOT, dirArg ? dirArg.slice(6) : 'dist');
@@ -142,6 +147,40 @@ const deals = payload.deals;
 const dealsById = new Map(deals.map(deal => [deal.id, deal]));
 const asOf = String(payload.updatedAt || '').slice(0, 10);
 
+// 窗口期集合的**独立重算**（与构建期互证的第二把尺子）。
+// 构建期按「内存 payload + buildArchive 的 gated 条目」算 indexable；这里换两个独立来源：
+//   · 首页可见 ← 对**产物里的** offers.json 重跑 renderCore.defaultVisible（同一判据、不同输入副本）；
+//   · 档案接住 ← **扫描产物里已渲染的档案详情页 HTML**，找相对回链 deal/<id>/（不重跑 buildArchive）。
+// 两者都不是 ⇒ 窗口期（dealLimbo）⇒ 该页必须 noindex 且不进 sitemap。
+// 回链只认**相对** href（与 seo.internalLinks 同口径）：档案页的 canonical 是绝对 URL
+// `…/archive/deal/<id>/`，若不排除会把每个归档实体都误判成「有回链」。
+const homepageVisibleIds = new Set((renderCore.allVisibleDeals ? renderCore.allVisibleDeals(deals) : renderCore.defaultVisible(deals)).map(deal => deal.id));
+const archivedLinkedIds = new Set();
+const archiveDealRoot = path.join(OUT, 'archive', 'deal');
+if (fs.existsSync(archiveDealRoot)) {
+  for (const entry of fs.readdirSync(archiveDealRoot, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    const file = path.join(archiveDealRoot, entry.name, 'index.html');
+    if (!fs.existsSync(file)) continue;
+    const html = fs.readFileSync(file, 'utf8');
+    for (const match of html.matchAll(/href="([^"]+)"/g)) {
+      const href = match[1];
+      if (/^https?:/i.test(href)) continue;
+      const stripped = href.replace(/^(\.\.\/)+/, '');
+      const dealMatch = /^deal\/([^/]+)\/$/.exec(stripped);
+      if (dealMatch) archivedLinkedIds.add(decodeURIComponent(dealMatch[1]));
+    }
+  }
+}
+const dealLimboOf = id => {
+  const deal = dealsById.get(id);
+  return !seo.dealIndexable({
+    homepageVisible: homepageVisibleIds.has(id),
+    archivedLinked: archivedLinkedIds.has(id),
+    expiredDays: deal ? seo.daysExpired(deal.expiresAt, asOf) : null
+  });
+};
+
 // 计划**从数据重新算一遍**（不读构建期的 PLAN）
 //
 // v3.0 Stage E：厂商页的门槛从「只有优惠条数」变成三条 OR（条数 / 历史事件 / **非优惠资料**），
@@ -159,13 +198,22 @@ const plansForPlan = JSON.parse(fs.readFileSync(path.join(ROOT, 'plans.json'), '
 const apiPlansForPlan = JSON.parse(fs.readFileSync(path.join(ROOT, 'api-plans.json'), 'utf8')).plans;
 const modelsForPlan = JSON.parse(fs.readFileSync(path.join(ROOT, 'models.json'), 'utf8')).models;
 const modelLinksForPlan = JSON.parse(fs.readFileSync(path.join(ROOT, 'model-registry-links.json'), 'utf8')).links;
+// 厂商页第三条门槛（历史事件数）必须与构建期同源：唯一实现在 `landing.vendorEventCountsOf()`。
+// 以前这里传 `eventCountOf: () => 0`，在「只靠事件数达标」的厂商出现前一直看不出来
+// （2026-11-12 NinjaPipe 第一次撞上：独立门禁的计划比产物少一页）。
+const dealHistoryStore = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts', 'data', 'deal-history.json'), 'utf8'));
+const vendorEventCount = landing.vendorEventCountsOf({
+  deals,
+  events: Array.isArray(dealHistoryStore.events) ? dealHistoryStore.events : [],
+  vendorKeyOf
+});
 const plan = landing.planLandingPages({
   deals,
   vendorKeyOf,
   vendorSlugs: site.VENDOR_SLUGS,
   thresholds: undefined,
   vendorThresholds: site.VENDOR_THRESHOLDS,
-  eventCountOf: () => 0,
+  eventCountOf: name => vendorEventCount.get(name) || 0,
   pinned: landing.loadPinned(),
   aliases: landing.loadAliases(),
   plans: plansForPlan,
@@ -275,6 +323,8 @@ for (const route of routes) {
     html,
     kind,
     indexable,
+    // 窗口期状态从产物独立重算（见上方 dealLimboOf）；规则层用它与 indexable 互证。
+    dealLimbo: kind === 'deal' ? dealLimboOf(itemIds[0]) : undefined,
     // v1.8-seo-answer-pages：别名页的 canonical 目标是正本。规则层用这个字段
     // 判「独立可索引」（canonical 自指）与 sitemap 成员资格，并核对页面上的 canonical。
     // 独立性来源是 `landing-aliases.json`（与构建期同一份表），不是本工具重算一份「谁指向谁」。
@@ -377,102 +427,51 @@ if (verdict.problems.length) {
 }
 
 /* ------------------------------------------------------------------ */
-/* ③′ 正文下限**余量**登记复核（P2 残留 e1：/need/no-card/ 只剩 50 字）    */
+/* ③′ 正文下限余量（建议性报告：只打印最薄的若干页，不判生死）             */
 /* ------------------------------------------------------------------ */
 
 /**
  * 本工具自己的「可见正文」计数器。
  *
- * 刻意与 `seo.js` 的 `visibleText()` **分开写**：登记表里的字数是**一个数**，
- * 而它被「怎么数字数」这件事定义。两个实现同时对同一页计数、且都对登记值负责，
- * 才算这句话有两个来源 —— 下面有一条断言专门比这两个数。
+ * 刻意与 `seo.js` 的 `visibleText()` **分开写**：两个实现对同一页计数必须一致 ——
+ * 这是「怎么数字数」这条实现的不变式（真完整性检查），不是数据快照。
  */
 const ownVisibleText = html => unescapeHtml(
   strip(html).replace(/<!--[\s\S]*?-->/g, ' ').replace(/<[^>]+>/g, ' ')
 ).replace(/\s+/g, ' ').trim();
 
 {
-  const byRoute = new Map(descriptors.map(page => [page.route, page]));
-  const printMode = process.argv.includes('--print-floor-margins');
-  const registeredAt = ((process.argv.find(a => a.startsWith('--registered-at=')) || '').slice(16)) || '<YYYY-MM-DD>';
-  const readings = [];
-  const registryProblems = [];
-  const counterProblems = [];
+  const pages = descriptors.map(page => ({
+    route: page.route,
+    kind: page.kind,
+    count: page.count,
+    chars: ownVisibleText(page.html).length,
+    floor: pageKinds.textFloor(page.kind, page.count),
+    rule: seo.visibleText(page.html).length
+  }));
 
-  for (const entry of seo.TEXT_FLOOR_RESIDUALS) {
-    const page = byRoute.get(entry.route);
-    if (!page) { registryProblems.push(`${entry.route}：登记了，但产物里没有这一页（登记过期）`); continue; }
-    const own = ownVisibleText(page.html).length;
-    const rule = seo.visibleText(page.html).length;
-    if (own !== rule) counterProblems.push(`${entry.route}：本工具 ${own} ≠ 规则层 ${rule}`);
-    const floor = pageKinds.textFloor(page.kind, page.count);
-    const margin = own - floor;
-    readings.push({ route: entry.route, kind: page.kind, count: page.count, chars: own, floor, margin, registered: entry.margin });
-    // 登记的两个入参也一起判：kind / 条数变了，这条登记的「底线」就不再是这一页的底线。
-    if (page.kind !== entry.kind) registryProblems.push(`${entry.route}：kind 现在是 ${page.kind}，登记时是 ${entry.kind}`);
-    if (Number(page.count) !== entry.count) registryProblems.push(`${entry.route}：条数现在是 ${page.count}，登记时是 ${entry.count}`);
-    if (margin < entry.margin) registryProblems.push(`${entry.route}：余量 ${margin} < 登记值 ${entry.margin}（${own} 字 − 下限 ${floor}）`);
-  }
-
-  // 重新登记的入口：把**现在的读数**打印成可以直接贴回 `lib/seo.js` 的一块。
-  // （登记日期用 `--registered-at=YYYY-MM-DD` 给；不给就留一个显式占位符，不猜今天。）
-  if (printMode) {
-    console.log('\n=== 重新登记：把下面这块贴回 scripts/lib/seo.js 的 TEXT_FLOOR_RESIDUALS ===');
-    console.log(`    （登记日期：${registeredAt}）`);
-    for (const row of readings) {
-      console.log(`  { route: '${row.route}', kind: '${row.kind}', count: ${row.count}, chars: ${row.chars}, floor: ${row.floor}, margin: ${row.margin}, registeredAt: '${registeredAt}' },`);
-    }
-    console.log('\n    再让 JSON 转写与声明逐字节一致（seo-selftest 会比这两份）：');
-    console.log("    node -e \"const fs=require('fs'),seo=require('./scripts/lib/seo');"
-      + "fs.writeFileSync('research/_raw/p2-residuals-v1/text-floor-margins.json',"
-      + " JSON.stringify(seo.TEXT_FLOOR_RESIDUALS,null,2)+'\\n')\"");
-    process.exit(0);
-  }
-
-  console.log('\n=== 正文下限余量登记（P2 残留 e1）· 从 dist 重新数一遍 ===');
-  for (const row of readings) {
-    console.log(`  ${row.route.padEnd(20)} ${String(row.chars).padStart(5)} 字 − 下限 ${String(row.floor).padStart(4)}`
-      + ` = 余量 ${String(row.margin).padStart(4)}（登记值 ${row.registered}）· kind=${row.kind} count=${row.count}`);
-  }
-
-  check(`正文下限余量登记：${seo.TEXT_FLOOR_RESIDUALS.length} 页的实时余量 ≥ 登记值（独立重算，零调低下限）`,
-    registryProblems.length === 0, registryProblems.join('；'));
-  check('登记页的字数：本工具自己的计数器与规则层计数器逐字相同（两个实现互证）',
+  const counterProblems = pages.filter(page => page.chars !== page.rule)
+    .map(page => `${page.route}：本工具 ${page.chars} ≠ 规则层 ${page.rule}`);
+  check('「可见正文」的两个独立实现逐页相同（本工具计数器 vs 规则层 seo.visibleText）',
     counterProblems.length === 0, counterProblems.join('；'));
-  check('登记表里的每一页都真的产出了（登记过期 = 这一页没人看着了）',
-    readings.length === seo.TEXT_FLOOR_RESIDUALS.length,
-    `${readings.length}/${seo.TEXT_FLOOR_RESIDUALS.length}`);
 
-  /**
-   * **登记集合 == 实时余量 < 150 的页面集合**（judge-coverage-gaps-v1 §4 观察 2 的收口）。
-   *
-   * 为什么要有这一条：改前只有「被点名的 `/need/no-card/` 必须在表里」这一条钉住登记表，
-   * 其余 5 条**连同行带 JSON 转写一起删掉**时 `selftest:seo` / `verify:seo` 全都保持全绿 ——
-   * 也就是说「登记范围 = 全站余量 < 150 字的**全部**页面」只是一次普查的**结论**，
-   * 不是一条能拦住「静默缩小」的不变式（那个缺口是 `judge-coverage-gaps-v1` 量出来的）。
-   * 现在把它变成不变式，**两个方向都判**：
-   *   · 实时余量 < 阈值却没登记 ⇒ 红（这一页没人看着）；
-   *   · 登记了但实时余量已经 ≥ 阈值 ⇒ 红（登记过期：它已经不是最薄的那一档了）。
-   * 阈值 150 与 `lib/seo.js` 的登记注释同源（下一档是 409 字）。
-   */
-  const RESIDUAL_RANGE = 150;
-  const liveThin = descriptors
-    .map(page => ({
-      route: page.route, kind: page.kind, count: page.count,
-      margin: ownVisibleText(page.html).length - pageKinds.textFloor(page.kind, page.count)
-    }))
-    .filter(row => row.margin < RESIDUAL_RANGE)
-    .sort((a, b) => a.margin - b.margin);
-  const registeredRoutes = seo.TEXT_FLOOR_RESIDUALS.map(row => row.route).sort();
-  const missingRegistration = liveThin.filter(row => registeredRoutes.indexOf(row.route) === -1);
-  const staleRegistration = registeredRoutes.filter(route => !liveThin.some(row => row.route === route));
-  check(`余量登记集合 == 实时余量 < ${RESIDUAL_RANGE} 的页面集合（${liveThin.length} 页；**少登记 / 过期登记都红**）`,
-    missingRegistration.length === 0 && staleRegistration.length === 0,
-    `实时 < ${RESIDUAL_RANGE}：${liveThin.map(row => `${row.route}(${row.margin})`).join(' · ') || '（无）'}`
-      + (missingRegistration.length ? ` · **未登记**：${missingRegistration.map(row => `${row.route}(${row.margin})`).join(' ')}` : '')
-      + (staleRegistration.length ? ` · **登记过期**（余量已 ≥ ${RESIDUAL_RANGE}）：${staleRegistration.join(' ')}` : ''));
+  // 余量是**领先指标**，不是判据：数据合法增长（条数涨 ⇒ 下限涨）会让它变小，
+  // 快照式断言（登记值 / 精确集合相等）在数据演进时必然误报，因此已按根因退役 ——
+  // 硬判据只有构建期与独立门禁两侧都跑的 thin-content 下限。
+  // 这份报告留着，是为了「离红线最近的是哪几页」始终可见、可复核。
+  const REPORT_LIMIT = 10;
+  const thinnest = pages
+    .map(({ route, kind, count, chars, floor }) => ({ route, kind, count, chars, floor, margin: chars - floor }))
+    .sort((a, b) => (a.margin - b.margin) || (a.route < b.route ? -1 : a.route > b.route ? 1 : 0))
+    .slice(0, REPORT_LIMIT);
+
+  console.log(`\n=== 正文下限余量（建议性报告 · 全站最薄 ${thinnest.length} 页，下限见 page-kinds.js）===`);
+  for (const row of thinnest) {
+    console.log(`  ${row.route.padEnd(24)} ${String(row.chars).padStart(5)} 字 − 下限 ${String(row.floor).padStart(4)}`
+      + ` = 余量 ${String(row.margin).padStart(4)} · kind=${row.kind} count=${row.count}`);
+  }
+  console.log('  （不参与门禁判定：余量随数据合法演进，快照式硬断言必然误报；硬判据只有 thin-content 下限）');
 }
-
 /* ------------------------------------------------------------------ */
 /* ③″ H14：「最近变化」是条件模块（零变化 / 日志不可用 ⇒ **整块不渲染**）  */
 /* ------------------------------------------------------------------ */
@@ -526,9 +525,19 @@ const ownVisibleText = html => unescapeHtml(
 {
   const FORBIDDEN = '查看全部';
   const ENTRY = '全部变化 →';
+  // 指向 /changes/ 的**第二种**入口（2026-11）：B 类未核验线索的常驻计数入口。
+  // 它不是「同一件事的第二个词」，而是另一个入口 —— 但它的文案同样必须是权威措辞的
+  // 渲染结果：徽标 = `SOURCE_WORDING.SOURCE_TYPE.lead`，计数 = `CHANGES_LEAD.count/
+  // countMore` 以 N=min(data-lead-count, LEAD_CHIP_MAX) 替换 `{n}`。这里按**数据属性 +
+  // 权威表独立复算**，不把「线索 · 未核验 … 条 →」抄成第二份字面量。
+  const LEAD_WORD = changes.CHANGES_WORDING.CHANGES_LEAD;
+  const LEAD_MAX = changes.LIMITS.LEAD_CHIP_MAX;
+  const LEAD_BADGE = audience.WORDING_CONTRACT.SOURCE_TYPE.lead;
   const forbiddenPages = [];
   const entryPages = [];
   const oddArrows = [];
+  const leadChipProblems = [];
+  let leadChips = 0;
 
   for (const route of routes) {
     const rel = route === '' ? 'index.html' : `${route}/index.html`;
@@ -541,8 +550,24 @@ const ownVisibleText = html => unescapeHtml(
       if (!/(^|\/)changes\/$/.test(href)) continue;
       const text = m[2].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
       if (!text.includes('→')) continue;   // 导航「变化雷达」/ 标题「最近变化」不带箭头
-      if (text === ENTRY) entries++;
-      else oddArrows.push(`${route}：「${text}」`);
+      if (text === ENTRY) { entries++; continue; }
+      // 常驻线索入口：`<a class="rleadcount" data-lead-count="N" href="changes/#lead-<id>">`
+      const tag = m[0].slice(0, m[0].indexOf('>') + 1);
+      if (/\bclass="[^"]*\brleadcount\b/.test(tag)) {
+        leadChips++;
+        const countMatch = tag.match(/\bdata-lead-count="(\d+)"/);
+        const n = countMatch ? Number(countMatch[1]) : NaN;
+        const problems = [];
+        if (!Number.isInteger(n) || n <= 0) problems.push('data-lead-count 缺失或不是正整数');
+        const suffix = (Number.isInteger(n) && n > LEAD_MAX ? LEAD_WORD.countMore : LEAD_WORD.count)
+          .replace('{n}', String(Number.isInteger(n) ? Math.min(n, LEAD_MAX) : '?'));
+        const expected = `${LEAD_BADGE} ${suffix}`;
+        if (text !== expected) problems.push(`文案「${text}」≠ 权威措辞「${expected}」`);
+        if (!/^changes\/#lead-[0-9a-f]{12}$/.test(m[1])) problems.push(`href「${m[1]}」不是 changes/#lead-<id>`);
+        if (problems.length) leadChipProblems.push(`${route}：${problems.join('；')}`);
+        continue;
+      }
+      oddArrows.push(`${route}：「${text}」`);
     }
     if (entries) entryPages.push(`${route}(${entries})`);
   }
@@ -551,8 +576,11 @@ const ownVisibleText = html => unescapeHtml(
     forbiddenPages.length === 0, forbiddenPages.slice(0, 4).join(', '));
   check(`入口文案：指向 /changes/ 的箭头锚逐字都是「${ENTRY}」（同一件事只有一个词）`,
     oddArrows.length === 0, oddArrows.slice(0, 4).join('；'));
+  check(`入口文案：常驻线索入口按权威表渲染（min(N, ${LEAD_MAX})；N 超限带「+」，href 指向 changes/#lead-<id>）`,
+    leadChipProblems.length === 0, leadChipProblems.slice(0, 4).join('；'));
   console.log(`\n=== 入口文案读数 · 「${ENTRY}」出现在 ${entryPages.length} 页`
-    + `${entryPages.length ? `：${entryPages.join(' · ')}` : '（0 页）'}`);
+    + `${entryPages.length ? `：${entryPages.join(' · ')}` : '（0 页）'}`
+    + ` · 常驻线索入口 ${leadChips} 处`);
 }
 
 /* ------------------------------------------------------------------ */
@@ -588,12 +616,24 @@ const ownVisibleText = html => unescapeHtml(
 }
 
 {
-  // v1.8：别名页不再 noindex。产物里允许出现的 noindex 页面必须来自策略表
-  // （今天 = 0 条；将来若出现，必须由 `page-kinds.js` 的声明解释，而不是悄悄多出来）。
+  // 窗口期策略（与 seo.dealIndexable / deal-index-policy 同源）：产物里允许的 noindex 页
+  // **只能**是「到期/线索但尚未归档」的优惠详情页，且必须与从产物**独立重算**的窗口期集合
+  // 逐个相等（双向对账）：
+  //   · 多一个 noindex（非窗口期页被 deindex）⇒ 红 —— 防止静默批量 deindex；
+  //   · 少一个 noindex（窗口期页仍可索引）⇒ 红 —— 孤儿页会重新暴露给搜索引擎。
+  // 别名页 v1.8 起用 canonical 收口、不再 noindex，所以非 deal 页一律不许 noindex。
   const noindexPages = descriptors.filter(page => !page.indexable);
-  check(`noindex 页面 ${noindexPages.length} 条（v1.8 起别名页用 canonical 收口，不再 noindex）`,
-    noindexPages.length === 0,
-    noindexPages.map(page => page.route).join(', '));
+  const expectedLimbo = deals
+    .filter(deal => deal.type === 'deal' && deal.id && dealLimboOf(deal.id))
+    .map(deal => `deal/${encodeURIComponent(deal.id)}/`);
+  const noindexRoutes = noindexPages.map(page => page.route).sort();
+  const expectedSorted = expectedLimbo.slice().sort();
+  const nonDealNoindex = noindexPages.filter(page => page.kind !== 'deal');
+  const unexpected = noindexRoutes.filter(route => !expectedSorted.includes(route));
+  const missing = expectedSorted.filter(route => !noindexRoutes.includes(route));
+  check(`noindex 页面 ${noindexPages.length} 条 == 独立重算的窗口期集合 ${expectedLimbo.length} 条（只允许窗口期 deal 页 noindex）`,
+    nonDealNoindex.length === 0 && unexpected.length === 0 && missing.length === 0,
+    `非deal页noindex [${nonDealNoindex.map(p => p.route).join(',')}] / 多 [${unexpected.join(',')}] / 少 [${missing.join(',')}]`);
 }
 
 {
