@@ -378,8 +378,8 @@ function docStart(spec) {
 <meta name="description" content="${description}">
 ${robotsHtml}<link rel="canonical" href="${canonicalUrl}">
 ${hreflangHtml}${hreflangHtml ? '\n' : ''}${feedTagsHtml}${feedTagsHtml ? '\n' : ''}${ogHtml}${ogHtml ? '\n' : ''}<meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f6f4ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c0b0a" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="${faviconHref}" type="image/svg+xml">
 ${logoCssHtml}${parts.themeScript}
 ${sharedCssTag}

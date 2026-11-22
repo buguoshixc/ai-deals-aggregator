@@ -742,8 +742,69 @@
     }
 
     /**
-     * 卡片正文。优惠条目显示优惠说明（档位配色的竖条 + 加粗前半句）；
-     * 工具条目显示工具简介（灰条、不加粗）——两者都是数据里已有的原文。
+     * 卡片视觉主标题（Benefit Callout · Direction B）：
+     * 严格从当前条目已有的真实字段提取核心事实（features / offerSummary / zh.discountInfo / discountInfo），
+     * 绝不编造数字或营销词。优先取带明确额度/价格/免费信号的特性短语，否则取正文核心短句。
+     */
+    function benefitHeadlineOf(deal) {
+      if (!deal || deal.type !== 'deal') return '';
+      const rawText = String(deal.offerSummary || zhOf(deal, 'discountInfo') || deal.discountInfo || '').trim();
+      const feats = Array.isArray(deal.features) ? deal.features.map(f => String(f || '').trim()).filter(Boolean) : [];
+      const modelCount = Array.isArray(deal.models) ? deal.models.length : 0;
+      const valRe = /\d|\$|¥|免费|折|\boff\b|credit|token|积分|代金券|体验券|额度|会员|补贴/i;
+      const noiseRe = /^(?:需|限流未标注|所有|仅限|个人开发者|火山方舟用户|千帆平台)/;
+      const clip = (str, max) => {
+        const chars = Array.from(String(str || '').trim());
+        if (chars.length <= max) return chars.join('');
+        let cut = chars.slice(0, max - 1).join('').replace(/[，。、；：,\s·\-—]+$/, '');
+        return cut + '…';
+      };
+
+      // ① 优先从官方提炼的 features 找带数值/免费事实的短语
+      const primaryFeat = feats.find(f => valRe.test(f) && !noiseRe.test(f));
+      if (primaryFeat) {
+        let out = primaryFeat;
+        if (modelCount > 1 && !/模型/.test(out)) {
+          const withModels = out + ' · ' + modelCount + ' 个模型';
+          if (Array.from(withModels).length <= 24) out = withModels;
+        } else {
+          const second = feats.find(f => f !== primaryFeat && valRe.test(f) && !noiseRe.test(f) && Array.from(f).length <= 12);
+          if (second && Array.from(out + ' · ' + second).length <= 24) {
+            out = out + ' · ' + second;
+          }
+        }
+        return clip(out, 26);
+      }
+
+      // ② features 为空时，从原文逐字抽取具体额度/价格事实短语
+      if (rawText) {
+        const patterns = [
+          /(?:单模型每日最高|每日最高|最高可领取总计|最高可领|每模型独立|新用户注册专享|注册即赠送?|首次开通[^，。；：]{0,6}赠送?|赠送|免费领取|每月|首月|一次性)\s*[\d,.]+\s*[万亿千百]?\s*(?:免费\s*)?(?:tokens?|credits?|元代金券|元|活动积分|积分|次\/[天日月]|次|小时|张|美元|\$)/i,
+          /[\d,.]+\s*[万亿千百]?\s*(?:免费\s*)?(?:tokens?|credits?|元代金券|活动积分|积分|次\/[天日月]|次\/小时)/i,
+          /(?:调用价格\s*0\s*元|价格均为\s*\$0|标价\s*0\s*元)/i,
+          /(?:限时免费|免费模型|免费使用|免费计划|永久免费)/i
+        ];
+        for (let i = 0; i < patterns.length; i++) {
+          const m = rawText.match(patterns[i]);
+          if (m && m[0]) {
+            let hit = m[0].replace(/\s+/g, ' ').trim();
+            if (modelCount > 1 && !/模型/.test(hit) && Array.from(hit).length <= 15) {
+              hit = hit + ' · ' + modelCount + ' 个模型';
+            }
+            return clip(hit, 26);
+          }
+        }
+      }
+
+      // ③ 兜底：取原文首个自然短句（仍然 100% 源自官方字段）
+      const sp = splitOffer(rawText);
+      const fallback = (sp && (sp.lead || sp.rest)) || '';
+      return fallback ? clip(fallback, 24) : '';
+    }
+
+    /**
+     * 卡片正文。优惠条目显示「事实核心收益（benefit-val）」+「精简原文说明（.of）」；
+     * 工具条目显示工具简介（灰条、不加粗）——两者全部来自数据里已有的原文。
      *
      * 单条卡走 `offerOf` 原来那条路（加粗切在**原文第一个标点**处，与 2.30 之前逐字相同）；
      * 折叠卡才在合并后的文案上重新切一刀。别把单条卡也塞进「先拼成一行再切」那条路——
@@ -759,10 +820,15 @@
       const merged = Boolean(deal.offerSummary);
       const offer = merged ? splitOffer(deal.offerSummary) : offerOf(deal);
       if (!offer) return '';
+      const benefit = benefitHeadlineOf(deal);
+      const benefitHtml = benefit
+        ? '<div class="benefit-val t' + tierN + '">' + escapeHtml(benefit) + '</div>'
+        : '';
       const body = offer.lead
         ? '<b>' + escapeHtml(offer.lead) + '</b>' + (offer.rest ? ' · ' + escapeHtml(offer.rest) : '')
         : escapeHtml(offer.rest);
-      return '<div class="ofwrap">' + foldMembersHtml(deal) +
+      const fmembers = foldMembersHtml(deal);
+      return '<div class="ofwrap' + (fmembers ? ' has-fmembers' : '') + '">' + benefitHtml + fmembers +
         '<div class="of t' + tierN + '"><span class="bar"></span><div class="tx">' + body + '</div></div></div>';
     }
 
@@ -1761,12 +1827,12 @@
         .join('');
     }
 
-    /** 顶栏右侧的汇总：静态骨架与首屏都读它 */
+    /** Hero 顶部信任胶囊汇总（同时满足静态骨架与首屏校验）：保留「N 条优惠」核心事实 */
     function topStatHtml(deals, updatedAt) {
       const cards = defaultCards(deals);
       const date = updatedAt ? String(updatedAt).slice(0, 10) : '';
-      return '<b>' + cards.length + '</b> 条优惠' +
-        (date ? ' · 更新 ' + escapeHtml(date) : '');
+      return (date ? escapeHtml(date) + ' 已核对 · ' : '') +
+        '<b>' + cards.length + '</b> 条优惠 · 官方直链 · 零付费推广';
     }
 
     /**
@@ -1956,6 +2022,100 @@
         '<span class="hint">' + escapeHtml(tier.hint) + '</span>' +
         '<span class="stat stat-22">' + count + '<span class="stat-unit">条</span></span>' +
         '<span class="line"></span></div>';
+    }
+
+    /**
+     * 首页「焦点免费额度」双栏卡（Direction B）：
+     * 100% 确定性数据规则，不接受付费推荐位：
+     *   · 槽位 1：档位 1（完全免费）中覆盖面最广的活跃条目（优先多模型折叠或长期免费档）；
+     *   · 槽位 2：档位 2（免费额度）中不同厂商的高额度/高频活跃条目（优先每日可领或百万级 Tokens 档）。
+     * 与下方主网格同源数据，默认无筛选视图显示，筛选/搜索后由客户端隐藏以聚焦结果。
+     */
+    function selectSpotlights(cards) {
+      const pool = (Array.isArray(cards) ? cards : []).filter(c =>
+        c && c.type === 'deal' && c.id && !isExpired(c)
+      );
+      if (!pool.length) return [];
+      const scoreT1 = c => {
+        const models = Array.isArray(c.models) ? c.models.length : 1;
+        const exp = expiryState(c);
+        return models * 10 + (exp.key === 'ongoing' ? 6 : 0) + (hasZh(c) ? 2 : 0) + (Array.isArray(c.features) ? Math.min(c.features.length, 3) : 0);
+      };
+      const scoreT2 = c => {
+        const models = Array.isArray(c.models) ? c.models.length : 1;
+        const txt = String(c.offerSummary || c.discountInfo || c.title || '');
+        const daily = /每日|每天|每\s*5\s*小时/.test(txt) ? 14 : 0;
+        const bigTokens = /500\s*万|2000\s*万|2\s*亿|100\s*万/.test(txt) ? 10 : 0;
+        return daily + bigTokens + Math.min(models, 10) * 2 + (c.region === 'cn' ? 3 : 0);
+      };
+      const t1 = pool.filter(c => (c.tier || tierOf(c).n) === 1)
+        .map((c, idx) => ({ c, s: scoreT1(c), idx }))
+        .sort((a, b) => b.s - a.s || a.idx - b.idx);
+      const t2 = pool.filter(c => (c.tier || tierOf(c).n) === 2)
+        .map((c, idx) => ({ c, s: scoreT2(c), idx }))
+        .sort((a, b) => b.s - a.s || a.idx - b.idx);
+
+      const picked = [];
+      const usedVendors = new Set();
+      if (t2.length) {
+        picked.push(t2[0].c);
+        usedVendors.add(vendorOf(t2[0].c).key);
+      }
+      const pick1 = t1.find(x => !usedVendors.has(vendorOf(x.c).key)) || t1[0];
+      if (pick1) {
+        picked.push(pick1.c);
+        usedVendors.add(vendorOf(pick1.c).key);
+      }
+      if (picked.length < 2) {
+        for (let i = 0; i < pool.length && picked.length < 2; i++) {
+          if (!picked.includes(pool[i]) && !usedVendors.has(vendorOf(pool[i]).key)) {
+            picked.push(pool[i]);
+            usedVendors.add(vendorOf(pool[i]).key);
+          }
+        }
+      }
+      return picked.slice(0, 2);
+    }
+
+    function spotlightsHtml(cards) {
+      const picked = selectSpotlights(cards);
+      if (!picked.length) return '';
+      const items = picked.map((deal, idx) => {
+        const tier = tierOf(deal);
+        const vendor = vendorOf(deal);
+        const internal = detailHref(deal);
+        const url = safeUrl(deal.url);
+        const benefit = benefitHeadlineOf(deal) || escapeHtml(deal.title);
+        const summary = offerTextOf(deal) || String(deal.description || '');
+        const feats = featsOf(deal).slice(0, 3);
+        const regionLabel = deal.region ? (REGION_LABELS[deal.region] || deal.region) : '';
+        const metaLine = [vendor.name, regionLabel, deal.category].filter(Boolean).join(' · ');
+        const state = expiryState(deal);
+        const badgeText = state.key === 'due' || state.key === 'ongoing'
+          ? state.label
+          : tier.name;
+        const warmCls = idx === 1 ? ' spot-warm' : '';
+        const ctaHref = internal || url || '#';
+        const ctaText = Array.isArray(deal.models) && deal.models.length > 1
+          ? '查看 ' + deal.models.length + ' 个模型 →'
+          : '查看领取方式 →';
+        return '<article class="spot' + warmCls + '" data-spotlight-id="' + escapeAttr(String(deal.id || '')) + '">' +
+          '<div class="spot-hd">' + logoHtml(deal, true) +
+          '<div class="spot-titles"><h4>' +
+          (internal ? '<a href="' + escapeAttr(internal) + '">' + escapeHtml(deal.title) + '</a>' : escapeHtml(deal.title)) +
+          '</h4><div class="spot-vendor">' + escapeHtml(metaLine) + '</div></div>' +
+          '<span class="spot-badge">' + escapeHtml(badgeText) + '</span></div>' +
+          '<div class="spot-stat">' + escapeHtml(benefit) + '</div>' +
+          '<p class="spot-desc">' + escapeHtml(summary) + '</p>' +
+          '<div class="spot-ft">' +
+          '<div class="spot-tags">' + feats.map(f => '<span>' + escapeHtml(f) + '</span>').join('') + '</div>' +
+          '<a class="spot-cta" href="' + escapeAttr(ctaHref) + '">' + escapeHtml(ctaText) + '</a>' +
+          '</div></article>';
+      }).join('');
+      return '<section class="spotsec" id="spotlights" aria-label="焦点免费额度">' +
+        '<div class="sec-hd"><h2>焦点免费额度 · 高频关注</h2>' +
+        '<small>按官方免费力度与覆盖范围自动筛选，非付费推荐位</small></div>' +
+        '<div class="spotgrid">' + items + '</div></section>';
     }
 
     /** 完整网格内容：分带 + 卡片；非「力度优先」排序时不分带 */
@@ -3205,26 +3365,52 @@
       } catch (error) { /* 隐私模式：本次会话内仍然生效，只是记不住 */ }
       renderThemeSeg();
     }
+    const THEME_CYCLE = ['auto', 'light', 'dark'];
+    const THEME_LABELS = { auto: '跟随系统', light: '浅色', dark: '深色' };
+    const THEME_ICONS = {
+      auto: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v18"/><path d="M12 3a9 9 0 0 1 0 18Z" fill="currentColor" stroke="none"/></svg>',
+      light: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>',
+      dark: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>'
+    };
     function renderThemeSeg() {
-      const seg = document.getElementById('themeSeg');
-      if (!seg) return;
       const now = currentTheme();
-      seg.querySelectorAll('[data-theme-value]').forEach(button => {
-        const on = button.dataset.themeValue === now;
-        button.classList.toggle('on', on);
-        button.setAttribute('aria-pressed', on ? 'true' : 'false');
-      });
+      const seg = document.getElementById('themeSeg');
+      if (seg) {
+        seg.querySelectorAll('[data-theme-value]').forEach(button => {
+          const on = button.dataset.themeValue === now;
+          button.classList.toggle('on', on);
+          button.setAttribute('aria-pressed', on ? 'true' : 'false');
+        });
+      }
+      const toggle = document.getElementById('themeToggle');
+      if (toggle) {
+        const next = THEME_CYCLE[(THEME_CYCLE.indexOf(now) + 1) % THEME_CYCLE.length];
+        const label = '配色主题：' + THEME_LABELS[now] + '（点击切换至' + THEME_LABELS[next] + '）';
+        toggle.dataset.themeState = now;
+        toggle.setAttribute('aria-label', label);
+        toggle.setAttribute('title', label);
+        toggle.innerHTML = THEME_ICONS[now];
+      }
     }
     // body.js 已加，切换器此时才显示出来，立刻把选中态画对（否则会闪一下「跟随系统」）。
     // 主题切换的绑定独立于列表逻辑：独立详情页没有列表，但同样要能切主题。
     function bindThemeSeg() {
       const seg = document.getElementById('themeSeg');
-      if (!seg) return;
-      // 回车/空格由 <button> 原生支持，不需要额外键盘处理
-      seg.addEventListener('click', event => {
-        const button = event.target.closest('[data-theme-value]');
-        if (button) applyTheme(button.dataset.themeValue);
-      });
+      if (seg) {
+        // 回车/空格由 <button> 原生支持，不需要额外键盘处理
+        seg.addEventListener('click', event => {
+          const button = event.target.closest('[data-theme-value]');
+          if (button) applyTheme(button.dataset.themeValue);
+        });
+      }
+      const toggle = document.getElementById('themeToggle');
+      if (toggle) {
+        toggle.addEventListener('click', () => {
+          const now = currentTheme();
+          const next = THEME_CYCLE[(THEME_CYCLE.indexOf(now) + 1) % THEME_CYCLE.length];
+          applyTheme(next);
+        });
+      }
     }
     bindThemeSeg();
     renderThemeSeg();
@@ -3278,6 +3464,8 @@
 
     const els = {
       list: document.getElementById('dealsList'),
+      spotlights: document.getElementById('spotlights'),
+      toolRibbon: document.getElementById('toolRibbon'),
       facets: document.getElementById('facets'),
       stats: document.getElementById('stats'),
       topStat: document.getElementById('topStat'),
@@ -3732,7 +3920,27 @@
       return button;
     }
 
-    /** 给当前渲染出来的每张卡片挂星标；卡片被 render() 重建过就重新挂一次 */
+    function buildCardCmpButton(card) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'cmp-quick';
+      button.setAttribute('data-cmp-toggle', '');
+      return card && card.id ? applyCardCmpState(button, card) : button;
+    }
+
+    function applyCardCmpState(button, card) {
+      const id = card && card.id ? String(card.id) : '';
+      const on = id ? inCmp(id) : false;
+      const full = cmpInDetail.length >= CMP_MAX;
+      button.setAttribute('aria-pressed', on ? 'true' : 'false');
+      button.disabled = !on && full;
+      button.textContent = on ? '已对比' : '+ 对比';
+      button.setAttribute('aria-label', (on ? '移出对比 ' : '加入对比 ') + (card ? card.title : ''));
+      button.setAttribute('title', on ? '从对比栏移出' : (full ? '最多对比 ' + CMP_MAX + ' 条' : '加入底部对比栏'));
+      return button;
+    }
+
+    /** 给当前渲染出来的每张卡片挂星标与快速对比按钮；卡片被 render() 重建过就重新挂一次 */
     function syncFavStars() {
       if (!els.list) return;
       const nodes = els.list.querySelectorAll('article.g');
@@ -3745,6 +3953,16 @@
           node.appendChild(button);
         } else {
           applyFavState(button, card);
+        }
+        const sp = node.querySelector('.meta .sp');
+        if (sp) {
+          let cmpBtn = sp.querySelector('.cmp-quick');
+          if (!cmpBtn) {
+            cmpBtn = buildCardCmpButton(card);
+            sp.insertAdjacentElement('afterbegin', cmpBtn);
+          } else {
+            applyCardCmpState(cmpBtn, card);
+          }
         }
       });
     }
@@ -3831,16 +4049,19 @@
         if (event.target.closest('[data-cmp-clear]')) { clearCmp(); return; }
       });
 
-      // 卡片上的星标：先 stopPropagation，否则这次点击会冒泡到列表的委托监听里，
-      // 被当成「点了卡片」把详情弹层也打开——点收藏不该顺带弹出一个弹层。
+      // 卡片上的星标与快速对比按钮：先 stopPropagation，否则会冒泡成「点开详情弹层」
       els.list.addEventListener('click', event => {
-        if (!event.target.closest('[data-fav-toggle]')) return;
+        const favBtn = event.target.closest('[data-fav-toggle]');
+        const cmpBtn = event.target.closest('[data-cmp-toggle]');
+        if (!favBtn && !cmpBtn) return;
         event.preventDefault();
         event.stopPropagation();
         const node = event.target.closest('article.g');
         const index = [...els.list.querySelectorAll('article.g')].indexOf(node);
         const card = state.cards[index];
-        if (card) toggleFav(String(card.id || ''));
+        if (!card) return;
+        if (favBtn) toggleFav(String(card.id || ''));
+        else if (cmpBtn) toggleCmp(String(card.id || ''));
       }, true);   // 捕获阶段：抢在 bindEvents() 里那个冒泡监听之前
 
       els.compare.addEventListener('click', event => {
@@ -3911,12 +4132,20 @@
       });
     }
 
+    function isDefaultHomeView() {
+      const f = state.filters;
+      return (f.tab || DEFAULT_FILTERS.tab) === DEFAULT_FILTERS.tab && !f.region && !f.collection && !f.vendor &&
+        !f.category && !f.search && !f.due && !f.fav && (f.sort || 'tier') === 'tier';
+    }
+
     function render() {
       // innerHTML 会重建全部卡片，星标与焦点都在里面；先记下焦点在哪张卡上
       const focusId = focusCardId();
       const cards = cardsFor(state.deals, state.filters);
       state.cards = cards;
       const rowsView = state.view === 'rows';
+      if (els.spotlights) els.spotlights.hidden = !isDefaultHomeView() || rowsView;
+      if (els.toolRibbon) els.toolRibbon.hidden = rowsView;
       els.list.className = rowsView ? 'rows' : 'grid';
       els.list.innerHTML = rowsView ? rowsHtml(cards) : gridHtml(cards, state.filters);
       els.stats.innerHTML = statsHtml(state.deals, state.filters, favInfo());
@@ -4047,9 +4276,9 @@
 
       els.list.addEventListener('click', event => {
         if (event.target.closest('a')) return;
-        // 星标由 setupPrefs() 在捕获阶段先处理掉了；这里再挡一次，
-        // 免得将来有人动了那个监听的时机，点收藏就又顺带弹出详情
-        if (event.target.closest('[data-fav-toggle]')) return;
+        // 星标与快速对比由 setupPrefs() 在捕获阶段先处理掉了；这里再挡一次，
+        // 免得将来有人动了那个监听的时机，点收藏/对比就又顺带弹出详情
+        if (event.target.closest('[data-fav-toggle], [data-cmp-toggle]')) return;
         // 列表视图的整行也可点开详情（与卡片一致）
         const node = event.target.closest('.g') || event.target.closest('.r');
         if (!node) return;
@@ -4057,6 +4286,17 @@
         const card = state.cards[nodes.indexOf(node)];
         if (card) openDetail(card);
       });
+
+      // 焦点双栏卡：点击非链接区域同样直接打开详情弹层（链接自身无 JS 也可跳详情页）
+      if (els.spotlights) {
+        els.spotlights.addEventListener('click', event => {
+          if (event.target.closest('a, button')) return;
+          const spot = event.target.closest('[data-spotlight-id]');
+          if (!spot) return;
+          const card = cardById(spot.dataset.spotlightId);
+          if (card) openDetail(card);
+        });
+      }
 
       // 弹层只保留右上角的 ✕ 关闭（外加 Esc 与点遮罩）：先前动作区里还有一个
       // 「关闭」链接，与 ✕ 重复；而它经 detailHtml() 复用到了独立详情页上，

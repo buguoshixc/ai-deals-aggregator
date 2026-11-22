@@ -625,6 +625,43 @@ function renderNeedRow(deals) {
 }
 
 /**
+ * 首页探索工具带（Direction B · 3 张静态卡片）：
+ * 把全站三个高价值长期工具（Coding 套餐对比 / API 计费对比 / API 成本计算器）
+ * 从顶栏角落提升为问题导向的引导带，数字全部由构建期现算，路由走 ROUTE_HREFS 占位符。
+ */
+function renderToolRibbon(plansStore, apiPlansStore) {
+  const plans = plansStore && Array.isArray(plansStore.plans) ? plansStore.plans : [];
+  const planPlatforms = new Set(plans.map(p => p.provider).filter(Boolean)).size;
+  const apiPlans = apiPlansStore && Array.isArray(apiPlansStore.plans) ? apiPlansStore.plans : [];
+  const apiPlatforms = new Set(apiPlans.map(p => p.provider).filter(Boolean)).size;
+  const apiModels = apiPlans.reduce((n, p) => n + (Array.isArray(p.models) ? p.models.length : 0), 0);
+  const items = [
+    {
+      href: '__PLANS_HREF__',
+      title: 'AI Coding 套餐谁更划算？',
+      desc: `横向对照 ${planPlatforms} 平台 · ${plans.length} 款月付套餐与限流`
+    },
+    {
+      href: '__APIPLAN_HREF__',
+      title: '每百万 Token 官方单价表',
+      desc: `覆盖 ${apiPlatforms} 平台 · ${apiModels} 项模型按量明码标价`
+    },
+    {
+      href: '__APICOST_HREF__',
+      title: '30 秒估算你的 API 月成本',
+      desc: '支持缓存命中率与最多 4 个模型原币种并排对比'
+    }
+  ];
+  const links = items.map(item =>
+    `<a class="toolcard" href="${item.href}">` +
+    `<span class="toolcard-copy"><strong>${htmlEscape(item.title)}</strong><small>${htmlEscape(item.desc)}</small></span>` +
+    `<span class="toolcard-arrow" aria-hidden="true">→</span>` +
+    `</a>`
+  ).join('');
+  return `  <nav class="toolribbon" id="toolRibbon" aria-label="套餐与计费对比工具">${links}</nav>`;
+}
+
+/**
 // `resolveRouteHrefs()` 与 `finalizePage()` 的唯一实现已迁到 `scripts/lib/page-shell.js`：
 // 页面壳（9 个页面族 + 首页收尾）都从那一处派生，「分析注入只有一处出口」这条性质不变，
 // 差别只是它不再住在构建脚本里 —— 于是 renderer 与构建编排都不会各自抄一份收尾逻辑。
@@ -663,11 +700,10 @@ const MIN_PRERENDERED_CARDS = 45;
 const PRERENDER_MARKERS = [
   'PRERENDER:deals', 'PRERENDER:facets', 'PRERENDER:topstat',
   'PRERENDER:stats', 'PRERENDER:categories', 'PRERENDER:needs', 'PRERENDER:changes', 'PRERENDER:jsonld',
+  'PRERENDER:spotlights', 'PRERENDER:toolribbon',
   // v1.7：页脚那一行的「少量厂商入口」（由落地页计划生成，见 renderVendorLine）
   'PRERENDER:vendorline',
   // v3.2：首页**折叠线以下**的「最近变化」区块（`#dealsList` 收口与 FAQ 之间）。
-  // 它必须留在 `#dealsList` **之后** —— 放到网格之前会把首屏完整可见卡片从 6 张打下去
-  //（`verify-site.js` 的「首屏完整可见卡片 ≥ 6」是实测阈值，不是估计）。
   'PRERENDER:changestopic'
 ];
 
@@ -2774,13 +2810,15 @@ function assemble() {
   html = html.replace(/\s*<div class="loading">加载数据中…<\/div>/g, '');
   console.log(`  卡片预渲染: ${rendered.count} 条（${rendered.dist}）`);
 
-  // 骨架的其余部分：筛选条计数、顶栏汇总、结果条、分类选项
+  // 骨架的其余部分：筛选条计数、顶栏汇总、结果条、分类选项、焦点双栏卡、探索工具带
   html = replaceMarker(html, '<!--PRERENDER:facets-->', rendered.facets);
   html = replaceMarker(html, '<!--PRERENDER:topstat-->', rendered.topStat);
   html = replaceMarker(html, '<!--PRERENDER:stats-->', rendered.stats);
   html = replaceMarker(html, '<!--PRERENDER:categories-->', rendered.categories);
-  // 按需求找优惠的入口行（v1.2）：静态 <a>，无 JS 可点。放在筛选条之后、
-  // 正文之前 —— 它回答「我要什么」，筛选条回答「我要怎么缩」，后者是它的下游。
+  html = replaceMarker(html, '<!--PRERENDER:spotlights-->', renderCore.spotlightsHtml(rendered.cards));
+  html = replaceMarker(html, '<!--PRERENDER:toolribbon-->', renderToolRibbon(plansStore, apiPlansStore));
+  // 按需求找优惠的入口行（v1.2）：静态 <a>，无 JS 可点。Direction B 放在主优惠列表之后、
+  // FAQ 之前，既消除首屏 10 格白框墙与 #main 绝对定位偏移，又完整保留 10 个 /need/* 站内入链。
   html = replaceMarker(html, '<!--PRERENDER:needs-->', renderNeedRow(payload.deals));
   // 变化雷达条带（v1.5）：同样一行静态导航，紧跟按需求入口行。它与 /changes/ 页
   // 共用 RENDER-CORE 的渲染函数，读的是上面算好的同一份 radar。

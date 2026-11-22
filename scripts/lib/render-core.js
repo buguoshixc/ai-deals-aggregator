@@ -36,7 +36,9 @@ const REQUIRED = [
   'relatedPlansHtml',
   // A 包：详情页「这条领不到了？」的一键复制话术。构建期要直接调用它断言文本形状
   // （标题 / 条目 id / 官方页 / issue 地址五段），所以它必须是对外可见的纯函数。
-  'lostReportText'
+  'lostReportText',
+  // Direction B（Editorial Discovery Hub）：核心事实收益提取与双栏焦点免费额度渲染
+  'benefitHeadlineOf', 'spotlightsHtml'
 ];
 
 /**
