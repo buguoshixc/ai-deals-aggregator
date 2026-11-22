@@ -192,6 +192,31 @@ const ALLOWED_DATA = [
 const PAGE_FILE_RE = /\.html?$/i;
 
 /**
+ * 产物里**不是页面**的 `.html`（逐路径登记 + 理由，不许通配）。
+ *
+ * 「任何 `*.html` 都是页面本体」这条假设有一串机器牙：构建自检的页头图标入口、`<footer>` 锚点、
+ * 说明意图清单、订阅 alternate 声明，以及产物复核 `analytics-selftest` 的「每个页面 exactly 1 个
+ * bootstrap」。但**站点归属验证文件**是这条假设的合法例外 —— 搜索引擎指定它叫 `<token>.html`、
+ * 必须落在站点根并逐字节原样可取，而它不是页面：没有页头 / 页脚 / 说明意图，没有页面引用它，
+ * 也不进 sitemap。
+ *
+ * 这张表是那条例外的**唯一出处**：构建期（拷贝清单 + 页面判据）与产物复核必须读同一份，
+ * 否则「构建时放行、复核时不认」这种漂移只会以一条看起来莫名其妙的门禁红出现。
+ * 三条纪律照旧：逐路径、写明理由、失败点名。
+ */
+const NON_PAGE_HTML = [
+  // Google Search Console 的「HTML 文件」验证（2026-11 加）。与 `BingSiteAuth.xml` 同属
+  // 「站对外的运维约定」那一类：没有页面引用它、它也不进 sitemap，但 Google 抓的就是这个
+  // 路径下的这份内容 —— 一个字节都不能改（连结尾换行都算「不原样」）。
+  ['google9207b438510519e4.html',
+    'Google Search Console 的站点归属验证文件（GSC 生成，内容只有一行 google-site-verification 令牌）：'
+    + '必须落在站点根逐字节原样可取，属于站对外的运维约定而不是数据；它不是页面，也没有任何页面引用它']
+];
+
+/** 上面那张表的路径集合（构建期与产物复核共用的成员判据，避免各自再写一份字面量）。 */
+const NON_PAGE_HTML_PATHS = new Set(NON_PAGE_HTML.map(([rel]) => rel));
+
+/**
  * 产物里全部文件的相对路径（POSIX 形式，排序后返回，便于逐字节可复现的日志与断言）。
  * @param {string} dir 产物目录（通常是构建期的暂存目录 OUT）
  */
@@ -280,7 +305,9 @@ function assertNoPublishedData(dir) {
 /** 给日志用的一行摘要：「产物资产 N 个（页面 M / 非页面 K，其中数据资源 1）」 */
 function summarizePublishedFiles(dir) {
   const files = listPublishedFiles(dir);
-  const pages = files.filter(rel => PAGE_FILE_RE.test(rel)).length;
+  // 页面数按「`.html` 减去 NON_PAGE_HTML 登记的验证文件」算：验证文件形状上是 `.html`、
+  // 语义上不是页面，算进页面会让日志读数与实际页面集合对不上（差一）。
+  const pages = files.filter(rel => PAGE_FILE_RE.test(rel) && !NON_PAGE_HTML_PATHS.has(rel)).length;
   const data = files.filter(rel => ALLOWED_DATA.some(([p]) => p === rel)).length;
   return { total: files.length, pages, nonPages: files.length - pages, data };
 }
@@ -289,6 +316,8 @@ module.exports = {
   ALLOWED_PATHS,
   ALLOWED_PREFIX,
   ALLOWED_DATA,
+  NON_PAGE_HTML,
+  NON_PAGE_HTML_PATHS,
   listPublishedFiles,
   assertNoPublishedData,
   summarizePublishedFiles

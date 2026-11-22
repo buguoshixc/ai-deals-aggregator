@@ -81,6 +81,24 @@ token 为空时整块不输出、绝不会生成占位 token。提交并发布�
    若出现「备用网页（有 canonical 标签）」指向 `/free-api/`、`/student/` 等正本，那是**预期行为**
    （3 个 `/need/*/` 别名页按 v1.8 策略用 canonical 收口，不进 sitemap、不再 noindex）。
 
+### 1.4 另一种验证方式：HTML 文件（本站实际采用）
+
+GSC 的验证弹窗里还有 **HTML 文件** 方式（给一个 `google<token>.html`）。本站走的是这条路，
+没有用上面的 meta 注入 —— 两条路**只需成功一条**，`site-verification.json` 的 `google.token`
+因此继续留空。
+
+三条硬约束：
+
+1. **文件放仓库根**：构建期由 `scripts/tools/build-local.js` 的 `PUBLIC_FILES` 原样拷到产物根，
+   线上地址就是 `https://buguoshixc.github.io/ai-deals-aggregator/<文件名>`；
+2. **逐字节照抄**（一行 `google-site-verification: …`，结尾不带换行）—— 格式化或补一个换行
+   都会让 Google 判失败；
+3. **它不是页面**：必须登记进 `scripts/lib/published-assets.js` 的 `NON_PAGE_HTML`（逐路径 + 理由），
+   构建自检与 `analytics-selftest` 才不会要求它有页头 / 页脚 / bootstrap。
+
+验证通过后仍按 §1.3 提交 sitemap、请求编入索引。如果哪天 GSC 要求换 token：**同时**换文件名
+与内容，并改 `NON_PAGE_HTML` 里的那一条（旧文件删掉，别留两份）。
+
 ---
 
 ## 2. 百度搜索资源平台

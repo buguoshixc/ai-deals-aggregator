@@ -33,6 +33,9 @@ const path = require('path');
 
 const analytics = require('../lib/analytics');
 const analyticsRoutes = require('../lib/analytics-routes');
+// 产物里「不是页面」的 `.html`（站点归属验证文件）的**唯一出处**：与 `build-local.js` 的
+// `listPageFiles()` 读同一份登记表，构建期放行与产物复核才不会各认一份名单。
+const publishedAssets = require('../lib/published-assets');
 // 站点常量（SITE_URL / VENDOR_*）的唯一出处：t2 起从订阅层的 `feeds.js` 改指本模块
 // （订阅层整体下架，站点常量不能跟着陪葬）。本自测只用 SITE_URL 与配置现场对账。
 const site = require('../lib/site');
@@ -108,7 +111,11 @@ function scanArtifacts(dir) {
     if (hit.length) problems.push(`${prefix} 下出现了 HTML 页面：${hit.slice(0, 3).join('、')}（这些目录按设计只放资产与数据）`);
   }
 
-  const htmlFiles = files.filter(file => file.endsWith('.html'));
+  // 站点归属验证文件形状上是 `.html`、语义上不是页面（没有路由、没有页脚、也没有 bootstrap）：
+  // 它不参与下面「每个页面 exactly 1 个 bootstrap」与路由归类（它自己的字节仍由构建期的残留
+  // 扫描逐条核对，这里不重复那条判据）。
+  const nonPageHtml = publishedAssets.NON_PAGE_HTML_PATHS;
+  const htmlFiles = files.filter(file => file.endsWith('.html') && !nonPageHtml.has(file));
   for (const file of htmlFiles) {
     const html = fs.readFileSync(path.join(dir, file), 'utf8');
     const route = analyticsRoutes.routeFromArtifactPath(file);
