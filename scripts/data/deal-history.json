@@ -2868,6 +2868,12 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-13"
     },
+    "3f1708dd5905": {
+      "source": "Futuretools",
+      "misses": 1,
+      "since": "2026-11-23",
+      "endedAt": null
+    },
     "3f97a29b90e6": {
       "source": "AppSumo",
       "misses": 2,
@@ -2885,6 +2891,12 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
+    },
+    "42df4fdc8aa9": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-23",
+      "endedAt": null
     },
     "44848acd19f3": {
       "source": "AppSumo",
@@ -2940,6 +2952,18 @@
       "since": "2026-11-14",
       "endedAt": "2026-11-14"
     },
+    "59c7b0179308": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-23",
+      "endedAt": null
+    },
+    "5c45f40df3ed": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-23",
+      "endedAt": null
+    },
     "60317b771abf": {
       "source": "Futuretools",
       "misses": 2,
@@ -2982,6 +3006,12 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
+    "6efc1d92dbf1": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-23",
+      "endedAt": null
+    },
     "717bfce842bf": {
       "source": "快科技",
       "misses": 2,
@@ -3014,9 +3044,9 @@
     },
     "7b9e80d90afc": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-22",
-      "endedAt": null
+      "endedAt": "2026-11-23"
     },
     "7d8921eb5c47": {
       "source": "aitools.fyi",
@@ -3240,12 +3270,6 @@
       "since": "2026-11-14",
       "endedAt": "2026-11-15"
     },
-    "d0ed1daf6974": {
-      "source": "AppSumo",
-      "misses": 2,
-      "since": "2026-11-22",
-      "endedAt": "2026-11-22"
-    },
     "d175c32f71fd": {
       "source": "AppSumo",
       "misses": 2,
@@ -3287,6 +3311,12 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
+    },
+    "e174981f60ea": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-23",
+      "endedAt": null
     },
     "e2bea3790e12": {
       "source": "AppSumo",
@@ -3335,6 +3365,12 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
+    },
+    "f34797ef8750": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-23",
+      "endedAt": null
     },
     "f68dfc4184bf": {
       "source": "IT之家",
@@ -8755,6 +8791,471 @@
         "title": "upcoach",
         "vendor": "upcoach"
       }
+    },
+    {
+      "id": "10c4bcfc0c32",
+      "at": "2026-11-23",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "AppSumo 终身授权限时折扣：现价 $99，原价 $1428（省 93%）",
+      "to": "AppSumo 终身授权限时折扣：现价 $109，原价 $1428（省 92%）",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "10c4bcfc0c32",
+      "at": "2026-11-23",
+      "type": "benefit_changed",
+      "field": "priceLine",
+      "from": "$99 终身（原价 $1428）",
+      "to": "$109 终身（原价 $1428）",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "10c4bcfc0c32",
+      "at": "2026-11-23",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-22",
+      "to": "2026-12-02",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "16e8d5b7267f",
+      "at": "2026-11-23",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/immersity-ai",
+        "verified": false
+      },
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "173ff7aa837e",
+      "at": "2026-11-23",
+      "type": "updated",
+      "field": "category",
+      "from": "视频",
+      "to": "其他",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "23d7b85f4992",
+      "at": "2026-11-23",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "AppSumo 终身授权限时折扣：现价 $59，原价 $1200（省 95%）",
+      "to": "AppSumo 终身授权限时折扣：现价 $69，原价 $1200（省 94%）",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "23d7b85f4992",
+      "at": "2026-11-23",
+      "type": "benefit_changed",
+      "field": "priceLine",
+      "from": "$59 终身（原价 $1200）",
+      "to": "$69 终身（原价 $1200）",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "23d7b85f4992",
+      "at": "2026-11-23",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-22",
+      "to": "2026-12-02",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "23d7b85f4992",
+      "at": "2026-11-23",
+      "type": "updated",
+      "field": "category",
+      "from": "设计创意",
+      "to": "教育学习",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "27558d3945c7",
+      "at": "2026-11-23",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "AppSumo 终身授权限时折扣：现价 $79，原价 $954（省 92%）",
+      "to": "AppSumo 终身授权限时折扣：现价 $89，原价 $954（省 91%）",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "27558d3945c7",
+      "at": "2026-11-23",
+      "type": "benefit_changed",
+      "field": "priceLine",
+      "from": "$79 终身（原价 $954）",
+      "to": "$89 终身（原价 $954）",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "27558d3945c7",
+      "at": "2026-11-23",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-22",
+      "to": "2026-12-02",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "27558d3945c7",
+      "at": "2026-11-23",
+      "type": "updated",
+      "field": "category",
+      "from": "音频语音",
+      "to": "办公效率",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "2a7204391275",
+      "at": "2026-11-23",
+      "type": "updated",
+      "field": "category",
+      "from": "编程开发",
+      "to": "办公效率",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "2b95f56ce3a1",
+      "at": "2026-11-23",
+      "type": "updated",
+      "field": "category",
+      "from": "编程开发",
+      "to": "办公效率",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "2d983b8730bc",
+      "at": "2026-11-23",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $49，原价 $199（省 75%）",
+        "pricingModel": "paid",
+        "priceLine": "$49 终身（原价 $199）",
+        "expiresAt": "2026-11-24",
+        "type": "deal",
+        "category": "其他",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+        "verified": false
+      },
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "41b332c4e705",
+      "at": "2026-11-23",
+      "type": "updated",
+      "field": "category",
+      "from": "对话模型",
+      "to": "音频语音",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "4e998909dbfb",
+      "at": "2026-11-23",
+      "type": "updated",
+      "field": "category",
+      "from": "API服务",
+      "to": "智能体",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "5975c73aa115",
+      "at": "2026-11-23",
+      "type": "updated",
+      "field": "category",
+      "from": "编程开发",
+      "to": "其他",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "6013b80f266f",
+      "at": "2026-11-23",
+      "type": "updated",
+      "field": "category",
+      "from": "API服务",
+      "to": "其他",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "60c544edd8be",
+      "at": "2026-11-23",
+      "type": "updated",
+      "field": "category",
+      "from": "设计创意",
+      "to": "其他",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "6534fe4c9677",
+      "at": "2026-11-23",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $216（省 73%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $216）",
+        "expiresAt": "2026-11-24",
+        "type": "deal",
+        "category": "视频",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "6e7cfea4dbc1",
+      "at": "2026-11-23",
+      "type": "updated",
+      "field": "category",
+      "from": "对话模型",
+      "to": "办公效率",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "7569157d322d",
+      "at": "2026-11-23",
+      "type": "updated",
+      "field": "category",
+      "from": "对话模型",
+      "to": "智能体",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "7b9e80d90afc",
+      "at": "2026-11-23",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-22",
+      "runAt": "2026-11-22T19:07:57.391Z",
+      "label": {
+        "title": "Buildin",
+        "vendor": "Buildin"
+      }
+    },
+    {
+      "id": "99229f326e43",
+      "at": "2026-11-23",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $79，原价 $144（省 45%）",
+        "pricingModel": "paid",
+        "priceLine": "$79 终身（原价 $144）",
+        "expiresAt": "2026-11-24",
+        "type": "deal",
+        "category": "视频",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "a679dc7e78c6",
+      "at": "2026-11-23",
+      "type": "updated",
+      "field": "category",
+      "from": "对话模型",
+      "to": "其他",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "c05dc74bfd78",
+      "at": "2026-11-23",
+      "type": "updated",
+      "field": "category",
+      "from": "图像绘画",
+      "to": "教育学习",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "c2fc2a641d49",
+      "at": "2026-11-23",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "AppSumo 终身授权限时折扣：现价 $99，原价 $684（省 86%）",
+      "to": "AppSumo 终身授权限时折扣：现价 $109，原价 $684（省 84%）",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "c2fc2a641d49",
+      "at": "2026-11-23",
+      "type": "benefit_changed",
+      "field": "priceLine",
+      "from": "$99 终身（原价 $684）",
+      "to": "$109 终身（原价 $684）",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "c2fc2a641d49",
+      "at": "2026-11-23",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-22",
+      "to": "2026-12-02",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "c2fc2a641d49",
+      "at": "2026-11-23",
+      "type": "updated",
+      "field": "category",
+      "from": "设计创意",
+      "to": "办公效率",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "c8784a307734",
+      "at": "2026-11-23",
+      "type": "updated",
+      "field": "category",
+      "from": "对话模型",
+      "to": "办公效率",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "c971e33a9cd0",
+      "at": "2026-11-23",
+      "type": "updated",
+      "field": "category",
+      "from": "对话模型",
+      "to": "其他",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "d0ed1daf6974",
+      "at": "2026-11-23",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "d0ed1daf6974",
+      "at": "2026-11-23",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "AppSumo 终身授权限时折扣：现价 $99，原价 $249（省 60%）",
+      "to": "AppSumo 终身授权限时折扣：现价 $109，原价 $249（省 56%）",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "d0ed1daf6974",
+      "at": "2026-11-23",
+      "type": "benefit_changed",
+      "field": "priceLine",
+      "from": "$99 终身（原价 $249）",
+      "to": "$109 终身（原价 $249）",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "d0ed1daf6974",
+      "at": "2026-11-23",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-22",
+      "to": "2026-12-02",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "d0ed1daf6974",
+      "at": "2026-11-23",
+      "type": "updated",
+      "field": "category",
+      "from": "设计创意",
+      "to": "教育学习",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "dfe7459afdf7",
+      "at": "2026-11-23",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $299（省 80%）",
+        "pricingModel": "paid",
+        "priceLine": "$59 终身（原价 $299）",
+        "expiresAt": "2026-11-24",
+        "type": "deal",
+        "category": "办公效率",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-22T19:07:57.391Z"
+    },
+    {
+      "id": "f5ffff50772c",
+      "at": "2026-11-23",
+      "type": "updated",
+      "field": "category",
+      "from": "对话模型",
+      "to": "其他",
+      "origin": "observed",
+      "runAt": "2026-11-22T19:07:57.391Z"
     }
   ]
 }
