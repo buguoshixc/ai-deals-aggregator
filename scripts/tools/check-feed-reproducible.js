@@ -234,7 +234,7 @@ function dataDatesOf() {
   let linkable = null;
   if (payload && Array.isArray(payload.deals)) {
     try {
-      linkable = changes.linkableDealIdsOf(payload.deals);
+      linkable = changes.feedDealIdsOf(payload.deals);
     } catch (error) {
       problems.push(`changes.linkableDealIdsOf(deals) 抛错：${error && error.message}`);
     }

@@ -56,7 +56,21 @@ const PROBLEM_CODES = [
  * 这不是「把报警器关掉」：活跃页与已归档页照常受 `orphan` 判据保护；独立验收（seo-verify）
  * 还会从数据重算一遍窗口期集合，`deal-index-policy` 判据守住描述符自洽，防止静默批量 deindex。
  */
-function dealIndexable({ homepageVisible, archivedLinked } = {}) {
+const EXPIRED_NOINDEX_AFTER_DAYS = 14;
+
+/** 计算一条优惠相对基准日（YYYY-MM-DD）已过期多少天；未过期或无截止日期返回 null */
+function daysExpired(expiresAt, asOf) {
+  if (!expiresAt || !asOf) return null;
+  const exp = String(expiresAt).slice(0, 10);
+  const base = String(asOf).slice(0, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(exp) || !/^\d{4}-\d{2}-\d{2}$/.test(base)) return null;
+  const diffMs = Date.parse(`${base}T00:00:00Z`) - Date.parse(`${exp}T00:00:00Z`);
+  if (!Number.isFinite(diffMs) || diffMs <= 0) return null;
+  return Math.floor(diffMs / 86400000);
+}
+
+function dealIndexable({ homepageVisible, archivedLinked, expiredDays = null } = {}) {
+  if (typeof expiredDays === 'number' && expiredDays > EXPIRED_NOINDEX_AFTER_DAYS) return false;
   return Boolean(homepageVisible || archivedLinked);
 }
 
@@ -712,7 +726,9 @@ function summarize(result) {
 
 module.exports = {
   TITLE_MAX_LENGTH,
+  EXPIRED_NOINDEX_AFTER_DAYS,
   PROBLEM_CODES,
+  daysExpired,
   dealIndexable,
   textFloor,
   validate,

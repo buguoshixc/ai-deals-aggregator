@@ -154,6 +154,11 @@ runs:
       shell: bash
       run: node scripts/tools/expiry-selftest.js
 
+    - name: Categories boundary self-test
+      id: s10b
+      shell: bash
+      run: node scripts/tools/categories-selftest.js
+
     - name: Text / cleanText self-test
       id: s11
       shell: bash
@@ -741,6 +746,7 @@ runs:
         if [ -z "$failed" ] && [ "${{ steps.s08.outcome }}" = "failure" ]; then failed='Translation coverage (advisory, English fallback, never blocks)'; fi
         if [ -z "$failed" ] && [ "${{ steps.s09.outcome }}" = "failure" ]; then failed='Translation self-test'; fi
         if [ -z "$failed" ] && [ "${{ steps.s10.outcome }}" = "failure" ]; then failed='Expiry self-test'; fi
+        if [ -z "$failed" ] && [ "${{ steps.s10b.outcome }}" = "failure" ]; then failed='Categories boundary self-test'; fi
         if [ -z "$failed" ] && [ "${{ steps.s11.outcome }}" = "failure" ]; then failed='Text / cleanText self-test'; fi
         if [ -z "$failed" ] && [ "${{ steps.s12.outcome }}" = "failure" ]; then failed='Source-health self-test'; fi
         if [ -z "$failed" ] && [ "${{ steps.s13.outcome }}" = "failure" ]; then failed='Provenance self-test'; fi

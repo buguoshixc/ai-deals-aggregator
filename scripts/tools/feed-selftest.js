@@ -82,6 +82,8 @@ const JUDGEMENT_REAL_DEAL_NAME =
 const SINGLE_SOURCE_SCAN = [
   'scripts/tools/verify-site.js',
   'scripts/tools/build-local.js',
+  'scripts/build/pages-ops.js',
+  'scripts/build/selfcheck.js',
   'scripts/tools/check-feed-reproducible.js',
   'scripts/lib/published-assets.js'
 ];

@@ -1147,11 +1147,10 @@ section('⑪ 边界：谁可以引用 plans，谁不可以');
   const indexSource = stripComments(fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8'));
   const plansHrefs = (indexSource.match(/__PLANS_HREF__/g) || []).length;
   check('前端 index.html 只用路由占位符引用套餐页（不直接读 plans.json）',
-    plansHrefs === 2 &&
+    plansHrefs === 3 &&
     !indexSource.includes('plans.json') && !indexSource.includes('curated_plans'),
-    // v2.2 起是**两处**：共享页脚那一行（每一种深度都解析）+ 顶栏那一枚并列入口。
-    // 数量写死是刻意的 —— 多出第三处时应该有人停下来想一下它是不是又一条要维护的入链。
-    `占位符 ${plansHrefs} 个（页脚 + 顶栏）`);
+    // Phase 3 起为**三处**：共享页脚 + 桌面顶栏 + 移动端全局导航抽屉（<details class="nav-drawer-home">）。
+    `占位符 ${plansHrefs} 个（页脚 + 顶栏 + 移动抽屉）`);
 
   // 正向：构建期**必须**引用它，否则上面那些"不许引用"的断言会因为"整条线根本不存在"而假绿。
   //
@@ -1162,7 +1161,10 @@ section('⑪ 边界：谁可以引用 plans，谁不可以');
   // 页面只剩壳。三条都只依赖构建脚本自身，与产物清单解耦。
   // 「plans.json 不许出现在产物里」这件事由构建期的 `lib/published-assets.js`
   // fail-closed 扫描守着（比在这里问一个注册表更强：它扫的是真实产物）。
-  const buildSource = stripComments(fs.readFileSync(path.join(ROOT, 'scripts/tools/build-local.js'), 'utf8'));
+  const buildSource = stripComments([
+    path.join(ROOT, 'scripts/tools/build-local.js'),
+    path.join(ROOT, 'scripts/build/pages-ops.js')
+  ].map(f => fs.readFileSync(f, 'utf8')).join('\n'));
   check('构建期确实接进了套餐页（占位符 → 路由 → 正文渲染）',
     buildSource.includes('__PLANS_HREF__') && buildSource.includes('plansPage.PLANS_ROUTE') &&
     buildSource.includes('plansPage.plansPageBody'),

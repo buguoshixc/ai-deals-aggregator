@@ -749,8 +749,11 @@ section('⑭ /changes/ 预渲染正文下限（按实际渲染行数，不按截
     && changes.changesPageTextFloor(leadRadar) === 740,
     `totals=${JSON.stringify(leadRadar.totals)} · rows=${changes.renderOrderOf(leadRadar).length} · floor=${changes.changesPageTextFloor(leadRadar)}`);
 
-  // 单源契约：build-local.js 必须调用 changes.changesPageTextFloor，不再手写旧公式
-  const buildSrc = fs.readFileSync(path.join(ROOT, 'scripts', 'tools', 'build-local.js'), 'utf8');
+  // 单源契约：构建链路（build-local.js + scripts/build/selfcheck.js）必须调用 changes.changesPageTextFloor，不再手写旧公式
+  const buildSrc = [
+    path.join(ROOT, 'scripts', 'tools', 'build-local.js'),
+    path.join(ROOT, 'scripts', 'build', 'selfcheck.js')
+  ].map(f => fs.readFileSync(f, 'utf8')).join('\n');
   check('单源契约：build-local.js 调用 changes.changesPageTextFloor(radar) 且已移除旧公式',
     buildSrc.includes('changes.changesPageTextFloor(radar)')
     && !buildSrc.includes('700 + 40 * (highValueTotal + radar.totals.other)'));

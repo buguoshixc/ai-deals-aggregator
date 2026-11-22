@@ -103,10 +103,35 @@
       setHidden(empty, !(tokens.length && shown === 0));
     };
 
-    input.addEventListener('input', apply);
-    // 初始状态：完整目录（与无 JS 时一致）。清空输入框会回到这里。
-    setHidden(empty, true);
-    if (status) status.textContent = `共 ${total} 条`;
+    const syncUrl = () => {
+      try {
+        if (typeof window === 'undefined' || !window.history || !window.history.replaceState) return;
+        const url = new URL(window.location.href);
+        const raw = String(input.value || '').trim();
+        if (raw) url.searchParams.set('q', raw);
+        else url.searchParams.delete('q');
+        window.history.replaceState(null, '', url.pathname + url.search + url.hash);
+      } catch (e) { /* file:// 或受限环境忽略 */ }
+    };
+
+    input.addEventListener('input', () => {
+      apply();
+      syncUrl();
+    });
+    // 若 URL 带 ?q=...（如从首页搜索框跳转而来），立即按参数收窄目录；否则展示完整目录。
+    let initQ = '';
+    try {
+      if (typeof window !== 'undefined' && window.location && window.location.search) {
+        initQ = String(new URLSearchParams(window.location.search).get('q') || '').trim();
+      }
+    } catch (e) { /* 忽略 */ }
+    if (initQ) {
+      input.value = initQ;
+      apply();
+    } else {
+      setHidden(empty, true);
+      if (status) status.textContent = `共 ${total} 条`;
+    }
   }
 
   if (typeof document !== 'undefined' && document.getElementById) init(document);

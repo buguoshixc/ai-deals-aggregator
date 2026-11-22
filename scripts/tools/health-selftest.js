@@ -487,7 +487,10 @@ check('§7④ 合计行同时给出暂停计数', /合计：1 个来源 · 正�
   (healthTableText.match(/合计：[^\n]*/) || [''])[0]);
 
 // 三处展示共用同一份文案/判定：静态接线检查（渲染器行为由 build-local 产物自检覆盖）。
-const buildLocalSource = fs.readFileSync(path.join(ROOT, 'scripts', 'tools', 'build-local.js'), 'utf8');
+const buildLocalSource = [
+  path.join(ROOT, 'scripts', 'tools', 'build-local.js'),
+  path.join(ROOT, 'scripts', 'build', 'pages-ops.js')
+].map(f => fs.readFileSync(f, 'utf8')).join('\n');
 const reportLibSource = fs.readFileSync(path.join(ROOT, 'scripts', 'lib', 'report.js'), 'utf8');
 const collectSource = fs.readFileSync(path.join(ROOT, 'scripts', 'collect.js'), 'utf8');
 check('§7④ /status/ 与 collect Summary 都调用 health.pausedLabel（不是各写一份措辞）',

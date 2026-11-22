@@ -653,15 +653,23 @@
      * 现在对外只有一个口径；数据字段 `verified` / `verifiedAt` 仍在（见 README），只是不再渲染。
      */
     function stampOf(deal) {
-      return deal.lastSeen
-        ? { label: '数据更新 ' + deal.lastSeen, date: String(deal.lastSeen) }
+      const isCurated = /^Curated(?:-CN)?$/i.test(String(deal && deal.source || ''));
+      const date = (isCurated && deal.verifiedAt)
+        ? String(deal.verifiedAt)
+        : (deal && deal.lastSeen ? String(deal.lastSeen) : '');
+      return date
+        ? {
+          label: '数据更新 ' + date,
+          date: date,
+          tip: isCurated ? '人工收录条目的最近核对日期' : '自动采集的最近更新日期'
+        }
         : null;
     }
 
     function stampHtml(deal) {
       const stamp = stampOf(deal);
       if (!stamp) return '';
-      return '<span title="本条记录最近一次更新的日期">' + escapeHtml(stamp.label) + '</span>';
+      return '<span title="' + escapeAttr(stamp.tip || '本条记录最近一次更新的日期') + '">' + escapeHtml(stamp.label) + '</span>';
     }
 
     /** 优惠类型徽章：来自 pricingModel + discountInfo 的补充标签 */
@@ -692,7 +700,8 @@
         if (at > 0 && at <= 26) { lead = value.slice(0, at); rest = value.slice(at + sep.length); break; }
       }
       if (!lead) {
-        const at = value.search(/[，,]/);
+        // 避开英文数字千分位逗号（如 500,000 tokens → 不把 500 与 000 切开）
+        const at = value.search(/，|,(?!\d{3}\b)/);
         if (at > 0 && at <= 26) { lead = value.slice(0, at); rest = value.slice(at + 1); }
       }
       return { lead: lead.trim(), rest: rest.trim() };
@@ -1161,6 +1170,7 @@
     function hoistedLead(prefix) {
       for (let i = prefix.length - 1; i >= 0; i--) {
         if (!LEAD_BOUNDARY_RE.test(prefix[i])) continue;
+        if (prefix[i] === ',' && i > 0 && /\d/.test(prefix[i - 1]) && /^\d{3}\b/.test(prefix.slice(i + 1))) continue;
         const cut = '（(【['.indexOf(prefix[i]) >= 0 ? i : i + 1;
         const lead = prefix.slice(0, cut).trim();
         if (lead.length >= 2) return lead;
@@ -1327,8 +1337,14 @@
 
     const TABS = [
       { key: 'deals', label: '优惠' },
+      { key: 'saas', label: 'SaaS 折扣' },
       { key: 'tools', label: '全部工具' }
     ];
+
+    /** AppSumo 终身授权类 SaaS 工具折扣单独归入「SaaS 折扣」页签，避免稀释默认大模型优惠流 */
+    function isSaasDeal(deal) {
+      return Boolean(deal && deal.type === 'deal' && String(deal.source || '') === 'AppSumo');
+    }
 
     const SORTS = [
       { key: 'tier', label: '优惠力度优先' },
@@ -1367,9 +1383,9 @@
      * assets/data/offers.json 里真实出现过的 collections 值逐个核对，写错或漏写会红。
      */
     const COLLECTION_FACETS = [
-      { key: 'student', label: '学生', icon: '🎓' },
-      { key: 'developer', label: '开发者', icon: '⌨' },
-      { key: 'free-api', label: '免费 API', icon: '⚡' }
+      { key: 'student', label: '学生', icon: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/></svg>' },
+      { key: 'developer', label: '开发者', icon: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>' },
+      { key: 'free-api', label: '免费 API', icon: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg>' }
     ];
 
     function defaultFilters() {
@@ -1448,17 +1464,16 @@
     }
 
     function matches(deal, filters) {
-      if (filters.tab === 'deals') {
-        if (deal.type !== 'deal') return false;
-      } else if (deal.type === 'deal' && isExpired(deal)) {
-        return false;
-      }
       if (deal.type === 'deal' && isExpired(deal)) return false;
       if (filters.due) {
-        // 「即将到期」= 有绝对截止日期、尚未过期、且落在窗口内。三个条件缺一不可：
-        // 没有 expiresAt 的条目不是「30 天后到期」，是「我们不知道」；已过期的不再是「即将」。
+        // 「即将到期」= 有绝对截止日期、尚未过期、且落在窗口内（覆盖全部有效优惠，含 SaaS 折扣，与 /expiry.ics 同源）
+        if (deal.type !== 'deal') return false;
         const dueDays = deal.expiresAt ? daysUntil(deal.expiresAt) : null;
         if (dueDays === null || dueDays < 0 || dueDays > DUE_WINDOW_DAYS) return false;
+      } else if (filters.tab === 'deals') {
+        if (deal.type !== 'deal' || isSaasDeal(deal)) return false;
+      } else if (filters.tab === 'saas') {
+        if (!isSaasDeal(deal)) return false;
       }
       if (filters.region && deal.region !== filters.region) return false;
       if (filters.category && deal.category !== filters.category) return false;
@@ -1595,9 +1610,15 @@
       return orderCards(scopedCards(deals, filters), (filters && filters.sort) || 'tier');
     }
 
-    /** 构建期/首屏：默认视图 */
+    /** 构建期/首屏：默认视图（纯大模型与 AI 平台优惠，不含 AppSumo SaaS 折扣） */
     function defaultVisible(deals) {
       return visibleDeals(deals, DEFAULT_FILTERS);
+    }
+
+    /** 全站可触达的有效优惠（默认优惠 Tab + SaaS 折扣 Tab），供 SEO 索引策略对账 */
+    function allVisibleDeals(deals) {
+      return visibleDeals(deals, DEFAULT_FILTERS)
+        .concat(visibleDeals(deals, Object.assign({}, DEFAULT_FILTERS, { tab: 'saas' })));
     }
 
     function defaultCards(deals) {
@@ -1717,7 +1738,7 @@
             '" data-facet="collection" data-value="' + escapeAttr(item.key) + '" aria-pressed="' +
             (filters.collection === item.key ? 'true' : 'false') + '" title="只看' + escapeAttr(item.label) +
             '相关的优惠（与 ' + escapeAttr('/' + item.key + '/') + ' 这一页同一份判据）">' +
-            '<span aria-hidden="true">' + item.icon + '</span> ' + escapeHtml(item.label) + '<b>' + item.count + '</b></button>');
+            '<span class="ficon" aria-hidden="true">' + item.icon + '</span>' + escapeHtml(item.label) + '<b>' + item.count + '</b></button>');
         });
       }
 
@@ -1768,25 +1789,28 @@
         ? ' · 另有 <b>' + stale + '</b> 条收藏在当前数据里找不到（条目可能已改名或下架）' +
           '<button type="button" class="prune" data-fav-prune>清理这 ' + stale + ' 条</button>'
         : '';
+      const siteSearchLink = filters.search
+        ? '<a class="gsearch-jump" href="' + escapeAttr('search/?q=' + encodeURIComponent(filters.search)) + '">全站搜「' + escapeHtml(filters.search) + '」→</a>'
+        : '';
       if (!cards.length) {
         if (filters.fav) return '没有符合条件的收藏卡片 · 地区 / 分类 / 厂商 / 搜索等筛选可能把它挡住了' + prune;
-        return '没有匹配的条目';
+        return '没有匹配的条目' + siteSearchLink;
       }
       if (filters.due) {
         // 基准日与 expiryState/daysUntil 用同一个 todayCN()——不许在这里另取一次「今天」。
         // 链接相对首页根（statsHtml 只在首页出现），不进任何脚本：无 JS 也能点开。
         return '<b>' + cards.length + '</b> 条 ' + DUE_WINDOW_DAYS + ' 天内到期 · 基准日 ' + todayCN() +
-          ' · <a class="cal" href="expiry.ics" type="text/calendar" title="订阅到期日历（.ics）：把这些截止日期加进你自己的日历">到期日历（.ics）</a>' + prune;
+          ' · <a class="cal" href="expiry.ics" type="text/calendar" title="订阅到期日历（.ics）：把这些截止日期加进你自己的日历">到期日历（.ics）</a>' + prune + siteSearchLink;
       }
       if (filters.fav) {
         const hidden = info && info.hidden > 0 ? info.hidden : 0;
         return '显示 <b>' + cards.length + '</b> 条收藏卡片' +
-          (hidden ? ' · 其余 ' + hidden + ' 条被当前筛选挡住' : '') + prune;
+          (hidden ? ' · 其余 ' + hidden + ' 条被当前筛选挡住' : '') + prune + siteSearchLink;
       }
       // v3.4 F4：尾部包进 `.stats-tail` —— ≤760px 隐藏它，控制带才收得进两行。
       // 桌面端逐字节不变（span 不产生换行/空格）。
       return '显示 <b>' + cards.length + '</b> 条卡片<span class="stats-tail"> · 国内 ' + cn + ' · 国外 ' + global +
-        ' · 覆盖 <b>' + tiers + '</b> 个力度档位</span>';
+        ' · 覆盖 <b>' + tiers + '</b> 个力度档位</span>' + siteSearchLink;
     }
 
     /**
@@ -1921,7 +1945,7 @@
         const text = offers && offers[model] ? offers[model] : (i === 0 ? sharedText : '');
         return '<span>' + label + (text ? '：' + escapeHtml(text) : '') + '</span>';
       });
-      return '<div class="fmembers" data-fold-members="' + models.length + '">' + rows.join('') + '</div>';
+      return '<div class="fmembers" data-fold-members="' + models.length + '">' + rows.join(' · ') + '</div>';
     }
 
     /** 档位分带：只有该档位有卡片时才输出。id 供顶部「跳到档位」锚点使用 */
@@ -1937,7 +1961,11 @@
     /** 完整网格内容：分带 + 卡片；非「力度优先」排序时不分带 */
     function gridHtml(cards, filters) {
       if (!cards.length) {
-        return '<div class="empty">没有匹配的条目，试试清空筛选条件。</div>';
+        const q = filters && filters.search ? String(filters.search).trim() : '';
+        const jump = q
+          ? '<a class="gsearch-jump" href="' + escapeAttr('search/?q=' + encodeURIComponent(q)) + '">去全站目录搜索「' + escapeHtml(q) + '」（含套餐 / API 计费 / 模型 / 厂商）→</a>'
+          : '';
+        return '<div class="empty">没有匹配的条目，试试清空筛选条件。' + jump + '</div>';
       }
       if ((filters.sort || 'tier') !== 'tier') {
         return cards.map(cardHtml).join('');
@@ -2045,7 +2073,8 @@
       cell('有效期说明', deal.validity, null, 'validity');
       // 三分类都落在这一行：有截止日给日期与剩余天数；没有就给「长期活动」或「未标注截止日期」
       const expiry = expiryState(deal);
-      cell('活动期限', expiry.note, expiry.key === 'due' ? 'ok' : null);
+      const isExpired = expiry.key === 'due' && typeof expiry.days === 'number' && expiry.days < 0;
+      cell('活动期限', expiry.note, isExpired ? 'warn' : (expiry.key === 'due' ? 'ok' : null));
       cell('价格阶梯', deal.priceLine, null, 'priceLine');
       cell('优惠力度', '档位 ' + tier.n + ' · ' + tier.name, 'ok');
       cell('更新时间', stamp ? stamp.date + '（本条记录最近一次更新）' : '');
@@ -2085,7 +2114,8 @@
         (deal.region ? '<span>' + escapeHtml(REGION_LABELS[deal.region] || deal.region) + '</span><span>·</span>' : '') +
         (stamp ? '<span>' + escapeHtml(stamp.label) + '</span>' : '') +
         '</div>' +
-        (offer ? '<div class="doffer"><div class="lab">档位 ' + tier.n + ' · ' + escapeHtml(tier.name) + '</div><p>' +
+        (isExpired ? '<div class="dexpired" role="status">此优惠已于 ' + escapeHtml(String(deal.expiresAt || '')) + ' 过期，页面仅作历史记录保留。</div>' : '') +
+        (offer ? '<div class="doffer t' + tier.n + '"><div class="lab">档位 ' + tier.n + ' · ' + escapeHtml(tier.name) + '</div><p>' +
           (offer.lead ? '<b>' + escapeHtml(offer.lead) + '</b>' + (offer.rest ? ' · ' : '') : '') + escapeHtml(offer.rest) + '</p>' +
           zhBlock(deal, 'discountInfo') + '</div>' : '') +
         (deal.description ? '<p class="ddesc">' + escapeHtml(deal.description) + '</p>' + zhBlock(deal, 'description') : '') +

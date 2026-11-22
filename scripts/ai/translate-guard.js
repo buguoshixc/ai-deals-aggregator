@@ -33,10 +33,10 @@ const MONTHS = {
 };
 
 const CURRENCY_TOKENS = [
-  { id: 'usd', re: /\$|US\$|USD|US dollars?/gi },
-  { id: 'cny', re: /¥|￥|CNY|RMB|元|人民币/gi },
-  { id: 'eur', re: /€|EUR/gi },
-  { id: 'gbp', re: /£|GBP/gi }
+  { id: 'usd', re: /\$|US\$|\bUSD\b|\bUS dollars?\b/gi },
+  { id: 'cny', re: /¥|￥|\bCNY\b|\bRMB\b|元|人民币/gi },
+  { id: 'eur', re: /€|\bEUR\b/gi },
+  { id: 'gbp', re: /£|\bGBP\b/gi }
 ];
 
 const NEGATION_EN = /\b(no|not|never|without|excluded|excluding|unless|cannot|can't|doesn't|don't|isn't|aren't)\b/i;
@@ -66,7 +66,10 @@ function numbersOf(text, { expandMonths = false } = {}) {
   }
   if (expandMonths) {
     for (const [name, value] of Object.entries(MONTHS)) {
-      const re2 = new RegExp(`\\b${name}\\b`, 'gi');
+      // 小写 "may" 多为英语情态动词（"may be retained"），仅在大写 May + 日期语境下展开为 5 月
+      const re2 = name === 'may'
+        ? /(?:\bMay\s+\d{1,4}\b|\b\d{1,2}\s+May\b|\bin\s+May\b)/
+        : new RegExp(`\\b${name}\\b`, 'gi');
       if (re2.test(source)) out.add(String(value));
     }
   }

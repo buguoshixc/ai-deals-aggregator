@@ -120,3 +120,7 @@ research/**/scratch/
 # 各成员的临时 scratch 目录：与 .agent-teams/ 同一类（协作过程的中间产物，不是项目源
 # 码；体积小但会污染提交）。research/**/scratch/ 只覆盖 research/ 底下，这里补上其他位置。
 .scratch/
+
+# 兜底：任意带后缀的隔离构建产物目录（如 dist.dev/、dist.qc-*/、dist.check/）均不入库
+dist.*/
+
