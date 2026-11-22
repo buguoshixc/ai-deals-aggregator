@@ -35,6 +35,9 @@ const { spawnSync } = require('child_process');
 const ROOT = path.join(__dirname, '..', '..');
 const LIB_FILE = path.join(ROOT, 'scripts', 'lib', 'page-fit.js');
 const pageFit = require('../lib/page-fit');
+// 产物里「不是页面」的 `.html`（站点归属验证文件）的唯一出处：沙箱要原样带上这些根文件，
+// 否则构建期 `PUBLIC_FILES` 的「声明了就必须存在」会红「缺少发布文件」。
+const publishedAssets = require('../lib/published-assets');
 const seo = require('../lib/seo');
 const schema = require('../lib/schema');
 const site = require('../lib/site');
@@ -345,7 +348,11 @@ const ROOT_FILES = [
   'models.json',
   'model-registry-links.json',
   'codex-resets.json',
-  'package.json'
+  'package.json',
+  // 站点归属验证文件（非页面 `.html`）：`build-local.js` 的 `PUBLIC_FILES` 从
+  // `lib/published-assets.js` 的 `NON_PAGE_HTML` 取，沙箱不带上它，构建就会红「缺少发布文件」。
+  // 这里同样从登记表取，避免再多一份会漂移的字面量（加第二个验证文件时也不用回来改）。
+  ...publishedAssets.NON_PAGE_HTML_PATHS
 ];
 
 const realDeals = JSON.parse(fs.readFileSync(path.join(ROOT, 'deals.json'), 'utf8'));

@@ -282,7 +282,37 @@ const NOTES_MANIFEST_PATH = path.join(path.dirname(FINAL_OUT), `${path.basename(
  * 而不是构建期生成：任何"顺手格式化一下"的改动都会让 Bing 那边验不过。
  * 它与 `robots.txt` 同属「站对外的运维约定」，不是数据文件（登记理由见 `lib/published-assets.js`）。
  */
-const PUBLIC_FILES = ['index.html', 'favicon.svg', 'robots.txt', '.nojekyll', 'BingSiteAuth.xml'];
+const PUBLIC_FILES = ['index.html', 'favicon.svg', 'robots.txt', '.nojekyll', 'BingSiteAuth.xml',
+  // 站点归属验证文件（GSC 的「HTML 文件」方式）：唯一出处是 `lib/published-assets.js` 的
+  // `NON_PAGE_HTML`（那里写了理由），这里从它取，不再写第二份字面量。
+  ...publishedAssets.NON_PAGE_HTML_PATHS];
+
+/**
+ * 产物里**不是页面**的 `.html`（唯一出处：`lib/published-assets.js` 的 `NON_PAGE_HTML`）。
+ *
+ * 为什么需要这条通道：下面产物自检的页面扫描面刻意写成「全部 `.html`」（`listArtifactFiles()`
+ * 遍历现算，不写页面族清单 —— 那种清单漏一族就会静默失效）。但**站点归属验证文件**必须由搜索
+ * 引擎指定成 `<token>.html`、必须落在站点根并逐字节原样可取，而它不是页面：没有页头 / 页脚 /
+ * 说明意图，也不该进 sitemap。于是它是「全部 `.html` = 页面」这条假设的**唯一例外来源** ——
+ * 只有登记在那张表里的路径会从**页面**判据（页头图标、页脚锚点、说明意图清单、订阅声明）里去掉；
+ * 它自己的内容仍然逐字节参与残留扫描，其他任何 `.html` 一条都不放过。
+ *
+ * 失效方式：忘记登记 ⇒ 上面四条页面判据当场红（点名这个路径）；登记了却删掉文件 ⇒
+ * `PUBLIC_FILES` 的「声明了就必须存在」在 assemble 时红。两边都咬得住。
+ */
+const NON_PAGE_HTML_FILES = [...publishedAssets.NON_PAGE_HTML_PATHS];
+
+/**
+ * 产物里的**页面**（= 全部 `.html` 去掉上面登记的非页面验证文件）。
+ *
+ * `listArtifactFiles` 是「磁盘上真的有什么」，这个函数是「其中哪些按页面判」——
+ * 两者分开写，页面扫描面才既不会漏、也不会把验证文件当成坏页面。
+ */
+function listPageFiles(dir) {
+  const nonPage = new Set(NON_PAGE_HTML_FILES);
+  return listArtifactFiles(dir).filter(file => file.endsWith('.html') && !nonPage.has(file));
+}
+
 /**
  * 构建期生成、不走源码拷贝的产物（**页面之外只有这些**）。
  *
@@ -658,7 +688,7 @@ function notesManifestText() {
 function noteManifestSelfCheck() {
   const problems = [];
   const readings = [];
-  const htmlFiles = listArtifactFiles(OUT).filter(file => file.endsWith('.html'));
+  const htmlFiles = listPageFiles(OUT);
   const diskRoutes = new Set(htmlFiles.map(file => file.replace(/index\.html$/, '')));
   for (const route of [...diskRoutes].sort()) {
     if (!noteIntent.has(route)) {
@@ -6198,20 +6228,25 @@ function scanResidue(dir) {
   for (const rel of files) {
     const raw = fs.readFileSync(path.join(dir, rel), 'utf8');
     const isHtml = /\.html?$/i.test(rel);
+    // 站点归属验证文件是**非页面** HTML（见 `NON_PAGE_HTML_FILES`）：它的字节照旧参与下面三遍残留比对，
+    // 但「每页恰好一个 <footer> 锚点」这类**页面形状**判据不适用于它（它本来就不是页面）。
+    const isPage = isHtml && !NON_PAGE_HTML_FILES.includes(rel);
     // 非 HTML（json / xml / ndjson / txt / svg…）没有「脚本 / 样式 / HTML 注释」这回事，
     // 原样判：Feed、公开数据文件里的字面同样会到读者眼前（下载的那一份就是产物）。
     const text = isHtml ? residueStrip(raw) : raw;
     let footerRegions = [];
     if (isHtml) {
-      htmlPages += 1;
-      footerRegions = [...text.matchAll(PAGE_FOOTER_RE)].map(m => [m.index, m.index + m[0].length]);
-      if (footerRegions.length === 1) footerPages += 1;
-      else {
-        problems.push(`${rel} 的 <footer> 锚点有 ${footerRegions.length} 个（共享页脚纪律要求恰好 1 个；`
-          + '「页脚保留句每页都在」这条正面断言的作用域也靠它指认）');
+      if (isPage) {
+        htmlPages += 1;
+        footerRegions = [...text.matchAll(PAGE_FOOTER_RE)].map(m => [m.index, m.index + m[0].length]);
+        if (footerRegions.length === 1) footerPages += 1;
+        else {
+          problems.push(`${rel} 的 <footer> 锚点有 ${footerRegions.length} 个（共享页脚纪律要求恰好 1 个；`
+            + '「页脚保留句每页都在」这条正面断言的作用域也靠它指认）');
+        }
+        // 页脚保留句：每一页的页脚区间里都必须在（t10 / F1 的正面断言，不依赖任何名单）
+        if (footerRegions.some(([a, b]) => text.slice(a, b).includes(FOOTER_KEPT_SENTENCE))) footerKeptPages += 1;
       }
-      // 页脚保留句：每一页的页脚区间里都必须在（t10 / F1 的正面断言，不依赖任何名单）
-      if (footerRegions.some(([a, b]) => text.slice(a, b).includes(FOOTER_KEPT_SENTENCE))) footerKeptPages += 1;
       // 6 类声明容器 + 关系式专用类（`.chgnote`）计数：**class token 级**（不是
       // `class="dsrc-note"` 精确串）——
       // 后者照不到多 class 形状，而「换个类名就静默失去覆盖」正是本文件反复记录的那类失效。
@@ -7052,7 +7087,7 @@ function selfCheck(built) {
       .replace(/&quot;/g, '"').replace(/&#39;/g, "'")
       .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
     const problems = [];
-    const htmlFiles = listArtifactFiles(OUT).filter(file => file.endsWith('.html'));
+    const htmlFiles = listPageFiles(OUT);
     for (const rel of htmlFiles) {
       const html = fs.readFileSync(path.join(OUT, rel), 'utf8');
       const blocks = [...html.matchAll(/<section class="ph-block"[^>]*data-ph-series="(\d+)" data-ph-changes="(\d+)"/g)];
@@ -8258,7 +8293,7 @@ function selfCheck(built) {
       const declProblems = [];
       const allowedRoutes = new Set(['', 'changes/']);
       const feedTypes = feed.FEED_FILES.map(([, type]) => type);
-      const htmlFiles = listArtifactFiles(OUT).filter(file => file.endsWith('.html'));
+      const htmlFiles = listPageFiles(OUT);
       const seenRoutes = new Set();
       const declared = [];
       for (const file of htmlFiles) {
@@ -8451,7 +8486,7 @@ function selfCheck(built) {
         // 误报面：t6 复核实测 184/184 页的页脚两遍都是 0 命中，所以换上不产生误红。
         const FOOTER_TEXT_LITERAL = 'GitHub 仓库';
         const FOOTER_TEXT_NEEDLE = normalizeForCompare(FOOTER_TEXT_LITERAL);
-        const allPages = listArtifactFiles(OUT).filter(file => file.endsWith('.html'));
+        const allPages = listPageFiles(OUT);
         for (const rel of allPages) {
           const page = fs.readFileSync(path.join(OUT, rel), 'utf8');
           // ③ 先按**元素**数（class token 级）：只差一个 class 的孪生锚（`class="ghlink gh-dup"`）
