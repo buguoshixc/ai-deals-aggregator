@@ -2802,6 +2802,12 @@
       "since": "2026-11-15",
       "endedAt": "2026-11-16"
     },
+    "2d983b8730bc": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-24",
+      "endedAt": null
+    },
     "2e5118bcd2c1": {
       "source": "AppSumo",
       "misses": 2,
@@ -2892,12 +2898,6 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
-    "42df4fdc8aa9": {
-      "source": "AppSumo",
-      "misses": 2,
-      "since": "2026-11-23",
-      "endedAt": "2026-11-23"
-    },
     "44848acd19f3": {
       "source": "AppSumo",
       "misses": 2,
@@ -2946,12 +2946,6 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
-    "59c7b0179308": {
-      "source": "AppSumo",
-      "misses": 2,
-      "since": "2026-11-23",
-      "endedAt": "2026-11-23"
-    },
     "5c45f40df3ed": {
       "source": "AppSumo",
       "misses": 2,
@@ -2975,6 +2969,12 @@
       "misses": 2,
       "since": "2026-11-17",
       "endedAt": "2026-11-18"
+    },
+    "6534fe4c9677": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-24",
+      "endedAt": null
     },
     "654e05ed3453": {
       "source": "aitools.fyi",
@@ -3260,9 +3260,9 @@
     },
     "d0ed1daf6974": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-23",
-      "endedAt": null
+      "endedAt": "2026-11-24"
     },
     "d175c32f71fd": {
       "source": "AppSumo",
@@ -3320,9 +3320,9 @@
     },
     "e3af28ce5ca1": {
       "source": "Futuretools",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-23",
-      "endedAt": null
+      "endedAt": "2026-11-24"
     },
     "e4bd8003b3d6": {
       "source": "智谱AI活动页",
@@ -3395,6 +3395,12 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
+    },
+    "f9720295b45d": {
+      "source": "Futuretools",
+      "misses": 1,
+      "since": "2026-11-24",
+      "endedAt": null
     },
     "fef21feaac71": {
       "source": "AppSumo",
@@ -9459,6 +9465,91 @@
       "label": {
         "title": "ScrollHaus",
         "vendor": "ScrollHaus"
+      }
+    },
+    {
+      "id": "23d7b85f4992",
+      "at": "2026-11-24",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/new/",
+      "to": "https://appsumo.com/collections/ending-soon/",
+      "origin": "observed",
+      "runAt": "2026-11-23T23:29:27.195Z"
+    },
+    {
+      "id": "42df4fdc8aa9",
+      "at": "2026-11-24",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-23T23:29:27.195Z"
+    },
+    {
+      "id": "59c7b0179308",
+      "at": "2026-11-24",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-23T23:29:27.195Z"
+    },
+    {
+      "id": "59c7b0179308",
+      "at": "2026-11-24",
+      "type": "updated",
+      "field": "category",
+      "from": "智能体",
+      "to": "搜索研究",
+      "origin": "observed",
+      "runAt": "2026-11-23T23:29:27.195Z"
+    },
+    {
+      "id": "8e4c1be70ec3",
+      "at": "2026-11-24",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/docarmor-9bbbc4bf",
+        "verified": false
+      },
+      "runAt": "2026-11-23T23:29:27.195Z"
+    },
+    {
+      "id": "d0ed1daf6974",
+      "at": "2026-11-24",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-23",
+      "runAt": "2026-11-23T23:29:27.195Z",
+      "label": {
+        "title": "upcoach",
+        "vendor": "upcoach"
+      }
+    },
+    {
+      "id": "e3af28ce5ca1",
+      "at": "2026-11-24",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-23",
+      "runAt": "2026-11-23T23:29:27.195Z",
+      "label": {
+        "title": "Emergent.sh",
+        "vendor": "Emergent.sh"
       }
     }
   ]
