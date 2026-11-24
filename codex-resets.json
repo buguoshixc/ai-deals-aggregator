@@ -5,13 +5,21 @@
     "aggregator": "https://codex-resets.com",
     "account": "https://x.com/thsottiaux"
   },
-  "fetchedAt": "2026-11-24T08:41:50.631Z",
+  "fetchedAt": "2026-11-24T21:59:14.239Z",
   "stats": {
-    "total": 72,
-    "avgIntervalDays": 5.9,
-    "lastResetAt": "2026-11-12T21:59:39.000Z"
+    "total": 73,
+    "avgIntervalDays": 6,
+    "lastResetAt": "2026-11-24T18:43:21.000Z"
   },
   "events": [
+    {
+      "tweetId": "2125299248782778588",
+      "tweetUrl": "https://x.com/thsottiaux/status/2125299248782778588",
+      "announcedAt": "2026-11-24T18:43:21.000Z",
+      "resetType": "banked",
+      "source": "webhook",
+      "text": "To all the ChatGPT Business teams out there. We have two small things for you, a banked reset and fast mode at no extra charge through Dec 31. Have fun!"
+    },
     {
       "tweetId": "2120999993079451919",
       "tweetUrl": "https://x.com/thsottiaux/status/2120999993079451919",

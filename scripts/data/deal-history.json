@@ -2730,6 +2730,12 @@
       "since": "2026-11-22",
       "endedAt": "2026-11-22"
     },
+    "08220811a35d": {
+      "source": "爱范儿",
+      "misses": 0,
+      "since": "2026-11-25",
+      "endedAt": "2026-11-25"
+    },
     "086534ebceeb": {
       "source": "AppSumo",
       "misses": 2,
@@ -2801,12 +2807,6 @@
       "misses": 2,
       "since": "2026-11-15",
       "endedAt": "2026-11-16"
-    },
-    "2d983b8730bc": {
-      "source": "AppSumo",
-      "misses": 2,
-      "since": "2026-11-24",
-      "endedAt": "2026-11-24"
     },
     "2e5118bcd2c1": {
       "source": "AppSumo",
@@ -2898,6 +2898,12 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
+    "42df4fdc8aa9": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-25",
+      "endedAt": null
+    },
     "44848acd19f3": {
       "source": "AppSumo",
       "misses": 2,
@@ -2912,9 +2918,9 @@
     },
     "45fcbb1d801f": {
       "source": "Futuretools",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-24",
-      "endedAt": null
+      "endedAt": "2026-11-25"
     },
     "46b1877f5969": {
       "source": "aitools.fyi",
@@ -2951,6 +2957,30 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
+    },
+    "5791cccec315": {
+      "source": "Futuretools",
+      "misses": 1,
+      "since": "2026-11-25",
+      "endedAt": null
+    },
+    "59c7b0179308": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-25",
+      "endedAt": null
+    },
+    "5c45f40df3ed": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-25",
+      "endedAt": null
+    },
+    "5e3897face03": {
+      "source": "Futuretools",
+      "misses": 1,
+      "since": "2026-11-25",
+      "endedAt": null
     },
     "60317b771abf": {
       "source": "Futuretools",
@@ -3029,6 +3059,12 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
+    },
+    "7b9e80d90afc": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-25",
+      "endedAt": null
     },
     "7d8921eb5c47": {
       "source": "aitools.fyi",
@@ -3138,12 +3174,6 @@
       "since": "2026-11-19",
       "endedAt": "2026-11-20"
     },
-    "97d21ff73d3e": {
-      "source": "智谱AI活动页",
-      "misses": 1,
-      "since": "2026-11-24",
-      "endedAt": null
-    },
     "98b5e610f7bc": {
       "source": "aitools.fyi",
       "misses": 2,
@@ -3198,6 +3228,12 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
+    "a67c07bf4993": {
+      "source": "Futuretools",
+      "misses": 1,
+      "since": "2026-11-25",
+      "endedAt": null
+    },
     "a9053ca847fb": {
       "source": "aitools.fyi",
       "misses": 2,
@@ -3228,6 +3264,12 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
+    "c2fc2a641d49": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-25",
+      "endedAt": null
+    },
     "c3d6bd34ebfe": {
       "source": "aitools.fyi",
       "misses": 2,
@@ -3242,9 +3284,9 @@
     },
     "c8784a307734": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-24",
-      "endedAt": null
+      "endedAt": "2026-11-25"
     },
     "c9c5429f2205": {
       "source": "aitools.fyi",
@@ -9666,6 +9708,250 @@
         "title": "AutoDraw",
         "vendor": "AutoDraw"
       }
+    },
+    {
+      "id": "08220811a35d",
+      "at": "2026-11-25",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "pruned_expired",
+      "runAt": "2026-11-24T21:59:13.372Z",
+      "label": {
+        "title": "早报｜iPhone Duo新增外屏人脸解锁/曝英伟达董事会无意请回黄仁勋/华为Mate X8定档11月24日",
+        "vendor": "Qwen"
+      }
+    },
+    {
+      "id": "2d983b8730bc",
+      "at": "2026-11-25",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-24T21:59:13.372Z"
+    },
+    {
+      "id": "2d983b8730bc",
+      "at": "2026-11-25",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "AppSumo 终身授权限时折扣：现价 $49，原价 $199（省 75%）",
+      "to": "AppSumo 终身授权限时折扣：现价 $59，原价 $199（省 70%）",
+      "origin": "observed",
+      "runAt": "2026-11-24T21:59:13.372Z"
+    },
+    {
+      "id": "2d983b8730bc",
+      "at": "2026-11-25",
+      "type": "benefit_changed",
+      "field": "priceLine",
+      "from": "$49 终身（原价 $199）",
+      "to": "$59 终身（原价 $199）",
+      "origin": "observed",
+      "runAt": "2026-11-24T21:59:13.372Z"
+    },
+    {
+      "id": "2d983b8730bc",
+      "at": "2026-11-25",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-24",
+      "to": "2026-12-02",
+      "origin": "observed",
+      "runAt": "2026-11-24T21:59:13.372Z"
+    },
+    {
+      "id": "2d983b8730bc",
+      "at": "2026-11-25",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/ending-soon/",
+      "to": "https://appsumo.com/collections/new/",
+      "origin": "observed",
+      "runAt": "2026-11-24T21:59:13.372Z"
+    },
+    {
+      "id": "45fcbb1d801f",
+      "at": "2026-11-25",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-24",
+      "runAt": "2026-11-24T21:59:13.372Z",
+      "label": {
+        "title": "Hola AI Voicemail",
+        "vendor": "Hola AI"
+      }
+    },
+    {
+      "id": "6534fe4c9677",
+      "at": "2026-11-25",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-24",
+      "to": "2026-12-02",
+      "origin": "observed",
+      "runAt": "2026-11-24T21:59:13.372Z"
+    },
+    {
+      "id": "735aeee52f16",
+      "at": "2026-11-25",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "AppSumo 终身授权限时折扣：现价 $79，原价 $1740（省 95%）",
+      "to": "AppSumo 终身授权限时折扣：现价 $89，原价 $1740（省 95%）",
+      "origin": "observed",
+      "runAt": "2026-11-24T21:59:13.372Z"
+    },
+    {
+      "id": "735aeee52f16",
+      "at": "2026-11-25",
+      "type": "benefit_changed",
+      "field": "priceLine",
+      "from": "$79 终身（原价 $1740）",
+      "to": "$89 终身（原价 $1740）",
+      "origin": "observed",
+      "runAt": "2026-11-24T21:59:13.372Z"
+    },
+    {
+      "id": "735aeee52f16",
+      "at": "2026-11-25",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-24",
+      "to": "2026-12-02",
+      "origin": "observed",
+      "runAt": "2026-11-24T21:59:13.372Z"
+    },
+    {
+      "id": "99229f326e43",
+      "at": "2026-11-25",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "AppSumo 终身授权限时折扣：现价 $79，原价 $144（省 45%）",
+      "to": "AppSumo 终身授权限时折扣：现价 $89，原价 $144（省 38%）",
+      "origin": "observed",
+      "runAt": "2026-11-24T21:59:13.372Z"
+    },
+    {
+      "id": "99229f326e43",
+      "at": "2026-11-25",
+      "type": "benefit_changed",
+      "field": "priceLine",
+      "from": "$79 终身（原价 $144）",
+      "to": "$89 终身（原价 $144）",
+      "origin": "observed",
+      "runAt": "2026-11-24T21:59:13.372Z"
+    },
+    {
+      "id": "99229f326e43",
+      "at": "2026-11-25",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-24",
+      "to": "2026-12-02",
+      "origin": "observed",
+      "runAt": "2026-11-24T21:59:13.372Z"
+    },
+    {
+      "id": "b0e7aa9b16b6",
+      "at": "2026-11-25",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "办公效率",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/letronna-92dfb376",
+        "verified": false
+      },
+      "runAt": "2026-11-24T21:59:13.372Z"
+    },
+    {
+      "id": "c8784a307734",
+      "at": "2026-11-25",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-24",
+      "runAt": "2026-11-24T21:59:13.372Z",
+      "label": {
+        "title": "Lety.ai",
+        "vendor": "Lety.ai"
+      }
+    },
+    {
+      "id": "ce286891fc29",
+      "at": "2026-11-25",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/takehound-933374c2",
+        "verified": false
+      },
+      "runAt": "2026-11-24T21:59:13.372Z"
+    },
+    {
+      "id": "dfe7459afdf7",
+      "at": "2026-11-25",
+      "type": "benefit_changed",
+      "field": "discountInfo",
+      "from": "AppSumo 终身授权限时折扣：现价 $59，原价 $299（省 80%）",
+      "to": "AppSumo 终身授权限时折扣：现价 $69，原价 $299（省 77%）",
+      "origin": "observed",
+      "runAt": "2026-11-24T21:59:13.372Z"
+    },
+    {
+      "id": "dfe7459afdf7",
+      "at": "2026-11-25",
+      "type": "benefit_changed",
+      "field": "priceLine",
+      "from": "$59 终身（原价 $299）",
+      "to": "$69 终身（原价 $299）",
+      "origin": "observed",
+      "runAt": "2026-11-24T21:59:13.372Z"
+    },
+    {
+      "id": "dfe7459afdf7",
+      "at": "2026-11-25",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-24",
+      "to": "2026-12-02",
+      "origin": "observed",
+      "runAt": "2026-11-24T21:59:13.372Z"
+    },
+    {
+      "id": "f73f99f96585",
+      "at": "2026-11-25",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "视频",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/cinemagiq-4647c25f",
+        "verified": false
+      },
+      "runAt": "2026-11-24T21:59:13.372Z"
     }
   ]
 }
