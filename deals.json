@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-11-24T07:29:27+08:00",
-  "count": 270,
+  "updatedAt": "2026-11-24T16:41:50+08:00",
+  "count": 272,
   "deals": [
     {
       "id": "2eae0e246de2",
@@ -2618,6 +2618,75 @@
       "verifiedAt": null
     },
     {
+      "id": "2b95f56ce3a1",
+      "title": "Boost.space AgentOS",
+      "vendor": "Boost.space AgentOS",
+      "url": "https://appsumo.com/products/boostspaceagents/",
+      "source": "AppSumo",
+      "sourceUrl": "https://appsumo.com/collections/new/",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $89，原价 $299（省 70%）",
+      "pricingModel": "paid",
+      "priceLine": "$89 终身（原价 $299）",
+      "features": null,
+      "category": "办公效率",
+      "description": "Manage AI agents with role-based access, 1,400+ AI models, 21B data records, and value tracking",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": "2026-12-02",
+      "firstSeen": "2026-11-12",
+      "lastSeen": "2026-11-24",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
+      "id": "fa69020c164a",
+      "title": "RobinReach",
+      "vendor": "RobinReach",
+      "url": "https://appsumo.com/products/robinreach/",
+      "source": "AppSumo",
+      "sourceUrl": "https://appsumo.com/collections/new/",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $79，原价 $99（省 20%）",
+      "pricingModel": "paid",
+      "priceLine": "$79 终身（原价 $99）",
+      "features": null,
+      "category": "其他",
+      "description": "Automate social media across 13 platforms with AI content creation, MCP integration, and repurposing",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": "2026-12-02",
+      "firstSeen": "2026-11-17",
+      "lastSeen": "2026-11-24",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
+      "id": "a157ed655587",
+      "title": "Rerun — AI Coworkers",
+      "vendor": "Rerun",
+      "url": "https://appsumo.com/products/rerun/",
+      "source": "AppSumo",
+      "sourceUrl": "https://appsumo.com/collections/new/",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $119，原价 $348（省 66%）",
+      "pricingModel": "paid",
+      "priceLine": "$119 终身（原价 $348）",
+      "features": null,
+      "category": "办公效率",
+      "description": "Turn your subscription plan or AI API key into Capable Coworkers",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-11-18",
+      "lastSeen": "2026-11-24",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
       "id": "41b332c4e705",
       "title": "Dialora",
       "vendor": "Dialora",
@@ -2664,70 +2733,24 @@
       "verifiedAt": null
     },
     {
-      "id": "a157ed655587",
-      "title": "Rerun — AI Coworkers",
-      "vendor": "Rerun",
-      "url": "https://appsumo.com/products/rerun/",
+      "id": "dfe7459afdf7",
+      "title": "Nexter",
+      "vendor": "Nexter",
+      "url": "https://appsumo.com/products/nexter/",
       "source": "AppSumo",
       "sourceUrl": "https://appsumo.com/collections/new/",
       "region": "global",
       "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $119，原价 $348（省 66%）",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $299（省 80%）",
       "pricingModel": "paid",
-      "priceLine": "$119 终身（原价 $348）",
+      "priceLine": "$59 终身（原价 $299）",
       "features": null,
       "category": "办公效率",
-      "description": "Turn your subscription plan or AI API key into Capable Coworkers",
+      "description": "Launch WordPress sites fast with 120+ AI Gutenberg blocks, 1600+ templates, and a no-code theme builder",
       "eligibility": null,
       "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-11-18",
-      "lastSeen": "2026-11-24",
-      "verified": false,
-      "verifiedAt": null
-    },
-    {
-      "id": "fa69020c164a",
-      "title": "RobinReach",
-      "vendor": "RobinReach",
-      "url": "https://appsumo.com/products/robinreach/",
-      "source": "AppSumo",
-      "sourceUrl": "https://appsumo.com/collections/new/",
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $79，原价 $99（省 20%）",
-      "pricingModel": "paid",
-      "priceLine": "$79 终身（原价 $99）",
-      "features": null,
-      "category": "其他",
-      "description": "Automate social media across 13 platforms with AI content creation, MCP integration, and repurposing",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": "2026-12-02",
-      "firstSeen": "2026-11-17",
-      "lastSeen": "2026-11-24",
-      "verified": false,
-      "verifiedAt": null
-    },
-    {
-      "id": "2b95f56ce3a1",
-      "title": "Boost.space AgentOS",
-      "vendor": "Boost.space AgentOS",
-      "url": "https://appsumo.com/products/boostspaceagents/",
-      "source": "AppSumo",
-      "sourceUrl": "https://appsumo.com/collections/new/",
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $89，原价 $299（省 70%）",
-      "pricingModel": "paid",
-      "priceLine": "$89 终身（原价 $299）",
-      "features": null,
-      "category": "办公效率",
-      "description": "Manage AI agents with role-based access, 1,400+ AI models, 21B data records, and value tracking",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": "2026-12-02",
-      "firstSeen": "2026-11-12",
+      "expiresAt": "2026-11-24",
+      "firstSeen": "2026-11-23",
       "lastSeen": "2026-11-24",
       "verified": false,
       "verifiedAt": null
@@ -2756,24 +2779,24 @@
       "verifiedAt": null
     },
     {
-      "id": "99229f326e43",
-      "title": "Mootion",
-      "vendor": "Mootion",
-      "url": "https://appsumo.com/products/mootion/",
+      "id": "bce5afb96302",
+      "title": "Visby",
+      "vendor": "Visby",
+      "url": "https://appsumo.com/products/visby/",
       "source": "AppSumo",
       "sourceUrl": "https://appsumo.com/collections/new/",
       "region": "global",
       "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $79，原价 $144（省 45%）",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $79，原价 $958（省 92%）",
       "pricingModel": "paid",
-      "priceLine": "$79 终身（原价 $144）",
+      "priceLine": "$79 终身（原价 $958）",
       "features": null,
-      "category": "视频",
-      "description": "Turn ideas, text, images, and audio into stunning videos with this user-friendly AI video generator",
+      "category": "搜索研究",
+      "description": "Track AI brand mentions, benchmark competitors’ share of voice, and close SEO and GEO content gaps",
       "eligibility": null,
       "validity": null,
-      "expiresAt": "2026-11-24",
-      "firstSeen": "2026-11-23",
+      "expiresAt": "2026-12-02",
+      "firstSeen": "2026-11-17",
       "lastSeen": "2026-11-24",
       "verified": false,
       "verifiedAt": null
@@ -2802,43 +2825,20 @@
       "verifiedAt": null
     },
     {
-      "id": "bce5afb96302",
-      "title": "Visby",
-      "vendor": "Visby",
-      "url": "https://appsumo.com/products/visby/",
+      "id": "99229f326e43",
+      "title": "Mootion",
+      "vendor": "Mootion",
+      "url": "https://appsumo.com/products/mootion/",
       "source": "AppSumo",
       "sourceUrl": "https://appsumo.com/collections/new/",
       "region": "global",
       "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $79，原价 $958（省 92%）",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $79，原价 $144（省 45%）",
       "pricingModel": "paid",
-      "priceLine": "$79 终身（原价 $958）",
+      "priceLine": "$79 终身（原价 $144）",
       "features": null,
-      "category": "搜索研究",
-      "description": "Track AI brand mentions, benchmark competitors’ share of voice, and close SEO and GEO content gaps",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": "2026-12-02",
-      "firstSeen": "2026-11-17",
-      "lastSeen": "2026-11-24",
-      "verified": false,
-      "verifiedAt": null
-    },
-    {
-      "id": "dfe7459afdf7",
-      "title": "Nexter",
-      "vendor": "Nexter",
-      "url": "https://appsumo.com/products/nexter/",
-      "source": "AppSumo",
-      "sourceUrl": "https://appsumo.com/collections/new/",
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $299（省 80%）",
-      "pricingModel": "paid",
-      "priceLine": "$59 终身（原价 $299）",
-      "features": null,
-      "category": "办公效率",
-      "description": "Launch WordPress sites fast with 120+ AI Gutenberg blocks, 1600+ templates, and a no-code theme builder",
+      "category": "视频",
+      "description": "Turn ideas, text, images, and audio into stunning videos with this user-friendly AI video generator",
       "eligibility": null,
       "validity": null,
       "expiresAt": "2026-11-24",
@@ -2848,47 +2848,47 @@
       "verifiedAt": null
     },
     {
-      "id": "c8784a307734",
-      "title": "Lety.ai",
-      "vendor": "Lety.ai",
-      "url": "https://appsumo.com/products/lety-ai/",
+      "id": "5c45f40df3ed",
+      "title": "CluGTM (formerly Cleanlist AI)",
+      "vendor": "CluGTM",
+      "url": "https://appsumo.com/products/clugtm/",
       "source": "AppSumo",
       "sourceUrl": "https://appsumo.com/collections/new/",
       "region": "global",
       "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $79，原价 $299.01（省 74%）",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $89，原价 $600（省 85%）",
       "pricingModel": "paid",
-      "priceLine": "$79 终身（原价 $299.01）",
+      "priceLine": "$89 终身（原价 $600）",
       "features": null,
-      "category": "办公效率",
-      "description": "Sell white-label AI agents with an agentic CRM, 900+ MCP integrations, and subscription billing",
+      "category": "搜索研究",
+      "description": "Search 1B+ profiles, enrich from 25+ providers, and research leads with AI in one GTM platform",
       "eligibility": null,
       "validity": null,
       "expiresAt": "2026-12-02",
-      "firstSeen": "2026-11-19",
+      "firstSeen": "2026-11-17",
       "lastSeen": "2026-11-24",
       "verified": false,
       "verifiedAt": null
     },
     {
-      "id": "c2fc2a641d49",
-      "title": "Formaloo",
-      "vendor": "Formaloo",
-      "url": "https://appsumo.com/products/formaloo/",
+      "id": "6534fe4c9677",
+      "title": "Jupitrr AI",
+      "vendor": "Jupitrr AI",
+      "url": "https://appsumo.com/products/jupitrr-alt/",
       "source": "AppSumo",
       "sourceUrl": "https://appsumo.com/collections/new/",
       "region": "global",
       "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $109，原价 $684（省 84%）",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $216（省 73%）",
       "pricingModel": "paid",
-      "priceLine": "$109 终身（原价 $684）",
+      "priceLine": "$59 终身（原价 $216）",
       "features": null,
-      "category": "办公效率",
-      "description": "Create no-code forms, client portals, and business apps, then let AI agents automate what comes next",
+      "category": "视频",
+      "description": "Automatically transform your talking head videos into social clips with AI",
       "eligibility": null,
       "validity": null,
-      "expiresAt": "2026-12-02",
-      "firstSeen": "2026-11-22",
+      "expiresAt": "2026-11-24",
+      "firstSeen": "2026-11-23",
       "lastSeen": "2026-11-24",
       "verified": false,
       "verifiedAt": null
@@ -3101,6 +3101,29 @@
       "verifiedAt": null
     },
     {
+      "id": "c2fc2a641d49",
+      "title": "Formaloo",
+      "vendor": "Formaloo",
+      "url": "https://appsumo.com/products/formaloo/",
+      "source": "AppSumo",
+      "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+      "region": "global",
+      "type": "deal",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $109，原价 $684（省 84%）",
+      "pricingModel": "paid",
+      "priceLine": "$109 终身（原价 $684）",
+      "features": null,
+      "category": "办公效率",
+      "description": "Create no-code forms, client portals, and business apps, then let AI agents automate what comes next",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": "2026-12-02",
+      "firstSeen": "2026-11-22",
+      "lastSeen": "2026-11-24",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
       "id": "42df4fdc8aa9",
       "title": "Triplo AI",
       "vendor": "Triplo AI",
@@ -3265,6 +3288,30 @@
       "zh": {
         "description": "Particle-1 是 Particle AI 基于 DeepSeek V4.1 Flash 后训练的智能体编程模型，注重 token 效率，适用于终端工作流与代码库修改等软件工程任务。"
       }
+    },
+    {
+      "id": "1e6664d8fe3a",
+      "title": "豆包发布AI个人助理小豆：正式开启公测",
+      "vendor": "豆包",
+      "url": "https://news.mydrivers.com/1/1168/1168082.htm",
+      "source": "快科技",
+      "sourceUrl": "https://rss.mydrivers.com/rss.aspx?Tid=1",
+      "region": "cn",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "其他",
+      "description": "",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-11-24",
+      "lastSeen": "2026-11-24",
+      "verified": false,
+      "verifiedAt": null,
+      "excerpt": "快科技11月24日消息，豆包官方今天正式宣布，旗下AI个人助理产品“小豆”正式开启公测。公测期间采用邀请制，凭邀请码即可体验，并获赠一定量免费额度，邀请好友可再得额度。苹果与安卓应用商店搜索“小豆”即可下载，App Store页面显示其iOS版上架时间为11月23日，开发者为北京春田知韵科技有限公司。小豆是独立应用，不是豆包里新增的一个入口，官方介绍它是一款基于人工智能技术的个人智能助理应用。采用对话式交互方式，在用户明确指令与授权范围内，协助用户高效处理日常事务。官方功能…"
     },
     {
       "id": "8642f235cf91",
@@ -3638,32 +3685,6 @@
       }
     },
     {
-      "id": "45fcbb1d801f",
-      "title": "Hola AI Voicemail",
-      "vendor": "Hola AI",
-      "url": "https://www.holavoicemail.com/",
-      "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/hola-ai-voicemail-2cc06445",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "音频语音",
-      "description": "AI voicemail app that answers calls and sends text summaries.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-10-27",
-      "lastSeen": "2026-11-24",
-      "verified": false,
-      "verifiedAt": null,
-      "zh": {
-        "description": "AI 语音信箱应用：代接来电并发送文字摘要。"
-      }
-    },
-    {
       "id": "ec17511a4284",
       "title": "Copilot 3D",
       "vendor": "Copilot 3D",
@@ -3716,6 +3737,29 @@
       }
     },
     {
+      "id": "9c94811e7f17",
+      "title": "DocsMint",
+      "vendor": "DocsMint",
+      "url": "https://docsmint.com/",
+      "source": "Futuretools",
+      "sourceUrl": "https://futuretools.io/tools/docsmint-5f906736",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "办公效率",
+      "description": "AI-powered document and knowledge workspace for teams and agents.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-11-14",
+      "lastSeen": "2026-11-24",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
       "id": "88b2afba57cf",
       "title": "OpenMontage",
       "vendor": "OpenMontage",
@@ -3765,32 +3809,6 @@
       }
     },
     {
-      "id": "cbfce04c5556",
-      "title": "Motionleap",
-      "vendor": "Motionleap",
-      "url": "https://apps.apple.com/us/app/motionleap-by-lightricks/id1381206010",
-      "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/motionleap",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "图像绘画",
-      "description": "An App to animate still images with effects.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-24",
-      "verified": false,
-      "verifiedAt": null,
-      "zh": {
-        "description": "给静态照片加上动效的 App。"
-      }
-    },
-    {
       "id": "29be3db37d5c",
       "title": "Call Annie",
       "vendor": "Call Annie",
@@ -3837,32 +3855,6 @@
       "verifiedAt": null
     },
     {
-      "id": "5e3897face03",
-      "title": "Arena AI",
-      "vendor": "Arena AI",
-      "url": "https://arena.ai/",
-      "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/arena-ai-lz5u0z",
-      "region": "global",
-      "type": "tool",
-      "discountInfo": null,
-      "pricingModel": null,
-      "priceLine": null,
-      "features": null,
-      "category": "搜索研究",
-      "description": "Compare AI models side-by-side via blind voting and leaderboard.",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-10-21",
-      "lastSeen": "2026-11-24",
-      "verified": false,
-      "verifiedAt": null,
-      "zh": {
-        "description": "通过盲测投票与排行榜，把多个 AI 模型放在一起对比。"
-      }
-    },
-    {
       "id": "935d32387deb",
       "title": "Oreate AI",
       "vendor": "Oreate AI",
@@ -3889,27 +3881,30 @@
       }
     },
     {
-      "id": "9c94811e7f17",
-      "title": "DocsMint",
-      "vendor": "DocsMint",
-      "url": "https://docsmint.com/",
+      "id": "cbfce04c5556",
+      "title": "Motionleap",
+      "vendor": "Motionleap",
+      "url": "https://apps.apple.com/us/app/motionleap-by-lightricks/id1381206010",
       "source": "Futuretools",
-      "sourceUrl": "https://futuretools.io/tools/docsmint-5f906736",
+      "sourceUrl": "https://futuretools.io/tools/motionleap",
       "region": "global",
       "type": "tool",
       "discountInfo": null,
       "pricingModel": null,
       "priceLine": null,
       "features": null,
-      "category": "办公效率",
-      "description": "AI-powered document and knowledge workspace for teams and agents.",
+      "category": "图像绘画",
+      "description": "An App to animate still images with effects.",
       "eligibility": null,
       "validity": null,
       "expiresAt": null,
-      "firstSeen": "2026-11-14",
+      "firstSeen": "2026-09-21",
       "lastSeen": "2026-11-24",
       "verified": false,
-      "verifiedAt": null
+      "verifiedAt": null,
+      "zh": {
+        "description": "给静态照片加上动效的 App。"
+      }
     },
     {
       "id": "8f479fcbe8f9",
@@ -4010,6 +4005,32 @@
       "verifiedAt": null
     },
     {
+      "id": "5e3897face03",
+      "title": "Arena AI",
+      "vendor": "Arena AI",
+      "url": "https://arena.ai/",
+      "source": "Futuretools",
+      "sourceUrl": "https://futuretools.io/tools/arena-ai-lz5u0z",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "搜索研究",
+      "description": "Compare AI models side-by-side via blind voting and leaderboard.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-10-21",
+      "lastSeen": "2026-11-24",
+      "verified": false,
+      "verifiedAt": null,
+      "zh": {
+        "description": "通过盲测投票与排行榜，把多个 AI 模型放在一起对比。"
+      }
+    },
+    {
       "id": "5791cccec315",
       "title": "ProposAI",
       "vendor": "ProposAI",
@@ -4050,6 +4071,29 @@
       "features": null,
       "category": "图像绘画",
       "description": "AI tool that redacts PII and PHI from PDFs, scans, and faxes.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-11-24",
+      "lastSeen": "2026-11-24",
+      "verified": false,
+      "verifiedAt": null
+    },
+    {
+      "id": "646537ceb49c",
+      "title": "Mascowiz",
+      "vendor": "Mascowiz",
+      "url": "https://mascowiz.com/",
+      "source": "Futuretools",
+      "sourceUrl": "https://futuretools.io/tools/mascowiz-0eeb6dc3",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "图像绘画",
+      "description": "AI tool that generates animated mascots for mobile and web apps.",
       "eligibility": null,
       "validity": null,
       "expiresAt": null,
@@ -4387,88 +4431,6 @@
       "verifiedAt": null,
       "zh": {
         "description": "一个 AI 基准测试：考察语言模型用 SVG 画出 Gary Busey 肖像的水平。"
-      }
-    },
-    {
-      "id": "97d21ff73d3e",
-      "title": "智谱AI 新用户注册专享 2000万 免费 Tokens 资源包",
-      "vendor": "智谱AI",
-      "url": "https://bigmodel.cn/pricing",
-      "source": "智谱AI活动页",
-      "sourceUrl": null,
-      "region": "cn",
-      "type": "deal",
-      "discountInfo": "新用户注册专享 2000万 免费 Tokens 资源包，并含 120 次图像和视频资源包。",
-      "pricingModel": "free",
-      "priceLine": null,
-      "features": null,
-      "category": "API服务",
-      "description": "来源：智谱开放平台官方价格页营销位与活动说明。",
-      "eligibility": "智谱开放平台新注册用户（需实名认证）",
-      "validity": null,
-      "expiresAt": null,
-      "firstSeen": "2026-09-21",
-      "lastSeen": "2026-11-24",
-      "verified": false,
-      "verifiedAt": null,
-      "audience": [
-        "developer"
-      ],
-      "benefitType": [
-        "free_credits",
-        "free_api"
-      ],
-      "eligibilityDetail": {
-        "identityVerificationRequired": true,
-        "newUserOnly": true
-      },
-      "claimRequirements": {
-        "accountRequired": true
-      },
-      "availability": {
-        "chinaUsable": true
-      },
-      "provenance": {
-        "credibility": "curated",
-        "contrib": {
-          "audience": [
-            "curated"
-          ],
-          "benefitType": [
-            "curated"
-          ],
-          "eligibilityDetail": [
-            "curated"
-          ],
-          "claimRequirements": [
-            "curated"
-          ],
-          "availability": [
-            "curated"
-          ]
-        },
-        "fields": {
-          "audience": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "benefitType": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "eligibilityDetail": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "claimRequirements": {
-            "basis": "source",
-            "derived": "stated"
-          },
-          "availability": {
-            "basis": "source",
-            "derived": "stated"
-          }
-        }
       }
     },
     {
@@ -5325,27 +5287,135 @@
       }
     },
     {
-      "id": "6534fe4c9677",
-      "title": "Jupitrr AI",
-      "vendor": "Jupitrr AI",
-      "url": "https://appsumo.com/products/jupitrr-alt/",
+      "id": "c8784a307734",
+      "title": "Lety.ai",
+      "vendor": "Lety.ai",
+      "url": "https://appsumo.com/products/lety-ai/",
       "source": "AppSumo",
-      "sourceUrl": "https://appsumo.com/collections/ending-soon/",
+      "sourceUrl": "https://appsumo.com/collections/new/",
       "region": "global",
       "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $59，原价 $216（省 73%）",
+      "discountInfo": "AppSumo 终身授权限时折扣：现价 $79，原价 $299.01（省 74%）",
       "pricingModel": "paid",
-      "priceLine": "$59 终身（原价 $216）",
+      "priceLine": "$79 终身（原价 $299.01）",
       "features": null,
-      "category": "视频",
-      "description": "Automatically transform your talking head videos into social clips with AI",
+      "category": "办公效率",
+      "description": "Sell white-label AI agents with an agentic CRM, 900+ MCP integrations, and subscription billing",
       "eligibility": null,
       "validity": null,
-      "expiresAt": "2026-11-24",
-      "firstSeen": "2026-11-23",
-      "lastSeen": "2026-11-23",
+      "expiresAt": "2026-12-02",
+      "firstSeen": "2026-11-19",
+      "lastSeen": "2026-11-24",
       "verified": false,
       "verifiedAt": null
+    },
+    {
+      "id": "45fcbb1d801f",
+      "title": "Hola AI Voicemail",
+      "vendor": "Hola AI",
+      "url": "https://www.holavoicemail.com/",
+      "source": "Futuretools",
+      "sourceUrl": "https://futuretools.io/tools/hola-ai-voicemail-2cc06445",
+      "region": "global",
+      "type": "tool",
+      "discountInfo": null,
+      "pricingModel": null,
+      "priceLine": null,
+      "features": null,
+      "category": "音频语音",
+      "description": "AI voicemail app that answers calls and sends text summaries.",
+      "eligibility": null,
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-10-27",
+      "lastSeen": "2026-11-24",
+      "verified": false,
+      "verifiedAt": null,
+      "zh": {
+        "description": "AI 语音信箱应用：代接来电并发送文字摘要。"
+      }
+    },
+    {
+      "id": "97d21ff73d3e",
+      "title": "智谱AI 新用户注册专享 2000万 免费 Tokens 资源包",
+      "vendor": "智谱AI",
+      "url": "https://bigmodel.cn/pricing",
+      "source": "智谱AI活动页",
+      "sourceUrl": null,
+      "region": "cn",
+      "type": "deal",
+      "discountInfo": "新用户注册专享 2000万 免费 Tokens 资源包，并含 120 次图像和视频资源包。",
+      "pricingModel": "free",
+      "priceLine": null,
+      "features": null,
+      "category": "API服务",
+      "description": "来源：智谱开放平台官方价格页营销位与活动说明。",
+      "eligibility": "智谱开放平台新注册用户（需实名认证）",
+      "validity": null,
+      "expiresAt": null,
+      "firstSeen": "2026-09-21",
+      "lastSeen": "2026-11-24",
+      "verified": false,
+      "verifiedAt": null,
+      "audience": [
+        "developer"
+      ],
+      "benefitType": [
+        "free_credits",
+        "free_api"
+      ],
+      "eligibilityDetail": {
+        "identityVerificationRequired": true,
+        "newUserOnly": true
+      },
+      "claimRequirements": {
+        "accountRequired": true
+      },
+      "availability": {
+        "chinaUsable": true
+      },
+      "provenance": {
+        "credibility": "curated",
+        "contrib": {
+          "audience": [
+            "curated"
+          ],
+          "benefitType": [
+            "curated"
+          ],
+          "eligibilityDetail": [
+            "curated"
+          ],
+          "claimRequirements": [
+            "curated"
+          ],
+          "availability": [
+            "curated"
+          ]
+        },
+        "fields": {
+          "audience": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "benefitType": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "eligibilityDetail": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "claimRequirements": {
+            "basis": "source",
+            "derived": "stated"
+          },
+          "availability": {
+            "basis": "source",
+            "derived": "stated"
+          }
+        }
+      }
     },
     {
       "id": "2d983b8730bc",
@@ -5463,29 +5533,6 @@
       "zh": {
         "description": "用编码智能体把遗留代码迁移到现代框架的 IDE。"
       }
-    },
-    {
-      "id": "5c45f40df3ed",
-      "title": "CluGTM (formerly Cleanlist AI)",
-      "vendor": "CluGTM",
-      "url": "https://appsumo.com/products/clugtm/",
-      "source": "AppSumo",
-      "sourceUrl": "https://appsumo.com/collections/new/",
-      "region": "global",
-      "type": "deal",
-      "discountInfo": "AppSumo 终身授权限时折扣：现价 $89，原价 $600（省 85%）",
-      "pricingModel": "paid",
-      "priceLine": "$89 终身（原价 $600）",
-      "features": null,
-      "category": "编程开发",
-      "description": "Search 1B+ profiles, enrich from 25+ providers, and research leads with AI in one GTM platform",
-      "eligibility": null,
-      "validity": null,
-      "expiresAt": "2026-12-02",
-      "firstSeen": "2026-11-17",
-      "lastSeen": "2026-11-22",
-      "verified": false,
-      "verifiedAt": null
     },
     {
       "id": "f34797ef8750",

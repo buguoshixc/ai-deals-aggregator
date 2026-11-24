@@ -2804,9 +2804,9 @@
     },
     "2d983b8730bc": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-24",
-      "endedAt": null
+      "endedAt": "2026-11-24"
     },
     "2e5118bcd2c1": {
       "source": "AppSumo",
@@ -2910,6 +2910,12 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
+    "45fcbb1d801f": {
+      "source": "Futuretools",
+      "misses": 1,
+      "since": "2026-11-24",
+      "endedAt": null
+    },
     "46b1877f5969": {
       "source": "aitools.fyi",
       "misses": 2,
@@ -2946,12 +2952,6 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
-    "5c45f40df3ed": {
-      "source": "AppSumo",
-      "misses": 2,
-      "since": "2026-11-23",
-      "endedAt": "2026-11-23"
-    },
     "60317b771abf": {
       "source": "Futuretools",
       "misses": 2,
@@ -2969,12 +2969,6 @@
       "misses": 2,
       "since": "2026-11-17",
       "endedAt": "2026-11-18"
-    },
-    "6534fe4c9677": {
-      "source": "AppSumo",
-      "misses": 1,
-      "since": "2026-11-24",
-      "endedAt": null
     },
     "654e05ed3453": {
       "source": "aitools.fyi",
@@ -3144,6 +3138,12 @@
       "since": "2026-11-19",
       "endedAt": "2026-11-20"
     },
+    "97d21ff73d3e": {
+      "source": "智谱AI活动页",
+      "misses": 1,
+      "since": "2026-11-24",
+      "endedAt": null
+    },
     "98b5e610f7bc": {
       "source": "aitools.fyi",
       "misses": 2,
@@ -3240,6 +3240,12 @@
       "since": "2026-11-19",
       "endedAt": "2026-11-20"
     },
+    "c8784a307734": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-24",
+      "endedAt": null
+    },
     "c9c5429f2205": {
       "source": "aitools.fyi",
       "misses": 2,
@@ -3269,6 +3275,12 @@
       "misses": 2,
       "since": "2026-11-21",
       "endedAt": "2026-11-21"
+    },
+    "d262c0445b55": {
+      "source": "快科技",
+      "misses": 1,
+      "since": "2026-11-24",
+      "endedAt": null
     },
     "d338170e86af": {
       "source": "aitools.fyi",
@@ -3398,9 +3410,9 @@
     },
     "f9720295b45d": {
       "source": "Futuretools",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-24",
-      "endedAt": null
+      "endedAt": "2026-11-24"
     },
     "fef21feaac71": {
       "source": "AppSumo",
@@ -9550,6 +9562,109 @@
       "label": {
         "title": "Emergent.sh",
         "vendor": "Emergent.sh"
+      }
+    },
+    {
+      "id": "1e6664d8fe3a",
+      "at": "2026-11-24",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "其他",
+        "region": "cn",
+        "source": "快科技",
+        "sourceUrl": "https://rss.mydrivers.com/rss.aspx?Tid=1",
+        "verified": false
+      },
+      "runAt": "2026-11-24T08:41:50.102Z"
+    },
+    {
+      "id": "2d983b8730bc",
+      "at": "2026-11-24",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-24",
+      "runAt": "2026-11-24T08:41:50.102Z",
+      "label": {
+        "title": "FlexiFunnels",
+        "vendor": "FlexiFunnels"
+      }
+    },
+    {
+      "id": "5c45f40df3ed",
+      "at": "2026-11-24",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-24T08:41:50.102Z"
+    },
+    {
+      "id": "5c45f40df3ed",
+      "at": "2026-11-24",
+      "type": "updated",
+      "field": "category",
+      "from": "编程开发",
+      "to": "搜索研究",
+      "origin": "observed",
+      "runAt": "2026-11-24T08:41:50.102Z"
+    },
+    {
+      "id": "646537ceb49c",
+      "at": "2026-11-24",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "图像绘画",
+        "region": "global",
+        "source": "Futuretools",
+        "sourceUrl": "https://futuretools.io/tools/mascowiz-0eeb6dc3",
+        "verified": false
+      },
+      "runAt": "2026-11-24T08:41:50.102Z"
+    },
+    {
+      "id": "6534fe4c9677",
+      "at": "2026-11-24",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/ending-soon/",
+      "to": "https://appsumo.com/collections/new/",
+      "origin": "observed",
+      "runAt": "2026-11-24T08:41:50.102Z"
+    },
+    {
+      "id": "c2fc2a641d49",
+      "at": "2026-11-24",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/new/",
+      "to": "https://appsumo.com/collections/ending-soon/",
+      "origin": "observed",
+      "runAt": "2026-11-24T08:41:50.102Z"
+    },
+    {
+      "id": "f9720295b45d",
+      "at": "2026-11-24",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-24",
+      "runAt": "2026-11-24T08:41:50.102Z",
+      "label": {
+        "title": "AutoDraw",
+        "vendor": "AutoDraw"
       }
     }
   ]
