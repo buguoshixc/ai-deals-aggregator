@@ -2900,9 +2900,9 @@
     },
     "42df4fdc8aa9": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-25",
-      "endedAt": null
+      "endedAt": "2026-11-25"
     },
     "44848acd19f3": {
       "source": "AppSumo",
@@ -2960,27 +2960,21 @@
     },
     "5791cccec315": {
       "source": "Futuretools",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-25",
-      "endedAt": null
+      "endedAt": "2026-11-25"
     },
     "59c7b0179308": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-25",
-      "endedAt": null
-    },
-    "5c45f40df3ed": {
-      "source": "AppSumo",
-      "misses": 1,
-      "since": "2026-11-25",
-      "endedAt": null
+      "endedAt": "2026-11-25"
     },
     "5e3897face03": {
       "source": "Futuretools",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-25",
-      "endedAt": null
+      "endedAt": "2026-11-25"
     },
     "60317b771abf": {
       "source": "Futuretools",
@@ -3062,9 +3056,9 @@
     },
     "7b9e80d90afc": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-25",
-      "endedAt": null
+      "endedAt": "2026-11-25"
     },
     "7d8921eb5c47": {
       "source": "aitools.fyi",
@@ -3230,9 +3224,9 @@
     },
     "a67c07bf4993": {
       "source": "Futuretools",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-25",
-      "endedAt": null
+      "endedAt": "2026-11-25"
     },
     "a9053ca847fb": {
       "source": "aitools.fyi",
@@ -3266,9 +3260,9 @@
     },
     "c2fc2a641d49": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-25",
-      "endedAt": null
+      "endedAt": "2026-11-25"
     },
     "c3d6bd34ebfe": {
       "source": "aitools.fyi",
@@ -3299,6 +3293,12 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
+    },
+    "ce32de15696e": {
+      "source": "IT之家",
+      "misses": 1,
+      "since": "2026-11-25",
+      "endedAt": null
     },
     "cfb47a6dd6fa": {
       "source": "AppSumo",
@@ -3428,9 +3428,9 @@
     },
     "f68dfc4184bf": {
       "source": "IT之家",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-21",
-      "endedAt": null
+      "endedAt": "2026-11-25"
     },
     "f6e6f3b1c820": {
       "source": "AppSumo",
@@ -9952,6 +9952,210 @@
         "verified": false
       },
       "runAt": "2026-11-24T21:59:13.372Z"
+    },
+    {
+      "id": "2d983b8730bc",
+      "at": "2026-11-25",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/new/",
+      "to": "https://appsumo.com/collections/ending-soon/",
+      "origin": "observed",
+      "runAt": "2026-11-25T07:09:20.903Z"
+    },
+    {
+      "id": "355b03d561bf",
+      "at": "2026-11-25",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $69，原价 $597（省 88%）",
+        "pricingModel": "paid",
+        "priceLine": "$69 终身（原价 $597）",
+        "type": "deal",
+        "category": "办公效率",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-25T07:09:20.903Z"
+    },
+    {
+      "id": "42df4fdc8aa9",
+      "at": "2026-11-25",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-25",
+      "runAt": "2026-11-25T07:09:20.903Z",
+      "label": {
+        "title": "Triplo AI",
+        "vendor": "Triplo AI"
+      }
+    },
+    {
+      "id": "5788d238a2fe",
+      "at": "2026-11-25",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "其他",
+        "region": "cn",
+        "source": "极客公园",
+        "sourceUrl": "https://www.geekpark.net/rss",
+        "verified": false
+      },
+      "runAt": "2026-11-25T07:09:20.903Z"
+    },
+    {
+      "id": "5791cccec315",
+      "at": "2026-11-25",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-25",
+      "runAt": "2026-11-25T07:09:20.903Z",
+      "label": {
+        "title": "ProposAI",
+        "vendor": "ProposAI"
+      }
+    },
+    {
+      "id": "59c7b0179308",
+      "at": "2026-11-25",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-25",
+      "runAt": "2026-11-25T07:09:20.903Z",
+      "label": {
+        "title": "Kavout",
+        "vendor": "Kavout"
+      }
+    },
+    {
+      "id": "5e3897face03",
+      "at": "2026-11-25",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-25",
+      "runAt": "2026-11-25T07:09:20.903Z",
+      "label": {
+        "title": "Arena AI",
+        "vendor": "Arena AI"
+      }
+    },
+    {
+      "id": "60c544edd8be",
+      "at": "2026-11-25",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-25",
+      "to": "2026-11-28",
+      "origin": "observed",
+      "runAt": "2026-11-25T07:09:20.903Z"
+    },
+    {
+      "id": "6534fe4c9677",
+      "at": "2026-11-25",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/new/",
+      "to": "https://appsumo.com/collections/ending-soon/",
+      "origin": "observed",
+      "runAt": "2026-11-25T07:09:20.903Z"
+    },
+    {
+      "id": "751a63218300",
+      "at": "2026-11-25",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "其他",
+        "region": "cn",
+        "source": "IT之家",
+        "sourceUrl": "https://www.ithome.com/rss/",
+        "verified": false
+      },
+      "runAt": "2026-11-25T07:09:20.903Z"
+    },
+    {
+      "id": "7b9e80d90afc",
+      "at": "2026-11-25",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-25",
+      "runAt": "2026-11-25T07:09:20.903Z",
+      "label": {
+        "title": "Buildin",
+        "vendor": "Buildin"
+      }
+    },
+    {
+      "id": "a67c07bf4993",
+      "at": "2026-11-25",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-25",
+      "runAt": "2026-11-25T07:09:20.903Z",
+      "label": {
+        "title": "Ankon AI",
+        "vendor": "Ankon AI"
+      }
+    },
+    {
+      "id": "c2fc2a641d49",
+      "at": "2026-11-25",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-25",
+      "runAt": "2026-11-25T07:09:20.903Z",
+      "label": {
+        "title": "Formaloo",
+        "vendor": "Formaloo"
+      }
+    },
+    {
+      "id": "f68dfc4184bf",
+      "at": "2026-11-25",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-21",
+      "runAt": "2026-11-25T07:09:20.903Z",
+      "label": {
+        "title": "AI 模型大幅降低古籍数字化成本：识别 1000 页内容费用已不到 0.1 美元",
+        "vendor": "Hugging Face"
+      }
     }
   ]
 }
