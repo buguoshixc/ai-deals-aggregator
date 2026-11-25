@@ -2712,12 +2712,6 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
-    "06bc1d631f62": {
-      "source": "Futuretools",
-      "misses": 2,
-      "since": "2026-11-12",
-      "endedAt": "2026-11-12"
-    },
     "070cad8aa770": {
       "source": "aitools.fyi",
       "misses": 2,
@@ -2843,6 +2837,12 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
+    },
+    "355b03d561bf": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-26",
+      "endedAt": null
     },
     "36fdb826204d": {
       "source": "AppSumo",
@@ -3322,7 +3322,7 @@
       "source": "快科技",
       "misses": 1,
       "since": "2026-11-24",
-      "endedAt": null
+      "endedAt": "2026-11-26"
     },
     "d338170e86af": {
       "source": "aitools.fyi",
@@ -3437,6 +3437,12 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
+    },
+    "f73f99f96585": {
+      "source": "Futuretools",
+      "misses": 1,
+      "since": "2026-11-26",
+      "endedAt": null
     },
     "f7d846f3c57f": {
       "source": "Futuretools",
@@ -10155,6 +10161,39 @@
       "label": {
         "title": "AI 模型大幅降低古籍数字化成本：识别 1000 页内容费用已不到 0.1 美元",
         "vendor": "Hugging Face"
+      }
+    },
+    {
+      "id": "06bc1d631f62",
+      "at": "2026-11-26",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-25T21:09:58.772Z"
+    },
+    {
+      "id": "2d983b8730bc",
+      "at": "2026-11-26",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/ending-soon/",
+      "to": "https://appsumo.com/collections/new/",
+      "origin": "observed",
+      "runAt": "2026-11-25T21:09:58.772Z"
+    },
+    {
+      "id": "d262c0445b55",
+      "at": "2026-11-26",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "pruned_expired",
+      "runAt": "2026-11-25T21:09:58.772Z",
+      "label": {
+        "title": "DeepSeek限额引发大量用户不满！长对话7天后受限 网友呼吁取消限制",
+        "vendor": "DeepSeek限额引发大量用户不满！长对话7天后受限 网友呼吁取消限制"
       }
     }
   ]
