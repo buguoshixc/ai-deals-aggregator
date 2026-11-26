@@ -2840,9 +2840,9 @@
     },
     "355b03d561bf": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-26",
-      "endedAt": null
+      "endedAt": "2026-11-26"
     },
     "36fdb826204d": {
       "source": "AppSumo",
@@ -2993,6 +2993,12 @@
       "misses": 2,
       "since": "2026-11-17",
       "endedAt": "2026-11-18"
+    },
+    "646537ceb49c": {
+      "source": "Futuretools",
+      "misses": 1,
+      "since": "2026-11-26",
+      "endedAt": null
     },
     "654e05ed3453": {
       "source": "aitools.fyi",
@@ -3437,12 +3443,6 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
-    },
-    "f73f99f96585": {
-      "source": "Futuretools",
-      "misses": 1,
-      "since": "2026-11-26",
-      "endedAt": null
     },
     "f7d846f3c57f": {
       "source": "Futuretools",
@@ -10195,6 +10195,68 @@
         "title": "DeepSeek限额引发大量用户不满！长对话7天后受限 网友呼吁取消限制",
         "vendor": "DeepSeek限额引发大量用户不满！长对话7天后受限 网友呼吁取消限制"
       }
+    },
+    {
+      "id": "23d7b85f4992",
+      "at": "2026-11-26",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/ending-soon/",
+      "to": "https://appsumo.com/collections/new/",
+      "origin": "observed",
+      "runAt": "2026-11-26T07:00:41.418Z"
+    },
+    {
+      "id": "2d983b8730bc",
+      "at": "2026-11-26",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/new/",
+      "to": "https://appsumo.com/collections/ending-soon/",
+      "origin": "observed",
+      "runAt": "2026-11-26T07:00:41.418Z"
+    },
+    {
+      "id": "355b03d561bf",
+      "at": "2026-11-26",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-26",
+      "runAt": "2026-11-26T07:00:41.418Z",
+      "label": {
+        "title": "Kenso",
+        "vendor": "Kenso"
+      }
+    },
+    {
+      "id": "6534fe4c9677",
+      "at": "2026-11-26",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/ending-soon/",
+      "to": "https://appsumo.com/collections/new/",
+      "origin": "observed",
+      "runAt": "2026-11-26T07:00:41.418Z"
+    },
+    {
+      "id": "c08f69abf1ff",
+      "at": "2026-11-26",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "其他",
+        "region": "cn",
+        "source": "36氪",
+        "sourceUrl": "https://www.36kr.com/feed",
+        "verified": false
+      },
+      "runAt": "2026-11-26T07:00:41.418Z"
     }
   ]
 }
