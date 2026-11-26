@@ -2760,6 +2760,12 @@
       "since": "2026-11-14",
       "endedAt": "2026-11-14"
     },
+    "1688614d6669": {
+      "source": "智谱AI活动页",
+      "misses": 1,
+      "since": "2026-11-27",
+      "endedAt": null
+    },
     "1fff4784ec9d": {
       "source": "aitools.fyi",
       "misses": 2,
@@ -2993,12 +2999,6 @@
       "misses": 2,
       "since": "2026-11-17",
       "endedAt": "2026-11-18"
-    },
-    "646537ceb49c": {
-      "source": "Futuretools",
-      "misses": 1,
-      "since": "2026-11-26",
-      "endedAt": null
     },
     "654e05ed3453": {
       "source": "aitools.fyi",
@@ -3299,6 +3299,12 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
+    },
+    "ce286891fc29": {
+      "source": "Futuretools",
+      "misses": 1,
+      "since": "2026-11-27",
+      "endedAt": null
     },
     "ce32de15696e": {
       "source": "IT之家",
@@ -10257,6 +10263,43 @@
         "verified": false
       },
       "runAt": "2026-11-26T07:00:41.418Z"
+    },
+    {
+      "id": "0ad91501f24e",
+      "at": "2026-11-27",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "搜索研究",
+        "region": "cn",
+        "source": "少数派",
+        "sourceUrl": "https://sspai.com/feed",
+        "verified": false
+      },
+      "runAt": "2026-11-26T21:00:22.299Z"
+    },
+    {
+      "id": "23d7b85f4992",
+      "at": "2026-11-27",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/new/",
+      "to": "https://appsumo.com/collections/ending-soon/",
+      "origin": "observed",
+      "runAt": "2026-11-26T21:00:22.299Z"
+    },
+    {
+      "id": "6534fe4c9677",
+      "at": "2026-11-27",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/new/",
+      "to": "https://appsumo.com/collections/ending-soon/",
+      "origin": "observed",
+      "runAt": "2026-11-26T21:00:22.299Z"
     }
   ]
 }

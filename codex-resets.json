@@ -5,13 +5,21 @@
     "aggregator": "https://codex-resets.com",
     "account": "https://x.com/thsottiaux"
   },
-  "fetchedAt": "2026-11-26T07:00:41.707Z",
+  "fetchedAt": "2026-11-26T21:00:22.646Z",
   "stats": {
-    "total": 73,
+    "total": 74,
     "avgIntervalDays": 6,
-    "lastResetAt": "2026-11-24T18:43:21.000Z"
+    "lastResetAt": "2026-11-26T07:26:16.000Z"
   },
   "events": [
+    {
+      "tweetId": "2125853628250599730",
+      "tweetUrl": "https://x.com/thsottiaux/status/2125853628250599730",
+      "announcedAt": "2026-11-26T07:26:16.000Z",
+      "resetType": "banked",
+      "source": "webhook",
+      "text": "Banked reset is online"
+    },
     {
       "tweetId": "2125299248782778588",
       "tweetUrl": "https://x.com/thsottiaux/status/2125299248782778588",
