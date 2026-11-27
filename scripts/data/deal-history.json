@@ -2714,9 +2714,9 @@
     },
     "06bc1d631f62": {
       "source": "Futuretools",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-27",
-      "endedAt": null
+      "endedAt": "2026-11-28"
     },
     "070cad8aa770": {
       "source": "aitools.fyi",
@@ -2994,6 +2994,12 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
+    "60c544edd8be": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-28",
+      "endedAt": null
+    },
     "620ef4290482": {
       "source": "AppSumo",
       "misses": 2,
@@ -3065,6 +3071,12 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
+    },
+    "762a098836d7": {
+      "source": "OpenRouter",
+      "misses": 1,
+      "since": "2026-11-28",
+      "endedAt": null
     },
     "7b9e80d90afc": {
       "source": "AppSumo",
@@ -3222,6 +3234,12 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
+    "a157ed655587": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-28",
+      "endedAt": null
+    },
     "a3f18a7a4b9d": {
       "source": "aitools.fyi",
       "misses": 2,
@@ -3288,6 +3306,12 @@
       "since": "2026-11-19",
       "endedAt": "2026-11-20"
     },
+    "c8784a307734": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-28",
+      "endedAt": null
+    },
     "c9c5429f2205": {
       "source": "aitools.fyi",
       "misses": 2,
@@ -3304,7 +3328,7 @@
       "source": "IT之家",
       "misses": 1,
       "since": "2026-11-25",
-      "endedAt": null
+      "endedAt": "2026-11-28"
     },
     "cfb47a6dd6fa": {
       "source": "AppSumo",
@@ -3426,6 +3450,12 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
+    "f34797ef8750": {
+      "source": "AppSumo",
+      "misses": 1,
+      "since": "2026-11-28",
+      "endedAt": null
+    },
     "f68dfc4184bf": {
       "source": "IT之家",
       "misses": 2,
@@ -3455,6 +3485,12 @@
       "misses": 2,
       "since": "2026-11-24",
       "endedAt": "2026-11-24"
+    },
+    "f9844047fe7c": {
+      "source": "OpenRouter",
+      "misses": 1,
+      "since": "2026-11-28",
+      "endedAt": null
     },
     "fef21feaac71": {
       "source": "AppSumo",
@@ -10351,6 +10387,118 @@
       "to": "其他",
       "origin": "observed",
       "runAt": "2026-11-27T06:53:42.746Z"
+    },
+    {
+      "id": "06bc1d631f62",
+      "at": "2026-11-28",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-27",
+      "runAt": "2026-11-27T20:45:14.490Z",
+      "label": {
+        "title": "Sync.so",
+        "vendor": "Sync.so"
+      }
+    },
+    {
+      "id": "10c4bcfc0c32",
+      "at": "2026-11-28",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/new/",
+      "to": "https://appsumo.com/collections/ending-soon/",
+      "origin": "observed",
+      "runAt": "2026-11-27T20:45:14.490Z"
+    },
+    {
+      "id": "6e7cfea4dbc1",
+      "at": "2026-11-28",
+      "type": "expiry_changed",
+      "field": "expiresAt",
+      "from": "2026-11-28",
+      "to": "2026-12-01",
+      "origin": "observed",
+      "runAt": "2026-11-27T20:45:14.490Z"
+    },
+    {
+      "id": "c65b5fa37a6a",
+      "at": "2026-11-28",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $119，原价 $750（省 84%）",
+        "pricingModel": "paid",
+        "priceLine": "$119 终身（原价 $750）",
+        "expiresAt": "2026-11-30",
+        "type": "deal",
+        "category": "搜索研究",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-27T20:45:14.490Z"
+    },
+    {
+      "id": "c6fee0cf11a5",
+      "at": "2026-11-28",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $279，原价 $649（省 57%）",
+        "pricingModel": "paid",
+        "priceLine": "$279 终身（原价 $649）",
+        "expiresAt": "2026-11-30",
+        "type": "deal",
+        "category": "音频语音",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-27T20:45:14.490Z"
+    },
+    {
+      "id": "ce32de15696e",
+      "at": "2026-11-28",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "pruned_expired",
+      "runAt": "2026-11-27T20:45:14.490Z",
+      "label": {
+        "title": "影石 Mic Pro、Wave 两款麦克风获升级，可原生接入腾讯 WorkBuddy",
+        "vendor": "WorkBuddy"
+      }
+    },
+    {
+      "id": "fed3ff711f11",
+      "at": "2026-11-28",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "discountInfo": "AppSumo 终身授权限时折扣：现价 $69，原价 $288（省 76%）",
+        "pricingModel": "paid",
+        "priceLine": "$69 终身（原价 $288）",
+        "expiresAt": "2026-11-30",
+        "type": "deal",
+        "category": "智能体",
+        "region": "global",
+        "source": "AppSumo",
+        "sourceUrl": "https://appsumo.com/collections/new/",
+        "verified": false
+      },
+      "runAt": "2026-11-27T20:45:14.490Z"
     }
   ]
 }
