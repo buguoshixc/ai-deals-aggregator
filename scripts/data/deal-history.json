@@ -2712,6 +2712,12 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
+    "06bc1d631f62": {
+      "source": "Futuretools",
+      "misses": 1,
+      "since": "2026-11-27",
+      "endedAt": null
+    },
     "070cad8aa770": {
       "source": "aitools.fyi",
       "misses": 2,
@@ -2762,9 +2768,9 @@
     },
     "1688614d6669": {
       "source": "智谱AI活动页",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-27",
-      "endedAt": null
+      "endedAt": "2026-11-27"
     },
     "1fff4784ec9d": {
       "source": "aitools.fyi",
@@ -3282,12 +3288,6 @@
       "since": "2026-11-19",
       "endedAt": "2026-11-20"
     },
-    "c8784a307734": {
-      "source": "AppSumo",
-      "misses": 2,
-      "since": "2026-11-24",
-      "endedAt": "2026-11-25"
-    },
     "c9c5429f2205": {
       "source": "aitools.fyi",
       "misses": 2,
@@ -3299,12 +3299,6 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
-    },
-    "ce286891fc29": {
-      "source": "Futuretools",
-      "misses": 1,
-      "since": "2026-11-27",
-      "endedAt": null
     },
     "ce32de15696e": {
       "source": "IT之家",
@@ -3431,12 +3425,6 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
-    },
-    "f34797ef8750": {
-      "source": "AppSumo",
-      "misses": 2,
-      "since": "2026-11-23",
-      "endedAt": "2026-11-23"
     },
     "f68dfc4184bf": {
       "source": "IT之家",
@@ -10300,6 +10288,69 @@
       "to": "https://appsumo.com/collections/ending-soon/",
       "origin": "observed",
       "runAt": "2026-11-26T21:00:22.299Z"
+    },
+    {
+      "id": "10c4bcfc0c32",
+      "at": "2026-11-27",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/ending-soon/",
+      "to": "https://appsumo.com/collections/new/",
+      "origin": "observed",
+      "runAt": "2026-11-27T06:53:42.746Z"
+    },
+    {
+      "id": "1688614d6669",
+      "at": "2026-11-27",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-27",
+      "runAt": "2026-11-27T06:53:42.746Z",
+      "label": {
+        "title": "智谱AI 邀请好友注册赠送 Tokens 资源包",
+        "vendor": "智谱AI"
+      }
+    },
+    {
+      "id": "c8784a307734",
+      "at": "2026-11-27",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-27T06:53:42.746Z"
+    },
+    {
+      "id": "dfe7459afdf7",
+      "at": "2026-11-27",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/new/",
+      "to": "https://appsumo.com/collections/ending-soon/",
+      "origin": "observed",
+      "runAt": "2026-11-27T06:53:42.746Z"
+    },
+    {
+      "id": "f34797ef8750",
+      "at": "2026-11-27",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-27T06:53:42.746Z"
+    },
+    {
+      "id": "f34797ef8750",
+      "at": "2026-11-27",
+      "type": "updated",
+      "field": "category",
+      "from": "设计创意",
+      "to": "其他",
+      "origin": "observed",
+      "runAt": "2026-11-27T06:53:42.746Z"
     }
   ]
 }
