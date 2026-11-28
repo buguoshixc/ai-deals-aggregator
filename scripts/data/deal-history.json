@@ -2996,9 +2996,9 @@
     },
     "60c544edd8be": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-28",
-      "endedAt": null
+      "endedAt": "2026-11-28"
     },
     "620ef4290482": {
       "source": "AppSumo",
@@ -3066,6 +3066,12 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
+    "751a63218300": {
+      "source": "IT之家",
+      "misses": 1,
+      "since": "2026-11-28",
+      "endedAt": null
+    },
     "75c584a4d6a2": {
       "source": "OpenRouter",
       "misses": 2,
@@ -3074,9 +3080,9 @@
     },
     "762a098836d7": {
       "source": "OpenRouter",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-28",
-      "endedAt": null
+      "endedAt": "2026-11-28"
     },
     "7b9e80d90afc": {
       "source": "AppSumo",
@@ -3236,9 +3242,9 @@
     },
     "a157ed655587": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-28",
-      "endedAt": null
+      "endedAt": "2026-11-28"
     },
     "a3f18a7a4b9d": {
       "source": "aitools.fyi",
@@ -3282,12 +3288,6 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
-    "bf08e4fbd5ac": {
-      "source": "Futuretools",
-      "misses": 2,
-      "since": "2026-11-12",
-      "endedAt": "2026-11-12"
-    },
     "c2fc2a641d49": {
       "source": "AppSumo",
       "misses": 2,
@@ -3308,9 +3308,9 @@
     },
     "c8784a307734": {
       "source": "AppSumo",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-28",
-      "endedAt": null
+      "endedAt": "2026-11-28"
     },
     "c9c5429f2205": {
       "source": "aitools.fyi",
@@ -3323,6 +3323,12 @@
       "misses": 2,
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
+    },
+    "ce286891fc29": {
+      "source": "Futuretools",
+      "misses": 1,
+      "since": "2026-11-28",
+      "endedAt": null
     },
     "ce32de15696e": {
       "source": "IT之家",
@@ -3450,11 +3456,17 @@
       "since": "2026-11-12",
       "endedAt": "2026-11-12"
     },
-    "f34797ef8750": {
+    "f1323ce17329": {
       "source": "AppSumo",
       "misses": 1,
       "since": "2026-11-28",
       "endedAt": null
+    },
+    "f34797ef8750": {
+      "source": "AppSumo",
+      "misses": 2,
+      "since": "2026-11-28",
+      "endedAt": "2026-11-28"
     },
     "f68dfc4184bf": {
       "source": "IT之家",
@@ -3488,9 +3500,9 @@
     },
     "f9844047fe7c": {
       "source": "OpenRouter",
-      "misses": 1,
+      "misses": 2,
       "since": "2026-11-28",
-      "endedAt": null
+      "endedAt": "2026-11-28"
     },
     "fef21feaac71": {
       "source": "AppSumo",
@@ -10499,6 +10511,132 @@
         "verified": false
       },
       "runAt": "2026-11-27T20:45:14.490Z"
+    },
+    {
+      "id": "60c544edd8be",
+      "at": "2026-11-28",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-28",
+      "runAt": "2026-11-28T06:27:14.814Z",
+      "label": {
+        "title": "PlugThis AI",
+        "vendor": "PlugThis AI"
+      }
+    },
+    {
+      "id": "63eec5e817b2",
+      "at": "2026-11-28",
+      "type": "created",
+      "field": null,
+      "from": null,
+      "to": null,
+      "fields": {
+        "type": "tool",
+        "category": "其他",
+        "region": "cn",
+        "source": "IT之家",
+        "sourceUrl": "https://www.ithome.com/rss/",
+        "verified": false
+      },
+      "runAt": "2026-11-28T06:27:14.814Z"
+    },
+    {
+      "id": "762a098836d7",
+      "at": "2026-11-28",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-28",
+      "runAt": "2026-11-28T06:27:14.814Z",
+      "label": {
+        "title": "Particle AI: Particle-1 (free)",
+        "vendor": "Particle AI"
+      }
+    },
+    {
+      "id": "99229f326e43",
+      "at": "2026-11-28",
+      "type": "updated",
+      "field": "sourceUrl",
+      "from": "https://appsumo.com/collections/new/",
+      "to": "https://appsumo.com/collections/ending-soon/",
+      "origin": "observed",
+      "runAt": "2026-11-28T06:27:14.814Z"
+    },
+    {
+      "id": "a157ed655587",
+      "at": "2026-11-28",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-28",
+      "runAt": "2026-11-28T06:27:14.814Z",
+      "label": {
+        "title": "Rerun — AI Coworkers",
+        "vendor": "Rerun"
+      }
+    },
+    {
+      "id": "bf08e4fbd5ac",
+      "at": "2026-11-28",
+      "type": "restored",
+      "field": null,
+      "from": null,
+      "to": null,
+      "runAt": "2026-11-28T06:27:14.814Z"
+    },
+    {
+      "id": "c8784a307734",
+      "at": "2026-11-28",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-28",
+      "runAt": "2026-11-28T06:27:14.814Z",
+      "label": {
+        "title": "Lety.ai",
+        "vendor": "Lety.ai"
+      }
+    },
+    {
+      "id": "f34797ef8750",
+      "at": "2026-11-28",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-28",
+      "runAt": "2026-11-28T06:27:14.814Z",
+      "label": {
+        "title": "ScrollHaus",
+        "vendor": "ScrollHaus"
+      }
+    },
+    {
+      "id": "f9844047fe7c",
+      "at": "2026-11-28",
+      "type": "ended",
+      "field": null,
+      "from": null,
+      "to": null,
+      "reason": "source_no_longer_lists",
+      "firstMissedAt": "2026-11-28",
+      "runAt": "2026-11-28T06:27:14.814Z",
+      "label": {
+        "title": "inclusionAI: Ling 3.2 Flash (free)",
+        "vendor": "inclusionAI"
+      }
     }
   ]
 }
